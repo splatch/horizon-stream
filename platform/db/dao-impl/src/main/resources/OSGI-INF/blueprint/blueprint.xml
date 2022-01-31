@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:jpa="http://aries.apache.org/xmlns/jpa/v2.0.0"
+           xmlns:tx="http://aries.apache.org/xmlns/transactions/v2.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+           http://aries.apache.org/xmlns/jpa/v2.0.0 https://aries.apache.org/documentation/_attachments/schemas/jpa/jpa_20.xsd
+           http://aries.apache.org/xmlns/transactions/v2.0.0 https://aries.apache.org/documentation/_attachments/schemas/transaction/transactionv20.xsd">
+
+    <jpa:enable />
+    <tx:enable />
+
+    <reference id="jtaTransactionManager" interface="javax.transaction.TransactionManager"/>
+
+    <service interface="org.opennms.horizon.db.dao.api.SessionUtils">
+        <bean class="org.opennms.horizon.db.dao.impl.SessionUtilsImpl">
+            <argument ref="jtaTransactionManager"/>
+        </bean>
+    </service>
+
+    <service interface="org.opennms.horizon.db.dao.api.AcknowledgmentDao">
+        <bean class="org.opennms.horizon.db.dao.impl.AcknowledgmentDaoHibernate"/>
+    </service>
+
+    <service interface="org.opennms.horizon.db.dao.api.AlarmDao">
+        <bean class="org.opennms.horizon.db.dao.impl.AlarmDaoHibernate"/>
+    </service>
+
+    <service interface="org.opennms.horizon.db.dao.api.EventDao">
+        <bean class="org.opennms.horizon.db.dao.impl.EventDaoHibernate"/>
+    </service>
+
+</blueprint>

@@ -1,0 +1,77 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+        xmlns:cxf="http://cxf.apache.org/blueprint/core"
+        xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+        xmlns:jaas="http://karaf.apache.org/xmlns/jaas/v1.0.0"
+        xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0
+        http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd
+        http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
+
+
+
+    <!-- IMPLEMENTATION OF ALERT REST SERVICE -->
+    <reference id="alarmDao" interface="org.opennms.horizon.db.dao.api.AlarmDao" />
+    <!--  <reference id="troubleTicketProxy" interface="org.opennms.web.svclayer.TroubleTicketProxy" /> -->
+    <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils" />
+    <reference id="eventConfDao" interface="org.opennms.horizon.events.api.EventConfDao" />
+
+    <!-- TODO: provide a service via the Rest Mapper module? -->
+    <bean id="eventMapper" class="org.opennms.horizon.db.model.mapper.EventMapperImpl">
+        <property name="eventConfDao" ref="eventConfDao" />
+    </bean>
+
+    <!-- TODO: provide a service via the Rest Mapper module? -->
+    <bean id="alarmMapper" class="org.opennms.horizon.db.model.mapper.AlarmMapperImpl">
+        <argument ref="eventMapper"/>
+
+        <property name="eventConfDao" ref="eventConfDao" />
+    </bean>
+
+    <bean id="alarmRestServiceImpl" class="org.opennms.netmgt.alarmd.rest.internal.AlarmRestServiceImpl" scope="singleton">
+        <property name="alarmDao" ref="alarmDao" />
+        <!-- <property name="troubleTicketProxy" ref="troubleTicketProxy" /> --> <!-- Exanble after working up TicketD -->
+        <property name="sessionUtils" ref="sessionUtils" />
+        <property name="alarmMapper" ref="alarmMapper" />
+    </bean>
+
+
+    <!--                                -->
+    <!-- JAX-RS WIRING WITH WHITE-BOARD -->
+    <!--                                -->
+    <service id="alarmRestService" ref="alarmRestServiceImpl" interface="org.opennms.netmgt.alarmd.rest.AlarmRestService">
+        <service-properties>
+            <entry key="osgi.jaxrs.resource" value="true"/>
+            <!-- TODO: root uri -->
+            <!--<entry key="osgi.jaxrs.application.base" value="/alarmservice"/>-->
+            <!--<entry key="osgi.jaxrs.uri" value="/alarmservice"/>-->
+            <!-- TODO: use a specific application name instead of the default, ".default" to prevent contamination of multiple services in the same whiteboard -->
+            <!--<entry key="osgi.jaxrs.name" value="alarmsRestService"/>-->
+        </service-properties>
+    </service>
+
+    <bean id="jaasAuthenticationFeature" class="org.apache.cxf.interceptor.security.JAASAuthenticationFeature" scope="singleton">
+        <property name="contextName" value="karaf" /> <!-- karaf later  _customize for opennms -->
+        <property name="reportFault" value="true" />
+    </bean>
+
+    <service ref="jaasAuthenticationFeature" interface="org.apache.cxf.feature.Feature">
+        <service-properties>
+            <entry key="cxf.extension" value="true"/>
+        </service-properties>
+    </service>
+
+    <bean id="rolesAllowedDynamicFeature" class="org.opennms.netmgt.alarmd.rest.jaxrs.RolesAllowedDynamicFeature" />
+    
+    <service ref="rolesAllowedDynamicFeature" interface="javax.ws.rs.container.DynamicFeature">
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true"/>
+        </service-properties>
+    </service>
+
+</blueprint>
