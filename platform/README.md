@@ -18,13 +18,13 @@ Currently in proof-of-concept phase
 ## Must do
 
 * Split Minion & Core
-** Figure out best way to setup the features - minimize the code loaded on Minion
+    * Figure out best way to setup the features - minimize the code loaded on Minion
 * Model definition, validation & lifecycle
-** State vs configuration vs limits & tuning
-** Common model (OnmsNode) vs domain specific (OnmsAlarm)
-** Bundle organization & DAO services
+    * State vs configuration vs limits & tuning
+    * Common model (OnmsNode) vs domain specific (OnmsAlarm)
+    * Bundle organization & DAO services
 * Authentication & permission model
-** Use standalone auth server, and JWTs
+    * Use standalone auth server, and JWTs
 * Managing secrets
 * Pull in CM engine
 * Observability: OpenMetrics
