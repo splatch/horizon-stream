@@ -36,5 +36,5 @@ What pieces do we want to rethink?
 * Authorization
 * Scheduling
 * Event persistence
-** Performance bottleneck
+    * Performance bottleneck
 

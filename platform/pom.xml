@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <version>0.1.0-SNAPSHOT</version>
     <name>OpenNMS Horizon</name>
-    <inceptionYear>2021</inceptionYear>
+    <inceptionYear>2022</inceptionYear>
 
     <modules>
         <module>3rdparty</module>
