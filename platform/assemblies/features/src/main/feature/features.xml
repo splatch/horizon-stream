@@ -3,6 +3,7 @@
 
     <repository>mvn:org.apache.aries.jax.rs/org.apache.aries.jax.rs.features/1.0.6/xml</repository>
     <repository>mvn:org.apache.cxf.karaf/apache-cxf/${cxf.version}/xml/features</repository>
+    <repository>mvn:no.priv.bang.karaf/liquibase-core-karaf/${liquibaseVersion}/xml/features</repository>
 
     <feature name="guava" version="${guava.version}" description="Google :: Guava">
         <bundle dependency="true">mvn:com.google.guava/guava/${guava.version}</bundle>
@@ -51,37 +52,58 @@
 <!--        <bundle>mvn:org.opennms.horizon.core/jaas/${project.version}</bundle>-->
     </feature>
 
+    <feature name="horizon-db-config" version="${project.version}" description="Default Configs for DB">
+        <config name="org.opennms.netmgt.distributed.datasource">
+            osgi.jdbc.driver.class=org.postgresql.Driver
+
+            datasource.adminUrl=jdbc:postgresql://localhost:5432/template1
+            datasource.adminDatabaseName=postgres
+            datasource.adminUsername=postgres
+            datasource.adminPassword=
+
+            datasource.url=jdbc:postgresql://localhost:5432/opennms
+            datasource.username=opennms
+            datasource.password=
+            datasource.databaseName=opennms
+            datasource.initialize=true
+        </config>
+    </feature>
+
+    <!-- WORKAROUND: the PooledDataSourceFactory service exported by pax-jdbc-pool-hikaricp for some reason -->
+    <!--             fails the feature install unless we explicitly declare the capability.                 -->
+    <feature name="pax-jdbc-pool-capability-workaround">
+        <feature>pax-jdbc-pool-hikaricp</feature>
+
+        <capability>
+            osgi.service;effective:=active;objectClass=org.ops4j.pax.jdbc.pool.common.PooledDataSourceFactory
+        </capability>
+    </feature>
+
     <feature name="horizon-db" version="${project.version}" description="Horizon :: DB">
+        <!--<feature prerequisite="true">horizon-db-config</feature>-->
+        <feature>pax-jdbc-postgresql</feature>
+        <feature>pax-jdbc-pool-capability-workaround</feature>
+
         <feature>horizon-events-api</feature>
+        <feature>liquibase-core</feature>
 
         <bundle>mvn:org.opennms.horizon.db/dao-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.db/dao-impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.db/schema/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.db/schema-liquibase/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.db/model/${project.version}</bundle>
 
         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
 
-        <config name="org.ops4j.datasource-opennms">
-            osgi.jdbc.driver.class=org.postgresql.Driver
-            url=jdbc:postgresql://localhost:5432/opennms
-            dataSourceName=opennms
-            user=opennms
-            password=opennms
-        </config>
-        <capability>
-            osgi.service;objectClass=javax.sql.DataSource;effective:=active;osgi.jndi.service.name=opennms
-        </capability>
+        <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
 
         <feature version="${hibernate.version}">hibernate</feature>
         <feature>jdbc</feature>
         <feature>jndi</feature>
         <feature>jpa</feature>
         <feature>transaction</feature>
-
-        <feature>pax-jdbc-config</feature>
-        <feature>pax-jdbc-postgresql</feature>
-        <feature>pax-jdbc-pool-hikaricp</feature>
     </feature>
 
     <feature name="horizon-events-api" version="${project.version}" description="Horizon :: Events :: API">
