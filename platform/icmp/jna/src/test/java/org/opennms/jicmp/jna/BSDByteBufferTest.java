@@ -40,6 +40,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -56,6 +57,7 @@ import com.sun.jna.ptr.IntByReference;
  * @author brozow
  * @author roskens
  */
+@Ignore
 public class BSDByteBufferTest {
 
     static {

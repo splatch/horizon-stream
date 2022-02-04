@@ -72,6 +72,7 @@
         <rate.limitted.logger.version>2.0.2</rate.limitted.logger.version>
         <rest-assured.version>4.3.3</rest-assured.version>
         <skipTests>false</skipTests>
+        <skipITs>true</skipITs>
         <slf4j.version>1.7.33</slf4j.version>
         <snmp4j.version>2.5.5</snmp4j.version>
         <snmp4j.agent.version>2.5.3</snmp4j.agent.version>
@@ -142,6 +143,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipITs>${skipITs}</skipITs>
+                </configuration>
                 <executions>
                     <execution>
                         <id>horizon-integration-test</id>

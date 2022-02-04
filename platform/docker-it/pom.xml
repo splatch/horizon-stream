@@ -123,7 +123,7 @@
         <groupId>io.fabric8</groupId>
         <artifactId>docker-maven-plugin</artifactId>
         <configuration>
-          <skip>${skipTests}</skip>
+          <skip>${skipITs}</skip>
           <showLogs>true</showLogs>
           <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
           <images>
@@ -248,7 +248,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
-            <skipITs>${skipTests}</skipITs>
+          <skipITs>${skipITs}</skipITs>
           <reuseForks>true</reuseForks>
           <useSystemClassLoader>false</useSystemClassLoader>
           <systemProperties>
