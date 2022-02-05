@@ -29,13 +29,19 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
            xsi:schemaLocation="
                 http://www.osgi.org/xmlns/blueprint/v1.0.0
                 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 
                 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
                 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+
+                http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+                https://aries.apache.org/documentation/_attachments/schemas/blueprint-ext/blueprint-ext-1.5.xsd
             ">
+
+    <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]"/>
 
     <cm:property-placeholder id="datasourceProperties" persistent-id="org.opennms.netmgt.distributed.datasource" update-strategy="reload">
         <cm:default-properties>
@@ -45,12 +51,12 @@
             <cm:property name="connection.pool.maxPool" value="50" />
             <cm:property name="connection.pool.maxSize" value="50" />
 
-            <cm:property name="datasource.adminUrl" value="jdbc:postgresql://localhost:5432/template1" />
+            <cm:property name="datasource.adminUrl" value="jdbc:postgresql://$[env:PGSQL_SERVICE_NAME]:5432/template1" />
             <cm:property name="datasource.adminDatabaseName" value="template1" />
-            <cm:property name="datasource.adminUsername" value="postgres" />
-            <cm:property name="datasource.adminPassword" value="" />
+            <cm:property name="datasource.adminUsername" value="$[env:PGSQL_ADMIN_USERNAME]" />
+            <cm:property name="datasource.adminPassword" value="$[env:PGSQL_ADMIN_PASSWORD]" />
 
-            <cm:property name="datasource.url" value="jdbc:postgresql://localhost:5432/opennms" />
+            <cm:property name="datasource.url" value="jdbc:postgresql://$[env:PGSQL_SERVICE_NAME]:5432/opennms" />
             <cm:property name="datasource.username" value="opennms" />
             <cm:property name="datasource.password" value="" />
             <cm:property name="datasource.databaseName" value="opennms" />

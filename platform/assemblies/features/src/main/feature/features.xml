@@ -52,23 +52,6 @@
 <!--        <bundle>mvn:org.opennms.horizon.core/jaas/${project.version}</bundle>-->
     </feature>
 
-    <feature name="horizon-db-config" version="${project.version}" description="Default Configs for DB">
-        <config name="org.opennms.netmgt.distributed.datasource">
-            osgi.jdbc.driver.class=org.postgresql.Driver
-
-            datasource.adminUrl=jdbc:postgresql://localhost:5432/template1
-            datasource.adminDatabaseName=postgres
-            datasource.adminUsername=postgres
-            datasource.adminPassword=
-
-            datasource.url=jdbc:postgresql://localhost:5432/opennms
-            datasource.username=opennms
-            datasource.password=
-            datasource.databaseName=opennms
-            datasource.initialize=true
-        </config>
-    </feature>
-
     <!-- WORKAROUND: the PooledDataSourceFactory service exported by pax-jdbc-pool-hikaricp for some reason -->
     <!--             fails the feature install unless we explicitly declare the capability.                 -->
     <feature name="pax-jdbc-pool-capability-workaround">
@@ -80,7 +63,6 @@
     </feature>
 
     <feature name="horizon-db" version="${project.version}" description="Horizon :: DB">
-        <!--<feature prerequisite="true">horizon-db-config</feature>-->
         <feature>pax-jdbc-postgresql</feature>
         <feature>pax-jdbc-pool-capability-workaround</feature>
 

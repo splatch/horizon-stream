@@ -73,10 +73,12 @@
         <rest-assured.version>4.3.3</rest-assured.version>
         <skipTests>false</skipTests>
         <skipITs>true</skipITs>
+        <skipUTs>${skipTests}</skipUTs>
         <slf4j.version>1.7.33</slf4j.version>
         <snmp4j.version>2.5.5</snmp4j.version>
         <snmp4j.agent.version>2.5.3</snmp4j.agent.version>
         <spring.version>4.2.9.RELEASE_1</spring.version>
+        <testcontainers.version>1.16.3</testcontainers.version>
     </properties>
 
     <build>
@@ -135,6 +137,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <skipTests>${skipUTs}</skipTests>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                     </excludes>

@@ -59,7 +59,7 @@
                 <configuration>
                     <images>
                         <image>
-                            <name>opennms/horizon-stream-core</name>
+                            <name>opennms/horizon-stream-core:local</name>
                             <build>
                                 <dockerFileDir>core</dockerFileDir>
                                 <filter>@</filter>

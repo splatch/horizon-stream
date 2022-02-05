@@ -17,6 +17,7 @@ Currently in proof-of-concept phase
 
 ## Must do
 
+* Review configuration handling - PostgreSQL URL, K8S, Secrets
 * Split Minion & Core
     * Figure out best way to setup the features - minimize the code loaded on Minion
 * Model definition, validation & lifecycle
@@ -28,6 +29,8 @@ Currently in proof-of-concept phase
 * Managing secrets
 * Pull in CM engine
 * Observability: OpenMetrics
+* docker: arm support & signing/content trust
+
 
 ## Nice to do
 

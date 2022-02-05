@@ -1,11 +1,14 @@
 package org.opennms.horizon.alarms.itests;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 import org.testcontainers.lifecycle.TestLifecycleAware;
 
 import com.google.common.collect.ImmutableMap;
@@ -28,53 +31,35 @@ public class CoreContainer extends GenericContainer<CoreContainer> implements Te
             .put(NetworkProtocol.SYSLOG, CORE_SYSLOG_PORT)
             .build();
 
-    public CoreContainer() {
-        super("opennms/horizon-stream-core:latest");
+    private final PostgreSQLContainer<?> pgContainer;
+
+    public CoreContainer(PostgreSQLContainer<?> pgContainer) {
+        // use the 'local' tag so that we don't accidentally pull 'latest' or another tag for the container registry
+        super("opennms/horizon-stream-core:local");
+        this.pgContainer = Objects.requireNonNull(pgContainer);
     }
 
     @Override
     protected void configure() {
         final Integer[] exposedPorts = new ArrayList<>(networkProtocolMap.values())
                 .toArray(new Integer[0]);
-        final int[] exposedUdpPorts = networkProtocolMap.entrySet().stream()
-                .filter(e -> InternetProtocol.UDP.equals(e.getKey().getIpProtocol()))
-                .mapToInt(Map.Entry::getValue)
-                .toArray();
 
         String javaOpts = "-Djava.security.egd=file:/dev/./urandom ";
-       // if (profile.isJvmDebuggingEnabled()) {
-            javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", CORE_SNMP_PORT);
-       // }
+        javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n ", CORE_DEBUG_PORT);
 
         String containerCommand = "-f";
 
         withExposedPorts(exposedPorts)
                 .withEnv("JAVA_OPTS", javaOpts)
+                .withEnv("PGSQL_SERVICE_NAME", DB_ALIAS)
+                .withEnv("PGSQL_ADMIN_USERNAME", pgContainer.getUsername())
+                .withEnv("PGSQL_ADMIN_PASSWORD", pgContainer.getPassword())
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
-                .waitingFor(new HostPortWaitStrategy());
-//
-//        withExposedPorts(exposedPorts)
-//                .withCreateContainerCmdModifier(cmd -> {
-//                    final CreateContainerCmd createCmd = (CreateContainerCmd)cmd;
-//                    // The framework doesn't support exposing UDP ports directly, so we use this hook to map some of the exposed ports to UDP
-//                    TestContainerUtils.exposePortsAsUdp(createCmd, exposedUdpPorts);
-//                })
-//                .withEnv("POSTGRES_HOST", DB_ALIAS)
-//                .withEnv("POSTGRES_PORT", Integer.toString(PostgreSQLContainer.POSTGRESQL_PORT))
-//                // User/pass are hardcoded in PostgreSQLContainer but are not exposed
-//                .withEnv("POSTGRES_USER", "test")
-//                .withEnv("POSTGRES_PASSWORD", "test")
-//                .withEnv("OPENNMS_DBNAME", "opennms")
-//                .withEnv("OPENNMS_DBUSER", "opennms")
-//                .withEnv("OPENNMS_DBPASS", "opennms")
-//                .withEnv("JAVA_OPTS", javaOpts)
-//                .withNetwork(Network.SHARED)
-//                .withNetworkAliases(ALIAS)
-//                .withCommand(containerCommand)
-//                .waitingFor(new HostPortWaitStrategy());
-////                .addFileSystemBind(overlay.toString(),
-////                        "/opt/opennms-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+                .waitingFor(new HttpWaitStrategy()
+                        .forPath("/alarms/list")
+                        .forPort(CORE_WEB_PORT)
+                        .withStartupTimeout(Duration.ofMinutes(2)));
     }
 }

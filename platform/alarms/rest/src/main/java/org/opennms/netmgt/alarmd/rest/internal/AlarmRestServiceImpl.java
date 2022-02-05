@@ -189,7 +189,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
             AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
             alarmsCollection.setTotalCount(dtoAlarmList.size());
 
-            return Response.status(Status.ACCEPTED).entity(alarmsCollection).build();
+            return Response.status(Status.OK).entity(alarmsCollection).build();
         });
 
     }
