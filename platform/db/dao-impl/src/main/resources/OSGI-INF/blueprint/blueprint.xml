@@ -30,4 +30,20 @@
         <bean class="org.opennms.horizon.db.dao.impl.EventDaoHibernate"/>
     </service>
 
+    <service interface="org.opennms.horizon.db.dao.api.NodeDao">
+        <bean class="org.opennms.horizon.db.dao.impl.NodeDaoHibernate"/>
+    </service>
+
+    <service interface="org.opennms.horizon.db.dao.api.IpInterfaceDao">
+        <bean class="org.opennms.horizon.db.dao.impl.IpInterfaceDaoHibernate"/>
+    </service>
+
+    <service interface="org.opennms.horizon.db.dao.api.DistPollerDao">
+        <bean class="org.opennms.horizon.db.dao.impl.DistPollerDaoHibernate"/>
+    </service>
+
+    <service interface="org.opennms.horizon.db.dao.api.MonitoringSystemDao">
+        <bean class="org.opennms.horizon.db.dao.impl.MonitoringSystemDaoHibernate"/>
+    </service>
+
 </blueprint>

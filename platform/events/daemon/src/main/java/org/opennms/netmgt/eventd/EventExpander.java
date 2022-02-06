@@ -110,7 +110,7 @@ public final class EventExpander implements org.opennms.horizon.events.api.Event
 
     private EventConfDao m_eventConfDao;
 
-    private EventUtil m_eventUtil;
+    private final EventUtil m_eventUtil;
 
     /**
      * The default event UEI - if the event lookup into the 'event.conf' fails,
@@ -831,7 +831,4 @@ public final class EventExpander implements org.opennms.horizon.events.api.Event
         m_eventConfDao = eventConfDao;
     }
 
-    public void setEventUtil(EventUtil eventUtil) {
-        m_eventUtil = eventUtil;
-    }
 }

@@ -9,7 +9,7 @@ import org.opennms.horizon.db.dao.api.SessionUtils;
 
 public class SessionUtilsImpl implements SessionUtils {
 
-    private TransactionManager transactionManager;
+    private final TransactionManager transactionManager;
 
     public SessionUtilsImpl(TransactionManager transactionManager) {
         this.transactionManager = Objects.requireNonNull(transactionManager);

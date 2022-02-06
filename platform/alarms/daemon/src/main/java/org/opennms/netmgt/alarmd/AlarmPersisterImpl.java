@@ -108,7 +108,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         try {
             locks.forEach(Lock::lock);
             // Process the alarm inside a transaction
-            // alarm = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event));
             sessionUtils.withTransaction(()->{
                 alarm[0] = addOrReduceEventAsAlarm(event);
             });
