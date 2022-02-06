@@ -54,3 +54,9 @@ feature:install aries-blueprint horizon-alarms
 curl -v -u admin:admin http://localhost:8181/alarms/list```
 ```
 
+```
+config:edit org.opennms.netmgt.distributed.datasource
+property-set datasource.adminUrl jdbc:postgresql://localhost:5432/template1
+property-set datasource.adminUsername postgres
+config:update
+```

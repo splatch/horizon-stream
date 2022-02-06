@@ -29,6 +29,8 @@
 package org.opennms.netmgt.alarmd;
 
 import org.opennms.horizon.core.lib.SystemProperties;
+import org.opennms.horizon.events.annotations.EventHandler;
+import org.opennms.horizon.events.annotations.EventListener;
 import org.opennms.horizon.events.api.DaemonTools;
 import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.events.api.ThreadAwareEventListener;
@@ -45,7 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author jwhite
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
-
+@EventListener(name=Alarmd.NAME, logPrefix="alarmd")
 public class Alarmd implements ThreadAwareEventListener {
     private static final Logger LOG = LoggerFactory.getLogger(Alarmd.class);
 
@@ -70,9 +72,9 @@ public class Alarmd implements ThreadAwareEventListener {
      *
      * This method is thread-safe.
      *
-     * @param e a {@link org.opennms.netmgt.events.api.model.IEvent} object.
+     * @param e a {@link org.opennms.horizon.events.model.IEvent} object.
      */
-   // @EventHandler(uei = EventHandler.ALL_UEIS)
+    @EventHandler(uei = EventHandler.ALL_UEIS)
     public void onEvent(IEvent e) {
     	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
            handleReloadEvent(e);
@@ -95,7 +97,7 @@ public class Alarmd implements ThreadAwareEventListener {
      * @param persister a {@link org.opennms.netmgt.alarmd.AlarmPersister} object.
      */
     public void setPersister(AlarmPersister persister) {
-        this.m_persister = persister;
+        m_persister = persister;
     }
 
     /**
@@ -105,10 +107,6 @@ public class Alarmd implements ThreadAwareEventListener {
      */
     public AlarmPersister getPersister() {
         return m_persister;
-    }
-
-    protected synchronized void onInit() {
-        // pass
     }
 
     public synchronized void onStart() {
@@ -126,16 +124,15 @@ public class Alarmd implements ThreadAwareEventListener {
         return THREADS;
     }
 
-
     public void setAlarmLifecycleListenerManager(AlarmLifecycleListenerManager allm) {
-        this.m_alm = allm;
+        m_alm = allm;
     }
 
     public void setDroolsAlarmContext(DroolsAlarmContext droolsAlarmContext) {
-        this.m_droolsAlarmContext = droolsAlarmContext;
+        m_droolsAlarmContext = droolsAlarmContext;
     }
 
     public void setEventForwarder(EventForwarder eventForwarder) {
-        this.m_eventForwarder = m_eventForwarder;
+        m_eventForwarder = eventForwarder;
     }
 }

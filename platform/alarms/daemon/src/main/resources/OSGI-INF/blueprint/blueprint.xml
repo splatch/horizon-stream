@@ -16,7 +16,7 @@
     <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils" />
     <reference id="eventForwarder" interface="org.opennms.horizon.events.api.EventForwarder" />
     <reference id="eventDao" interface="org.opennms.horizon.db.dao.api.EventDao" />
-    <reference id="eventSubscriptionService" interface="org.opennms.horizon.events.api.EventSubscriptionService" />
+    <reference id="annotationBasedEventListenerFactory" interface="org.opennms.horizon.events.api.AnnotationBasedEventListenerFactory" />
     <reference id="acknowledgmentDao" interface="org.opennms.horizon.db.dao.api.AcknowledgmentDao" />
 
     <bean id="alarmEntityNotifier" class="org.opennms.netmgt.alarmd.AlarmEntityNotifierImpl"/>
@@ -70,11 +70,9 @@
         <property name="alarmLifecycleListenerManager" ref="alarmLifecycleListenerManager" />
     </bean>
 
-    <!-- FIXME: OOPS -->
-<!--    <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter" init-method="afterPropertiesSet" destroy-method="destroy">-->
-<!--        <property name="annotatedListener" ref="daemon" />-->
-<!--        <property name="eventSubscriptionService" ref="eventSubscriptionService" />-->
-<!--    </bean>-->
+    <bean id="listener" factory-ref="annotationBasedEventListenerFactory" factory-method="createAnnotationBasedEventListener" init-method="start" destroy-method="stop">
+        <argument ref="daemon" />
+    </bean>
 
     <service interface="org.opennms.horizon.alarms.api.AlarmEntityListener" ref="alarmLifecycleListenerManager"/>
     <reference-list id="alarmLifecycleListeners" interface="org.opennms.horizon.alarms.api.AlarmLifecycleListener" availability="optional">

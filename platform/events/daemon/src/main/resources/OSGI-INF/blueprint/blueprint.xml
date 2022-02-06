@@ -61,4 +61,9 @@
         <property name="eventIpcBroadcaster" ref="eventIpcManagerImpl"/>
     </bean>
 
+    <bean id="annotationBasedEventListenerFactory" class="org.opennms.netmgt.eventd.AnnotationBasedEventListenerFactoryImpl">
+        <argument ref="eventIpcManagerImpl"/>
+    </bean>
+    <service interface="org.opennms.horizon.events.api.AnnotationBasedEventListenerFactory" ref="annotationBasedEventListenerFactory" />
+
 </blueprint>
