@@ -3,33 +3,42 @@ package org.opennms.horizon.db.dao.impl;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 
 import org.opennms.horizon.db.dao.api.SessionUtils;
 
 public class SessionUtilsImpl implements SessionUtils {
+    private final UserTransaction tx;
 
-    private final TransactionManager transactionManager;
-
-    public SessionUtilsImpl(TransactionManager transactionManager) {
-        this.transactionManager = Objects.requireNonNull(transactionManager);
+    public SessionUtilsImpl(UserTransaction tx) {
+        this.tx = Objects.requireNonNull(tx);
     }
 
     @Override
     public <V> V withTransaction(Supplier<V> supplier) {
-        // FIXME: Ooops
-        return supplier.get();
+        try {
+            tx.begin();
+            try {
+                return supplier.get();
+            } finally {
+                tx.commit();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public <V> V withReadOnlyTransaction(Supplier<V> supplier) {
-        // FIXME: Ooops
-        return supplier.get();
-    }
-
-    @Override
-    public <V> V withManualFlush(Supplier<V> supplier) {
-        // FIXME: Ooops
-        return supplier.get();
+        try {
+            tx.begin();
+            try {
+                return supplier.get();
+            } finally {
+                tx.rollback();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

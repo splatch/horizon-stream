@@ -48,7 +48,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
     }
 
     @SuppressWarnings("unchecked")
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional(Transactional.TxType.REQUIRED)
     @Override
     public K save(T entity) {
         entityManager.persist(entity);

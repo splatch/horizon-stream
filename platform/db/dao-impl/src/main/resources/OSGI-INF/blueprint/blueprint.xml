@@ -11,10 +11,11 @@
     <tx:enable />
 
     <reference id="jtaTransactionManager" interface="javax.transaction.TransactionManager"/>
+    <reference id="userTransaction" interface="javax.transaction.UserTransaction"/>
 
     <service interface="org.opennms.horizon.db.dao.api.SessionUtils">
         <bean class="org.opennms.horizon.db.dao.impl.SessionUtilsImpl">
-            <argument ref="jtaTransactionManager"/>
+            <argument ref="userTransaction"/>
         </bean>
     </service>
 

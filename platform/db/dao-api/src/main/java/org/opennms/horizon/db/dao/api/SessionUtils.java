@@ -72,23 +72,4 @@ public interface SessionUtils {
         });
     }
 
-    /**
-     * Converts the flush mode for the current session factory to MANUAL
-     * for the duration of the call to the given supplier.
-     *
-     * The flush mode is reverted to it's previous value after the call.
-     *
-     * @param supplier supplier to invoke
-     * @param <V> type returned by the supplier
-     * @return value returned by the supplier
-     */
-    <V> V withManualFlush(Supplier<V> supplier);
-
-    default void withManualFlush(Runnable runnable) {
-        this.withManualFlush(() -> {
-            runnable.run();
-            return null;
-        });
-    }
-
 }
