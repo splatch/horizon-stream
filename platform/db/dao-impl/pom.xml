@@ -33,6 +33,10 @@
             <artifactId>dao-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.aries.jpa</groupId>
+            <artifactId>org.apache.aries.jpa.api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

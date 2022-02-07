@@ -1,7 +1,5 @@
 package org.opennms.horizon.db.dao.impl;
 
-import java.util.List;
-
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
@@ -16,7 +14,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         super(OnmsAlarm.class);
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(Transactional.TxType.REQUIRED)
     @Override
     public OnmsAlarm findByReductionKey(String reductionKey) {
         TypedQuery<OnmsAlarm> query = getEntityManager().createQuery("SELECT a FROM OnmsAlarm a WHERE a.reductionKey=:reductionKey", OnmsAlarm.class);

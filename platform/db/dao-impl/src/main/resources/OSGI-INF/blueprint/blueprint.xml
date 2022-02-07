@@ -10,12 +10,11 @@
     <jpa:enable />
     <tx:enable />
 
-    <reference id="jtaTransactionManager" interface="javax.transaction.TransactionManager"/>
-    <reference id="userTransaction" interface="javax.transaction.UserTransaction"/>
+    <reference id="jpaTemplate" interface="org.apache.aries.jpa.template.JpaTemplate" filter="(osgi.unit.name=dao-hibernate)"/>
 
     <service interface="org.opennms.horizon.db.dao.api.SessionUtils">
         <bean class="org.opennms.horizon.db.dao.impl.SessionUtilsImpl">
-            <argument ref="userTransaction"/>
+            <argument ref="jpaTemplate"/>
         </bean>
     </service>
 

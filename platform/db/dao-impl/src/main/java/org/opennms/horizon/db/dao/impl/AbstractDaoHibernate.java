@@ -61,27 +61,27 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
         entityManager.persist(entity);
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(Transactional.TxType.REQUIRED)
     @Override
     public void saveOrUpdate(T entity) {
         // FIXME: OOPS: Need more here
         entityManager.persist(entity);
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(Transactional.TxType.REQUIRED)
     @Override
     public void flush() {
         entityManager.flush();
     }
 
     @SuppressWarnings("unchecked")
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(Transactional.TxType.REQUIRED)
     @Override
     public List<T> findMatching(CriteriaQuery<?> query) {
         return (List<T>)entityManager.createQuery(query).getResultList();
     }
 
-    @Transactional(Transactional.TxType.SUPPORTS)
+    @Transactional(Transactional.TxType.REQUIRED)
     @Override
     public long countAll() {
         return (Long)entityManager.createQuery("SELECT COUNT(x) from " + entityClass.getSimpleName() + " x").getSingleResult();

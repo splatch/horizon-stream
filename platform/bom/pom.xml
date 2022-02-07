@@ -52,6 +52,11 @@
                 <version>${mapstruct.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.aries.jpa</groupId>
+                <artifactId>org.apache.aries.jpa.api</artifactId>
+                <version>${aries.jpa.api.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
                 <version>${spring.version}</version>
