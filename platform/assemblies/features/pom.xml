@@ -87,6 +87,7 @@
                                 <feature>horizon-ipc-api</feature>
                                 <feature>horizon-snmp</feature>
                                 <feature>horizon-tracing</feature>
+                                <feature>jackson</feature>
                                 <feature>java-native-access</feature>
                                 <feature>kie-drools</feature>
                                 <feature>moxy</feature>

@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -170,7 +169,7 @@ public class EventRestServiceImpl implements EventRestService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
-    @RolesAllowed({"user", "admin"})
+    // @RolesAllowed({"user", "admin"})
     public String getCount() {
         return Long.toString(m_eventDao.countAll());
     }
@@ -185,7 +184,7 @@ public class EventRestServiceImpl implements EventRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @RolesAllowed({"user", "admin"})
+    // @RolesAllowed({"user", "admin"})
     public EventCollectionDTO getEvents(@Context final UriInfo uriInfo) throws ParseException {
         CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
         return this.sessionUtils.withReadOnlyTransaction(
@@ -203,7 +202,7 @@ public class EventRestServiceImpl implements EventRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("between")
-    @RolesAllowed({"user", "admin"})
+    // @RolesAllowed({"user", "admin"})
     public EventCollectionDTO getEventsBetween(@Context UriInfo uriInfo) throws ParseException {
         MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 
@@ -225,7 +224,7 @@ public class EventRestServiceImpl implements EventRestService {
     @PUT
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @RolesAllowed({"admin"})
+    // @RolesAllowed({"admin"})
     public Response updateEvent(@Context SecurityContext securityContext, @PathParam("eventId") Integer eventId, @FormParam("ack") Boolean ack) {
         if (ack == null) {
             throw new WebApplicationException(
@@ -252,7 +251,7 @@ public class EventRestServiceImpl implements EventRestService {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @RolesAllowed({"admin"})
+    // @RolesAllowed({"admin"})
     public Response updateEvents(@Context SecurityContext securityContext, MultivaluedHashMap<String, String> formProperties) {
         /*
         Boolean ack = false;
@@ -275,7 +274,7 @@ public class EventRestServiceImpl implements EventRestService {
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    @RolesAllowed({"admin"})
+    // @RolesAllowed({"admin"})
     public Response publishEvent(final Event event) {
         if (event.getSource() == null) {
             event.setSource("ReST");
@@ -302,7 +301,7 @@ public class EventRestServiceImpl implements EventRestService {
 //                                .build()
 //                );
 //            }
-            m_eventForwarder.sendNow(event);
+            m_eventForwarder.sendNowSync(event);
             return Response.accepted().build();
         } catch (Exception exc) {
             // TODO: any reason _not_ to use the built-in exception mapping and handling?

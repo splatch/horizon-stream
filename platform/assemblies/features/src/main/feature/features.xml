@@ -68,16 +68,13 @@
 
         <feature>horizon-events-api</feature>
         <feature>liquibase-core</feature>
+        <feature version="${jackson.version}">jackson</feature>
 
         <bundle>mvn:org.opennms.horizon.db/dao-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.db/dao-impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.db/schema/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.db/schema-liquibase/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.db/model/${project.version}</bundle>
-
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
-        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
 
         <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
 
@@ -178,6 +175,16 @@
         <bundle>mvn:org.opennms.horizon.snmp/rpc-impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.snmp/snmp4j/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.snmp/shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="jackson" version="${jackson.version}">
+        <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxrs-api-2.1/2.9.1</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson.version}</bundle>
     </feature>
 
     <feature name="java-native-access" version="${jna.version}" description="Java Native Access (JNA)">
