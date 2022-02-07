@@ -9,6 +9,10 @@ executors:
   test-executor:
       machine:
           image: ubuntu-2004:202111-02
+  ui-executor:
+    docker:
+      - image: cimg/node:16.3.0
+
 
 workflows:
   build-deploy:
@@ -17,6 +21,7 @@ workflows:
       - tests:
           requires:
             - build
+      - build-ui
 
 jobs:
   build:
@@ -95,3 +100,13 @@ jobs:
           path: ~/junit
       - store_artifacts:
           path: ~/cucumber
+
+  build-ui:
+    executor: ui-executor
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: |
+            cd ui && yarn install && yarn test && yarn build
+
