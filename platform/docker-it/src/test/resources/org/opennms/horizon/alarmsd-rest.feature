@@ -9,29 +9,28 @@ Feature: OpenNMS Alarm Daemon Rest
   Scenario: Ensure Events endpoints are reachable
     Given application base url in system property "application.base-url"
     Given http username "admin" password "admin"
-    Then send GET request at path "/events/count" with retry timeout 20000
+    Then send GET request at path "/api/events/count" with retry timeout 20000
 
   Scenario: Admin user request /alarms/list endpoint with JSON
     Given application base url in system property "application.base-url"
     Given http username "admin" password "admin"
     Given JSON accept encoding
-    Then send GET request at path "/alarms/list" with retry timeout 20000
+    Then send GET request at path "/api/alarms/list" with retry timeout 20000
     Then verify the response code 200 was returned
     Then DEBUG dump the response body
     Then parse the JSON response
     Then verify JSON path expressions match
       | totalCount == 0 |
 
-# TODO: enable once events API is available
   Scenario: Admin user request /alarms/list endpoint with JSON
     Given application base url in system property "application.base-url"
     Given http username "admin" password "admin"
     Given JSON accept encoding
     Given XML content type
     Given POST request body in resource "test-data/event001.xml"
-    Then send POST request at path "/events"
+    Then send POST request at path "/api/events"
     Then verify the response code 202 was returned
-    Then send GET request at path "/alarms/list" with retry timeout 20000
+    Then send GET request at path "/api/alarms/list" with retry timeout 20000
     Then verify the response code 200 was returned
     Then DEBUG dump the response body
     Then parse the JSON response
@@ -40,3 +39,11 @@ Feature: OpenNMS Alarm Daemon Rest
       | alarm[0].uei == uei.opennms.org/alarms/trigger                        |
       | alarm[0].logMessage == A problem has been triggered on //x-service-x. |
       | alarm[0].lastEvent.source == x-source-x                               |
+
+  Scenario: INVALID CREDENTIALS on the /events endpoint
+    Given application base url in system property "application.base-url"
+    Given http username "INVALID_USER" password "INVALID_PASSWORD"
+    Then send GET request at path "/api/events/count" with retry timeout 20000
+    Then verify the response code 500 was returned
+    Then verify the response body matches ".*AuthenticationException.*"
+

@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -184,7 +185,7 @@ public class EventRestServiceImpl implements EventRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    // @RolesAllowed({"user", "admin"})
+    @RolesAllowed({"user", "admin"})
     public EventCollectionDTO getEvents(@Context final UriInfo uriInfo) throws ParseException {
         CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
         return this.sessionUtils.withReadOnlyTransaction(
