@@ -1,4 +1,4 @@
-package org.opennms;
+package org.opennms.rest;
 
 import org.apache.cxf.interceptor.security.AuthenticationException;
 

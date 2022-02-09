@@ -50,6 +50,8 @@
 <!--        Use the built-in JAAS provider - may not be necessary if we use JWTs-->
 <!--        <feature>jaas-deployer</feature>-->
 <!--        <bundle>mvn:org.opennms.horizon.core/jaas/${project.version}</bundle>-->
+
+        <bundle>mvn:org.opennms.horizon.core/rest/${project.version}</bundle>
     </feature>
 
     <!-- WORKAROUND: the PooledDataSourceFactory service exported by pax-jdbc-pool-hikaricp for some reason -->
