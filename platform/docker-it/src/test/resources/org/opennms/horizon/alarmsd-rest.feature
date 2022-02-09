@@ -44,6 +44,5 @@ Feature: OpenNMS Alarm Daemon Rest
     Given application base url in system property "application.base-url"
     Given http username "INVALID_USER" password "INVALID_PASSWORD"
     Then send GET request at path "/api/events/count" with retry timeout 20000
-    Then verify the response code 500 was returned
-    Then verify the response body matches ".*AuthenticationException.*"
+    Then verify the response code 403 was returned
 

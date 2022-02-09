@@ -74,4 +74,13 @@
         </service-properties>
     </service>
 
+
+    <!-- Map authentication failure to 403 -->
+    <bean id="authenticationFailureExceptionMapper" class="org.opennms.AuthenticationFailureExceptionMapper"/>
+
+    <service ref="authenticationFailureExceptionMapper" interface="javax.ws.rs.ext.ExceptionMapper">
+        <service-properties>
+            <entry key="osgi.jaxrs.extension" value="true"/>
+        </service-properties>
+    </service>
 </blueprint>
