@@ -9,13 +9,13 @@ Feature: OpenNMS Alarm Daemon Rest
   Scenario: Ensure Events endpoints are reachable
     Given application base url in system property "application.base-url"
     Given http username "admin" password "admin"
-    Then send GET request at path "/api/events/count" with retry timeout 20000
+    Then send GET request at path "/events/count" with retry timeout 20000
 
   Scenario: Admin user request /alarms/list endpoint with JSON
     Given application base url in system property "application.base-url"
     Given http username "admin" password "admin"
     Given JSON accept encoding
-    Then send GET request at path "/api/alarms/list" with retry timeout 20000
+    Then send GET request at path "/alarms/list" with retry timeout 20000
     Then verify the response code 200 was returned
     Then DEBUG dump the response body
     Then parse the JSON response
@@ -28,9 +28,9 @@ Feature: OpenNMS Alarm Daemon Rest
     Given JSON accept encoding
     Given XML content type
     Given POST request body in resource "test-data/event001.xml"
-    Then send POST request at path "/api/events"
+    Then send POST request at path "/events"
     Then verify the response code 202 was returned
-    Then send GET request at path "/api/alarms/list" with retry timeout 20000
+    Then send GET request at path "/alarms/list" with retry timeout 20000
     Then verify the response code 200 was returned
     Then DEBUG dump the response body
     Then parse the JSON response
@@ -43,6 +43,6 @@ Feature: OpenNMS Alarm Daemon Rest
   Scenario: INVALID CREDENTIALS on the /events endpoint
     Given application base url in system property "application.base-url"
     Given http username "INVALID_USER" password "INVALID_PASSWORD"
-    Then send GET request at path "/api/events/count" with retry timeout 20000
+    Then send GET request at path "/events/count" with retry timeout 20000
     Then verify the response code 403 was returned
 
