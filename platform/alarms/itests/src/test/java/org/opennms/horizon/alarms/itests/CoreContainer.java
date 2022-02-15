@@ -60,7 +60,7 @@ public class CoreContainer extends GenericContainer<CoreContainer> implements Te
                 .withCommand(containerCommand)
                 .withFileSystemBind("target/test-classes/users.properties", "/opt/horizon-stream/etc/users.properties", BindMode.READ_ONLY)
                 .waitingFor(new HttpWaitStrategy()
-                        .forPath("/cxf/alarms/list")
+                        .forPath("/alarms/list")
                         .forPort(CORE_WEB_PORT)
                         .withBasicCredentials("admin", "admin")
                         .withStartupTimeout(Duration.ofMinutes(2)));
