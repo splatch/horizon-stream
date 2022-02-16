@@ -32,6 +32,14 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.opennms.horizon.assemblies</groupId>
+      <artifactId>docker</artifactId>
+      <type>pom</type>
+      <scope>test</scope>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-core</artifactId>
       <scope>test</scope>
@@ -167,9 +175,9 @@
               <name>alarm-application-it-image</name>
               <alias>application</alias>
               <build>
-                <from>apache/karaf:${karaf.version}</from>
+                <from>opennms/horizon-stream-core:local</from>
                 <assembly>
-                  <!-- <user>karaf:users:karaf</user> -->
+                  <user>horizon-stream</user>
                   <targetDir>/</targetDir>
 
                   <inline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -182,37 +190,32 @@
                     <fileSets>
                       <fileSet>
                         <directory>${project.build.testOutputDirectory}/karaf/etc</directory>
-                        <outputDirectory>/opt/apache-karaf-${karaf.version}/etc</outputDirectory>
+                        <outputDirectory>/opt/horizon-stream/etc</outputDirectory>
                       </fileSet>
                     </fileSets>
                   </inline>
                 </assembly>
-                <!--<cmd>-->
-                  <!--<arg>karaf</arg>-->
-                  <!--<arg>run</arg>-->
-                  <!--<arg>debug</arg>-->
-                <!--</cmd>-->
+                <cmd>
+                  <arg>-f</arg>
+                </cmd>
               </build>
               <run>
                 <ports>
                   <port>karaf-ssh-port:8101</port>
                   <port>karaf-http-port:8181</port>
-                  <!--<port>5005:5005</port>-->
+                  <port>5005:5005</port>
                 </ports>
                 <env>
                   <!-- Need to make sure address=* is in the DEBUG OPTS otherwise it listens on the container's localhost only -->
-                  <JAVA_DEBUG_OPTS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_DEBUG_OPTS>
+                  <JAVA_OPTS>-Djava.security.egd=file:/dev/./urandom -Dkaraf.log.console=ALL -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_OPTS>
+                  <PGSQL_SERVICE_NAME>db</PGSQL_SERVICE_NAME>
+                  <PGSQL_ADMIN_USERNAME>postgres</PGSQL_ADMIN_USERNAME>
+                  <PGSQL_ADMIN_PASSWORD>unused</PGSQL_ADMIN_PASSWORD>
                 </env>
                 <wait>
                   <log>Blueprint bundle org.opennms.horizon.alarms.daemon/.* has been started</log>
                   <time>120000</time>
                 </wait>
-                <volumes>
-                  <bind>
-                    <volume>${user.home}/.m2:/opt/apache-karaf/.m2</volume>
-                    <volume>${project.basedir}/../../opennms-base-assembly/target/classes:/opt/opennms</volume>
-                  </bind>
-                </volumes>
                 <network>
                   <mode>custom</mode>
                   <name>alarm-docker-it-network</name>
