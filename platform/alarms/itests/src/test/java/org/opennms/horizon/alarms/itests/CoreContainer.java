@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -57,9 +58,11 @@ public class CoreContainer extends GenericContainer<CoreContainer> implements Te
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
+                .withFileSystemBind("target/test-classes/users.properties", "/opt/horizon-stream/etc/users.properties", BindMode.READ_ONLY)
                 .waitingFor(new HttpWaitStrategy()
                         .forPath("/alarms/list")
                         .forPort(CORE_WEB_PORT)
+                        .withBasicCredentials("admin", "admin")
                         .withStartupTimeout(Duration.ofMinutes(2)));
     }
 }

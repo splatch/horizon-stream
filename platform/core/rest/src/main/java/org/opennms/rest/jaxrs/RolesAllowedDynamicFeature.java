@@ -18,7 +18,7 @@
  * Modified by Arthur Naseef
  */
 
-package org.opennms.netmgt.alarmd.rest.jaxrs;
+package org.opennms.rest.jaxrs;
 
 import java.io.IOException;
 

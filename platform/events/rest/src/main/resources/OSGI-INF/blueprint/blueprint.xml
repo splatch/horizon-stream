@@ -71,24 +71,4 @@
         </service-properties>
     </service>
 
-    <bean id="jaasAuthenticationFeature" class="org.apache.cxf.interceptor.security.JAASAuthenticationFeature" scope="singleton">
-        <property name="contextName" value="karaf" /> <!-- karaf later  _customize for opennms -->
-        <property name="reportFault" value="true" />
-    </bean>
-
-    <service ref="jaasAuthenticationFeature" interface="org.apache.cxf.feature.Feature">
-        <service-properties>
-            <entry key="cxf.extension" value="true"/>
-        </service-properties>
-    </service>
-
-    <!-- TODO: reusable RolesAllowedDynamicFeature -->
-    <bean id="rolesAllowedDynamicFeature" class="org.opennms.netmgt.events.rest.jaxrs.RolesAllowedDynamicFeature"/>
-
-    <service ref="rolesAllowedDynamicFeature" interface="javax.ws.rs.container.DynamicFeature">
-        <service-properties>
-            <entry key="osgi.jaxrs.extension" value="true"/>
-        </service-properties>
-    </service>
-
 </blueprint>

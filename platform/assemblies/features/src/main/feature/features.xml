@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features name="horizon" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
 
-    <repository>mvn:org.apache.aries.jax.rs/org.apache.aries.jax.rs.features/1.0.6/xml</repository>
+    <repository>mvn:org.apache.aries.jax.rs/org.apache.aries.jax.rs.features/${aries.jax.rs.whiteboard.version}/xml</repository>
     <repository>mvn:org.apache.cxf.karaf/apache-cxf/${cxf.version}/xml/features</repository>
     <repository>mvn:no.priv.bang.karaf/liquibase-core-karaf/${liquibaseVersion}/xml/features</repository>
 
@@ -50,6 +50,8 @@
 <!--        Use the built-in JAAS provider - may not be necessary if we use JWTs-->
 <!--        <feature>jaas-deployer</feature>-->
 <!--        <bundle>mvn:org.opennms.horizon.core/jaas/${project.version}</bundle>-->
+
+        <bundle>mvn:org.opennms.horizon.core/rest/${project.version}</bundle>
     </feature>
 
     <!-- WORKAROUND: the PooledDataSourceFactory service exported by pax-jdbc-pool-hikaricp for some reason -->

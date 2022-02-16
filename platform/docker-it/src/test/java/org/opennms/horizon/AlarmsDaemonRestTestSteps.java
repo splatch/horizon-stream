@@ -270,10 +270,16 @@ public class AlarmsDaemonRestTestSteps {
         }
     }
 
+    @Then("verify the response body matches {string}")
+    public void verifyTheResponseBodyMatches(String regex) {
+        String bodyText = restAssuredResponse.getBody().asString();
 
-    //========================================
-    // Utility Rules
-    //----------------------------------------
+        assertTrue(bodyText.matches(regex));
+    }
+
+//========================================
+// Utility Rules
+//----------------------------------------
 
     @Then("^DEBUG dump the response body$")
     public void debugDumpTheResponseBody() {
