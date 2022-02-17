@@ -53,6 +53,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.opennms.horizon.core.lib.SystemProperties;
 import org.opennms.horizon.db.dao.api.AlarmDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
@@ -170,6 +171,9 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @GET
     @Path("list")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @ApiResponse(
+            description = "Retrieve the list of alarms"
+    )
     public Response getAlarms(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo) {
         // replace the next line with @RolesAllowed("")
         //SecurityHelper.assertUserReadCredentials(securityContext);
@@ -197,6 +201,9 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @PUT
     @Path("{id}/memo")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiResponse(
+            description = "Update the memo for an Alarm"
+    )
     public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
         // replace the next two lines with @RolesAllowed("")
         final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
@@ -215,6 +222,9 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @PUT
     @Path("{id}/journal")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @ApiResponse(
+            description = "Update the journal for an Alarm"
+    )
     public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
         return this.sessionUtils.withTransaction(() -> {
             final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
@@ -228,6 +238,9 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     @DELETE
     @Path("{id}/memo")
+    @ApiResponse(
+            description = "Remove the memo for an Alarm"
+    )
     public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
         //SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
         try {

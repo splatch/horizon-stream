@@ -336,14 +336,7 @@ public class AlarmData implements Serializable {
         }
         return hasFields;
     }
-    
-    public void setUpdateField(UpdateField[] fields) {
-        m_updateFieldList.clear();
-        for (int i = 0; i < fields.length; i++) {
-            m_updateFieldList.add(fields[i]);
-        }
-    }
-    
+
     public void setUpdateField(final List<UpdateField> fields) {
         if (m_updateFieldList == fields) return;
         m_updateFieldList.clear();

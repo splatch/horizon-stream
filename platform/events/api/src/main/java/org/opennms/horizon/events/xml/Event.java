@@ -1365,20 +1365,6 @@ public class Event implements Message,Serializable {
 	}
 
 	/**
-	 * 
-	 * 
-	 * @param vAutoactionArray
-	 */
-	public void setAutoaction(final Autoaction[] vAutoactionArray) {
-		// -- copy array
-		_autoactionList.clear();
-
-		for (int i = 0; i < vAutoactionArray.length; i++) {
-			_autoactionList.add(vAutoactionArray[i]);
-		}
-	}
-
-	/**
 	 * Sets the value of '_autoactionList' by copying the given Vector. All
 	 * elements will be checked for type safety.
 	 * 
@@ -1477,20 +1463,6 @@ public class Event implements Message,Serializable {
 	}
 
 	/**
-	 * 
-	 * 
-	 * @param vForwardArray
-	 */
-	public void setForward(final Forward[] vForwardArray) {
-		// -- copy array
-		_forwardList.clear();
-
-		for (int i = 0; i < vForwardArray.length; i++) {
-			_forwardList.add(vForwardArray[i]);
-		}
-	}
-
-	/**
 	 * Sets the value of '_forwardList' by copying the given Vector. All
 	 * elements will be checked for type safety.
 	 * 
@@ -1578,20 +1550,6 @@ public class Event implements Message,Serializable {
 		}
 
 		_loggroupList.set(index, vLoggroup);
-	}
-
-	/**
-	 * 
-	 * 
-	 * @param vLoggroupArray
-	 */
-	public void setLoggroup(final String[] vLoggroupArray) {
-		// -- copy array
-		_loggroupList.clear();
-
-		for (int i = 0; i < vLoggroupArray.length; i++) {
-			_loggroupList.add(vLoggroupArray[i]);
-		}
 	}
 
 	/**
@@ -1695,20 +1653,6 @@ public class Event implements Message,Serializable {
 	}
 
 	/**
-	 * 
-	 * 
-	 * @param vOperactionArray
-	 */
-	public void setOperaction(final Operaction[] vOperactionArray) {
-		// -- copy array
-		_operactionList.clear();
-
-		for (int i = 0; i < vOperactionArray.length; i++) {
-			_operactionList.add(vOperactionArray[i]);
-		}
-	}
-
-	/**
 	 * Sets the value of '_operactionList' by copying the given Vector. All
 	 * elements will be checked for type safety.
 	 * 
@@ -1780,20 +1724,6 @@ public class Event implements Message,Serializable {
 		}
 
 		_scriptList.set(index, vScript);
-	}
-
-	/**
-	 * 
-	 * 
-	 * @param vScriptArray
-	 */
-	public void setScript(final Script[] vScriptArray) {
-		// -- copy array
-		_scriptList.clear();
-
-		for (int i = 0; i < vScriptArray.length; i++) {
-			_scriptList.add(vScriptArray[i]);
-		}
 	}
 
 	/**

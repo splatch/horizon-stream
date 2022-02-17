@@ -19,7 +19,7 @@
 
         <bundle>mvn:org.opennms.horizon.alarms/api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.alarms/daemon/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.alarms/rest/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.opennms.horizon.alarms/rest/${project.version}</bundle>
     </feature>
 
     <feature name="horizon-core" version="${project.version}">
@@ -38,11 +38,13 @@
     <feature name="horizon-core-rest" version="${project.version}">
         <feature>horizon-core</feature>
 
-        <feature>http</feature>
-        <feature>jetty</feature>
+        <feature>cxf</feature>
         <feature>cxf-jaxrs</feature>
         <feature>cxf-sse</feature>
+        <feature>cxf-rs-description-openapi-v3</feature>
+
         <bundle>mvn:org.apache.aries.component-dsl/org.apache.aries.component-dsl.component-dsl/1.2.2</bundle>
+        <bundle>mvn:org.apache.aries.jax.rs/org.apache.aries.jax.rs.openapi.resource/${aries.jax.rs.whiteboard.version}</bundle>
         <feature>aries-jax-rs-whiteboard</feature>
         <feature>aries-jax-rs-whiteboard-jackson</feature>
         <bundle>mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
@@ -51,7 +53,7 @@
 <!--        <feature>jaas-deployer</feature>-->
 <!--        <bundle>mvn:org.opennms.horizon.core/jaas/${project.version}</bundle>-->
 
-        <bundle>mvn:org.opennms.horizon.core/rest/${project.version}</bundle>
+        <bundle start-level="79">mvn:org.opennms.horizon.core/rest/${project.version}</bundle>
     </feature>
 
     <!-- WORKAROUND: the PooledDataSourceFactory service exported by pax-jdbc-pool-hikaricp for some reason -->
@@ -104,7 +106,7 @@
 
         <bundle>mvn:org.opennms.horizon.events/dao/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.events/daemon/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.events/rest/${project.version}</bundle>
+        <bundle start-level="80">mvn:org.opennms.horizon.events/rest/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.events/shell/${project.version}</bundle>
     </feature>
 

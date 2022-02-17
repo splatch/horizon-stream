@@ -58,6 +58,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.opennms.horizon.db.dao.api.EventDao;
@@ -152,6 +153,9 @@ public class EventRestServiceImpl implements EventRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{eventId}")
+    @ApiResponse(
+            description = "Retrieve an event by ID"
+    )
     public EventDTO getEvent(@PathParam("eventId") Integer eventId) {
         Supplier<EventDTO> op = () -> {
             OnmsEvent onmsEvent = this.lookupRequiredEvent(eventId);
@@ -171,6 +175,9 @@ public class EventRestServiceImpl implements EventRestService {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("count")
     // @RolesAllowed({"user", "admin"})
+    @ApiResponse(
+            description = "Retrieve the count of events"
+    )
     public String getCount() {
         return Long.toString(m_eventDao.countAll());
     }
@@ -186,6 +193,9 @@ public class EventRestServiceImpl implements EventRestService {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @RolesAllowed({"user", "admin"})
+    @ApiResponse(
+            description = "Retrieve a list of events"
+    )
     public EventCollectionDTO getEvents(@Context final UriInfo uriInfo) throws ParseException {
         CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
         return this.sessionUtils.withReadOnlyTransaction(
@@ -204,6 +214,9 @@ public class EventRestServiceImpl implements EventRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("between")
     // @RolesAllowed({"user", "admin"})
+    @ApiResponse(
+            description = "Retrieve a list of events in the specified date range"
+    )
     public EventCollectionDTO getEventsBetween(@Context UriInfo uriInfo) throws ParseException {
         MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 
@@ -226,6 +239,9 @@ public class EventRestServiceImpl implements EventRestService {
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     // @RolesAllowed({"admin"})
+    @ApiResponse(
+            description = "Update the ACK state of an event"
+    )
     public Response updateEvent(@Context SecurityContext securityContext, @PathParam("eventId") Integer eventId, @FormParam("ack") Boolean ack) {
         if (ack == null) {
             throw new WebApplicationException(
@@ -253,6 +269,9 @@ public class EventRestServiceImpl implements EventRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     // @RolesAllowed({"admin"})
+    @ApiResponse(
+            description = "Update the ACK state of events that match filter/query criteria given"
+    )
     public Response updateEvents(@Context SecurityContext securityContext, MultivaluedHashMap<String, String> formProperties) {
         /*
         Boolean ack = false;
@@ -276,6 +295,9 @@ public class EventRestServiceImpl implements EventRestService {
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     // @RolesAllowed({"admin"})
+    @ApiResponse(
+            description = "Publish a new event"
+    )
     public Response publishEvent(final Event event) {
         if (event.getSource() == null) {
             event.setSource("ReST");

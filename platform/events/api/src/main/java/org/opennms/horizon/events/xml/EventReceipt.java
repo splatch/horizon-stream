@@ -234,21 +234,6 @@ public class EventReceipt implements Serializable {
     }
 
     /**
-     * 
-     * 
-     * @param vUuidArray
-     */
-    public void setUuid(
-            final String[] vUuidArray) {
-        //-- copy array
-        _uuidList.clear();
-        
-        for (int i = 0; i < vUuidArray.length; i++) {
-                this._uuidList.add(vUuidArray[i]);
-        }
-    }
-
-    /**
      * Sets the value of '_uuidList' by copying the given Vector.
      * All elements will be checked for type safety.
      * 
