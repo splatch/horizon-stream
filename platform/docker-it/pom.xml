@@ -172,7 +172,7 @@
             <!-- APPLICATION IMAGE  -->
             <!--                    -->
             <image>
-              <name>alarm-application-it-image</name>
+              <name>opennms-horizon-application-it-image</name>
               <alias>application</alias>
               <build>
                 <from>opennms/horizon-stream-core:local</from>
@@ -203,11 +203,11 @@
                 <ports>
                   <port>karaf-ssh-port:8101</port>
                   <port>karaf-http-port:8181</port>
-                  <port>5005:5005</port>
+                  <!--<port>5005:5005</port>-->
                 </ports>
                 <env>
                   <!-- Need to make sure address=* is in the DEBUG OPTS otherwise it listens on the container's localhost only -->
-                  <JAVA_OPTS>-Djava.security.egd=file:/dev/./urandom -Dkaraf.log.console=ALL -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_OPTS>
+                  <JAVA_OPTS>-Djava.security.egd=file:/dev/./urandom -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_OPTS>
                   <PGSQL_SERVICE_NAME>db</PGSQL_SERVICE_NAME>
                   <PGSQL_ADMIN_USERNAME>postgres</PGSQL_ADMIN_USERNAME>
                   <PGSQL_ADMIN_PASSWORD>unused</PGSQL_ADMIN_PASSWORD>
