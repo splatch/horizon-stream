@@ -256,21 +256,6 @@ public class Mask implements Serializable {
     }
 
     /**
-     * 
-     * 
-     * @param vMaskelementArray
-     */
-    public void setMaskelement(
-            final Maskelement[] vMaskelementArray) {
-        //-- copy array
-        _maskelementList.clear();
-        
-        for (int i = 0; i < vMaskelementArray.length; i++) {
-                this._maskelementList.add(vMaskelementArray[i]);
-        }
-    }
-
-    /**
      * Sets the value of '_maskelementList' by copying the given
      * Vector. All elements will be checked for type safety.
      * 

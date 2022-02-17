@@ -374,21 +374,6 @@ public class Correlation implements Serializable {
     }
 
     /**
-     * 
-     * 
-     * @param vCueiArray
-     */
-    public void setCuei(
-            final String[] vCueiArray) {
-        //-- copy array
-        _cueiList.clear();
-        
-        for (int i = 0; i < vCueiArray.length; i++) {
-                this._cueiList.add(vCueiArray[i]);
-        }
-    }
-
-    /**
      * Sets the value of '_cueiList' by copying the given Vector.
      * All elements will be checked for type safety.
      * 

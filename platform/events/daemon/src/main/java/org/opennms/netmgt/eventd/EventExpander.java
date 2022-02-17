@@ -29,6 +29,7 @@
 package org.opennms.netmgt.eventd;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -426,7 +427,7 @@ public final class EventExpander implements org.opennms.horizon.events.api.Event
         }
 
         if (expanded) {
-            event.setAutoaction(autoactions);
+            event.setAutoaction(Arrays.asList(autoactions));
         }
     }
 
@@ -445,7 +446,7 @@ public final class EventExpander implements org.opennms.horizon.events.api.Event
         }
 
         if (expanded) {
-            event.setOperaction(operactions);
+            event.setOperaction(Arrays.asList(operactions));
         }
     }
 

@@ -243,21 +243,6 @@ public class Parms implements Serializable {
     }
 
     /**
-     * 
-     * 
-     * @param vParmArray
-     */
-    public void setParm(
-            final Parm[] vParmArray) {
-        //-- copy array
-        _parmList.clear();
-        
-        for (int i = 0; i < vParmArray.length; i++) {
-                this._parmList.add(vParmArray[i]);
-        }
-    }
-
-    /**
      * Sets the value of '_parmList' by copying the given Vector.
      * All elements will be checked for type safety.
      * 
