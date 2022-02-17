@@ -60,3 +60,12 @@ property-set datasource.adminUrl jdbc:postgresql://localhost:5432/template1
 property-set datasource.adminUsername postgres
 config:update
 ```
+
+## Building
+
+    # Simple build - no Integration Tests
+    $ mvn clean install
+
+    # Full build, including docker image creation and Integration Tests
+    $ mvn -DskipITs=false clean install docker:build
+

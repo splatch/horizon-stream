@@ -28,6 +28,16 @@
   </dependencyManagement>
 
   <dependencies>
+    <!-- Depend on the DOCKER project to ensure tests run after the docker image is built -->
+    <!--  Note this also requires the "docker:build" target during the build.             -->
+    <dependency>
+      <groupId>org.opennms.horizon.assemblies</groupId>
+      <artifactId>docker</artifactId>
+      <type>pom</type>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
