@@ -1,6 +1,6 @@
 Feature: OpenNMS OpenAPI Specification export via
 
-  Scenario: Verify the Alarms Rest Service entry in the OpenAPI Specification
+  Scenario: Verify the Top-Level details in the OpenAPI Specification
     Given application base url in system property "application.base-url"
     Given http username "admin" password "admin"
     Given JSON accept encoding
@@ -8,7 +8,16 @@ Feature: OpenNMS OpenAPI Specification export via
     Then DEBUG dump the response body
     Then parse the JSON response
     Then verify JSON path expressions match
-      | openapi == 3.0.1                                                                                               |
+      | openapi == 3.0.1                    |
+      | info.title == OpenNMS Rest Services |
+
+  Scenario: Verify the Alarms Rest Service entry in the OpenAPI Specification
+    Given application base url in system property "application.base-url"
+    Given http username "admin" password "admin"
+    Given JSON accept encoding
+    Then send GET request at path "/openapi.json" with retry timeout 20000
+    Then DEBUG dump the response body
+    Then parse the JSON response
     Then verify JSON path expressions match
       | paths["/alarms/list"]["get"]["operationId"] == getAlarms                                                       |
       | paths["/alarms/list"]["get"]["responses"]["default"]["description"] == Retrieve the list of alarms             |

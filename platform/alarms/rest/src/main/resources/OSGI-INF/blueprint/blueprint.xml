@@ -49,15 +49,4 @@
             <entry key="osgi.jaxrs.resource" value="true"/>
         </service-properties>
     </service>
-
-    <!--                 -->
-    <!-- OPEN API WIRING -->
-    <!--                 -->
-    <bean id="openApiInfo" class="io.swagger.v3.oas.models.info.Info">
-        <property name="title" value="OpenNMS Alarms Rest Service"/>
-    </bean>
-    <bean id="openApi" class="io.swagger.v3.oas.models.OpenAPI">
-        <property name="info" ref="openApiInfo"/>
-    </bean>
-    <service ref="openApi" auto-export="all-classes"/>
 </blueprint>
