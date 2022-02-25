@@ -227,7 +227,6 @@
             </activation>
             <properties>
                 <skipITs>false</skipITs>
-                <build-docker-images>true</build-docker-images>
             </properties>
         </profile>
     </profiles>
