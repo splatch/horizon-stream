@@ -37,6 +37,14 @@
       <type>pom</type>
       <scope>test</scope>
       <version>${project.version}</version>
+      <!-- Exclude all transitive dependencies; this dependency is only needed for build order, to ensure the -->
+      <!--  docker image is built before building this module.                                                -->
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
