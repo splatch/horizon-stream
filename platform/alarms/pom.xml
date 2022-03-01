@@ -18,7 +18,6 @@
   <modules>
     <module>api</module>
     <module>daemon</module>
-    <module>itests</module>
     <module>rest</module>
   </modules>
 
