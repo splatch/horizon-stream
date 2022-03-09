@@ -107,7 +107,7 @@
         <propertyPlaceholder id="properties" location="blueprint:alarmdListenerProperties" />
 
         <route id="receiveEventKafka" autoStartup="{{useKafka}}">
-            <from uri="kafka:{{kafkaTopic}}?brokers={{kafkaBrokers}}&amp;offsetRepository=#offsetRepo"/>
+            <from uri="kafka:{{kafkaTopic}}?brokers={{kafkaBrokers}}&amp;offsetRepository=#offsetRepo&amp;autoOffsetReset=earliest"/>
             <unmarshal><jaxb contextPath="org.opennms.horizon.events.xml"/></unmarshal>
             <log message="Received Event: ${body}"/>
             <to uri="bean:daemon?method=onEvent"/>

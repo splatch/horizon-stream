@@ -253,7 +253,7 @@
                 </env>
                 <wait>
                   <log>Blueprint bundle org.opennms.horizon.alarms.daemon/.* has been started</log>
-                  <time>120000</time>
+                  <time>300000</time>
                 </wait>
                 <network>
                   <mode>custom</mode>
