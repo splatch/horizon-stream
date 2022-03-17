@@ -13,5 +13,9 @@ export default defineConfig({
   plugins: [vue(), svgLoader()],
   define: {
     'process.env': process.env
+  },
+  test: {
+    globals: true,
+    environment: 'happy-dom',
   }
 })
