@@ -36,9 +36,9 @@
     <maven.compiler.target>17</maven.compiler.target>
     <jkube.version>${project.version}</jkube.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <versionSuffix>${versionSuffix}</versionSuffix>
   </properties>
 
-<!--
   <build>
     <finalName>jkube-maven-sample-webapp-jetty</finalName>
     <plugins>
@@ -61,8 +61,8 @@
       </plugin>
     </plugins>
   </build>
--->
 
+<!--
   <build>
     <finalName>jkube-maven-sample-webapp-jetty</finalName>
     <plugins>
@@ -135,7 +135,6 @@
               <alias>hello-world</alias>
 	      <build>
                 <from>openjdk:latest</from>
-                <!--<cmd>java -jar registry-hs:49635/maven/${project.artifactId}-${project.version}.jar</cmd>-->
                 <cmd>java -jar /usr/local/jetty/start.jar</cmd>
               </build>
 	      <run>
@@ -147,7 +146,8 @@
           </images>
         </configuration>
       </plugin>
-
     </plugins>
   </build>
+-->
+
 </project>

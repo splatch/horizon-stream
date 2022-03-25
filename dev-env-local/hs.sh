@@ -64,6 +64,8 @@ if [ "$1" = "$ARG_1_1" ] && [ "$2" = "$ARG_2_2" ]; then
 
 printf "\n================================================================================\nAPPLY DEPLOYMENT - $3\n================================================================================\n\n"
 
+export KUBECONFIG=~/.kube/horizon-stream:~/.kube/config
+
 cd $3
 DATE_EPOCH=$(date +%s)
 mvn clean install k8s:resource k8s:apply "-DversionSuffix=DATE_EPOCH"
@@ -106,6 +108,8 @@ if [ "$1" = "$ARG_1_2" ] && [ "$2" = "$ARG_2_5" ] || [ 1 = "$BOOL_IMAGE_PUSH" ];
 
 printf "\n================================================================================\nPUSHING & IMPORTING CREATED IMAGE INTO CLUSTER - $3\n================================================================================\n\n"
 
+export KUBECONFIG=~/.kube/horizon-stream:~/.kube/config
+
 cd $3
 
 DATE_EPOCH=$(cat version.tmp)
@@ -127,9 +131,11 @@ if [ "$1" = "$ARG_1_1" ] && [ "$2" = "$ARG_2_4" ]; then
 
 printf "\n================================================================================\nADDING INGRESS TO EXAMPLE\n================================================================================\n\n"
 
+export KUBECONFIG=~/.kube/horizon-stream:~/.kube/config
+
 cd $3
 
-# Move to webapp-jetty/ parent dir.
+# This is only tested for test-webapp/.
 kubectl -n ingress-nginx get pods
 
 # Apply the following to the above webapp, put in a ingress-webapp.yaml file
@@ -146,6 +152,9 @@ printf "\n======================================================================
 
 k3d cluster delete $PROPERTY_CLUSTER_NAME
 rm $3/version.tmp
+
+# This cleans out configs back to Mac. Need to test this on Linux distros.
+export KUBECONFIG=''
 
 fi
 
