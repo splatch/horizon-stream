@@ -21,9 +21,7 @@ import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherIcon } from '@featherds/icon'
 import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import Logo from '@/assets/Logo.vue'
-import { useStore } from 'vuex'
 
-const store = useStore()
 const logo = Logo
 const theme = ref('')
 const light = 'open-light'
@@ -50,7 +48,6 @@ const toggleDarkLightMode = (savedTheme: string | null) => {
   // save the new theme in data and localStorage
   theme.value = newTheme
   localStorage.setItem('theme', theme.value)
-  store.dispatch('appModule/setTheme', theme.value)
 }
 onMounted(async () => {
   const savedTheme = localStorage.getItem('theme')
