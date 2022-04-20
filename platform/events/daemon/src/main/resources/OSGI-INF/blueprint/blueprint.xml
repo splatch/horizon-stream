@@ -85,11 +85,17 @@
     </bean>
     <service interface="org.opennms.horizon.events.api.AnnotationBasedEventListenerFactory" ref="annotationBasedEventListenerFactory" />
 
+    <bean id="eventdStreams" class="org.opennms.netmgt.eventd.kafkastreams.EventdStreams"
+          init-method="init" destroy-method="destroy">
+        <argument ref="eventExpander"/>
+        <argument ref="eventWriter"/>
+    </bean>
+
     <cm:property-placeholder id="eventProducerProperties" persistent-id="org.opennms.horizon.eventd.camel" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="useKafka" value="true"/>
             <cm:property name="kafkaBrokers" value="$[env:KAFKA_BROKER_HOST]:$[env:KAFKA_BROKER_PORT]"/>
-            <cm:property name="kafkaTopic" value="events"/>
+            <cm:property name="kafkaTopic" value="external-events"/>
 
             <cm:property name="useActiveMq" value="false"/>
             <cm:property name="activeMqBrokerURL" value="$[env:ACTIVEMQ_BROKER_URL]"/>

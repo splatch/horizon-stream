@@ -131,7 +131,6 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
     private final MetricRegistry m_registry;
 
-    // magic?
     @Produce
     private ProducerTemplate producer;
 
@@ -267,34 +266,18 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
         if (LOG.isDebugEnabled()) LOG.debug("sending: {}", eventLog);
 
-        try {
-            m_eventHandlerPool.execute(m_eventHandler.createRunnable(eventLog));
-        } catch (RejectedExecutionException e) {
-            LOG.warn("Unable to queue event log to the event handler pool queue", e);
-            throw e;
-        }
+        eventLog.getEvents().getEventCollection()
+                .forEach(event -> producer.sendBody("direct:forwardEvent", event));
     }
 
     @Override
     public void sendNowSync(Event event) {
-        Objects.requireNonNull(event);
-
-        Events events = new Events();
-        events.addEvent(event);
-
-        Log eventLog = new Log();
-        eventLog.setEvents(events);
-
-        sendNowSync(eventLog);
+        sendNow(event);
     }
 
     @Override
     public void sendNowSync(Log eventLog) {
-        Objects.requireNonNull(eventLog);
-        // Create the runnable and invoke it using the current thread
-        // Also set the logging prefix to ensure that the log messages are
-        // properly routed to eventd's log file
-        Logging.withPrefix(Eventd.LOG4J_CATEGORY, m_eventHandler.createRunnable(eventLog, true));
+        sendNow(eventLog);
     }
 
     @Override
@@ -303,70 +286,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
         }
 
-        if (LOG.isDebugEnabled() && m_listeners.isEmpty()) {
-            LOG.debug("No listeners interested in all events");
-        }
-
-        List<CompletableFuture<Void>> listenerFutures = new ArrayList<>();
-
         IEvent immutableEvent = ImmutableMapper.fromMutableEvent(event);
 
-        // Send to camel route
-        producer.sendBody("direct:forwardEvent", event);
-
-        // Send to listeners interested in receiving all events
-        for (EventListener listener : m_listeners) {
-            listenerFutures.add(queueEventToListener(immutableEvent, listener));
-        }
-
-        if (event.getUei() == null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Event ID {} does not have a UEI, so skipping UEI matching", immutableEvent.getDbid());
-            }
-            return;
-        }
-
-        /*
-         * Send to listeners who are interested in this event UEI.
-         * Loop to attempt partial wild card "directory" matches.
-         */
-        Set<EventListener> sentToListeners = new HashSet<EventListener>();
-        for (String uei = event.getUei(); uei.length() > 0; ) {
-            if (m_ueiListeners.containsKey(uei)) {
-                for (EventListener listener : m_ueiListeners.get(uei)) {
-                    if (!sentToListeners.contains(listener)) {
-                        listenerFutures.add(queueEventToListener(immutableEvent, listener));
-                        sentToListeners.add(listener);
-                    }
-                }
-            }
-            
-            // Try wild cards: Find / before last character
-            int i = uei.lastIndexOf("/", uei.length() - 2);
-            if (i > 0) {
-                // Split at "/", including the /
-                uei = uei.substring (0, i + 1);
-            } else {
-                // No more wild cards to match
-                break;
-            }
-        }
-        
-        if (sentToListeners.isEmpty()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("No listener interested in event ID {}: {}", event.getDbid(), event.getUei());
-            }
-        }
-
-        // If synchronous...
-        if (synchronous) {
-            // Wait for all of the listeners to complete before returning
-            CompletableFuture.allOf(listenerFutures.toArray(new CompletableFuture[0])).join();
-        }
-    }
-
-    private CompletableFuture<Void> queueEventToListener(IEvent event, EventListener listener) {
-        return m_listenerThreads.get(listener.getName()).addEvent(event);
+        producer.sendBody("direct:forwardEvent", immutableEvent);
     }
 
     /**

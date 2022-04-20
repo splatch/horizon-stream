@@ -81,7 +81,7 @@
         <cm:default-properties>
             <cm:property name="useKafka" value="true"/>
             <cm:property name="kafkaBrokers" value="$[env:KAFKA_BROKER_HOST]:$[env:KAFKA_BROKER_PORT]"/>
-            <cm:property name="kafkaTopic" value="events"/>
+            <cm:property name="kafkaTopic" value="alarm-events"/>
 
             <cm:property name="useActiveMq" value="false"/>
             <cm:property name="activeMqBrokerURL" value="$[env:ACTIVEMQ_BROKER_URL]"/>

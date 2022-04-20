@@ -103,6 +103,7 @@
         <feature>camel-jaxb</feature>
         <feature>camel-kafka</feature>
         <feature>camel-activemq</feature>
+        <feature version="${kafka.version}">kafka-streams</feature>
 
         <bundle>mvn:org.opennms.horizon.events/dao/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.events/daemon/${project.version}</bundle>
@@ -282,6 +283,25 @@
     <feature name="rate-limited-logger" version="${rateLimitedLoggerVersion}" description="Rate Limited Logger">
         <bundle>mvn:joda-time/joda-time/2.1</bundle>
         <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rate.limitted.logger.version}</bundle>
+    </feature>
+
+    <feature name="kafka-streams" description="Kafka Streams" version="${kafka.version}">
+        <!-- Wrap the kafka-streams bundle instead of using the servicemix implementation since the later doesn't include the required imports for rocksdb -->
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-streams/${kafkaBundle.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundle.version}</bundle>
+<!--        <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJni.version}</bundle>-->
+        <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-json/${kafka.version}</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafka.version}</bundle>
+<!--        <bundle dependency="true">mvn:org.lz4/lz4-java/${lz4Java.version}</bundle>-->
+<!--        <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/${snappyJava.version}</bundle>-->
+<!--        <bundle dependency="true">mvn:com.typesafe.scala-logging/scala-logging_${scala.version}/${scalaLogging.version}</bundle>-->
+        <!-- These are only needed for  servicemix implementation of kafka streams -->
+        <!--
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}</bundle>
+        -->
+        <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/${rocksdbjni.version}</bundle>
     </feature>
 
     <!--             -->

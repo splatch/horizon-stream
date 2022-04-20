@@ -61,6 +61,8 @@
         <junit.version>4.13.2</junit.version>
         <json.version>20171018</json.version>
         <jsr250.version>1.0</jsr250.version>
+        <kafka.version>3.1.0</kafka.version>
+        <kafkaBundle.version>3.1.0_1</kafkaBundle.version>
         <karaf.version>4.3.6</karaf.version>
         <liquibaseVersion>3.6.3</liquibaseVersion>
         <log4j2.version>2.17.1</log4j2.version>
@@ -75,6 +77,7 @@
         <protobuf.version>3.16.1</protobuf.version>
         <rate.limitted.logger.version>2.0.2</rate.limitted.logger.version>
         <rest-assured.version>4.3.3</rest-assured.version>
+        <rocksdbjni.version>6.22.1.1</rocksdbjni.version>
         <skipTests>false</skipTests>
         <skipITs>true</skipITs>
         <skipUTs>${skipTests}</skipUTs>
