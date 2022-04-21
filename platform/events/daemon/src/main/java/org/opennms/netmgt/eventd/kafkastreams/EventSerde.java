@@ -4,59 +4,56 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.horizon.events.xml.Event;
-
-import java.io.ByteArrayInputStream;
 
 // TODO: Refactor to use Protobuf
 public class EventSerde implements Serde<Event> {
 
-    private final ProtobufMapper protobufMapper;
+    private final EventMapper eventMapper;
 
-    public EventSerde(ProtobufMapper protobufMapper) {
-        this.protobufMapper = protobufMapper;
+    public EventSerde(EventMapper eventMapper) {
+        this.eventMapper = eventMapper;
     }
 
     @Override
     public Serializer<Event> serializer() {
-        return new EventSerializer(protobufMapper);
+        return new EventSerializer(eventMapper);
     }
 
     @Override
     public Deserializer<Event> deserializer() {
-        return new EventDeserializer(protobufMapper);
+        return new EventDeserializer(eventMapper);
     }
 
     static class EventSerializer implements Serializer<Event> {
-        private final ProtobufMapper protobufMapper;
+        private final EventMapper eventMapper;
 
-        EventSerializer(ProtobufMapper protobufMapper) {
-            this.protobufMapper = protobufMapper;
+        EventSerializer(EventMapper eventMapper) {
+            this.eventMapper = eventMapper;
         }
 
         @Override
         public byte[] serialize(String topic, Event event) {
-            return protobufMapper.toEvent(event).build().toByteArray();
+            return eventMapper.eventToEventProto(event).toByteArray();
         }
     }
 
     static class EventDeserializer implements Deserializer<Event> {
-        private final ProtobufMapper protobufMapper;
+        private final EventMapper eventMapper;
 
-        EventDeserializer(ProtobufMapper protobufMapper) {
-            this.protobufMapper = protobufMapper;
+        EventDeserializer(EventMapper eventMapper) {
+            this.eventMapper = eventMapper;
         }
 
         @Override
         public Event deserialize(String topic, byte[] value) {
-            OpennmsModelProtos.Event protobufEvent = null;
+            OpennmsEventModelProtos.Event protobufEvent = null;
             try {
-                protobufEvent = OpennmsModelProtos.Event.parseFrom(value);
+                protobufEvent = OpennmsEventModelProtos.Event.parseFrom(value);
             } catch (InvalidProtocolBufferException e) {
                 e.printStackTrace();
             }
-            return this.protobufMapper.toEvent(protobufEvent);
+            return this.eventMapper.eventProtoToEvent(protobufEvent);
         }
     }
 }

@@ -36,15 +36,15 @@ public final class EventdStreams {
 
     private final EventExpander eventExpander;
     private final EventWriter eventWriter;
-    private final ProtobufMapper protobufMapper;
+    private final EventMapper eventMapper;
 
     private StreamsBuilder builder;
     private KafkaStreams streams;
 
-    public EventdStreams(EventExpander eventExpander, EventWriter eventWriter, ProtobufMapper protobufMapper) {
+    public EventdStreams(EventExpander eventExpander, EventWriter eventWriter, EventMapper eventMapper) {
         this.eventExpander = eventExpander;
         this.eventWriter = eventWriter;
-        this.protobufMapper = protobufMapper;
+        this.eventMapper = eventMapper;
     }
 
     public void init() {
@@ -98,7 +98,7 @@ public final class EventdStreams {
                     return value;
                 });
 
-        expandedEvents.to(EXPANDED_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde(protobufMapper)));
+        expandedEvents.to(EXPANDED_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde(eventMapper)));
 
         final KStream<String, Event> persistedEvents = expandedEvents
                 .filter((key, event) -> event.getLogmsg() != null)
@@ -113,7 +113,7 @@ public final class EventdStreams {
                     return value;
                 });
 
-        persistedEvents.to(PERSISTED_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde(protobufMapper)));
+        persistedEvents.to(PERSISTED_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde(eventMapper)));
 
         persistedEvents
                 .filter((key, event) -> event.getAlarmData() != null)
