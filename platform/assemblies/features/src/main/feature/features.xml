@@ -109,6 +109,7 @@
         <bundle>mvn:org.opennms.horizon.events/daemon/${project.version}</bundle>
         <bundle start-level="80">mvn:org.opennms.horizon.events/rest/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.events/shell/${project.version}</bundle>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf.version}</bundle>
     </feature>
 
     <feature name="horizon-grpc" version="${project.version}" description="Horizon :: gRPC">

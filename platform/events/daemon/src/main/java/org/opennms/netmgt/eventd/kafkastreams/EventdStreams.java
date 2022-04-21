@@ -36,13 +36,15 @@ public final class EventdStreams {
 
     private final EventExpander eventExpander;
     private final EventWriter eventWriter;
+    private final ProtobufMapper protobufMapper;
 
     private StreamsBuilder builder;
     private KafkaStreams streams;
 
-    public EventdStreams(EventExpander eventExpander, EventWriter eventWriter) {
+    public EventdStreams(EventExpander eventExpander, EventWriter eventWriter, ProtobufMapper protobufMapper) {
         this.eventExpander = eventExpander;
         this.eventWriter = eventWriter;
+        this.protobufMapper = protobufMapper;
     }
 
     public void init() {
@@ -85,9 +87,9 @@ public final class EventdStreams {
 
     private void createEventStream() {
         final KStream<String, Event> internalSource = builder.stream(INTERNAL_INPUT_TOPIC,
-                Consumed.with(Serdes.String(), new EventSerde()));
+                Consumed.with(Serdes.String(), new EventXmlSerde()));
         final KStream<String, Event> externalSource = builder.stream(EXTERNAL_INPUT_TOPIC,
-                Consumed.with(Serdes.String(), new EventSerde()));
+                Consumed.with(Serdes.String(), new EventXmlSerde()));
 
         final KStream<String, Event> expandedEvents = internalSource
                 .merge(externalSource)
@@ -96,7 +98,7 @@ public final class EventdStreams {
                     return value;
                 });
 
-        expandedEvents.to(EXPANDED_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde()));
+        expandedEvents.to(EXPANDED_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde(protobufMapper)));
 
         final KStream<String, Event> persistedEvents = expandedEvents
                 .filter((key, event) -> event.getLogmsg() != null)
@@ -111,11 +113,11 @@ public final class EventdStreams {
                     return value;
                 });
 
-        persistedEvents.to(PERSISTED_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde()));
+        persistedEvents.to(PERSISTED_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde(protobufMapper)));
 
         persistedEvents
                 .filter((key, event) -> event.getAlarmData() != null)
-                .to(ALARM_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde()));
+                .to(ALARM_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventXmlSerde()));
     }
 
     private Log getLog(Event event) {

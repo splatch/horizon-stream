@@ -91,6 +91,11 @@
       <artifactId>camel-activemq</artifactId>
       <version>${camel.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-protobuf</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
