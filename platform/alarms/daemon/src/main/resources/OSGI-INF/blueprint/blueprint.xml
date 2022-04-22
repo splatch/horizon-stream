@@ -96,7 +96,7 @@
     </bean>
 
     <bean id="offsetRepoFactory" class="org.opennms.netmgt.alarmd.AlarmKafkaOffsetRepositoryFactory">
-        <argument value="etc/alarm-kafka-offset.dat	"/>
+        <argument value="etc/alarm-kafka-offset.dat"/>
     </bean>
     <bean id="offsetRepo" class="org.apache.camel.spi.StateRepository"
           factory-ref="offsetRepoFactory" factory-method="get">
