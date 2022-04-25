@@ -122,7 +122,6 @@
         <route id="produceEventKafka" autoStartup="{{useKafka}}">
             <from uri="direct:forwardEvent"/>
             <marshal><protobuf/></marshal>
-            <removeHeaders pattern="*"/>
             <to uri="kafka:{{kafkaTopic}}?brokers={{kafkaBrokers}}&amp;valueSerializer=org.apache.kafka.common.serialization.ByteArraySerializer" />
         </route>
 

@@ -71,7 +71,7 @@ public class Alarmd {
 
     public void onEvent(OpennmsEventModelProtos.Event e) {
         Event event = m_eventMapper.eventProtoToEvent(e);
-    	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
+    	if (event.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
             ImmutableEvent immutableEvent = ImmutableMapper.fromMutableEvent(event);
             handleReloadEvent(immutableEvent);
             return;
