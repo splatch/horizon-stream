@@ -1,22 +1,27 @@
 #!/bin/bash
 
+HOST_PORT=localhost:9000
 REALM="opennms"
 CLIENT_ID=admin-cli
 
 usage()
 {
-	echo "Usage: $0 [-hv] [-R <realm>] [-t <access-token>]"
+	echo "Usage: $0 [-hv] [-H <host:port>] [-R <realm>] [-t <access-token>]"
 	echo
 	echo "  -h  Display this help"
 	echo "  -v  Verbose curl output"
 }
 
-while getopts "hRt:v" arg
+while getopts "hH:Rt:v" arg
 do
 	case "$arg" in
 		h)
 			usage
 			exit 0
+			;;
+
+		H)
+			HOST_PORT="${OPTARG}"
 			;;
 
 		R)
@@ -34,7 +39,7 @@ do
 	esac
 done
 
-URL="http://localhost:9000/realms/${REALM}/protocol/openid-connect/logout"
+URL="http://${HOST_PORT}/realms/${REALM}/protocol/openid-connect/logout"
 
 {
 	curl "${CURL_OPTS[@]}" -X GET \
