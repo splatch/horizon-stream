@@ -110,7 +110,7 @@
 
         <route id="receiveEventKafka" autoStartup="{{useKafka}}">
             <from uri="kafka:{{kafkaTopic}}?brokers={{kafkaBrokers}}&amp;offsetRepository=#offsetRepo&amp;autoOffsetReset=earliest&amp;valueDeserializer=org.apache.kafka.common.serialization.ByteArrayDeserializer"/>
-            <unmarshal><protobuf instanceClass="org.opennms.netmgt.alarmd.OpennmsEventModelProtos$Event"/></unmarshal>
+            <unmarshal><protobuf instanceClass="org.opennms.horizon.events.protobuf.OpennmsEventModelProtos$Event"/></unmarshal>
             <log message="Received Event: ${body}"/>
             <to uri="bean:daemon?method=onEvent"/>
         </route>

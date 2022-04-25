@@ -30,11 +30,11 @@ package org.opennms.netmgt.eventd.kafkastreams;
 
 import org.mapstruct.*;
 import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.events.protobuf.OpennmsEventModelProtos;
 import org.opennms.horizon.events.xml.Event;
 
 import java.net.InetAddress;
 import java.util.Date;
-import java.util.Locale;
 
 @Mapper(componentModel = "spring", collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class EventMapper {

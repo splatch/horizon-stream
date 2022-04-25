@@ -32,6 +32,7 @@ import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueCheckStrategy;
 import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.events.protobuf.OpennmsEventModelProtos;
 import org.opennms.horizon.events.xml.Event;
 
 import java.net.InetAddress;

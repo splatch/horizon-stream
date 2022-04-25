@@ -1,5 +1,5 @@
 syntax = "proto3";
-option java_package = "org.opennms.netmgt.alarmd";
+option java_package = "org.opennms.horizon.events.protobuf";
 option java_outer_classname = "OpennmsEventModelProtos";
 
 message Event {

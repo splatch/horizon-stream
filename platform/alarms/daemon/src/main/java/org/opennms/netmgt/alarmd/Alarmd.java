@@ -34,6 +34,7 @@ import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.events.model.IEvent;
 import org.opennms.horizon.events.model.ImmutableEvent;
 import org.opennms.horizon.events.model.ImmutableMapper;
+import org.opennms.horizon.events.protobuf.OpennmsEventModelProtos;
 import org.opennms.horizon.events.xml.Event;
 import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
 import org.slf4j.Logger;
