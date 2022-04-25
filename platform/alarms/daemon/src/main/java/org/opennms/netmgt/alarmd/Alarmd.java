@@ -65,13 +65,17 @@ public class Alarmd {
     @Autowired
     private EventForwarder m_eventForwarder;
 
-    public void onEvent(Event e) {
+    @Autowired
+    private EventMapper m_eventMapper;
+
+    public void onEvent(OpennmsEventModelProtos.Event e) {
+        Event event = m_eventMapper.eventProtoToEvent(e);
     	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
-            ImmutableEvent immutableEvent = ImmutableMapper.fromMutableEvent(e);
+            ImmutableEvent immutableEvent = ImmutableMapper.fromMutableEvent(event);
             handleReloadEvent(immutableEvent);
             return;
     	}
-    	m_persister.persist(e);
+    	m_persister.persist(event);
     }
 
     private synchronized void handleReloadEvent(IEvent e) {
@@ -120,5 +124,9 @@ public class Alarmd {
 
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
+    }
+
+    public void setEventMapper(EventMapper eventMapper) {
+        m_eventMapper = eventMapper;
     }
 }

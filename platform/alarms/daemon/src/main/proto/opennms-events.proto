@@ -1,0 +1,154 @@
+syntax = "proto3";
+option java_package = "org.opennms.netmgt.alarmd";
+option java_outer_classname = "OpennmsEventModelProtos";
+
+message Event {
+  string uuid = 1;
+  uint64 dbid = 2;
+  string dist_poller = 3;
+  uint64 creation_time = 4;
+  string master_station = 5;
+  Mask mask = 6;
+  string uei = 7;
+  string source = 8;
+  uint64 node_id = 9;
+  uint64 time = 10;
+  string host = 11;
+  string interface_address = 12;
+  string snmp_host = 13;
+  string service = 14;
+  Snmp snmp = 15;
+  repeated EventParameter parms = 16;
+  string descr = 17;
+  Logmsg logmsg = 18;
+  Severity severity = 19;
+  string pathoutage = 20;
+  Correlation correlation = 21;
+  string operinstruct = 22;
+  repeated Autoaction autoactions = 23;
+  repeated Operaction operactions = 24;
+  Autoacknowledge autoacknowledge = 25;
+  repeated string loggroups = 26;
+  Tticket tticket = 27;
+  repeated Forward forwards = 28;
+  repeated Script scripts = 29;
+  uint32 if_index = 30;
+  string if_alias = 31;
+  string mouseovertext = 32;
+  AlarmData alarm_data = 33;
+}
+
+// The values differ from the standard codes in OpenNMS
+// since proto3 enforces us to start at 0
+enum Severity {
+  INDETERMINATE = 0;
+  CLEARED = 1;
+  NORMAL = 2;
+  WARNING = 3;
+  MINOR = 4;
+  MAJOR = 5;
+  CRITICAL = 6;
+}
+
+message EventParameter {
+  string name = 1;
+  string value = 2;
+}
+
+message Snmp {
+  string id = 1;
+  string version = 2;
+  uint32 specific = 3;
+  uint32 generic = 4;
+  string community = 5;
+  string trap_oid = 6;
+  string idtext = 7;
+  uint64 time_stamp = 8;
+}
+
+message Logmsg {
+  string content = 1;
+  string notify = 2;
+  string dest = 3;
+}
+
+message Correlation {
+  string state = 1;
+  string path = 2;
+  repeated string ceuis = 3;
+  string cmin = 4;
+  string cmax = 5;
+  string ctime = 6;
+}
+
+message Toggleable {
+  string content = 1;
+  string state = 2;
+}
+
+message Autoaction  {
+  string content = 1;
+  string state = 2;
+}
+
+message Operaction {
+  string content = 1;
+  string state = 2;
+  string menutext = 3;
+}
+
+message Autoacknowledge {
+  string content = 1;
+  string state = 2;
+}
+
+message Tticket {
+  string content = 1;
+  string state = 2;
+}
+
+message Script {
+  string content = 1;
+  string language = 2;
+}
+
+message Forward {
+  string content = 1;
+  string state = 2;
+  string mechanism = 3;
+}
+
+message Mask {
+  repeated MaskElement maskelements = 1;
+}
+
+message MaskElement {
+  string mename = 1;
+  repeated string mevalues = 2;
+}
+
+message AlarmData {
+  string reduction_key = 1;
+  enum AlarmType {
+    PROBLEM_WITH_CLEAR = 0;
+    CLEAR = 1;
+    PROBLEM_WITHOUT_CLEAR = 2;
+  }
+  AlarmType alarm_type = 2;
+  string clear_key = 3;
+  bool auto_clean = 4;
+  string x733_alarm_type = 5;
+  uint32 x733_probable_cause = 6;
+
+  message UpdateField {
+    string field_name = 1;
+    bool update_on_reduction = 2;
+    string value_expression = 3;
+  }
+  repeated UpdateField updateFields = 7;
+
+  message ManagedObject {
+    string type = 1;
+  }
+  ManagedObject managed_object = 8;
+}

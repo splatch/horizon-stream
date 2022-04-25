@@ -29,6 +29,9 @@
     </bean>
 
     <bean id="eventMapper" class="org.opennms.netmgt.eventd.kafkastreams.EventMapperImpl"/>
+    <bean id="eventSerde" class="org.opennms.netmgt.eventd.kafkastreams.EventSerde">
+        <argument ref="eventMapper"/>
+    </bean>
 
     <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
         <argument ref="metricRegistry"/>
@@ -69,6 +72,7 @@
     <bean id="eventIpcManagerHandlerQueueLength" factory-ref="eventdConfigManager" factory-method="getQueueLength"/>
     <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl" init-method="init">
         <argument ref="metricRegistry"/>
+        <argument ref="eventMapper"/>
         <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
         <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>
         <property name="eventHandler" ref="eventdEventHandler"/>
@@ -91,7 +95,7 @@
           init-method="init" destroy-method="destroy">
         <argument ref="eventExpander"/>
         <argument ref="eventWriter"/>
-        <argument ref="eventMapper"/>
+        <argument ref="eventSerde"/>
     </bean>
 
     <cm:property-placeholder id="eventProducerProperties" persistent-id="org.opennms.horizon.eventd.camel" update-strategy="reload">
@@ -117,8 +121,9 @@
 
         <route id="produceEventKafka" autoStartup="{{useKafka}}">
             <from uri="direct:forwardEvent"/>
-            <marshal><jaxb contextPath="org.opennms.horizon.events.xml"/></marshal>
-            <to uri="kafka:{{kafkaTopic}}?brokers={{kafkaBrokers}}" />
+            <marshal><protobuf/></marshal>
+            <removeHeaders pattern="*"/>
+            <to uri="kafka:{{kafkaTopic}}?brokers={{kafkaBrokers}}&amp;valueSerializer=org.apache.kafka.common.serialization.ByteArraySerializer" />
         </route>
 
         <route id="produceEventActiveMq" autoStartup="{{useActiveMq}}">

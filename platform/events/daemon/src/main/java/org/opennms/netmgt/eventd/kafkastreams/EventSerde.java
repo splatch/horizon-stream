@@ -5,9 +5,11 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 import org.opennms.horizon.events.xml.Event;
+import org.slf4j.LoggerFactory;
 
-// TODO: Refactor to use Protobuf
 public class EventSerde implements Serde<Event> {
+
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(EventSerde.class);
 
     private final EventMapper eventMapper;
 
@@ -51,7 +53,8 @@ public class EventSerde implements Serde<Event> {
             try {
                 protobufEvent = OpennmsEventModelProtos.Event.parseFrom(value);
             } catch (InvalidProtocolBufferException e) {
-                e.printStackTrace();
+                LOG.error("Error while deserializing Event from Protobuf", e);
+                throw new RuntimeException(e);
             }
             return this.eventMapper.eventProtoToEvent(protobufEvent);
         }

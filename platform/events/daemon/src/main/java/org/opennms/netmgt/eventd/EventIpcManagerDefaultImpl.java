@@ -28,45 +28,26 @@
 
 package org.opennms.netmgt.eventd;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.opennms.horizon.core.lib.LogPreservingThreadFactory;
 import org.opennms.horizon.core.lib.Logging;
-import org.opennms.horizon.events.api.EventHandler;
-import org.opennms.horizon.events.api.EventIpcBroadcaster;
-import org.opennms.horizon.events.api.EventIpcManager;
 import org.opennms.horizon.events.api.EventListener;
-import org.opennms.horizon.events.api.EventProxyException;
-import org.opennms.horizon.events.api.ThreadAwareEventListener;
+import org.opennms.horizon.events.api.*;
 import org.opennms.horizon.events.model.IEvent;
-import org.opennms.horizon.events.model.ImmutableMapper;
 import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.events.xml.Events;
 import org.opennms.horizon.events.xml.Log;
+import org.opennms.netmgt.eventd.kafkastreams.EventMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * An implementation of the EventIpcManager interface that can be used to
@@ -130,6 +111,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     private Integer m_handlerQueueLength;
 
     private final MetricRegistry m_registry;
+
+    private final EventMapper eventMapper;
 
     @Produce
     private ProducerTemplate producer;
@@ -214,8 +197,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * <p>Constructor for EventIpcManagerDefaultImpl.</p>
      */
-    public EventIpcManagerDefaultImpl(MetricRegistry registry) {
-        m_registry = Objects.requireNonNull(registry);
+    public EventIpcManagerDefaultImpl(MetricRegistry registry, EventMapper eventMapper) {
+        this.m_registry = Objects.requireNonNull(registry);
+        this.eventMapper = eventMapper;
     }
 
     /** {@inheritDoc} */
@@ -267,6 +251,8 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
         if (LOG.isDebugEnabled()) LOG.debug("sending: {}", eventLog);
 
         eventLog.getEvents().getEventCollection()
+                .stream()
+                .map(eventMapper::eventToEventProto)
                 .forEach(event -> producer.sendBody("direct:forwardEvent", event));
     }
 
@@ -286,9 +272,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
         }
 
-        IEvent immutableEvent = ImmutableMapper.fromMutableEvent(event);
-
-        producer.sendBody("direct:forwardEvent", immutableEvent);
+        producer.sendBody("direct:forwardEvent", eventMapper.eventToEventProto(event));
     }
 
     /**

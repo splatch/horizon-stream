@@ -36,15 +36,15 @@ public final class EventdStreams {
 
     private final EventExpander eventExpander;
     private final EventWriter eventWriter;
-    private final EventMapper eventMapper;
+    private final EventSerde eventSerde;
 
     private StreamsBuilder builder;
     private KafkaStreams streams;
 
-    public EventdStreams(EventExpander eventExpander, EventWriter eventWriter, EventMapper eventMapper) {
+    public EventdStreams(EventExpander eventExpander, EventWriter eventWriter, EventSerde eventSerde) {
         this.eventExpander = eventExpander;
         this.eventWriter = eventWriter;
-        this.eventMapper = eventMapper;
+        this.eventSerde = eventSerde;
     }
 
     public void init() {
@@ -80,6 +80,7 @@ public final class EventdStreams {
         props.putIfAbsent(StreamsConfig.APPLICATION_ID_CONFIG, "streams-eventd");
         props.putIfAbsent(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.putIfAbsent(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
+        props.putIfAbsent(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG, "org.apache.kafka.streams.errors.LogAndContinueExceptionHandler");
         props.putIfAbsent(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         return props;
@@ -87,9 +88,9 @@ public final class EventdStreams {
 
     private void createEventStream() {
         final KStream<String, Event> internalSource = builder.stream(INTERNAL_INPUT_TOPIC,
-                Consumed.with(Serdes.String(), new EventXmlSerde()));
+                Consumed.with(Serdes.String(), eventSerde));
         final KStream<String, Event> externalSource = builder.stream(EXTERNAL_INPUT_TOPIC,
-                Consumed.with(Serdes.String(), new EventXmlSerde()));
+                Consumed.with(Serdes.String(), eventSerde));
 
         final KStream<String, Event> expandedEvents = internalSource
                 .merge(externalSource)
@@ -98,7 +99,7 @@ public final class EventdStreams {
                     return value;
                 });
 
-        expandedEvents.to(EXPANDED_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde(eventMapper)));
+        expandedEvents.to(EXPANDED_OUTPUT_TOPIC, Produced.with(Serdes.String(), eventSerde));
 
         final KStream<String, Event> persistedEvents = expandedEvents
                 .filter((key, event) -> event.getLogmsg() != null)
@@ -113,11 +114,11 @@ public final class EventdStreams {
                     return value;
                 });
 
-        persistedEvents.to(PERSISTED_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventSerde(eventMapper)));
+        persistedEvents.to(PERSISTED_OUTPUT_TOPIC, Produced.with(Serdes.String(), eventSerde));
 
         persistedEvents
                 .filter((key, event) -> event.getAlarmData() != null)
-                .to(ALARM_OUTPUT_TOPIC, Produced.with(Serdes.String(), new EventXmlSerde()));
+                .to(ALARM_OUTPUT_TOPIC, Produced.with(Serdes.String(), eventSerde));
     }
 
     private Log getLog(Event event) {

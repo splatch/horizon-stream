@@ -61,6 +61,7 @@
         <reference-listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
     </reference-list>
 
+    <bean id="eventMapper" class="org.opennms.netmgt.alarmd.EventMapperImpl"/>
     <bean id="alarmLifecycleListenerManager" class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager" init-method="start" destroy-method="stop" >
         <property name="alarmDao" ref="alarmDao" />
         <property name="sessionUtils" ref="sessionUtils" />
@@ -70,6 +71,7 @@
         <property name="persister" ref="alarmPersister" />
         <property name="droolsAlarmContext" ref="droolsAlarmContext" />
         <property name="alarmLifecycleListenerManager" ref="alarmLifecycleListenerManager" />
+        <property name="eventMapper" ref="eventMapper" />
     </bean>
 
     <service interface="org.opennms.horizon.alarms.api.AlarmEntityListener" ref="alarmLifecycleListenerManager"/>
@@ -107,8 +109,8 @@
         <propertyPlaceholder id="properties" location="blueprint:alarmdListenerProperties" />
 
         <route id="receiveEventKafka" autoStartup="{{useKafka}}">
-            <from uri="kafka:{{kafkaTopic}}?brokers={{kafkaBrokers}}&amp;offsetRepository=#offsetRepo&amp;autoOffsetReset=earliest"/>
-            <unmarshal><jaxb contextPath="org.opennms.horizon.events.xml"/></unmarshal>
+            <from uri="kafka:{{kafkaTopic}}?brokers={{kafkaBrokers}}&amp;offsetRepository=#offsetRepo&amp;autoOffsetReset=earliest&amp;valueDeserializer=org.apache.kafka.common.serialization.ByteArrayDeserializer"/>
+            <unmarshal><protobuf instanceClass="org.opennms.netmgt.alarmd.OpennmsEventModelProtos$Event"/></unmarshal>
             <log message="Received Event: ${body}"/>
             <to uri="bean:daemon?method=onEvent"/>
         </route>
