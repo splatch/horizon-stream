@@ -5,7 +5,8 @@ services:
   postgres:
     image: postgres:13.3-alpine
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=passw0rd
     ports:
       - 5432:5432
     volumes:
@@ -40,7 +41,7 @@ services:
       - JAVA_OPTS=-Djava.security.egd=file:/dev/./urandom -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
       - PGSQL_SERVICE_NAME=postgres
       - PGSQL_ADMIN_USERNAME=postgres
-      - PGSQL_ADMIN_PASSWORD=unused
+      - PGSQL_ADMIN_PASSWORD=passw0rd
       - KAFKA_BROKER_HOST=kafka
       - KAFKA_BROKER_PORT=9092
       - ACTIVEMQ_BROKER_URL=tcp://localhost:61616
