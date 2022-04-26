@@ -128,7 +128,7 @@ public class Alarmd {
         m_eventForwarder = eventForwarder;
     }
 
-    public void setEventMapper(EventProtobufMapper eventProtobufMapper) {
+    public void setEventProtobufMapper(EventProtobufMapper eventProtobufMapper) {
         m_eventProtobufMapper = eventProtobufMapper;
     }
 }
