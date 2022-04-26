@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd;
 
 import org.opennms.horizon.core.lib.SystemProperties;
+import org.opennms.horizon.db.model.mapper.EventProtobufMapper;
 import org.opennms.horizon.events.api.DaemonTools;
 import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.events.model.IEvent;
@@ -67,10 +68,10 @@ public class Alarmd {
     private EventForwarder m_eventForwarder;
 
     @Autowired
-    private EventMapper m_eventMapper;
+    private EventProtobufMapper m_eventProtobufMapper;
 
     public void onEvent(OpennmsEventModelProtos.Event e) {
-        Event event = m_eventMapper.eventProtoToEvent(e);
+        Event event = m_eventProtobufMapper.eventProtoToEvent(e);
     	if (event.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
             ImmutableEvent immutableEvent = ImmutableMapper.fromMutableEvent(event);
             handleReloadEvent(immutableEvent);
@@ -127,7 +128,7 @@ public class Alarmd {
         m_eventForwarder = eventForwarder;
     }
 
-    public void setEventMapper(EventMapper eventMapper) {
-        m_eventMapper = eventMapper;
+    public void setEventMapper(EventProtobufMapper eventProtobufMapper) {
+        m_eventProtobufMapper = eventProtobufMapper;
     }
 }

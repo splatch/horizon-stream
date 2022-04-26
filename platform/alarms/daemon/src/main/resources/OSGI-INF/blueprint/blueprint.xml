@@ -61,17 +61,21 @@
         <reference-listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
     </reference-list>
 
-    <bean id="eventMapper" class="org.opennms.netmgt.alarmd.EventMapperImpl"/>
+
+    <!-- TODO: provide a service via the Rest Mapper module? -->
+    <bean id="eventProtobufMapper" class="org.opennms.horizon.db.model.mapper.EventProtobufMapperImpl" />
+
     <bean id="alarmLifecycleListenerManager" class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager" init-method="start" destroy-method="stop" >
         <property name="alarmDao" ref="alarmDao" />
         <property name="sessionUtils" ref="sessionUtils" />
         <property name="listener" ref="droolsAlarmContext" />
     </bean>
+
     <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" init-method="onStart" destroy-method="onStop">
         <property name="persister" ref="alarmPersister" />
         <property name="droolsAlarmContext" ref="droolsAlarmContext" />
         <property name="alarmLifecycleListenerManager" ref="alarmLifecycleListenerManager" />
-        <property name="eventMapper" ref="eventMapper" />
+        <property name="eventProtobufMapper" ref="eventProtobufMapper" />
     </bean>
 
     <service interface="org.opennms.horizon.alarms.api.AlarmEntityListener" ref="alarmLifecycleListenerManager"/>

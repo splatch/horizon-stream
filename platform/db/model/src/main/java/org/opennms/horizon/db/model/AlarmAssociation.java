@@ -46,6 +46,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
 import com.google.common.base.MoreObjects;
+import org.opennms.horizon.db.model.mapper.EventProtobufMapper;
 
 /**
  * <p> Entity to store situations and their associated (related) alarms with other details like mappedTime </p>

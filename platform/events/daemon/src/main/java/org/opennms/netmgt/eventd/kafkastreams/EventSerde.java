@@ -4,6 +4,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
+import org.opennms.horizon.db.model.mapper.EventProtobufMapper;
 import org.opennms.horizon.events.protobuf.OpennmsEventModelProtos;
 import org.opennms.horizon.events.xml.Event;
 import org.slf4j.LoggerFactory;
@@ -12,40 +13,40 @@ public class EventSerde implements Serde<Event> {
 
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(EventSerde.class);
 
-    private final EventMapper eventMapper;
+    private final EventProtobufMapper eventProtobufMapper;
 
-    public EventSerde(EventMapper eventMapper) {
-        this.eventMapper = eventMapper;
+    public EventSerde(EventProtobufMapper eventProtobufMapper) {
+        this.eventProtobufMapper = eventProtobufMapper;
     }
 
     @Override
     public Serializer<Event> serializer() {
-        return new EventSerializer(eventMapper);
+        return new EventSerializer(eventProtobufMapper);
     }
 
     @Override
     public Deserializer<Event> deserializer() {
-        return new EventDeserializer(eventMapper);
+        return new EventDeserializer(eventProtobufMapper);
     }
 
     static class EventSerializer implements Serializer<Event> {
-        private final EventMapper eventMapper;
+        private final EventProtobufMapper eventProtobufMapper;
 
-        EventSerializer(EventMapper eventMapper) {
-            this.eventMapper = eventMapper;
+        EventSerializer(EventProtobufMapper eventProtobufMapper) {
+            this.eventProtobufMapper = eventProtobufMapper;
         }
 
         @Override
         public byte[] serialize(String topic, Event event) {
-            return eventMapper.eventToEventProto(event).toByteArray();
+            return eventProtobufMapper.eventToEventProto(event).toByteArray();
         }
     }
 
     static class EventDeserializer implements Deserializer<Event> {
-        private final EventMapper eventMapper;
+        private final EventProtobufMapper eventProtobufMapper;
 
-        EventDeserializer(EventMapper eventMapper) {
-            this.eventMapper = eventMapper;
+        EventDeserializer(EventProtobufMapper eventProtobufMapper) {
+            this.eventProtobufMapper = eventProtobufMapper;
         }
 
         @Override
@@ -57,7 +58,7 @@ public class EventSerde implements Serde<Event> {
                 LOG.error("Error while deserializing Event from Protobuf", e);
                 throw new RuntimeException(e);
             }
-            return this.eventMapper.eventProtoToEvent(protobufEvent);
+            return this.eventProtobufMapper.eventProtoToEvent(protobufEvent);
         }
     }
 }

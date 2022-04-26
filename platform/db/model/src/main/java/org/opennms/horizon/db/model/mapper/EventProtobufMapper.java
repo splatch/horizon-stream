@@ -26,11 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd;
+package org.opennms.horizon.db.model.mapper;
 
-import org.mapstruct.CollectionMappingStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.*;
 import org.opennms.horizon.core.lib.InetAddressUtils;
 import org.opennms.horizon.events.protobuf.OpennmsEventModelProtos;
 import org.opennms.horizon.events.xml.Event;
@@ -38,8 +36,10 @@ import org.opennms.horizon.events.xml.Event;
 import java.net.InetAddress;
 import java.util.Date;
 
-@Mapper(componentModel = "spring", collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-public abstract class EventMapper {
+@Mapper(componentModel = "spring",
+        collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED,
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+public abstract class EventProtobufMapper {
     public abstract OpennmsEventModelProtos.Event eventToEventProto(Event event);
 
     public abstract Event eventProtoToEvent(OpennmsEventModelProtos.Event eventProto);

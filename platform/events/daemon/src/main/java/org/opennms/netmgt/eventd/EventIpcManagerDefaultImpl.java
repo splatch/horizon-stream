@@ -40,7 +40,7 @@ import org.opennms.horizon.events.model.IEvent;
 import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.events.xml.Events;
 import org.opennms.horizon.events.xml.Log;
-import org.opennms.netmgt.eventd.kafkastreams.EventMapper;
+import org.opennms.horizon.db.model.mapper.EventProtobufMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -112,7 +112,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
     private final MetricRegistry m_registry;
 
-    private final EventMapper eventMapper;
+    private final EventProtobufMapper eventProtobufMapper;
 
     @Produce
     private ProducerTemplate producer;
@@ -197,9 +197,9 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
     /**
      * <p>Constructor for EventIpcManagerDefaultImpl.</p>
      */
-    public EventIpcManagerDefaultImpl(MetricRegistry registry, EventMapper eventMapper) {
+    public EventIpcManagerDefaultImpl(MetricRegistry registry, EventProtobufMapper eventProtobufMapper) {
         this.m_registry = Objects.requireNonNull(registry);
-        this.eventMapper = eventMapper;
+        this.eventProtobufMapper = eventProtobufMapper;
     }
 
     /** {@inheritDoc} */
@@ -252,7 +252,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
 
         eventLog.getEvents().getEventCollection()
                 .stream()
-                .map(eventMapper::eventToEventProto)
+                .map(eventProtobufMapper::eventToEventProto)
                 .forEach(event -> producer.sendBody("direct:forwardEvent", event));
     }
 
@@ -272,7 +272,7 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager, EventIpcBroa
             LOG.debug("Event ID {} to be broadcasted: {}", event.getDbid(), event.getUei());
         }
 
-        producer.sendBody("direct:forwardEvent", eventMapper.eventToEventProto(event));
+        producer.sendBody("direct:forwardEvent", eventProtobufMapper.eventToEventProto(event));
     }
 
     /**

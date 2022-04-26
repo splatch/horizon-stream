@@ -28,9 +28,8 @@
         <argument ref="ipInterfaceDao"/>
     </bean>
 
-    <bean id="eventMapper" class="org.opennms.netmgt.eventd.kafkastreams.EventMapperImpl"/>
     <bean id="eventSerde" class="org.opennms.netmgt.eventd.kafkastreams.EventSerde">
-        <argument ref="eventMapper"/>
+        <argument ref="eventProtobufMapper"/>
     </bean>
 
     <bean id="eventWriter" class="org.opennms.netmgt.eventd.processor.HibernateEventWriter">
@@ -48,6 +47,9 @@
         <argument ref="eventConfDao"/>
         <argument ref="eventUtil"/>
     </bean>
+
+    <!-- TODO: provide a service via the Rest Mapper module? -->
+    <bean id="eventProtobufMapper" class="org.opennms.horizon.db.model.mapper.EventProtobufMapperImpl" />
 
     <bean id="eventdConfigManager" class="org.opennms.netmgt.eventd.MockEventdConfig"/>
     <bean id="shouldLogEventSummaries" factory-ref="eventdConfigManager" factory-method="shouldLogEventSummaries"/>
@@ -72,7 +74,7 @@
     <bean id="eventIpcManagerHandlerQueueLength" factory-ref="eventdConfigManager" factory-method="getQueueLength"/>
     <bean id="eventIpcManagerImpl" class="org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl" init-method="init">
         <argument ref="metricRegistry"/>
-        <argument ref="eventMapper"/>
+        <argument ref="eventProtobufMapper"/>
         <property name="handlerPoolSize" ref="eventIpcManagerHandlerPoolSize"/>
         <property name="handlerQueueLength" ref="eventIpcManagerHandlerQueueLength"/>
         <property name="eventHandler" ref="eventdEventHandler"/>
