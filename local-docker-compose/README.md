@@ -27,3 +27,11 @@ This docker-compose configuration exists as an example only.
     $ ./KC.assign-user-role -H localhost:28080 -r admin -i "$(< data/role-id.txt)" -t "$(< data/ACCESS_TOKEN.txt)" -U "$(< data/user-id.txt)" -R opennms
     $ ./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
     $ ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+    $ ./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+    $ ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+
+## Run with Kafka
+
+Use the following command in place of `docker-compose up`:
+
+    $ docker-compose -f docker-compose.kafka.yaml up
