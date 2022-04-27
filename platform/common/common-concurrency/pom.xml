@@ -12,6 +12,7 @@
 
   <artifactId>common-concurrency</artifactId>
   <name>OpenNMS Horizon :: Common Concurrency</name>
+  <packaging>bundle</packaging>
 
   <dependencyManagement>
     <dependencies>
