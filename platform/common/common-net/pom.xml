@@ -12,6 +12,7 @@
 
   <artifactId>common-net</artifactId>
   <name>OpenNMS Horizon :: Common Net</name>
+  <packaging>bundle</packaging>
 
   <dependencyManagement>
     <dependencies>

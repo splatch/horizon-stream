@@ -184,6 +184,15 @@
     </feature>
 
 
+    <!--           -->
+    <!-- PROVSIOND -->
+    <!--           -->
+    <feature name="horizon-provisiond" version="${project.version}" description="Horizon : Provisiond">
+        <bundle>mvn:org.opennms.horizon.provision/api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.common/common-concurrency/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.common/common-net/${project.version}</bundle>
+    </feature>
+
     <!--        -->
     <!-- MINION -->
     <!--        -->
