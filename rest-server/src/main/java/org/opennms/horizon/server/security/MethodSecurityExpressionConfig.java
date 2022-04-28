@@ -29,6 +29,7 @@
 package org.opennms.horizon.server.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
@@ -39,18 +40,17 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
 public class MethodSecurityExpressionConfig extends GlobalMethodSecurityConfiguration {
-    private final UserRoleProvider roleProvider;
-    private final AuthenticationTrustResolver trustResolver;
+
+    @Qualifier(value = "customExpressHandler")
+    private CustomMethodSecurityExpressionHandler expressionHandler;
 
     @Autowired
-    public MethodSecurityExpressionConfig(UserRoleProvider roleProvider, AuthenticationTrustResolver trustResolver) {
-        this.roleProvider = roleProvider;
-        this.trustResolver = trustResolver;
+    public MethodSecurityExpressionConfig(CustomMethodSecurityExpressionHandler expressionHandler) {
+        this.expressionHandler = expressionHandler;
     }
 
     @Override
-    protected MethodSecurityExpressionHandler createExpressionHandler() {
-        final CustomMethodSecurityExpressionHandler expressionHandler = new CustomMethodSecurityExpressionHandler(trustResolver, roleProvider);
+    public MethodSecurityExpressionHandler createExpressionHandler() {
         return expressionHandler;
     }
 }

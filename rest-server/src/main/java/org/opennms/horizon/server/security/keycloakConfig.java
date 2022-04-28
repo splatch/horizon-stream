@@ -41,9 +41,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
 public class keycloakConfig {
@@ -96,5 +93,14 @@ public class keycloakConfig {
     @Bean
     UserRoleProvider initialRoleProvider(Keycloak keycloakk) {
         return new KeycloakRoleProvider(keycloakk, appRealm);
+    }
+
+    @Autowired
+    @Bean(name = "customExpression")
+    CustomMethodSecurityExpression createExpressRoot(AuthenticationTrustResolver resolver, UserRoleProvider roleProvider) {
+        CustomMethodSecurityExpression root = new CustomMethodSecurityExpression();
+        root.setTrustResolver(resolver);
+        root.setRoleProvider(roleProvider);
+        return root;
     }
 }

@@ -39,7 +39,7 @@ import org.springframework.security.core.Authentication;
 
 public class CustomMethodSecurityExpression implements MethodSecurityExpressionOperations {
 
-    protected final Authentication authentication;
+    protected Authentication authentication;
     private AuthenticationTrustResolver trustResolver;
     private RoleHierarchy roleHierarchy;
     private Set<String> roles;
@@ -59,8 +59,8 @@ public class CustomMethodSecurityExpression implements MethodSecurityExpressionO
 
     private UserRoleProvider roleProvider;
 
-    public CustomMethodSecurityExpression(Authentication authentication) {
-        if(authentication == null){
+    public void setAuthentication(Authentication authentication) {
+        if(authentication == null) {
             throw new IllegalArgumentException("Authentication object cannot be null");
         }
         this.authentication = authentication;

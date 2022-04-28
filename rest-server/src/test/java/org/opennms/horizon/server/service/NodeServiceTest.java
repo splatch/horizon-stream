@@ -47,6 +47,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.keycloak.admin.client.Keycloak;
 import org.opennms.horizon.server.dao.MonitoringLocationRepository;
 import org.opennms.horizon.server.dao.NodeRepository;
 import org.opennms.horizon.server.model.dto.NodeDto;
@@ -60,7 +61,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
-@ContextConfiguration
 public class NodeServiceTest {
     @Autowired
     private NodeService nodeService;

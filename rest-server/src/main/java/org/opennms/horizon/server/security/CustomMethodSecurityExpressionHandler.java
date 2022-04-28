@@ -29,27 +29,26 @@
 package org.opennms.horizon.server.security;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
+@Component("customExpressHandler")
 public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
-    private final AuthenticationTrustResolver trustResolver;
-    private final UserRoleProvider userRoleProvider;
+    @Qualifier("customExpression")
+    private CustomMethodSecurityExpression expressionRoot;
 
-    public CustomMethodSecurityExpressionHandler(AuthenticationTrustResolver trustResolver, UserRoleProvider userRoleProvider) {
-        this.trustResolver = trustResolver;
-        this.userRoleProvider = userRoleProvider;
+    @Autowired
+    public CustomMethodSecurityExpressionHandler(CustomMethodSecurityExpression expressionRoot) {
+        this.expressionRoot = expressionRoot;
     }
-
     @Override
-    protected MethodSecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, MethodInvocation invocation) {
-        final CustomMethodSecurityExpression root = new CustomMethodSecurityExpression(authentication);
-        root.setPermissionEvaluator(getPermissionEvaluator());
-        root.setRoleHierarchy(getRoleHierarchy());
-        root.setTrustResolver(trustResolver);
-        root.setRoleProvider(userRoleProvider);
-        return root;
+    public MethodSecurityExpressionOperations createSecurityExpressionRoot(Authentication authentication, MethodInvocation invocation) {
+        expressionRoot.setAuthentication(authentication);
+        return expressionRoot;
     }
 }
