@@ -188,9 +188,16 @@
     <!-- PROVSIOND -->
     <!--           -->
     <feature name="horizon-provisiond" version="${project.version}" description="Horizon : Provisiond">
-        <bundle>mvn:org.opennms.horizon.provision/api/${project.version}</bundle>
+        <feature>onms-httpclient</feature>
+        <feature>onms-netty3</feature>
+
         <bundle>mvn:org.opennms.horizon.common/common-concurrency/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.common/common-net/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.common/common-web/${project.version}</bundle>
+
+        <bundle>mvn:org.opennms.horizon.provision/api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.provision/core/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.provision/detector-web/${project.version}</bundle>
     </feature>
 
     <!--        -->
@@ -292,6 +299,16 @@
         <bundle>mvn:joda-time/joda-time/2.1</bundle>
         <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rate.limitted.logger.version}</bundle>
     </feature>
+
+    <!-- -->
+    <feature name="onms-httpclient" version="${project.version}" description="HTTP Client Feature">
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcore.version}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclient.version}</bundle>
+    </feature>
+    <feature name="onms-netty3" version="${project.version}" description="Netty3 Feature">
+        <bundle>mvn:io.netty/netty/3.10.6.Final</bundle>
+    </feature>
+
 
     <!--             -->
     <!-- WORKAROUNDS -->
