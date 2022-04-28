@@ -20,6 +20,8 @@
     <module>activemq</module>
     <module>bsf</module>
     <module>core</module>
+
+    <module>web</module>
   </modules>
 
 </project>
