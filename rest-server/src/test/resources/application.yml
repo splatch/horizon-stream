@@ -13,3 +13,8 @@ spring:
     show-sql: true
   liquibase:
     enabled: false
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.keycloak: DEBUG

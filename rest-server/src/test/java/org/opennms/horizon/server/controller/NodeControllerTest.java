@@ -44,14 +44,16 @@ import org.opennms.horizon.server.model.dto.NodeDto;
 import org.opennms.horizon.server.service.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
+import org.springframework.web.server.WebFilter;
 
 
 //@SpringBootTest
@@ -64,17 +66,19 @@ public class NodeControllerTest {
     @MockBean
     private NodeService nodeService;
 
+
+    private CsrfConfigurer<HttpSecurity> csrfConfig;
+
     private static final String URL_PATH = "/nodes";
     private final Long nodeId = 1L;
     private NodeDto node1;
     private NodeDto node2;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         webClient = WebTestClient.bindToApplicationContext(context)
                 .apply(springSecurity())
                 .configureClient()
-                .filter(basicAuthentication())
                 .build();
         node1 = new NodeDto();
         node1.setId(nodeId);
@@ -86,7 +90,7 @@ public class NodeControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {"ROLE_admin"})
+    @WithMockUser(username = "testUser")
     public void testListAll() {
         doReturn(Arrays.asList(node1, node2)).when(nodeService).findAll();
         webClient.get().uri(URL_PATH)
@@ -103,6 +107,7 @@ public class NodeControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser")
     public void testFindById() {
         doReturn(node1).when(nodeService).findById(nodeId);
 
@@ -118,6 +123,7 @@ public class NodeControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser")
     public void testFindByIdNotFound() {
         doReturn(null).when(nodeService).findById(nodeId);
         webClient.get().uri(URL_PATH+ "/" + nodeId)
@@ -128,6 +134,7 @@ public class NodeControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testAdmin", authorities = {"admin"})
     public void testCreat() {
         NodeDto nodeDto = new NodeDto();
         doReturn(node1).when(nodeService).create(any(NodeDto.class));
@@ -142,6 +149,7 @@ public class NodeControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"admin"})
     public void testUpdate() {
         NodeDto nodeDto = new NodeDto();
         doReturn(node1).when(nodeService).update(eq(nodeId), any(NodeDto.class));
@@ -156,6 +164,7 @@ public class NodeControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"admin"})
     public void testUpdateNotFound() {
         NodeDto nodeDto = new NodeDto();
         doReturn(null).when(nodeService).update(eq(nodeId), any(NodeDto.class));
@@ -166,6 +175,7 @@ public class NodeControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"user"})
     public void testDelete() {
         doReturn(true).when(nodeService).delete(nodeId);
         webClient.delete().uri(URL_PATH + "/" + nodeId).exchange()
@@ -175,6 +185,7 @@ public class NodeControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"user"})
     public void testDeleteNoFound() {
         doReturn(false).when(nodeService).delete(nodeId);
         webClient.delete().uri(URL_PATH + "/" + nodeId).exchange()
