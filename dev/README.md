@@ -28,13 +28,15 @@ Horizon Core:
 2. Confirm connection to cluster:
    * ``` kubectl config get-contexts```
    * ``` kubectl get all```
-3. Apply the Kubernetes cluster: ```kubectl apply -f local-docker-compose/kubernetes.kafka.yaml```
-4. Wait for all services to come up.
-5. Forward ports through kubectl:
-   ```
+3. Build the horizon-stream-core docker image: ```mvn clean install -f platform -Pbuild-docker-images-enabled```
+4. Load the local docker image into kind: ```kind load docker-image horizon-stream-core:local```
+5. Apply the Kubernetes cluster: ```kubectl apply -f local-docker-compose/kubernetes.kafka.yaml```
+6. Wait for all services to come up.
+7. Forward ports through kubectl in two different terminals:
+   ```shell
    kubectl port-forward service/horizon-stream 18181:8181
    ```
-   ```
+   ```shell
    kubectl port-forward service/keycloak 28080:8080 
    ```
 8. Run the Keycloak scripts:
@@ -53,4 +55,4 @@ Horizon Core:
    ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
    ./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
    ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-```
+   ```

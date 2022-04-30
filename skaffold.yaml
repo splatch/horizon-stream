@@ -1,0 +1,13 @@
+apiVersion: skaffold/v2beta28
+kind: Config
+metadata:
+  name: horizon-stream
+build:
+  artifacts:
+  - image: opennms/horizon-stream-core
+    custom:
+      buildCommand: ./skaffold-build.sh
+deploy:
+  kubectl:
+    manifests:
+    - local-docker-compose/kubernetes.kafka.yaml
