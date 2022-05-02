@@ -22,6 +22,8 @@
     "src/**/*.d.ts",
     "src/**/*.vue",
     "vite.config.ts",
+    "auto-imports.d.ts",
+    "components.d.ts",
     "tests"
   ],
   "exclude": [
