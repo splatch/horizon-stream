@@ -1,0 +1,42 @@
+server:
+  port: 9090
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/horizon_stream
+    hikari:
+      username: opennms
+      password: opennms
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        enable_lazy_load_no_trans: true
+    show-sql: true
+  main:
+    allow-bean-definition-overriding: true
+  # database schema
+  liquibase:
+    enabled: false
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+# graphql
+graphql:
+  spqr:
+    gui:
+      enabled: true
+
+# keycloak
+keycloak:
+  realm: opennms
+  auth-server-url: http://localhost:8080
+  resource: login-app
+  public-client: true
+  use-resource-role-mappings: true
+  principal-attribute:
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.keycloak: DEBUG
