@@ -25,7 +25,7 @@ Types of development & testing:
         * This will be done locally but will also be used for CI-CD pipeline.
         * Will use non-maven tool for integration testing at this level.
 
-Skaffold Example
+# Skaffold Example
 
 Process
 1. ``` kind create cluster``` 
