@@ -7,6 +7,10 @@ build:
   - image: opennms/horizon-stream-core
     custom:
       buildCommand: ./skaffold-build.sh
+      dependencies:
+        paths: ["platform/**"]
+        ignore: ["**/target/**"]
+
 deploy:
   kubectl:
     manifests:
