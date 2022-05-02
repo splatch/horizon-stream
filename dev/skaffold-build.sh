@@ -7,4 +7,4 @@ if [ -n "${IMAGE}" ]; then
   echo "Applying custom image tag ${IMAGE_TAG}."
 fi
 
-mvn clean install -f platform -Pbuild-docker-images-enabled -DskipTests -Ddocker.image.tag=${IMAGE_TAG} -Ddocker.image.skipPush=${!PUSH_IMAGE}
+mvn clean install -Pbuild-docker-images-enabled -DskipTests -Ddocker.image.tag=${IMAGE_TAG} -Ddocker.image.skipPush=${!PUSH_IMAGE}

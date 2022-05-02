@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: horizon-stream
+  name: horizon-stream-core
   labels:
-    run: my-horizon-stream
+    run: my-horizon-stream-core
 spec:
   type: ClusterIP
   ports:
@@ -17,7 +17,22 @@ spec:
       protocol: TCP
       name: debug
   selector:
-    run: my-horizon-stream
+    run: my-horizon-stream-core
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: horizon-stream-api
+  labels:
+    run: my-horizon-stream-api
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      protocol: TCP
+      name: http
+  selector:
+    run: my-horizon-stream-api
 ---
 apiVersion: v1
 kind: Service
@@ -242,23 +257,23 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-horizon-stream
+  name: my-horizon-stream-core
 spec:
   selector:
     matchLabels:
-      run: my-horizon-stream
+      run: my-horizon-stream-core
   replicas: 1
   template:
     metadata:
       labels:
-        run: my-horizon-stream
+        run: my-horizon-stream-core
     spec:
       volumes:
         - name: config-volume
           configMap:
             name: alarmd-camel-config
       containers:
-        - name: horizon-stream
+        - name: horizon-stream-core
           image: opennms/horizon-stream-core:local
           imagePullPolicy: Never
           args: [ "-f" ]
@@ -291,6 +306,34 @@ spec:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.alarmd.camel.cfg"
               subPath: "org.opennms.horizon.alarmd.camel.cfg"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-horizon-stream-api
+spec:
+  selector:
+    matchLabels:
+      run: my-horizon-stream-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: my-horizon-stream-api
+    spec:
+      containers:
+        - name: horizon-stream-api
+          image: opennms/horizon-stream-api:local
+          imagePullPolicy: Never
+          env:
+            - name: KEYCLOAK_BASE_URL
+              value: "http://keycloak:8080"
+            - name: KEYCLOAK_ADMIN_USERNAME
+              value: "keycloak-admin"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "admin"
+          ports:
+            - containerPort: 8080
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -5,23 +5,34 @@ metadata:
 build:
   artifacts:
   - image: opennms/horizon-stream-core
+    context: platform
     custom:
-      buildCommand: ./skaffold-build.sh
+      buildCommand: ../dev/skaffold-build.sh
       dependencies:
-        paths: ["platform/**"]
+        paths: ["."]
+        ignore: ["**/target/**"]
+  - image: opennms/horizon-stream-api
+    context: rest-server
+    custom:
+      buildCommand: ../dev/skaffold-build.sh
+      dependencies:
+        paths: ["src/**"]
         ignore: ["**/target/**"]
 
 portForward:
   - resourceType: deployment
-    resourceName: my-horizon-stream
+    resourceName: my-horizon-stream-api
+    port: 8080
+  - resourceType: deployment
+    resourceName: my-horizon-stream-core
     port: 8181
     localPort: 18181
   - resourceType: deployment
-    resourceName: my-horizon-stream
+    resourceName: my-horizon-stream-core
     port: 8101
     localPort: 18101
   - resourceType: deployment
-    resourceName: my-horizon-stream
+    resourceName: my-horizon-stream-core
     port: 5005
     localPort: 15005
   - resourceType: deployment
