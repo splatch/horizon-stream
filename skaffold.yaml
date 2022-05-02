@@ -11,6 +11,24 @@ build:
         paths: ["platform/**"]
         ignore: ["**/target/**"]
 
+portForward:
+  - resourceType: deployment
+    resourceName: my-horizon-stream
+    port: 8181
+    localPort: 18181
+  - resourceType: deployment
+    resourceName: my-horizon-stream
+    port: 8101
+    localPort: 18101
+  - resourceType: deployment
+    resourceName: my-horizon-stream
+    port: 5005
+    localPort: 15005
+  - resourceType: deployment
+    resourceName: my-keycloak
+    port: 8080
+    localPort: 28080
+
 deploy:
   kubectl:
     manifests:

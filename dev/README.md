@@ -14,7 +14,7 @@ Process:
     * ``` kubectl get all```
 2. ``` git clone https://github.com/GoogleContainerTools/skaffold.git tmp/skaffold```
 3. ``` cd tmp/skaffold/examples/dev-journey-buildpacks/``` 
-4. ``` skaffold dev --port-forward``` 
+4. ```skaffold dev --port-forward``` 
 5. Go to http://localhost:8080/ in web browser. 
 6. Open another tab in terminal to perform the following steps. 
 7. ``` vi src/main/java/hello/HelloController.java```  
@@ -28,18 +28,14 @@ Horizon Core:
 2. Confirm connection to cluster:
    * ``` kubectl config get-contexts```
    * ``` kubectl get all```
-3. Build the horizon-stream-core docker image: ```mvn clean install -f platform -Pbuild-docker-images-enabled```
-4. Load the local docker image into kind: ```kind load docker-image horizon-stream-core:local```
-5. Apply the Kubernetes cluster: ```kubectl apply -f local-docker-compose/kubernetes.kafka.yaml```
-6. Wait for all services to come up.
-7. Forward ports through kubectl in two different terminals:
-   ```shell
-   kubectl port-forward service/horizon-stream 18181:8181
-   ```
-   ```shell
-   kubectl port-forward service/keycloak 28080:8080 
-   ```
-8. Run the Keycloak scripts:
+3. Deploy the project into the cluster.
+   * Dev mode with file watching and port forwarding: `skaffold dev`
+   * Build and deploy once:
+     * `skaffold run`
+     * `kubectl port-forward service/horizon-stream 18181:8181`
+     * `kubectl port-forward service/keycloak 28080:8080 `
+4. Wait for all services to come up.
+5. Run the Keycloak scripts to test that the build was successful:
    ```shell
    cd tools
    ./KC.login -H localhost:28080 -u keycloak-admin -p admin -R master
