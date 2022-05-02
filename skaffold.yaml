@@ -18,8 +18,21 @@ build:
       dependencies:
         paths: ["src/**"]
         ignore: ["**/target/**"]
+  - image: opennms/horizon-stream-ui
+    context: ui
+    sync:
+      infer:
+        - '**/*.ts'
+        - '**/*.tsx'
+        - '**/*.css'
+        - '**/*.vue'
+    docker:
+      dockerfile: Dockerfile
 
 portForward:
+  - resourceType: deployment
+    resourceName: my-horizon-stream-ui
+    port: 3000
   - resourceType: deployment
     resourceName: my-horizon-stream-api
     port: 8080

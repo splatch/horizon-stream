@@ -335,6 +335,25 @@ spec:
           ports:
             - containerPort: 8080
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-horizon-stream-ui
+spec:
+  selector:
+    matchLabels:
+      app: my-horizon-stream-ui
+  template:
+    metadata:
+      labels:
+        app: my-horizon-stream-ui
+    spec:
+      containers:
+        - name: horizon-stream-ui
+          image: opennms/horizon-stream-ui:local
+          ports:
+            - containerPort: 3000
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
