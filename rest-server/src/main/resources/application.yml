@@ -2,7 +2,7 @@ server:
   port: 9090
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/horizon_stream
+    url: jdbc:postgresql://${POSTGRES_SERVICE_HOST:localhost}:5432/horizon_stream
     hikari:
       username: opennms
       password: opennms
@@ -30,8 +30,8 @@ graphql:
 # keycloak
 keycloak:
   realm: opennms
-  auth-server-url: http://localhost:8080
-  resource: login-app
+  auth-server-url: ${KEYCLOAK_BASE_URL:"http://localhost:8080"}
+  resource: admin-cli
   public-client: true
   use-resource-role-mappings: true
   principal-attribute:
@@ -40,3 +40,6 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.keycloak: DEBUG
+  file:
+    path: /var/log/rest-api
+    name: restserver.log
