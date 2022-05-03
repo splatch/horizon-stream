@@ -205,7 +205,7 @@ spec:
         - name: postgres-volume
         - name: postgres-initial-script
           configMap:
-            name: alarmd-camel-config
+            name: postgres-initial-sql
       containers:
         - name: postgres
           image: postgres:13.3-alpine
@@ -332,14 +332,12 @@ spec:
           image: opennms/horizon-stream-api:local
           imagePullPolicy: Never
           env:
-            - name: JAVA_OPTS
-              value: "-Djava.security.egd=file:/dev/./urandom -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
-            - name: DATASOURCE_URL
-              value: "jdbc:postgresql://${POSTGRES_SERVICE_HOST}:5432/horizon_stream"
-            - name: POSTGRES_SERVER
-              value: "postgres"
-            - name: KEYCLOAK_BASE_URL
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres:5432/horizon_stream"
+            - name: KEYCLOAK_AUTH-SERVER-URL
               value: "http://keycloak:8080"
+            - name: KEYCLOAK_REALM
+              value: "opennms"
             - name: KEYCLOAK_ADMIN_USERNAME
               value: "keycloak-admin"
             - name: KEYCLOAK_ADMIN_PASSWORD
@@ -356,6 +354,12 @@ data:
     useSeda=false
     useKafka=true
     useActiveMq=false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-initial-sql
+data:
   postgres.initial.script.sql: |
     CREATE USER opennms with password 'opennms';
     CREATE DATABASE horizon_stream;
