@@ -1,41 +1,28 @@
-This dir is for building local dev envs.
+# Local Development with Skaffold
 
-Pre-requisites:
-* Install Kind. Mac, there is brew install. 
-* ```$ run.sh``` - Builds some components in dir.
-* Make sure Docker is running. 
-* Install Skaffold: https://skaffold.dev/docs/install/
+## Prerequisites
+* JDK 11 (https://www.oracle.com/java/technologies/downloads/#java11)
+* Maven - Build tool for Java (https://maven.apache.org/download.cgi)
+* Docker - Containerization (https://docs.docker.com/get-docker/)
+* Kind - Spin up a local Kubernetes cluster (https://kind.sigs.k8s.io/docs/user/quick-start/#installing-with-a-package-manager)
+* Skaffold - Dev tool for developing locally with Kubernetes (https://skaffold.dev/docs/install/)
 
-Process:
-1. ``` kind create cluster``` 
-    * There are options to create multiple clusters with different names and switch between them. 
-2. Confirm connection to cluster:
-    * ``` kubectl config get-contexts```
-    * ``` kubectl get all```
-2. ``` git clone https://github.com/GoogleContainerTools/skaffold.git tmp/skaffold```
-3. ``` cd tmp/skaffold/examples/dev-journey-buildpacks/``` 
-4. ```skaffold dev --port-forward``` 
-5. Go to http://localhost:8080/ in web browser. 
-6. Open another tab in terminal to perform the following steps. 
-7. ``` vi src/main/java/hello/HelloController.java```  
-    * Make a change to the text. And wait until the skaffold dev tab has finished uploading change.
-8. Go to http://localhost:8080/ in web browser. 
-9. Ctrl-C to finish and cleanup.
-
-Horizon Core:
+## Instructions
 1. ``` kind create cluster```
    * There are options to create multiple clusters with different names and switch between them. 
 2. Confirm connection to cluster:
    * ``` kubectl config get-contexts```
    * ``` kubectl get all```
 3. Deploy the project into the cluster.
-   * Dev mode with file watching and port forwarding: `skaffold dev`
-   * Build and deploy once:
-     * `skaffold run`
-     * `kubectl port-forward service/horizon-stream 18181:8181`
-     * `kubectl port-forward service/keycloak 28080:8080 `
+   1. Dev mode with file watching and port forwarding: `skaffold dev`
+   2. Build and deploy once, forward ports to make services accessible:
+      * `skaffold run`
+      * `kubectl port-forward service/horizon-stream-core 18181:8181`
+      * `kubectl port-forward service/keycloak 28080:8080`
+      * `kubectl port-forward deployment/my-horizon-stream-ui 33000:3000`
 4. Wait for all services to come up.
-5. Run the Keycloak scripts to test that the build was successful:
+5. Visit the front end in a web browser: http://localhost:3000/
+6. Run the Keycloak scripts to test that the build was successful:
    ```shell
    cd tools
    ./KC.login -H localhost:28080 -u keycloak-admin -p admin -R master
@@ -52,3 +39,4 @@ Horizon Core:
    ./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
    ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
    ```
+   You should see log output with event JSON.
