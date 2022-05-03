@@ -43,6 +43,16 @@ Process
 8. Go to http://localhost:8080/ in web browser. 
 9. Ctrl-C to finish and cleanup.
 
+Pruning docker images from process:
+* Removes based on image-name:tag
+```
+for i in $(docker images | grep skaffold | awk '{print $1":"$2}'); do docker rmi $i; done; docker images
+```
+* Removes based on image id
+```
+for i in $(docker images | grep skaffold | awk '{print $3}'); do docker rmi $i; done; docker images
+```
+
 # Process - Skaffold Build of HS Core and HS API Server
 
 To start, we need to skaffold build each project to an image and deploy it to the local cluster (Kind).
