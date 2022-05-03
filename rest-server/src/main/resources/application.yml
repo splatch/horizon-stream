@@ -40,6 +40,5 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.keycloak: DEBUG
-  file:
-    path: /var/log/rest-api
-    name: restserver.log
+  file.path: /var/log/rest-api
+  file.name: restserver.log
