@@ -31,7 +31,7 @@ graphql:
 keycloak:
   realm: opennms
   auth-server-url: http://localhost:8080
-  resource: login-app
+  resource: admin-cli
   public-client: true
   use-resource-role-mappings: true
   principal-attribute:
@@ -40,3 +40,5 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.keycloak: DEBUG
+  file.path: /var/log
+  file.name: restServer.log

@@ -35,7 +35,7 @@ portForward:
     port: 3000
   - resourceType: deployment
     resourceName: my-horizon-stream-api
-    port: 8080
+    port: 9090
   - resourceType: deployment
     resourceName: my-horizon-stream-core
     port: 8181

@@ -28,7 +28,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 8080
+    - port: 9090
       protocol: TCP
       name: http
   selector:
@@ -203,6 +203,9 @@ spec:
     spec:
       volumes:
         - name: postgres-volume
+        - name: postgres-initial-script
+          configMap:
+            name: postgres-initial-sql
       containers:
         - name: postgres
           image: postgres:13.3-alpine
@@ -216,8 +219,11 @@ spec:
           ports:
             - containerPort: 5432
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data
+            - mountPath: "/var/lib/postgresql/data"
               name: postgres-volume
+            - mountPath: "/docker-entrypoint-initdb.d/postgres.initial.script.sql"
+              name: postgres-initial-script
+              subPath: "postgres.initial.script.sql"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -326,14 +332,18 @@ spec:
           image: opennms/horizon-stream-api:local
           imagePullPolicy: Never
           env:
-            - name: KEYCLOAK_BASE_URL
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres:5432/horizon_stream"
+            - name: KEYCLOAK_AUTH-SERVER-URL
               value: "http://keycloak:8080"
+            - name: KEYCLOAK_REALM
+              value: "opennms"
             - name: KEYCLOAK_ADMIN_USERNAME
               value: "keycloak-admin"
             - name: KEYCLOAK_ADMIN_PASSWORD
               value: "admin"
           ports:
-            - containerPort: 8080
+            - containerPort: 9090
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -363,3 +373,13 @@ data:
     useSeda=false
     useKafka=true
     useActiveMq=false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-initial-sql
+data:
+  postgres.initial.script.sql: |
+    CREATE USER opennms with password 'opennms';
+    CREATE DATABASE horizon_stream;
+    GRANT ALL ON DATABASE horizon_stream TO opennms;
