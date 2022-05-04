@@ -13,9 +13,6 @@ spec:
     - port: 8181
       protocol: TCP
       name: http
-    - port: 5005
-      protocol: TCP
-      name: debug
   selector:
     run: my-horizon-stream-core
 ---
@@ -284,8 +281,8 @@ spec:
           imagePullPolicy: Never
           args: [ "-f" ]
           env:
-            - name: JAVA_OPTS
-              value: "-Djava.security.egd=file:/dev/./urandom -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+            - name: JAVA_TOOL_OPTIONS # Let `skaffold debug` see that this is a jvm container
+              value: "-Djava.security.egd=file:/dev/./urandom"
             - name: PGSQL_SERVICE_NAME
               value: "postgres"
             - name: PGSQL_ADMIN_USERNAME
@@ -307,7 +304,6 @@ spec:
           ports:
             - containerPort: 8101
             - containerPort: 8181
-            - containerPort: 5005
           volumeMounts:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.alarmd.camel.cfg"
