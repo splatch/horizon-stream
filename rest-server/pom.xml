@@ -31,8 +31,6 @@
 		<lombok.binding.version>0.2.0</lombok.binding.version>
 		<liquibase.version>4.9.1</liquibase.version>
 		<skip-docker-image-build>true</skip-docker-image-build>
-		<docker.image.tag>local</docker.image.tag>
-		<docker.image.skipPush>false</docker.image.skipPush>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -197,10 +195,6 @@
 							<build>
 								<contextDir>${project.basedir}</contextDir>
 								<dockerFile>src/main/docker/Dockerfile</dockerFile>
-								<tags>
-									<tag>${docker.image.tag}</tag>
-								</tags>
-								<skipPush>${docker.image.skipPush}</skipPush>
 							</build>
 						</image>
 					</images>
@@ -211,6 +205,11 @@
 						<phase>package</phase>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.2.1</version>
 			</plugin>
 		</plugins>
 	</build>

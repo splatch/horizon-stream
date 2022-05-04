@@ -280,7 +280,7 @@ spec:
             name: alarmd-camel-config
       containers:
         - name: horizon-stream-core
-          image: opennms/horizon-stream-core:local
+          image: opennms/horizon-stream-core
           imagePullPolicy: Never
           args: [ "-f" ]
           env:
@@ -329,7 +329,7 @@ spec:
     spec:
       containers:
         - name: horizon-stream-api
-          image: opennms/horizon-stream-api:local
+          image: opennms/horizon-stream-api
           imagePullPolicy: Never
           env:
             - name: SPRING_DATASOURCE_URL
@@ -360,7 +360,7 @@ spec:
     spec:
       containers:
         - name: horizon-stream-ui
-          image: opennms/horizon-stream-ui:local
+          image: opennms/horizon-stream-ui-dev
           ports:
             - containerPort: 3000
 ---

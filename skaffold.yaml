@@ -7,18 +7,16 @@ build:
   - image: opennms/horizon-stream-core
     context: platform
     custom:
-      buildCommand: ../dev/skaffold-build.sh
+      buildCommand: ./skaffold-build.sh
       dependencies:
         paths: ["."]
         ignore: ["**/target/**"]
   - image: opennms/horizon-stream-api
     context: rest-server
-    custom:
-      buildCommand: ../dev/skaffold-build.sh
-      dependencies:
-        paths: ["src/**"]
-        ignore: ["**/target/**"]
-  - image: opennms/horizon-stream-ui
+    jib: {}
+    sync:
+      auto: true
+  - image: opennms/horizon-stream-ui-dev
     context: ui
     sync:
       infer:
