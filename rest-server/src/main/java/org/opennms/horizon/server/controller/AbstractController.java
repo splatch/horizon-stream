@@ -48,7 +48,7 @@ public abstract class AbstractController<D, ID> {
         this.service = service;
     }
 
-    @PreAuthorize("hasRole('ROLE_admin')")
+    @PreAuthorize("hasRole('admin')")
     @PostMapping
     public Mono<D> create(@RequestBody D dto) {
         return Mono.just(service.create(dto));
@@ -69,7 +69,7 @@ public abstract class AbstractController<D, ID> {
         return ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasRole('ROLE_admin')")
+    @PreAuthorize("hasRole('admin')")
     @PutMapping("/{id}")
     public ResponseEntity<Mono<D>> update(@PathVariable ID id, @RequestBody D dto) {
         D result = service.update(id, dto);
@@ -79,7 +79,7 @@ public abstract class AbstractController<D, ID> {
         return ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasRole('ROLE_admin')")
+    @PreAuthorize("hasRole('admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable ID id) {
         if(service.delete(id)) {

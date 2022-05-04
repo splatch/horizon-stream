@@ -13,3 +13,27 @@ spring:
     show-sql: true
   liquibase:
     enabled: false
+  main:
+    allow-bean-definition-overriding: true
+
+# keycloak
+keycloak:
+  realm: opennms
+  auth-server-url: http://localhost:8080
+  resource: login-app
+  public-client: true
+  use-resource-role-mappings: true
+
+# keycloak admin client properties
+horizon-keycloak:
+  admin:
+    client-id: admin-cli
+    username: admin
+    password: admin
+    client-pool-size: 3
+    client-pool-timeout: 5
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.keycloak: DEBUG

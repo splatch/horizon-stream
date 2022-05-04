@@ -28,14 +28,79 @@
 
 package org.opennms.horizon.server.security;
 
+import java.util.concurrent.TimeUnit;
+
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.keycloak.OAuth2Constants;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 
 @Configuration
 public class keycloakConfig {
+    private final String masterRealm = "master";
+    @Value("${keycloak.auth-server-url}")
+    private String serverURl;
+    @Value("${keycloak.realm}")
+    private String appRealm;
+
+    //keycloak admin clients properties for role provider
+    @Value("${horizon-keycloak.admin.client-id}")
+    private String adminClientId;
+    @Value("${horizon-keycloak.admin.username}")
+    private String adminUsername;
+    @Value("${horizon-keycloak.admin.password}")
+    private String adminPassword;
+    @Value("${horizon-keycloak.admin.client-pool-size}")
+    private int adminClientPoolSize;
+    @Value("${horizon-keycloak.admin.client-pool-timeout}")
+    private int adminClientPoolTimeOut;
+
     @Bean
     public KeycloakSpringBootConfigResolver keycloakConfigResolver() {
         return new KeycloakSpringBootConfigResolver();
+    }
+
+    @Bean
+    Keycloak createKeycloak() {
+        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
+        clientBuilder.connectionPoolSize(adminClientPoolSize)
+                .connectionCheckoutTimeout(adminClientPoolTimeOut, TimeUnit.MINUTES);
+        KeycloakBuilder kcBuilder = KeycloakBuilder.builder();
+        kcBuilder.serverUrl(serverURl)
+                .grantType(OAuth2Constants.PASSWORD)
+                .realm(masterRealm)
+                .clientId(adminClientId)
+                .username(adminUsername)
+                .password(adminPassword)
+                .resteasyClient(clientBuilder.build());
+        return kcBuilder.build();
+
+    }
+
+    @Bean
+    AuthenticationTrustResolver createResolver() {
+        return new AuthenticationTrustResolverImpl();
+    }
+
+    @Autowired
+    @Bean
+    UserRoleProvider initialRoleProvider(Keycloak keycloakk) {
+        return new KeycloakRoleProvider(keycloakk, appRealm);
+    }
+
+    @Autowired
+    @Bean(name = "customExpression")
+    CustomMethodSecurityExpression createExpressRoot(AuthenticationTrustResolver resolver, UserRoleProvider roleProvider) {
+        CustomMethodSecurityExpression root = new CustomMethodSecurityExpression();
+        root.setTrustResolver(resolver);
+        root.setRoleProvider(roleProvider);
+        return root;
     }
 }

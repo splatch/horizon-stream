@@ -34,11 +34,24 @@ keycloak:
   resource: admin-cli
   public-client: true
   use-resource-role-mappings: true
-  principal-attribute:
+
+# keycloak admin client properties
+horizon-keycloak:
+  admin:
+    client-id: admin-cli
+    username: admin
+    password: admin
+    client-pool-size: 3
+    client-pool-timeout: 5
+
 
 logging:
   level:
     org.springframework.security: DEBUG
     org.keycloak: DEBUG
+<<<<<<< HEAD
   file.path: /var/log
   file.name: restServer.log
+=======
+
+>>>>>>> 10b35f35083043e3124ad81785f49459ed9f797c
