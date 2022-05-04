@@ -14,7 +14,7 @@
             />
 
             <!-- Password -->
-            <FeatherProtectedInput
+            <FeatherInput
               autocomplete="new-password"
               label="Password" 
               v-model="password"

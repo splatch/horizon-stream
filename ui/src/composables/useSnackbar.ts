@@ -7,7 +7,7 @@ const hasError = ref<boolean | undefined>(false)
 const message = ref('')
 
 const useSnackbar = () => {
-  const showSnackBar = (snackbarProps: SnackbarProps) => {
+  const showSnackbar = (snackbarProps: SnackbarProps) => {
     const { center, error, msg } = snackbarProps
     isDisplayed.value = true
     isCentered.value = isDefined(center) ? center : true
@@ -21,7 +21,7 @@ const useSnackbar = () => {
   }
 
   return {
-    showSnackBar,
+    showSnackbar,
     hideSnackbar,
     isDisplayed: isDisplayed,
     isCentered: readonly(isCentered),

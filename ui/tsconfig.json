@@ -24,6 +24,7 @@
     "vite.config.ts",
     "auto-imports.d.ts",
     "components.d.ts",
+    "keycloak.config.ts",
     "tests"
   ],
   "exclude": [
