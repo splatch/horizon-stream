@@ -34,11 +34,10 @@ Types of development & testing:
    * ``` kubectl get all```
 3. Deploy the project into the cluster.
    1. Dev mode with file watching and port forwarding: `skaffold dev`
-   2. Build and deploy once, forward ports to make services accessible:
-      * `skaffold run`
-      * `kubectl port-forward service/horizon-stream-core 18181:8181`
-      * `kubectl port-forward service/keycloak 28080:8080`
-      * `kubectl port-forward deployment/my-horizon-stream-ui 33000:3000`
+   2. Build and deploy once without enabling the dev loop: `skaffold run`
+      * Forward ports automatically: `skaffold run --port-forward`
+   3. Debug mode with automatic debug ports into containers: `skaffold debug`
+      * Most of the dev loop is disabled in debug mode to prevent interfering with debug sessions. Reenable these features with `skaffold debug --auto-build --auto-sync --auto-deploy`
 4. Wait for all services to come up.
 5. Visit the front end in a web browser: http://localhost:3000/
 6. Run the Keycloak scripts to test that the build was successful:
