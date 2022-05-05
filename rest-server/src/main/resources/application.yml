@@ -49,9 +49,5 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.keycloak: DEBUG
-<<<<<<< HEAD
   file.path: /var/log
   file.name: restServer.log
-=======
-
->>>>>>> 10b35f35083043e3124ad81785f49459ed9f797c
