@@ -1,6 +1,6 @@
 import { TokenResponse } from '@/types'
 
-const storedToken = JSON.parse(window.localStorage.getItem('token') || '')
+const storedToken = JSON.parse(window.localStorage.getItem('token') || '{}')
 const token = useStorage('token', storedToken)
 
 const useToken = () => {
