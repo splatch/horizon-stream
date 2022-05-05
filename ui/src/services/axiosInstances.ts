@@ -1,16 +1,18 @@
 import axios, { AxiosError } from 'axios'
-import useKeycloak from '@/composables/useKeycloak'
+import useToken from '@/composables/useToken'
+import router from '@/router'
+
+const { setToken } = useToken()
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL?.toString() || '/opennms/api',
-  withCredentials: true
 })
 
 api.interceptors.request.use((config) => {
-  const { keycloak } = useKeycloak()
+  const { token } = useToken()
 
   const defaultHeaders = {
-    'Authorization': `Bearer ${keycloak.value?.token}`,
+    'Authorization': `Bearer ${token.value.access_token}`,
     'Content-Type': 'application/json'
   }
 
@@ -23,9 +25,9 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use((config) => { return config }, 
 async (err: AxiosError) => {
-  const { keycloak } = useKeycloak()
   if (err.response?.status === 401) {
-    await keycloak.value?.logout()
+    setToken(null)
+    router.push('/login')
   }
 })
 

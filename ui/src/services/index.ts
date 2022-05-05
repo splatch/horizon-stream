@@ -1,4 +1,4 @@
-import { login } from './loginService'
+import { login, logout, getUserInfo } from './authService'
 import { getAlarms, sendAlarm, clearAlarm } from './alarmService'
 
-export default { login, getAlarms, sendAlarm, clearAlarm }
+export default { login, logout, getUserInfo, getAlarms, sendAlarm, clearAlarm }

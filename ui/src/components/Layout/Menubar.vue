@@ -1,5 +1,5 @@
 <template>
-  <FeatherAppBar :labels="{ skip: 'main' }" content="app">
+  <FeatherAppBar :labels="{ skip: 'main' }" content="app" v-if="isAuthenticated">
     <template v-slot:left>
       <FeatherAppBarLink 
         class="app-bar" 
@@ -16,6 +16,11 @@
         class="pointer light-dark"
         @click="toggleDark()"
       />
+
+    <div class="headline3-mixin"
+      @click="logout()">
+      Logout
+    </div>
     </template>
   </FeatherAppBar>
 </template>
@@ -23,6 +28,11 @@
 <script setup lang="ts">
 import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import Logo from '@/assets/Logo.vue'
+import { useAuthStore } from '@/store/authStore'
+import useToken from '@/composables/useToken';
+
+const authStore = useAuthStore()
+const { isAuthenticated } = useToken()
 
 const isDark = useDark({
   selector: 'body',
@@ -32,10 +42,20 @@ const isDark = useDark({
 })
 
 const toggleDark = useToggle(isDark)
+
+const logout = async () => authStore.logout()
 </script>
 
 <style lang="scss" scoped>
 @import "@featherds/styles/themes/variables";
+@import "@featherds/styles/mixins/typography";
+
+.headline3-mixin {
+  @include headline3();
+  color: var($primary-text-on-color);
+  margin: 10px 0px 10px 15px;
+  cursor: pointer;
+}
 </style>
 
 <style lang="scss">

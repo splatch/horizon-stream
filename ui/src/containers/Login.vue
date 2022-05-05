@@ -34,8 +34,8 @@
 
 <script setup lang="ts">
 import Logo from '@/assets/Logo.vue'
-import { useLoginStore } from '@/store/loginStore'
-const loginStore = useLoginStore()
+import { useAuthStore } from '@/store/authStore'
+const authStore = useAuthStore()
 
 const username = ref('')
 const password = ref('')
@@ -59,7 +59,7 @@ const onLoginBtnClick = () => {
 
   // submit if form is valid
   if (!usernameError.value && !passwordError.value) {
-    loginStore.login(username.value, password.value)
+    authStore.login(username.value, password.value)
   }
 }
 </script>

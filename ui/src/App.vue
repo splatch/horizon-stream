@@ -16,6 +16,9 @@
 </template>
   
 <script setup lang="ts">
+import { useAuthStore } from './store/authStore'
+const authStore = useAuthStore()
+authStore.getUserInfo()
 </script>
   
 <style lang="scss">
