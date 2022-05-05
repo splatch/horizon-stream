@@ -29,6 +29,9 @@ router.beforeEach(async (to) => {
   if (!isAuthenticated.value && to.name !== 'Login') {
     return { name: 'Login' }
   }
+  if (isAuthenticated.value && to.name === 'Login') {
+    return { name: 'Dashboard' }
+  }
 })
 
 export default router

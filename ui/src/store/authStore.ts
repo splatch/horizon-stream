@@ -1,9 +1,6 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
-import useToken from '@/composables/useToken'
 import { UserInfo } from '@/types'
-
-const { setToken } = useToken()
 
 interface State {
   userInfo: UserInfo
@@ -16,17 +13,24 @@ export const useAuthStore = defineStore('authStore', {
     } as State),
   actions: {
     async login(username: string, password: string) {
-      const token = await API.login(username, password)
+      await API.login(username, password)
 
-      if (token) {
-        setToken(token)
-      }
+      const userInfo = await API.getUserInfo()
+      if (userInfo) this.userInfo = userInfo
     },
     async logout() {
       await API.logout()
     },
     async getUserInfo() {
-      const userInfo = await API.getUserInfo()
+      let userInfo = await API.getUserInfo()
+
+      // if unable to access
+      if (!userInfo) {
+        // attempt to refresh the token
+        const success = await API.refreshToken()
+        // call for user data again
+        if (success) userInfo = await API.getUserInfo()
+      }
       if (userInfo) this.userInfo = userInfo
     }
   }

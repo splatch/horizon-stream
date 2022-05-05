@@ -17,7 +17,7 @@
         @click="toggleDark()"
       />
 
-    <div class="headline3-mixin"
+    <div class="headline4-mixin"
       @click="logout()">
       Logout
     </div>
@@ -50,8 +50,8 @@ const logout = async () => authStore.logout()
 @import "@featherds/styles/themes/variables";
 @import "@featherds/styles/mixins/typography";
 
-.headline3-mixin {
-  @include headline3();
+.headline4-mixin {
+  @include headline4;
   color: var($primary-text-on-color);
   margin: 10px 0px 10px 15px;
   cursor: pointer;

@@ -1,8 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import useToken from '@/composables/useToken'
-import router from '@/router'
-
-const { setToken } = useToken()
+import { refreshToken } from './authService'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL?.toString() || '/opennms/api'
@@ -32,8 +30,8 @@ api.interceptors.response.use(
   },
   async (err: AxiosError) => {
     if (err.response?.status === 401) {
-      setToken(null)
-      router.push('/login')
+      // attempts refresh, logs out if err
+      refreshToken()
     }
   }
 )

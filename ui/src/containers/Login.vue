@@ -42,6 +42,11 @@ const password = ref('')
 const usernameError = ref()
 const passwordError = ref()
 
+onKeyStroke('Enter', (e) => {
+  e.preventDefault()
+  onLoginBtnClick()
+})
+
 const onLoginBtnClick = () => {
   // check for valid username
   if (!username.value) {

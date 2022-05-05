@@ -27,19 +27,7 @@ auth.interceptors.request.use(
   }
 )
 
-auth.interceptors.response.use(
-  (config) => {
-    return config
-  },
-  async (err: AxiosError) => {
-    if (err.response?.status === 401) {
-      setToken(null)
-      router.push('/login')
-    }
-  }
-)
-
-const login = async (username: string, password: string): Promise<TokenResponse | null> => {
+const login = async (username: string, password: string): Promise<void> => {
   const params = new URLSearchParams()
   params.append('username', username)
   params.append('password', password)
@@ -49,16 +37,31 @@ const login = async (username: string, password: string): Promise<TokenResponse 
   startSpinner()
   try {
     const resp = await auth.post('/token', params)
+    setToken(resp.data)
     router.push('/')
-    return resp.data
   } catch (err: any) {
     if (err.response?.status === 401) {
-      showSnackbar({ error: true, msg: 'Unauthorized' })
+      showSnackbar({ error: true, msg: err.response.data.error_description })
     }
-
-    return null
   } finally {
     stopSpinner()
+  }
+}
+
+const refreshToken = async (): Promise<boolean> => {
+  const params = new URLSearchParams()
+  params.append('client_id', keycloakConfig.clientId as string)
+  params.append('grant_type', 'refresh_token')
+  params.append('refresh_token', token.value.refresh_token)
+
+  try {
+    const resp = await auth.post('/token', params)
+    setToken(resp.data)
+    return true
+  } catch (err: any) {
+    setToken(null)
+    router.push('/login')
+    return false
   }
 }
 
@@ -84,11 +87,11 @@ const getUserInfo = async (): Promise<UserInfo | null> => {
   try {
     const resp = await auth.post('/userinfo')
     return resp.data
-  } catch (err) {
+  } catch (err: any) {
     return null
   } finally {
     stopSpinner()
   }
 }
 
-export { login, logout, getUserInfo }
+export { login, logout, getUserInfo, refreshToken }
