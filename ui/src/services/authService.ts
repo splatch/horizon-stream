@@ -11,26 +11,33 @@ const { showSnackbar } = useSnackbar()
 const { setToken, token } = useToken()
 
 const auth = axios.create({
-  baseURL: `${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect`,
+  baseURL: `${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect`
 })
 
-auth.interceptors.request.use((config) => {
-  const defaultHeaders = {
-    'Authorization': `Bearer ${token.value.access_token}`
+auth.interceptors.request.use(
+  (config) => {
+    const defaultHeaders = {
+      Authorization: `Bearer ${token.value.access_token}`
+    }
+    config.headers = defaultHeaders
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
   }
-  config.headers = defaultHeaders
-  return config
-}, (error) => {
-  return Promise.reject(error)
-})
+)
 
-auth.interceptors.response.use((config) => { return config }, 
-async (err: AxiosError) => {
-  if (err.response?.status === 401) {
-    setToken(null)
-    router.push('/login')
+auth.interceptors.response.use(
+  (config) => {
+    return config
+  },
+  async (err: AxiosError) => {
+    if (err.response?.status === 401) {
+      setToken(null)
+      router.push('/login')
+    }
   }
-})
+)
 
 const login = async (username: string, password: string): Promise<TokenResponse | null> => {
   const params = new URLSearchParams()
@@ -45,7 +52,6 @@ const login = async (username: string, password: string): Promise<TokenResponse 
     router.push('/')
     return resp.data
   } catch (err: any) {
-
     if (err.response?.status === 401) {
       showSnackbar({ error: true, msg: 'Unauthorized' })
     }

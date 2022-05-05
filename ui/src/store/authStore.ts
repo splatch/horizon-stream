@@ -11,9 +11,9 @@ interface State {
 
 export const useAuthStore = defineStore('authStore', {
   state: () =>
-  ({
-    userInfo: {}
-  } as State),
+    ({
+      userInfo: {}
+    } as State),
   actions: {
     async login(username: string, password: string) {
       const token = await API.login(username, password)
