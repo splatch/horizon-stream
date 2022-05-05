@@ -8,6 +8,7 @@
             <!-- Username -->
             <FeatherInput 
               autocomplete="new-username"
+              ref="usernameInput"
               label="Username" 
               v-model="username"  
               :error="usernameError"
@@ -19,6 +20,7 @@
               label="Password" 
               v-model="password"
               :error="passwordError"
+              type="password"
             />
           </form>
 
@@ -37,6 +39,7 @@ import Logo from '@/assets/Logo.vue'
 import { useAuthStore } from '@/store/authStore'
 const authStore = useAuthStore()
 
+const usernameInput = ref()
 const username = ref('')
 const password = ref('')
 const usernameError = ref()
@@ -67,6 +70,8 @@ const onLoginBtnClick = () => {
     authStore.login(username.value, password.value)
   }
 }
+
+onMounted(() => usernameInput.value.focus())
 </script>
 
 <style scoped lang="scss">
