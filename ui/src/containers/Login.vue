@@ -6,7 +6,8 @@
           <Logo class="logo" />
           <form autocomplete="off">
             <!-- Username -->
-            <FeatherInput 
+            <FeatherInput
+              data-test="username-input"
               autocomplete="new-username"
               ref="usernameInput"
               label="Username" 
@@ -16,6 +17,7 @@
 
             <!-- Password -->
             <FeatherInput
+              data-test="password-input"
               autocomplete="new-password"
               label="Password" 
               v-model="password"
@@ -25,7 +27,9 @@
           </form>
 
           <!-- Login -->
-          <FeatherButton primary @click="onLoginBtnClick">
+          <FeatherButton
+            primary
+            @click="onLoginBtnClick">
             Login
           </FeatherButton>
         </div>
@@ -99,6 +103,7 @@ onMounted(() => usernameInput.value.focus())
       width: 16em;
       margin: auto;
       margin-bottom: 20px;
+      fill: var($primary-text-on-surface);
     }
   }
 }
