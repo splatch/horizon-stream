@@ -1,23 +1,28 @@
 #!/bin/bash
 
+HOST_PORT=localhost:9000
 REALM="opennms"
 TOKEN=""
 ROLE=admin
 
 usage()
 {
-	echo "Usage: $0 [-hv] [-r <role-name>] [-t <access-token>]"
+	echo "Usage: $0 [-hv] [-H <host:port>] [-r <role-name>] [-t <access-token>]"
 	echo
 	echo "  -h  Display this help"
 	echo "  -v  Verbose curl output"
 }
 
-while getopts "hr:t:v" arg
+while getopts "hH:r:t:v" arg
 do
 	case "$arg" in
 		h)
 			usage
 			exit 0
+			;;
+
+		H)
+			HOST_PORT="${OPTARG}"
 			;;
 
 		r)
@@ -39,7 +44,7 @@ do
 	esac
 done
 
-URL="http://localhost:9000/admin/realms/${REALM}/roles?search=${ROLE}"
+URL="http://${HOST_PORT}/admin/realms/${REALM}/roles?search=${ROLE}"
 
 {
 	curl "${CURL_OPTS[@]}" -X GET \

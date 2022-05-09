@@ -1,5 +1,6 @@
 #!/bin/bash
 
+HOST_PORT=localhost:8181
 ROOT_PATH=""
 JSON="application/json"
 XML="application/xml"
@@ -8,11 +9,15 @@ ACCEPT="${XML}"
 CURL_OPTS=()
 TOKEN=""
 
-while getopts "cjt:u:vx" arg
+while getopts "cH:jt:u:vx" arg
 do
 	case "$arg" in
 		c)
 			ROOT_PATH="cxf/"
+			;;
+
+		H)
+			HOST_PORT="${OPTARG}"
 			;;
 
 		j)
@@ -38,4 +43,4 @@ do
 	esac
 done
 
-curl "${CURL_OPTS[@]}" -X GET -H "Accept: ${ACCEPT}" -s http://localhost:8181/${ROOT_PATH}events
+curl "${CURL_OPTS[@]}" -X GET -H "Accept: ${ACCEPT}" -s http://${HOST_PORT}/${ROOT_PATH}events

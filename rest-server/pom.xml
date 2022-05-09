@@ -35,6 +35,7 @@
 		<lombok.version>1.18.22</lombok.version>
 		<lombok.binding.version>0.2.0</lombok.binding.version>
 		<liquibase.version>4.9.1</liquibase.version>
+		<skip-docker-image-build>true</skip-docker-image-build>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -187,7 +188,50 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.38.1</version>
+				<extensions>true</extensions>
+				<configuration>
+					<skip>${skip-docker-image-build}</skip>
+					<images>
+						<image>
+							<name>opennms/horizon-stream-api:local</name>
+							<build>
+								<contextDir>${project.basedir}</contextDir>
+								<dockerFile>src/main/docker/Dockerfile</dockerFile>
+							</build>
+						</image>
+					</images>
+				</configuration>
+				<executions>
+					<execution>
+						<goals><goal>build</goal></goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.2.1</version>
+			</plugin>
 		</plugins>
 	</build>
+
+
+	<profiles>
+		<!-- Build docker images on request. -->
+		<profile>
+			<id>build-docker-images-enabled</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<skip-docker-image-build>false</skip-docker-image-build>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>

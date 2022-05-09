@@ -1,47 +1,64 @@
-This dir is for building local dev envs.
+# Local Development with Skaffold
 
-Pre-requisites:
-* Install Kind. Mac, there is brew install. 
-* ```$ run.sh``` - Builds some components in dir.
-* Make sure Docker is running. 
-* Install Skaffold: https://skaffold.dev/docs/install/
+## Prerequisites
+* JDK 11 (https://www.oracle.com/java/technologies/downloads/#java11)
+* Maven - Build tool for Java (https://maven.apache.org/download.cgi)
+* Docker - Containerization (https://docs.docker.com/get-docker/)
+* Kind - Spin up a local Kubernetes cluster (https://kind.sigs.k8s.io/docs/user/quick-start/#installing-with-a-package-manager)
+* Skaffold - Dev tool for developing locally with Kubernetes (https://skaffold.dev/docs/install/)
 
 This will be used for local devs, CI-CD, and users who want to deploy an on-prem solution.
 
 Types of development & testing:
 * Unit development & test - maven (current setup) - each Jar file.
-    * More frequent development.
-    * Microservice architecture allows us to develop and test components in isolation making it easier to manage each component.
-    * Use docker or other non-k8s setup. Quickest and easiest for developers.
+   * More frequent development.
+   * Microservice architecture allows us to develop and test components in isolation making it easier to manage each component.
+   * Use docker or other non-k8s setup. Quickest and easiest for developers.
 * Build time integration for multiple classes is another layer of integration … multiple layers of integration. We could use mocks for those lower layers of integration.
-    * Integration of jars and classes into the complete software solution.
+   * Integration of jars and classes into the complete software solution.
 * External System Integration development & test - Uses Kubernetes with Operator deploying the env using Maven.
-    * Development
-        * Opennms-horizon-stream/dev/README.md will have a section that instructs users to setup kind and deploy operator and then deploy CRD for horizon stream version being developed locally. Much simpler with manual steps.
-        * Does not happen as often as unit development on microservices, so steps can happen manually.
-        * Could look at Skaffold at some point for this if more frequent development is required.
-    * Test
-        * Need the ability to deploy a cluster with operator on demand.
-        * This will be done locally but will also be used for CI-CD pipeline.
-        * Will use non-maven tool for integration testing at this level.
+   * Development
+      * Opennms-horizon-stream/dev/README.md will have a section that instructs users to setup kind and deploy operator and then deploy CRD for horizon stream version being developed locally. Much simpler with manual steps.
+      * Does not happen as often as unit development on microservices, so steps can happen manually.
+      * Could look at Skaffold at some point for this if more frequent development is required.
+   * Test
+      * Need the ability to deploy a cluster with operator on demand.
+      * This will be done locally but will also be used for CI-CD pipeline.
+      * Will use non-maven tool for integration testing at this level.
 
-# Skaffold Example
-
-Process
-1. ``` kind create cluster``` 
-    * There are options to create multiple clusters with different names and switch between them. 
-2. Confirm connection to cluster:
-    * ``` kubectl config get-contexts```
-    * ``` kubectl get all```
-2. ``` git clone https://github.com/GoogleContainerTools/skaffold.git tmp/skaffold```
-3. ``` cd tmp/skaffold/examples/dev-journey-buildpacks/``` 
-4. ``` skaffold dev --port-forward``` 
-5. Go to http://localhost:8080/ in web browser. 
-6. Open another tab in terminal to perform the following steps. 
-7. ``` vi src/main/java/hello/HelloController.java```  
-    * Make a change to the text. And wait until the skaffold dev tab has finished uploading change.
-8. Go to http://localhost:8080/ in web browser. 
-9. Ctrl-C to finish and cleanup.
+## Instructions
+1. Start from the project's root directory.
+2. ``` kind create cluster```
+   * There are options to create multiple clusters with different names and switch between them. 
+3. Confirm connection to cluster:
+   * ``` kubectl config get-contexts```
+   * ``` kubectl get all```
+4. Deploy the project into the cluster.
+   1. Dev mode with file watching and port forwarding: `skaffold dev`
+   2. Build and deploy once without enabling the dev loop: `skaffold run`
+      * Forward ports automatically: `skaffold run --port-forward`
+   3. Debug mode with automatic debug ports into containers: `skaffold debug`
+      * Most of the dev loop is disabled in debug mode to prevent interfering with debug sessions. Reenable these features with `skaffold debug --auto-build --auto-sync --auto-deploy`
+5. Wait for all services to come up.
+6. Visit the front end in a web browser: http://localhost:3000/
+7. Run the Keycloak scripts to test that the build was successful:
+   ```shell
+   cd tools
+   ./KC.login -H localhost:28080 -u keycloak-admin -p admin -R master
+   ./KC.add-realm -H localhost:28080 -t "$(< data/ACCESS_TOKEN.txt)" -R opennms
+   ./KC.create-user -H localhost:28080 -t "$(< data/ACCESS_TOKEN.txt)" -u user001 -p passw0rd -R opennms
+   ./KC.get-user-by-username -H localhost:28080 -t "$(< data/ACCESS_TOKEN.txt)" -u user001 -R opennms | tee data/user.out
+   jq -r '.[] | .id' data/user.out  | tee data/user-id.txt
+   ./KC.create-role -H localhost:28080 -t "$(< data/ACCESS_TOKEN.txt)" -R opennms -r admin
+   ./KC.get-realm-roles -H localhost:28080 -t "$(< data/ACCESS_TOKEN.txt)" -R opennms | tee data/role.out
+   jq -r '.[] | select(.["name"] == "admin") | .id' data/role.out | tee data/role-id.txt
+   ./KC.assign-user-role -H localhost:28080 -r admin -i "$(< data/role-id.txt)" -t "$(< data/ACCESS_TOKEN.txt)" -U "$(< data/user-id.txt)" -R opennms
+   ./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
+   ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+   ./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+   ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+   ```
+   You should see log output with event JSON.
 
 Pruning docker images from process:
 * Removes based on image-name:tag
@@ -52,9 +69,4 @@ for i in $(docker images | grep skaffold | awk '{print $1":"$2}'); do docker rmi
 ```
 for i in $(docker images | grep skaffold | awk '{print $3}'); do docker rmi $i; done; docker images
 ```
-
-# Process - Skaffold Build of HS Core and HS API Server
-
-To start, we need to skaffold build each project to an image and deploy it to the local cluster (Kind).
-
 
