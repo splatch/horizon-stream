@@ -59,6 +59,11 @@ Types of development & testing:
    ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
    ```
    You should see log output with event JSON.
+8. Manually configure keycloak to work with localhost login.
+   1. Add realm `opennms`, if one does not exist from the scripts above. 
+   2. Add client `horizon-stream`.
+   3. On the client page, set `Standard Flow Enabled` to `OFF`.
+   4. On the client page, add `'*'` to `Web Origins` to prevent CORS issues.
 
 Pruning docker images from process:
 * Removes based on image-name:tag
