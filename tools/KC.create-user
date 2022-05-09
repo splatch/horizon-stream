@@ -1,5 +1,6 @@
 #!/bin/bash
 
+HOST_PORT=localhost:9000
 REALM="opennms"
 USERNAME=""
 PASSWORD=""
@@ -7,18 +8,22 @@ TOKEN=""
 
 usage()
 {
-	echo "Usage: $0 [-hv] [-p <password>] [-R <realm>] [-t <access-token>] [-u <username>]"
+	echo "Usage: $0 [-hv] [-H <host:port>] [-p <password>] [-R <realm>] [-t <access-token>] [-u <username>]"
 	echo
 	echo "  -h  Display this help"
 	echo "  -v  Verbose curl output"
 }
 
-while getopts "hp:R:t:u:v" arg
+while getopts "hH:p:R:t:u:v" arg
 do
 	case "$arg" in
 		h)
 			usage
 			exit 0
+			;;
+
+		H)
+			HOST_PORT="${OPTARG}"
 			;;
 
 		p)
@@ -48,7 +53,7 @@ do
 	esac
 done
 
-URL="http://localhost:9000/admin/realms/${REALM}/users"
+URL="http://${HOST_PORT}/admin/realms/${REALM}/users"
 
 REQUEST="$(printf '{"username":"%s","enabled":true,"credentials":[{"type":"password","temporary":false,"value":"%s"}]}' "${USERNAME}" "${PASSWORD}")"
 

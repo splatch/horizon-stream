@@ -39,6 +39,8 @@
         <commons.lang.version>2.6</commons.lang.version>
         <cucumber.version>7.1.0</cucumber.version>
         <cxf.version>3.5.0</cxf.version>
+        <docker.image.tag>local</docker.image.tag>
+        <docker.image.skipPush>false</docker.image.skipPush>
         <drools.version>7.31.0.Final</drools.version>
         <glassfish.jaxb.version>2.3.2</glassfish.jaxb.version>
         <grpc.version>1.43.2</grpc.version>

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+HOST_PORT=localhost:9000
 REALM="opennms"
 USERID=""
 ROLE_NAME=""
@@ -8,18 +9,22 @@ TOKEN=""
 
 usage()
 {
-	echo "Usage: $0 [-hv] [-i <role-id>] [-R <realm>] [-r <role-name>] [-t <access-token>] [-U <user-id>]"
+	echo "Usage: $0 [-hv] [-H <host:port>] [-i <role-id>] [-R <realm>] [-r <role-name>] [-t <access-token>] [-U <user-id>]"
 	echo
 	echo "  -h  Display this help"
 	echo "  -v  Verbose curl output"
 }
 
-while getopts "hi:R:r:t:U:v" arg
+while getopts "hH:i:R:r:t:U:v" arg
 do
 	case "$arg" in
 		h)
 			usage
 			exit 0
+			;;
+
+		H)
+			HOST_PORT="${OPTARG}"
 			;;
 
 		i)
@@ -53,7 +58,8 @@ do
 	esac
 done
 
-URL="http://localhost:9000/admin/realms/${REALM}/users/${USERID}/role-mappings/realm"
+URL="http://${HOST_PORT}/admin/realms/${REALM}/users/${USERID}/role-mappings/realm"
+
 
 REQUEST="$(printf '[{"name":"%s","id":"%s"}]' "${ROLE_NAME}" "${ROLE_ID}")"
 echo "$REQUEST"

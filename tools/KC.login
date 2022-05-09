@@ -13,6 +13,7 @@
 ##
 ########################################################################################################################
 
+HOST_PORT=localhost:9000
 REALM=opennms
 CLIENT_ID=admin-cli
 USERNAME=admin
@@ -20,17 +21,21 @@ PASSWORD=admin
 
 usage()
 {
-	echo "Usage: $0 [-hv] [-c <client-id>] [-p <password>] [-R <realm>] [-u <username>]"
+	echo "Usage: $0 [-hv] [-H <host:port>] [-c <client-id>] [-p <password>] [-R <realm>] [-u <username>]"
 	echo
 	echo "  -h  Display this help"
 	echo "  -v  Verbose curl output"
 }
 
-while getopts "c:hp:R:u:v" arg
+while getopts "c:hH:p:R:u:v" arg
 do
 	case "$arg" in
 		c)
 			CLIENT_ID="${OPTARG}"
+			;;
+
+		H)
+			HOST_PORT="${OPTARG}"
 			;;
 
 		h)
@@ -61,7 +66,7 @@ do
 	esac
 done
 
-URL="http://localhost:9000/realms/${REALM}/protocol/openid-connect/token"
+URL="http://${HOST_PORT}/realms/${REALM}/protocol/openid-connect/token"
 
 {
 	curl "${CURL_OPTS[@]}" -X POST \
