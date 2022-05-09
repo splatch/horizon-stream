@@ -27,20 +27,21 @@ Types of development & testing:
       * Will use non-maven tool for integration testing at this level.
 
 ## Instructions
-1. ``` kind create cluster```
+1. Start from the project's root directory.
+2. ``` kind create cluster```
    * There are options to create multiple clusters with different names and switch between them. 
-2. Confirm connection to cluster:
+3. Confirm connection to cluster:
    * ``` kubectl config get-contexts```
    * ``` kubectl get all```
-3. Deploy the project into the cluster.
+4. Deploy the project into the cluster.
    1. Dev mode with file watching and port forwarding: `skaffold dev`
    2. Build and deploy once without enabling the dev loop: `skaffold run`
       * Forward ports automatically: `skaffold run --port-forward`
    3. Debug mode with automatic debug ports into containers: `skaffold debug`
       * Most of the dev loop is disabled in debug mode to prevent interfering with debug sessions. Reenable these features with `skaffold debug --auto-build --auto-sync --auto-deploy`
-4. Wait for all services to come up.
-5. Visit the front end in a web browser: http://localhost:3000/
-6. Run the Keycloak scripts to test that the build was successful:
+5. Wait for all services to come up.
+6. Visit the front end in a web browser: http://localhost:3000/
+7. Run the Keycloak scripts to test that the build was successful:
    ```shell
    cd tools
    ./KC.login -H localhost:28080 -u keycloak-admin -p admin -R master
