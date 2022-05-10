@@ -4,7 +4,7 @@
       <div class="feather-col-12">
         <div class="login-container">
           <Logo class="logo" />
-          <form autocomplete="off">
+          <form autocomplete="off" @submit.prevent="onLoginBtnClick">
             <!-- Username -->
             <FeatherInput
               data-test="username-input"
@@ -25,14 +25,14 @@
               :error="passwordError"
               type="password"
             />
-          </form>
 
-          <!-- Login -->
-          <FeatherButton
-            primary
-            @click="onLoginBtnClick">
-            Login
-          </FeatherButton>
+            <!-- Login -->
+            <FeatherButton
+              type="submit"
+              primary>
+              Login
+            </FeatherButton>
+          </form>
         </div>
       </div>
     </div>
@@ -49,11 +49,6 @@ const username = ref('')
 const password = ref('')
 const usernameError = ref()
 const passwordError = ref()
-
-onKeyStroke('Enter', (e) => {
-  e.preventDefault()
-  onLoginBtnClick()
-})
 
 const onLoginBtnClick = () => {
   // check for valid username
@@ -97,6 +92,10 @@ const onLoginBtnClick = () => {
     transform: translateX(-50%);
     background: var($surface);
     padding: 50px;
+
+    button {
+      width: 100%;
+    }
 
     .logo {
       width: 16em;
