@@ -13,6 +13,7 @@
               label="Username" 
               v-model="username"  
               :error="usernameError"
+              autofocus
             />
 
             <!-- Password -->
@@ -74,8 +75,6 @@ const onLoginBtnClick = () => {
     authStore.login(username.value, password.value)
   }
 }
-
-onMounted(() => usernameInput.value.focus())
 </script>
 
 <style scoped lang="scss">

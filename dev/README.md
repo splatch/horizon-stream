@@ -62,8 +62,11 @@ Types of development & testing:
 8. Manually configure keycloak to work with localhost login.
    1. Add realm `opennms`, if one does not exist from the scripts above. 
    2. Add client `horizon-stream`.
-   3. On the client page, set `Standard Flow Enabled` to `OFF`.
-   4. On the client page, add `'*'` to `Web Origins` to prevent CORS issues.
+      * On the client page, set `Standard Flow Enabled` to `OFF`.
+      * On the client page, add `*` to `Web Origins` to prevent CORS issues.
+   3. Add a user
+      * On the user credentials tab, add a password.
+      * On the user details tab, deselect the `Update Password` chip in the `Required User Actions` field.
 
 Pruning docker images from process:
 * Removes based on image-name:tag
