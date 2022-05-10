@@ -51,7 +51,7 @@ const onClear = (alarm: any) => alarmStore.clearAlarm(alarm)
   padding: 10px 30px 30px 30px;
   width: 700px;
   margin: auto;
-  margin-top: 150px;
+  margin-top: 10px;
 
   p {
     @include headline1;

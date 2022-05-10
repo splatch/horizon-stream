@@ -4,28 +4,35 @@
       <div class="feather-col-12">
         <div class="login-container">
           <Logo class="logo" />
-          <form autocomplete="off">
+          <form autocomplete="off" @submit.prevent="onLoginBtnClick">
             <!-- Username -->
-            <FeatherInput 
+            <FeatherInput
+              data-test="username-input"
               autocomplete="new-username"
+              ref="usernameInput"
               label="Username" 
               v-model="username"  
               :error="usernameError"
+              autofocus
             />
 
             <!-- Password -->
-            <FeatherProtectedInput
+            <FeatherInput
+              data-test="password-input"
               autocomplete="new-password"
               label="Password" 
               v-model="password"
               :error="passwordError"
+              type="password"
             />
-          </form>
 
-          <!-- Login -->
-          <FeatherButton primary @click="onLoginBtnClick">
-            Login
-          </FeatherButton>
+            <!-- Login -->
+            <FeatherButton
+              type="submit"
+              primary>
+              Login
+            </FeatherButton>
+          </form>
         </div>
       </div>
     </div>
@@ -34,9 +41,10 @@
 
 <script setup lang="ts">
 import Logo from '@/assets/Logo.vue'
-import { useLoginStore } from '@/store/loginStore'
-const loginStore = useLoginStore()
+import { useAuthStore } from '@/store/authStore'
+const authStore = useAuthStore()
 
+const usernameInput = ref()
 const username = ref('')
 const password = ref('')
 const usernameError = ref()
@@ -59,7 +67,7 @@ const onLoginBtnClick = () => {
 
   // submit if form is valid
   if (!usernameError.value && !passwordError.value) {
-    loginStore.login(username.value, password.value)
+    authStore.login(username.value, password.value)
   }
 }
 </script>
@@ -85,10 +93,15 @@ const onLoginBtnClick = () => {
     background: var($surface);
     padding: 50px;
 
+    button {
+      width: 100%;
+    }
+
     .logo {
       width: 16em;
       margin: auto;
       margin-bottom: 20px;
+      fill: var($primary-text-on-surface);
     }
   }
 }

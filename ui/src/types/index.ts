@@ -10,3 +10,19 @@ export interface SnackbarProps {
   center?: boolean
   error?: boolean
 }
+
+export interface TokenResponse {
+  access_token: string
+  expires_in: number
+  refresh_expires_in: number
+  refresh_token: string
+  scope: string
+  session_state: string
+  token_type: string
+}
+
+export interface UserInfo {
+  email_verified: boolean
+  preferred_username: string
+  sub: string
+}
