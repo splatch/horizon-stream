@@ -28,15 +28,19 @@
 
 package org.opennms.netmgt.provision.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.opennms.netmgt.provision.persistence.ProvisionRepository;
 
 @Slf4j
+@RequiredArgsConstructor
 public class ProvisionerImpl implements Provisioner {
 
+    private final ProvisionRepository provisionRepository;
+
     @Override
-    public void publishRequisition(String requisition) throws Exception {
-//        log.info("Publishing {}", requisition);
-        System.out.println("bugaloo!");
-        throw new NumberFormatException();
+    public void publishRequisition(String requisition) {
+        log.info("Publishing {}", requisition);
+        provisionRepository.save(requisition);
     }
 }

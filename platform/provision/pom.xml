@@ -20,10 +20,10 @@
     <module>activemq</module>
     <module>bsf</module>
     <module>core</module>
-
     <module>web</module>
     <module>service</module>
     <module>rest</module>
+    <module>persistence</module>
   </modules>
 
 </project>

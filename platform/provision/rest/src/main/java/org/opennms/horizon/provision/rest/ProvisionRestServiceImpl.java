@@ -10,6 +10,11 @@ public class ProvisionRestServiceImpl implements ProvisionRestService {
 
     @Override
     public Response publishRequisition(String requisition) {
+        try {
+            provisioner.publishRequisition(requisition);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return null;
     }
 }
