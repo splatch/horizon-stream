@@ -20,8 +20,8 @@ jobs:
         if:  ${{ github.ref == 'refs/heads/develop' }}
         run: |
           ps
-	  sleep 20
-	  # This starts the server.
+          sleep 20
+          # This starts the server.
           echo "This runs if branch is develop."
           ls -1
           pwd
