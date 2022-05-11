@@ -13,11 +13,14 @@ jobs:
       image: rancher/k3s:latest
       options: --env=K3S_TOKEN=300511717113269 --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin/aux --env=CRI_CONFIG_FILE=/var/lib/rancher/k3s/agent/etc/crictl.yaml --privileged
     steps:
+      # The container does not have git installed and is a scratch image.
       #- name: Check out repository code
       #  uses: actions/checkout@v2
       - name: Dev Test
         if:  ${{ github.ref == 'refs/heads/develop' }}
         run: |
+          # This starts the server.
+          server &
           echo "This runs if branch is develop."
           ls -1
           pwd
