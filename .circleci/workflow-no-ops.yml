@@ -25,7 +25,7 @@ jobs:
           command: |
             echo ""
             echo "==============================================================="
-            echo " SUB JOB IN ANOTHER FILE
+            echo " Placeholder for .cricleci/ and other repo files in root dir" $CIRCLE_PROJECT_REPONAME
             echo "==============================================================="
             echo ""
 

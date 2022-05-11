@@ -10,30 +10,11 @@ executors:
 
 
 parameters:
-  run-job-no-ops:
-    type: boolean
-    default: false
   run-job-dev:
-    type: boolean
-    default: false
-  run-job-external-it:
     type: boolean
     default: false
 
 jobs:
-  # This job is defined to handle changes to the .clricleci/ configurations,
-  # else an error occurs.
-  no-ops:
-    executor: docker-executor
-    steps:
-      - run:
-          name: "For changes in .circleci/ or other files in git repo's root dir. If this job is not here, and error is thrown for the path-filter orb."
-          command: |
-            echo ""
-            echo "==============================================================="
-            echo " Placeholder for .cricleci/ and other repo files in root dir" $CIRCLE_PROJECT_REPONAME
-            echo "==============================================================="
-            echo ""
 
   dev:
     executor: docker-executor
@@ -49,16 +30,6 @@ jobs:
 
 workflows:
   version: 2
-
-  no-ops:
-    when: << pipeline.parameters.run-job-no-ops >>
-    jobs:
-      - no-ops:
-          filters:
-            branches:
-              only:
-                - develop
-          config-path: .circleci/workflow-no-ops.yml
 
   dev:
     when: << pipeline.parameters.run-job-dev >>
