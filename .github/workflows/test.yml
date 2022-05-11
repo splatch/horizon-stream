@@ -19,6 +19,7 @@ jobs:
       - name: Dev Test
         if:  ${{ github.ref == 'refs/heads/develop' }}
         run: |
+          /bin/k3s
           ps
           sleep 20
           # This starts the server.
