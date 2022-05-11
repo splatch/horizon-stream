@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.support;
+package org.opennms.netmgt.provision.core.support;
 
 import java.net.InetAddress;
 import java.util.Map;
@@ -36,6 +36,7 @@ import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectResults;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
+import org.opennms.netmgt.provision.support.DetectRequestImpl;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 

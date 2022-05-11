@@ -12,7 +12,7 @@
 
   <artifactId>service</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS ::: Horizon ::: Provision::: Service</name>
+  <name>OpenNMS Horizon :: Provision :: Service</name>
 
   <dependencyManagement>
     <dependencies>

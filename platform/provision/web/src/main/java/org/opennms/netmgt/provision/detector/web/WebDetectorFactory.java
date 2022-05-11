@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.web;
 
-import org.opennms.netmgt.provision.support.GenericServiceDetectorFactory;
+import org.opennms.netmgt.provision.core.support.GenericServiceDetectorFactory;
 import org.springframework.stereotype.Component;
 
 @Component

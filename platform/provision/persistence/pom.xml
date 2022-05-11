@@ -11,7 +11,7 @@
 
   <artifactId>persistence</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS ::: Horizon ::: Provision ::: Persistence</name>
+  <name>OpenNMS Horizon :: Provision :: Persistence</name>
 
   <dependencyManagement>
     <dependencies>

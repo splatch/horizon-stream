@@ -13,7 +13,7 @@
   <artifactId>rest</artifactId>
 
   <packaging>bundle</packaging>
-  <name>OpenNMS ::: Horizon ::: Provision ::: Rest</name>
+  <name>OpenNMS Horizon :: Provision :: Rest</name>
 
   <dependencyManagement>
     <dependencies>
