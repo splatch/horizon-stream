@@ -1,5 +1,6 @@
 # Local Development with Skaffold
 
+
 ## Prerequisites
 * JDK 11 (https://www.oracle.com/java/technologies/downloads/#java11)
 * Maven - Build tool for Java (https://maven.apache.org/download.cgi)
