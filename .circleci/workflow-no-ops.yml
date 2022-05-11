@@ -13,6 +13,12 @@ parameters:
   run-job-no-ops:
     type: boolean
     default: false
+  run-job-dev:
+    type: boolean
+    default: false
+  run-job-external-it:
+    type: boolean
+    default: false
 
 jobs:
   # This job is defined to handle changes to the .clricleci/ configurations,

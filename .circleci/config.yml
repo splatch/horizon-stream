@@ -12,6 +12,7 @@ workflows:
     jobs:
       - path-filtering/filter:
           mapping: |
+            .circleci/.* run-job-no-ops false
             dev/.* run-job-dev false
             external-it/.* run-job-external-it true
 
@@ -20,7 +21,9 @@ workflows:
       
       - path-filtering/filter:
           mapping: |
+            .circleci/.* run-job-no-ops false
             dev/.* run-job-dev true
+            external-it/.* run-job-external-it false
           
           base-revision: << pipeline.git.branch >>
           config-path: .circleci/workflow-dev.yml
@@ -28,6 +31,8 @@ workflows:
       - path-filtering/filter:
           mapping: |
             .circleci/.* run-job-no-ops true
+            dev/.* run-job-dev false
+            external-it/.* run-job-external-it false
           
           base-revision: << pipeline.git.branch >>
           config-path: .circleci/workflow-no-ops.yml
