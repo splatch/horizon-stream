@@ -58,6 +58,7 @@ workflows:
             branches:
               only:
                 - develop
+        config-path: .circleci/workflow-no-ops.yml
 
   dev:
     when: << pipeline.parameters.run-job-dev >>
