@@ -11,11 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: rancher/k3s:latest
-      options: --user root
-      # --env=K3S_TOKEN=300511717113269 \
-      # --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin/aux \
-      # --env=CRI_CONFIG_FILE=/var/lib/rancher/k3s/agent/etc/crictl.yaml \
-      # --privileged
+      options: --env=K3S_TOKEN=300511717113269 --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin/aux --env=CRI_CONFIG_FILE=/var/lib/rancher/k3s/agent/etc/crictl.yaml --privileged
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
