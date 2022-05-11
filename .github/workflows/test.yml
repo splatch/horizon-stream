@@ -23,7 +23,7 @@ jobs:
         if:  ${{ github.ref == 'refs/heads/develop' }}
         run: |
           echo "This runs if branch is develop."
-	  ls -1
-	  pwd
-	  echo "just seeing what is happening"
-	  kubectl get all
+          ls -1
+          pwd
+          echo "just seeing what is happening"
+          kubectl get all
