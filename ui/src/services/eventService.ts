@@ -1,31 +1,26 @@
-import { AlarmResponseList } from '@/types/alarms'
 import { api } from './axiosInstances'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
+import { Event } from '@/types/events'
 import { getMsgFromError } from './errorService'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 
-const endpoint = '/alarms'
+const endpoint = '/events'
 
-const getAlarms = async (): Promise<AlarmResponseList> => {
+const sendEvent = async (event: Event): Promise<boolean> => {
   startSpinner()
 
   try {
-    const resp = await api.get(endpoint)
-    return resp.data
+    await api.post(endpoint, event)
+    return true
   } catch (err: unknown) {
     showSnackbar({ error: true, msg: getMsgFromError(err) })
-    return {
-      alarm: [],
-      count: 0,
-      offset: 0,
-      totalCount: 0
-    }
+    return false
   } finally {
     stopSpinner()
   }
 }
 
-export { getAlarms }
+export { sendEvent }

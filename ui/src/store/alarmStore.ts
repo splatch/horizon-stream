@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { Alarm } from '@/types/alarms'
 import API from '@/services'
+import { Alarm } from '@/types/alarms'
 
 interface State {
   alarms: Alarm[]
@@ -13,13 +13,8 @@ export const useAlarmStore = defineStore('alarmStore', {
     } as State),
   actions: {
     async getAlarms() {
-      this.alarms = await API.getAlarms()
-    },
-    async sendAlarm(alarm: Alarm) {
-      await API.sendAlarm(alarm)
-    },
-    async clearAlarm(alarm: Alarm) {
-      await API.clearAlarm(alarm)
+      const resp = await API.getAlarms()
+      this.alarms = resp.alarm
     }
   }
 })

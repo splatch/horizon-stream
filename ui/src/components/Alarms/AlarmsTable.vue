@@ -3,8 +3,8 @@
     <p>Alarms</p>
     <div class="feather-row">
       <div class="feather-col-12">
-        <FeatherButton primary @click="onSend({})">Send Alarm</FeatherButton>
-        <FeatherButton secondary @click="onClear({})">Clear Alarms</FeatherButton>
+        <FeatherButton primary @click="trigger">Send Alarm</FeatherButton>
+        <FeatherButton secondary @click="clear">Clear Alarms</FeatherButton>
       </div>
     </div>
     <div class="feather-row">
@@ -31,14 +31,19 @@
 </template>
 
 <script setup lang="ts">
+import { getMockEvent } from '@/types/mocks'
 import { useAlarmStore } from '@/store/alarmStore'
-// import { Alarm } from '@/types/alarms.js'
+import { useEventStore } from '@/store/eventStore'
 
 const alarmStore = useAlarmStore()
+const eventStore = useEventStore()
+
 const alarms = computed(() => alarmStore.alarms)
 
-const onSend = (alarm: any) => alarmStore.sendAlarm(alarm)
-const onClear = (alarm: any) => alarmStore.clearAlarm(alarm)
+const trigger = () => eventStore.sendEvent(getMockEvent())
+const clear = () => ''
+
+onMounted(() => alarmStore.getAlarms())
 </script>
 
 <style lang="scss" scoped>
