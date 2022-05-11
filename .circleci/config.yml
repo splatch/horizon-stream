@@ -1,6 +1,5 @@
 version: 2.1
 
-
 setup: true
 
 orbs:
@@ -28,7 +27,7 @@ workflows:
             external-it/.* run-job-external-it true
 
           base-revision: << pipeline.git.branch >>
-          config-path: .circleci/workflows-external-it.yml
+          config-path: .circleci/workflow-external-it.yml
       - path-filtering/filter:
           mapping: |
             .circleci/.* run-job-no-ops true
@@ -46,4 +45,4 @@ workflows:
             external-it/.* run-job-external-it false
           
           base-revision: << pipeline.git.branch >>
-          config-path: .circleci/workflows-dev.yml
+          config-path: .circleci/workflow-dev.yml
