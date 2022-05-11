@@ -12,37 +12,36 @@ workflows:
     jobs:
       - path-filtering/filter:
           mapping: |
-            .circleci/.* run-job-no-ops true
-            LICENSE.md run-job-no-ops true
-            README.md run-job-no-ops true
-            design/.* run-job-no-ops true
-            howto/.* run-job-no-ops true
-            local-docker-compose/.* run-job-no-ops true
-            platform/.* run-job-no-ops true
-            rest-server/.* run-job-no-ops true
-            skaffold.yaml/.* run-job-no-ops true
-            tools/.* run-job-no-ops true
-            ui/.* run-job-no-ops true
             dev/.* run-job-dev false
             external-it/.* run-job-external-it true
 
           base-revision: << pipeline.git.branch >>
           config-path: .circleci/workflow-external-it.yml
+      
       - path-filtering/filter:
           mapping: |
-            .circleci/.* run-job-no-ops true
-            LICENSE.md run-job-no-ops true
-            README.md run-job-no-ops true
-            design/.* run-job-no-ops true
-            howto/.* run-job-no-ops true
-            local-docker-compose/.* run-job-no-ops true
-            platform/.* run-job-no-ops true
-            rest-server/.* run-job-no-ops true
-            skaffold.yaml/.* run-job-no-ops true
-            tools/.* run-job-no-ops true
-            ui/.* run-job-no-ops true
+            .circleci/.* run-job-no-ops false
             dev/.* run-job-dev true
             external-it/.* run-job-external-it false
           
           base-revision: << pipeline.git.branch >>
           config-path: .circleci/workflow-dev.yml
+
+      #- path-filtering/filter:
+      #    mapping: |
+      #      .circleci/.* run-job-no-ops true
+      #      LICENSE.md run-job-no-ops true
+      #      README.md run-job-no-ops true
+      #      design/.* run-job-no-ops true
+      #      howto/.* run-job-no-ops true
+      #      local-docker-compose/.* run-job-no-ops true
+      #      platform/.* run-job-no-ops true
+      #      rest-server/.* run-job-no-ops true
+      #      skaffold.yaml/.* run-job-no-ops true
+      #      tools/.* run-job-no-ops true
+      #      ui/.* run-job-no-ops true
+      #      dev/.* run-job-dev true
+      #      external-it/.* run-job-external-it false
+      #    
+      #    base-revision: << pipeline.git.branch >>
+      #    config-path: .circleci/workflow-dev.yml
