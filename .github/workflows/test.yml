@@ -6,13 +6,37 @@ on:
       - 'dev/**'
 
 jobs:
-  deploy-iac:
+  build-dev
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    
+    - if:  ${{ github.ref == 'refs/heads/develop' }}
+      run: |
+        mkdir -p path/to/artifact
+        echo hello > path/to/artifact/world.txt
+    
+    - if:  ${{ github.ref == 'refs/heads/develop' }}
+      uses: actions/upload-artifact@master
+      with:
+        name: my-artifact
+        path: path/to/artifact
+
+  test-dev:
     # VM to run container on.
     runs-on: ubuntu-latest
     container:
       image: rancher/k3s:latest
       options: --env=K3S_TOKEN=300511717113269 --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin/aux --env=CRI_CONFIG_FILE=/var/lib/rancher/k3s/agent/etc/crictl.yaml --privileged
     steps:
+      - uses: actions/checkout@master
+      - uses: actions/download-artifact@master
+        with:
+          name: my-artifact
+          path: path/to/artifact
+      - if:  ${{ github.ref == 'refs/heads/develop' }}
+        run: cat path/to/artifact/world.txt
+
       # The container does not have git installed and is a scratch image.
       #- name: Check out repository code
       #  uses: actions/checkout@v2
