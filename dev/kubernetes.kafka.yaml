@@ -180,10 +180,6 @@ spec:
                   key: password
             - name: ALLOW_PLAINTEXT_LISTENER
               value: "yes"
-            - name: KAFKA_HOSTNAME
-              value: "kafka"
-            - name: KAFKA_ADVERTISED_HOST_NAME
-              value: "kafka"
             - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
               value: "CLIENT:PLAINTEXT"
             - name: KAFKA_CFG_LISTENERS
@@ -227,6 +223,9 @@ spec:
         - name: postgres-initial-script
           configMap:
             name: postgres-initial-sql
+        - name: postgres-keycloak-initial-script
+          configMap:
+            name: postgres-keycloak-initial-sql
       containers:
         - name: postgres
           image: postgres:13.3-alpine
@@ -251,6 +250,9 @@ spec:
             - mountPath: "/docker-entrypoint-initdb.d/postgres.initial.script.sql"
               name: postgres-initial-script
               subPath: "postgres.initial.script.sql"
+            - mountPath: "/docker-entrypoint-initdb.d/postgres.keycloak.initial.script.sql"
+              name: postgres-keycloak-initial-script
+              subPath: "postgres.keycloak.initial.script.sql"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -283,6 +285,23 @@ spec:
               value: "postgres"
             - name: KEYCLOAK_DATABASE_PASSWORD
               value: "unused"
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL
+              value: jdbc:postgresql://postgres/keycloak
+            #
+            # TODO: use keycloak user (and password) instead of the admin "postgres" user
+            #
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-admin-secret
+                  key: username
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-admin-secret
+                  key: password
           ports:
             - containerPort: 8080
             - containerPort: 8443
@@ -304,7 +323,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: alarmd-camel-config
+            name: camel-config
       containers:
         - name: horizon-stream-core
           image: opennms/horizon-stream-core
@@ -343,7 +362,10 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.alarmd.camel.cfg"
-              subPath: "org.opennms.horizon.alarmd.camel.cfg"
+              subPath: "useKafka"
+            - name: config-volume
+              mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.eventd.camel.cfg"
+              subPath: "useKafka"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -401,9 +423,9 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: alarmd-camel-config
+  name: camel-config
 data:
-  org.opennms.horizon.alarmd.camel.cfg: |
+  useKafka: |
     useSeda=false
     useKafka=true
     useActiveMq=false
@@ -417,6 +439,16 @@ data:
     CREATE USER opennms with password 'opennms';
     CREATE DATABASE horizon_stream;
     GRANT ALL ON DATABASE horizon_stream TO opennms;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-keycloak-initial-sql
+data:
+  postgres.keycloak.initial.script.sql: |
+    CREATE USER keycloak with password 'passw0rd';
+    CREATE DATABASE keycloak;
+    GRANT ALL ON DATABASE keycloak TO keycloak;
 ---
 apiVersion: v1
 kind: Secret
@@ -444,3 +476,67 @@ type: Opaque
 stringData:
   username: kafka-user
   password: passw0rd
+---
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: KeycloakRealmImport
+metadata:
+  name: opennms
+  labels:
+    app: sso
+spec:
+  keycloakCRName: my-keycloak
+  realm:
+    id: opennms
+    realm: opennms
+    enabled: true
+    clients:
+      - id: b67dfe9a-36c2-42bc-bd23-b380023d4238
+        clientId: horizon-stream
+        standardFlowEnabled: false
+        enabled: true
+        webOrigins:
+          - "*"
+        publicClient: true
+        directAccessGrantsEnabled: true
+    roles:
+      realm:
+      - id: 50e6b594-e01b-426b-873d-873f632355b4
+        name: user
+        composite: false
+      - id: 76f0abc8-da17-4f57-8956-40cca624d62d
+        name: admin
+        composite: false
+    users:
+      - username: "admin"
+        email: "admin@test.opennms.org"
+        enabled: True
+        emailVerified: False
+        credentials:
+          - type: "password"
+            value: "admin"
+        realmRoles:
+          - "admin"
+        clientRoles:
+          account:
+            - "manage-account"
+            - "view-profile"
+          realm-management:
+            - "manage-users"
+            - "view-users"
+            - "query-users"
+            - "create-client"
+      - username: "user001"
+        firstName: "User001"
+        lastName: ""
+        email: "user001@test.opennms.org"
+        enabled: True
+        emailVerified: False
+        credentials:
+          - type: "password"
+            value: "passw0rd"
+        realmRoles:
+          - "user"
+        clientRoles:
+          account:
+            - "manage-account"
+            - "view-profile"
