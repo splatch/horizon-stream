@@ -53,20 +53,36 @@ jobs:
       - name: Dev Test
         if:  ${{ github.ref == 'refs/heads/develop' }}
         run: |
-          #/bin/k3s server &
-          #/bin/k3s agent &
-          #ps
-          #sleep 20
-          ## This starts the server.
-          #echo "This runs if branch is develop."
-          ls -1
-          pwd
-          java --version
-          docker version
-          kubectl -h
-          #kind create cluster
-          kubectl config get-contexts
+          
+          # Create cluster
+          kind create cluster
+        
+          # Confirm cluster created
+          #kubectl config get-contexts
           #kubectl get all
+        
+          # Confirm versions
+          #java --version # JDK 11
+          #docker version
+          #kubectl -h
+        
+          # Install skaffold and run skaffold 
+          # 
+          # TODO: Try this to test, but once the pipelines are up for creating
+          # images for each of the sub dirs in horizon stream, cache them as
+          # tar files and push them to the kind server and then update the
+          # kubernetes yaml files here and apply them through kubectl. In this
+          # way, we can remove skaffold and also use the docker images built
+          # and tested in previous workflows.
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
           skaffold --help
+          skaffold run --port-forward --skip-tests &
+            # Run env
+          sleep 120 # Give it 2 mins.
+            # Wait for skaffold to deploy the horizon stream.
+        
+          # Test
+          kubectl get all
+        
+          # Cucumber test - TODO
