@@ -7,20 +7,6 @@ executors:
   docker-executor:
     docker:
       - image: cimg/base:2021.02
-  k3s-executor:
-    parameters:
-      hostname:
-        type: string
-        default: foo
-    environment:
-      SOME_VAR: << parameters.some-value >>
-    docker:
-      - image: cimg/base:2021.02
-    docker:
-      - image: ubuntu:xenial
-        auth:
-          username: mydockerhub-user
-          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
 
 parameters:
   run-job-no-ops:
