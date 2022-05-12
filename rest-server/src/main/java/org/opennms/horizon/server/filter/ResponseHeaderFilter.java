@@ -26,34 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.controller;
+package org.opennms.horizon.server.filter;
 
+import java.io.IOException;
 
-import org.opennms.horizon.server.service.PlatformGateway;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-@RestController
-@RequestMapping("/alarms")
-public class AlarmController {
-    private final PlatformGateway gateway;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-    public AlarmController(PlatformGateway gateway) {
-        this.gateway = gateway;
+@Component
+public class ResponseHeaderFilter extends OncePerRequestFilter {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        filterChain.doFilter(request, response);
     }
-
-    @GetMapping
-    public ResponseEntity<String> listAlarms(@RequestHeader("Authorization") String authToken) {
-        String result = gateway.get(PlatformGateway.URL_PATH_ALARMS, authToken);
-        if(result != null) {
-            return ResponseEntity.ok(result);
-        } else {
-           return ResponseEntity.badRequest().build();
-        }
-    }
-
-    //TODO clear alarms
 }
