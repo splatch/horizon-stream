@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - run: |
-	  echo "test: " ${{ github.workspace }}
+          echo "test: " ${{ github.workspace }}
           pwd
           ls
           printf "ID=debian\n" > /etc/os-release
