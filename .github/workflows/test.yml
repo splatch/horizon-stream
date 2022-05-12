@@ -79,7 +79,7 @@ jobs:
           skaffold --help
           skaffold run --port-forward --skip-tests &
             # Run env
-          sleep 120 # Give it 2 mins.
+          sleep 180 
             # Wait for skaffold to deploy the horizon stream.
         
           # Test
