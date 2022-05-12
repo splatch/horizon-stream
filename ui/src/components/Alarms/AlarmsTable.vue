@@ -21,7 +21,7 @@
             <tr v-for="alarm in alarms" :key="alarm.id">
               <td>{{ alarm.severity }}</td>
               <td>{{ alarm.description }}</td>
-              <td>{{ alarm.lastEventTime }}</td>
+              <td v-date>{{ alarm.lastEventTime }}</td>
             </tr>
           </tbody>
         </table>
@@ -40,8 +40,17 @@ const eventStore = useEventStore()
 
 const alarms = computed(() => alarmStore.alarms)
 
-const trigger = () => eventStore.sendEvent(getMockEvent())
-const clear = () => ''
+const trigger = () => {
+  eventStore.sendEvent(getMockEvent())
+  alarmStore.getAlarms()
+}
+
+const clear = () => {
+  for (const alarm of alarms.value) {
+    alarmStore.deleteAlarmById(alarm.id)
+  }
+  alarmStore.getAlarms()
+}
 
 onMounted(() => alarmStore.getAlarms())
 </script>

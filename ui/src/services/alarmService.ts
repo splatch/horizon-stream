@@ -28,4 +28,18 @@ const getAlarms = async (): Promise<AlarmResponseList> => {
   }
 }
 
-export { getAlarms }
+const deleteAlarmById = async (id: number): Promise<boolean> => {
+  startSpinner()
+
+  try {
+    await api.delete(`${endpoint}/${id}/ack`)
+    return true
+  } catch (err: unknown) {
+    showSnackbar({ error: true, msg: getMsgFromError(err) })
+    return false
+  } finally {
+    stopSpinner()
+  }
+}
+
+export { getAlarms, deleteAlarmById }

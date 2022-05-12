@@ -15,6 +15,9 @@ export const useAlarmStore = defineStore('alarmStore', {
     async getAlarms() {
       const resp = await API.getAlarms()
       this.alarms = resp.alarm
+    },
+    async deleteAlarmById(id: number) {
+      await API.deleteAlarmById(id)
     }
   }
 })
