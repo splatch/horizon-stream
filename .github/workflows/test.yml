@@ -65,6 +65,6 @@ jobs:
           #kubectl get all
           docker version
           kubectl -h
-          kind create cluster
+          #kind create cluster
           kubectl config get-contexts
-          kubectl get all
+          #kubectl get all
