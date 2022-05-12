@@ -65,4 +65,4 @@ jobs:
           #kubectl get all
           docker version
           kubectl -h
-	  kind
+          kind
