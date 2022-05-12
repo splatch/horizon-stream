@@ -66,4 +66,4 @@ jobs:
           #kind create cluster
           kubectl config get-contexts
           #kubectl get all
-	  skaffold --help
+          skaffold --help
