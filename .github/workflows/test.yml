@@ -33,7 +33,8 @@ jobs:
 
     steps:
       - run: |
-          cat /etc/*release | grep ^ID
+          pwd
+	  ls
           printf "ID=debian\n" > /etc/os-release
           cat /etc/*release | grep ^ID
       - uses: actions/checkout@master
