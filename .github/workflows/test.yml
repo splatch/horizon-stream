@@ -61,10 +61,9 @@ jobs:
           #echo "This runs if branch is develop."
           ls -1
           pwd
-          #echo "just seeing what is happening"
-          #kubectl get all
           docker version
           kubectl -h
           #kind create cluster
           kubectl config get-contexts
           #kubectl get all
+	  skaffold --help
