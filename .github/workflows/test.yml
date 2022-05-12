@@ -76,8 +76,12 @@ jobs:
           # and tested in previous workflows.
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
-          skaffold --help
-          skaffold run --port-forward --skip-tests 
+          kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+          kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+          kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
+          # Verify (should get keycloaks and keycloakrealmiiimports)
+          kubectl api-resources | grep keycloak
+          skaffold run --port-forward --skip-tests &
             # Run env
           #sleep 180 
             # Wait for skaffold to deploy the horizon stream.
