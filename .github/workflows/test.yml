@@ -61,6 +61,7 @@ jobs:
           #echo "This runs if branch is develop."
           ls -1
           pwd
+          java --version
           docker version
           kubectl -h
           #kind create cluster
