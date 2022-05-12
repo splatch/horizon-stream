@@ -82,7 +82,7 @@ workflows:
           filters:
             branches:
               only:
-                - develop
+                - develop-deprecated
 
   no-ops:
     when: << pipeline.parameters.run-job-no-ops >>
@@ -91,7 +91,7 @@ workflows:
           filters:
             branches:
               only:
-                - develop
+                - develop-deprecated
 
   external-it:
     when: << pipeline.parameters.run-job-external-it >>
@@ -100,4 +100,4 @@ workflows:
           filters:
             branches:
               only:
-                - develop
+                - develop-deprecated
