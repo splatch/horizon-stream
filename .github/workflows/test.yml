@@ -28,11 +28,12 @@ jobs:
     container:
       image: rancher/k3s:latest
       options: --env=K3S_TOKEN=300511717113269 --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin/aux --env=CRI_CONFIG_FILE=/var/lib/rancher/k3s/agent/etc/crictl.yaml --privileged
-      volumes:
-        - /etc:/etc
+      #volumes:
+      #  - /etc:/etc
 
     steps:
       - run: |
+	  echo "test: " ${{ github.workspace }}
           pwd
           ls
           printf "ID=debian\n" > /etc/os-release
