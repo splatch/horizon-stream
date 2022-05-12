@@ -83,7 +83,7 @@ jobs:
           kubectl api-resources | grep keycloak
           skaffold run --port-forward --skip-tests &
             # Run env
-          #sleep 180 
+          sleep 240 
             # Wait for skaffold to deploy the horizon stream.
         
           # Test
