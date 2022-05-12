@@ -30,6 +30,7 @@ jobs:
       options: --env=K3S_TOKEN=300511717113269 --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin/aux --env=CRI_CONFIG_FILE=/var/lib/rancher/k3s/agent/etc/crictl.yaml --privileged
     steps:
       - run: |
+          cat /etc/*release | grep ^ID
           printf "ID=debian\n" > /etc/os-release
           cat /etc/*release | grep ^ID
       - uses: actions/checkout@master
