@@ -59,10 +59,12 @@ jobs:
           #sleep 20
           ## This starts the server.
           #echo "This runs if branch is develop."
-          #ls -1
-          #pwd
+          ls -1
+          pwd
           #echo "just seeing what is happening"
           #kubectl get all
           docker version
           kubectl -h
-          kind
+          kind create cluster
+          kubectl config get-contexts
+          kubectl get all
