@@ -77,9 +77,9 @@ jobs:
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
           skaffold --help
-          skaffold run --port-forward --skip-tests &
+          skaffold run --port-forward --skip-tests 
             # Run env
-          sleep 180 
+          #sleep 180 
             # Wait for skaffold to deploy the horizon stream.
         
           # Test
