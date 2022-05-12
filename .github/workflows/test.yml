@@ -25,18 +25,18 @@ jobs:
   test-dev:
     # VM to run container on.
     runs-on: ubuntu-latest
-    container:
-      image: rancher/k3s:latest
-      options: --env=K3S_TOKEN=300511717113269 --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin/aux --env=CRI_CONFIG_FILE=/var/lib/rancher/k3s/agent/etc/crictl.yaml --privileged
-      #volumes:
-      #  - /etc:/etc
+    #container:
+    #  image: rancher/k3s:latest
+    #  options: --env=K3S_TOKEN=300511717113269 --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin/aux --env=CRI_CONFIG_FILE=/var/lib/rancher/k3s/agent/etc/crictl.yaml --privileged
+    #  #volumes:
+    #  #  - /etc:/etc
 
     steps:
       - run: |
           echo "test: " ${{ github.workspace }}
           pwd
           ls
-          printf "ID=debian\n" > /etc/os-release
+          #printf "ID=debian\n" > /etc/os-release
           cat /etc/*release | grep ^ID
       - uses: actions/checkout@master
       - uses: actions/download-artifact@master
@@ -52,13 +52,15 @@ jobs:
       - name: Dev Test
         if:  ${{ github.ref == 'refs/heads/develop' }}
         run: |
-          /bin/k3s server &
-          /bin/k3s agent &
-          ps
-          sleep 20
-          # This starts the server.
-          echo "This runs if branch is develop."
-          ls -1
-          pwd
-          echo "just seeing what is happening"
-          kubectl get all
+          #/bin/k3s server &
+          #/bin/k3s agent &
+          #ps
+          #sleep 20
+          ## This starts the server.
+          #echo "This runs if branch is develop."
+          #ls -1
+          #pwd
+          #echo "just seeing what is happening"
+          #kubectl get all
+          docker version
+          kubectl -h
