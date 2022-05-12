@@ -180,10 +180,6 @@ spec:
                   key: password
             - name: ALLOW_PLAINTEXT_LISTENER
               value: "yes"
-            - name: KAFKA_HOSTNAME
-              value: "kafka"
-            - name: KAFKA_ADVERTISED_HOST_NAME
-              value: "kafka"
             - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
               value: "CLIENT:PLAINTEXT"
             - name: KAFKA_CFG_LISTENERS
@@ -327,7 +323,7 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: alarmd-camel-config
+            name: camel-config
       containers:
         - name: horizon-stream-core
           image: opennms/horizon-stream-core
@@ -366,7 +362,10 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.alarmd.camel.cfg"
-              subPath: "org.opennms.horizon.alarmd.camel.cfg"
+              subPath: "useKafka"
+            - name: config-volume
+              mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.eventd.camel.cfg"
+              subPath: "useKafka"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -424,9 +423,9 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: alarmd-camel-config
+  name: camel-config
 data:
-  org.opennms.horizon.alarmd.camel.cfg: |
+  useKafka: |
     useSeda=false
     useKafka=true
     useActiveMq=false
