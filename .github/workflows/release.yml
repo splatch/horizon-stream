@@ -139,6 +139,10 @@ jobs:
       - name: publish-image-core
         run: |
 
+          # Login to dockerhub.
+          #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+
           # Publish core image
           cd platform/
 
@@ -162,6 +166,10 @@ jobs:
       
       - name: publish-image-ui
         run: |
+
+          # Login to dockerhub.
+          #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
           # Publish core image
           cd ui/
@@ -187,6 +195,10 @@ jobs:
 
       - name: publish-image-rest-server
         run: |
+
+          # Login to dockerhub.
+          #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
           # When there are tests to run, put those in the actions for this.
 
