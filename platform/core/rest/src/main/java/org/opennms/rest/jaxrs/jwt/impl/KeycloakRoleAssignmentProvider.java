@@ -3,11 +3,11 @@ package org.opennms.rest.jaxrs.jwt.impl;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.MappingsRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.opennms.keycloak.admin.client.KeycloakAdminClient;
-import org.opennms.keycloak.admin.client.KeycloakAdminClientSession;
+import org.keycloak.admin.client.Keycloak;
 import org.opennms.rest.jaxrs.jwt.RoleAssignmentProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class KeycloakRoleAssignmentProvider implements RoleAssignmentProvider {
 
     private Logger log = DEFAULT_LOGGER;
 
-    private KeycloakAdminClient keycloakAdminClient;
+    private String keycloakBaseUrl;
     private String keycloakRealm;
     private String keycloakAdminRealm;
     private String keycloakAdminUsername;
@@ -44,13 +44,12 @@ public class KeycloakRoleAssignmentProvider implements RoleAssignmentProvider {
 //========================================
 // Getters and Setters
 //----------------------------------------
-
-    public KeycloakAdminClient getKeycloakAdminClient() {
-        return keycloakAdminClient;
+    public String getKeycloakBaseUrl() {
+        return keycloakBaseUrl;
     }
 
-    public void setKeycloakAdminClient(KeycloakAdminClient keycloakAdminClient) {
-        this.keycloakAdminClient = keycloakAdminClient;
+    public void setKeycloakBaseUrl(String keycloakBaseUrl) {
+        this.keycloakBaseUrl = keycloakBaseUrl;
     }
 
     public String getKeycloakAdminRealm() {
@@ -132,16 +131,14 @@ public class KeycloakRoleAssignmentProvider implements RoleAssignmentProvider {
      * @return
      */
     private List<String> loadFromKeycloak(String realm, String username) {
-        KeycloakAdminClientSession session = null;
+        Keycloak keycloakSession = Keycloak.getInstance(keycloakBaseUrl, keycloakAdminRealm, keycloakAdminUsername, keycloakAdminPassword, "horizon-stream");
         try {
-            session = this.keycloakAdminClient.login(keycloakAdminRealm, keycloakAdminUsername, keycloakAdminPassword);
-
-            UserRepresentation userRepresentation = session.getUserByUsername(realm, username);
+            UserResource userResource = keycloakSession.realm(realm).users().get(username);
 
             List<String> result;
 
-            if (userRepresentation != null) {
-                MappingsRepresentation mappingsRepresentation = session.getUserRoleMappings(realm, userRepresentation.getId());
+            if (userResource != null) {
+                MappingsRepresentation mappingsRepresentation = userResource.roles().getAll();
 
                 result = mappingsRepresentation.getRealmMappings().stream().map(RoleRepresentation::getName).collect(Collectors.toList());
             } else {
@@ -154,7 +151,7 @@ public class KeycloakRoleAssignmentProvider implements RoleAssignmentProvider {
             throw new RuntimeException("failed to load user roles from keycloak", exc);
         } finally {
             try {
-                session.logout();
+                keycloakSession.close();
             } catch (Exception exc) {
                 log.warn("failed to logout Keycloak session", exc);
             }

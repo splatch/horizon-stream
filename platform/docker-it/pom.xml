@@ -46,13 +46,11 @@
         </exclusion>
       </exclusions>
     </dependency>
-
-    <dependency>
-      <groupId>org.opennms.horizon.3rdparty</groupId>
-      <artifactId>keycloak-admin-client</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-admin-client</artifactId>
+        <scope>test</scope>
+        </dependency>
 
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -224,7 +222,7 @@
               <name>keycloak-it-image</name>
               <alias>keycloak</alias>
               <build>
-                <from>quay.io/keycloak/keycloak:17.0.0</from>
+                <from>quay.io/keycloak/keycloak:18.0.0</from>
               </build>
               <run>
                 <!--<cmd>start-dev &#45;&#45;log-level=DEBUG,org.hibernate:INFO</cmd>-->

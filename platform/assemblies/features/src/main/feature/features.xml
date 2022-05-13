@@ -197,13 +197,16 @@
         <feature>jaas-deployer</feature>
 
         <!--<bundle>mvn:org.keycloak/keycloak-jaxrs-oauth-client/${keycloak.version}</bundle>-->
+        <bundle>wrap:mvn:org.keycloak/keycloak-admin-client/${keycloak.version}</bundle>
+        <bundle>wrap:mvn:org.jboss.resteasy/resteasy-client/3.13.2.Final</bundle>
+        <bundle>wrap:mvn:org.jboss.resteasy/resteasy-jaxrs/3.13.2.Final</bundle>
+        <bundle>wrap:mvn:org.jboss.resteasy/resteasy-jackson2-provider/3.13.2.Final</bundle>
         <bundle>mvn:org.keycloak/keycloak-pax-web-jetty94/${keycloak.version}</bundle>
         <bundle>mvn:org.keycloak/keycloak-jetty94-adapter/${keycloak.version}</bundle>
         <bundle>mvn:org.keycloak/keycloak-jetty-core/${keycloak.version}</bundle>
         <bundle>mvn:org.keycloak/keycloak-jetty-adapter-spi/${keycloak.version}</bundle>
         <bundle>mvn:org.keycloak/keycloak-servlet-filter-adapter/${keycloak.version}</bundle>
-
-        <bundle>mvn:org.opennms.horizon.3rdparty/keycloak-admin-client/${project.version}</bundle>
+        <bundle>mvn:org.jboss.spec.javax.annotation/jboss-annotations-api_1.3_spec/2.0.1.Final</bundle>
     </feature>
 
 

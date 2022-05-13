@@ -38,12 +38,11 @@ import io.restassured.internal.util.IOUtils;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.opennms.keycloak.admin.client.KeycloakAdminClientSession;
-import org.opennms.keycloak.admin.client.exc.KeycloakBaseException;
-import org.opennms.keycloak.admin.client.impl.KeycloakAdminClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,8 +108,8 @@ public class AlarmsDaemonRestTestSteps {
     //
     private Response restAssuredResponse;
     private JsonPath parsedJsonResponse;
-    private KeycloakAdminClientSession keycloakUserSession;
-    private KeycloakAdminClientSession keycloakAdminSession;
+    private Keycloak keycloakUserSession;
+    private Keycloak keycloakAdminSession;
     private int alarmId;
 
 //========================================
@@ -177,37 +176,43 @@ public class AlarmsDaemonRestTestSteps {
 
     @Then("add keycloak realm {string}")
     public void addKeycloakRealm(String realmName) throws Exception {
-        this.keycloakAdminSession.addRealm(realmName, null);
+        RealmRepresentation realm = new RealmRepresentation();
+        realm.setRealm(realmName);
+        this.keycloakAdminSession.realms().create(realm);
     }
 
 
     @Then("add keycloak user {string} with password {string} in realm {string}")
     public void addKeycloakUserWithPassword(String username, String password, String realm) throws Exception {
-        keycloakAdminSession.addUser(realm, username, userRepresentation -> {
-            CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
-            credentialRepresentation.setType("password");
-            credentialRepresentation.setTemporary(false);
-            credentialRepresentation.setValue(password);
+        UserRepresentation user = new UserRepresentation();
+        user.setUsername(username);
+        CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+        credentialRepresentation.setType("password");
+        credentialRepresentation.setTemporary(false);
+        credentialRepresentation.setValue(password);
+        user.setCredentials(Collections.singletonList(credentialRepresentation));
 
-            userRepresentation.setCredentials(Collections.singletonList(credentialRepresentation));
-        });
+        keycloakAdminSession.realm(realm).users().create(user);
     }
 
 
     @Then("create role {string} in realm {string}")
-    public void createRoleInRealm(String roleName, String realmName) throws KeycloakBaseException, IOException, URISyntaxException {
-        keycloakAdminSession.createRole(realmName, roleName);
+    public void createRoleInRealm(String roleName, String realmName) {
+        RoleRepresentation role = new RoleRepresentation();
+        role.setName(roleName);
+        keycloakAdminSession.realm(realmName).roles().create(role);
     }
 
     @Then("assign role {string} to keycloak user {string} in realm {string}")
     public void assignRoleToKeycloakUser(String roleName, String username, String realm) throws Exception {
-        UserRepresentation userRepresentation = keycloakAdminSession.getUserByUsername(realm, username);
+        UserRepresentation userRepresentation = keycloakAdminSession.realm(realm).users().get(username).toRepresentation();
         assertNotNull("Failed to lookup user from keycloak: username=" + username + "; realm=" + realm, userRepresentation);
 
-        RoleRepresentation roleRepresentation = keycloakAdminSession.getRoleByName(realm, roleName);
+        RoleRepresentation roleRepresentation = keycloakAdminSession.realm(realm).roles().get(roleName).toRepresentation();
         assertNotNull("Failed to lookup role from keycloak: rolename=" + roleName + "; realm=" + realm, roleRepresentation);
 
-        keycloakAdminSession.assignUserRole(realm, userRepresentation.getId(), roleName, roleRepresentation.getId());
+        userRepresentation.setRealmRoles(Collections.singletonList(roleRepresentation.getName()));
+        keycloakAdminSession.realm(realm).users().create(userRepresentation);
     }
 
     @Given("DB username {string} and password {string}")
@@ -274,7 +279,7 @@ public class AlarmsDaemonRestTestSteps {
                         .config(restAssuredConfig)
                         ;
 
-        String accessToken = this.keycloakUserSession.getInitialAccessToken();
+        String accessToken = this.keycloakUserSession.tokenManager().getAccessTokenString();
 
         if (accessToken != null) {
             requestSpecification =
@@ -381,16 +386,8 @@ public class AlarmsDaemonRestTestSteps {
 // Internals
 //========================================
 
-    private KeycloakAdminClientSession loginToKeycloak(String keycloakClientId, String username, String password, String realm) throws Exception {
-
-        KeycloakAdminClientImpl keycloakAdminClient = new KeycloakAdminClientImpl();
-        keycloakAdminClient.setBaseUrl(this.keycloakUrl);
-        keycloakAdminClient.setClientId(keycloakClientId);
-        keycloakAdminClient.init();
-
-        KeycloakAdminClientSession session = keycloakAdminClient.login(realm, username, password);
-
-        return session;
+    private Keycloak loginToKeycloak(String keycloakClientId, String username, String password, String realm) {
+        return Keycloak.getInstance(this.keycloakUrl, realm, username, password, keycloakClientId);
     }
 
     private RestAssuredConfig createRestAssuredTestConfig() {
@@ -446,7 +443,7 @@ public class AlarmsDaemonRestTestSteps {
         String accessToken = null;
 
         if( this.keycloakUserSession != null) {
-            accessToken = this.keycloakUserSession.getInitialAccessToken();
+            accessToken = this.keycloakUserSession.tokenManager().getAccessTokenString();
         }
 
         if (accessToken != null) {
