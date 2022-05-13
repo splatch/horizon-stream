@@ -38,10 +38,10 @@ jobs:
           # put it as an env variable to be used through out below and passed
           # to actions for tagging the docker images after they are created.          
           echo "branch: " ${{ github.ref }}
-	  # The above github.ref, we expect this format: release/0.0.1.
-	  # If that changes, update the following statement.
+          # The above github.ref, we expect this format: release/0.0.1.
+          # If that changes, update the following statement.
           TAG=$(echo ${{ github.ref }} | sed -E  's/(.*)\/(.*)/\2/')
-	  echo "$TAG"
+          echo "$TAG"
           echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
           echo "release: " ${{ env.RELEASE_TAG }}
 
