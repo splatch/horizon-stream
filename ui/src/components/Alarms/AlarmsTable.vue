@@ -4,7 +4,7 @@
     <div class="feather-row">
       <div class="feather-col-12">
         <FeatherButton primary @click="trigger">Send Alarm</FeatherButton>
-        <FeatherButton secondary @click="clear">Clear Alarms</FeatherButton>
+        <FeatherButton secondary @click="clear">Clear Alarm</FeatherButton>
       </div>
     </div>
     <div class="feather-row">
@@ -40,16 +40,15 @@ const eventStore = useEventStore()
 
 const alarms = computed(() => alarmStore.alarms)
 
-const trigger = () => {
-  eventStore.sendEvent(getMockEvent())
-  alarmStore.getAlarms()
+const trigger = async () => {
+  await eventStore.sendEvent(getMockEvent())
+  await alarmStore.getAlarms()
 }
 
-const clear = () => {
-  for (const alarm of alarms.value) {
-    alarmStore.deleteAlarmById(alarm.id)
-  }
-  alarmStore.getAlarms()
+const clear = async () => {
+  const promises = alarms.value.map((alarm) => alarmStore.deleteAlarmById(alarm.id))
+  await Promise.all(promises)
+  await alarmStore.getAlarms()
 }
 
 onMounted(() => alarmStore.getAlarms())
