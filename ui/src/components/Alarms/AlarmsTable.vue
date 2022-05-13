@@ -19,7 +19,12 @@
           </thead>
           <tbody>
             <tr v-for="alarm in alarms" :key="alarm.id">
-              <td>{{ alarm.severity }}</td>
+              <td>
+                <div class="severity">
+                  <div :class="alarm.severity.toLowerCase()" class="status-box"></div>
+                  {{ alarm.severity }}
+                </div>
+              </td>
               <td>{{ alarm.description }}</td>
               <td v-date>{{ alarm.lastEventTime }}</td>
             </tr>
@@ -77,6 +82,23 @@ onMounted(() => alarmStore.getAlarms())
 
   table {
     @include table;
+
+    .severity {
+      display: flex;
+      .status-box {
+        display: block;
+        width: 12px;
+        height: 12px;
+        margin: 5px 10px 0px -10px;
+
+        &.cleared {
+          background: var($success);
+        }
+        &.warning {
+          background: var($warning);
+        }
+      }
+    }
   }
 }
 </style>
