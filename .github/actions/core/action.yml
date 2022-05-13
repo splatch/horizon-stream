@@ -37,7 +37,4 @@ runs:
         # The image, opennms-horizon-application-it-image, is just for the
         # integration tests, ignore.  
 
-        # Save the image as a file to be published.
-        docker save -o horizon-stream-core.tar opennms/horizon-stream-core:local
-
       shell: bash
