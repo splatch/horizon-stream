@@ -23,22 +23,30 @@ jobs:
     steps:
       - name: init
         run: |
-          echo "hello from init on release"
+          echo "hello from init on release" 
+          echo "test 1" > tmp.test
 
       - name: feature-ui
         run: |
           echo "hello from feature-ui on release"
+          cat tmp.test
+          echo "test 2" >> tmp.test
 
       - name: feature-core
         run: |
           echo "hello from feature-core on release"
+          cat tmp.test
+          echo "test 3" >> tmp.test
 
       - name: feature-rest-server
         run: |
           echo "hello from feature-rest-server on release"
+          cat tmp.test
+          echo "test 4" >> tmp.test
 
       - name: external-it
         run: |
+          cat tmp.test
           echo "test: " ${{ github.workspace }}
           pwd
           ls
