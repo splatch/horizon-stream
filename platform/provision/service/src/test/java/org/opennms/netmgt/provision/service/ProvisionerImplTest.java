@@ -1,6 +1,5 @@
 package org.opennms.netmgt.provision.service;
 
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -13,14 +12,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opennms.netmgt.provision.persistence.ProvisionRepository;
+import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
 
 public class ProvisionerImplTest {
 
     Provisioner provisioner;
     String xml=null;
     @Mock
-    ProvisionRepository provisionRepository;
+    RequisitionRepository provisionRepository;
     
     @Before
     public void setUp() throws Exception {

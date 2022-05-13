@@ -9,7 +9,7 @@
     </cm:default-properties>
   </cm:property-placeholder>
 
-  <reference id="provisionPersistence" interface="org.opennms.netmgt.provision.persistence.ProvisionRepository"/>
+  <reference id="provisionPersistence" interface="org.opennms.netmgt.provision.persistence.dao.RequisitionRepository"/>
 
   <bean id="provisionerImpl" class="org.opennms.netmgt.provision.service.ProvisionerImpl">
     <argument ref="provisionPersistence"/>
