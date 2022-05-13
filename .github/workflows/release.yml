@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-        description: Is required to call actions.
+        # Is required to call actions.
 
       - name: init
         run: |
