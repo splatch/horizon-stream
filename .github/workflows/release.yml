@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: init
         run: |
-        echo "hello from init on release"
+          echo "hello from init on release"
 
       - name: feature-ui
         run: |
