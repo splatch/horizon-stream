@@ -33,8 +33,10 @@ import java.io.IOException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -43,7 +45,6 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,7 +54,10 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class PlatformGateway {
     public static final String URL_PATH_EVENTS = "/events";
-    public static final String URL_PATH_ALARMS = "/alarms/list";
+    public static final String URL_PATH_ALARMS = "/alarms";
+    public static final String URL_PATH_ALARMS_LIST = URL_PATH_ALARMS + "/list";
+    public static final String URL_PATH_ALARMS_ACK = URL_PATH_ALARMS + "/%d/ack";
+    public static final String URL_PATH_ALARMS_CLEAR = URL_PATH_ALARMS + "/%d/clear";
     private ObjectMapper jsonMapper = new ObjectMapper();
     @Value("${horizon-stream.core.url}")
     private String platformUrl;
@@ -70,7 +74,7 @@ public class PlatformGateway {
                 return response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED;
             }
         }catch (Exception e) {
-            log.error("Error happened when posting {} at {} on platform", data, path, e);
+            log.error("Error happened when post {} at {} on platform", data, path, e);
             return false;
         }
     }
@@ -87,6 +91,41 @@ public class PlatformGateway {
         } catch (IOException e) {
             log.error("Error happened when execute get request at {} on platform", path, e);
             return null;
+        }
+    }
+
+    public boolean put(String path, String authToken, String data) {
+        try {
+            HttpPut putRequest = new HttpPut(platformUrl + path);
+            putRequest.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
+            putRequest.addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
+            putRequest.addHeader(HttpHeaders.AUTHORIZATION, authToken);
+            putRequest.setEntity(new StringEntity(data.toString()));
+            try(CloseableHttpClient client = HttpClients.createDefault();
+                CloseableHttpResponse response = client.execute(putRequest)) {
+                log.info("Put request to platform {} with data {} return code {}", path, data, response.getStatusLine().getStatusCode());
+                return true;
+            }
+        } catch (IOException e) {
+            log.error("Error happened when put {} at {}", data, path);
+            return false;
+        }
+    }
+
+    public boolean delete(String path, String authToken) {
+        try {
+            HttpDelete deleteRequest = new HttpDelete(platformUrl + path);
+            deleteRequest.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
+            deleteRequest.addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
+            deleteRequest.addHeader(HttpHeaders.AUTHORIZATION, authToken);
+            try(CloseableHttpClient client = HttpClients.createDefault();
+                CloseableHttpResponse response = client.execute(deleteRequest)) {
+                log.info("un-ack alarm with url path {}", path);
+                return true;
+            }
+
+        } catch (IOException e) {
+            return false;
         }
     }
 }
