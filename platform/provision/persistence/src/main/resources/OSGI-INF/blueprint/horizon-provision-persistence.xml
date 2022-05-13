@@ -9,9 +9,9 @@
     </cm:default-properties>
   </cm:property-placeholder>
 
-  <bean id="persistenceImpl" class="org.opennms.netmgt.provision.persistence.DefaultRevisionRepository">
+  <bean id="persistenceImpl" class="org.opennms.netmgt.provision.persistence.HibernateRequisitionRepository">
   </bean>
 
-  <service ref="persistenceImpl" interface="org.opennms.netmgt.provision.persistence.ProvisionRepository"/>
+  <service ref="persistenceImpl" interface="org.opennms.netmgt.provision.persistence.dao.RequisitionRepository"/>
 
 </blueprint>
