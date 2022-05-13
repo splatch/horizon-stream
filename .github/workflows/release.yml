@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "hello from feature-rest-server on release"
 
-      - name: external-it:
+      - name: external-it
         run: |
           echo "test: " ${{ github.workspace }}
           pwd
