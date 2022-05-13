@@ -46,10 +46,7 @@ jobs:
         uses: ./.github/actions/core
         with:
           dir-location: 'platform'
-        #run: |
-        #  echo "hello from feature-core on release"
-        #  cat tmp.test
-        #  echo "test 3" >> tmp.test
+
       - name: feature-rest-server
         run: |
           echo "hello from feature-rest-server on release"
@@ -62,7 +59,10 @@ jobs:
           echo "test: " ${{ github.workspace }}
           pwd
           ls
-         
+ 
+          # Check that the image was created.
+          docker images
+
           echo "test external-it"
 
           # IMPORTANT: Put the following into an action, it will be used for
@@ -81,6 +81,8 @@ jobs:
           ##kubectl -h
         
           ## Install skaffold and run skaffold 
+          ## 
+          ## TODO: Push docker image (save tar or something) to cluster, if good, then run the docker push at end of this.
           ## 
           ## TODO: Try this to test, but once the pipelines are up for creating
           ## images for each of the sub dirs in horizon stream, cache them as
