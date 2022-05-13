@@ -37,10 +37,10 @@ jobs:
         uses: ./.github/actions/core
         with:
           dir-location: 'auth-container'
-        run: |
-          echo "hello from feature-core on release"
-          cat tmp.test
-          echo "test 3" >> tmp.test
+        #run: |
+        #  echo "hello from feature-core on release"
+        #  cat tmp.test
+        #  echo "test 3" >> tmp.test
       - name: feature-rest-server
         run: |
           echo "hello from feature-rest-server on release"
