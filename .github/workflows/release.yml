@@ -131,7 +131,9 @@ jobs:
         run: |
 
           # Login to dockerhub.
-          docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
+          #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
+          echo "test: " ${{ secrets.DOCKERHUB_LOGIN }} 
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
       - name: publish-image-core
         run: |
