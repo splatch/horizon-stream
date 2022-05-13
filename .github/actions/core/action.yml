@@ -1,0 +1,20 @@
+name: 'Build and test core'
+description: 'This implements unit and built-time integration tests on core, dir platform.'
+inputs:
+  dir-location:
+    description: 'The dir containing the change.'
+    required: true
+    default: 'none'
+
+runs:
+  using: "composite"
+  steps:
+    - name: global data
+      run: |
+	cd ${{ inputs.dir-location }}
+	# Keep the input arg of the dir, if the process is the same for each
+	# core, rest-server, and ui, we can make this like a generic function.
+ 
+        echo "Testing actions"
+
+      shell: bash

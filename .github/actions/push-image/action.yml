@@ -1,0 +1,46 @@
+name: 'Push Docker Image'
+description: 'This can be any image. The workflow will pass in required parameters so different images can use this to push to dockerhub.'
+inputs:
+  dockerhub-login:
+    description: 'Docker hub user'
+    required: true
+    default: 'none'
+  dockerhub-pw:
+    description: 'Docker hub pw'
+    required: true
+    default: 'none'
+  image-name:
+    description: 'The image name, should be a file of the image.'
+    required: true
+    default: 'none'
+  dir-location:
+    description: 'The dir containing the change.'
+    required: true
+    default: 'none'
+  image-repo-name:
+    description: 'The docker hub repo name.'
+    required: true
+    default: 'none'
+
+runs:
+  using: "composite"
+  steps:
+    - name: global data
+      run: |
+        cd ${{ inputs.dir-location }}
+       
+        echo ${{ inputs.image-name }}
+        echo ${{ inputs.image-repo-name }}
+
+        echo "Testing actions"
+
+        ## Save Docker image as file. This will actually go in a previous step.
+        #docker save -o ${{ inputs.image-name }}.tar opennms/horizon-stream-${{ inputs.image-name }}:${{inputs.tag-release}}
+
+        ## Login to dockerhub.
+        #docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
+        #
+        ## Load image to docker hub.
+        #docker load -i ${{ inputs.image-name }}.tar
+
+      shell: bash

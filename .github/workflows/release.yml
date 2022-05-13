@@ -1,0 +1,86 @@
+name: release
+
+# This triggers only when pull request is merged (closed) into branches of
+# 'release/**'. The process is to create a new release branch from the previous
+# release branch, then create a PR from develop branch to that new release.
+# When all is approved, then merge and it should trigger this workflow.
+#on:
+#  pull_request:
+#    branches: 
+#      - 'release/**'
+#    types: [closed]
+
+# Tmp, just until I get something working. Develop this first, all pieces on
+# release, then pull out what needed for other workflows.
+on:  
+  push:
+    branches:
+      - 'develop'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: init
+        run: |
+        echo "hello from init on release"
+
+      - name: feature-ui
+        run: |
+          echo "hello from feature-ui on release"
+
+      - name: feature-core
+        run: |
+          echo "hello from feature-core on release"
+
+      - name: feature-rest-server
+        run: |
+          echo "hello from feature-rest-server on release"
+
+      - name: external-it:
+      - run: |
+          echo "test: " ${{ github.workspace }}
+          pwd
+          ls
+         
+          echo "test external-it"
+
+          # IMPORTANT: Put the following into an action, it will be used for
+          # branch develop merges and also release ones.
+
+          ## Create cluster
+          #kind create cluster
+        
+          ## Confirm cluster created
+          ##kubectl config get-contexts
+          ##kubectl get all
+        
+          ## Confirm versions
+          ##java --version # JDK 11
+          ##docker version
+          ##kubectl -h
+        
+          ## Install skaffold and run skaffold 
+          ## 
+          ## TODO: Try this to test, but once the pipelines are up for creating
+          ## images for each of the sub dirs in horizon stream, cache them as
+          ## tar files and push them to the kind server and then update the
+          ## kubernetes yaml files here and apply them through kubectl. In this
+          ## way, we can remove skaffold and also use the docker images built
+          ## and tested in previous workflows.
+          #curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+          #sudo install skaffold /usr/local/bin/
+          #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+          #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+          #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
+          ## Verify (should get keycloaks and keycloakrealmiiimports)
+          #kubectl api-resources | grep keycloak
+          #skaffold run --port-forward --skip-tests &
+          #  # Run env
+          #sleep 240 
+          #  # Wait for skaffold to deploy the horizon stream.
+        
+          ## Test
+          #kubectl get all
+        
+          ## Cucumber test - TODO
