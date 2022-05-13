@@ -36,7 +36,7 @@ const deleteAlarmById = async (id: number): Promise<boolean> => {
   startSpinner()
 
   try {
-    await api.delete(`${endpoint}/${id}/ack`)
+    await api.post(`${endpoint}/${id}/clear`, { user: 'admin' })
     return true
   } catch (err: unknown) {
     showSnackbar({ error: true, msg: getMsgFromError(err) })

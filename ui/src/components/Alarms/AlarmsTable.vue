@@ -42,13 +42,17 @@ const alarms = computed(() => alarmStore.alarms)
 
 const trigger = async () => {
   await eventStore.sendEvent(getMockEvent())
-  await alarmStore.getAlarms()
+  setTimeout(() => {
+    alarmStore.getAlarms()
+  }, 350)
 }
 
 const clear = async () => {
   const promises = alarms.value.map((alarm) => alarmStore.deleteAlarmById(alarm.id))
   await Promise.all(promises)
-  await alarmStore.getAlarms()
+  setTimeout(() => {
+    alarmStore.getAlarms()
+  }, 350)
 }
 
 onMounted(() => alarmStore.getAlarms())
