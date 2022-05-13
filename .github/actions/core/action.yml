@@ -11,7 +11,7 @@ runs:
   steps:
     - name: global data
       run: |
-        cd ${{ inputs.dir-location }}
+        #cd ${{ inputs.dir-location }}
         # Keep the input arg of the dir, if the process is the same for each
         # core, rest-server, and ui, we can make this like a generic function.
  

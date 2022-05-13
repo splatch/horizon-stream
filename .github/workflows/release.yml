@@ -17,6 +17,11 @@ on:
     branches:
       - 'develop'
 
+# For now, we have put all steps into a single job, this will allow for just
+# one vm to run. We use actions to factor out the functionality. If there is a
+# requirement to create additional jobs, maybe to run concurrent jobs, then we
+# can split them up later.
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -40,7 +45,7 @@ jobs:
         id: action-feature-core
         uses: ./.github/actions/core
         with:
-          dir-location: 'auth-container'
+          dir-location: 'platform'
         #run: |
         #  echo "hello from feature-core on release"
         #  cat tmp.test
