@@ -3,7 +3,9 @@ name: release
 # This triggers only when pull request is merged (closed) into branches of
 # 'release/**'. The process is to create a new release branch from the previous
 # release branch, then create a PR from develop branch to that new release.
-# When all is approved, then merge and it should trigger this workflow.
+# When all is approved, then merge and it should trigger this workflow. After
+# which, merge new release branch into develop and develop merge into the
+# various feature branches. Follows gitflow.
 on:
   pull_request:
     branches: 
@@ -36,7 +38,10 @@ jobs:
           # put it as an env variable to be used through out below and passed
           # to actions for tagging the docker images after they are created.          
           echo "branch: " ${{ github.ref }}
-          TAG=$(echo ${{ github.ref }} | sed -E  's/(.*)\/(.*)\/(.*)\/(.*)/\4/')
+	  # The above github.ref, we expect this format: release/0.0.1.
+	  # If that changes, update the following statement.
+          TAG=$(echo ${{ github.ref }} | sed -E  's/(.*)\/(.*)/\2/')
+	  echo "$TAG"
           echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
           echo "release: " ${{ env.RELEASE_TAG }}
 
