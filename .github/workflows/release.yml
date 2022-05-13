@@ -32,6 +32,14 @@ jobs:
 
       - name: init
         run: |
+          # TODO: Filter the tag number off of the branch (release/tab_number),
+          # put it as an env variable to be used through out below and passed
+          # to actions for tagging the docker images after they are created.          
+          echo "branch: " ${{ github.ref }}
+          TAG=$(echo ${{ github.ref }} | sed -E  's/(.*)\/(.*)\/(.*)\/(.*)/\4/')
+          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
+          echo "release: " ${{ env.RELEASE_TAG }}
+
           echo "hello from init on release" 
           echo "test 1" > tmp.test
 
@@ -107,3 +115,30 @@ jobs:
           #kubectl get all
         
           ## Cucumber test - TODO
+
+      - name: publish-image-core
+        run: |
+
+          # Publish core image
+          cd platform/
+
+          ls -1
+
+          ## Login to dockerhub.
+          #docker login -u ${DOCKERHUB_LOGIN} -p ${DOCKERHUB_PASS}
+          #
+          ## Load image to docker hub. The image will go to the tag created at
+          ## 'docker save' step.
+          #docker load -i horizon-stream-core.tar
+      
+      - name: publish-image-ui
+        run: |
+
+          # Publish core image
+          cd ui/
+      
+      - name: publish-image-rest-server
+        run: |
+
+          # Publish core image
+          cd rest-server/
