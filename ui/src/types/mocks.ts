@@ -1,11 +1,12 @@
+import { add } from 'date-fns'
 import { Event } from './events'
 
 const mockEvent: Event = {
   "uei": "uei.opennms.org/alarms/trigger",
-  "time": "2022-01-12T17:12:22.000Z",
+  "time": add(new Date(), { days: 1 }).toISOString(),
   "source": "asn-cli-script",
   "descr": "A problem has been triggered...",
-  "creation-time": "2022-01-12T17:12:22.000Z",
+  "creation-time": new Date().toISOString(),
   "logmsg": {
     "notify": true,
     "dest": "A problem has been triggered on //..."

@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import useToken from '@/composables/useToken'
 import { refreshToken } from './authService'
 
@@ -7,8 +7,11 @@ const api = axios.create({
 })
 
 api.interceptors.request.use(
-  (config) => {
-    const { token } = useToken()
+  async (config) => {
+    const { token, isExpired } = useToken()
+
+    // if token expired, attempt refresh before call
+    if (isExpired()) await refreshToken()
 
     const defaultHeaders = {
       Authorization: `Bearer ${token.value.access_token}`,
@@ -21,18 +24,6 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error)
-  }
-)
-
-api.interceptors.response.use(
-  (config) => {
-    return config
-  },
-  async (err: AxiosError) => {
-    if (err.response?.status === 401) {
-      // attempts refresh, logs out if err
-      refreshToken()
-    }
   }
 )
 
