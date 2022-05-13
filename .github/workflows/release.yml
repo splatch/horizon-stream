@@ -21,6 +21,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        description: Is required to call actions.
+
       - name: init
         run: |
           echo "hello from init on release" 
