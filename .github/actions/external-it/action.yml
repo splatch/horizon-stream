@@ -45,39 +45,39 @@ runs:
 
         docker ps
 
-        echo "test 1"
-
         kind load docker-image opennms/horizon-stream-ui:local          
         kind load docker-image opennms/horizon-stream-core:local        
         kind load docker-image opennms/horizon-stream-rest-server:local 
-
-        echo "test 2"
 
         # List images in kind cluster container.  
         # ISSUE: This produces an error, not required if the '$ kubectl apply
         # -f ...' succeeds below, means image loads were successful.
         #docker exec -it kind-control-plane crictl images ls
 
-        echo "test 3"
-
         cat dev/kubernetes.kafka.yaml|  sed 's/opennms\/horizon-stream-ui-dev/opennms\/horizon-stream-ui\:local/' > dev/kubernetes.kafka.1.yaml
         cat dev/kubernetes.kafka.1.yaml|  sed 's/opennms\/horizon-stream-api/opennms\/horizon-stream-rest-server\:local/' > dev/kubernetes.kafka.2.yaml
         cat dev/kubernetes.kafka.2.yaml|  sed 's/opennms\/horizon-stream-core/opennms\/horizon-stream-core\:local/' > dev/kubernetes.kafka.3.yaml
 
-        echo "test 4"
- 
+        kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+        kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+        kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
+        # Verify (should get keycloaks and keycloakrealmiiimports)
+        kubectl api-resources | grep keycloak
+
         # Test change
         cat dev/kubernetes.kafka.3.yaml | grep image
 
-        echo "test 5"
-
         kubectl apply -f dev/kubernetes.kafka.3.yaml
-
-        echo "test 6"
 
         # Test install - Wait until core is running.
         sleep 60
         kubectl get all
+
+        cd tools
+        ./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
+        ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        ./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
 
       shell: bash
 
