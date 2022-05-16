@@ -30,6 +30,8 @@ runs:
         kubectl config get-contexts
         kubectl get all
 
+        docker ps
+   
       shell: bash
 
     - name: Import Relevant Images into Cluster
@@ -46,10 +48,12 @@ runs:
         #docker save -o horizon-stream-core.tar        opennms/horizon-stream-core:local
         #docker save -o horizon-stream-rest-server.tar opennms/horizon-stream-rest-server:local
 
+        docker ps
+
         echo "test 1"
 
         kind load docker-image opennms/horizon-stream-ui:local          
-        kind load docker-image opennms/horizon-stream-core:local        
+        #kind load docker-image opennms/horizon-stream-core:local        
         kind load docker-image opennms/horizon-stream-rest-server:local 
 
         echo "test 2"
@@ -77,8 +81,6 @@ runs:
         # Test install
         sleep 60
         kubectl get all
-
-        docker ps
 
       shell: bash
 
