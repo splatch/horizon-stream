@@ -1,4 +1,4 @@
-name: feature-ui
+name: feature-rest-server
 
 on:  
   push:
@@ -6,7 +6,7 @@ on:
       - '!develop'
       - '!release/**'
     paths:
-      - 'ui/**'
+      - 'rest-server/**'
 
 jobs:
 
@@ -23,8 +23,8 @@ jobs:
 
           echo "For init steps."
 
-      - name: feature-ui
-        id: action-feature-ui
-        uses: ./.github/actions/ui
+      - name: feature-rest-server
+        id: action-feature-rest-server
+        uses: ./.github/actions/rest-server
         with:
-          dir-location: 'ui'
+          dir-location: 'rest-server'
