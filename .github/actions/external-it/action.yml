@@ -18,6 +18,8 @@ runs:
         #docker version
         #kubectl -h
 
+      shell: bash
+
     - name: Create Cluster
       run: |
 
@@ -27,6 +29,8 @@ runs:
         # Confirm cluster created
         kubectl config get-contexts
         kubectl get all
+
+      shell: bash
 
     - name: Import Relevant Images into Cluster
       run: |
@@ -41,6 +45,8 @@ runs:
         docker save -o horizon-stream-rest-server.tar opennms/horizon-stream-rest-server:local
 
         docker ps
+
+      shell: bash
 
     - name: Run Cucumber Tests
       run: |

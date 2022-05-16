@@ -12,7 +12,7 @@ on:
 # can split them up later.
 
 jobs:
-  release:
+  develop:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -30,11 +30,11 @@ jobs:
         with:
           dir-location: 'ui'
 
-      - name: feature-core
-        id: action-feature-core
-        uses: ./.github/actions/core
-        with:
-          dir-location: 'platform'
+      #- name: feature-core
+      #  id: action-feature-core
+      #  uses: ./.github/actions/core
+      #  with:
+      #    dir-location: 'platform'
 
       - name: feature-rest-server
         id: action-rest-server
