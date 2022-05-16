@@ -1,11 +1,20 @@
-import { ResponseError } from '@/types'
+import { DefaultResponseError, CustomResponseError } from '@/types'
 
-const isResponseError = (err: unknown): err is ResponseError =>
-  (err as ResponseError).response?.data?.error_description !== undefined
+const isDefaultResponseError = (err: unknown): err is DefaultResponseError => 
+  (err as DefaultResponseError).response?.data?.error_description !== undefined
+
+const isCustomResponseError = (err: unknown): err is CustomResponseError => 
+  typeof (err as CustomResponseError).response?.data === 'string' 
+
 
 const getMsgFromError = (err: unknown, fallback: string = 'Could not complete request.'): string => {
-  if (isResponseError(err)) {
+
+  if (isDefaultResponseError(err)) {
     return err.response.data.error_description
+  }
+
+  if (isCustomResponseError(err)) {
+    return err.response.data
   }
 
   return fallback

@@ -26,6 +26,9 @@ const getAlarms = async (): Promise<AlarmResponseList> => {
 
     return resp.data
   } catch (err: unknown) {
+    if ((err as any).response?.status === 403) {
+      showSnackbar({ error: true, msg: getMsgFromError(err) })
+    }
     return emptyResponse
   } finally {
     stopSpinner()
