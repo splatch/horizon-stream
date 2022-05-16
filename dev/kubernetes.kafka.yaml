@@ -394,7 +394,7 @@ spec:
               value: "opennms"
             - name: HORIZON_STREAM_KEYCLOAK_ADMIN_USERNAME
               value: "keycloak-admin"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_USERNAME
+            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_PASSWORD
               value: "admin"
             - name: HORIZON_STREAM_CORE_URL
               value: "http://horizon-stream-core:8181"
