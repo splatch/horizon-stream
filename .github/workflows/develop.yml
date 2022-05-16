@@ -1,0 +1,92 @@
+name: dev
+
+on:  
+  push:
+    paths:
+      - 'dev/**'
+
+jobs:
+  build-dev:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    
+    - if:  ${{ github.ref == 'refs/heads/develop' }}
+      run: |
+        mkdir -p path/to/artifact
+        echo hello > path/to/artifact/world.txt
+    
+    - if:  ${{ github.ref == 'refs/heads/develop' }}
+      uses: actions/upload-artifact@master
+      with:
+        name: my-artifact
+        path: path/to/artifact
+
+  test-dev:
+    needs: build-dev
+    # VM to run container on.
+    runs-on: ubuntu-latest
+    #container:
+    #  image: rancher/k3s:latest
+    #  options: --env=K3S_TOKEN=300511717113269 --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/bin/aux --env=CRI_CONFIG_FILE=/var/lib/rancher/k3s/agent/etc/crictl.yaml --privileged
+    #  #volumes:
+    #  #  - /etc:/etc
+
+    steps:
+      - run: |
+          echo "test: " ${{ github.workspace }}
+          pwd
+          ls
+          #printf "ID=debian\n" > /etc/os-release
+          cat /etc/*release | grep ^ID
+      - uses: actions/checkout@master
+      - uses: actions/download-artifact@master
+        with:
+          name: my-artifact
+          path: path/to/artifact
+      - if:  ${{ github.ref == 'refs/heads/develop' }}
+        run: cat path/to/artifact/world.txt
+
+      # The container does not have git installed and is a scratch image.
+      #- name: Check out repository code
+      #  uses: actions/checkout@v2
+      - name: Dev Test
+        if:  ${{ github.ref == 'refs/heads/develop' }}
+        run: |
+          
+          # Create cluster
+          kind create cluster
+        
+          # Confirm cluster created
+          #kubectl config get-contexts
+          #kubectl get all
+        
+          # Confirm versions
+          #java --version # JDK 11
+          #docker version
+          #kubectl -h
+        
+          # Install skaffold and run skaffold 
+          # 
+          # TODO: Try this to test, but once the pipelines are up for creating
+          # images for each of the sub dirs in horizon stream, cache them as
+          # tar files and push them to the kind server and then update the
+          # kubernetes yaml files here and apply them through kubectl. In this
+          # way, we can remove skaffold and also use the docker images built
+          # and tested in previous workflows.
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+          sudo install skaffold /usr/local/bin/
+          kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+          kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+          kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
+          # Verify (should get keycloaks and keycloakrealmiiimports)
+          kubectl api-resources | grep keycloak
+          skaffold run --port-forward --skip-tests &
+            # Run env
+          sleep 240 
+            # Wait for skaffold to deploy the horizon stream.
+        
+          # Test
+          kubectl get all
+        
+          # Cucumber test - TODO

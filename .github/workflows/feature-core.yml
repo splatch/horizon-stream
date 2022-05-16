@@ -1,0 +1,18 @@
+name: feature-ui
+
+on:  
+  push:
+    paths:
+      - 'ui/**'
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Dev Test
+        if: ${{ github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/release' }} 
+        run: |
+          
+          echo "test"
