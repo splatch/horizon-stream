@@ -3,7 +3,7 @@ name: develop
 on:
   pull_request:
     branches: 
-      - 'develop/**'
+      - 'develop'
     types: [closed]
 
 # For now, we have put all steps into a single job, this will allow for just
