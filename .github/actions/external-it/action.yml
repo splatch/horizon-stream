@@ -73,11 +73,14 @@ runs:
         sleep 60
         kubectl get all
 
-        cd tools
-        ./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
-        ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-        ./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-        ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        # TODO: Setup the portforward in background ('&') before running the
+        # tools to create the user and pw to run. These are required to run the
+        # Cucumber test.
+        #cd tools
+        #./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
+        #./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        #./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        #./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
 
       shell: bash
 

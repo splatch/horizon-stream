@@ -49,6 +49,8 @@ jobs:
           echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
           echo "release: " ${{ env.RELEASE_TAG }} # Not appears
 
+          # TODO: Create a git tag for this branch as well.
+
       - name: feature-ui
         id: action-feature-ui
         uses: ./.github/actions/ui
@@ -99,17 +101,6 @@ jobs:
 
           docker push opennms/horizon-stream-core:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-core:latest
-
-          # Put the following into the build before test action.
-          #docker save -o horizon-stream-core-${{ env.RELEASE_TAG }}.tar opennms/horizon-stream-core:${{ env.RELEASE_TAG }}
-          #docker save -o horizon-stream-core-latest.tar opennms/horizon-stream-core:latest
-
-          ## Load image to docker hub. The image will go to the tag created at
-          ## 'docker save' step.
-          #docker load -i horizon-stream-core-${{ env.RELEASE_TAG }}.tar 
-          #docker load -i horizon-stream-core-latest.tar 
-
-          # TODO: Create a git tag for this branch as well.
       
       - name: publish-image-ui
         run: |
@@ -119,20 +110,11 @@ jobs:
           echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
           # Tag and save the image as a file to be published. Both release version and latest.
-          docker tag opennms/horizon-stream-ui:${{ env.RELEASE_TAG }} opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
-          docker tag opennms/horizon-stream-ui:${{ env.RELEASE_TAG }} opennms/horizon-stream-ui:latest
+          docker tag opennms/horizon-stream-ui:local opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
+          docker tag opennms/horizon-stream-ui:local opennms/horizon-stream-ui:latest
 
           docker push opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-ui:latest
-
-          # Put the following into the build before test action.
-          #docker save -o horizon-stream-ui-${{ env.RELEASE_TAG }}.tar opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
-          #docker save -o horizon-stream-ui-latest.tar opennms/horizon-stream-ui:latest
-
-          ## Load image to docker hub. The image will go to the tag created at
-          ## 'docker save' step.
-          #docker load -i horizon-stream-ui-${{ env.RELEASE_TAG }}.tar 
-          #docker load -i horizon-stream-ui-latest.tar 
 
       - name: publish-image-rest-server
         run: |
@@ -151,11 +133,3 @@ jobs:
           docker push opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-rest-server:latest
 
-          # Put the following into the build before test action
-          #docker save -o horizon-stream-rest-server-${{ env.RELEASE_TAG }}.tar opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
-          #docker save -o horizon-stream-rest-server-latest.tar opennms/horizon-stream-rest-server:latest
-
-          ## Load image to docker hub. The image will go to the tag created at
-          ## 'docker save' step.
-          #docker load -i horizon-stream-rest-server-${{ env.RELEASE_TAG }}.tar 
-          #docker load -i horizon-stream-rest-server-latest.tar 
