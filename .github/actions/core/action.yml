@@ -12,7 +12,6 @@ runs:
     - name: global data
       run: |
         echo "Testing actions - " ${{ inputs.dir-location }}
-        echo "test 3 - action core" >> tmp.test
 
         cd ${{ inputs.dir-location }}
         # Keep the input arg of the dir, if the process is the same for each

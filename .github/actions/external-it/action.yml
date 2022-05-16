@@ -1,0 +1,76 @@
+name: 'Test components in Kubernetes cluster'
+description: 'This implements external integration test for all components. This is done in kubernetes cluster deployed in the runner.'
+inputs:
+  dir-location:
+    description: 'The dir containing the change.'
+    required: true
+    default: 'none'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Init
+      run: |
+
+        echo "For init - placeholder"
+        # Confirm versions
+        #java --version # JDK 11
+        #docker version
+        #kubectl -h
+
+    - name: Create Cluster
+      run: |
+
+        # Create cluster
+        kind create cluster
+
+        # Confirm cluster created
+        kubectl config get-contexts
+        kubectl get all
+
+    - name: Import Relevant Images into Cluster
+      run: |
+
+        # Check that the image was created.
+        docker images
+        # Image from the action-feature-core shows up here.
+
+        # Save all relevant images to tars.
+        docker save -o horizon-stream-ui.tar opennms/horizon-stream-ui:local
+        docker save -o horizon-stream-core.tar opennms/horizon-stream-core:local
+        docker save -o horizon-stream-rest-server.tar opennms/horizon-stream-rest-server:local
+
+        docker ps
+
+    - name: Run Cucumber Tests
+      run: |
+
+        # Install skaffold and run skaffold
+        #
+        # TODO: Push docker image (save tar or something) to cluster, if good, then run the docker push at end of this.
+        #
+        # TODO: Try this to test, but once the pipelines are up for creating
+        # images for each of the sub dirs in horizon stream, cache them as
+        # tar files and push them to the kind server and then update the
+        # kubernetes yaml files here and apply them through kubectl. In this
+        # way, we can remove skaffold and also use the docker images built
+        # and tested in previous workflows.
+        #curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+        #sudo install skaffold /usr/local/bin/
+        #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+        #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+        #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
+        ## Verify (should get keycloaks and keycloakrealmiiimports)
+        #kubectl api-resources | grep keycloak
+        #skaffold run --port-forward --skip-tests &
+        #  # Run env
+        #sleep 240
+          # Wait for skaffold to deploy the horizon stream.
+
+        # Test
+        kubectl get all
+
+        # Cucumber test - TODO
+        cd ${{ inputs.dir-location }}
+
+      shell: bash

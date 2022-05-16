@@ -4,8 +4,9 @@ name: release
 # 'release/**'. The process is to create a new release branch from the previous
 # release branch, then create a PR from develop branch to that new release.
 # When all is approved, then merge and it should trigger this workflow. After
-# which, merge new release branch into develop and develop merge into the
-# various feature branches. Follows gitflow.
+# which, merge new release branch into develop. Then, developers can pull
+# develop branch and merge it into the various feature branches. Follows
+# gitflow.
 on:
   pull_request:
     branches: 
@@ -37,8 +38,8 @@ jobs:
       - name: init
         run: |
 
-          # TODO: Filter the tag number off of the branch (release/tab_number),
-          # put it as an env variable to be used through out below and passed
+          # This filters the tag number off of the branch (release/tab_number),
+          # puts it as an env variable to be used through out below and passed
           # to actions for tagging the docker images after they are created.          
           echo "branch: " ${{ github.ref }}
           # The above github.ref, we expect this format: release/0.0.1.
@@ -48,18 +49,11 @@ jobs:
           echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
           echo "release: " ${{ env.RELEASE_TAG }} # Not appears
 
-          echo "hello from init on release" 
-          echo "test 1" > tmp.test
-
       - name: feature-ui
-        run: |
-          # TODO: Need to create an action to run tests for this.
-
-          echo "hello from feature-ui on release"
-          cat tmp.test
-          echo "test 2" >> tmp.test
-          echo "tag: " "$TAG" # Not appears
-          echo "release: " ${{ env.RELEASE_TAG }} # Appears
+        id: action-feature-ui
+        uses: ./.github/actions/ui
+        with:
+          dir-location: 'ui'
 
       - name: feature-core
         id: action-feature-core
@@ -68,70 +62,22 @@ jobs:
           dir-location: 'platform'
 
       - name: feature-rest-server
-        run: |
-          # TODO: Need to create an action to run tests for this.
-
-          echo "hello from feature-rest-server on release"
-          cat tmp.test
-          echo "test 4" >> tmp.test
+        id: action-rest-server
+        uses: ./.github/actions/rest-server
+        with:
+          dir-location: 'rest-server'
 
       - name: external-it
-        run: |
-          cat tmp.test
-          echo "test: " ${{ github.workspace }}
-          pwd
-          ls
- 
-          # Check that the image was created.
-          docker images
-          # Image from the action-feature-core shows up here.
-
-          echo "test external-it"
-
-          # IMPORTANT: Put the following into an action, it will be used for
-          # branch develop merges and also release ones.
-
-          ## Create cluster
-          #kind create cluster
-        
-          ## Confirm cluster created
-          ##kubectl config get-contexts
-          ##kubectl get all
-        
-          ## Confirm versions
-          ##java --version # JDK 11
-          ##docker version
-          ##kubectl -h
-        
-          ## Install skaffold and run skaffold 
-          ## 
-          ## TODO: Push docker image (save tar or something) to cluster, if good, then run the docker push at end of this.
-          ## 
-          ## TODO: Try this to test, but once the pipelines are up for creating
-          ## images for each of the sub dirs in horizon stream, cache them as
-          ## tar files and push them to the kind server and then update the
-          ## kubernetes yaml files here and apply them through kubectl. In this
-          ## way, we can remove skaffold and also use the docker images built
-          ## and tested in previous workflows.
-          #curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
-          #sudo install skaffold /usr/local/bin/
-          #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-          #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
-          #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
-          ## Verify (should get keycloaks and keycloakrealmiiimports)
-          #kubectl api-resources | grep keycloak
-          #skaffold run --port-forward --skip-tests &
-          #  # Run env
-          #sleep 240 
-          #  # Wait for skaffold to deploy the horizon stream.
-        
-          ## Test
-          #kubectl get all
-        
-          ## Cucumber test - TODO
+        id: action-external-it
+        uses: ./.github/actions/external-it
+        with:
+          dir-location: 'external-it'
 
       - name: dockerhub-login
         run: |
+
+          # This and the following steps are put here rather than put into an
+          # action because it is only ever called from this workflow.
 
           # Login to dockerhub.
           #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
@@ -172,12 +118,6 @@ jobs:
           #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
           echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
-          # Publish core image
-          cd ui/
-
-          # Create the docker image.
-          docker build -t opennms/horizon-stream-ui:${{ env.RELEASE_TAG }} -f ./dev/Dockerfile .
-
           # Tag and save the image as a file to be published. Both release version and latest.
           docker tag opennms/horizon-stream-ui:${{ env.RELEASE_TAG }} opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
           docker tag opennms/horizon-stream-ui:${{ env.RELEASE_TAG }} opennms/horizon-stream-ui:latest
@@ -197,21 +137,16 @@ jobs:
       - name: publish-image-rest-server
         run: |
 
-          # Login to dockerhub.
+          # Login to dockerhub. Probably could remove this, session created in previous step.
           #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
           echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
-          # When there are tests to run, put those in the actions for this.
-
-          # Publish core image
-          cd rest-server/
-
-          # Create the docker image.
-          mvn clean install jib:dockerBuild -Dimage=opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
+          # Test build images
+          docker images
 
           # Tag and save the image as a file to be published. Both release version and latest.
-          docker tag opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }} opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
-          docker tag opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }} opennms/horizon-stream-rest-server:latest
+          docker tag opennms/horizon-stream-rest-server:local opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
+          docker tag opennms/horizon-stream-rest-server:local opennms/horizon-stream-rest-server:latest
 
           docker push opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-rest-server:latest
