@@ -43,23 +43,20 @@ runs:
 
         kubectl get all
 
-        # Save all relevant images to tars.
-        #docker save -o horizon-stream-ui.tar          opennms/horizon-stream-ui:local
-        #docker save -o horizon-stream-core.tar        opennms/horizon-stream-core:local
-        #docker save -o horizon-stream-rest-server.tar opennms/horizon-stream-rest-server:local
-
         docker ps
 
         echo "test 1"
 
         kind load docker-image opennms/horizon-stream-ui:local          
-        #kind load docker-image opennms/horizon-stream-core:local        
+        kind load docker-image opennms/horizon-stream-core:local        
         kind load docker-image opennms/horizon-stream-rest-server:local 
 
         echo "test 2"
 
-        # List images in kind cluster container.
-        docker exec -it kind-control-plane crictl images ls
+        # List images in kind cluster container.  
+        # ISSUE: This produces an error, not required if the '$ kubectl apply
+        # -f ...' succeeds below, means image loads were successful.
+        #docker exec -it kind-control-plane crictl images ls
 
         echo "test 3"
 
@@ -78,7 +75,7 @@ runs:
 
         echo "test 6"
 
-        # Test install
+        # Test install - Wait until core is running.
         sleep 60
         kubectl get all
 
