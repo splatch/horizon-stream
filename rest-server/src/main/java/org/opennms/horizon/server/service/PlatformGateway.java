@@ -31,6 +31,7 @@ package org.opennms.horizon.server.service;
 import java.io.IOException;
 
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -43,9 +44,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +63,7 @@ public class PlatformGateway {
     @Value("${horizon-stream.core.url}")
     private String platformUrl;
 
-    public boolean post(String path, String authToken, String data) {
+    public ResponseEntity post(String path, String authToken, String data) {
         try {
             HttpPost post = new HttpPost(platformUrl + path);
             post.setEntity(new StringEntity(data));
@@ -71,22 +72,22 @@ public class PlatformGateway {
             post.addHeader(HttpHeaders.AUTHORIZATION, authToken);
             try (CloseableHttpClient httpClient = HttpClients.createDefault();
                  CloseableHttpResponse response = httpClient.execute(post)) {
-                return response.getStatusLine().getStatusCode() == HttpStatus.SC_ACCEPTED;
+                return processResponse(response, false);
             }
         }catch (Exception e) {
             log.error("Error happened when post {} at {} on platform", data, path, e);
-            return false;
+            return ResponseEntity.badRequest().build();
         }
     }
 
-    public String get(String path, String authToken) {
+    public ResponseEntity<String> get(String path, String authToken) {
         try {
             HttpGet getRequest = new HttpGet(platformUrl + path);
             getRequest.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
             getRequest.setHeader(HttpHeaders.AUTHORIZATION, authToken);
             try (CloseableHttpClient client = HttpClients.createDefault();
                  CloseableHttpResponse response = client.execute(getRequest)) {
-                return EntityUtils.toString(response.getEntity());
+                return processResponse(response, true);
             }
         } catch (IOException e) {
             log.error("Error happened when execute get request at {} on platform", path, e);
@@ -94,7 +95,7 @@ public class PlatformGateway {
         }
     }
 
-    public boolean put(String path, String authToken, String data) {
+    public ResponseEntity put(String path, String authToken, String data) {
         try {
             HttpPut putRequest = new HttpPut(platformUrl + path);
             putRequest.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
@@ -104,15 +105,15 @@ public class PlatformGateway {
             try(CloseableHttpClient client = HttpClients.createDefault();
                 CloseableHttpResponse response = client.execute(putRequest)) {
                 log.info("Put request to platform {} with data {} return code {}", path, data, response.getStatusLine().getStatusCode());
-                return true;
+                return processResponse(response, false);
             }
         } catch (IOException e) {
             log.error("Error happened when put {} at {}", data, path);
-            return false;
+            return ResponseEntity.badRequest().build();
         }
     }
 
-    public boolean delete(String path, String authToken) {
+    public ResponseEntity delete(String path, String authToken) {
         try {
             HttpDelete deleteRequest = new HttpDelete(platformUrl + path);
             deleteRequest.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
@@ -120,12 +121,25 @@ public class PlatformGateway {
             deleteRequest.addHeader(HttpHeaders.AUTHORIZATION, authToken);
             try(CloseableHttpClient client = HttpClients.createDefault();
                 CloseableHttpResponse response = client.execute(deleteRequest)) {
-                log.info("un-ack alarm with url path {}", path);
-                return true;
+                log.info("delete request with url path {}", path);
+                return processResponse(response, false);
             }
 
         } catch (IOException e) {
-            return false;
+
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    private ResponseEntity<String> processResponse(HttpResponse response, boolean withBody) throws IOException {
+        int status = response.getStatusLine().getStatusCode();
+        if(status == HttpStatus.SC_FORBIDDEN) {
+            return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body("User doesn't has permission on surch operation");
+        }
+        if(withBody) {
+            return ResponseEntity.status(status).body(EntityUtils.toString(response.getEntity()));
+        } else {
+            return ResponseEntity.status(status).build();
         }
     }
 }

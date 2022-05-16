@@ -46,19 +46,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/events")
-public class EventController extends AbstractPlatformController {
+public class EventController {
+    private final PlatformGateway gateway;
     public EventController(PlatformGateway gateway) {
-        super(gateway);
+        this.gateway = gateway;
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity create(@RequestBody JsonNode data, @RequestHeader("Authorization") String authToken) {
-        log.info("received data {}", data);
-        return post(PlatformGateway.URL_PATH_EVENTS, authToken, data.toString());
+        log.info("Received post event data {}", data);
+        return gateway.post(PlatformGateway.URL_PATH_EVENTS, authToken, data.toString());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<String> getEventById(@PathVariable Long id, @RequestHeader("Authorization") String authToken) {
-        return get(PlatformGateway.URL_PATH_EVENTS+"/"+id, authToken);
+        return gateway.get(PlatformGateway.URL_PATH_EVENTS+"/"+id, authToken);
     }
 }
