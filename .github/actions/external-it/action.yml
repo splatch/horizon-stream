@@ -46,21 +46,33 @@ runs:
         #docker save -o horizon-stream-core.tar        opennms/horizon-stream-core:local
         #docker save -o horizon-stream-rest-server.tar opennms/horizon-stream-rest-server:local
 
+        echo "test 1"
+
         kind load docker-image opennms/horizon-stream-ui:local          
         kind load docker-image opennms/horizon-stream-core:local        
         kind load docker-image opennms/horizon-stream-rest-server:local 
 
+        echo "test 2"
+
         # List images in kind cluster container.
         docker exec -it kind-control-plane crictl images ls
+
+        echo "test 3"
 
         cat dev/kubernetes.kafka.yaml|  sed 's/opennms\/horizon-stream-ui-dev/opennms\/horizon-stream-ui\:local/' > dev/kubernetes.kafka.1.yaml
         cat dev/kubernetes.kafka.1.yaml|  sed 's/opennms\/horizon-stream-api/opennms\/horizon-stream-rest-server\:local/' > dev/kubernetes.kafka.2.yaml
         cat dev/kubernetes.kafka.2.yaml|  sed 's/opennms\/horizon-stream-core/opennms\/horizon-stream-core\:local/' > dev/kubernetes.kafka.3.yaml
+
+        echo "test 4"
  
         # Test change
         cat dev/kubernetes.kafka.3.yaml | grep image
 
+        echo "test 5"
+
         kubectl apply -f dev/kubernetes.kafka.3.yaml
+
+        echo "test 6"
 
         # Test install
         sleep 60
