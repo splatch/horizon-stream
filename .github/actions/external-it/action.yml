@@ -39,10 +39,18 @@ runs:
         docker images
         # Image from the action-feature-core shows up here.
 
+        echo "test 1"
+
+        kubectl get all
+
+        echo "test 2"
+
         # Save all relevant images to tars.
         docker save -o horizon-stream-ui.tar opennms/horizon-stream-ui:local
-        docker save -o horizon-stream-core.tar opennms/horizon-stream-core:local
+        #docker save -o horizon-stream-core.tar opennms/horizon-stream-core:local
         docker save -o horizon-stream-rest-server.tar opennms/horizon-stream-rest-server:local
+
+        echo "test 3"
 
         docker ps
 
