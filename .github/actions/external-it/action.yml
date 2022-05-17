@@ -70,6 +70,7 @@ runs:
         kubectl apply -f dev/kubernetes.kafka.3.yaml
 
         # Test install - Wait until core is running.
+        echo "wait for pods to start"
         sleep 120
         kubectl get all
 
@@ -89,12 +90,14 @@ runs:
         kubectl port-forward deployment.apps/my-keycloak            28080:8080 &
 
         # Setup required user and pw.
-        ./tools/KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
-        ./tools/events.list -H localhost:18181 -t "$(< tools/data/ACCESS_TOKEN.txt)"
-        ./tools/events.publish -H localhost:18181 -t "$(< tools/data/ACCESS_TOKEN.txt)"
-        ./tools/events.list -H localhost:18181 -t "$(< tools/data/ACCESS_TOKEN.txt)"
+        cd tools/
+        ./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
+        ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        ./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
 
         # Cucumber test
+        cd ../
         cd ${{ inputs.dir-location }}
         mvn clean install
         HORIZON_STREAM_BASE_URL=http://localhost:30000
