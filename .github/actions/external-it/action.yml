@@ -91,40 +91,38 @@ runs:
         kubectl port-forward deployment.apps/my-keycloak            28080:8080 &
 
         # Wait for port-forwards to start.
-        #sleep 60
-
-        echo "TODO: Setup & Run Cucumber Tests"
+        sleep 60
 
         # Test port-forwards.
-        #curl localhost:30000
-        #curl localhost:29090
-        #curl localhost:18181
-        #curl localhost:18101
-        #curl localhost:28080
-        #
-        ## Setup required user and pw.
-        #cd tools/
-        #ls; pwd; echo "test 1"
-        #./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
-        #echo "test 1"
-        #./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-        #echo "test 2"
-        #./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-        #echo "test 3"
-        #./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-        #echo "test 4"
+        curl localhost:30000
+        curl localhost:29090
+        curl localhost:18181
+        curl localhost:18101
+        curl localhost:28080
+        
+        # Setup required user and pw.
+        cd tools/
+        ls; pwd; echo "test 1"
+        ./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
+        echo "test 1"
+        ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        echo "test 2"
+        ./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        echo "test 3"
+        ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        echo "test 4"
 
-        ## Cucumber test
-        #cd ../
-        #cd ${{ inputs.dir-location }}
-        #mvn clean install
-        #HORIZON_STREAM_BASE_URL=http://localhost:30000
-        #KEYCLOAK_BASE_URL=http://localhost:28080
-        #KEYCLOAK_REALM=opennms
-        #KEYCLOAK_USERNAME=user001
-        #KEYCLOAK_PASSWORD=passw0rd
-        #export HORIZON_STREAM_BASE_URL KEYCLOAK_BASE_URL KEYCLOAK_REALM KEYCLOAK_USERNAME KEYCLOAK_PASSWORD
-        #PROJECT_VERSION="$(mvn -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive -q org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)"
-        #java -jar "external-horizon-stream-it/target/external-horizon-stream-it-${PROJECT_VERSION}.jar"
+        # Cucumber test
+        cd ../
+        cd ${{ inputs.dir-location }}
+        mvn clean install
+        HORIZON_STREAM_BASE_URL=http://localhost:30000
+        KEYCLOAK_BASE_URL=http://localhost:28080
+        KEYCLOAK_REALM=opennms
+        KEYCLOAK_USERNAME=user001
+        KEYCLOAK_PASSWORD=passw0rd
+        export HORIZON_STREAM_BASE_URL KEYCLOAK_BASE_URL KEYCLOAK_REALM KEYCLOAK_USERNAME KEYCLOAK_PASSWORD
+        PROJECT_VERSION="$(mvn -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive -q org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)"
+        java -jar "external-horizon-stream-it/target/external-horizon-stream-it-${PROJECT_VERSION}.jar"
 
       shell: bash
