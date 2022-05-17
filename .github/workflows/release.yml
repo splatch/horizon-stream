@@ -81,7 +81,8 @@ jobs:
           # This and the following steps are put here rather than put into an
           # action because it is only ever called from this workflow.
 
-          # Login to dockerhub.
+          # Login to dockerhub. The session doesn't seem to carry across steps,
+          # re-test to confirm.
           #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
           echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
@@ -89,7 +90,6 @@ jobs:
         run: |
 
           # Login to dockerhub.
-          #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
           echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
           # Publish core image
@@ -106,7 +106,6 @@ jobs:
         run: |
 
           # Login to dockerhub.
-          #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
           echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
           # Tag and save the image as a file to be published. Both release version and latest.
@@ -120,7 +119,6 @@ jobs:
         run: |
 
           # Login to dockerhub. Probably could remove this, session created in previous step.
-          #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
           echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
           # Test build images

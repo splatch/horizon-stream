@@ -73,46 +73,37 @@ runs:
         sleep 60
         kubectl get all
 
-        # TODO: Setup the portforward in background ('&') before running the
-        # tools to create the user and pw to run. These are required to run the
-        # Cucumber test.
-        #cd tools
-        #./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
-        #./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-        #./events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-        #./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-
       shell: bash
 
-    - name: Run Cucumber Tests
+    - name: Setup & Run Cucumber Tests
       run: |
-
-        # Install skaffold and run skaffold
-        #
-        # TODO: Push docker image (save tar or something) to cluster, if good, then run the docker push at end of this.
-        #
-        # TODO: Try this to test, but once the pipelines are up for creating
-        # images for each of the sub dirs in horizon stream, cache them as
-        # tar files and push them to the kind server and then update the
-        # kubernetes yaml files here and apply them through kubectl. In this
-        # way, we can remove skaffold and also use the docker images built
-        # and tested in previous workflows.
-        #curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
-        #sudo install skaffold /usr/local/bin/
-        #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-        #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
-        #kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
-        ## Verify (should get keycloaks and keycloakrealmiiimports)
-        #kubectl api-resources | grep keycloak
-        #skaffold run --port-forward --skip-tests &
-        #  # Run env
-        #sleep 240
-          # Wait for skaffold to deploy the horizon stream.
 
         # Test
         kubectl get all
 
-        # Cucumber test - TODO
+        # Setup require port forwards for test.
+        kubectl port-forward deployment.apps/my-horizon-stream-ui   30000:3000 &
+        kubectl port-forward deployment.apps/my-horizon-stream-api  29090:9090 &
+        kubectl port-forward deployment.apps/my-horizon-stream-core 18181:8181 &
+        kubectl port-forward deployment.apps/my-horizon-stream-core 18101:8101 &
+        kubectl port-forward deployment.apps/my-keycloak            28080:8080 &
+
+        # Setup required user and pw.
+        ./tools/KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
+        ./tools/events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        ./tools/events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        ./tools/events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+
+        # Cucumber test
         cd ${{ inputs.dir-location }}
+        mvn clean install
+        HORIZON_STREAM_BASE_URL=http://localhost:30000
+        KEYCLOAK_BASE_URL=http://localhost:28080
+        KEYCLOAK_REALM=opennms
+        KEYCLOAK_USERNAME=user001
+        KEYCLOAK_PASSWORD=passw0rd
+        export HORIZON_STREAM_BASE_URL KEYCLOAK_BASE_URL KEYCLOAK_REALM KEYCLOAK_USERNAME KEYCLOAK_PASSWORD
+        PROJECT_VERSION="$(mvn -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive -q org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)"
+        java -jar "external-horizon-stream-it/target/external-horizon-stream-it-${PROJECT_VERSION}.jar"
 
       shell: bash
