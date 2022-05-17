@@ -70,7 +70,7 @@ runs:
         kubectl apply -f dev/kubernetes.kafka.3.yaml
 
         # Test install - Wait until core is running.
-        sleep 60
+        sleep 120
         kubectl get all
 
       shell: bash
@@ -90,9 +90,9 @@ runs:
 
         # Setup required user and pw.
         ./tools/KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
-        ./tools/events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-        ./tools/events.publish -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
-        ./tools/events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
+        ./tools/events.list -H localhost:18181 -t "$(< tools/data/ACCESS_TOKEN.txt)"
+        ./tools/events.publish -H localhost:18181 -t "$(< tools/data/ACCESS_TOKEN.txt)"
+        ./tools/events.list -H localhost:18181 -t "$(< tools/data/ACCESS_TOKEN.txt)"
 
         # Cucumber test
         cd ${{ inputs.dir-location }}
