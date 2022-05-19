@@ -15,6 +15,8 @@ import javax.persistence.TypedQuery;
 
 import org.hibernate.ObjectNotFoundException;
 import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
+import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
+import org.opennms.horizon.db.dao.util.AbstractDaoHibernate;
 import org.opennms.horizon.db.model.AckAction;
 import org.opennms.horizon.db.model.AckType;
 import org.opennms.horizon.db.model.Acknowledgeable;
@@ -31,8 +33,8 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
 
     private Logger log = DEFAULT_LOGGER;
 
-    public AcknowledgmentDaoHibernate() {
-        super(OnmsAcknowledgment.class);
+    public AcknowledgmentDaoHibernate(PersistenceContextHolder persistenceContextHolder) {
+        super(persistenceContextHolder, OnmsAcknowledgment.class);
     }
 
     public List<Acknowledgeable> findAcknowledgables(OnmsAcknowledgment ack) {

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="mfrazier" id="xx.xx.xx-requisitions">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="requisitions" /></not>
+		</preConditions> 
+
+		<createTable tableName="requisitions">
+
+			<!-- Unique identifier -->
+			<column name="requisitionName" type="text">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_requisitionName" />
+			</column>
+
+			<!-- A reference to the eventUei that created this alarm. -->
+			<column name="requisition" type="jsonb">
+				<constraints nullable="false" />
+			</column>
+
+		</createTable>
+
+		<createIndex tableName="requisitions" indexName="requisitions_uei_idx">
+			<column name="requisitionName" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

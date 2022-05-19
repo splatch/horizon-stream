@@ -1,6 +1,8 @@
 package org.opennms.netmgt.provision.service;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -12,34 +14,36 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.opennms.netmgt.provision.persistence.dao.HibernateRequisitionEntity;
 import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
+import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 
 public class ProvisionerImplTest {
 
     Provisioner provisioner;
-    String xml=null;
+    String requisitionJsonStr = null;
     @Mock
-    RequisitionRepository provisionRepository;
+    RequisitionRepository requisitionRepository;
     
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        provisioner = new ProvisionerImpl(provisionRepository);
+        provisioner = new ProvisionerImpl(requisitionRepository);
 
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("import_dummy-empty.xml");
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("import_dummy-empty.json");
         if (stream == null) {
             throw new FileNotFoundException("Test file does not exist.");
         }
-        xml = IOUtils.toString(stream, StandardCharsets.UTF_8);
+        requisitionJsonStr = IOUtils.toString(stream, StandardCharsets.UTF_8);
         stream.close();
     }
 
     @Test
     public void publishRequisition() throws Exception {
 
-        provisioner.publishRequisition(xml);
+        provisioner.publishRequisition(requisitionJsonStr);
 
-        verify(provisionRepository).save(eq(xml));
-        verifyNoMoreInteractions(provisionRepository);
+        verify(requisitionRepository).save(isA(RequisitionDTO.class));
+        verifyNoMoreInteractions(requisitionRepository);
     }
 }

@@ -1,29 +1,27 @@
 package org.opennms.netmgt.provision.persistence;
 
-import com.google.gson.Gson;
+import org.opennms.horizon.db.dao.util.AbstractDaoHibernate;
+import org.opennms.netmgt.provision.persistence.dao.HibernateRequisitionEntity;
+import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
 import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 
-public class HibernateRequisitionRepository implements RequisitionRepository {
+public class HibernateRequisitionRepository extends AbstractDaoHibernate<HibernateRequisitionEntity, String> implements RequisitionRepository {
 
-    Gson gson = new Gson();
+    public HibernateRequisitionRepository(PersistenceContextHolder persistenceContextHolder) {
+        super(persistenceContextHolder, HibernateRequisitionEntity.class);
+    }
 
     @Override
     public String save(RequisitionDTO requisitionDTO) {
-//        requisitionNodeDAO.save(requisitionNodeDTO);
-        String dtoStr = gson.toJson(requisitionDTO);
-        return requisitionDTO.getId();
+        HibernateRequisitionEntity hibernateRequisitionEntity = new HibernateRequisitionEntity(requisitionDTO.getId(), requisitionDTO);
+        save(hibernateRequisitionEntity);
+        return hibernateRequisitionEntity.getRequisitionName();
     }
 
     @Override
     public RequisitionDTO read(String id) {
-        String dtoStr = "blah";
-        return gson.fromJson(dtoStr, RequisitionDTO.class);
-//       return requisitionNodeDAO.findById(id);
-    }
-
-    @Override
-    public void delete(String id) {
-//        requisitionNodeDAO.delete(id);
+        HibernateRequisitionEntity hibernateRequisitionEntity = get(id);
+        return hibernateRequisitionEntity.getRequisition();
     }
 }

@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author ranger
  * @author Duncan Mackintosh
  */
-public class ConnectionFactoryConnectorPoolImpl extends org.opennms.netmgt.provision.support.ConnectionFactory {
+public class ConnectionFactoryConnectorPoolImpl extends ConnectionFactory {
     
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionFactoryConnectorPoolImpl.class);
     

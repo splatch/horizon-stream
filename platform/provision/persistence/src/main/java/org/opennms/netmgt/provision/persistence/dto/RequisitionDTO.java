@@ -40,9 +40,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import lombok.Data;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 
@@ -52,22 +50,23 @@ public class RequisitionDTO implements Serializable {
 
     private static final long serialVersionUID = 1629774241824443273L;
     public static final String IMPORTED = "imported";
+
     protected Map<String, RequisitionNodeDTO> nodes = new HashMap<>();
     protected Date dateStamp = new Date();
     protected String foreignSource = IMPORTED;
     protected Date lastImport;
-    private final String id = UUID.randomUUID().toString();
+    private String id;
 
     /** the resource that this requisition was created from **/
-    private transient Resource m_resource;
+    private transient Resource resource;
 
     /**
      * <p>Constructor for RequisitionDTO.</p>
      *
-     * @param foreignSource a {@link String} object.
+     * @param id a {@link String} object.
      */
-    public RequisitionDTO(final String foreignSource) {
-        this.foreignSource = foreignSource;
+    public RequisitionDTO(final String id) {
+        this.id = id;
     }
 
 

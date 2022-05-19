@@ -4,13 +4,15 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import org.opennms.horizon.db.dao.api.NodeDao;
+import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
 import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
+import org.opennms.horizon.db.dao.util.AbstractDaoHibernate;
 
 public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> implements NodeDao {
 
-    public NodeDaoHibernate() {
-        super(OnmsNode.class);
+    public NodeDaoHibernate(PersistenceContextHolder persistenceContextHolder) {
+        super(persistenceContextHolder, OnmsNode.class);
     }
 
     @Override

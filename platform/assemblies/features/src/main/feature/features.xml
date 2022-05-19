@@ -225,9 +225,10 @@
     <!--           -->
     <!-- PROVSIOND -->
     <!--           -->
-    <feature name="horizon-provisiond" version="${project.version}" description="Horizon : Provisiond">
+    <feature name="horizon-provision" version="${project.version}" description="Horizon : Provision">
         <feature>onms-httpclient</feature>
         <feature>onms-netty3</feature>
+        <feature>camel-gson</feature>
 
         <bundle>mvn:org.opennms.horizon.common/common-concurrency/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.common/common-net/${project.version}</bundle>

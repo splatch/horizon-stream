@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.service;
+@TypeDef(name = "RequisitionJsonType", typeClass = RequsitionJsonType.class)
 
-import com.google.gson.Gson;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
-import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
+package org.opennms.netmgt.provision.persistence.dao;
 
-@Slf4j
-@RequiredArgsConstructor
-public class ProvisionerImpl implements Provisioner {
-
-    private final RequisitionRepository requisitionRepository;
-
-    @Override
-    public String publishRequisition(String requisition) {
-        log.info("Publishing {}", requisition);
-        RequisitionDTO requisitionDTO = new Gson().fromJson(requisition, RequisitionDTO.class);
-        return requisitionRepository.save(requisitionDTO);
-    }
-}
+import org.hibernate.annotations.TypeDef;

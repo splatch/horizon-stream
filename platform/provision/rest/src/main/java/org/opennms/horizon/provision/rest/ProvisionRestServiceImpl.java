@@ -11,10 +11,10 @@ public class ProvisionRestServiceImpl implements ProvisionRestService {
     @Override
     public Response publishRequisition(String requisition) {
         try {
-            provisioner.publishRequisition(requisition);
+            String id = provisioner.publishRequisition(requisition);
+            return Response.ok().entity(id).build();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
 }
