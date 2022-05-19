@@ -34,7 +34,6 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @IncludeEngines("cucumber")
-@SelectDirectories({
-        "src/test/resources/cucumber/location-rest-api.feature"})
+@SelectDirectories("src/test/resources/cucumber")
 public class CucumberRunnerIT {
 }

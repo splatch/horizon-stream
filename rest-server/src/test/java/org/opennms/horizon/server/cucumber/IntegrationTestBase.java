@@ -32,13 +32,7 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.MalformedURLException;
-import java.util.concurrent.TimeUnit;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.opennms.horizon.server.security.KeyCloakUtils;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -51,58 +45,22 @@ abstract class IntegrationTestBase {
     private static final String LOGIN_DATA_TEMPLATE = "client_id=%s&username=%s&password=%s&grant_type=password";
     private static final String LOGIN_URL_TEMPLATE = "%s/realms/%s/protocol/openid-connect/token";
     protected static final String PATH_LOCATIONS = "/locations";
+    protected  String clientId;
 
     protected String apiUrl;
     protected String keycloakAuthUrl;
-    protected KeyCloakUtils keyCloakUtils;
+    /*protected KeyCloakUtils keyCloakUtils;
     protected String keycloakAdminUser;
     protected String keycloakAdminPassword;
-    protected String adminClientId;
+    protected String adminClientId;*/
     protected String testRealm;
-    protected User adminUser;
-    protected User testUser;
     protected String accessToken;
 
-    protected void initKeycloakUtils() {
-        ResteasyClientBuilder clientBuilder = new ResteasyClientBuilder();
-        clientBuilder.connectionPoolSize(5);
-        clientBuilder.connectionCheckoutTimeout(5, TimeUnit.MINUTES);
-        KeycloakBuilder kb = KeycloakBuilder.builder();
-        kb.serverUrl(keycloakAuthUrl)
-                .grantType(OAuth2Constants.PASSWORD)
-                .realm("master")
-                .clientId(adminClientId)
-                .username(keycloakAdminUser)
-                .password(keycloakAdminPassword)
-                .resteasyClient(clientBuilder.build());
-        Keycloak keycloak = kb.build();
-        keyCloakUtils = new KeyCloakUtils(keycloak);
-    }
-
-    protected void closeKeycloak() {
-        keyCloakUtils.close();
-    }
-
-    protected static class User {
-        private String username;
-        private String password;
-
-        public User(String username, String password) {
-            this.username = username;
-            this.password = password;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-    }
+    protected String username;
+    protected String password;
 
     protected boolean login(String user, String password) throws MalformedURLException {
-       String postData = String.format(LOGIN_DATA_TEMPLATE, adminClientId, user, password);
+       String postData = String.format(LOGIN_DATA_TEMPLATE, clientId, user, password);
 
         Response response = given()
                 .header("Accept", "application/json")

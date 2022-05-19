@@ -33,7 +33,6 @@ import static graphql.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.net.MalformedURLException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.opennms.horizon.server.model.dto.MonitoringLocationDto;
@@ -51,60 +50,28 @@ public class RestAPIIntegrationSteps extends IntegrationTestBase{
     private ObjectMapper mapper = new ObjectMapper();
     private MonitoringLocationDto location1;
     private MonitoringLocationDto location2;
+
     @Given("REST server url in system property {string}")
     public void restServerUrlInSystemProperty(String apiUrl) {
         this.apiUrl = System.getProperty(apiUrl);
     }
 
-    @Given("Keycloak auth server url in system property {string}")
-    public void keycloakAuthServerUrlInSystemProperty(String authUrl) {
+    @Given("Keycloak auth server url in system property {string}, realm {string} and client {string}")
+    public void keycloakAuthServerUrlInSystemProperty(String authUrl, String realm, String clientId) {
         this.keycloakAuthUrl = System.getProperty(authUrl);
-    }
-
-    @Given("Keycloak admin user {string} with password {string}")
-    public void keycloakAdminUserWithPassword(String user, String password) {
-        this.keycloakAdminUser = user;
-        this.keycloakAdminPassword = password;
-    }
-
-    @Given("Keycloak master realm client-id {string}")
-    public void keycloakMasterRealmClientId(String clientId) {
-        adminClientId = clientId;
-    }
-
-    @Then("Initial Keycloak utils")
-    public void initialKeycloakAdminClient() {
-        log.info("Initial keycloak utils, {}", this);
-        initKeycloakUtils();
-    }
-
-    @Then("Create Keycloak realm {string}")
-    public void createKeycloakRealm(String realm) {
         this.testRealm = realm;
-        keyCloakUtils.createRealm(realm, keycloakAuthUrl);
+        this.clientId = clientId;
     }
 
-    @Then("Add roles")
-    public void addRoles(List<String> roles) {
-        keyCloakUtils.addRoles(testRealm, roles);
+    @Given("Admin user {string} with password {string}")
+    public void adminUserWithPassword(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
-
-    @Then("Add admin user {string} with password {string} and role {string}")
-    public void addAdminUserWithPassword(String username, String password, String role) {
-        keyCloakUtils.addUser(testRealm, username, password, role);
-        adminUser = new User(username, password);
-    }
-
-    @Then("Add regular user {string} with password {string} and role {string}")
-    public void addRegularUserWithPassword(String user, String pwd, String role) {
-        keyCloakUtils.addUser(testRealm, user, pwd, role);
-        testUser = new User(user, pwd);
-        keyCloakUtils.close();
-    }
     @Then("Admin user can create an access token")
     public void adminUserCanCreateAnAccessToken() throws MalformedURLException {
-        assertTrue(login(adminUser.getUsername(), adminUser.getPassword()));
+        assertTrue(login(username, password));
     }
 
     @Then("Admin user can create new location")
