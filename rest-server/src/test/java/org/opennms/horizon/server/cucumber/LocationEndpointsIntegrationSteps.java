@@ -46,7 +46,7 @@ import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RestAPIIntegrationSteps extends IntegrationTestBase{
+public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
     private ObjectMapper mapper = new ObjectMapper();
     private MonitoringLocationDto location1;
     private MonitoringLocationDto location2;
@@ -130,5 +130,64 @@ public class RestAPIIntegrationSteps extends IntegrationTestBase{
         assertEquals(204, response.statusCode());
         List <MonitoringLocationDto> list = getRequest(PATH_LOCATIONS).jsonPath().getList(".", MonitoringLocationDto.class);
         assertEquals(1, list.size());
+    }
+
+    @Given("A normal user with username {string} and password {string}")
+    public void aNormalUserWithUsernameAndPassword(String username, String password) {
+        this.username = username;
+        this.password = password;
+        accessToken = "";
+    }
+
+    @Then("Normal user can login and create access token")
+    public void normalUserCanLoginAndCreateAccessToken() throws MalformedURLException {
+        assertTrue(login(username, password));
+    }
+
+    @Then("Normal user can list location")
+    public void normalUserCanListLocation() {
+        Response response = getRequest(PATH_LOCATIONS);
+        assertEquals(200, response.statusCode());
+        List<MonitoringLocationDto> result = response.jsonPath().getList(".", MonitoringLocationDto.class);
+        assertEquals(1, result.size());
+        location2 = result.get(0);
+    }
+
+    @Then("Normal user can get location by ID")
+    public void normalUserCanGetLocationByID() {
+        Response response = getRequest(PATH_LOCATIONS + "/" + location2.getId());
+        assertEquals(200, response.statusCode());
+        MonitoringLocationDto result = response.as(MonitoringLocationDto.class);
+        assertNotNull(result);
+        assertEquals(location2.getLocation(), result.getLocation());
+    }
+
+    @Then("Normal user am not allowed to create new location")
+    public void normalUserAmNotAllowedToCreateNewLocation() {
+        ObjectNode data = mapper.createObjectNode();
+        data.put("location", "Default");
+        data.put("monitoringArea", "localhost");
+        Response response = postRequest(PATH_LOCATIONS, data);
+        assertEquals(403, response.statusCode());
+    }
+
+    @Then("Normal user am not allowed to update the location by ID")
+    public void normalUserAmNotAllowedToUpdateTheLocationByID() {
+        location2.setMonitoringArea("updated_network");
+        Response response = putRequest(PATH_LOCATIONS + "/" + location2.getId(), mapper.valueToTree(location2));
+        assertEquals(403, response.statusCode());
+    }
+
+    @Then("Normal user am not allowed to delete the location")
+    public void normalUserAmNotAllowedToDeleteTheLocation() {
+        Response response = deleteRequest(PATH_LOCATIONS + "/" + location2.getId());
+        assertEquals(403, response.statusCode());
+    }
+
+    @Then("Without in correct token user can't access rest api")
+    public void withoutInCorrectTokenUserCanTAccessRestApi() {
+        accessToken = "Bearer invalid_token";
+        Response response = getRequest(PATH_LOCATIONS);
+        assertEquals(401, response.statusCode());
     }
 }

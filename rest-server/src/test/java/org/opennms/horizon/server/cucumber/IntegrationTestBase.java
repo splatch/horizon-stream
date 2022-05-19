@@ -37,11 +37,16 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 
 abstract class IntegrationTestBase {
-
+    private static final RestAssuredConfig restConfig = RestAssuredConfig.config().httpClient(
+            HttpClientConfig.httpClientConfig().setParam("http.connection.timeout", 30000)
+                    .setParam("http.socket.timeout", 30000)
+    );
     private static final String LOGIN_DATA_TEMPLATE = "client_id=%s&username=%s&password=%s&grant_type=password";
     private static final String LOGIN_URL_TEMPLATE = "%s/realms/%s/protocol/openid-connect/token";
     protected static final String PATH_LOCATIONS = "/locations";
@@ -49,10 +54,6 @@ abstract class IntegrationTestBase {
 
     protected String apiUrl;
     protected String keycloakAuthUrl;
-    /*protected KeyCloakUtils keyCloakUtils;
-    protected String keycloakAdminUser;
-    protected String keycloakAdminPassword;
-    protected String adminClientId;*/
     protected String testRealm;
     protected String accessToken;
 
@@ -63,6 +64,7 @@ abstract class IntegrationTestBase {
        String postData = String.format(LOGIN_DATA_TEMPLATE, clientId, user, password);
 
         Response response = given()
+                .config(restConfig)
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .body(postData)
