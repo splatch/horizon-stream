@@ -30,24 +30,26 @@ package org.opennms.horizon.provision.rest;
 
 import java.text.ParseException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/provision")
 public interface ProvisionRestService {
 
-    /**
-     * Returns all the events which match the filter/query in the query
-     * parameters
-     *
-     * @return Collection of OnmsEventCollection (ready to be XML-ified)
-     * @throws ParseException
-     *             if any.
-     */
     @POST
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Path("publish")
+    @Consumes({MediaType.APPLICATION_JSON})
 //    @RolesAllowed({"admin"})
     Response publishRequisition(final String requisition);
+
+    @GET
+    @Path("read/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+//    @RolesAllowed({"admin"})
+    Response getRequisition(@PathParam("id") final String requisitionName);
 }
