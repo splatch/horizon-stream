@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.5</version>
+		<version>2.6.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.opennms.horizon</groupId>
@@ -113,6 +113,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<version>2.1.212</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -144,9 +145,39 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.cucumber</groupId>
-			<artifactId>cucumber-spring</artifactId>
-			<version>${cucumber.version}</version>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<version>5.8.2</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured-common</artifactId>
+			<version>5.0.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>5.0.1</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy-xml</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured-all</artifactId>
+			<version>5.0.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -294,7 +325,7 @@
 									</run>
 								</image>
 								<image>
-									<!-- Keycloak container -->
+									<!-->Keycloak container-->
 									<name>keycloak-it-image</name>
 									<alias>keycloak</alias>
 									<build>
@@ -338,7 +369,7 @@
 										</ports>
 										<env>
 											<!-- Need to make sure address=* is in the DEBUG OPTS otherwise it listens on the container's localhost only -->
-											<JAVA_OPTS>-Djava.security.egd=file:/dev/./urandom -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_OPTS>
+<!--											<JAVA_OPTS>-Djava.security.egd=file:/dev/./urandom -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_OPTS>-->
 											<SPRING_DATASOURCE_URL>jdbc:postgresql://postgres-host:5432/horizon_stream</SPRING_DATASOURCE_URL>
 											<KEYCLOAK_AUTH_SERVER_URL>http://keycloak-host:8080</KEYCLOAK_AUTH_SERVER_URL>
 											<KEYCLOAK_REALM>opennms</KEYCLOAK_REALM>
@@ -377,23 +408,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.0.0-M5</version>
-				<configuration>
-					<skipITs>${skipITs}</skipITs>
-					<reuseForks>true</reuseForks>
-					<useSystemClassLoader>false</useSystemClassLoader>
-					<systemProperties>
-						<property>
-							<name>application.base-url</name>
-							<value>http://localhost:${rest-api-http}</value>
-						</property>
-						<property>
-							<name>keycloak.url</name>
-							<value>http://localhost:${keycloak-http.port}</value>
-						</property>
-					</systemProperties>
-				</configuration>
 				<executions>
+					<execution>
+						<id>default</id>
+						<phase>none</phase>
+					</execution>
 					<execution>
 						<id>rest-server-it-tests</id>
 						<phase>integration-test</phase>
@@ -401,9 +420,20 @@
 							<goal>integration-test</goal>
 						</goals>
 						<configuration>
-							<excludes>
-								<exclude>none</exclude>
-							</excludes>
+							<classesDirectory>${project.build.outputDirectory}</classesDirectory>
+							<skipITs>${skipITs}</skipITs>
+							<reuseForks>true</reuseForks>
+							<useSystemClassLoader>false</useSystemClassLoader>
+							<systemProperties>
+								<property>
+									<name>rest-server-url</name>
+									<value>http://localhost:${rest-api-http}</value>
+								</property>
+								<property>
+									<name>keycloak.url</name>
+									<value>http://localhost:${keycloak-http.port}</value>
+								</property>
+							</systemProperties>
 							<includes>
 								<include>**/*IT.java</include>
 							</includes>

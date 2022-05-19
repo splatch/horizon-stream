@@ -29,10 +29,17 @@
 package org.opennms.horizon.server.security;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
+import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -50,11 +57,16 @@ public class KeyCloakUtils {
         this.keycloak = keycloak;
     }
 
-    public void createRealm(String realm) {
+    public void createRealm(String realm, String frontendUrl) {
         RealmRepresentation realmRp = new RealmRepresentation();
         realmRp.setId(realm);
         realmRp.setRealm(realm);
         realmRp.setEnabled(true);
+        if(StringUtils.hasLength(frontendUrl)) {
+            Map<String, String> attr = new HashMap<>();
+            attr.put("frontendUrl", frontendUrl);
+            realmRp.setAttributes(attr);
+        }
         keycloak.realms().create(realmRp);
     }
 
@@ -65,36 +77,42 @@ public class KeyCloakUtils {
         keycloak.realm(realm).roles().create(rr);
     }
 
-    /*public void addUser(String realm, UserDto user) {
-        addUser(realm, user, null);
-
-    }
-
-    public boolean addUser(String realm, UserDto user, String password) {
-        UserRepresentation ur = new UserRepresentation();
-        ur.setUsername(user.getUsername());
-        ur.setFirstName(user.getFirstname());
-        ur.setLastName(user.getLastname());
-        ur.setEmail(user.getEmail());
-        ur.setEnabled(true);
+    public void addUser(String realm, String username, String password, String role) {
+        UserRepresentation userRp = new UserRepresentation();
+        userRp.setUsername(username);
         if(StringUtils.hasLength(password)) {
             CredentialRepresentation cr = new CredentialRepresentation();
             cr.setType(CredentialRepresentation.PASSWORD);
             cr.setValue(password);
-            ur.setCredentials(Arrays.asList(cr));
+            userRp.setCredentials(Arrays.asList(cr));
         }
-        ur.setRealmRoles(user.getRoles());
+        userRp.setEnabled(true);
+        addUser(realm, userRp, role);
+    }
 
-
-        Response response = keycloak.realm(realm).users().create(ur);
+    public boolean addUser(String realm, UserRepresentation userRp, String role) {
+        RealmResource realmResource = keycloak.realm(realm);
+        UsersResource usersResource = realmResource.users();
+        Response response = usersResource.create(userRp);
+        int statusCode = response.getStatus();
+        String userId = CreatedResponseUtil.getCreatedId(response);
+        RoleRepresentation roleRp = realmResource.roles().get(role).toRepresentation();
+        UserResource userResource = usersResource.get(userId);
+        userResource.roles().realmLevel().add(Arrays.asList(roleRp));
         return response.getStatus()==200;
-    }*/
+    }
 
-    /*public void updateRoleMapperForClient(String realm, String client, String mapperName) {
-        ClientRepresentation cr = keycloak.realm(realm).clients().findByClientId(client).get(0);
+    public void addRoles(String realm, List<String> roles) {
+        roles.forEach(r -> addRole(realm, r));
+    }
 
-        ProtocolMapperRepresentation pr = keycloak.realm(realm).
+    public boolean isClosed() {
+        return keycloak.isClosed();
+    }
 
-        cr.setProtocolMappers();
-    }*/
+    public void close() {
+        if(!keycloak.isClosed()) {
+            keycloak.close();
+        }
+    }
 }
