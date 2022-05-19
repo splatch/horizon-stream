@@ -1,4 +1,4 @@
-Feature: End to End test for location REST API endpoints with auth
+Feature: Location REST API endpoints integration tests
 
   Scenario: admin user can view/add/update/delete location
     Given REST server url in system property "rest-server-url"
