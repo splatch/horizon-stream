@@ -46,4 +46,10 @@ public class ProvisionerImpl implements Provisioner {
         RequisitionDTO requisitionDTO = new Gson().fromJson(requisition, RequisitionDTO.class);
         return requisitionRepository.save(requisitionDTO);
     }
+
+    @Override
+    public String read(String name) {
+        RequisitionDTO requisitionDTO = requisitionRepository.read(name);
+        return new Gson().toJson(requisitionDTO);
+    }
 }

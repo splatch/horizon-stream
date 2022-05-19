@@ -35,9 +35,11 @@
 ">
 
     <reference id="provisioner" interface="org.opennms.netmgt.provision.service.Provisioner"/>
+    <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils" />
 
     <bean id="provisionRestServiceImpl" class="org.opennms.horizon.provision.rest.ProvisionRestServiceImpl" scope="singleton">
         <argument ref="provisioner"/>
+        <argument ref="sessionUtils"/>
     </bean>
 
 

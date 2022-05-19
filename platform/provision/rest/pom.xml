@@ -37,6 +37,11 @@
       <artifactId>service</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.horizon.db</groupId>
+      <artifactId>dao-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <properties>
