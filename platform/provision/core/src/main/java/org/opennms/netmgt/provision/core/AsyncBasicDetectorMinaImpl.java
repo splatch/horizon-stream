@@ -51,9 +51,6 @@ import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
 import org.opennms.net.util.RelaxedX509ExtendedTrustManager;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.core.AsyncBasicDetector;
-import org.opennms.netmgt.provision.support.ConnectionFactory;
-import org.opennms.netmgt.provision.support.DetectFutureMinaImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

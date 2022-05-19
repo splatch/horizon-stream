@@ -1,11 +1,13 @@
 package org.opennms.horizon.db.dao.impl;
 
 import org.opennms.horizon.db.dao.api.MonitoringSystemDao;
+import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
 import org.opennms.horizon.db.model.OnmsMonitoringSystem;
+import org.opennms.horizon.db.dao.util.AbstractDaoHibernate;
 
 public class MonitoringSystemDaoHibernate extends AbstractDaoHibernate<OnmsMonitoringSystem, String> implements MonitoringSystemDao {
 
-    public MonitoringSystemDaoHibernate() {
-        super(OnmsMonitoringSystem.class);
+    public MonitoringSystemDaoHibernate(PersistenceContextHolder persistenceContextHolder) {
+        super(persistenceContextHolder, OnmsMonitoringSystem.class);
     }
 }

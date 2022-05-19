@@ -1,4 +1,4 @@
-package org.opennms.horizon.db.dao.impl;
+package org.opennms.horizon.db.dao.util;
 
 import java.util.Objects;
 import java.util.function.Supplier;

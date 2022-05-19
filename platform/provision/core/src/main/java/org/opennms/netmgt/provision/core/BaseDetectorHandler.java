@@ -32,7 +32,6 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.opennms.netmgt.provision.core.support.AsyncClientConversation;
-import org.opennms.netmgt.provision.support.DetectFutureMinaImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

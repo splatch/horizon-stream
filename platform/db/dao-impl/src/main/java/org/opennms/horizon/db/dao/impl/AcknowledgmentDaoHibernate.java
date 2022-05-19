@@ -9,11 +9,13 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
+import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
 import org.opennms.horizon.db.model.OnmsAcknowledgment;
+import org.opennms.horizon.db.dao.util.AbstractDaoHibernate;
 
 public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowledgment, Integer> implements AcknowledgmentDao {
-    public AcknowledgmentDaoHibernate() {
-        super(OnmsAcknowledgment.class);
+    public AcknowledgmentDaoHibernate(PersistenceContextHolder persistenceContextHolder) {
+        super(persistenceContextHolder, OnmsAcknowledgment.class);
     }
 
     @Override
