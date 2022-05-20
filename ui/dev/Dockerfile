@@ -2,7 +2,7 @@ FROM node:17-alpine
 
 WORKDIR /app
 EXPOSE 3000
-CMD ["yarn", "run", "dev"]
+CMD ["yarn", "run", "dev", "--host"]
 
 COPY package* ./
 RUN yarn install
