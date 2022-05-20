@@ -30,6 +30,7 @@ package org.opennms.horizon.provision.rest;
 
 import java.text.ParseException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -52,4 +53,10 @@ public interface ProvisionRestService {
     @Produces(MediaType.APPLICATION_JSON)
 //    @RolesAllowed({"admin"})
     Response getRequisition(@PathParam("id") final String requisitionName);
+
+    @DELETE
+    @Path("delete/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+//    @RolesAllowed({"admin"})
+    Response deleteRequisition(@PathParam("id") final String requisitionName);
 }

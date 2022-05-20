@@ -15,8 +15,8 @@
 		<createTable tableName="requisitions">
 
 			<!-- Unique identifier -->
-			<column name="requisitionName" type="text">
-				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_requisitionName" />
+			<column name="requisitionname" type="text">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_requisitionname" />
 			</column>
 
 			<!-- A reference to the eventUei that created this alarm. -->
@@ -27,7 +27,7 @@
 		</createTable>
 
 		<createIndex tableName="requisitions" indexName="requisitions_uei_idx">
-			<column name="requisitionName" />
+			<column name="requisitionname" />
 		</createIndex>
 
 	</changeSet>
