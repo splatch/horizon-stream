@@ -29,9 +29,10 @@
 package org.opennms.horizon.server.controller;
 
 import org.opennms.horizon.server.service.PlatformGateway;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,18 +48,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/events")
 public class EventController {
     private final PlatformGateway gateway;
-
     public EventController(PlatformGateway gateway) {
         this.gateway = gateway;
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity create(@RequestBody JsonNode data, @RequestHeader("Authorization") String authToken) {
-        log.info("received data {}", data);
-        if(gateway.post(PlatformGateway.URL_PATH_EVENTS, authToken, data.toString())) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+        log.info("Received post event data {}", data);
+        return gateway.post(PlatformGateway.URL_PATH_EVENTS, authToken, data.toString());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<String> getEventById(@PathVariable Long id, @RequestHeader("Authorization") String authToken) {
+        return gateway.get(PlatformGateway.URL_PATH_EVENTS+"/"+id, authToken);
     }
 }

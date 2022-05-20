@@ -3,8 +3,8 @@
     <p>Alarms</p>
     <div class="feather-row">
       <div class="feather-col-12">
-        <FeatherButton primary @click="onSend({})">Send Alarm</FeatherButton>
-        <FeatherButton secondary @click="onClear({})">Clear Alarms</FeatherButton>
+        <FeatherButton primary @click="trigger">Send Alarm</FeatherButton>
+        <FeatherButton secondary @click="clear">Clear Alarm</FeatherButton>
       </div>
     </div>
     <div class="feather-row">
@@ -19,9 +19,14 @@
           </thead>
           <tbody>
             <tr v-for="alarm in alarms" :key="alarm.id">
-              <td>{{ alarm.severity }}</td>
+              <td>
+                <div class="severity">
+                  <div :class="alarm.severity.toLowerCase()" class="status-box"></div>
+                  {{ alarm.severity }}
+                </div>
+              </td>
               <td>{{ alarm.description }}</td>
-              <td>{{ alarm.lastEventTime }}</td>
+              <td v-date>{{ alarm.lastEventTime }}</td>
             </tr>
           </tbody>
         </table>
@@ -31,14 +36,31 @@
 </template>
 
 <script setup lang="ts">
+import { getMockEvent } from '@/types/mocks'
 import { useAlarmStore } from '@/store/alarmStore'
-// import { Alarm } from '@/types/alarms.js'
+import { useEventStore } from '@/store/eventStore'
 
 const alarmStore = useAlarmStore()
+const eventStore = useEventStore()
+
 const alarms = computed(() => alarmStore.alarms)
 
-const onSend = (alarm: any) => alarmStore.sendAlarm(alarm)
-const onClear = (alarm: any) => alarmStore.clearAlarm(alarm)
+const trigger = async () => {
+  await eventStore.sendEvent(getMockEvent())
+  setTimeout(() => {
+    alarmStore.getAlarms()
+  }, 350)
+}
+
+const clear = async () => {
+  const promises = alarms.value.map((alarm) => alarmStore.deleteAlarmById(alarm.id))
+  await Promise.all(promises)
+  setTimeout(() => {
+    alarmStore.getAlarms()
+  }, 350)
+}
+
+onMounted(() => alarmStore.getAlarms())
 </script>
 
 <style lang="scss" scoped>
@@ -60,6 +82,23 @@ const onClear = (alarm: any) => alarmStore.clearAlarm(alarm)
 
   table {
     @include table;
+
+    .severity {
+      display: flex;
+      .status-box {
+        display: block;
+        width: 12px;
+        height: 12px;
+        margin: 5px 10px 0px -10px;
+
+        &.cleared {
+          background: var($success);
+        }
+        &.warning {
+          background: var($warning);
+        }
+      }
+    }
   }
 }
 </style>

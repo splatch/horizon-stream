@@ -6,9 +6,10 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# For local dev envs, a place to put required dependencies, secrets, or test
-# data that we do not want to push to repo.
+# For local dev and sample envs, a place to put required dependencies, secrets,
+# or test data that we do not want to push to repo.
 dev/tmp
+local-sample/tmp
 
 # Package Files #
 *.jar

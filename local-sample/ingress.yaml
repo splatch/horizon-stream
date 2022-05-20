@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hs-ingress
+  namespace: default
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: horizon-stream-ui
+            port:
+              number: 3000
+        path: /ui
+        pathType: Prefix
+      - backend:
+          service:
+            name: horizon-stream-core
+            port:
+              number: 8101
+        path: /karaf
+        pathType: Prefix
+      - backend:
+          service:
+            name: horizon-stream-core
+            port:
+              number: 8181
+        path: /core
+        pathType: Prefix
+      - backend:
+          service:
+            name: keycloak
+            port:
+              number: 8080
+        path: /keycloak
+        pathType: Prefix
+

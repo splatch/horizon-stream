@@ -26,3 +26,19 @@ export interface UserInfo {
   preferred_username: string
   sub: string
 }
+
+export interface DefaultResponseError {
+  response: {
+    status: number
+    data: {
+      error_description: string
+    }
+  }
+}
+
+export interface CustomResponseError {
+  response: {
+    status: number
+    data: string
+  }
+}
