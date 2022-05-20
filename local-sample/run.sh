@@ -34,7 +34,7 @@ kind create cluster --config=config.yaml
 kubectl config use-context kind-kind
 kubectl config get-contexts
 
-# Add Dependencies
+# Add Dependency - Keycloak
 kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
 kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
 kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
@@ -42,11 +42,15 @@ kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resourc
 # Verify (should get keycloaks and keycloakrealmiiimports)
 kubectl api-resources | grep keycloak
 
+# Add Dependency - Ingress Nginx
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
 # Update local build from dev
 cat ../dev/kubernetes.kafka.yaml | \
   sed 's/opennms\/horizon-stream-core/opennms\/horizon-stream-core\:latest/' | \
   sed 's/opennms\/horizon-stream-api/opennms\/horizon-stream-rest-server\:latest/' | \
   sed 's/opennms\/horizon-stream-ui-dev/opennms\/horizon-stream-ui\:latest/' | \
+  sed 's/frontendUrl: \"http:\/\/localhost:28080\"/frontendUrl: \"http:\/\/localhostkey\"/' | \
   sed 's/imagePullPolicy: Never/imagePullPolicy: Always/' > tmp/hs.yaml
 
 # Deploy HS
@@ -63,21 +67,21 @@ app_check_wait "app" "${APPS[@]}"
 # Confirm Deployment
 kubectl get all
 
-#kubectl apply -f services.yaml
-#kubectl apply -f ingress.yaml
+kubectl apply -f services.yaml
+kubectl apply -f ingress.yaml
 
 # Implement port-forwarding to relevant services.
-nohup kubectl port-forward deployment.apps/my-horizon-stream-ui   30000:3000 &> tmp/hs-ui.log &
-nohup kubectl port-forward deployment.apps/my-horizon-stream-api  29090:9090 &> tmp/hs-api.log &
-nohup kubectl port-forward deployment.apps/my-horizon-stream-core 18181:8181 &> tmp/hs-core.log &
-nohup kubectl port-forward deployment.apps/my-horizon-stream-core 18101:8101 &> tmp/hs-core.log &
-nohup kubectl port-forward deployment.apps/my-keycloak            28080:8080 &> tmp/keycloak.log &
+#nohup kubectl port-forward deployment.apps/my-horizon-stream-ui   30000:3000 &> tmp/hs-ui.log &
+#nohup kubectl port-forward deployment.apps/my-horizon-stream-api  29090:9090 &> tmp/hs-api.log &
+#nohup kubectl port-forward deployment.apps/my-horizon-stream-core 18181:8181 &> tmp/hs-core.log &
+#nohup kubectl port-forward deployment.apps/my-horizon-stream-core 18101:8101 &> tmp/hs-core.log &
+#nohup kubectl port-forward deployment.apps/my-keycloak            28080:8080 &> tmp/keycloak.log &
 
 # Create user through keycloak.
 cd ../tools/
-./KC.login -H localhost/keycloak -u user001 -p passw0rd -R opennms
-./events.list -H localhost/core -t "$(< data/ACCESS_TOKEN.txt)"
-./events.publish -H localhost/core -t "$(< data/ACCESS_TOKEN.txt)"
-./events.list -H localhost/core -t "$(< data/ACCESS_TOKEN.txt)"
+./KC.login -H localhostkey/keycloak -u user001 -p passw0rd -R opennms
+#./events.list -H localhost/core -t "$(< data/ACCESS_TOKEN.txt)"
+#./events.publish -H localhost/core -t "$(< data/ACCESS_TOKEN.txt)"
+#./events.list -H localhost/core -t "$(< data/ACCESS_TOKEN.txt)"
 
 printf "\n\nDone\n\nGo to localhost and use user 'user001' & password 'passw0rd'\n\n"
