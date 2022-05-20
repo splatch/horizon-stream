@@ -27,11 +27,18 @@ export interface UserInfo {
   sub: string
 }
 
-export interface ResponseError {
+export interface DefaultResponseError {
   response: {
     status: number
     data: {
       error_description: string
     }
+  }
+}
+
+export interface CustomResponseError {
+  response: {
+    status: number
+    data: string
   }
 }

@@ -134,7 +134,7 @@ public class PlatformGateway {
     private ResponseEntity<String> processResponse(HttpResponse response, boolean withBody) throws IOException {
         int status = response.getStatusLine().getStatusCode();
         if(status == HttpStatus.SC_FORBIDDEN) {
-            return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body("User doesn't has permission on surch operation");
+            return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body("User doesn't have permissions for this operation.");
         }
         if(withBody) {
             return ResponseEntity.status(status).body(EntityUtils.toString(response.getEntity()));
