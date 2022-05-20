@@ -13,6 +13,8 @@ runs:
       run: |
         echo "Testing actions - " ${{ inputs.dir-location }}
 
+        netstat -ltan
+
         cd ${{ inputs.dir-location }}
         # Keep the input arg of the dir, if the process is the same for each
         # core, rest-server, and ui, we can make this like a generic function.
