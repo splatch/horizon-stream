@@ -3,7 +3,7 @@ name: feature-ui
 on:  
   push:
     branches:
-      - '*'
+      - '**'
       - '!develop'
       - '!release/**'
     paths:
