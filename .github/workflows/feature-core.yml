@@ -1,0 +1,30 @@
+name: feature-core
+
+on:  
+  push:
+    branches:
+      - '!develop'
+      - '!release/**'
+    paths:
+      - 'platform/**'
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        # Is required to call actions.
+
+      - name: init
+        run: |
+
+          echo "For init steps."
+
+      - name: feature-core
+        id: action-feature-core
+        uses: ./.github/actions/core
+        with:
+          dir-location: 'platform'
