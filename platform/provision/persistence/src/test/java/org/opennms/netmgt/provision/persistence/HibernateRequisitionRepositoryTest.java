@@ -1,6 +1,7 @@
 package org.opennms.netmgt.provision.persistence;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -57,9 +58,11 @@ public class HibernateRequisitionRepositoryTest {
         assertNotNull(readDto);
     }
 
+    //TODO: can we check for an exception here?
     @Test
     public void delete() {
         requisitionRepository.delete(BLAH_ID);
+        assertTrue(true);
     }
 
     private class DummyPersistenceContextHolder implements PersistenceContextHolder {

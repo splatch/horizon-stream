@@ -12,10 +12,7 @@ import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
 
 public abstract class AbstractDaoHibernate<T, K extends Serializable> implements OnmsDao<T, K> {
 
-//    @PersistenceContext(unitName = "dao-provision")
-//    private EntityManager entityManager;
-    @Setter
-    PersistenceContextHolder persistenceContextHolder;
+    private final PersistenceContextHolder persistenceContextHolder;
 
     private final Class<T> entityClass;
 
@@ -93,9 +90,4 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
     public EntityManager getEntityManager() {
         return persistenceContextHolder.getEntityManager();
     }
-//
-//    public void setEntityManager(EntityManager entityManager) {
-//        this.entityManager = entityManager;
-//    }
-
 }

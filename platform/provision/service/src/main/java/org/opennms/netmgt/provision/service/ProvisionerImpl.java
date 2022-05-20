@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.service;
 
-import com.google.gson.Gson;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
@@ -40,16 +40,21 @@ public class ProvisionerImpl implements Provisioner {
 
     private final RequisitionRepository requisitionRepository;
 
+
     @Override
-    public String publishRequisition(String requisition) {
+    public Optional<String> publishRequisition(RequisitionDTO requisition) {
         log.info("Publishing {}", requisition);
-        RequisitionDTO requisitionDTO = new Gson().fromJson(requisition, RequisitionDTO.class);
-        return requisitionRepository.save(requisitionDTO);
+        return Optional.ofNullable(requisitionRepository.save(requisition));
     }
 
     @Override
-    public String read(String name) {
-        RequisitionDTO requisitionDTO = requisitionRepository.read(name);
-        return new Gson().toJson(requisitionDTO);
+    public Optional<RequisitionDTO> read(String name) {
+
+        return Optional.ofNullable(requisitionRepository.read(name));
+    }
+
+    @Override
+    public void delete(String name) {
+        requisitionRepository.delete(name);
     }
 }

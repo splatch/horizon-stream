@@ -7,5 +7,4 @@ public interface RequisitionRepository {
     String save(RequisitionDTO requisitionNodeDTO);
     RequisitionDTO read(String id);
     void delete(String id);
-//    void setEntityManager(EntityManager entityManager);
 }
