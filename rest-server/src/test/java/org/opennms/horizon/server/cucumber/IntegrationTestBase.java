@@ -31,16 +31,18 @@ package org.opennms.horizon.server.cucumber;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.net.MalformedURLException;
+import java.util.Map;
 
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 abstract class IntegrationTestBase {
     private static final RestAssuredConfig restConfig = RestAssuredConfig.config().httpClient(
@@ -50,6 +52,9 @@ abstract class IntegrationTestBase {
     private static final String LOGIN_DATA_TEMPLATE = "client_id=%s&username=%s&password=%s&grant_type=password";
     private static final String LOGIN_URL_TEMPLATE = "%s/realms/%s/protocol/openid-connect/token";
     protected static final String PATH_LOCATIONS = "/locations";
+    protected static final String PATH_NODS = "/nodes";
+
+    protected final ObjectMapper mapper = new ObjectMapper();
     protected  String clientId;
 
     protected String apiUrl;
@@ -60,33 +65,37 @@ abstract class IntegrationTestBase {
     protected String username;
     protected String password;
 
-    protected boolean login(String user, String password) throws MalformedURLException {
+    protected boolean login(String user, String password) {
        String postData = String.format(LOGIN_DATA_TEMPLATE, clientId, user, password);
-
-        Response response = given()
-                .config(restConfig)
-                .header("Accept", "application/json")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .body(postData)
-                .when()
-                .post(String.format(LOGIN_URL_TEMPLATE, keycloakAuthUrl, testRealm))
-                .then().extract().response();
-
+        Map<String, String> headers = Map.of(
+                "Accept", "application/json",
+                "Content-Type", "application/x-www-form-urlencoded");
+        Response response = postHelp(null, String.format(LOGIN_URL_TEMPLATE, keycloakAuthUrl, testRealm), restConfig, headers, postData);
         assertEquals(200, response.statusCode());
         accessToken = "Bearer " + response.jsonPath().get("access_token");
         return StringUtils.hasLength(accessToken);
     }
 
     protected Response postRequest(String path, JsonNode data) {
-        return given()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .header("Authorization", accessToken)
-                .baseUri(apiUrl)
-                .body(data)
-                .when()
-                .post(path).then().extract().response();
+        Map<String, String> headers = Map.of(
+                "Content-Type", "application/json",
+                "Accept", "application/json",
+                "Authorization", accessToken);
+        return postHelp(apiUrl, path, null, headers, data.toString());
     }
+
+    private Response postHelp(String baseUri, String path, RestAssuredConfig config, Map<String, String> headers, String data) {
+        RequestSpecification request = given();
+        request.headers(headers).body(data);
+        if(baseUri != null) {
+            request.baseUri(baseUri);
+        }
+        if(config != null) {
+            request.config(config);
+        }
+        return request.when().post(path).then().extract().response();
+    }
+
 
     protected Response getRequest(String path) {
         return given()

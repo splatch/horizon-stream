@@ -32,12 +32,10 @@ import static graphql.Assert.assertNotNull;
 import static graphql.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.net.MalformedURLException;
 import java.util.List;
 
 import org.opennms.horizon.server.model.dto.MonitoringLocationDto;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.cucumber.java.en.Given;
@@ -47,7 +45,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
-    private ObjectMapper mapper = new ObjectMapper();
     private MonitoringLocationDto location1;
     private MonitoringLocationDto location2;
 
@@ -70,7 +67,7 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
     }
 
     @Then("Admin user can create an access token")
-    public void adminUserCanCreateAnAccessToken() throws MalformedURLException {
+    public void adminUserCanCreateAnAccessToken() {
         assertTrue(login(username, password));
     }
 
@@ -105,6 +102,8 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
         assertEquals(200, response.statusCode());
         List<MonitoringLocationDto> result = response.jsonPath().getList(".", MonitoringLocationDto.class);
         assertEquals(2, result.size());
+        assertEquals(location1.getId(), result.get(0).getId());
+        assertEquals(location2.getId(), result.get(1).getId());
     }
 
     @Then("Admin user can get location by ID")
@@ -113,7 +112,7 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
         assertEquals(200, response.statusCode());
         MonitoringLocationDto result = response.as(MonitoringLocationDto.class);
         assertNotNull(result);
-        assertEquals("Default", result.getLocation());
+        assertEquals(location1.getLocation(), result.getLocation());
     }
 
     @Then("Admin user can update the location")
@@ -140,7 +139,7 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
     }
 
     @Then("Normal user can login and create access token")
-    public void normalUserCanLoginAndCreateAccessToken() throws MalformedURLException {
+    public void normalUserCanLoginAndCreateAccessToken() {
         assertTrue(login(username, password));
     }
 
