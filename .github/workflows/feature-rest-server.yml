@@ -3,6 +3,7 @@ name: feature-rest-server
 on:  
   push:
     branches:
+      - '*'
       - '!develop'
       - '!release/**'
     paths:
