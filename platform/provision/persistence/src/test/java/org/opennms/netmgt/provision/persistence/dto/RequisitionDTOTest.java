@@ -21,9 +21,7 @@ public class RequisitionDTOTest {
         requisitionNodeDTO.setParentForeignId("blahParentForeignId");
         requisitionNodeDTO.setParentForeignSource("blahParentForeignSource");
         requisitionDTO.putNode(requisitionNodeDTO);
-        //TODO: log4j properties file to set log level
         log.info(new Gson().toJson(requisitionDTO));
-        System.out.println(new Gson().toJson(requisitionDTO));
     }
 
 }
