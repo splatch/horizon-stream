@@ -22,13 +22,8 @@ public class ProvisionRestServiceImpl implements ProvisionRestService {
         return this.sessionUtils.withTransaction(() -> {
             try {
                 RequisitionDTO requisitionDTO = gson.fromJson(requisition, RequisitionDTO.class);
-                Optional<String> id = provisioner.publishRequisition(requisitionDTO);
-                if (id.isPresent()) {
-                    return Response.ok().entity(id.get()).build();
-                }
-                else {
-                    return Response.serverError().build();
-                }
+                String id = provisioner.publishRequisition(requisitionDTO);
+                return Response.ok().entity(id).build();
             } catch (Exception e) {
                 return Response.serverError().build();
             }
@@ -51,9 +46,14 @@ public class ProvisionRestServiceImpl implements ProvisionRestService {
 
     @Override
     public Response deleteRequisition(String requisitionName) {
-        return this.sessionUtils.withReadOnlyTransaction(() -> {
-            provisioner.delete(requisitionName);
-            return Response.ok().build();
+        return this.sessionUtils.withTransaction(() -> {
+            try {
+                provisioner.delete(requisitionName);
+                return Response.ok().build();
+            }
+            catch (Exception e) {
+                return Response.noContent().build();
+            }
         });
     }
 }

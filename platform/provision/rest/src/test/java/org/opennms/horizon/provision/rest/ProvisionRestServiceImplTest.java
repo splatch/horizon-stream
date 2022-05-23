@@ -2,8 +2,10 @@ package org.opennms.horizon.provision.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -14,9 +16,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Supplier;
+import javax.persistence.EntityExistsException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opennms.horizon.db.dao.api.SessionUtils;
@@ -34,7 +39,7 @@ public class ProvisionRestServiceImplTest {
     RequisitionDTO requisitionDTO;
     Gson gson = new Gson();
 
-    @org.junit.Before
+    @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         sessionUtils = new MockSessionUtils();
@@ -48,9 +53,9 @@ public class ProvisionRestServiceImplTest {
         requisitionDTO = gson.fromJson(requisitionJsonStr, RequisitionDTO.class);
     }
 
-    @org.junit.Test
+    @Test
     public void publishRequisition() throws Exception{
-        when(provisioner.publishRequisition(any())).thenReturn(Optional.of("blahId"));
+        when(provisioner.publishRequisition(any())).thenReturn("blahId");
 
         Response response = provisionRestService.publishRequisition(requisitionJsonStr);
 
@@ -59,7 +64,18 @@ public class ProvisionRestServiceImplTest {
         verifyNoMoreInteractions(provisioner);
     }
 
-    @org.junit.Test
+    @Test
+    public void publishRequisitionError() throws Exception{
+        when(provisioner.publishRequisition(any())).thenThrow(new EntityExistsException());
+
+        Response response = provisionRestService.publishRequisition(requisitionJsonStr);
+
+        assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        verify(provisioner).publishRequisition(any());
+        verifyNoMoreInteractions(provisioner);
+    }
+
+    @Test
     public void getRequisition() {
         when(provisioner.read(anyString())).thenReturn(Optional.of(requisitionDTO));
         Response response = provisionRestService.getRequisition("blahId");
@@ -69,10 +85,29 @@ public class ProvisionRestServiceImplTest {
         verifyNoMoreInteractions(provisioner);
     }
 
-    @org.junit.Test
+    @Test
+    public void getRequisitionNotFound() {
+        when(provisioner.read(anyString())).thenReturn(Optional.empty());
+        Response response = provisionRestService.getRequisition("blahId");
+        assertEquals(Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        assertNull(response.getEntity());
+        verify(provisioner).read(anyString());
+        verifyNoMoreInteractions(provisioner);
+    }
+
+    @Test
     public void deleteRequisition() {
         Response response = provisionRestService.deleteRequisition("blahId");
         assertEquals(response.getStatus(), Status.OK.getStatusCode());
+        verify(provisioner).delete(anyString());
+        verifyNoMoreInteractions(provisioner);
+    }
+
+    @Test()
+    public void deleteRequisitionError() {
+        doThrow(new IllegalArgumentException()).when(provisioner).delete(anyString());
+        Response response = provisionRestService.deleteRequisition("blahId");
+        assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
         verify(provisioner).delete(anyString());
         verifyNoMoreInteractions(provisioner);
     }

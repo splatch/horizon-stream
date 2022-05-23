@@ -42,14 +42,13 @@ public class ProvisionerImpl implements Provisioner {
 
 
     @Override
-    public Optional<String> publishRequisition(RequisitionDTO requisition) {
+    public String publishRequisition(RequisitionDTO requisition) {
         log.info("Publishing {}", requisition);
-        return Optional.ofNullable(requisitionRepository.save(requisition));
+        return requisitionRepository.save(requisition);
     }
 
     @Override
     public Optional<RequisitionDTO> read(String name) {
-
         return Optional.ofNullable(requisitionRepository.read(name));
     }
 

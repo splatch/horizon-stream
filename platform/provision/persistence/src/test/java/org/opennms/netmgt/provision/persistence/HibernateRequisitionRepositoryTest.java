@@ -58,7 +58,6 @@ public class HibernateRequisitionRepositoryTest {
         assertNotNull(readDto);
     }
 
-    //TODO: can we check for an exception here?
     @Test
     public void delete() {
         requisitionRepository.delete(BLAH_ID);
