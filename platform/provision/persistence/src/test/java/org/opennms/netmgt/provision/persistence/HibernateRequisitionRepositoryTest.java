@@ -59,6 +59,12 @@ public class HibernateRequisitionRepositoryTest {
     }
 
     @Test
+    public void update() {
+        String id = requisitionRepository.update(dto);
+        assertNotNull(id);
+    }
+
+    @Test
     public void delete() {
         requisitionRepository.delete(BLAH_ID);
         assertTrue(true);

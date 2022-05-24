@@ -42,7 +42,7 @@ public class ProvisionerImpl implements Provisioner {
 
 
     @Override
-    public String publishRequisition(RequisitionDTO requisition) {
+    public String publish(RequisitionDTO requisition) {
         log.info("Publishing {}", requisition);
         return requisitionRepository.save(requisition);
     }
@@ -55,5 +55,10 @@ public class ProvisionerImpl implements Provisioner {
     @Override
     public void delete(String name) {
         requisitionRepository.delete(name);
+    }
+
+    @Override
+    public String update(RequisitionDTO requisitionDTO) throws Exception {
+        return requisitionRepository.update(requisitionDTO);
     }
 }

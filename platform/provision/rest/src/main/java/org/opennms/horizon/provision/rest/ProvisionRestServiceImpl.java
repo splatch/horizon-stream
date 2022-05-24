@@ -22,7 +22,7 @@ public class ProvisionRestServiceImpl implements ProvisionRestService {
         return this.sessionUtils.withTransaction(() -> {
             try {
                 RequisitionDTO requisitionDTO = gson.fromJson(requisition, RequisitionDTO.class);
-                String id = provisioner.publishRequisition(requisitionDTO);
+                String id = provisioner.publish(requisitionDTO);
                 return Response.ok().entity(id).build();
             } catch (Exception e) {
                 return Response.serverError().build();
@@ -40,6 +40,19 @@ public class ProvisionRestServiceImpl implements ProvisionRestService {
             }
             else {
                 return Response.status(Status.NOT_FOUND).build();
+            }
+        });
+    }
+
+    @Override
+    public Response updateRequisition(String requisition) {
+        return this.sessionUtils.withTransaction(() -> {
+            try {
+                RequisitionDTO requisitionDTO = gson.fromJson(requisition, RequisitionDTO.class);
+                String id = provisioner.update(requisitionDTO);
+                return Response.ok().entity(id).build();
+            } catch (Exception e) {
+                return Response.serverError().build();
             }
         });
     }
