@@ -79,7 +79,7 @@ kubectl apply -f ingress.yaml
 
 # Create user through keycloak.
 cd ../tools/
-./KC.login -H localhostkey/keycloak -u user001 -p passw0rd -R opennms
+./KC.login -H http://localhostkey/keycloak -u user001 -p passw0rd -R opennms
 #./events.list -H localhost/core -t "$(< data/ACCESS_TOKEN.txt)"
 #./events.publish -H localhost/core -t "$(< data/ACCESS_TOKEN.txt)"
 #./events.list -H localhost/core -t "$(< data/ACCESS_TOKEN.txt)"
