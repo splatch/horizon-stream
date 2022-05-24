@@ -1,9 +1,12 @@
 Feature: Location REST API endpoints integration tests
 
-  Scenario: admin user can view/add/update/delete location
+  Background:
     Given REST server url in system property "rest-server-url"
     Given Keycloak auth server url in system property "keycloak.url", realm "opennms" and client "admin-cli"
     Given Admin user "admin-user" with password "password123"
+
+
+  Scenario: admin user can view/add/update/delete location
     Then Admin user can create an access token
     Then Admin user can create new location
     Then Admin user can list location
@@ -12,10 +15,7 @@ Feature: Location REST API endpoints integration tests
     Then Admin user can delete the location by ID
 
   Scenario: Normal user only can view location
-    Given REST server url in system property "rest-server-url"
-    Given Keycloak auth server url in system property "keycloak.url", realm "opennms" and client "admin-cli"
     Given A normal user with username "test-user" and password "password123"
-    Then Normal user can login and create access token
     Then Normal user can list location
     Then Normal user can get location by ID
     Then Normal user am not allowed to create new location
@@ -24,6 +24,6 @@ Feature: Location REST API endpoints integration tests
 
   Scenario: Not authorized user can't access the REST API
     Given REST server url in system property "rest-server-url"
-    Then Without in correct token user can't access rest api
+    Then Without correct token user can't access rest api
 
 

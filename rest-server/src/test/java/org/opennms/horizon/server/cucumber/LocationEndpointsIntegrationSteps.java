@@ -49,26 +49,26 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
     private MonitoringLocationDto location2;
 
     @Given("REST server url in system property {string}")
-    public void restServerUrlInSystemProperty(String apiUrl) {
-        this.apiUrl = System.getProperty(apiUrl);
+    public void restServerUrlInSystemProperty(String apiUrlProperty) {
+        this.apiUrl = System.getProperty(apiUrlProperty);
     }
 
     @Given("Keycloak auth server url in system property {string}, realm {string} and client {string}")
-    public void keycloakAuthServerUrlInSystemProperty(String authUrl, String realm, String clientId) {
-        this.keycloakAuthUrl = System.getProperty(authUrl);
+    public void keycloakAuthServerUrlInSystemProperty(String authUrlProperty, String realm, String clientId) {
+        this.keycloakAuthUrl = System.getProperty(authUrlProperty);
         this.testRealm = realm;
         this.clientId = clientId;
     }
 
     @Given("Admin user {string} with password {string}")
     public void adminUserWithPassword(String username, String password) {
-        this.username = username;
-        this.password = password;
+        this.adminUsername = username;
+        this.adminPassword = password;
     }
 
     @Then("Admin user can create an access token")
     public void adminUserCanCreateAnAccessToken() {
-        assertTrue(login(username, password));
+        assertTrue(login(adminUsername, adminPassword));
     }
 
     @Then("Admin user can create new location")
@@ -133,13 +133,6 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
 
     @Given("A normal user with username {string} and password {string}")
     public void aNormalUserWithUsernameAndPassword(String username, String password) {
-        this.username = username;
-        this.password = password;
-        accessToken = "";
-    }
-
-    @Then("Normal user can login and create access token")
-    public void normalUserCanLoginAndCreateAccessToken() {
         assertTrue(login(username, password));
     }
 
@@ -183,10 +176,11 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
         assertEquals(403, response.statusCode());
     }
 
-    @Then("Without in correct token user can't access rest api")
+    @Then("Without correct token user can't access rest api")
     public void withoutInCorrectTokenUserCanTAccessRestApi() {
         accessToken = "Bearer invalid_token";
         Response response = getRequest(PATH_LOCATIONS);
         assertEquals(401, response.statusCode());
+        cleanDB();
     }
 }

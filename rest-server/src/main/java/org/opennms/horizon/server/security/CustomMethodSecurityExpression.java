@@ -44,7 +44,6 @@ public class CustomMethodSecurityExpression implements MethodSecurityExpressionO
     protected Authentication authentication;
     private AuthenticationTrustResolver trustResolver;
     private RoleHierarchy roleHierarchy;
-    private Map<String, Set<String>> roles = new HashMap<>();
     private String defaultRolePrefix = "";
     private Object target;
     private Object filterObject;
@@ -180,10 +179,7 @@ public class CustomMethodSecurityExpression implements MethodSecurityExpressionO
 
     private Set<String> getAuthoritySet() {
         String userId = authentication.getName();
-        if(!roles.containsKey(userId)) {
-            roles.put(userId, roleProvider.lookupUserRoles(userId));
-        }
-        return roles.get(userId);
+        return roleProvider.lookupUserRoles(userId);
     }
 
     private boolean hasAnyAuthorityName(String prefix, String... roles) {

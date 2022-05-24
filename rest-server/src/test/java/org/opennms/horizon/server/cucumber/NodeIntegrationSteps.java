@@ -67,13 +67,13 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
 
     @Given("Prepare node test with admin user {string} with password {string}")
     public void prepareNodeTestWithAdminUserWithPassword(String username, String password) {
-        this.username = username;
-        this.password = password;
+        this.adminUsername = username;
+        this.adminPassword = password;
     }
 
     @Then("Admin user can login and generate an access token")
     public void adminUserCanLoginAndGenerateAnAccessToken() {
-        assertTrue(login(username, password));
+        assertTrue(login(adminUsername, adminPassword));
     }
 
     @Then("Admin user create a location")
@@ -151,13 +151,6 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
 
     @Given("Prepare node test with with normal {string} and password {string}")
     public void prepareNodeTestWithWithNormalAndPassword(String username, String password) {
-        this.username = username;
-        this.password = password;
-        accessToken = "";
-    }
-
-    @Then("Normal user can login and generate an access token")
-    public void normalUserCanLoginAndGenerateAnAccessToken() {
         assertTrue(login(username, password));
     }
 
@@ -200,7 +193,7 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
         assertEquals(403, response.statusCode());
     }
 
-    @Then("Without in correct token user can't access node endpoint")
+    @Then("Without correct token user can't access node endpoint")
     public void withoutInCorrectTokenUserCanTAccessNodeEndpoint() {
         accessToken = "Bearer invalid_token";
         Response response = getRequest(PATH_NODS);

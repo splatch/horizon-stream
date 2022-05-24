@@ -31,6 +31,7 @@ package org.opennms.horizon.server.cucumber;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.util.StringUtils;
@@ -53,6 +54,7 @@ abstract class IntegrationTestBase {
     private static final String LOGIN_URL_TEMPLATE = "%s/realms/%s/protocol/openid-connect/token";
     protected static final String PATH_LOCATIONS = "/locations";
     protected static final String PATH_NODS = "/nodes";
+    protected static final String PATH_GRAPHQL = "/graphql";
 
     protected final ObjectMapper mapper = new ObjectMapper();
     protected  String clientId;
@@ -62,10 +64,11 @@ abstract class IntegrationTestBase {
     protected String testRealm;
     protected String accessToken;
 
-    protected String username;
-    protected String password;
+    protected String adminUsername;
+    protected String adminPassword;
 
     protected boolean login(String user, String password) {
+        accessToken = "";
        String postData = String.format(LOGIN_DATA_TEMPLATE, clientId, user, password);
         Map<String, String> headers = Map.of(
                 "Accept", "application/json",
@@ -77,11 +80,15 @@ abstract class IntegrationTestBase {
     }
 
     protected Response postRequest(String path, JsonNode data) {
+        return postRequest(path, data.toString());
+    }
+
+    protected Response postRequest(String path, String data) {
         Map<String, String> headers = Map.of(
                 "Content-Type", "application/json",
                 "Accept", "application/json",
                 "Authorization", accessToken);
-        return postHelp(apiUrl, path, null, headers, data.toString());
+        return postHelp(apiUrl, path, null, headers, data);
     }
 
     private Response postHelp(String baseUri, String path, RestAssuredConfig config, Map<String, String> headers, String data) {
@@ -124,5 +131,11 @@ abstract class IntegrationTestBase {
                 .baseUri(apiUrl)
                 .when()
                 .delete(path).then().extract().response();
+    }
+
+    protected void cleanDB() {
+        login(adminUsername, adminPassword);
+        List<Long> ids = getRequest(PATH_LOCATIONS).jsonPath().getList("id", Long.class);
+        ids.forEach(id -> deleteRequest(PATH_LOCATIONS + "/" + id));
     }
 }
