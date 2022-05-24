@@ -29,4 +29,12 @@ public class HibernateRequisitionRepository extends AbstractDaoHibernate<Hiberna
         HibernateRequisitionEntity hibernateRequisitionEntity = get(id);
         return hibernateRequisitionEntity.getRequisition();
     }
+
+    @Override
+    public String update(RequisitionDTO requisitionDTO) {
+        HibernateRequisitionEntity hibernateRequisitionEntity = new HibernateRequisitionEntity(requisitionDTO.getId(), requisitionDTO);
+        saveOrUpdate(hibernateRequisitionEntity);
+        log.info("Requisition {} udpated in database", hibernateRequisitionEntity.getRequisitionName());
+        return hibernateRequisitionEntity.getRequisitionName();
+    }
 }

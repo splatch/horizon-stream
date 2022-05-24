@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opennms.netmgt.provision.persistence.dao.HibernateRequisitionEntity;
 import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 
@@ -46,7 +45,7 @@ public class ProvisionerImplTest {
     @Test
     public void publishRequisition() throws Exception {
 
-        provisioner.publishRequisition(requisitionDTO);
+        provisioner.publish(requisitionDTO);
 
         verify(requisitionRepository).save(isA(RequisitionDTO.class));
         verifyNoMoreInteractions(requisitionRepository);
@@ -58,6 +57,15 @@ public class ProvisionerImplTest {
         provisioner.read("blahId");
 
         verify(requisitionRepository).read(eq("blahId"));
+        verifyNoMoreInteractions(requisitionRepository);
+    }
+
+    @Test
+    public void updateRequisition() throws Exception {
+
+        provisioner.update(requisitionDTO);
+
+        verify(requisitionRepository).update(isA(RequisitionDTO.class));
         verifyNoMoreInteractions(requisitionRepository);
     }
 

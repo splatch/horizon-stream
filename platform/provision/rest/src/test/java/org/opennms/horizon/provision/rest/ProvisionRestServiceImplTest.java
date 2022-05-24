@@ -55,23 +55,44 @@ public class ProvisionRestServiceImplTest {
 
     @Test
     public void publishRequisition() throws Exception{
-        when(provisioner.publishRequisition(any())).thenReturn("blahId");
+        when(provisioner.publish(any())).thenReturn("blahId");
 
         Response response = provisionRestService.publishRequisition(requisitionJsonStr);
 
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        verify(provisioner).publishRequisition(any());
+        verify(provisioner).publish(any());
         verifyNoMoreInteractions(provisioner);
     }
 
     @Test
     public void publishRequisitionError() throws Exception{
-        when(provisioner.publishRequisition(any())).thenThrow(new EntityExistsException());
+        when(provisioner.publish(any())).thenThrow(new EntityExistsException());
 
         Response response = provisionRestService.publishRequisition(requisitionJsonStr);
 
         assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-        verify(provisioner).publishRequisition(any());
+        verify(provisioner).publish(any());
+        verifyNoMoreInteractions(provisioner);
+    }
+
+    public void updateRequisition() throws Exception{
+        when(provisioner.update(any())).thenReturn("blahId");
+
+        Response response = provisionRestService.updateRequisition(requisitionJsonStr);
+
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        verify(provisioner).update(any());
+        verifyNoMoreInteractions(provisioner);
+    }
+
+    @Test
+    public void updateRequisitionError() throws Exception{
+        when(provisioner.update(any())).thenThrow(new EntityExistsException());
+
+        Response response = provisionRestService.updateRequisition(requisitionJsonStr);
+
+        assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        verify(provisioner).update(any());
         verifyNoMoreInteractions(provisioner);
     }
 
