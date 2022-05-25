@@ -21,7 +21,9 @@ Run the following: ```cd local-sample```
 
 Change the dns to the above dns entries in config-run to match the /etc/hosts file: ```vi config-run```
 
-TODO: Put the above as env variables to the docker image to be passed in through the k8s yaml file.
+Run ```run.sh```. Takes a while.
+
+Go to http://localhostui in the web browser. 
 
 # Cleanup
 
