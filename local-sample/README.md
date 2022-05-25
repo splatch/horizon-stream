@@ -8,17 +8,34 @@ Running on Mac or Linux.
 
 ```
 sudo vi /etc/hosts
-
-# Update with the following:
-#127.0.0.1 localhostui
-#127.0.0.1 localhostkey
-#127.0.0.1 localhostapi
-#127.0.0.1 localhostcore
+```
+Add with the following to /etc/hosts:
+```
+127.0.0.1 localhostui
+127.0.0.1 localhostkey
+127.0.0.1 localhostapi
+127.0.0.1 localhostcore
 ```
 
-Change the dns to the above dns entries in config-run.
+Run the following: ```cd local-sample```
 
-TODO: Put the above as env variables to the docker image to be passed in through the k8s yaml file.
+Change the dns to the above dns entries in config-run to match the /etc/hosts file: ```vi config-run```
+
+Run ```run.sh```. Takes a while.
+
+Go to http://localhostui in the web browser. 
+
+# Cleanup
+
+```
+# Delete cluster.
+kind delete clusters kind
+
+# Confirm all port-forwarding background processes are killed.
+ps -axf | grep kubectl
+```
+
+# Testing Images Not Published But Built Locally
 
 Rebuild the image:
 ```
@@ -32,12 +49,3 @@ kubectl edit deployment.apps/my-horizon-stream-ui
 # Change: spec.template.spec.containers.imagePullPolicy: Always -> spec.template.spec.containers.imagePullPolicy: Never
 ```
 
-# Cleanup
-
-```
-# Delete cluster.
-kind delete clusters kind
-
-# Confirm all port-forwarding background processes are killed.
-ps -axf | grep kubectl
-```
