@@ -433,6 +433,13 @@ spec:
           image: opennms/horizon-stream-ui-dev
           ports:
             - containerPort: 3000
+          env:
+            - name: DOMAIN_API
+              value: "localhostapi"
+            - name: DOMAIN_KEYCLOAK
+              value: "localhostkey"
+          command: ["/app/dev/entrypoint.sh"]
+          args: ["$(DOMAIN_KEYCLOAK)","$(DOMAIN_API)"]
 ---
 apiVersion: v1
 kind: ConfigMap
