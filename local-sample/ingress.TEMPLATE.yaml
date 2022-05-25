@@ -3,12 +3,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-hs-ui
-  #annotations:
-  #  nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - host: localhostui
+  - host: [[LOCALHOSTUI]]
     http:
       paths:
       - path: /
@@ -23,12 +21,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-keycloak
-  #annotations:
-  #  nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-  - host: localhostkey
+  - host: [[LOCALHOSTKEYCLOAK]]
     http:
       paths:
       - path: /
@@ -42,13 +38,47 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-hs-api
-  #annotations:
-  #  nginx.ingress.kubernetes.io/rewrite-target: /
+  name: ingress-hs-karaf
 spec:
   ingressClassName: nginx
   rules:
-  - host: localhostapi
+  - host: [[LOCALHOSTKARAF]]
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: horizon-stream-core
+            port:
+              number: 8101
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-hs-core
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: [[LOCALHOSTCORE]]
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: horizon-stream-core
+            port:
+              number: 8181
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-hs-api
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: [[LOCALHOSTAPI]]
     http:
       paths:
       - path: /
