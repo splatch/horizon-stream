@@ -20,7 +20,14 @@ public class RequisitionDTOTest {
         RequisitionNodeDTO requisitionNodeDTO = new RequisitionNodeDTO("blahForegnId", "blahLocation", "blahBuilding", "blahCity", "blahNodeLabel");
         requisitionNodeDTO.setParentForeignId("blahParentForeignId");
         requisitionNodeDTO.setParentForeignSource("blahParentForeignSource");
+
+        for (int i=0;i<5; i++) {
+             RequisitionInterfaceDTO interfaceDTO = new RequisitionInterfaceDTO();
+             interfaceDTO.setIpAddr(String.format("192.168.1.%1d", i));
+             requisitionNodeDTO.putInterface(interfaceDTO);
+        }
         requisitionDTO.putNode(requisitionNodeDTO);
+
         log.info(new Gson().toJson(requisitionDTO));
     }
 

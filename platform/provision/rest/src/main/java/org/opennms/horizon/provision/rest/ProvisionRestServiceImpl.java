@@ -69,4 +69,12 @@ public class ProvisionRestServiceImpl implements ProvisionRestService {
             }
         });
     }
+
+    @Override
+    public Response scanNodes() {
+        return this.sessionUtils.withReadOnlyTransaction(() -> {
+            provisioner.performNodeScan();
+            return Response.ok().build();
+        });
+    }
 }
