@@ -1,0 +1,52 @@
+BODY="
+<event xmlns=\"http://xmlns.opennms.org/xsd/event\">
+  <time>2022-01-12 17:12:22</time>
+  <uei>uei.opennms.org/alarms/trigger</uei>
+  <source>asn-cli-script</source>
+  <creation-time>2022-01-12 17:12:22</creation-time>
+  <descr>A problem has been triggered...</descr>
+  <logmsg>A problem has been triggered on //...</logmsg>
+</event>
+"
+
+HOST_PORT=localhost:8181
+ROOT_PATH=""
+ACCEPT="${XML}"
+CURL_OPTS=()
+TOKEN=""
+
+while getopts "cH:jt:u:vx" arg
+do
+	case "$arg" in
+		c)
+			ROOT_PATH="cxf/"
+			;;
+
+		H)
+			HOST_PORT="${OPTARG}"
+			;;
+
+		j)
+			ACCEPT="${JSON}"
+			;;
+
+		t)
+			TOKEN="${OPTARG}"
+			CURL_OPTS=("${CURL_OPTS[@]}" "-H" "Authorization: Bearer ${OPTARG}")
+			;;
+
+		x)
+			ACCEPT="${XML}"
+			;;
+
+		u)
+			CURL_OPTS=("${CURL_OPTS[@]}" "-u${OPTARG}")
+			;;
+
+		v)
+			CURL_OPTS=("${CURL_OPTS[@]}" -v)
+			;;
+	esac
+done
+
+curl "${CURL_OPTS[@]}" -X POST -H "Accept: ${ACCEPT}" -H 'Content-Type: application/xml' --data-ascii "${BODY}" -s http://${HOST_PORT}/${ROOT_PATH}events

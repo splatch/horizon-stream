@@ -28,6 +28,7 @@
 
 package org.opennms.horizon;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.RestAssured;
@@ -37,22 +38,32 @@ import io.restassured.internal.util.IOUtils;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
+import org.opennms.keycloak.admin.client.KeycloakAdminClientSession;
+import org.opennms.keycloak.admin.client.exc.KeycloakBaseException;
+import org.opennms.keycloak.admin.client.impl.KeycloakAdminClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -61,6 +72,8 @@ import static org.junit.Assert.assertTrue;
 public class AlarmsDaemonRestTestSteps {
 
     public static final int DEFAULT_HTTP_SOCKET_TIMEOUT = 15_000;
+    public static final String KEYCLOAK_ADMIN_CLIENT_ID = "admin-cli";
+    public static final String KEYCLOAK_ACCOUNT_CLIENT_ID = "account";
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(AlarmsDaemonRestTestSteps.class);
 
@@ -80,18 +93,25 @@ public class AlarmsDaemonRestTestSteps {
     private String dbPassword;
 
     private String applicationBaseUrl;
-    private String username;
-    private String password;
     private String acceptEncoding;
     private String contentType;
     private String postPayload;
 
+    private String keycloakUrl;
+    private String keycloakAdminUser;
+    private String keycloakAdminPassword;
+    private String keycloakTestUser;
+    private String keycloakTestPassword;
+    private String keycloakTestRealm;
 
     //
     // Test Runtime Data
     //
     private Response restAssuredResponse;
     private JsonPath parsedJsonResponse;
+    private KeycloakAdminClientSession keycloakUserSession;
+    private KeycloakAdminClientSession keycloakAdminSession;
+    private int alarmId;
 
 //========================================
 // Constructor
@@ -121,21 +141,89 @@ public class AlarmsDaemonRestTestSteps {
         this.log.info("Using DB URL {}", this.databaseUrl);
     }
 
+    @Given("keycloak server URL in system property {string}")
+    public void keycloakServerURLInSystemProperty(String systemProperty) {
+        this.keycloakUrl = System.getProperty(systemProperty);
+
+        this.log.info("Using KEYCLOAK URL {}", this.keycloakUrl);
+    }
+
+    @Given("keycloak admin user {string} with password {string}")
+    public void keycloakAdminUserWithPassword(String adminUsername, String adminPassword) {
+        this.keycloakAdminUser = adminUsername;
+        this.keycloakAdminPassword = adminPassword;
+    }
+
+    @Given("keycloak test user {string} with password {string}")
+    public void keycloakTestUserWithPassword(String testUsername, String testPassword) {
+        this.keycloakTestUser = testUsername;
+        this.keycloakTestPassword = testPassword;
+    }
+
+    @Given("keycloak test realm {string}")
+    public void keycloakTestRealm(String realm) {
+        this.keycloakTestRealm = realm;
+    }
+
+    @Then("login admin user with keycloak")
+    public void loginAdminUserToKeycloak() throws Exception {
+        this.keycloakAdminSession = this.loginToKeycloak(KEYCLOAK_ADMIN_CLIENT_ID, this.keycloakAdminUser, this.keycloakAdminPassword, "master");
+    }
+
+    @Then("login test user with keycloak")
+    public void loginTestUserToKeycloak() throws Exception {
+        this.keycloakUserSession = this.loginToKeycloak(KEYCLOAK_ADMIN_CLIENT_ID, this.keycloakTestUser, this.keycloakTestPassword, this.keycloakTestRealm);
+    }
+
+    @Then("add keycloak realm {string}")
+    public void addKeycloakRealm(String realmName) throws Exception {
+        this.keycloakAdminSession.addRealm(realmName, null);
+    }
+
+
+    @Then("add keycloak user {string} with password {string} in realm {string}")
+    public void addKeycloakUserWithPassword(String username, String password, String realm) throws Exception {
+        keycloakAdminSession.addUser(realm, username, userRepresentation -> {
+            CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
+            credentialRepresentation.setType("password");
+            credentialRepresentation.setTemporary(false);
+            credentialRepresentation.setValue(password);
+
+            userRepresentation.setCredentials(Collections.singletonList(credentialRepresentation));
+        });
+    }
+
+
+    @Then("create role {string} in realm {string}")
+    public void createRoleInRealm(String roleName, String realmName) throws KeycloakBaseException, IOException, URISyntaxException {
+        keycloakAdminSession.createRole(realmName, roleName);
+    }
+
+    @Then("assign role {string} to keycloak user {string} in realm {string}")
+    public void assignRoleToKeycloakUser(String roleName, String username, String realm) throws Exception {
+        UserRepresentation userRepresentation = keycloakAdminSession.getUserByUsername(realm, username);
+        assertNotNull("Failed to lookup user from keycloak: username=" + username + "; realm=" + realm, userRepresentation);
+
+        RoleRepresentation roleRepresentation = keycloakAdminSession.getRoleByName(realm, roleName);
+        assertNotNull("Failed to lookup role from keycloak: rolename=" + roleName + "; realm=" + realm, roleRepresentation);
+
+        keycloakAdminSession.assignUserRole(realm, userRepresentation.getId(), roleName, roleRepresentation.getId());
+    }
+
     @Given("DB username {string} and password {string}")
     public void dbUsernameAndPassword(String username, String password) {
         this.dbUsername = username;
         this.dbPassword = password;
     }
 
-    @Given("^http username \"([^\"]*)\" password \"([^\"]*)\"$")
-    public void httpUsernamePassword(String username, String password) throws Throwable {
-        this.username = username;
-        this.password = password;
-    }
-
     @Given("^JSON accept encoding$")
     public void jsonAcceptEncoding() throws Throwable {
         this.acceptEncoding = "application/json";
+    }
+
+    @Given("^TEXT accept encoding$")
+    public void textAcceptEncoding() throws Throwable {
+        this.acceptEncoding = "text/plain";
     }
 
     @Given("^JSON content type$")
@@ -174,7 +262,9 @@ public class AlarmsDaemonRestTestSteps {
 
     @Then("^send POST request at path \"([^\"]*)\"$")
     public void sendPOSTRequestAtPath(String path) throws Throwable {
-        URL requestUrl = new URL(new URL(this.applicationBaseUrl), path);
+        String resolvedPath = this.resolvePathVariables(path);
+
+        URL requestUrl = new URL(new URL(this.applicationBaseUrl), resolvedPath);
 
         RestAssuredConfig restAssuredConfig = this.createRestAssuredTestConfig();
 
@@ -184,13 +274,15 @@ public class AlarmsDaemonRestTestSteps {
                         .config(restAssuredConfig)
                         ;
 
-        if (this.username != null) {
+        String accessToken = this.keycloakUserSession.getInitialAccessToken();
+
+        if (accessToken != null) {
             requestSpecification =
-                    requestSpecification
-                            .auth()
-                            .preemptive()
-                            .basic(this.username, this.password)
-                            ;
+                requestSpecification
+                        .auth()
+                        .preemptive()
+                        .oauth2(accessToken)
+                        ;
         }
 
         if (this.contentType!= null) {
@@ -217,6 +309,26 @@ public class AlarmsDaemonRestTestSteps {
         assertNotNull(this.restAssuredResponse);
     }
 
+    @Then("request non-empty alarm list with retry timeout {int}")
+    public void requestAlarmListWithRetryTimeout(int retryTimeout) throws Throwable {
+        this.restAssuredResponse = this.sendGetRequestWithRetry("/alarms/list", retryTimeout,
+                //
+                // Retry the operation until response body has an alarm or timeout
+                //
+                (response) -> {
+                    if (response == null || response.getStatusCode() == 500 || response.getStatusCode() == 404) {
+                        return false;
+                    }
+
+                    if (response.getStatusCode() == 200) {
+                        JsonPath body = JsonPath.from(response.getBody().asString());
+                        return (int) body.get("totalCount") > 0;
+                    }
+
+                    return false;
+                });
+    }
+
     @Then("^verify the response code (\\d+) was returned$")
     public void verifyTheResponseCodeWasReturned (int expectedResponseCode) {
         assertEquals(expectedResponseCode, this.restAssuredResponse.getStatusCode());
@@ -225,6 +337,16 @@ public class AlarmsDaemonRestTestSteps {
     @Then("^parse the JSON response$")
     public void parseTheJsonResponse() {
         this.parsedJsonResponse = JsonPath.from((this.restAssuredResponse.getBody().asString()));
+    }
+
+    @Then("extract ID of the first alarm")
+    public void extractIDOfTheFirstAlarm() {
+        this.alarmId = this.parsedJsonResponse.getInt("alarm[0].id");
+    }
+
+    @Then("acknowledge alarm")
+    public void acknowledgeAlarm() {
+
     }
 
     @Then("^verify JSON path expressions match$")
@@ -259,6 +381,18 @@ public class AlarmsDaemonRestTestSteps {
 // Internals
 //========================================
 
+    private KeycloakAdminClientSession loginToKeycloak(String keycloakClientId, String username, String password, String realm) throws Exception {
+
+        KeycloakAdminClientImpl keycloakAdminClient = new KeycloakAdminClientImpl();
+        keycloakAdminClient.setBaseUrl(this.keycloakUrl);
+        keycloakAdminClient.setClientId(keycloakClientId);
+        keycloakAdminClient.init();
+
+        KeycloakAdminClientSession session = keycloakAdminClient.login(realm, username, password);
+
+        return session;
+    }
+
     private RestAssuredConfig createRestAssuredTestConfig() {
         return RestAssuredConfig.config()
                 .httpClient(HttpClientConfig.httpClientConfig()
@@ -273,11 +407,17 @@ public class AlarmsDaemonRestTestSteps {
         if (parts.length == 2) {
             // Expression and value to match - evaluate as a string and compare
             String actualValue = jsonPath.getString(parts[0]);
-            String actualTrimmed = actualValue.trim();
+            String actualTrimmed;
+
+            if (actualValue != null) {
+                actualTrimmed = actualValue.trim();
+            }  else {
+                actualTrimmed = null;
+            }
 
             String expectedTrimmed = parts[1].trim();
 
-            assertEquals("matching to JSON path " + jsonPath, expectedTrimmed, actualTrimmed);
+            assertEquals("matching to JSON path " + parts[0], expectedTrimmed, actualTrimmed);
         } else {
             // Just an expression - evaluate as a boolean
             assertTrue("verifying JSON path expression " + pathExpression, jsonPath.getBoolean(pathExpression));
@@ -292,26 +432,6 @@ public class AlarmsDaemonRestTestSteps {
         }
     }
 
-    @Then("request non-empty alarm list with retry timeout {int}")
-    public void requestAlarmListWithRetryTimeout(int retryTimeout) throws Throwable {
-        this.restAssuredResponse = this.sendGetRequestWithRetry("/alarms/list", retryTimeout,
-                //
-                // Retry the operation until response body has an alarm or timeout
-                //
-                (response) -> {
-                    if (response == null || response.getStatusCode() == 500 || response.getStatusCode() == 404) {
-                        return false;
-                    }
-
-                    if (response.getStatusCode() == 200) {
-                        JsonPath body = JsonPath.from(response.getBody().asString());
-                        return (int) body.get("totalCount") > 0;
-                    }
-
-                    return false;
-                });
-    }
-
     private Response sendGetRequestWithRetry(String path, int retryTimeout, Predicate<Response> completionPredicate) throws Throwable {
         URL requestUrl = new URL(new URL(this.applicationBaseUrl), path);
 
@@ -323,12 +443,18 @@ public class AlarmsDaemonRestTestSteps {
                         .config(restAssuredConfig)
                 ;
 
-        if (this.username != null) {
+        String accessToken = null;
+
+        if( this.keycloakUserSession != null) {
+            accessToken = this.keycloakUserSession.getInitialAccessToken();
+        }
+
+        if (accessToken != null) {
             requestSpecification =
                     requestSpecification
                             .auth()
                             .preemptive()
-                            .basic(this.username, this.password)
+                            .oauth2(accessToken)
             ;
         }
 
@@ -346,11 +472,31 @@ public class AlarmsDaemonRestTestSteps {
                                 .get(requestUrl)
                                 .thenReturn();
 
-        return this.retryUtils.retry(
+        Response response =
+                this.retryUtils.retry(
                         operation,
                         completionPredicate,
                         1000,
                         retryTimeout,
                         null);
+
+        log.debug("RESPONSE: status-code={}; body={}", response.getStatusCode(), response.getBody().asString());
+
+        return response;
+    }
+
+    private String formatJsonObjectText(Consumer<Map<String, Object>> fieldAdder) throws Exception {
+        Map<String, Object> jsonObject = new HashMap<>();
+
+        fieldAdder.accept(jsonObject);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonText = objectMapper.writeValueAsString(jsonObject);
+
+        return jsonText;
+    }
+
+    private String resolvePathVariables(String path) {
+        return path.replaceAll(Pattern.quote("${alarmId}"), String.valueOf(this.alarmId));
     }
 }

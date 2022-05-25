@@ -41,6 +41,8 @@
         <commons.lang.version>2.6</commons.lang.version>
         <cucumber.version>7.1.0</cucumber.version>
         <cxf.version>3.5.0</cxf.version>
+        <docker.image.tag>local</docker.image.tag>
+        <docker.image.skipPush>false</docker.image.skipPush>
         <drools.version>7.31.0.Final</drools.version>
         <glassfish.jaxb.version>2.3.2</glassfish.jaxb.version>
         <grpc.version>1.43.2</grpc.version>
@@ -57,6 +59,7 @@
         <java.version>11</java.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jaxrs.version>2.1</jaxrs.version>
+        <jboss-logging.version>3.4.1.Final</jboss-logging.version>
         <jexl.version>2.1.1</jexl.version>
         <jicmp.version>2.0.1</jicmp.version>
         <jicmp6.version>2.0.1</jicmp6.version>
@@ -66,6 +69,7 @@
         <json.version>20171018</json.version>
         <jsr250.version>1.0</jsr250.version>
         <karaf.version>4.3.6</karaf.version>
+        <keycloak.version>17.0.0</keycloak.version>
         <liquibaseVersion>3.6.3</liquibaseVersion>
         <log4j2.version>2.17.1</log4j2.version>
         <mapstruct.version>1.4.1.Final</mapstruct.version>

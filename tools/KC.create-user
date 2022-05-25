@@ -1,0 +1,66 @@
+#!/bin/bash
+
+HOST_PORT=localhost:9000
+REALM="opennms"
+USERNAME=""
+PASSWORD=""
+TOKEN=""
+
+usage()
+{
+	echo "Usage: $0 [-hv] [-H <host:port>] [-p <password>] [-R <realm>] [-t <access-token>] [-u <username>]"
+	echo
+	echo "  -h  Display this help"
+	echo "  -v  Verbose curl output"
+}
+
+while getopts "hH:p:R:t:u:v" arg
+do
+	case "$arg" in
+		h)
+			usage
+			exit 0
+			;;
+
+		H)
+			HOST_PORT="${OPTARG}"
+			;;
+
+		p)
+			PASSWORD="${OPTARG}"
+			;;
+
+		R)
+			REALM="${OPTARG}"
+			;;
+
+		t)
+			TOKEN="${OPTARG}"
+			;;
+
+		u)
+			USERNAME="${OPTARG}"
+			;;
+
+		v)
+			CURL_OPTS=("${CURL_OPTS[@]}" -v)
+			;;
+
+		*)
+			usage >&2
+			exit 1
+			;;
+	esac
+done
+
+URL="http://${HOST_PORT}/admin/realms/${REALM}/users"
+
+REQUEST="$(printf '{"username":"%s","enabled":true,"credentials":[{"type":"password","temporary":false,"value":"%s"}]}' "${USERNAME}" "${PASSWORD}")"
+
+{
+	curl "${CURL_OPTS[@]}" -X POST \
+		-H "Authorization: Bearer ${TOKEN}" \
+		-H 'Content-Type: application/json' \
+		--data-ascii "${REQUEST}" \
+		"${URL}"
+}

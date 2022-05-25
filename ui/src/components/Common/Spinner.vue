@@ -1,30 +1,25 @@
 <template>
   <transition name="fade">
-    <div class="spinner" v-if="spinnerState">
+    <div class="spinner" v-if="isActive">
       <FeatherSpinner />
     </div>
   </transition>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useStore } from 'vuex'
-import { FeatherSpinner } from '@featherds/progress'
-
-const store = useStore()
-const spinnerState = computed(() => store.state.spinnerModule.spinnerState)
+import useSpinner from '@/composables/useSpinner'
+const { isActive } = useSpinner()
 </script>
 
 <style scoped lang="scss">
 .spinner {
   z-index: 2;
   position: absolute;
-  width: 95%;
-  height: 90%;
+  width: 100%;
   background: transparent;
 }
 .spinner-container {
-  height: 75%;
+  height: 78vh;
 }
 .fade-enter-active,
 .fade-leave-active {
