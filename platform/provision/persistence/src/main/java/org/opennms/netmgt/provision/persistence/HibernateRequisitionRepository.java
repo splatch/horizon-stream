@@ -1,5 +1,7 @@
 package org.opennms.netmgt.provision.persistence;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.db.dao.util.AbstractDaoHibernate;
@@ -36,5 +38,10 @@ public class HibernateRequisitionRepository extends AbstractDaoHibernate<Hiberna
         saveOrUpdate(hibernateRequisitionEntity);
         log.info("Requisition {} udpated in database", hibernateRequisitionEntity.getRequisitionName());
         return hibernateRequisitionEntity.getRequisitionName();
+    }
+
+    @Override
+    public List<RequisitionDTO> read() {
+        return super.findAll().stream().map(entity -> entity.getRequisition()).collect(Collectors.toList());
     }
 }

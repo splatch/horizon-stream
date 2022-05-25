@@ -66,4 +66,8 @@ public interface ProvisionRestService {
     @Produces(MediaType.APPLICATION_JSON)
 //    @RolesAllowed({"admin"})
     Response deleteRequisition(@PathParam("id") final String requisitionName);
+
+    @POST
+    @Path("scanNodes")
+    Response scanNodes();
 }

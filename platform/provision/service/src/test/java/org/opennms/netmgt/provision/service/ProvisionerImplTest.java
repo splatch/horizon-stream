@@ -10,6 +10,9 @@ import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import org.apache.camel.Produce;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.test.junit4.CamelTestSupport;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 
-public class ProvisionerImplTest {
+public class ProvisionerImplTest extends CamelTestSupport {
 
     Provisioner provisioner;
     String requisitionJsonStr = null;
@@ -27,11 +30,14 @@ public class ProvisionerImplTest {
 
     Gson gson = new Gson();
     RequisitionDTO requisitionDTO;
+
+    @Produce
+    protected ProducerTemplate template;
     
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        provisioner = new ProvisionerImpl(requisitionRepository);
+        provisioner = new ProvisionerImpl(requisitionRepository, template);
 
         InputStream stream = this.getClass().getClassLoader().getResourceAsStream("import_dummy-empty.json");
         if (stream == null) {

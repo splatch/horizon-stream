@@ -28,18 +28,21 @@
 
 package org.opennms.netmgt.provision.service;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.camel.ProducerTemplate;
 import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
+import org.opennms.netmgt.provision.service.scan.NodeScanner;
 
 @Slf4j
 @RequiredArgsConstructor
 public class ProvisionerImpl implements Provisioner {
 
     private final RequisitionRepository requisitionRepository;
-
+    private final ProducerTemplate scanProducer;
 
     @Override
     public String publish(RequisitionDTO requisition) {
@@ -60,5 +63,15 @@ public class ProvisionerImpl implements Provisioner {
     @Override
     public String update(RequisitionDTO requisitionDTO) throws Exception {
         return requisitionRepository.update(requisitionDTO);
+    }
+
+    @Override
+    public List<RequisitionDTO> read() {
+        return requisitionRepository.read();
+    }
+
+    @Override
+    public void performNodeScan() {
+        scanProducer.sendBody(NodeScanner.DIRECT_SCAN,"blah");
     }
 }
