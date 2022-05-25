@@ -26,19 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.security;
+package org.opennms.horizon.server.cache;
 
-import java.util.Set;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class KeycloakRoleProvider implements UserRoleProvider{
-    private KeyCloakUtils keyCloakUtils;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
 
-    public KeycloakRoleProvider(KeyCloakUtils keyCloakUtils) {
-        this.keyCloakUtils= keyCloakUtils;
+@Configuration
+public class CacheConfig {
+
+    @Value("${spring.cache.caffeine.spec}")
+    private String cacheSpec;
+
+    @Bean
+    public Caffeine createCaffeine() {
+        CaffeineSpec spec = CaffeineSpec.parse(cacheSpec);
+        return Caffeine.from(spec);
     }
 
-    @Override
-    public Set<String> lookupUserRoles(final String userId) {
-        return keyCloakUtils.listUserRoles(userId);
+    @Bean
+    public CacheManager cacheManager(Caffeine caffeine) {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(caffeine);
+        return cacheManager;
     }
 }

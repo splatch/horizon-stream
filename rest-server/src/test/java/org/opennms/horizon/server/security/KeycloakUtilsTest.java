@@ -28,17 +28,15 @@
 
 package org.opennms.horizon.server.security;
 
-import java.util.Set;
+import org.keycloak.admin.client.Keycloak;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-public class KeycloakRoleProvider implements UserRoleProvider{
-    private KeyCloakUtils keyCloakUtils;
+@SpringBootTest
+public class KeycloakUtilsTest {
 
-    public KeycloakRoleProvider(KeyCloakUtils keyCloakUtils) {
-        this.keyCloakUtils= keyCloakUtils;
-    }
+    @MockBean
+    private Keycloak mockKeycloak;
 
-    @Override
-    public Set<String> lookupUserRoles(final String userId) {
-        return keyCloakUtils.listUserRoles(userId);
-    }
+    private String testRealm = "test-realm";
 }
