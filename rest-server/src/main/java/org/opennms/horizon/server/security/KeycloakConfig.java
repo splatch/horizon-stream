@@ -91,8 +91,8 @@ public class KeycloakConfig {
 
     @Autowired
     @Bean
-    UserRoleProvider initialRoleProvider(Keycloak keycloakk) {
-        return new KeycloakRoleProvider(keycloakk, appRealm);
+    UserRoleProvider initialRoleProvider(KeyCloakUtils keyCloakUtils) {
+        return new KeycloakRoleProvider(keyCloakUtils, appRealm);
     }
 
     @Autowired

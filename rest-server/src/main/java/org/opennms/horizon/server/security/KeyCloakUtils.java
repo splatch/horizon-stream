@@ -30,8 +30,11 @@ package org.opennms.horizon.server.security;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Response;
 
@@ -94,7 +97,6 @@ public class KeyCloakUtils {
         RealmResource realmResource = keycloak.realm(realm);
         UsersResource usersResource = realmResource.users();
         Response response = usersResource.create(userRp);
-        int statusCode = response.getStatus();
         String userId = CreatedResponseUtil.getCreatedId(response);
         RoleRepresentation roleRp = realmResource.roles().get(role).toRepresentation();
         UserResource userResource = usersResource.get(userId);
@@ -106,8 +108,17 @@ public class KeyCloakUtils {
         roles.forEach(r -> addRole(realm, r));
     }
 
-    public boolean isClosed() {
-        return keycloak.isClosed();
+    /**
+     *
+     * @param usrId the keycloak user id
+     * @return set of realm roles assigned to the user
+     */
+    public Set<String> listUserRoles(String realm, String usrId) {
+        UserResource userResource = keycloak.realm(realm).users().get(usrId);
+        if(userResource != null) {
+            return userResource.roles().getAll().getRealmMappings().stream().map(r->r.getName()).collect(Collectors.toSet());
+        }
+        return new HashSet<>();
     }
 
     public void close() {
