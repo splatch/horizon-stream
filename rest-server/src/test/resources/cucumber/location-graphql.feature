@@ -1,9 +1,9 @@
 Feature: Location GraphQL Integration tests
 
   Background:
-    Given Prepare location graphql test with api server url in system property "rest-server-url"
-    Given Prepare location graphql test with auth server url in system property "keycloak.url", realm "opennms" and client "admin-cli"
-    Given Prepare location graphql test with admin user "admin-user" with password "password123"
+    Given REST server url in system property "rest-server-url"
+    Given Keycloak auth server url in system property "keycloak.url", realm "opennms" and client "admin-cli"
+    Given Admin user "admin-user" with password "password123"
 
   Scenario: Admin user has full access of locations via graphql endpoint
     Then Admin user can loging and create access token
@@ -14,7 +14,7 @@ Feature: Location GraphQL Integration tests
     Then Admin user can delete a location
 
   Scenario: Normal user only can view location view locations via graphql endpoint
-    Given Normal user "test-user" with password "password123" for location graphql test
+    Then Normal user "test-user" with password "password123" login to test location graphql api
     Then Normal user can query locations
     Then Normal user can query a location by ID
     Then Normal user am not allowed to create a location
@@ -22,7 +22,6 @@ Feature: Location GraphQL Integration tests
     Then Normal user not allowed to delete a location
 
   Scenario: Not authorized user can't access the graphql API
-    Given Prepare location graphql test with api server url in system property "rest-server-url"
     Then Without correct token user can't access graphql api
 
 

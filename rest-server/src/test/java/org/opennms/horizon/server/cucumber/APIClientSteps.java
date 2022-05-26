@@ -38,34 +38,69 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import io.cucumber.java.en.Given;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-abstract class IntegrationTestBase {
+public class APIClientSteps {
     private static final RestAssuredConfig restConfig = RestAssuredConfig.config().httpClient(
             HttpClientConfig.httpClientConfig().setParam("http.connection.timeout", 30000)
                     .setParam("http.socket.timeout", 30000)
     );
     private static final String LOGIN_DATA_TEMPLATE = "client_id=%s&username=%s&password=%s&grant_type=password";
     private static final String LOGIN_URL_TEMPLATE = "%s/realms/%s/protocol/openid-connect/token";
-    protected static final String PATH_LOCATIONS = "/locations";
-    protected static final String PATH_NODS = "/nodes";
-    protected static final String PATH_GRAPHQL = "/graphql";
+    public static final String PATH_LOCATIONS = "/locations";
+    public static final String PATH_NODS = "/nodes";
+    public static final String PATH_GRAPHQL = "/graphql";
 
-    protected final ObjectMapper mapper = new ObjectMapper();
-    protected  String clientId;
+    private final ObjectMapper mapper = new ObjectMapper();
+    private  String clientId;
 
     protected String apiUrl;
     protected String keycloakAuthUrl;
-    protected String testRealm;
-    protected String accessToken;
+    private String testRealm;
 
-    protected String adminUsername;
-    protected String adminPassword;
+    private String accessToken;
+
+    private String adminUsername;
+    private String adminPassword;
+
+
+
+    @Given("REST server url in system property {string}")
+    public void restServerUrlInSystemProperty(String apiUrlProperty) {
+        this.apiUrl = System.getProperty(apiUrlProperty);
+    }
+
+    @Given("Keycloak auth server url in system property {string}, realm {string} and client {string}")
+    public void keycloakAuthServerUrlInSystemProperty(String authUrlProperty, String realm, String clientId) {
+        this.keycloakAuthUrl = System.getProperty(authUrlProperty);
+        this.testRealm = realm;
+        this.clientId = clientId;
+    }
+
+    @Given("Admin user {string} with password {string}")
+    public void adminUserWithPassword(String username, String password) {
+        this.adminUsername = username;
+        this.adminPassword = password;
+    }
+
+    public String getAdminUsername() {
+        return adminUsername;
+    }
+
+    public String getAdminPassword() {
+        return adminPassword;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 
     protected boolean login(String user, String password) {
         accessToken = "";
@@ -137,5 +172,13 @@ abstract class IntegrationTestBase {
         login(adminUsername, adminPassword);
         List<Long> ids = getRequest(PATH_LOCATIONS).jsonPath().getList("id", Long.class);
         ids.forEach(id -> deleteRequest(PATH_LOCATIONS + "/" + id));
+    }
+
+    protected JsonNode objectToJson(Object data) {
+        return mapper.valueToTree(data);
+    }
+
+    protected ObjectNode createJsonNode() {
+        return mapper.createObjectNode();
     }
 }
