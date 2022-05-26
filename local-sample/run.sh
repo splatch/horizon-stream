@@ -116,4 +116,4 @@ cd ../tools/
 printf "\n\n# Output\n"
 printf "################################################################################\n\n"
 
-printf "\n\nDone\n\nGo to $DOMAIN_UI and use user 'user001' & password 'passw0rd'\n\n"
+printf "\n\nDone\n\nGo to $DOMAIN_UI\n\n"
