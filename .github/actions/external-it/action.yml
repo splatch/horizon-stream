@@ -41,39 +41,46 @@ runs:
         docker images
         # Image from the action-feature-core shows up here.
 
-        kubectl get all
+        #kubectl get all
 
-        docker ps
+        #docker ps
 
-        kind load docker-image opennms/horizon-stream-ui:local          
-        kind load docker-image opennms/horizon-stream-core:local        
-        kind load docker-image opennms/horizon-stream-rest-server:local 
+        #docker tag opennms/horizon-stream-ui:latest opennms/horizon-stream-ui:local         
+        #docker tag opennms/horizon-stream-core:latest opennms/horizon-stream-core:local         
+        #docker tag opennms/horizon-stream-rest-server:latest opennms/horizon-stream-rest-server:local         
 
-        # List images in kind cluster container.  
-        # ISSUE: This produces an error, not required if the '$ kubectl apply
-        # -f ...' succeeds below, means image loads were successful.
-        #docker exec -it kind-control-plane crictl images ls
+        #kind load docker-image opennms/horizon-stream-ui:latest          
+        #kind load docker-image opennms/horizon-stream-core:latest        
+        #kind load docker-image opennms/horizon-stream-rest-server:latest 
 
-        cat dev/kubernetes.kafka.yaml|  sed 's/opennms\/horizon-stream-ui-dev/opennms\/horizon-stream-ui\:local/' > dev/kubernetes.kafka.1.yaml
-        cat dev/kubernetes.kafka.1.yaml|  sed 's/opennms\/horizon-stream-api/opennms\/horizon-stream-rest-server\:local/' > dev/kubernetes.kafka.2.yaml
-        cat dev/kubernetes.kafka.2.yaml|  sed 's/opennms\/horizon-stream-core/opennms\/horizon-stream-core\:local/' > dev/kubernetes.kafka.3.yaml
+        ## List images in kind cluster container.  
+        ## ISSUE: This produces an error, not required if the '$ kubectl apply
+        ## -f ...' succeeds below, means image loads were successful.
+        ##docker exec -it kind-control-plane crictl images ls
 
-        kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-        kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
-        kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
-        # Verify (should get keycloaks and keycloakrealmiiimports)
-        kubectl api-resources | grep keycloak
+        #cd local-sample/
+        #./run.sh
+ 
+        ##cat dev/kubernetes.kafka.yaml|  sed 's/opennms\/horizon-stream-ui-dev/opennms\/horizon-stream-ui\:local/' > dev/kubernetes.kafka.1.yaml
+        ##cat dev/kubernetes.kafka.1.yaml|  sed 's/opennms\/horizon-stream-api/opennms\/horizon-stream-rest-server\:local/' > dev/kubernetes.kafka.2.yaml
+        ##cat dev/kubernetes.kafka.2.yaml|  sed 's/opennms\/horizon-stream-core/opennms\/horizon-stream-core\:local/' > dev/kubernetes.kafka.3.yaml
 
-        # Test change
-        cat dev/kubernetes.kafka.3.yaml | grep image
+        ##kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+        ##kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+        ##kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
+        ### Verify (should get keycloaks and keycloakrealmiiimports)
+        ##kubectl api-resources | grep keycloak
 
-        kubectl apply -f dev/kubernetes.kafka.3.yaml
+        ### Test change
+        ##cat dev/kubernetes.kafka.3.yaml | grep image
 
-        # Test install - Wait until core is running.
-        # TODO: Write a listener for pods completing rather than a timed wait.
-        echo "wait for pods to start"
-        sleep 120
-        kubectl get all
+        ##kubectl apply -f dev/kubernetes.kafka.3.yaml
+
+        ### Test install - Wait until core is running.
+        ### TODO: Write a listener for pods completing rather than a timed wait.
+        ##echo "wait for pods to start"
+        ##sleep 120
+        #kubectl get all
 
       shell: bash
 
