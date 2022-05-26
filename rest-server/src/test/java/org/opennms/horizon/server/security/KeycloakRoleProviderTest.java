@@ -67,7 +67,7 @@ public class KeycloakRoleProviderTest {
         doReturn(roles).when(mockUtils).listUserRoles(userID);
         Set<String> result = roleProvider.lookupUserRoles(userID);
         assertEquals(roles, result);
-        //The second lookup should hit the caffeine cache
+        //The second lookup shouldn't hit the KeycloakUtils
         Set<String> result2 = roleProvider.lookupUserRoles(userID);
         assertEquals(roles, result2);
         verify(mockUtils).listUserRoles(userID);
