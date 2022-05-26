@@ -30,6 +30,8 @@ package org.opennms.horizon.server.security;
 
 import java.util.Set;
 
+import org.springframework.cache.annotation.Cacheable;
+
 public class KeycloakRoleProvider implements UserRoleProvider{
     private KeyCloakUtils keyCloakUtils;
 
@@ -38,6 +40,7 @@ public class KeycloakRoleProvider implements UserRoleProvider{
     }
 
     @Override
+    @Cacheable("user-roles")
     public Set<String> lookupUserRoles(final String userId) {
         return keyCloakUtils.listUserRoles(userId);
     }

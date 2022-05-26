@@ -28,15 +28,49 @@
 
 package org.opennms.horizon.server.security;
 
-import org.keycloak.admin.client.Keycloak;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+import java.util.HashSet;
+import java.util.Set;
+
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
-public class KeycloakUtilsTest {
-
+public class KeycloakRoleProviderTest {
     @MockBean
-    private Keycloak mockKeycloak;
+    private KeyCloakUtils mockUtils;
 
-    private String testRealm = "test-realm";
+    @Autowired
+    private KeycloakConfig config;
+    private KeycloakRoleProvider roleProvider;
+    private String userID = "test-user-id";
+    private Set<String> roles;
+
+    @BeforeEach
+    public void setup(){
+        roleProvider = (KeycloakRoleProvider) config.initialRoleProvider(mockUtils);
+        roles = new HashSet<>();
+        roles.add("admin");
+        roles.add("user");
+    }
+
+    @Test
+    public void testLookupUserRoles() {
+        doReturn(roles).when(mockUtils).listUserRoles(userID);
+        Set<String> result = roleProvider.lookupUserRoles(userID);
+        assertEquals(roles, result);
+        //The second lookup should hit the caffeine cache
+        Set<String> result2 = roleProvider.lookupUserRoles(userID);
+        assertEquals(roles, result2);
+        verify(mockUtils).listUserRoles(userID);
+        verifyNoMoreInteractions(mockUtils);
+    }
 }

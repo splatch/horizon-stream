@@ -124,7 +124,6 @@ public class KeyCloakUtils {
      * @param usrId the keycloak user id
      * @return set of realm roles assigned to the user
      */
-    @Cacheable("user-roles")
     public Set<String> listUserRoles(String usrId) {
         log.info("list roles for user {} with realm {}", usrId, appRealm);
         UserResource userResource = keycloak.realm(appRealm).users().get(usrId);
