@@ -1,9 +1,9 @@
 Feature: Location GraphQL Integration tests
 
   Background:
-    Given Prepare location graphql test with api server url in system property "rest-server-url"
-    Given Prepare location graphql test with auth server url in system property "keycloak.url", realm "opennms" and client "admin-cli"
-    Given Prepare location graphql test with admin user "admin-user" with password "password123"
+    Given REST server url in system property "rest-server-url"
+    Given Keycloak auth server url in system property "keycloak.url", realm "opennms" and client "admin-cli"
+    Given Admin user "admin-user" with password "password123"
 
   Scenario: Admin user has full access of locations via graphql endpoint
     Then Admin user can loging and create access token

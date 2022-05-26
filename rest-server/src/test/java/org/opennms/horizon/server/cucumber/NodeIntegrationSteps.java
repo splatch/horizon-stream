@@ -32,6 +32,8 @@ import static graphql.Assert.assertNotNull;
 import static graphql.Assert.assertNull;
 import static graphql.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.opennms.horizon.server.cucumber.APIClientSteps.PATH_LOCATIONS;
+import static org.opennms.horizon.server.cucumber.APIClientSteps.PATH_NODS;
 
 import java.util.List;
 
@@ -39,49 +41,38 @@ import org.opennms.horizon.server.model.dto.MonitoringLocationDto;
 import org.opennms.horizon.server.model.dto.NodeDto;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
+import liquibase.hub.model.ApiKey;
 
-public class NodeIntegrationSteps extends IntegrationTestBase {
+public class NodeIntegrationSteps {
 
     private static final String foreignID1 = "asdfasdf";
     private static final String foreignID2 = "sdfhsdfhfasdf";
+    private APIClientSteps apiClient;
     private MonitoringLocationDto location;
     private NodeDto node1;
     private NodeDto node2;
 
-    @Given("Prepare node test with REST server url in system property {string}")
-    public void prepareNodeTestWithRESTServerUrlInSystemProperty(String property) {
-        apiUrl = System.getProperty(property);
-    }
-
-    @Given("Prepare node test with auth server url in system property {string}, realm {string} and client {string}")
-    public void prepareNodeTestWithAuthServerUrlInSystemPropertyRealmAndClient(String authUrl, String realm, String clientId) {
-        this.keycloakAuthUrl = System.getProperty(authUrl);
-        this.testRealm = realm;
-        this.clientId = clientId;
-    }
-
-    @Given("Prepare node test with admin user {string} with password {string}")
-    public void prepareNodeTestWithAdminUserWithPassword(String username, String password) {
-        this.adminUsername = username;
-        this.adminPassword = password;
+    public NodeIntegrationSteps(APIClientSteps apiClient) {
+        this.apiClient = apiClient;
     }
 
     @Then("Admin user can login and generate an access token")
     public void adminUserCanLoginAndGenerateAnAccessToken() {
-        assertTrue(login(adminUsername, adminPassword));
+        assertTrue(apiClient.login(apiClient.getAdminUsername(), apiClient.getAdminPassword()));
     }
 
     @Then("Admin user create a location")
     public void adminUserCreateALocation() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("location", "Default");
         data.put("monitoringArea", "localhost");
-        Response response = postRequest(PATH_LOCATIONS, data);
+        Response response = apiClient.postRequest(PATH_LOCATIONS, data);
         assertEquals(200, response.statusCode());
         location = response.as(MonitoringLocationDto.class);
         assertNotNull(location);
@@ -90,12 +81,12 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
     @Then("Admin use can create new node")
     public void adminUseCanCreateNewNode() {
         JsonNode tmpNode1 = createNodeDto(foreignID1, null, null);
-        Response response = postRequest(PATH_NODS, tmpNode1);
+        Response response = apiClient.postRequest(PATH_NODS, tmpNode1);
         assertEquals(200, response.statusCode());
         node1 = response.as(NodeDto.class);
         assertNotNull(node1);
         JsonNode tmpNode2 = createNodeDto(foreignID2, node1.getId(), location.getId());
-        Response response2 = postRequest(PATH_NODS, tmpNode2);
+        Response response2 = apiClient.postRequest(PATH_NODS, tmpNode2);
         assertEquals(200, response.statusCode());
         node2 = response2.as(NodeDto.class);
         assertNotNull(node2);
@@ -103,7 +94,7 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
 
     @Then("Admin user can list nodes")
     public void adminUserCanListNodes() {
-        Response response = getRequest(PATH_NODS);
+        Response response = apiClient.getRequest(PATH_NODS);
         assertEquals(200, response.statusCode());
         List<NodeDto> result = response.jsonPath().getList(".", NodeDto.class);
         assertEquals(2, result.size());
@@ -120,7 +111,7 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
 
     @Then("Admin user can get node by ID")
     public void adminUserCanGetNodeByID() {
-        Response response = getRequest(PATH_NODS + "/" + node2.getId());
+        Response response = apiClient.getRequest(PATH_NODS + "/" + node2.getId());
         assertEquals(200, response.statusCode());
         NodeDto result = response.as(NodeDto.class);
         assertNotNull(result);
@@ -134,7 +125,7 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
     public void adminUserCanUpdateNode() {
         String newLabel = "updated_label";
         node2.setLabel(newLabel);
-        Response response = putRequest(PATH_NODS + "/" + node2.getId(), mapper.valueToTree(node2));
+        Response response = apiClient.putRequest(PATH_NODS + "/" + node2.getId(), apiClient.objectToJson(node2));
         assertEquals(200, response.statusCode());
         NodeDto result = response.as(NodeDto.class);
         assertNotNull(result);
@@ -143,20 +134,20 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
 
     @Then("Admin user can delete a node")
     public void adminUserCanDeleteANode() {
-        Response response = deleteRequest(PATH_NODS + "/" + node2.getId());
+        Response response = apiClient.deleteRequest(PATH_NODS + "/" + node2.getId());
         assertEquals(204, response.statusCode());
-        List<NodeDto> list = getRequest(PATH_NODS).jsonPath().getList(".", NodeDto.class);
+        List<NodeDto> list = apiClient.getRequest(PATH_NODS).jsonPath().getList(".", NodeDto.class);
         assertEquals(1, list.size());
     }
 
     @Then("Normal user {string} and password {string} login to test node api")
     public void normalAndPasswordLoginToTestNodeApi(String username, String password) {
-        assertTrue(login(username, password));
+        assertTrue(apiClient.login(username, password));
     }
 
     @Then("Normal user can list nodes")
     public void normalUserCanListNodes() {
-        Response response = getRequest(PATH_NODS);
+        Response response = apiClient.getRequest(PATH_NODS);
         assertEquals(200, response.statusCode());
         List<NodeDto> result = response.jsonPath().getList(".", NodeDto.class);
         assertEquals(1, result.size());
@@ -166,7 +157,7 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
 
     @Then("Normal user can get node by ID")
     public void normalUserCanGetNodeByID() {
-        Response response = getRequest(PATH_NODS + "/" + node1.getId());
+        Response response = apiClient.getRequest(PATH_NODS + "/" + node1.getId());
         assertEquals(200, response.statusCode());
         NodeDto result = response.as(NodeDto.class);
         assertNotNull(result);
@@ -176,27 +167,27 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
     @Then("Normal user is not allowed to create new node")
     public void normalUserIsNotAllowedToCreateNewNode() {
         JsonNode tmpNode = createNodeDto(foreignID2, null, null);
-        Response response = postRequest(PATH_NODS, tmpNode);
+        Response response = apiClient.postRequest(PATH_NODS, tmpNode);
         assertEquals(403, response.statusCode());
     }
 
     @Then("Normal user is not allowed to update a node")
     public void normalUserIsNotAllowedToUpdateANode() {
         node1.setLabel("new_label");
-        Response response = putRequest(PATH_NODS + "/" + node1.getId(), mapper.valueToTree(node1));
+        Response response = apiClient.putRequest(PATH_NODS + "/" + node1.getId(), apiClient.objectToJson(node1));
         assertEquals(403, response.statusCode());
     }
 
     @Then("Normal user is not allowed to delete a node")
     public void normalUserIsNotAllowedToDeleteANode() {
-        Response response = deleteRequest(PATH_NODS + "/" + node1.getId());
+        Response response = apiClient.deleteRequest(PATH_NODS + "/" + node1.getId());
         assertEquals(403, response.statusCode());
     }
 
     @Then("Without correct token user can't access node endpoint")
     public void withoutInCorrectTokenUserCanTAccessNodeEndpoint() {
-        accessToken = "Bearer invalid_token";
-        Response response = getRequest(PATH_NODS);
+        apiClient.setAccessToken("Bearer invalid_token");
+        Response response = apiClient.getRequest(PATH_NODS);
         assertEquals(401, response.statusCode());
     }
 
@@ -216,6 +207,6 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
         node.setForeignSource("Opennms");
         node.setLocationId(locationId);
         node.setParentId(parentId);
-        return mapper.valueToTree(node);
+        return apiClient.objectToJson(node);
     }
 }

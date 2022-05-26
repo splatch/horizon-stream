@@ -1,9 +1,9 @@
 Feature: Node REST API endpoints integration tests
 
   Background:
-    Given Prepare node test with REST server url in system property "rest-server-url"
-    Given Prepare node test with auth server url in system property "keycloak.url", realm "opennms" and client "admin-cli"
-    Given Prepare node test with admin user "admin-user" with password "password123"
+    Given REST server url in system property "rest-server-url"
+    Given Keycloak auth server url in system property "keycloak.url", realm "opennms" and client "admin-cli"
+    Given Admin user "admin-user" with password "password123"
 
   Scenario: admin user have full access to all endpoints
     Then Admin user can login and generate an access token

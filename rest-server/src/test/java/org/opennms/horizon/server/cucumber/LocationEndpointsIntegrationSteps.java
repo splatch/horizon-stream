@@ -31,6 +31,7 @@ package org.opennms.horizon.server.cucumber;
 import static graphql.Assert.assertNotNull;
 import static graphql.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.opennms.horizon.server.cucumber.APIClientSteps.PATH_LOCATIONS;
 
 import java.util.List;
 
@@ -38,57 +39,44 @@ import org.opennms.horizon.server.model.dto.MonitoringLocationDto;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
+public class LocationEndpointsIntegrationSteps {
+    APIClientSteps apiClient;
     private MonitoringLocationDto location1;
     private MonitoringLocationDto location2;
+    private List<MonitoringLocationDto> result;
 
-    @Given("REST server url in system property {string}")
-    public void restServerUrlInSystemProperty(String apiUrlProperty) {
-        this.apiUrl = System.getProperty(apiUrlProperty);
-    }
-
-    @Given("Keycloak auth server url in system property {string}, realm {string} and client {string}")
-    public void keycloakAuthServerUrlInSystemProperty(String authUrlProperty, String realm, String clientId) {
-        this.keycloakAuthUrl = System.getProperty(authUrlProperty);
-        this.testRealm = realm;
-        this.clientId = clientId;
-    }
-
-    @Given("Admin user {string} with password {string}")
-    public void adminUserWithPassword(String username, String password) {
-        this.adminUsername = username;
-        this.adminPassword = password;
+    public LocationEndpointsIntegrationSteps(APIClientSteps apiClient) {
+        this.apiClient = apiClient;
     }
 
     @Then("Admin user can create an access token")
     public void adminUserCanCreateAnAccessToken() {
-        assertTrue(login(adminUsername, adminPassword));
+        assertTrue(apiClient.login(apiClient.getAdminUsername(), apiClient.getAdminPassword()));
     }
 
     @Then("Admin user can create new location")
     public void adminUserCanCreateNewLocation() {
 
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("location", "Default");
         data.put("monitoringArea", "localhost");
 
-        ObjectNode data2 = mapper.createObjectNode();
+        ObjectNode data2 = apiClient.createJsonNode();
         data2.put("location", "test-location");
         data2.put("monitoringArea", "office-network");
 
-        Response response = postRequest(PATH_LOCATIONS, data);
+        Response response = apiClient.postRequest(PATH_LOCATIONS, data);
         assertEquals(200, response.statusCode());
         location1 = response.as(MonitoringLocationDto.class);
         assertNotNull(location1);
         assertEquals("Default", location1.getLocation());
         assertEquals("localhost", location1.getMonitoringArea());
-        Response response2 = postRequest(PATH_LOCATIONS, data2);
+        Response response2 = apiClient.postRequest(PATH_LOCATIONS, data2);
         assertEquals(200, response2.statusCode());
         location2 = response2.as(MonitoringLocationDto.class);
         assertNotNull(location2);
@@ -98,18 +86,22 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
 
     @Then("Admin user can list location")
     public void adminUserCanListLocation() {
-        Response response = getRequest(PATH_LOCATIONS);
+        Response response = apiClient.getRequest(PATH_LOCATIONS);
         assertEquals(200, response.statusCode());
-        List<MonitoringLocationDto> result = response.jsonPath().getList(".", MonitoringLocationDto.class);
+        result = response.jsonPath().getList(".", MonitoringLocationDto.class);
         assertEquals(2, result.size());
-        //verify the location ids
+
+    }
+
+    @Then("Verify location ids in the list")
+    public void verifyLocationIds() {
         assertEquals(location1.getId(), result.get(0).getId());
         assertEquals(location2.getId(), result.get(1).getId());
     }
 
     @Then("Admin user can get location by ID")
     public void adminUserCanGetLocationByID() {
-        Response response = getRequest(PATH_LOCATIONS + "/" + location1.getId());
+        Response response = apiClient.getRequest(PATH_LOCATIONS + "/" + location1.getId());
         assertEquals(200, response.statusCode());
         MonitoringLocationDto result = response.as(MonitoringLocationDto.class);
         assertNotNull(result);
@@ -119,27 +111,27 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
     @Then("Admin user can update the location")
     public void adminUserCanUpdateTheLocation() {
         location1.setMonitoringArea("updated_network");
-        Response response = putRequest(PATH_LOCATIONS + "/" + location1.getId(), mapper.valueToTree(location1));
+        Response response = apiClient.putRequest(PATH_LOCATIONS + "/" + location1.getId(), apiClient.objectToJson(location1));
         assertEquals(200, response.statusCode());
         assertEquals(location1.getMonitoringArea(), response.jsonPath().get("monitoringArea"));
     }
 
     @Then("Admin user can delete the location by ID")
     public void adminUserCanDeleteTheLocationByID() {
-        Response response = deleteRequest(PATH_LOCATIONS + "/" + location1.getId());
+        Response response = apiClient.deleteRequest(PATH_LOCATIONS + "/" + location1.getId());
         assertEquals(204, response.statusCode());
-        List <MonitoringLocationDto> list = getRequest(PATH_LOCATIONS).jsonPath().getList(".", MonitoringLocationDto.class);
+        List <MonitoringLocationDto> list = apiClient.getRequest(PATH_LOCATIONS).jsonPath().getList(".", MonitoringLocationDto.class);
         assertEquals(1, list.size());
     }
 
     @Then("Normal user {string} with password {string} login to test location api")
     public void aNormalUserWithUsernameAndPassword(String username, String password) {
-        assertTrue(login(username, password));
+        assertTrue(apiClient.login(username, password));
     }
 
     @Then("Normal user can list location")
     public void normalUserCanListLocation() {
-        Response response = getRequest(PATH_LOCATIONS);
+        Response response = apiClient.getRequest(PATH_LOCATIONS);
         assertEquals(200, response.statusCode());
         List<MonitoringLocationDto> result = response.jsonPath().getList(".", MonitoringLocationDto.class);
         assertEquals(1, result.size());
@@ -148,7 +140,7 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
 
     @Then("Normal user can get location by ID")
     public void normalUserCanGetLocationByID() {
-        Response response = getRequest(PATH_LOCATIONS + "/" + location2.getId());
+        Response response = apiClient.getRequest(PATH_LOCATIONS + "/" + location2.getId());
         assertEquals(200, response.statusCode());
         MonitoringLocationDto result = response.as(MonitoringLocationDto.class);
         assertNotNull(result);
@@ -157,31 +149,31 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
 
     @Then("Normal user am not allowed to create new location")
     public void normalUserAmNotAllowedToCreateNewLocation() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("location", "Default");
         data.put("monitoringArea", "localhost");
-        Response response = postRequest(PATH_LOCATIONS, data);
+        Response response = apiClient.postRequest(PATH_LOCATIONS, data);
         assertEquals(403, response.statusCode());
     }
 
     @Then("Normal user am not allowed to update the location by ID")
     public void normalUserAmNotAllowedToUpdateTheLocationByID() {
         location2.setMonitoringArea("updated_network");
-        Response response = putRequest(PATH_LOCATIONS + "/" + location2.getId(), mapper.valueToTree(location2));
+        Response response = apiClient.putRequest(PATH_LOCATIONS + "/" + location2.getId(), apiClient.objectToJson(location2));
         assertEquals(403, response.statusCode());
     }
 
     @Then("Normal user am not allowed to delete the location")
     public void normalUserAmNotAllowedToDeleteTheLocation() {
-        Response response = deleteRequest(PATH_LOCATIONS + "/" + location2.getId());
+        Response response = apiClient.deleteRequest(PATH_LOCATIONS + "/" + location2.getId());
         assertEquals(403, response.statusCode());
     }
 
     @Then("Without correct token user can't access rest api")
     public void withoutInCorrectTokenUserCanTAccessRestApi() {
-        accessToken = "Bearer invalid_token";
-        Response response = getRequest(PATH_LOCATIONS);
+        apiClient.setAccessToken("Bearer invalid_token");
+        Response response = apiClient.getRequest(PATH_LOCATIONS);
         assertEquals(401, response.statusCode());
-        cleanDB();
+        apiClient.cleanDB();
     }
 }

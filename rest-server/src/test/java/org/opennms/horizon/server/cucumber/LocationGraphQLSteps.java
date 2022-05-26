@@ -2,6 +2,7 @@ package org.opennms.horizon.server.cucumber;
 
 import static graphql.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.opennms.horizon.server.cucumber.APIClientSteps.PATH_GRAPHQL;
 
 import java.util.List;
 
@@ -9,7 +10,6 @@ import org.opennms.horizon.server.model.dto.MonitoringLocationDto;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -43,10 +43,15 @@ import lombok.extern.slf4j.Slf4j;
  *******************************************************************************/
 
 @Slf4j
-public class LocationGraphQLSteps extends IntegrationTestBase {
+public class LocationGraphQLSteps {
 
     private MonitoringLocationDto location1;
     private MonitoringLocationDto location2;
+    private APIClientSteps apiClient;
+
+    public LocationGraphQLSteps(APIClientSteps apiClient) {
+        this.apiClient = apiClient;
+    }
 
     private MonitoringLocationDto generateLocation(Response response) {
         MonitoringLocationDto location = new MonitoringLocationDto();
@@ -56,45 +61,27 @@ public class LocationGraphQLSteps extends IntegrationTestBase {
         return location;
     }
 
-    @Given("Prepare location graphql test with api server url in system property {string}")
-    public void prepareLocationGraphqlTestWithApiServerUrlInSystemProperty(String apiUrlPrt) {
-        apiUrl = System.getProperty(apiUrlPrt);
-    }
-
-    @Given("Prepare location graphql test with auth server url in system property {string}, realm {string} and client {string}")
-    public void prepareLocationGraphqlTestWithAuthServerUrlInSystemPropertyRealmAndClient(String authUrlPrt, String realm, String clientId) {
-        keycloakAuthUrl = System.getProperty(authUrlPrt);
-        this.testRealm = realm;
-        this.clientId = clientId;
-    }
-
-    @Given("Prepare location graphql test with admin user {string} with password {string}")
-    public void prepareLocationGraphqlTestWithAdminUserWithPassword(String username, String password) {
-        this.adminUsername = username;
-        this.adminPassword = password;
-    }
-
     @Then("Admin user can loging and create access token")
     public void adminUserCanLogingAndCreateAccessToken() {
-        assertTrue(login(adminUsername, adminPassword));
+        assertTrue(apiClient.login(apiClient.getAdminUsername(), apiClient.getAdminPassword()));
     }
 
     @Then("Admin user can create new locations")
     public void adminUserCanCreateNewLocations() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("query", "mutation {addLocation(input: {location: \"graphql-test\", monitoringArea: \"localhost\"}) " +
                 "{id  location monitoringArea}}");
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response = apiClient.postRequest(PATH_GRAPHQL, data);
         assertEquals(200, response.statusCode());
         location1 = generateLocation(response);
         assertEquals(1, location1.getId());
         assertEquals("graphql-test", location1.getLocation());
         assertEquals("localhost", location1.getMonitoringArea());
 
-        ObjectNode data2 = mapper.createObjectNode();
+        ObjectNode data2 = apiClient.createJsonNode();
         data2.put("query", "mutation {addLocation(input: {location: \"graphql-test2\", monitoringArea: \"office-network\"}) " +
                 "{id   location monitoringArea} }");
-        Response response2 = postRequest(PATH_GRAPHQL, data2);
+        Response response2 = apiClient.postRequest(PATH_GRAPHQL, data2);
         assertEquals(200, response2.statusCode());
         location2 = generateLocation(response2);
         assertEquals(2, location2.getId());
@@ -104,18 +91,18 @@ public class LocationGraphQLSteps extends IntegrationTestBase {
 
     @Then("Admin user can query locations")
     public void adminUserCanQueryLocations() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("query", "{getAllLocations {id location monitoringArea}}");
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response = apiClient.postRequest(PATH_GRAPHQL, data);
         assertEquals(200, response.statusCode());
         assertEquals(2, response.jsonPath().getList("data.getAllLocations").size());
     }
 
     @Then("Admin user can query a location by ID")
     public void adminUserCanQueryALocationByID() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("query", String.format("{getLocationById(id: %d){id location monitoringArea tags}}", location2.getId()));
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response = apiClient.postRequest(PATH_GRAPHQL, data);
         assertEquals(200, response.statusCode());
         assertEquals(location2.getId(), response.jsonPath().getLong("data.getLocationById.id"));
         assertEquals(location2.getLocation(), response.jsonPath().getString("data.getLocationById.location"));
@@ -124,10 +111,10 @@ public class LocationGraphQLSteps extends IntegrationTestBase {
 
     @Then("Admin user can update a location")
     public void adminUserCanUpdateALocation() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("query", String.format("mutation {updateLocation(input: {location: \"updated-location\"}, id: %d) ", location2.getId()) +
                 "{id, location, monitoringArea}}");
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response = apiClient.postRequest(PATH_GRAPHQL, data);
         assertEquals(200, response.statusCode());
         assertEquals(location2.getId(), response.jsonPath().getLong("data.updateLocation.id"));
         assertEquals("updated-location", response.jsonPath().getString("data.updateLocation.location"));
@@ -136,23 +123,23 @@ public class LocationGraphQLSteps extends IntegrationTestBase {
 
     @Then("Admin user can delete a location")
     public void adminUserCanDeleteALocation() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("query", String.format("mutation {deleteLocation(id: %d)}", location2.getId()));
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response = apiClient.postRequest(PATH_GRAPHQL, data);
         assertEquals(200, response.statusCode());
         assertTrue(response.jsonPath().getBoolean("data.deleteLocation"));
     }
 
     @Then("Normal user {string} with password {string} login to test location graphql api")
     public void normalUserWithPasswordForLocationGraphqlTest(String user, String password) {
-        assertTrue(login(user, password));
+        assertTrue(apiClient.login(user, password));
     }
 
     @Then("Normal user can query locations")
     public void normalUserCanQueryLocations() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("query", "{getAllLocations {id location monitoringArea}}");
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response =apiClient. postRequest(PATH_GRAPHQL, data);
         assertEquals(200, response.statusCode());
         List<MonitoringLocationDto> list = response.jsonPath().getList("data.getAllLocations", MonitoringLocationDto.class);
         assertEquals(1, list.size());
@@ -161,9 +148,9 @@ public class LocationGraphQLSteps extends IntegrationTestBase {
 
     @Then("Normal user can query a location by ID")
     public void normalUserCanQueryALocationByID() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data =apiClient.createJsonNode();
         data.put("query", String.format("{getLocationById(id: %d){id location monitoringArea tags}}", location1.getId()));
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response = apiClient.postRequest(PATH_GRAPHQL, data);
         assertEquals(200, response.statusCode());
         assertEquals(location1.getId(), response.jsonPath().getLong("data.getLocationById.id"));
         assertEquals(location1.getLocation(), response.jsonPath().getString("data.getLocationById.location"));
@@ -172,37 +159,37 @@ public class LocationGraphQLSteps extends IntegrationTestBase {
 
     @Then("Normal user am not allowed to create a location")
     public void normalUserAmNotAllowedToCreateALocation() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("query", "mutation {addLocation(input: {location: \"graphql-test\", monitoringArea: \"localhost\"}) " +
                 "{id  location monitoringArea}}");
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response = apiClient.postRequest(PATH_GRAPHQL, data);
         assertTrue(response.jsonPath().getString("errors[0].message").contains("Access is denied"));
     }
 
     @Then("Normal user not allowed to update a location")
     public void normalUserNotAllowedToUpdateALocation() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("query", String.format("mutation {updateLocation(input: {location: \"updated-location\"}, id: %d) ", location1.getId()) +
                 "{id, location, monitoringArea}}");
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response = apiClient.postRequest(PATH_GRAPHQL, data);
         assertTrue(response.jsonPath().getString("errors[0].message").contains("Access is denied"));
     }
 
     @Then("Normal user not allowed to delete a location")
     public void normalUserNotAllowedToDeleteALocation() {
-        ObjectNode data = mapper.createObjectNode();
+        ObjectNode data = apiClient.createJsonNode();
         data.put("query", String.format("mutation {deleteLocation(id: %d)}", location1.getId()));
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response = apiClient.postRequest(PATH_GRAPHQL, data);
         assertTrue(response.jsonPath().getString("errors[0].message").contains("Access is denied"));
     }
 
     @Then("Without correct token user can't access graphql api")
     public void withoutCorrectTokenUserNotAllowedAccessGraphqlApi() {
-        accessToken = "Bearer invalid_token";
-        ObjectNode data = mapper.createObjectNode();
+        apiClient.setAccessToken("Bearer invalid_token");
+        ObjectNode data = apiClient.createJsonNode();
         data.put("query", "{getAllLocations {id location monitoringArea}}");
-        Response response = postRequest(PATH_GRAPHQL, data);
+        Response response = apiClient.postRequest(PATH_GRAPHQL, data);
         assertEquals(401, response.statusCode());
-        cleanDB();
+        apiClient.cleanDB();
     }
 }

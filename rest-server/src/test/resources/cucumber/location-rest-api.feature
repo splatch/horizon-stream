@@ -10,6 +10,7 @@ Feature: Location REST API endpoints integration tests
     Then Admin user can create an access token
     Then Admin user can create new location
     Then Admin user can list location
+    Then Verify location ids in the list
     Then Admin user can get location by ID
     Then Admin user can update the location
     Then Admin user can delete the location by ID
