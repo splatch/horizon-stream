@@ -26,7 +26,7 @@ done
 printf "\n# Init\n"
 printf "################################################################################\n\n"
 
-pringf "\n# Clear and remake tmp/ dir"
+printf "\n# Clear and remake tmp/ dir"
 # Contains files not to be committed to github.
 
 rm -r tmp/
