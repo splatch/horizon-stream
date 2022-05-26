@@ -76,8 +76,8 @@ cat ../dev/kubernetes.kafka.yaml | \
   sed "s/opennms\/horizon-stream-api/opennms\/horizon-stream-rest-server\:latest/" | \
   sed "s/opennms\/horizon-stream-ui-dev/opennms\/horizon-stream-ui\:latest/" | \
   sed "s/frontendUrl: \"http:\/\/localhost:28080\"/frontendUrl: \"http:\/\/$DOMAIN_KEYCLOAK\"/" | \
-  sed "s/localhostkey/$DOMAIN_KEYCLOAK/" | \
-  sed "s/localhostapi/$DOMAIN_API/" | \
+  sed "s/localhost:28080/$DOMAIN_KEYCLOAK/" | \
+  sed "s/localhost:9090/$DOMAIN_API/" | \
   sed "s/imagePullPolicy: Never/imagePullPolicy: Always/" > tmp/hs.yaml
 
 cat ingress.TEMPLATE.yaml | \
