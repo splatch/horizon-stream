@@ -15,7 +15,7 @@ Feature: Location REST API endpoints integration tests
     Then Admin user can delete the location by ID
 
   Scenario: Normal user only can view location
-    Given A normal user with username "test-user" and password "password123"
+    Then Normal user "test-user" with password "password123" login to test location api
     Then Normal user can list location
     Then Normal user can get location by ID
     Then Normal user am not allowed to create new location
@@ -23,7 +23,6 @@ Feature: Location REST API endpoints integration tests
     Then Normal user am not allowed to delete the location
 
   Scenario: Not authorized user can't access the REST API
-    Given REST server url in system property "rest-server-url"
     Then Without correct token user can't access rest api
 
 

@@ -102,6 +102,7 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
         assertEquals(200, response.statusCode());
         List<MonitoringLocationDto> result = response.jsonPath().getList(".", MonitoringLocationDto.class);
         assertEquals(2, result.size());
+        //verify the location ids
         assertEquals(location1.getId(), result.get(0).getId());
         assertEquals(location2.getId(), result.get(1).getId());
     }
@@ -131,7 +132,7 @@ public class LocationEndpointsIntegrationSteps extends IntegrationTestBase{
         assertEquals(1, list.size());
     }
 
-    @Given("A normal user with username {string} and password {string}")
+    @Then("Normal user {string} with password {string} login to test location api")
     public void aNormalUserWithUsernameAndPassword(String username, String password) {
         assertTrue(login(username, password));
     }

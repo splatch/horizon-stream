@@ -1,6 +1,5 @@
 package org.opennms.horizon.server.cucumber;
 
-import static graphql.Assert.assertNotNull;
 import static graphql.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -144,7 +143,7 @@ public class LocationGraphQLSteps extends IntegrationTestBase {
         assertTrue(response.jsonPath().getBoolean("data.deleteLocation"));
     }
 
-    @Given("Normal user {string} with password {string} for location graphql test")
+    @Then("Normal user {string} with password {string} login to test location graphql api")
     public void normalUserWithPasswordForLocationGraphqlTest(String user, String password) {
         assertTrue(login(user, password));
     }

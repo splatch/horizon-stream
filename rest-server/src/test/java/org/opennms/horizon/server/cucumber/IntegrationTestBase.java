@@ -62,6 +62,7 @@ abstract class IntegrationTestBase {
     protected String apiUrl;
     protected String keycloakAuthUrl;
     protected String testRealm;
+
     protected String accessToken;
 
     protected String adminUsername;

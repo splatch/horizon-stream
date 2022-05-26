@@ -149,8 +149,8 @@ public class NodeIntegrationSteps extends IntegrationTestBase {
         assertEquals(1, list.size());
     }
 
-    @Given("Prepare node test with with normal {string} and password {string}")
-    public void prepareNodeTestWithWithNormalAndPassword(String username, String password) {
+    @Then("Normal user {string} and password {string} login to test node api")
+    public void normalAndPasswordLoginToTestNodeApi(String username, String password) {
         assertTrue(login(username, password));
     }
 
