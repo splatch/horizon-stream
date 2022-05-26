@@ -27,7 +27,7 @@ Confirm that ingresses have been updated (pending issue), there should be 5 ingr
 
 If none appear from the previous statement, then run ```kubectl apply -f tmp/ingress.yaml``` else move onto the next statement.
 
-Go to http://localhostui in the web browser. 
+Go to http://localhostui in the web browser. Login with user ```admin``` with pw ```admin```.
 
 # Cleanup
 
