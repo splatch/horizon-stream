@@ -23,6 +23,10 @@ Change the dns to the above dns entries in config-run to match the /etc/hosts fi
 
 Run ```run.sh```. Takes a while.
 
+Confirm that ingresses have been updated (pending issue), there should be 5 ingresses: ```kubectl get ingress```
+
+If none appear from the previous statement, then run ```kubectl apply -f tmp/ingress.yaml``` else move onto the next statement.
+
 Go to http://localhostui in the web browser. 
 
 # Cleanup
