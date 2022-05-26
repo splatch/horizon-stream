@@ -35,8 +35,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.server.model.entity.MonitoringLocation;
 import org.opennms.horizon.server.model.entity.Node;

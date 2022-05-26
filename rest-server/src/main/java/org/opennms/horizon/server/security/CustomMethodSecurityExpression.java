@@ -29,6 +29,8 @@
 package org.opennms.horizon.server.security;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.security.access.PermissionEvaluator;
@@ -42,7 +44,6 @@ public class CustomMethodSecurityExpression implements MethodSecurityExpressionO
     protected Authentication authentication;
     private AuthenticationTrustResolver trustResolver;
     private RoleHierarchy roleHierarchy;
-    private Set<String> roles;
     private String defaultRolePrefix = "";
     private Object target;
     private Object filterObject;
@@ -177,11 +178,8 @@ public class CustomMethodSecurityExpression implements MethodSecurityExpressionO
     }
 
     private Set<String> getAuthoritySet() {
-        if(this.roles == null) {
-            String userId = authentication.getName();
-            roles = roleProvider.lookupUserRoles(userId);
-        }
-        return roles;
+        String userId = authentication.getName();
+        return roleProvider.lookupUserRoles(userId);
     }
 
     private boolean hasAnyAuthorityName(String prefix, String... roles) {
