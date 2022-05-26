@@ -3,7 +3,7 @@ import useToken from '@/composables/useToken'
 import { refreshToken } from './authService'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL?.toString() || '/opennms/api'
+  baseURL: process.env.API_BASE_URL || import.meta.env.VITE_BASE_URL?.toString()
 })
 
 api.interceptors.request.use(
