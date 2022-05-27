@@ -5,6 +5,11 @@ on:
     branches: 
       - 'develop'
     types: [closed]
+  push:
+    # For testing, comment out when not useing, and increment branch version.
+    # Comment out when not using.
+    branches: 
+      - 'jaberry/ci-cd-1'
 
 # For now, we have put all steps into a single job, this will allow for just
 # one vm to run. We use actions to factor out the functionality. If there is a
