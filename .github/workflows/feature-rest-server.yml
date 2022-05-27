@@ -1,0 +1,31 @@
+name: feature-rest-server
+
+on:  
+  push:
+    branches:
+      - '**'
+      - '!develop'
+      - '!release/**'
+    paths:
+      - 'rest-server/**'
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        # Is required to call actions.
+
+      - name: init
+        run: |
+
+          echo "For init steps."
+
+      - name: feature-rest-server
+        id: action-feature-rest-server
+        uses: ./.github/actions/rest-server
+        with:
+          dir-location: 'rest-server'

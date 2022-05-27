@@ -1,0 +1,31 @@
+name: feature-ui
+
+on:  
+  push:
+    branches:
+      - '**'
+      - '!develop'
+      - '!release/**'
+    paths:
+      - 'ui/**'
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        # Is required to call actions.
+
+      - name: init
+        run: |
+
+          echo "For init steps."
+
+      - name: feature-ui
+        id: action-feature-ui
+        uses: ./.github/actions/ui
+        with:
+          dir-location: 'ui'
