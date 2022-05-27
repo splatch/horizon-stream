@@ -37,23 +37,52 @@
 package org.opennms.netmgt.provision.persistence.dto;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
-public class BaseRequisitionDTO {
+public class CategoriesAndMetadataDTO {
 
 
     protected Map<String, RequisitionCategoryDTO> categories = new HashMap<>();
     protected Map<String, RequisitionMetaDataDTO> metaData = new HashMap<>();
 
     /**
+     * <p>getCategory</p>
+     *
+     * @param category a {@link String} object.
+     * @return a {@link RequisitionCategoryDTO} object.
+     */
+    public RequisitionCategoryDTO getCategory(String category) {
+        return categories.get(category);
+    }
+
+    /**
+     * <p>getCategoryCount</p>
+     *
+     * @return a int.
+     */
+    public int getCategoryCount() {
+        return (categories == null)? 0 : categories.size();
+    }
+
+    public List<RequisitionMetaDataDTO> getMetadataAsList() {
+        return metaData.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
+    }
+
+    public List<RequisitionCategoryDTO> getCategoriesAsList() {
+        return categories.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
+    }
+
+    /**
      * <p>deleteCategory</p>
      *
      * @param category a {@link RequisitionCategoryDTO} object.
      */
-    public void deleteCategory(RequisitionCategoryDTO category) {
-           deleteCategory(category.getName());
+    public boolean deleteCategory(RequisitionCategoryDTO category) {
+           return deleteCategory(category.getName());
     }
 
     /**
@@ -61,8 +90,8 @@ public class BaseRequisitionDTO {
      *
      * @param category a {@link String} object.
      */
-    public void deleteCategory(String category) {
-        categories.remove(category);
+    public boolean deleteCategory(final String category) {
+        return (categories.remove(category) != null);
     }
 
     /**

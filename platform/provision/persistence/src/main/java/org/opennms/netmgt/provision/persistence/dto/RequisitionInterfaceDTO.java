@@ -50,20 +50,19 @@ import org.opennms.horizon.db.model.PrimaryType;
  */
 @Data
 @Slf4j
-public class RequisitionInterfaceDTO extends BaseRequisitionDTO{
+public class RequisitionInterfaceDTO extends CategoriesAndMetadataDTO {
 
-    protected Map<String, RequisitionMonitoredServiceDTO> monitoredServices = new HashMap<>();
-    protected String description;
-    protected String ipAddressStr;
+    private Map<String, RequisitionMonitoredServiceDTO> monitoredServices = new HashMap<>();
+    private String description;
     //TODO: why an object?
-    protected Boolean managed;
+    private Boolean managed;
     
     // annotated on the class, for some compatibility/initialization
-    //TODO: this may cause a circular dep
-    protected PrimaryType snmpPrimary;
-    protected Integer status;
+    //TODO: this may cause a circular ref?
+    private PrimaryType snmpPrimary;
+    private Integer status;
 
-    protected InetAddress ipAddress;
+    private InetAddress ipAddress;
 
     /**
      * <p>getMonitoredServiceCount</p>
@@ -132,7 +131,6 @@ public class RequisitionInterfaceDTO extends BaseRequisitionDTO{
     public void setIpAddr(String value) {
         try {
             ipAddress = InetAddressUtils.getInetAddress(value);
-            ipAddressStr = value;
         } catch (Throwable e) {
             throw new IllegalArgumentException(String.format("Invalid IP address specified: %s", value), e);
         }

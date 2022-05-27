@@ -3,9 +3,11 @@ package org.opennms.netmgt.provision.persistence.dto;
 import static org.junit.Assert.*;
 
 import com.google.gson.Gson;
+import java.net.InetAddress;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.opennms.horizon.core.lib.InetAddressUtils;
 
 @Slf4j
 public class RequisitionDTOTest {
