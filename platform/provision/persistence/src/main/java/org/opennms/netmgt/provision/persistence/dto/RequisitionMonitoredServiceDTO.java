@@ -40,7 +40,7 @@ import lombok.Data;
 
 
 @Data
-public class RequisitionMonitoredServiceDTO  extends BaseRequisitionDTO {
+public class RequisitionMonitoredServiceDTO  extends CategoriesAndMetadataDTO {
 
     protected String serviceName;
     

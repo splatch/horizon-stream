@@ -35,22 +35,20 @@ import java.util.stream.Collectors;
 import lombok.Data;
 
 @Data
-public class RequisitionNodeDTO {
+public class RequisitionNodeDTO extends CategoriesAndMetadataDTO {
 
     private final String foreignId;
-    private final String m_location;
+    private final String location;
     private final String building;
     private final String city;
     private final String nodeLabel;
+
+    //TODO: are these just relational mappings? Can be done with object model nesting now?
     private String parentForeignId;
     private String parentForeignSource;
-    
-    //TODO: anti-pattern! Remove this
     protected String parentNodeLabel;
 
     protected Map<String, RequisitionInterfaceDTO> interfaces = new HashMap<>();
-    protected Map<String, RequisitionCategoryDTO> categories = new HashMap<>();
-    protected Map<String, RequisitionMetaDataDTO> metaData = new HashMap<>();
 
     /**
      * <p>getInterfaceCount</p>
@@ -70,13 +68,6 @@ public class RequisitionNodeDTO {
         return interfaces.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
     }
 
-    public List<RequisitionMetaDataDTO> getMetadataAsList() {
-        return metaData.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
-    }
-
-    public List<RequisitionCategoryDTO> getCategoriesAsList() {
-        return categories.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
-    }
 
     //TODO: do we want to allow this?
 //    /**
@@ -109,7 +100,7 @@ public class RequisitionNodeDTO {
      * @param iface a {@link RequisitionInterfaceDTO} object.
      */
     public boolean deleteInterface(final RequisitionInterfaceDTO iface) {
-        return deleteInterface(iface.ipAddressStr);
+        return deleteInterface(iface.getIpAddress().toString());
     }
 
     /**
@@ -127,67 +118,7 @@ public class RequisitionNodeDTO {
      * @param iface a {@link RequisitionInterfaceDTO} object.
      */
     public void putInterface(RequisitionInterfaceDTO iface) {
-        interfaces.put(iface.ipAddressStr, iface);
-    }
-
-    /**
-     * <p>getCategoryCount</p>
-     *
-     * @return a int.
-     */
-    public int getCategoryCount() {
-        return (categories == null)? 0 : categories.size();
-    }
-
-//    /**
-//     * <p>setCategories</p>
-//     *
-//     * @param categories a {@link List} object.
-//     */
-//    public void setCategories(Collection<RequisitionCategory> categories) {
-//        if (categories == null) {
-//            categories = new TreeSet<>();
-//        }
-//        if (this.categories == categories) return;
-//        this.categories.clear();
-//        this.categories.addAll(categories);
-//    }
-
-    /**
-     * <p>getCategory</p>
-     *
-     * @param category a {@link String} object.
-     * @return a {@link RequisitionCategoryDTO} object.
-     */
-    public RequisitionCategoryDTO getCategory(String category) {
-        return categories.get(category);
-    }
-
-    /**
-     * <p>deleteCategory</p>
-     *
-     * @param category a {@link RequisitionCategoryDTO} object.
-     */
-    public boolean deleteCategory(final RequisitionCategoryDTO category) {
-        return deleteCategory(category.getName());
-    }
-
-    /**
-     * <p>deleteCategory</p>
-     *
-     * @param category a {@link String} object.
-     */
-    public boolean deleteCategory(final String category) {
-        return (categories.remove(category) != null);
-    }
-
-    /**
-     * <p>putCategory</p>
-     *
-     * @param category a {@link RequisitionCategoryDTO} object.
-     */
-    public void putCategory(RequisitionCategoryDTO category) {
-        categories.put(category.getName(), category);
+        interfaces.put(iface.getIpAddress().toString(), iface);
     }
 
     /**
