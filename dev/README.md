@@ -39,11 +39,11 @@ Types of development & testing:
    * `kubectl config use-context kind-kind`
 1. Install the Keycloak Operator
     ```shell
-    $ kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-    $ kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
-    $ kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
-    # Verify (should get keycloaks and keycloakrealmiiimports)
-    $ kubectl api-resources | grep keycloak
+    kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+    kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+    kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
+    # Verify (should get keycloaks and keycloakrealmimports)
+    kubectl api-resources | grep keycloak
     ```
 1. Deploy the project into the cluster.
    1. Dev mode with file watching and port forwarding: `skaffold dev`

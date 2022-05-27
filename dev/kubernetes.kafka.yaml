@@ -324,6 +324,12 @@ spec:
         - name: config-volume
           configMap:
             name: camel-config
+        - name: users-volume
+          secret:
+            secretName: karaf-users-secret
+        - name: maven-repo-volume
+          hostPath:
+            path: "/.m2"
       containers:
         - name: horizon-stream-core
           image: opennms/horizon-stream-core
@@ -366,6 +372,13 @@ spec:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.eventd.camel.cfg"
               subPath: "useKafka"
+            - name: users-volume
+              mountPath: "/opt/horizon-stream/etc/users.properties"
+              subPath: "data"
+              readOnly: true
+            - name: maven-repo-volume
+              mountPath: "/opt/horizon-stream/.m2"
+              readOnly: true
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -497,6 +510,16 @@ type: Opaque
 stringData:
   username: kafka-user
   password: passw0rd
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: karaf-users-secret
+type: Opaque
+stringData:
+  data: |
+    admin=admin,_g_:admingroup
+    _g_\:admingroup=group,admin,manager,viewer,systembundles,ssh
 ---
 apiVersion: k8s.keycloak.org/v2alpha1
 kind: KeycloakRealmImport
