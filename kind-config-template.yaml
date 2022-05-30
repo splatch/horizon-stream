@@ -3,7 +3,7 @@ apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
 - role: control-plane
   extraMounts:
-  - hostPath: /Users/geraldhumphries/.m2
-    containerPath: /.m2
+  - hostPath: {{MVN_REPO}}
+    containerPath: /.m2/repository
     readOnly: true
 

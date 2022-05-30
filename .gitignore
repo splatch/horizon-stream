@@ -37,3 +37,4 @@ java/bin/
 *.swp
 *.iml
 
+kind-config.yaml
