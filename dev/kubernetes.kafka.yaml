@@ -328,8 +328,8 @@ spec:
           secret:
             secretName: karaf-users-secret
         - name: maven-repo-volume
-          hostPath:
-            path: "/.m2"
+          persistentVolumeClaim:
+            claimName: local-m2-pv-claim
       containers:
         - name: horizon-stream-core
           image: opennms/horizon-stream-core
@@ -520,6 +520,32 @@ stringData:
   data: |
     admin=admin,_g_:admingroup
     _g_\:admingroup=group,admin,manager,viewer,systembundles,ssh
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-m2-pv
+spec:
+  storageClassName: local-m2
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/.m2"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-m2-pv-claim
+spec:
+  storageClassName: local-m2
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: k8s.keycloak.org/v2alpha1
 kind: KeycloakRealmImport
