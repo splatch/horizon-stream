@@ -5,5 +5,4 @@ nodes:
   extraMounts:
   - hostPath: {{MVN_REPO}}
     containerPath: /.m2/repository
-    readOnly: true
-
+    readOnly: false

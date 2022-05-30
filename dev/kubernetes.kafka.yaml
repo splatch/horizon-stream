@@ -378,7 +378,7 @@ spec:
               readOnly: true
             - name: maven-repo-volume
               mountPath: "/opt/horizon-stream/.m2"
-              readOnly: true
+              readOnly: false
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -542,7 +542,7 @@ metadata:
 spec:
   storageClassName: local-m2
   accessModes:
-    - ReadOnlyMany
+    - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
