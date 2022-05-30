@@ -29,34 +29,20 @@ Types of development & testing:
 
 ## Instructions
 1. Start from the project's root directory.
-2. Run ```./kind-generate-config.sh```
-   * This will create a kind-config.yaml file that mounts your local Maven repository to the control plane.
-   * Pulls the location from Maven. Set the variable MVN_REPO to override this location.
-3. ``` kind create cluster --config kind-config.yaml```
-   * There are options to create multiple clusters with different names and switch between them.
-4. Confirm connection to cluster:
-   * ``` kubectl config get-contexts```
-   * ``` kubectl get all```
-
-   **NOTE**: if you get the error `The connection to the server localhost:8080 was refused - did you specify the right host or port?`, run the following:
-   * `kubectl config use-context kind-kind`
-5. Install the Keycloak Operator
-    ```shell
-    kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-    kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
-    kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/kubernetes.yml
-    # Verify (should get keycloaks and keycloakrealmimports)
-    kubectl api-resources | grep keycloak
-    ```
-6. Deploy the project into the cluster.
+2. Run ```./cluster-setup.sh```. This script performs the following:
+   * Gets the location of the local Maven repository from Maven. Set the variable MVN_REPO to override this location.
+   * Generates a `kind-config.yaml` file with your Maven repository specified as an `extraMount`.
+   * Creates a local Kubernetes cluster using Kind, with the settings from `kind-config.yaml`.
+   * Installs the Keycloak Operator into the cluster.
+3. Deploy the project into the cluster.
    1. Dev mode with file watching and port forwarding: `skaffold dev`
    2. Build and deploy once without enabling the dev loop: `skaffold run`
       * Forward ports automatically: `skaffold run --port-forward`
    3. Debug mode with automatic debug ports into containers: `skaffold debug`
       * Most of the dev loop is disabled in debug mode to prevent interfering with debug sessions. Reenable these features with `skaffold debug --auto-build --auto-sync --auto-deploy`
-7. Wait for all services to come up.
-8. Visit the front end in a web browser: http://localhost:3000/
-9. Run the Keycloak scripts to test that the build was successful:
+4. Wait for all services to come up.
+5. Visit the front end in a web browser: http://localhost:3000/
+6. Run the Keycloak scripts to test that the build was successful:
    ```shell
    cd tools
    ./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
@@ -65,14 +51,14 @@ Types of development & testing:
    ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
    ```
    You should see log output with event JSON.
-10. Manually configure keycloak to work with localhost login.
-    1. Add realm `opennms`, if one does not exist from the scripts above. 
-    2. Add client `horizon-stream`.
-       * On the client page, set `Standard Flow Enabled` to `OFF`.
-       * On the client page, add `*` to `Web Origins` to prevent CORS issues.
-    3. Add a user
-       * On the user credentials tab, add a password.
-       * On the user details tab, deselect the `Update Password` chip in the `Required User Actions` field.
+7. Manually configure keycloak to work with localhost login.
+   1. Add realm `opennms`, if one does not exist from the scripts above. 
+   2. Add client `horizon-stream`.
+      * On the client page, set `Standard Flow Enabled` to `OFF`.
+      * On the client page, add `*` to `Web Origins` to prevent CORS issues.
+   3. Add a user
+      * On the user credentials tab, add a password.
+      * On the user details tab, deselect the `Update Password` chip in the `Required User Actions` field.
 
 Pruning docker images from process:
 * Removes based on image-name:tag

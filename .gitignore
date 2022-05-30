@@ -10,6 +10,7 @@
 # or test data that we do not want to push to repo.
 dev/tmp
 local-sample/tmp
+dev/kind-config.yaml
 
 # Package Files #
 *.jar
@@ -36,5 +37,3 @@ dependency-reduced-pom.xml
 java/bin/
 *.swp
 *.iml
-
-kind-config.yaml
