@@ -83,7 +83,7 @@ kind load docker-image opennms/horizon-stream-core:local
 kind load docker-image opennms/horizon-stream-rest-server:local
 kubectl patch deployments my-horizon-stream-ui -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "imagePullPolicy":"Never"}]}}}}'
 kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core", "imagePullPolicy":"Never"}]}}}}'
-kubectl patch deployments my-horizon-stream-api -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-rest-server", "imagePullPolicy":"Never"}]}}}}'
+kubectl patch deployments my-horizon-stream-api -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
 fi
 
 printf "\nWaiting for startup of pods, could take a few minutes\n"
