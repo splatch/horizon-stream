@@ -127,10 +127,12 @@ public class KeyCloakUtils {
     public Set<String> listUserRoles(String usrId) {
         log.info("list roles for user {} with realm {}", usrId, appRealm);
         UserResource userResource = keycloak.realm(appRealm).users().get(usrId);
-        if(userResource != null) {
+        try {
             return userResource.roles().getAll().getRealmMappings().stream().map(r->r.getName()).collect(Collectors.toSet());
+        } catch (Exception e) {
+            log.error("failed list user roles: {}", e.getMessage());
+            return new HashSet<>();
         }
-        return new HashSet<>();
     }
 
     public void close() {
