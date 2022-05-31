@@ -22,7 +22,7 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.xml
   cache:
     caffeine:
-      spec: maximumSize=10000,expireAfterAccess=600s
+      spec: maximumSize=10000,expireAfterWrite=600s
 
 
 # graphql
