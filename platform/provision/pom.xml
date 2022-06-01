@@ -24,6 +24,7 @@
     <module>service</module>
     <module>rest</module>
     <module>persistence</module>
+    <module>detector</module>
   </modules>
 
 </project>
