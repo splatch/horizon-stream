@@ -388,6 +388,8 @@ spec:
           env:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres:5432/horizon_stream"
+            - name: SPRING_CACHE_CAFFEINE_SPEC
+              value: "maximumSize=10000,expireAfterWrite=60s"
             - name: KEYCLOAK_AUTH_SERVER_URL
               value: "http://keycloak:8080"
             - name: KEYCLOAK_REALM
