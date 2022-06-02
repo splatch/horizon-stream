@@ -229,6 +229,13 @@
         <feature>onms-httpclient</feature>
         <feature>onms-netty3</feature>
         <feature>camel-gson</feature>
+        <feature>horizon-db</feature>
+        <feature>horizon-tracing</feature>
+
+        <bundle dependency="true">mvn:commons-io/commons-io/${commons.io.version}</bundle>
+        <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
+
+        <bundle>mvn:org.apache.mina/mina-core/${mina.version}</bundle>
 
         <bundle>mvn:org.opennms.horizon.common/common-concurrency/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.common/common-net/${project.version}</bundle>
