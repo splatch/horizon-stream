@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.provision.service;
 
+import io.opentracing.Span;
+import io.opentracing.SpanContext;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

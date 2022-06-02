@@ -9,9 +9,14 @@ import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.opennms.horizon.db.model.OnmsMonitoringLocation;
+import org.opennms.horizon.db.model.OnmsNode;
+import org.opennms.netmgt.provision.LocationAwareDetectorClient;
+import org.opennms.netmgt.provision.persistence.dto.PluginConfigDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionNodeDTO;
 import org.opennms.netmgt.provision.service.Provisioner;
+import org.opennms.netmgt.provision.service.scan.rpc.LocationAwareDetectorClientRpcImpl;
 
 @AllArgsConstructor
 @Slf4j
@@ -21,6 +26,8 @@ public class NodeScanner {
 
     private final CamelContext context;
     private final Provisioner provisioner;
+    //TODO: I think we inject this once and re-use
+//    private final LocationAwareDetectorClient locationAwareDetectorClient;
 
     public void init() {
         try {
@@ -50,12 +57,42 @@ public class NodeScanner {
         public void process(Exchange exchange) throws Exception {
             List<RequisitionDTO> requisitions = provisioner.read();
             log.info("Found {} requisitions for scanning", requisitions.size());
-            requisitions.forEach(req -> {log.info("requisition: {}", req);req.getNodes().values().forEach(node -> scanNode(node));});
+            requisitions.forEach(req -> {
+                log.info("requisition: {}", req);
+                req.getNodes().values().forEach(node -> scanNode(node));
+            });
         }
 
         private void scanNode(RequisitionNodeDTO node) {
-            node.getInterfaces().values().forEach(intrfc -> log.info("Interface {}", intrfc));
-            //TODO: put in gRPC call to the minions here?
+            PluginConfigDTO pluginConfigDTO = new PluginConfigDTO();
+            pluginConfigDTO.setName("WebDetector");
+            pluginConfigDTO.setPluginClass("org.opennms.netmgt.provision.detector.web.WebDetector");
+            LocationAwareDetectorClient locationAwareDetectorClient = new LocationAwareDetectorClientRpcImpl();
+            OnmsMonitoringLocation onmsMonitoringLocation = new OnmsMonitoringLocation();
+            onmsMonitoringLocation.setLocationName(node.getLocation());
+
+            //TODO: what to actually impl here?
+            Callback<Boolean> callback = new Callback<>() {
+                @Override
+                public void accept(Boolean t) {
+
+                }
+
+                @Override
+                public Boolean apply(Throwable throwable) {
+                    return null;
+                }
+            };
+            node.getInterfaces().values().forEach(intrfc -> {
+                log.info("Interface {}", intrfc);
+                //TODO: Need to read the OnmsNode from the database
+                OnmsNode onmsnode = new OnmsNode();
+                onmsnode.setId(1);
+                //TODO: need the span?
+                DetectorRunner detectorRunner = new DetectorRunner(locationAwareDetectorClient, pluginConfigDTO, onmsnode.getId(), intrfc.getIpAddress(), onmsMonitoringLocation, null );
+                detectorRunner.supplyAsyncThenAccept(callback);
+            });
+
         }
     }
 }
