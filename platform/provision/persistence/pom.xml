@@ -69,6 +69,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.horizon.provision</groupId>
+      <artifactId>core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.aries.jpa</groupId>
       <artifactId>org.apache.aries.jpa.api</artifactId>
     </dependency>
