@@ -2,14 +2,7 @@ name: develop
 
 on:
   pull_request:
-    branches: 
-      - 'develop'
-    types: [closed]
-  #push:
-  #  # For testing, comment out when not useing, and increment branch version.
-  #  # Comment out when not using.
-  #  branches: 
-  #    - 'jaberry/ci-cd-1'
+    types: [ labeled ]
 
 # For now, we have put all steps into a single job, this will allow for just
 # one vm to run. We use actions to factor out the functionality. If there is a
@@ -18,6 +11,7 @@ on:
 
 jobs:
   develop:
+    if: ${{ ( github.event.label.name == 'actions-test-develop' ) || ( github.event.label.name == 'actions-test-release' ) }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -28,28 +22,29 @@ jobs:
         run: |
 
           echo "For init steps."
+          echo "TEST: ${{ github.event.comment.body }}"
 
-      - name: feature-ui
-        id: action-feature-ui
-        uses: ./.github/actions/ui
-        with:
-          dir-location: 'ui'
+      #- name: feature-ui
+      #  id: action-feature-ui
+      #  uses: ./.github/actions/ui
+      #  with:
+      #    dir-location: 'ui'
 
-      - name: feature-core
-        id: action-feature-core
-        uses: ./.github/actions/core
-        with:
-          dir-location: 'platform'
+      #- name: feature-core
+      #  id: action-feature-core
+      #  uses: ./.github/actions/core
+      #  with:
+      #    dir-location: 'platform'
 
-      - name: feature-rest-server
-        id: action-rest-server
-        uses: ./.github/actions/rest-server
-        with:
-          dir-location: 'rest-server'
+      #- name: feature-rest-server
+      #  id: action-rest-server
+      #  uses: ./.github/actions/rest-server
+      #  with:
+      #    dir-location: 'rest-server'
 
-      - name: external-it
-        id: action-external-it
-        uses: ./.github/actions/external-it
-        with:
-          dir-location: 'external-it'
+      #- name: external-it
+      #  id: action-external-it
+      #  uses: ./.github/actions/external-it
+      #  with:
+      #    dir-location: 'external-it'
 
