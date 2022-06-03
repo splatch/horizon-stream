@@ -22,9 +22,27 @@
     <argument ref="scanProducer"/>
   </bean>
 
+<!--  <bean id="webDetector" class="org.opennms.netmgt.provision.detector.web.WebDetector"/>-->
+
+  <bean id="serviceRegistry" class="org.opennms.netmgt.provision.service.scan.soa.DefaultServiceRegistry"/>
+
+  <bean id="serviceDetectorRegistry" class="org.opennms.netmgt.provision.service.scan.ServiceDetectorRegistryImpl" init-method="afterPropertiesSet">
+    <property name="m_serviceRegistry" ref="serviceRegistry"/>
+    <property name="m_detectorFactories">
+      <set>
+        <bean class="org.opennms.netmgt.provision.detector.web.WebDetectorFactory"/>
+      </set>
+    </property>
+  </bean>
+
+  <bean id="locationAwareDetector" class="org.opennms.netmgt.provision.service.scan.rpc.LocationAwareDetectorClientRpcImpl">
+     <property name="registry" ref="serviceDetectorRegistry"/>
+  </bean>
+
   <bean id="nodeScanner" class="org.opennms.netmgt.provision.service.scan.NodeScanner" init-method="init">
     <argument ref="provisionCamelContext"/>
     <argument ref="provisioner"/>
+    <argument ref="locationAwareDetector"/>
   </bean>
 
   <service ref="provisioner" interface="org.opennms.netmgt.provision.service.Provisioner"/>

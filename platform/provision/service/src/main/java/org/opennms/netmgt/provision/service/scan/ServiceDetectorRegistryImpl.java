@@ -38,6 +38,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 //import org.opennms.core.soa.ServiceRegistry;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
 //import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
@@ -52,8 +54,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceDetectorRegistryImpl.class);
 
-    ServiceRegistry m_serviceRegistry;
-    Set<ServiceDetectorFactory<?>> m_detectorFactories;
+    @Setter
+    private ServiceRegistry m_serviceRegistry;
+    @Setter
+    private Set<ServiceDetectorFactory<?>> m_detectorFactories;
 
     private final Map<String, String> m_classNameByServiceName = new LinkedHashMap<>();
     private final Map<String, ServiceDetectorFactory<? extends ServiceDetector>> m_factoriesByServiceName = new LinkedHashMap<>();

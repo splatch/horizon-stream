@@ -248,27 +248,7 @@
         <bundle>mvn:org.opennms.horizon.provision/service/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/rest/${project.version}</bundle>
     </feature>
-
-    <!--           -->
-    <!-- PROVSIOND -->
-    <!--           -->
-    <feature name="horizon-provision" version="${project.version}" description="Horizon : Provision">
-        <feature>onms-httpclient</feature>
-        <feature>onms-netty3</feature>
-        <feature>camel-gson</feature>
-
-        <bundle>mvn:org.opennms.horizon.common/common-concurrency/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.common/common-net/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.common/common-web/${project.version}</bundle>
-
-        <bundle>mvn:org.opennms.horizon.provision/api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.provision/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.provision/detector-web/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.provision/persistence/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.provision/service/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.provision/rest/${project.version}</bundle>
-    </feature>
-
+    
     <!--        -->
     <!-- MINION -->
     <!--        -->

@@ -42,6 +42,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 //import org.opennms.netmgt.provision.service.scan.rpc.soa.Registration;
 //import org.opennms.core.soa.filter.FilterParser;
 import java.util.stream.Collectors;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author brozow
  * @version $Id: $
  */
+@NoArgsConstructor
 public class DefaultServiceRegistry implements ServiceRegistry {
 
     private static Logger LOG = LoggerFactory.getLogger(DefaultServiceRegistry.class);
