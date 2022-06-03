@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service.scan.rpc;
 import com.google.common.base.Strings;
 import io.opentracing.Span;
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -147,10 +148,15 @@ public class DetectorRequestBuilderImpl implements DetectorRequestBuilder {
             throw new IllegalArgumentException("Detector class name is required.");
         }
 
-        final Map<String, String> interpolatedAttributes = Interpolator.interpolateStrings(attributes, new FallbackScope(
-                this.client.getEntityScopeProvider().getScopeForNode(nodeId),
-                this.client.getEntityScopeProvider().getScopeForInterface(nodeId, InetAddressUtils.toIpAddrString(address))
-        ));
+        // TBD888: need to get the scopes working
+        final Map<String, String> interpolatedAttributes =
+                Interpolator.interpolateStrings(attributes,
+                        new FallbackScope(Collections.emptyList())
+        );
+        // final Map<String, String> interpolatedAttributes = Interpolator.interpolateStrings(attributes, new FallbackScope(
+        //         this.client.getEntityScopeProvider().getScopeForNode(nodeId),
+        //         this.client.getEntityScopeProvider().getScopeForInterface(nodeId, InetAddressUtils.toIpAddrString(address))
+        // ));
 
         // Retrieve the factory associated with the requested detector
         final ServiceDetectorFactory<?> factory = client.getRegistry().getDetectorFactoryByClassName(className);

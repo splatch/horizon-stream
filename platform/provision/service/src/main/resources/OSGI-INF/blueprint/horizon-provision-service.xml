@@ -28,7 +28,7 @@
 
   <bean id="serviceRegistry" class="org.opennms.netmgt.provision.service.scan.soa.DefaultServiceRegistry"/>
 
-  <bean id="detectorClientRpcModule" class="org.opennms.netmgt.provision.detector.client.rpc.DetectorClientRpcModule" />
+  <bean id="detectorClientRpcModule" class="org.opennms.netmgt.provision.service.scan.rpc.DetectorClientRpcModule" />
 
   <bean id="serviceDetectorRegistry" class="org.opennms.netmgt.provision.service.scan.ServiceDetectorRegistryImpl" init-method="afterPropertiesSet">
     <property name="m_serviceRegistry" ref="serviceRegistry"/>

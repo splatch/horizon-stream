@@ -231,6 +231,7 @@
         <feature>camel-gson</feature>
         <feature>horizon-db</feature>
         <feature>horizon-tracing</feature>
+        <feature>horizon-grpc</feature>
 
         <bundle>mvn:commons-io/commons-io/${commons.io.version}</bundle>
         <bundle>mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
