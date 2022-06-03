@@ -24,13 +24,11 @@
     <argument ref="scanProducer"/>
   </bean>
 
-<!--  <bean id="webDetector" class="org.opennms.netmgt.provision.detector.web.WebDetector"/>-->
+  <bean id="serviceRegistry" class="org.opennms.core.soa.support.DefaultServiceRegistry"/>
 
-  <bean id="serviceRegistry" class="org.opennms.netmgt.provision.service.scan.soa.DefaultServiceRegistry"/>
+  <bean id="detectorClientRpcModule" class="org.opennms.netmgt.provision.detector.client.DetectorClientRpcModule" />
 
-  <bean id="detectorClientRpcModule" class="org.opennms.netmgt.provision.service.scan.rpc.DetectorClientRpcModule" />
-
-  <bean id="serviceDetectorRegistry" class="org.opennms.netmgt.provision.service.scan.ServiceDetectorRegistryImpl" init-method="afterPropertiesSet">
+  <bean id="serviceDetectorRegistry" class="org.opennms.netmgt.provision.ServiceDetectorRegistryImpl" init-method="afterPropertiesSet">
     <property name="m_serviceRegistry" ref="serviceRegistry"/>
     <property name="m_detectorFactories">
       <set>
@@ -39,14 +37,14 @@
     </property>
   </bean>
 
-  <bean id="locationAwareDetector" class="org.opennms.netmgt.provision.service.scan.rpc.LocationAwareDetectorClientRpcImpl" init-method="afterPropertiesSet">
+  <bean id="locationAwareDetector" class="org.opennms.netmgt.provision.detector.client.LocationAwareDetectorClientRpcImpl" init-method="afterPropertiesSet">
      <property name="registry" ref="serviceDetectorRegistry"/>
     <property name="detectorClientRpcModule" ref="detectorClientRpcModule"/>
     <property name="rpcClientFactory" ref="grpcServer"/>
 <!--    <property name="entityScopeProvider" ref=""/>-->
   </bean>
 
-  <bean id="nodeScanner" class="org.opennms.netmgt.provision.service.scan.NodeScanner" init-method="init">
+  <bean id="nodeScanner" class="org.opennms.netmgt.provision.scan.NodeScanner" init-method="init">
     <argument ref="provisionCamelContext"/>
     <argument ref="provisioner"/>
     <argument ref="locationAwareDetector"/>

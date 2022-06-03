@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.provision.service;
 
-import io.opentracing.Span;
-import io.opentracing.SpanContext;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
-import org.opennms.netmgt.provision.service.scan.NodeScanner;
+import org.opennms.netmgt.provision.scan.NodeScanner;
 
 @Slf4j
 @RequiredArgsConstructor
