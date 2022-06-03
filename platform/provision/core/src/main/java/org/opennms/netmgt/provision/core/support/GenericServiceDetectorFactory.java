@@ -36,7 +36,6 @@ import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.DetectResults;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.ServiceDetectorFactory;
-import org.opennms.netmgt.provision.support.DetectRequestImpl;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 

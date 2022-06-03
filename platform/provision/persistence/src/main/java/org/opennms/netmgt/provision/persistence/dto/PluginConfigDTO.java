@@ -38,7 +38,7 @@ import java.util.TreeSet;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.opennms.netmgt.provision.support.PluginWrapper;
+import org.opennms.netmgt.provision.core.support.PluginWrapper;
 
 /**
  * A PluginConfig represents a portion of a configuration that defines a reference

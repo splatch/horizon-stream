@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.support;
+package org.opennms.netmgt.provision.core.support;
 
 import java.util.Map;
 

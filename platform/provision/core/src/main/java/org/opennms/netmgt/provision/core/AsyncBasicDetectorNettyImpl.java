@@ -53,7 +53,7 @@ import org.opennms.horizon.core.lib.LogPreservingThreadFactory;
 import org.opennms.net.util.RelaxedX509ExtendedTrustManager;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.core.support.AsyncClientConversation;
-import org.opennms.netmgt.provision.support.DetectFutureFailedImpl;
+import org.opennms.netmgt.provision.core.support.DetectFutureFailedImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
