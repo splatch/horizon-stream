@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.service.scan.rpc;
 //import org.opennms.core.rpc.api.RpcClient;
 //import org.opennms.core.rpc.api.RpcClientFactory;
 //import org.opennms.core.rpc.utils.mate.EntityScopeProvider;
+import lombok.Data;
 import org.opennms.horizon.ipc.rpc.api.RpcClient;
 import org.opennms.horizon.ipc.rpc.api.RpcClientFactory;
 import org.opennms.netmgt.provision.DetectorRequestBuilder;
@@ -40,6 +41,7 @@ import org.opennms.netmgt.provision.ServiceDetectorRegistry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Data
 public class LocationAwareDetectorClientRpcImpl implements LocationAwareDetectorClient, InitializingBean {
 
     private ServiceDetectorRegistry registry;
