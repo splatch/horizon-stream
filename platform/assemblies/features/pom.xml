@@ -304,7 +304,32 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.provision</groupId>
+            <artifactId>activemq</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.provision</groupId>
+            <artifactId>bsf</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.provision</groupId>
             <artifactId>detector-web</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.provision</groupId>
+            <artifactId>persistence</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.provision</groupId>
+            <artifactId>rest</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.provision</groupId>
+            <artifactId>service</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
