@@ -1,0 +1,48 @@
+#!/bin/bash
+
+HOST_PORT=localhost:9000
+REALM="opennms"
+CLIENT_ID=admin-cli
+
+usage()
+{
+	echo "Usage: $0 [-hv] [-H <host:port>] [-R <realm>] [-t <access-token>]"
+	echo
+	echo "  -h  Display this help"
+	echo "  -v  Verbose curl output"
+}
+
+while getopts "hH:Rt:v" arg
+do
+	case "$arg" in
+		h)
+			usage
+			exit 0
+			;;
+
+		H)
+			HOST_PORT="${OPTARG}"
+			;;
+
+		R)
+			REALM="${OPTARG}"
+			;;
+
+		t)
+			TOKEN="${OPTARG}"
+			CURL_OPTS=("${CURL_OPTS[@]}" "-H" "Authorization: Bearer ${OPTARG}")
+			;;
+
+		v)
+			CURL_OPTS=("${CURL_OPTS[@]}" -v)
+			;;
+	esac
+done
+
+URL="http://${HOST_PORT}/realms/${REALM}/protocol/openid-connect/logout"
+
+{
+	curl "${CURL_OPTS[@]}" -X GET \
+		-H 'Content-Type: application/json' \
+		"${URL}"
+}

@@ -98,6 +98,7 @@ class DetectorRunner implements Async<Boolean> {
                         }
                     });
         } catch (Throwable e) {
+            LOG.warn("Detection failure", e);
             cb.handleException(e);
         }
     }

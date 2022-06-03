@@ -1,0 +1,59 @@
+server:
+  port: 9090
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/horizon_stream
+    hikari:
+      username: opennms
+      password: opennms
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        enable_lazy_load_no_trans: true
+    show-sql: true
+  main:
+    allow-bean-definition-overriding: true
+  # database schema
+  liquibase:
+    enabled: false
+    change-log: classpath:db/changelog/db.changelog-master.xml
+  cache:
+    caffeine:
+      spec: maximumSize=10000,expireAfterWrite=600s
+
+
+# graphql
+graphql:
+  spqr:
+    gui:
+      enabled: true
+
+# keycloak
+keycloak:
+  realm: opennms
+  auth-server-url: http://localhost:8080
+  resource: horizon-stream
+  public-client: true
+  use-resource-role-mappings: true
+  cors: true
+
+# keycloak admin client properties
+horizon-stream:
+  keycloak:
+    admin:
+      client-id: admin-cli
+      username: keycloak-admin
+      password: admin
+      client-pool-size: 3
+      client-pool-timeout: 5
+  core:
+    url: http://localhost:8181
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.keycloak: DEBUG
+  file.path: /var/log/restServer

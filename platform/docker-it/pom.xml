@@ -48,6 +48,19 @@
     </dependency>
 
     <dependency>
+      <groupId>org.opennms.horizon.3rdparty</groupId>
+      <artifactId>keycloak-admin-client</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-core</artifactId>
       <scope>test</scope>
@@ -204,6 +217,43 @@
               </run>
             </image>
 
+            <!--                -->
+            <!-- KEYCLOAK IMAGE -->
+            <!--                -->
+            <image>
+              <name>keycloak-it-image</name>
+              <alias>keycloak</alias>
+              <build>
+                <from>quay.io/keycloak/keycloak:17.0.0</from>
+              </build>
+              <run>
+                <!--<cmd>start-dev &#45;&#45;log-level=DEBUG,org.hibernate:INFO</cmd>-->
+                <cmd>start-dev</cmd>
+                <env>
+                  <KEYCLOAK_CREATE_ADMIN_USER>true</KEYCLOAK_CREATE_ADMIN_USER>
+                  <KEYCLOAK_ADMIN>keycloak-admin</KEYCLOAK_ADMIN>
+                  <KEYCLOAK_ADMIN_PASSWORD>admin</KEYCLOAK_ADMIN_PASSWORD>
+
+                  <KEYCLOAK_DATABASE_HOST>postgres-host</KEYCLOAK_DATABASE_HOST>
+                  <KEYCLOAK_DATABASE_USER>postgres</KEYCLOAK_DATABASE_USER>
+                  <KEYCLOAK_DATABASE_PASSWORD>unused</KEYCLOAK_DATABASE_PASSWORD>
+                </env>
+                <ports>
+                  <port>keycloak-http.port:8080</port>
+                  <port>keycloak-https.port:8443</port>
+                </ports>
+                <wait>
+                  <log>Keycloak .* on JVM .* started in .* Listening on: http.*</log>
+                  <time>120000</time>
+                </wait>
+                <network>
+                  <mode>custom</mode>
+                  <name>alarm-docker-it-network</name>
+                  <alias>keycloak-host</alias>
+                </network>
+              </run>
+            </image>
+
             <!--                    -->
             <!-- APPLICATION IMAGE  -->
             <!--                    -->
@@ -244,7 +294,7 @@
                 <env>
                   <!-- Need to make sure address=* is in the DEBUG OPTS otherwise it listens on the container's localhost only -->
                   <JAVA_OPTS>-Djava.security.egd=file:/dev/./urandom -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_OPTS>
-                  <PGSQL_SERVICE_NAME>db</PGSQL_SERVICE_NAME>
+                  <PGSQL_SERVICE_NAME>postgres-host</PGSQL_SERVICE_NAME>
                   <PGSQL_ADMIN_USERNAME>postgres</PGSQL_ADMIN_USERNAME>
                   <PGSQL_ADMIN_PASSWORD>unused</PGSQL_ADMIN_PASSWORD>
                   <KAFKA_BROKER_HOST>kafka-host</KAFKA_BROKER_HOST>
@@ -259,6 +309,64 @@
                   <mode>custom</mode>
                   <name>alarm-docker-it-network</name>
                   <alias>application</alias>
+                </network>
+              </run>
+            </image>
+
+            <!--              -->
+            <!-- MINION IMAGE -->
+            <!--              -->
+            <!-- NOTE: Minion must start AFTER application -->
+            <image>
+              <name>minion-it-image</name>
+              <alias>minion</alias>
+              <build>
+                <from>opennms/minion:29.0.10</from>
+                <assembly>
+                  <user>minion</user>
+                  <targetDir>/</targetDir>
+
+                  <inline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                          xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+                          xsi:schemaLocation="
+                                             http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
+                                             http://maven.apache.org/xsd/assembly-1.1.2.xsd
+                                             ">
+
+                    <fileSets>
+                      <fileSet>
+                        <directory>${project.build.testOutputDirectory}/minion</directory>
+                        <outputDirectory>/opt/minion</outputDirectory>
+                      </fileSet>
+                    </fileSets>
+                  </inline>
+                </assembly>
+                <healthCheck>
+                  <interval>10s</interval>
+                  <timeout>10s</timeout>
+                  <retries>3</retries>
+                  <cmd>/health.sh</cmd>
+                </healthCheck>
+              </build>
+              <run>
+                <cmd>-f</cmd>
+                <env>
+                  <TZ>America/New_York</TZ>
+                  <JAVA_MIN_MEM>512M</JAVA_MIN_MEM>
+                  <JAVA_MAX_MEM>2048M</JAVA_MAX_MEM>
+                </env>
+                <ports>
+                  <port>minion-ssh.port:8201</port>
+                </ports>
+                <wait>
+                  <healthy>true</healthy>
+                  <time>600000</time>
+                  <!--<time>120000</time>-->
+                </wait>
+                <network>
+                  <mode>custom</mode>
+                  <name>alarm-docker-it-network</name>
+                  <alias>minion-host</alias>
                 </network>
               </run>
             </image>
@@ -297,6 +405,10 @@
             <property>
               <name>database.url</name>
               <value>jdbc:postgresql://localhost:${postgresql.port}/opennms</value>
+            </property>
+            <property>
+              <name>keycloak.url</name>
+              <value>http://localhost:${keycloak-http.port}</value>
             </property>
             <property>
               <name>application.base-url</name>

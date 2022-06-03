@@ -82,6 +82,10 @@
                                         </inline>
                                     </assembly>
                                 </assemblies>
+                                <tags>
+                                    <tag>${docker.image.tag}</tag>
+                                </tags>
+                                <skipPush>${docker.image.skipPush}</skipPush>
                             </build>
                         </image>
                     </images>

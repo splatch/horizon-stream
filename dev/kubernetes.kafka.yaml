@@ -1,0 +1,678 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: horizon-stream-core
+  labels:
+    run: my-horizon-stream-core
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8101
+      protocol: TCP
+      name: ssh
+    - port: 8181
+      protocol: TCP
+      name: http
+    - port: 8990
+      protocol: TCP
+      name: grpc
+  selector:
+    run: my-horizon-stream-core
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: horizon-stream-api
+  labels:
+    run: my-horizon-stream-api
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9090
+      protocol: TCP
+      name: http
+  selector:
+    run: my-horizon-stream-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minion
+  labels:
+    run: my-minion
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8201
+      protocol: TCP
+      name: ssh
+    - port: 1162
+      protocol: UDP
+      name: snmp-trap
+    - port: 1514
+      protocol: UDP
+      name: syslog
+  selector:
+    run: my-minion
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  labels:
+    run: my-zookeeper
+spec:
+  type: ClusterIP
+  ports:
+    - port: 2181
+      protocol: TCP
+      name: http
+  selector:
+    run: my-zookeeper
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  labels:
+    run: my-kafka
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9092
+      protocol: TCP
+      name: http
+  selector:
+    run: my-kafka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    run: my-postgres
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      protocol: TCP
+      name: http
+  selector:
+    run: my-postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  labels:
+    run: my-keycloak
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      protocol: TCP
+      name: http
+    - port: 8443
+      protocol: TCP
+      name: https
+  selector:
+    run: my-keycloak
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-zookeeper
+spec:
+  selector:
+    matchLabels:
+      run: my-zookeeper
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: my-zookeeper
+    spec:
+      volumes:
+        - name: zookeeper-volume
+      containers:
+        - name: zookeeper
+          image: docker.io/bitnami/zookeeper:3.7
+          env:
+            - name: ALLOW_ANONYMOUS_LOGIN
+              value: "no"
+            - name: ZOO_ENABLE_AUTH
+              value: "yes"
+            - name: ZOO_SERVER_USERS
+              valueFrom:
+                secretKeyRef:
+                  name: zookeeper-secret
+                  key: username
+            - name: ZOO_SERVER_PASSWORDS
+              valueFrom:
+                secretKeyRef:
+                  name: zookeeper-secret
+                  key: password
+            - name: ZOO_CLIENT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: zookeeper-secret
+                  key: username
+            - name: ZOO_CLIENT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zookeeper-secret
+                  key: password
+          ports:
+            - containerPort: 2181
+          volumeMounts:
+            - mountPath: /bitnami/zookeeper
+              name: zookeeper-volume
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-kafka
+spec:
+  selector:
+    matchLabels:
+      run: my-kafka
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: my-kafka
+    spec:
+      volumes:
+        - name: kafka-volume
+      containers:
+        - name: kafka
+          image: docker.io/bitnami/kafka:3
+          env:
+            - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+              value: "zookeeper:2181"
+            - name: KAFKA_ZOOKEEPER_PROTOCOL
+              value: "SASL"
+            - name: KAFKA_ZOOKEEPER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: zookeeper-secret
+                  key: username
+            - name: KAFKA_ZOOKEEPER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: zookeeper-secret
+                  key: password
+            - name: ALLOW_PLAINTEXT_LISTENER
+              value: "yes"
+            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "CLIENT:PLAINTEXT"
+            - name: KAFKA_CFG_LISTENERS
+              value: "CLIENT://:9092"
+            - name: KAFKA_CFG_ADVERTISED_LISTENERS
+              value: "CLIENT://kafka:9092"
+            - name: KAFKA_CFG_INTER_BROKER_LISTENER_NAME
+              value: "CLIENT"
+            - name: KAFKA_CLIENT_USERS
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secret
+                  key: username
+            - name: KAFKA_CLIENT_PASSWORDS
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secret
+                  key: password
+          ports:
+            - containerPort: 9092
+          volumeMounts:
+            - mountPath: /bitnami/kafka
+              name: kafka-volume
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-postgres
+spec:
+  selector:
+    matchLabels:
+      run: my-postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: my-postgres
+    spec:
+      volumes:
+        - name: postgres-volume
+        - name: postgres-initial-script
+          configMap:
+            name: postgres-initial-sql
+        - name: postgres-keycloak-initial-script
+          configMap:
+            name: postgres-keycloak-initial-sql
+      containers:
+        - name: postgres
+          image: postgres:13.3-alpine
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-admin-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-admin-secret
+                  key: password
+            - name: POSTGRES_HOST_AUTH_METHOD
+              value: "trust"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: postgres-volume
+            - mountPath: "/docker-entrypoint-initdb.d/postgres.initial.script.sql"
+              name: postgres-initial-script
+              subPath: "postgres.initial.script.sql"
+            - mountPath: "/docker-entrypoint-initdb.d/postgres.keycloak.initial.script.sql"
+              name: postgres-keycloak-initial-script
+              subPath: "postgres.keycloak.initial.script.sql"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-keycloak
+spec:
+  selector:
+    matchLabels:
+      run: my-keycloak
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: my-keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:17.0.1 #After testing, version 18 and 17.0.1 works on M1 MacBook, for more information https://github.com/keycloak/keycloak/issues/8825
+          args: [ "start-dev" ]
+          env:
+            - name: KEYCLOAK_CREATE_ADMIN_USER
+              value: "true"
+            - name: KEYCLOAK_ADMIN
+              value: "keycloak-admin"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "admin"
+            - name: KEYCLOAK_DATABASE_HOST 
+              value: "postgres"
+            - name: KEYCLOAK_DATABASE_USER
+              value: "postgres"
+            - name: KEYCLOAK_DATABASE_PASSWORD
+              value: "unused"
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL
+              value: jdbc:postgresql://postgres/keycloak
+            #
+            # TODO: use keycloak user (and password) instead of the admin "postgres" user
+            #
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-admin-secret
+                  key: username
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-admin-secret
+                  key: password
+          ports:
+            - containerPort: 8080
+            - containerPort: 8443
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-horizon-stream-core
+spec:
+  selector:
+    matchLabels:
+      run: my-horizon-stream-core
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: my-horizon-stream-core
+    spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: camel-config
+      containers:
+        - name: horizon-stream-core
+          image: opennms/horizon-stream-core
+          imagePullPolicy: Never
+          args: [ "-f" ]
+          env:
+            - name: JAVA_TOOL_OPTIONS # Let `skaffold debug` see that this is a jvm container
+              value: "-Djava.security.egd=file:/dev/./urandom"
+            - name: PGSQL_SERVICE_NAME
+              value: "postgres"
+            - name: PGSQL_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-admin-secret
+                  key: username
+            - name: PGSQL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-admin-secret
+                  key: password
+            - name: KAFKA_BROKER_HOST
+              value: "kafka"
+            - name: KAFKA_BROKER_PORT
+              value: "9092"
+            - name: ACTIVEMQ_BROKER_URL
+              value: "tcp://localhost:61616"
+            - name: KEYCLOAK_BASE_URL
+              value: "http://keycloak:8080"
+            - name: KEYCLOAK_ADMIN_USERNAME
+              value: "keycloak-admin"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "admin"
+          ports:
+            - containerPort: 8101
+            - containerPort: 8181
+            - containerPort: 8990
+          volumeMounts:
+            - name: config-volume
+              mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.alarmd.camel.cfg"
+              subPath: "useKafka"
+            - name: config-volume
+              mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.eventd.camel.cfg"
+              subPath: "useKafka"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-horizon-stream-api
+spec:
+  selector:
+    matchLabels:
+      run: my-horizon-stream-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: my-horizon-stream-api
+    spec:
+      containers:
+        - name: horizon-stream-api
+          image: opennms/horizon-stream-api
+          imagePullPolicy: Never
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres:5432/horizon_stream"
+            - name: SPRING_CACHE_CAFFEINE_SPEC
+              value: "maximumSize=10000,expireAfterWrite=60s"
+            - name: KEYCLOAK_AUTH_SERVER_URL
+              value: "http://keycloak:8080"
+            - name: KEYCLOAK_REALM
+              value: "opennms"
+            - name: KEYCLOAK_RESOURCE
+              value: "horizon-stream"
+            - name: KEYCLOAK_PUBLIC_CLIENT
+              value: "true"
+            - name: KEYCLOAK_USE_RESOURCE_ROLE_MAPPINGS
+              value: "true"
+            - name: KEYCLOAK_CORS
+              value: "true"
+            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_ID
+              value: "admin-cli"
+            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_USERNAME
+              value: "keycloak-admin"
+            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_PASSWORD
+              value: "admin"
+            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_POOL_SIZE
+              value: "3"
+            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_POOL_TIMEOUT
+              value: "5"
+            - name: HORIZON_STREAM_CORE_URL
+              value: "http://horizon-stream-core:8181"
+          ports:
+            - containerPort: 9090
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-minion
+spec:
+  selector:
+    matchLabels:
+      run: my-minion
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: my-minion
+    spec:
+      volumes:
+        - name: minion-config-volume
+          configMap:
+            name: minion-config-map
+      containers:
+        - name: minion
+          image: opennms/minion:29.0.10
+          args: ["-f"]
+          env:
+            - name: TZ
+              value: "America/New_York"
+            - name: JAVA_MIN_MEM
+              value: "512M"
+            - name: JAVA_MAX_MEM
+              value: "2048M"
+          ports:
+            - containerPort: 8201
+            - containerPort: 1162
+              protocol: UDP
+            - containerPort: 1514
+              protocol: UDP
+#          livenessProbe:
+#            exec:
+#              command: ["/health.sh"]
+#            initialDelaySeconds: 30
+#            periodSeconds: 30
+#            timeoutSeconds: 20
+#            failureThreshold: 3
+          volumeMounts:
+            - name: minion-config-volume
+              mountPath: "/opt/minion/minion-config.yaml"
+              subPath: "minion-config.yaml"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-horizon-stream-ui
+spec:
+  selector:
+    matchLabels:
+      app: my-horizon-stream-ui
+  template:
+    metadata:
+      labels:
+        app: my-horizon-stream-ui
+    spec:
+      containers:
+        - name: horizon-stream-ui
+          image: opennms/horizon-stream-ui-dev
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DOMAIN_API
+              value: "localhost:9090"
+            - name: DOMAIN_KEYCLOAK
+              value: "localhost:28080"
+          command: ["/app/dev/entrypoint.sh"]
+          args: ["$(DOMAIN_KEYCLOAK)","$(DOMAIN_API)"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: camel-config
+data:
+  useKafka: |
+    useSeda=false
+    useKafka=true
+    useActiveMq=false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-initial-sql
+data:
+  postgres.initial.script.sql: |
+    CREATE USER opennms with password 'opennms';
+    CREATE DATABASE horizon_stream;
+    GRANT ALL ON DATABASE horizon_stream TO opennms;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-keycloak-initial-sql
+data:
+  postgres.keycloak.initial.script.sql: |
+    CREATE USER keycloak with password 'passw0rd';
+    CREATE DATABASE keycloak;
+    GRANT ALL ON DATABASE keycloak TO keycloak;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minion-config-map
+data:
+  minion-config.yaml: |
+    http-url: "http://horizon:8980/opennms"
+    id: "minion-01"
+    location: "minion-location"
+    
+    karaf:
+      shell:
+        ssh:
+          host: "0.0.0.0"
+    
+    ipc:
+      grpc:
+        host: "horizon-stream-core"
+        port: "8990"
+    
+    netmgt:
+      syslog:
+        syslog.listen.interface: "0.0.0.0"
+        syslog.listen.port: 1514
+    
+      traps:
+        trapd.listen.interface: "0.0.0.0"
+        trapd.listen.port: 1162
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-admin-secret
+type: Opaque
+stringData:
+  username: postgres
+  password: passw0rd
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: zookeeper-secret
+type: Opaque
+stringData:
+  username: zookeeper-user
+  password: passw0rd
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kafka-secret
+type: Opaque
+stringData:
+  username: kafka-user
+  password: passw0rd
+---
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: KeycloakRealmImport
+metadata:
+  name: opennms
+  labels:
+    app: sso
+spec:
+  keycloakCRName: my-keycloak
+  realm:
+    id: opennms
+    realm: opennms
+    enabled: true
+    attributes:
+      frontendUrl: "http://localhost:28080"
+    clients:
+      - id: b67dfe9a-36c2-42bc-bd23-b380023d4238
+        clientId: horizon-stream
+        standardFlowEnabled: false
+        enabled: true
+        webOrigins:
+          - "*"
+        publicClient: true
+        directAccessGrantsEnabled: true
+        defaultClientScopes:
+          - "web-origins"
+          - "roles"
+          - "profile"
+          - "email"
+        optionalClientScopes:
+          - "address"
+          - "phone"
+          - "offline_access"
+          - "microprofile-jwt"
+    roles:
+      realm:
+      - id: 50e6b594-e01b-426b-873d-873f632355b4
+        name: user
+        composite: false
+      - id: 76f0abc8-da17-4f57-8956-40cca624d62d
+        name: admin
+        composite: false
+    users:
+      - username: "admin"
+        email: "admin@test.opennms.org"
+        enabled: True
+        emailVerified: False
+        credentials:
+          - type: "password"
+            value: "admin"
+        realmRoles:
+          - "admin"
+        clientRoles:
+          account:
+            - "manage-account"
+            - "view-profile"
+          realm-management:
+            - "manage-users"
+            - "view-users"
+            - "query-users"
+            - "create-client"
+      - username: "user001"
+        firstName: "User001"
+        lastName: ""
+        email: "user001@test.opennms.org"
+        enabled: True
+        emailVerified: False
+        credentials:
+          - type: "password"
+            value: "passw0rd"
+        realmRoles:
+          - "user"
+        clientRoles:
+          account:
+            - "manage-account"
+            - "view-profile"
