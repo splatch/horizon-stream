@@ -45,4 +45,5 @@ public class UserDTO {
     private String email;
     private Boolean enabled;
     private List<String> roles;
+    private List<String> requiredActions;
 }

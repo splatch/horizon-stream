@@ -109,6 +109,6 @@ public class KeycloakInitialSteps {
                 .password(keycloakAdminPassword)
                 .resteasyClient(clientBuilder.build());
         Keycloak keycloak = kb.build();
-        keyCloakUtils = new KeyCloakUtils(keycloak, new KeycloakUserMapperImpl());
+      keyCloakUtils = new KeyCloakUtils(keycloak);
     }
 }

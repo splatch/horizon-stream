@@ -34,7 +34,7 @@ import org.opennms.horizon.server.exception.UserManagementException;
 import org.opennms.horizon.server.model.dto.ResetPasswordDTO;
 import org.opennms.horizon.server.model.dto.UserDTO;
 import org.opennms.horizon.server.model.dto.UserSearchDTO;
-import org.opennms.horizon.server.security.KeyCloakUtils;
+import org.opennms.horizon.server.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,33 +54,36 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/users")
 public class UserController {
 
-    private KeyCloakUtils keyCloakUtils;
+    private UserService service;
 
-    public UserController(KeyCloakUtils keyCloakUtils) {
-        this.keyCloakUtils = keyCloakUtils;
+    public UserController(UserService service) {
+        this.service = service;
     }
 
     @GetMapping
     @PreAuthorize("hasRole('admin')")
     public List<UserDTO> searchUsers(UserSearchDTO searchDTO) {
-        return keyCloakUtils.searchUser(searchDTO);
+        return service.searchUsers(searchDTO);
     }
 
     @GetMapping("/{userID}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable String userID) {
-        //TODO none admin user only can see own account information
-        UserDTO user = keyCloakUtils.getUserById(userID);
-        if(user != null) {
-            return ResponseEntity.ok(user);
+    public ResponseEntity getUserById(@PathVariable String userID, @RequestHeader("Authorization") String authToken) {
+        try {
+            UserDTO user = service.getUserById(userID, authToken);
+            if (user != null) {
+                return ResponseEntity.ok(user);
+            }
+            return ResponseEntity.notFound().build();
+        }catch (UserManagementException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 
     @PostMapping
     @PreAuthorize("hasRole('admin')")
     public ResponseEntity createUser(@RequestBody UserDTO userDTO) {
         try {
-            UserDTO newUser = keyCloakUtils.createUser(userDTO);
+            UserDTO newUser = service.createUser(userDTO);
             log.info("New user {} created", newUser);
             return ResponseEntity.ok(newUser);
         } catch (UserManagementException e) {
@@ -89,28 +93,35 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable String userId, @RequestBody UserDTO userDTO) {
-        //TODO none admin user only can see own account information
-        UserDTO updatedUser = keyCloakUtils.updateUser(userId, userDTO);
+    public ResponseEntity updateUser(@PathVariable String userId, @RequestBody UserDTO userDTO, @RequestHeader("Authorization") String authToken) {
+        try{
+        UserDTO updatedUser = service.updateUser(userId, userDTO, authToken);
         if(updatedUser!=null) {
             return ResponseEntity.ok(updatedUser);
         }
         return ResponseEntity.notFound().build();
+        } catch (UserManagementException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity deleteUser(@PathVariable String userId) {
-        if (keyCloakUtils.deleteUser(userId)) {
-            return ResponseEntity.noContent().build();
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity deleteUser(@PathVariable String userId, @RequestHeader("Authorization") String authToken) {
+        try {
+            if (service.deleteUser(userId, authToken)) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.notFound().build();
+        } catch (UserManagementException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{userId}/password")
-    public ResponseEntity resetPassword(@PathVariable String userId, @RequestBody ResetPasswordDTO passwordDto) {
-        //TODO none admin user only can reset own password
+    public ResponseEntity resetPassword(@PathVariable String userId, @RequestBody ResetPasswordDTO passwordDto, @RequestHeader("Authorization") String authToken) {
         try {
-            if(keyCloakUtils.resetPassword(userId, passwordDto)){
+            if(service.resetPassword(userId, passwordDto, authToken)){
                 return ResponseEntity.noContent().build();
             } else {
                 return ResponseEntity.notFound().build();
