@@ -30,6 +30,8 @@ package org.opennms.core.soa.support;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.Multimaps;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -140,10 +142,9 @@ public class DefaultServiceRegistry implements ServiceRegistry {
         }
         
     }
-
-    //TODO: make sure these are synchronized or use a different impl from guava
-    private Multimap<Class<?>, ServiceRegistration> m_registrationMap = ArrayListMultimap.create();//new MultivaluedMapImpl.synchronizedMultivaluedMap();
-    private Multimap<Class<?>, RegistrationListener<?>> m_listenerMap = ArrayListMultimap.create();//MultivaluedMapImpl.synchronizedMultivaluedMap();
+    
+    private Multimap<Class<?>, ServiceRegistration> m_registrationMap = Multimaps.synchronizedMultimap(MultimapBuilder.hashKeys().linkedHashSetValues().build());
+    private Multimap<Class<?>, RegistrationListener<?>> m_listenerMap = Multimaps.synchronizedMultimap(MultimapBuilder.hashKeys().linkedHashSetValues().build());
     private List<RegistrationHook> m_hooks = new CopyOnWriteArrayList<>();
     
     /** {@inheritDoc} */
@@ -240,8 +241,6 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     	}
 	}
 	private <T> Set<ServiceRegistration> getRegistrations(Class<T> serviceInterface) {
-//        Set<ServiceRegistration> copy = m_registrationMap.getCopy(serviceInterface);
-        //TODO: double check this
         Set<ServiceRegistration> copy = m_registrationMap.get(serviceInterface).stream().collect(Collectors.toSet());
         return (copy == null ? Collections.<ServiceRegistration>emptySet() : copy);
     }
@@ -263,7 +262,6 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     /** {@inheritDoc} */
     @Override
     public <T> void addListener(Class<T> service,  RegistrationListener<T> listener) {
-        //TODO: double check
         m_listenerMap.put(service, listener);
     }
 
@@ -276,8 +274,6 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             Set<ServiceRegistration> registrations = null;
             
             synchronized (m_registrationMap) {
-//                m_listenerMap.add(service, listener);
-                //TODO: double check
                 m_listenerMap.put(service, listener);
                 registrations = getRegistrations(service);
             }
@@ -287,11 +283,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             }
             
         } else {
-            
-//            m_listenerMap.add(service, listener);
-            //TODO: double check
             m_listenerMap.put(service, listener);
-            
         }
     }
 
@@ -320,7 +312,6 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     
     @SuppressWarnings("unchecked")
     private <T> Set<RegistrationListener<T>> getListeners(Class<T> serviceInterface) {
-//        Set<RegistrationListener<?>> listeners = m_listenerMap.getCopy(serviceInterface);
         Set<RegistrationListener<?>> listeners = m_listenerMap.get(serviceInterface).stream().collect(Collectors.toSet());
         return (Set<RegistrationListener<T>>) (listeners == null ? Collections.emptySet() : listeners);
     }
@@ -358,15 +349,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
 	}
 
 	private Set<ServiceRegistration> getAllRegistrations() {
-		Set<ServiceRegistration> registrations = new LinkedHashSet<>();
-
-        //TODO: make sure this is correct now after conversion to guava
-		for(ServiceRegistration registrationSet: m_registrationMap.values()) {
-			registrations.addAll((Collection<? extends ServiceRegistration>) registrationSet);
-		}
-		
-		return registrations;
-		
+        return m_registrationMap.values().stream().collect(Collectors.toSet());
 	}
 
 }

@@ -39,12 +39,10 @@ import java.util.Map;
 import java.util.Set;
 import org.opennms.core.soa.ServiceRegistry;
 import lombok.Setter;
-//import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-//TODO: where should this live?
 public class ServiceDetectorRegistryImpl implements ServiceDetectorRegistry, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceDetectorRegistryImpl.class);
 

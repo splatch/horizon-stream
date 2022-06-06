@@ -33,20 +33,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.opennms.horizon.ipc.rpc.api.RemoteExecutionException;
 import org.opennms.horizon.ipc.rpc.api.RpcResponse;
 import org.opennms.netmgt.provision.DetectResults;
 
-//TODO: lombok
+@Data
+@NoArgsConstructor
 public class DetectorResponseDTO implements DetectResults, RpcResponse {
 
     private String error;
     private boolean detected;
     private List<DetectorAttributeDTO> attributes = new ArrayList<>();
-
-    public DetectorResponseDTO() {
-        // Default constructor for JAXB
-    }
 
     public DetectorResponseDTO(DetectResults results) {
         setDetected(results.isServiceDetected());
@@ -58,18 +57,6 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
     public DetectorResponseDTO(Throwable t) {
         setDetected(false);
         error = RemoteExecutionException.toErrorMessage(t);
-    }
-
-    public boolean isDetected() {
-        return detected;
-    }
-
-    public void setDetected(boolean detected) {
-        this.detected = detected;
-    }
-
-    public List<DetectorAttributeDTO> getAttributes() {
-        return attributes;
     }
 
     public void addAttribute(String key, String value) {
@@ -88,7 +75,7 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
 
     @Override
     public boolean isServiceDetected() {
-        return detected;
+        return isDetected();
     }
 
     @Override
@@ -96,24 +83,24 @@ public class DetectorResponseDTO implements DetectResults, RpcResponse {
         return getAttributesMap();
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(detected, error, attributes);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        DetectorResponseDTO other = (DetectorResponseDTO) obj;
-        return Objects.equals(this.detected, other.detected) &&
-                Objects.equals(this.error, other.error) &&
-                Objects.equals(this.attributes, other.attributes);
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(detected, error, attributes);
+//    }
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (this == obj)
+//            return true;
+//        if (obj == null)
+//            return false;
+//        if (getClass() != obj.getClass())
+//            return false;
+//        DetectorResponseDTO other = (DetectorResponseDTO) obj;
+//        return Objects.equals(this.detected, other.detected) &&
+//                Objects.equals(this.error, other.error) &&
+//                Objects.equals(this.attributes, other.attributes);
+//    }
 
     @Override
     public String getErrorMessage() {

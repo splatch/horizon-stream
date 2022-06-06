@@ -47,7 +47,6 @@ public class DetectorRunner implements Async<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(DetectorRunner.class);
 
     private final LocationAwareDetectorClient locationAwareDetectorClient;
-//    private final ProvisionService m_service;
     private final PluginConfigDTO detectorConfig;
     private final Integer nodeId;
     private final InetAddress address;

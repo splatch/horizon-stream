@@ -36,11 +36,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.opennms.horizon.ipc.rpc.api.RpcRequest;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.PreDetectCallback;
 
-//TODO lombok
+@Data
+@NoArgsConstructor
 public class DetectorRequestDTO implements DetectRequest, RpcRequest {
 
     private String location;
@@ -58,32 +61,6 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
 
     private PreDetectCallback preDetectCallback;
 
-    @Override
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public void setSystemId(String systemId) {
-        this.systemId = systemId;
-    }
-
-    @Override
-    public String getSystemId() {
-        return systemId;
-    }
-
-    public List<DetectorAttributeDTO> getDetectorAttributes() {
-        return detectorAttributes;
-    }
-
-    public void setDetectorAttributes(List<DetectorAttributeDTO> attributes) {
-        this.detectorAttributes = attributes;
-    }
-
     public void addDetectorAttribute(String key, String value) {
         detectorAttributes.add(new DetectorAttributeDTO(key, value));
     }
@@ -96,10 +73,6 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
     public Map<String, String> getAttributeMap() {
         return detectorAttributes.stream().collect(Collectors.toMap(DetectorAttributeDTO::getKey,
                 DetectorAttributeDTO::getValue));
-    }
-
-    public void setRuntimeAttributes(List<DetectorAttributeDTO> attributes) {
-        this.runtimeAttributes = attributes;
     }
 
     public void addRuntimeAttribute(String key, String value) {
@@ -120,45 +93,6 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
         return runtimeAttributeMap;
     }
 
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public InetAddress getAddress() {
-        return address;
-    }
-
-    public void setAddress(InetAddress address) {
-        this.address = address;
-    }
-
-    @Override
-    public Long getTimeToLiveMs() {
-        return this.timeToLiveMs;
-    }
-
-    public void setTimeToLiveMs(Long timeToLive) {
-        this.timeToLiveMs = timeToLive;
-    }
-
-    @Override
-    public Map<String, String> getTracingInfo() {
-        return tracingInfo;
-    }
-
-    @Override
-    public Span getSpan() {
-        return this.span;
-    }
-
-    public void setSpan(Span span) {
-        this.span = span;
-    }
-
     public void addTracingInfo(String key, String value) {
         tracingInfo.put(key, value);
     }
@@ -174,27 +108,28 @@ public class DetectorRequestDTO implements DetectRequest, RpcRequest {
         }
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(location, systemId, detectorAttributes, runtimeAttributes,
-                className, address);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final DetectorRequestDTO other = (DetectorRequestDTO) obj;
-        return Objects.equals(this.location, other.location)
-                && Objects.equals(this.systemId, other.systemId)
-                && Objects.equals(this.detectorAttributes, other.detectorAttributes)
-                && Objects.equals(this.runtimeAttributes, other.runtimeAttributes)
-                && Objects.equals(this.className, other.className)
-                && Objects.equals(this.address, other.address);
-    }
+    //TODO: does lombok generated methods give same answer?
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(location, systemId, detectorAttributes, runtimeAttributes,
+//                className, address);
+//    }
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (this == obj)
+//            return true;
+//        if (obj == null)
+//            return false;
+//        if (getClass() != obj.getClass())
+//            return false;
+//        final DetectorRequestDTO other = (DetectorRequestDTO) obj;
+//        return Objects.equals(this.location, other.location)
+//                && Objects.equals(this.systemId, other.systemId)
+//                && Objects.equals(this.detectorAttributes, other.detectorAttributes)
+//                && Objects.equals(this.runtimeAttributes, other.runtimeAttributes)
+//                && Objects.equals(this.className, other.className)
+//                && Objects.equals(this.address, other.address);
+//    }
 
 }
