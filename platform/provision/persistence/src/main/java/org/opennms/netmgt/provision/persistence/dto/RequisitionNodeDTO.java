@@ -42,8 +42,6 @@ public class RequisitionNodeDTO extends CategoriesAndMetadataDTO {
     private final String building;
     private final String city;
     private final String nodeLabel;
-
-    //TODO: are these just relational mappings? Can be done with object model nesting now?
     private String parentForeignId;
     private String parentForeignSource;
     protected String parentNodeLabel;
@@ -184,45 +182,5 @@ public class RequisitionNodeDTO extends CategoriesAndMetadataDTO {
 //                asset.validate();
 //            }
 //        }
-//    }
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(m_building, m_city, m_foreignId, m_assets,
-//                m_categories, m_interfaces, m_nodeLabel, m_nodeLabel,
-//                m_parentForeignId, m_parentForeignSource, m_parentNodeLabel, m_location,
-//                m_metaData);
-//    }
-//
-//    @Override
-//    public boolean equals(final Object obj) {
-//        if (this == obj) return true;
-//        if (obj == null) return false;
-//        if (!(obj instanceof RequisitionNode)) return false;
-//        final RequisitionNode other = (RequisitionNode) obj;
-//        return Objects.equals(this.m_building, other.m_building) &&
-//                Objects.equals(this.m_city, other.m_city) &&
-//                Objects.equals(this.m_foreignId, other.m_foreignId) &&
-//                Objects.equals(this.m_assets, other.m_assets) &&
-//                Objects.equals(this.m_categories, other.m_categories) &&
-//                Objects.equals(this.m_interfaces, other.m_interfaces) &&
-//                Objects.equals(this.m_nodeLabel, other.m_nodeLabel) &&
-//                Objects.equals(this.m_parentForeignId, other.m_parentForeignId) &&
-//                Objects.equals(this.m_parentForeignSource, other.m_parentForeignSource) &&
-//                Objects.equals(this.m_parentNodeLabel, other.m_parentNodeLabel) &&
-//                Objects.equals(this.m_location, other.m_location) &&
-//                Objects.equals(this.m_metaData, other.m_metaData);
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "RequisitionNode [interfaces=" + m_interfaces
-//                + ", categories=" + m_categories + ", assets=" + m_assets + ", meta-data=" + m_metaData
-//                + ", building=" + m_building + ", city=" + m_city
-//                + ", foreignId=" + m_foreignId + ", nodeLabel=" + m_nodeLabel
-//                + ", parentForeignSource=" + m_parentForeignSource
-//                + ", parentForeignId=" + m_parentForeignId
-//                + ", parentNodeLabel=" + m_parentNodeLabel
-//                + ", location=" + m_location + "]";
 //    }
 }

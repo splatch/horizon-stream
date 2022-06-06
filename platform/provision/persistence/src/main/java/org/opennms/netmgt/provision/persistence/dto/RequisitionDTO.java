@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 
@@ -55,6 +56,7 @@ public class RequisitionDTO implements Serializable {
     protected Date dateStamp = new Date();
     protected String foreignSource = IMPORTED;
     protected Date lastImport;
+    @EqualsAndHashCode.Exclude
     private String id;
 
     /** the resource that this requisition was created from **/
@@ -143,55 +145,6 @@ public class RequisitionDTO implements Serializable {
     public int getNodeCount() {
         return nodes.size();
     }
-
-//    @Override
-//    public int hashCode() {
-//        final int prime = 31;
-//        int result = 1;
-//        result = prime * result + ((m_dateStamp == null) ? 0 : m_dateStamp.hashCode());
-//        result = prime * result + ((m_foreignSource == null) ? 0 : m_foreignSource.hashCode());
-//        result = prime * result + ((m_lastImport == null) ? 0 : m_lastImport.hashCode());
-//        result = prime * result + ((m_nodes == null) ? 0 : m_nodes.hashCode());
-//        return result;
-//    }
-
-//    @Override
-//    public boolean equals(final Object obj) {
-//        if (this == obj) return true;
-//        if (obj == null) return false;
-//        if (!(obj instanceof RequisitionDTO))  return false;
-//
-//        final RequisitionDTO other = (RequisitionDTO) obj;
-//        if (m_dateStamp == null) {
-//            if (other.m_dateStamp != null) return false;
-//        } else if (!m_dateStamp.equals(other.m_dateStamp)) {
-//            return false;
-//        }
-//        if (m_foreignSource == null) {
-//            if (other.m_foreignSource != null) return false;
-//        } else if (!m_foreignSource.equals(other.m_foreignSource)) {
-//            return false;
-//        }
-//        if (m_lastImport == null) {
-//            if (other.m_lastImport != null) return false;
-//        } else if (!m_lastImport.equals(other.m_lastImport)) {
-//            return false;
-//        }
-//        if (m_nodes == null) {
-//            if (other.m_nodes != null) return false;
-//        } else if (!m_nodes.equals(other.m_nodes)) {
-//            return false;
-//        }
-//        return true;
-//    }
-
-//    @Override
-//    public String toString() {
-//        return "RequisitionDTO [nodes="
-//                + m_nodes + ", dateStamp=" + m_dateStamp
-//                + ", foreignSource=" + m_foreignSource + ", lastImport="
-//                + m_lastImport + "]";
-//    }
     
     /**
      * Make sure that no data in the requisition is inconsistent.  Nodes should be unique,

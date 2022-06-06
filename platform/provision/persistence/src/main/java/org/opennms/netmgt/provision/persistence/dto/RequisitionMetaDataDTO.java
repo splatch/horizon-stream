@@ -36,28 +36,4 @@ public class RequisitionMetaDataDTO {
     protected String context;
     protected String key;
     protected String value;
-
-//    @Override
-//    public int compareTo(final RequisitionMetaData other) {
-//        return new CompareToBuilder()
-//            .append(context, other.context)
-//            .append(key, other.key)
-//            .append(value, other.value)
-//            .toComparison();
-//    }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        RequisitionMetaData that = (RequisitionMetaData) o;
-//        return Objects.equals(context, that.context) &&
-//                Objects.equals(key, that.key) &&
-//                Objects.equals(value, that.value);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(context, key, value);
-//    }
 }

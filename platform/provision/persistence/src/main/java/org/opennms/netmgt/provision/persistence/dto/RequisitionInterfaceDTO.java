@@ -61,30 +61,7 @@ public class RequisitionInterfaceDTO extends CategoriesAndMetadataDTO {
     //TODO: this may cause a circular ref?
     private PrimaryType snmpPrimary;
     private Integer status;
-
     private InetAddress ipAddress;
-
-    /**
-     * <p>getMonitoredServiceCount</p>
-     *
-     * @return a int.
-     */
-
-//    @Transient
-//    public int getMonitoredServiceCount() {
-//        return monitoredServices.size();
-//    }
-//
-//    /* backwards-compat with ModelImport */
-//    /**
-//     * <p>getMonitoredService</p>
-//     *
-//     * @return an array of {@link RequisitionMonitoredService} objects.
-//     */
-//    @Transient
-//    public RequisitionMonitoredService[] getMonitoredService() {
-//        return getMonitoredServices().toArray(new RequisitionMonitoredService[] {});
-//    }
 
     /**
      * <p>getMonitoredService</p>
@@ -208,94 +185,5 @@ public class RequisitionInterfaceDTO extends CategoriesAndMetadataDTO {
 //                throw new ValidationException("Node foreign ID (" + node.getForeignId() + ") contains multiple primary interfaces. Maximum one is allowed.");
 //            }
 //        }
-//    }
-
-//    @Override
-//    public int hashCode() {
-//        final int prime = 67;
-//        int result = 1;
-//        result = prime * result + ((m_categories == null) ? 0 : m_categories.hashCode());
-//        result = prime * result + ((m_metaData == null) ? 0 : m_metaData.hashCode());
-//        result = prime * result + ((m_description == null) ? 0 : m_description.hashCode());
-//        result = prime * result + ((m_ipAddress == null) ? 0 : m_ipAddress.hashCode());
-//        result = prime * result + ((m_isManaged == null) ? 0 : m_isManaged.hashCode());
-//        result = prime * result + ((m_monitoredServices == null) ? 0 : m_monitoredServices.hashCode());
-//        result = prime * result + ((m_snmpPrimary == null) ? 0 : m_snmpPrimary.hashCode());
-//        result = prime * result + ((m_status == null) ? 0 : m_status.hashCode());
-//        return result;
-//    }
-//
-//    @Override
-//    public boolean equals(final Object obj) {
-//        if (this == obj) return true;
-//        if (obj == null) return false;
-//        if (!(obj instanceof RequisitionInterface)) return false;
-//        final RequisitionInterface other = (RequisitionInterface) obj;
-//        if (m_categories == null) {
-//            if (other.m_categories != null) return false;
-//        } else if (!m_categories.equals(other.m_categories)) {
-//            return false;
-//        }
-//        if (m_metaData == null) {
-//            if (other.m_metaData != null) return false;
-//        } else if (!m_metaData.equals(other.m_metaData)) {
-//            return false;
-//        }
-//        if (m_description == null) {
-//            if (other.m_description != null) return false;
-//        } else if (!m_description.equals(other.m_description)) {
-//            return false;
-//        }
-//        if (m_ipAddress == null) {
-//            if (other.m_ipAddress != null) return false;
-//        } else if (!m_ipAddress.equals(other.m_ipAddress)) {
-//            return false;
-//        }
-//        if (m_isManaged == null) {
-//            if (other.m_isManaged != null) return false;
-//        } else if (!m_isManaged.equals(other.m_isManaged)) {
-//            return false;
-//        }
-//        if (m_monitoredServices == null) {
-//            if (other.m_monitoredServices != null) return false;
-//        } else if (!m_monitoredServices.equals(other.m_monitoredServices)) {
-//            return false;
-//        }
-//        if (m_snmpPrimary == null) {
-//            if (other.m_snmpPrimary != null) return false;
-//        } else if (!getSnmpPrimary().equals(other.getSnmpPrimary())) {
-//            return false;
-//        }
-//        if (m_status == null) {
-//            if (other.m_status != null) return false;
-//        } else if (!m_status.equals(other.m_status)) {
-//            return false;
-//        }
-//        return true;
-//    }
-
-//    @Override
-//    public String toString() {
-//        return "RequisitionInterface [monitoredServices="
-//                + m_monitoredServices + ", categories=" + m_categories
-//                + ", metaData=" + m_metaData
-//                + ", description=" + m_description + ", ipAddress="
-//                + m_ipAddress + ", isManaged=" + m_isManaged
-//                + ", snmpPrimary=" + m_snmpPrimary + ", status="
-//                + m_status + "]";
-//    }
-
-//    @Override
-//    public int compareTo(final RequisitionInterface other) {
-//        return new CompareToBuilder()
-//            .append(ipAddress, other.ipAddress)
-//            .append(status, other.status)
-//            .append(managed, other.managed)
-//            .append(getSnmpPrimary(), other.getSnmpPrimary())
-//            .append(monitoredServices, other.monitoredServices)
-//            .append(categories, other.categories)
-//            .append(metaData, other.metaData)
-//            .append(description, other.description)
-//            .toComparison();
 //    }
 }

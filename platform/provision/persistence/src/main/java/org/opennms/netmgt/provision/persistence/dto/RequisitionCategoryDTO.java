@@ -41,44 +41,4 @@ import lombok.Data;
 @Data
 public class RequisitionCategoryDTO {
     protected String name;
-
-//    public void validate() throws ValidationException {
-//        if (m_name == null || m_name.trim().isEmpty()) {
-//            throw new ValidationException("Requisition category 'name' is a required attribute!");
-//        }
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        final int prime = 61;
-//        int result = 1;
-//        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-//        return result;
-//    }
-//
-//    @Override
-//    public boolean equals(final Object obj) {
-//        if (this == obj) return true;
-//        if (obj == null) return false;
-//        if (!(obj instanceof RequisitionCategory)) return false;
-//        final RequisitionCategory other = (RequisitionCategory) obj;
-//        if (m_name == null) {
-//            if (other.m_name != null) return false;
-//        } else if (!m_name.equals(other.m_name)) {
-//            return false;
-//        }
-//        return true;
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "RequisitionCategory [name=" + m_name + "]";
-//    }
-//
-//    @Override
-//    public int compareTo(final RequisitionCategory other) {
-//        return new CompareToBuilder()
-//            .append(m_name, other.m_name)
-//            .toComparison();
-//    }
 }
