@@ -114,8 +114,9 @@ public class UserService {
 
     public boolean resetPassword(String userId, ResetPasswordDTO passwordDto, String authToken) throws UserManagementException {
         verifyUserPermission(userId, authToken, null, Action.RESET_PWD);
+        //TODO we might need to use Keycloak password policy
         if(!StringUtils.hasLength(passwordDto.getNewPassword()) || passwordDto.getNewPassword().length() < KeyCloakUtils.PWD_MINI_LEN) {
-            throw new UserManagementException(String.format("Invalid password: d%s, password must have at least %d characters.", passwordDto.getNewPassword(), KeyCloakUtils.PWD_MINI_LEN));
+            throw new UserManagementException(String.format("Invalid password: %s, password must have at least %d characters.", passwordDto.getNewPassword(), KeyCloakUtils.PWD_MINI_LEN));
         }
         UserRepresentation user = keyCloakUtils.getUserById(userId);
         if(user != null) {
@@ -139,7 +140,7 @@ public class UserService {
                         throw new UserManagementException("Users are not allowed to change their own roles.");
                     }
                 } else if(action.equals(Action.DELETE)) {
-                    throw new UserManagementException("Users are not allowed to delete their own roles.");
+                    throw new UserManagementException("Users are not allowed to delete their own account.");
                 }
             }
         } catch (VerificationException e) {

@@ -34,6 +34,16 @@ Feature: User management integration tests
      }
      """
     Then User can reset password to "newPassword123" for his own account
+    Then User can't change roles for his account
+    """json
+      {
+        "username": "test-user",
+        "firstName": "test",
+        "lastName": "user",
+        "email": "testuser-updated@opennms.com",
+        "roles": ["user", "admin"]
+     }
+     """
     Then User can not search users
     Then User can not create user
     Then User can not delete a user
