@@ -15,18 +15,19 @@
 		<createTable tableName="requisitions">
 
 			<!-- Unique identifier -->
+<!--			TODO: refactor to use a unique (generated) id?-->
 			<column name="requisitionname" type="text">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_requisitionname" />
 			</column>
 
-			<!-- A reference to the eventUei that created this alarm. -->
+			<!-- The requisition model in JSON String form -->
 			<column name="requisition" type="jsonb">
 				<constraints nullable="false" />
 			</column>
 
 		</createTable>
 
-		<createIndex tableName="requisitions" indexName="requisitions_uei_idx">
+		<createIndex tableName="requisitions" indexName="requisitions_idx">
 			<column name="requisitionname" />
 		</createIndex>
 
