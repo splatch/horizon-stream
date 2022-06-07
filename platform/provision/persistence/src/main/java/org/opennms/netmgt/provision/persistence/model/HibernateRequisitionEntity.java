@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision.persistence.dao;
+package org.opennms.netmgt.provision.persistence.model;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -21,6 +21,8 @@ public class HibernateRequisitionEntity implements Serializable
     @Id
     private String requisitionName;
 
+    // Because we are storing this as JSON, it makes to just inject the DTO object
+    // which is the source of the JSON.
     @Column
     @Type(type = "RequisitionJsonType")
     private RequisitionDTO requisition;

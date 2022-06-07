@@ -17,11 +17,15 @@ http://aries.apache.org/xmlns/transactions/v2.0.0">
   <jpa:enable/>
   <tx:enable/>
 
-  <bean id="persistenceContextHolder" class="org.opennms.netmgt.provision.persistence.dao.PersistenceContextHolderImpl"/>
+  <bean id="entityManagerHolder" class="org.opennms.netmgt.provision.persistence.model.EntityManagerHolderImpl"/>
+
+  <bean id="requisitionDao" class="org.opennms.netmgt.provision.persistence.RequisitionDao">
+     <argument ref="entityManagerHolder"/>
+  </bean>
   
-  <service interface="org.opennms.netmgt.provision.persistence.dao.RequisitionRepository">
-    <bean class="org.opennms.netmgt.provision.persistence.HibernateRequisitionRepository">
-      <argument ref="persistenceContextHolder"/>
+  <service interface="org.opennms.netmgt.provision.persistence.model.RequisitionRepository">
+    <bean class="org.opennms.netmgt.provision.persistence.RequisitionRepositoryImpl">
+      <argument ref="requisitionDao"/>
     </bean>
   </service>
 

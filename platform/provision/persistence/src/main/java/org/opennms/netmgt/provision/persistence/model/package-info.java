@@ -28,6 +28,6 @@
 
 @TypeDef(name = "RequisitionJsonType", typeClass = RequsitionJsonType.class)
 
-package org.opennms.netmgt.provision.persistence.dao;
+package org.opennms.netmgt.provision.persistence.model;
 
 import org.hibernate.annotations.TypeDef;

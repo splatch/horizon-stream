@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision.persistence.dao;
+package org.opennms.netmgt.provision.persistence.model;
 
 import java.sql.Types;
 import org.hibernate.dialect.PostgreSQL95Dialect;

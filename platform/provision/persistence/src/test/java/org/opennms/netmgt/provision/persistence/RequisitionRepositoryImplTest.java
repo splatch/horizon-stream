@@ -13,12 +13,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opennms.netmgt.provision.persistence.dao.HibernateRequisitionEntity;
-import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
-import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
+import org.opennms.netmgt.provision.persistence.model.HibernateRequisitionEntity;
+import org.opennms.horizon.db.dao.api.EntityManagerHolder;
+import org.opennms.netmgt.provision.persistence.model.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 
-public class HibernateRequisitionRepositoryTest {
+public class RequisitionRepositoryImplTest {
 
     public static final String BLAH_ID = "blahId";
 
@@ -36,8 +36,9 @@ public class HibernateRequisitionRepositoryTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        PersistenceContextHolder p = new DummyPersistenceContextHolder();
-        requisitionRepository = new HibernateRequisitionRepository(p);
+        EntityManagerHolder p = new DummyPersistenceContextHolder();
+        RequisitionDao requisitionDAO = new RequisitionDao(p);
+        requisitionRepository = new RequisitionRepositoryImpl(requisitionDAO);
         when(entityManager.getEntityManagerFactory()).thenReturn(entityManagerFactory);
         when(entityManagerFactory.getPersistenceUnitUtil()).thenReturn(persistenceUnitUtil);
 
@@ -70,7 +71,7 @@ public class HibernateRequisitionRepositoryTest {
         assertTrue(true);
     }
 
-    private class DummyPersistenceContextHolder implements PersistenceContextHolder {
+    private class DummyPersistenceContextHolder implements EntityManagerHolder {
 
         @Override
         public EntityManager getEntityManager() {

@@ -2,6 +2,6 @@ package org.opennms.horizon.db.dao.api;
 
 import javax.persistence.EntityManager;
 
-public interface PersistenceContextHolder {
+public interface EntityManagerHolder {
     EntityManager getEntityManager();
 }

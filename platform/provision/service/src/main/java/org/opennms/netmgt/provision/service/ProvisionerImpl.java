@@ -54,7 +54,7 @@ public class ProvisionerImpl implements Provisioner {
     public String publish(RequisitionDTO requisition) {
         log.info("Publishing {}", requisition);
         requisition.validate();
-        
+
         requisition.getNodes().values().forEach(node -> processNode(node));
         return requisitionRepository.save(requisition);
     }

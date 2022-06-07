@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opennms.horizon.repository.api.NodeRepository;
 import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
+import org.opennms.netmgt.provision.persistence.model.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionInterfaceDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionNodeDTO;

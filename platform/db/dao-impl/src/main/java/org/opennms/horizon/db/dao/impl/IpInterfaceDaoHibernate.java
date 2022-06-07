@@ -2,7 +2,7 @@ package org.opennms.horizon.db.dao.impl;
 
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
+import org.opennms.horizon.db.dao.api.EntityManagerHolder;
 import org.opennms.horizon.db.dao.util.AbstractDaoHibernate;
 
 import org.opennms.horizon.db.dao.api.IpInterfaceDao;
@@ -10,7 +10,7 @@ import org.opennms.horizon.db.model.OnmsIpInterface;
 
 public class IpInterfaceDaoHibernate  extends AbstractDaoHibernate<OnmsIpInterface, Integer> implements IpInterfaceDao {
 
-    public IpInterfaceDaoHibernate(PersistenceContextHolder persistenceContextHolder) {
+    public IpInterfaceDaoHibernate(EntityManagerHolder persistenceContextHolder) {
         super(persistenceContextHolder, OnmsIpInterface.class);
     }
 
