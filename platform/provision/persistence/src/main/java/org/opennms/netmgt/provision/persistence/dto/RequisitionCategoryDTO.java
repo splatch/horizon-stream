@@ -36,9 +36,16 @@
 
 package org.opennms.netmgt.provision.persistence.dto;
 
+import javax.validation.ValidationException;
 import lombok.Data;
 
 @Data
 public class RequisitionCategoryDTO {
     protected String name;
+
+    public void validate() throws ValidationException {
+        if (name == null || name.trim().isEmpty()) {
+            throw new ValidationException("Requisition category 'name' is a required attribute!");
+        }
+    }
 }

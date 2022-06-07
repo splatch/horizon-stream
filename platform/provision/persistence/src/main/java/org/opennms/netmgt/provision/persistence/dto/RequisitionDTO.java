@@ -37,9 +37,16 @@
 package org.opennms.netmgt.provision.persistence.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.validation.ValidationException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -150,45 +157,32 @@ public class RequisitionDTO implements Serializable {
      * Make sure that no data in the requisition is inconsistent.  Nodes should be unique,
      * interfaces should be unique per node, etc.
      */
-//    public void validate() throws ValidationException {
-//    	final Map<String,Integer> foreignSourceCounts = new HashMap<String,Integer>();
-//    	final Set<String> errors = new HashSet<>();
-//
-//    	if (m_foreignSource == null) {
-//    	    throw new ValidationException("RequisitionDTO 'foreign-source' must be set!");
-//    	}
-//    	if (m_foreignSource.contains("/")) {
-//            throw new ValidationException("Foreign Source (" + m_foreignSource + ") contains invalid characters. ('/' is forbidden.)");
-//    	}
-//
-//        // new ArrayList to prevent ConcurrentModificationException
-//        for (final RequisitionNode node : new ArrayList<>(m_nodes)) {
-//    		final String foreignId = node.getForeignId();
-//    		node.validate();
-//			Integer count = foreignSourceCounts.get(foreignId);
-//			foreignSourceCounts.put(foreignId, count == null? 1 : ++count);
-//    	}
-//
-//    	for (final Entry<String,Integer> entry : foreignSourceCounts.entrySet()) {
-//    	    final String foreignId = entry.getKey();
-//    		final Integer count = entry.getValue();
-//    		if (count > 1) {
-//    			errors.add( foreignId + " (" + count + " found)");
-//    		}
-//    	}
-//
-//    	if (errors.size() > 0) {
-//    		final StringBuilder sb = new StringBuilder();
-//    		sb.append("Duplicate nodes found on foreign source ").append(getForeignSource()).append(": ");
-//    		final Iterator<String> it = errors.iterator();
-//    		while (it.hasNext()) {
-//    			final String error = it.next();
-//    			sb.append(error);
-//    			if (it.hasNext()) {
-//    				sb.append(", ");
-//    			}
-//    		}
-//    		throw new ValidationException(sb.toString());
-//    	}
-//    }
+    public void validate() throws ValidationException {
+    	final Map<String,Integer> foreignSourceCounts = new HashMap<>();
+
+    	if (foreignSource == null) {
+    	    throw new ValidationException("RequisitionDTO 'foreign-source' must be set!");
+    	}
+    	if (foreignSource.contains("/")) {
+            throw new ValidationException("Foreign Source (" + foreignSource + ") contains invalid characters. ('/' is forbidden.)");
+    	}
+
+        for (final RequisitionNodeDTO node : nodes.values()) {
+    		final String foreignId = node.getForeignId();
+    		node.validate();
+			Integer count = foreignSourceCounts.get(foreignId);
+			foreignSourceCounts.put(foreignId, count == null? 1 : ++count);
+    	}
+
+        List<String> errors = foreignSourceCounts.entrySet().stream().filter(en1 -> en1.getValue() > 1).
+                map(en -> String.format("%s ( %d found)")).collect(Collectors.toList());
+
+    	if (errors.size() > 0) {
+    		final StringBuilder sb = new StringBuilder();
+    		sb.append("Duplicate nodes found on foreign source ").append(getForeignSource()).append(": ");
+
+            String errorList = errors.stream().collect(Collectors.joining(", "));
+    		throw new ValidationException(sb.append(errorList).toString());
+    	}
+    }
 }

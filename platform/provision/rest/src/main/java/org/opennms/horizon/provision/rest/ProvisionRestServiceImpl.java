@@ -25,7 +25,7 @@ public class ProvisionRestServiceImpl implements ProvisionRestService {
                 String id = provisioner.publish(requisitionDTO);
                 return Response.ok().entity(id).build();
             } catch (Exception e) {
-                return Response.serverError().build();
+                return Response.serverError().entity(e.getMessage()).build();
             }
         });
     }
@@ -52,7 +52,7 @@ public class ProvisionRestServiceImpl implements ProvisionRestService {
                 String id = provisioner.update(requisitionDTO);
                 return Response.ok().entity(id).build();
             } catch (Exception e) {
-                return Response.serverError().build();
+                return Response.serverError().entity(e.getMessage()).build();
             }
         });
     }

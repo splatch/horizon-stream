@@ -20,6 +20,7 @@ public class HibernateRequisitionRepository extends AbstractDaoHibernate<Hiberna
 
     @Override
     public String save(RequisitionDTO requisitionDTO) {
+        requisitionDTO.validate();
         HibernateRequisitionEntity hibernateRequisitionEntity = new HibernateRequisitionEntity(requisitionDTO.getId(), requisitionDTO);
         save(hibernateRequisitionEntity);
         log.info("Requisition {} persisted to database", hibernateRequisitionEntity.getRequisitionName());

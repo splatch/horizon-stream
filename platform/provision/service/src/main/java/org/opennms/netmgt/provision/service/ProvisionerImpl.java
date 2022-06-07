@@ -33,8 +33,12 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
+import org.opennms.horizon.db.dao.api.NodeDao;
+import org.opennms.horizon.db.model.OnmsIpInterface;
+import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
+import org.opennms.netmgt.provision.persistence.dto.RequisitionNodeDTO;
 import org.opennms.netmgt.provision.scan.NodeScanner;
 
 @Slf4j
@@ -43,11 +47,27 @@ public class ProvisionerImpl implements Provisioner {
 
     private final RequisitionRepository requisitionRepository;
     private final ProducerTemplate scanProducer;
+    private final NodeDao nodeRepository;
 
     @Override
     public String publish(RequisitionDTO requisition) {
         log.info("Publishing {}", requisition);
+        requisition.validate();
+        
+        requisition.getNodes().values().forEach(node -> processNode(node));
         return requisitionRepository.save(requisition);
+    }
+
+    private void processNode(RequisitionNodeDTO node) {
+        OnmsNode node1 = new OnmsNode();
+        node1.setLabel(node.getNodeLabel());
+
+        OnmsIpInterface iface = new OnmsIpInterface("need ip address for key", node1);
+        iface.setIsManaged("M");
+        iface.setSnmpPrimary("N");
+
+
+        nodeRepository.save(node1);
     }
 
     @Override

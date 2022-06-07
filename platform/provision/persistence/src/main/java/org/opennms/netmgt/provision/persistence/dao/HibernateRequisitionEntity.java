@@ -14,10 +14,13 @@ import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 @Entity
 @Table(name="requisitions")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class HibernateRequisitionEntity implements Serializable
 {
+
+    public HibernateRequisitionEntity(String name, RequisitionDTO requisition) {
+
+    }
     @Id
     private String requisitionName;
 

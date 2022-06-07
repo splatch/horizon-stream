@@ -32,16 +32,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.validation.ValidationException;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.opennms.horizon.db.model.PrimaryType;
 
 @Data
+@NoArgsConstructor
 public class RequisitionNodeDTO extends CategoriesAndMetadataDTO {
 
-    private final String foreignId;
-    private final String location;
-    private final String building;
-    private final String city;
-    private final String nodeLabel;
+    private final String foreignId = null;
+    private final String location = null;
+    private final String building = null;
+    private final String city = null;
+    private final String nodeLabel = null;
     private String parentForeignId;
     private String parentForeignSource;
     protected String parentNodeLabel;
@@ -65,7 +69,6 @@ public class RequisitionNodeDTO extends CategoriesAndMetadataDTO {
     public List<RequisitionInterfaceDTO> getInterfacesAsList() {
         return interfaces.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
     }
-
 
     //TODO: do we want to allow this?
 //    /**
@@ -146,19 +149,28 @@ public class RequisitionNodeDTO extends CategoriesAndMetadataDTO {
         parentNodeLabel = value != null && "".equals(value.trim()) ? null : value;
     }
 
-//    public void validate() throws ValidationException {
-//        //this.pruneInterfaces();
-//        if (m_nodeLabel == null) {
-//            throw new ValidationException("Requisition node 'node-label' is a required attribute!");
+    public void validate() throws ValidationException {
+        //this.pruneInterfaces();
+        if (nodeLabel == null) {
+            throw new ValidationException("Requisition node 'node-label' is a required attribute!");
+        }
+        if (foreignId == null) {
+            throw new ValidationException("Requisition node 'foreign-id' is a required attribute!");
+        }
+        if (foreignId.contains("/")) {
+            throw new ValidationException("Node foreign ID (" + foreignId + ") contains invalid characters. ('/' is forbidden.)");
+        }
+        //TODO: figure out if we need to handle this
+//        if (interfaces != null) {
+//            interfaces.values().forEach(interfaceDTO -> {
+//                try {
+//                    interfaceDTO.validate(this);
+//                } catch (IPValidationException ive) {
+//                    interfaces.remove(interfaceDTO.getIpAddress().toString());
+//                }
+//            });
 //        }
-//        if (m_foreignId == null) {
-//            throw new ValidationException("Requisition node 'foreign-id' is a required attribute!");
-//        }
-//        if (m_foreignId.contains("/")) {
-//            throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. ('/' is forbidden.)");
-//        }
-//        if (m_interfaces != null) {
-//            Iterator<RequisitionInterface> iter = m_interfaces.iterator();
+//            Iterator<RequisitionInterfaceDTO> iter = interfaces.iterator();
 //            while (iter.hasNext()) {
 //                try {
 //                    iter.next().validate(this);
@@ -167,20 +179,10 @@ public class RequisitionNodeDTO extends CategoriesAndMetadataDTO {
 //                    iter.remove();
 //                }
 //            }
-//            // there can be only one primary interface per node
-//            if(m_interfaces.stream().filter(iface -> PrimaryType.PRIMARY == iface.snmpPrimary).count() > 1) {
-//                throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains multiple primary interfaces. Maximum one is allowed.");
-//            }
-//        }
-//        if (m_categories != null) {
-//            for (final RequisitionCategory cat : m_categories) {
-//                cat.validate();
-//            }
-//        }
-//        if (m_assets != null) {
-//            for (final RequisitionAsset asset : m_assets) {
-//                asset.validate();
-//            }
-//        }
-//    }
+        // there can be only one primary interface per node
+        if (interfaces.values().stream().filter(iface -> PrimaryType.PRIMARY == iface.getSnmpPrimary()).count() > 1) {
+            throw new ValidationException("Node foreign ID (" + foreignId + ") contains multiple primary interfaces. Maximum one is allowed.");
+        }
+        categories.values().forEach(cat -> cat.validate());
+    }
 }
