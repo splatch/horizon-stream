@@ -11,9 +11,9 @@
 
         <!-- Only used when transaction-type=RESOURCE_LOCAL -->
         <non-jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=opennms)</non-jta-data-source>
-        <class>org.opennms.netmgt.provision.persistence.dao.HibernateRequisitionEntity</class>
+        <class>org.opennms.netmgt.provision.persistence.model.HibernateRequisitionEntity</class>
         <properties>
-            <property name="hibernate.dialect" value="org.opennms.netmgt.provision.persistence.dao.RequisitionPostgreSQL95Dialect"/>
+            <property name="hibernate.dialect" value="org.opennms.netmgt.provision.persistence.model.RequisitionPostgreSQL95Dialect"/>
         </properties>
     </persistence-unit>
 

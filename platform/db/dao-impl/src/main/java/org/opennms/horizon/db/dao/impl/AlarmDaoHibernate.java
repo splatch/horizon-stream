@@ -5,14 +5,14 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.opennms.horizon.db.dao.api.AlarmDao;
-import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
+import org.opennms.horizon.db.dao.api.EntityManagerHolder;
 import org.opennms.horizon.db.model.OnmsAlarm;
 import org.opennms.horizon.db.dao.util.AbstractDaoHibernate;
 
 @Transactional
 public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> implements AlarmDao {
 
-    public AlarmDaoHibernate(PersistenceContextHolder persistenceContextHolder) {
+    public AlarmDaoHibernate(EntityManagerHolder persistenceContextHolder) {
         super(persistenceContextHolder, OnmsAlarm.class);
     }
 

@@ -33,7 +33,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
-import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
+import org.opennms.netmgt.provision.persistence.model.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 import org.opennms.netmgt.provision.scan.NodeScanner;
 

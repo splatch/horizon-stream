@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
+import org.opennms.netmgt.provision.persistence.model.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 
 public class ProvisionerImplTest extends CamelTestSupport {

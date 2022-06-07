@@ -6,18 +6,17 @@ import java.util.Objects;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
-import lombok.Setter;
 import org.opennms.horizon.db.dao.api.OnmsDao;
-import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
+import org.opennms.horizon.db.dao.api.EntityManagerHolder;
 
 public abstract class AbstractDaoHibernate<T, K extends Serializable> implements OnmsDao<T, K> {
 
-    private final PersistenceContextHolder persistenceContextHolder;
+    private final EntityManagerHolder entityManagerHolder;
 
     private final Class<T> entityClass;
 
-    public AbstractDaoHibernate(PersistenceContextHolder persistenceContextHolder, Class<T> entityClass) {
-        this.persistenceContextHolder = persistenceContextHolder;
+    public AbstractDaoHibernate(EntityManagerHolder entityManagerHolder, Class<T> entityClass) {
+        this.entityManagerHolder = entityManagerHolder;
         this.entityClass = Objects.requireNonNull(entityClass);
     }
 
@@ -88,6 +87,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> implements
 
     @Override
     public EntityManager getEntityManager() {
-        return persistenceContextHolder.getEntityManager();
+        return entityManagerHolder.getEntityManager();
     }
 }

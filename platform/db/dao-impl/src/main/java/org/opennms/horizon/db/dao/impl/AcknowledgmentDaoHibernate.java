@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -15,7 +14,7 @@ import javax.persistence.TypedQuery;
 
 import org.hibernate.ObjectNotFoundException;
 import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
-import org.opennms.horizon.db.dao.api.PersistenceContextHolder;
+import org.opennms.horizon.db.dao.api.EntityManagerHolder;
 import org.opennms.horizon.db.dao.util.AbstractDaoHibernate;
 import org.opennms.horizon.db.model.AckAction;
 import org.opennms.horizon.db.model.AckType;
@@ -33,7 +32,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
 
     private Logger log = DEFAULT_LOGGER;
 
-    public AcknowledgmentDaoHibernate(PersistenceContextHolder persistenceContextHolder) {
+    public AcknowledgmentDaoHibernate(EntityManagerHolder persistenceContextHolder) {
         super(persistenceContextHolder, OnmsAcknowledgment.class);
     }
 

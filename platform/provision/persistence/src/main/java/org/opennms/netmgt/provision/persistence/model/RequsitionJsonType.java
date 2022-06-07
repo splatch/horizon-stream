@@ -1,4 +1,4 @@
-package org.opennms.netmgt.provision.persistence.dao;
+package org.opennms.netmgt.provision.persistence.model;
 
 import com.google.gson.Gson;
 import java.io.Serializable;
