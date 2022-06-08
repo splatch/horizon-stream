@@ -1,1 +1,45 @@
-{"nodes":{"blahForegnId":{"foreignId":"blahForegnId","m_location":"blahLocation","building":"blahBuilding","city":"blahCity","nodeLabel":"blahNodeLabel","parentForeignId":"blahParentForeignId","parentForeignSource":"blahParentForeignSource","interfaces":{},"categories":{},"metaData":{}}},"dateStamp":"May 17, 2022, 1:52:22 PM","foreignSource":"imported","lastImport":"May 17, 2022, 1:52:22 PM","id":"blahId"}
+{
+  "nodes": {
+    "blahForeignId": {
+      "foreignId": "blahForeignId",
+      "nodeLabel": "blahNodeLabel",
+      "interfaces": {
+        "/192.168.1.2": {
+          "monitoredServices": {},
+          "ipAddress": "192.168.1.2",
+          "categories": {},
+          "metaData": {}
+        },
+        "/192.168.1.1": {
+          "monitoredServices": {},
+          "ipAddress": "192.168.1.1",
+          "categories": {},
+          "metaData": {}
+        },
+        "/192.168.1.0": {
+          "monitoredServices": {},
+          "ipAddress": "192.168.1.0",
+          "categories": {},
+          "metaData": {}
+        },
+        "/192.168.1.4": {
+          "monitoredServices": {},
+          "ipAddress": "192.168.1.4",
+          "categories": {},
+          "metaData": {}
+        },
+        "/192.168.1.3": {
+          "monitoredServices": {},
+          "ipAddress": "192.168.1.3",
+          "categories": {},
+          "metaData": {}
+        }
+      },
+      "categories": {},
+      "metaData": {}
+    }
+  },
+  "dateStamp": "Jun 8, 2022, 9:54:18 AM",
+  "foreignSource": "imported",
+  "id": "blahId"
+}

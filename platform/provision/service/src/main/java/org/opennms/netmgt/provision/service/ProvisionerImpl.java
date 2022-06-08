@@ -36,6 +36,7 @@ import org.apache.camel.ProducerTemplate;
 import org.opennms.horizon.db.dao.api.NodeDao;
 import org.opennms.horizon.db.model.OnmsIpInterface;
 import org.opennms.horizon.db.model.OnmsNode;
+import org.opennms.horizon.repository.api.NodeRepository;
 import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionNodeDTO;
@@ -47,7 +48,7 @@ public class ProvisionerImpl implements Provisioner {
 
     private final RequisitionRepository requisitionRepository;
     private final ProducerTemplate scanProducer;
-    private final NodeDao nodeRepository;
+    private final NodeRepository nodeRepository;
 
     @Override
     public String publish(RequisitionDTO requisition) {
@@ -58,16 +59,16 @@ public class ProvisionerImpl implements Provisioner {
         return requisitionRepository.save(requisition);
     }
 
-    private void processNode(RequisitionNodeDTO node) {
-        OnmsNode node1 = new OnmsNode();
-        node1.setLabel(node.getNodeLabel());
+    private void processNode(RequisitionNodeDTO nodeDTO) {
+        OnmsNode node = new OnmsNode();
+        node.setLabel(nodeDTO.getNodeLabel());
 
-        OnmsIpInterface iface = new OnmsIpInterface("need ip address for key", node1);
+        OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1");
         iface.setIsManaged("M");
         iface.setSnmpPrimary("N");
+        node.getIpInterfaces().add(iface);
 
-
-        nodeRepository.save(node1);
+        nodeRepository.save(node);
     }
 
     @Override

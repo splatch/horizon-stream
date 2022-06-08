@@ -15,13 +15,15 @@
     <camel:template id="scanProducer" defaultEndpoint="{{scan.endpoint}}"/>
   </camel:camelContext>
 
-  <reference id="provisionPersistence" interface="org.opennms.netmgt.provision.persistence.dao.RequisitionRepository"/>
+  <reference id="requisitionRepository" interface="org.opennms.netmgt.provision.persistence.dao.RequisitionRepository"/>
+  <reference id="nodeRepository" interface="org.opennms.horizon.repository.api.NodeRepository"/>
 
   <reference id="grpcServer" interface="org.opennms.horizon.ipc.rpc.api.RpcClientFactory"/>
 
   <bean id="provisioner" class="org.opennms.netmgt.provision.service.ProvisionerImpl">
-    <argument ref="provisionPersistence"/>
+    <argument ref="requisitionRepository"/>
     <argument ref="scanProducer"/>
+    <argument ref="nodeRepository"/>
   </bean>
 
   <bean id="serviceRegistry" class="org.opennms.core.soa.support.DefaultServiceRegistry"/>
