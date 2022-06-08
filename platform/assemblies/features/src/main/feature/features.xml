@@ -40,6 +40,7 @@
         <bundle>mvn:org.opennms.horizon.core/identity/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.core/lib/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.core/xml/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.core/soa/${project.version}</bundle>
     </feature>
 
     <feature name="horizon-core-rest" version="${project.version}">
@@ -222,6 +223,34 @@
     </feature>
 
 
+    <!--           -->
+    <!-- PROVSIOND -->
+    <!--           -->
+    <feature name="horizon-provision" version="${project.version}" description="Horizon : Provision">
+        <feature>onms-httpclient</feature>
+        <feature>onms-netty3</feature>
+        <feature>camel-gson</feature>
+        <feature>horizon-db</feature>
+        <feature>horizon-tracing</feature>
+        <feature>horizon-grpc</feature>
+
+        <bundle>mvn:commons-io/commons-io/${commons.io.version}</bundle>
+        <bundle>mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
+
+        <bundle>mvn:org.apache.mina/mina-core/${mina.version}</bundle>
+
+        <bundle>mvn:org.opennms.horizon.common/common-concurrency/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.common/common-net/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.common/common-web/${project.version}</bundle>
+
+        <bundle>mvn:org.opennms.horizon.provision/api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.provision/core/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.provision/detector-web/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.provision/persistence/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.provision/service/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.provision/rest/${project.version}</bundle>
+    </feature>
+    
     <!--        -->
     <!-- MINION -->
     <!--        -->
@@ -321,6 +350,16 @@
         <bundle>mvn:joda-time/joda-time/2.1</bundle>
         <bundle>wrap:mvn:com.swrve/rate-limited-logger/${rate.limitted.logger.version}</bundle>
     </feature>
+
+    <!-- -->
+    <feature name="onms-httpclient" version="${project.version}" description="HTTP Client Feature">
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcore.version}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclient.version}</bundle>
+    </feature>
+    <feature name="onms-netty3" version="${project.version}" description="Netty3 Feature">
+        <bundle>mvn:io.netty/netty/3.10.6.Final</bundle>
+    </feature>
+
 
     <!--             -->
     <!-- WORKAROUNDS -->
