@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.google.gson.Gson;
-import com.google.protobuf.Any;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +21,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opennms.horizon.repository.api.NodeRepository;
-import org.opennms.netmgt.provision.persistence.dao.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.model.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionInterfaceDTO;
