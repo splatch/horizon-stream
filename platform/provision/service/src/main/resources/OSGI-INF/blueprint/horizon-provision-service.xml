@@ -15,8 +15,7 @@
     <camel:template id="scanProducer" defaultEndpoint="{{scan.endpoint}}"/>
   </camel:camelContext>
 
-  <reference id="requisitionRepository" interface="org.opennms.netmgt.provision.persistence.dao.RequisitionRepository"/>
-  <reference id="nodeRepository" interface="org.opennms.horizon.repository.api.NodeRepository"/>
+  <reference id="requisitionRepository" interface="org.opennms.netmgt.provision.persistence.model.RequisitionRepository"/>
 
   <reference id="grpcServer" interface="org.opennms.horizon.ipc.rpc.api.RpcClientFactory"/>
 
