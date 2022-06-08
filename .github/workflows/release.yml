@@ -137,6 +137,7 @@ jobs:
           git checkout release
           git pull origin release # Update release branch, should not have any changes.
           git merge develop
+          git push origin release
           git tag ${{ env.RELEASE_TAG }}
           git push origin ${{ env.RELEASE_TAG }}
 
