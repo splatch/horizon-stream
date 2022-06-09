@@ -27,7 +27,7 @@ jobs:
           git fetch
           git --no-pager log --decorate --graph --all --oneline | head -100
 
-          echo ${{fromJSON(github)}}
+          echo ${{toJSON(github)}}
 
       #- name: feature-ui
       #  id: action-feature-ui
