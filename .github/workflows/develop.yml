@@ -2,10 +2,9 @@ name: develop
 
 on:
   pull_request:
-    types: [ labeled ]
+    types: [ labeled, closed]
     branches:
       - 'develop'
-    types: [closed]
 
 # For now, we have put all steps into a single job, this will allow for just
 # one vm to run. We use actions to factor out the functionality. If there is a
