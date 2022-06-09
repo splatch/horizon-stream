@@ -27,7 +27,7 @@ jobs:
           git fetch
           git --no-pager log --decorate --graph --all --oneline | head -100
 
-          echo ${{fromJSON(needs.job1.outputs.matrix)}}
+          echo ${{fromJSON(github)}}
 
       #- name: feature-ui
       #  id: action-feature-ui
