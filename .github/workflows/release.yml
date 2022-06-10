@@ -43,85 +43,85 @@ jobs:
             exit 1
           fi
 
-      #- name: feature-ui
-      #  id: action-feature-ui
-      #  uses: ./.github/actions/ui
-      #  with:
-      #    dir-location: 'ui'
+      - name: feature-ui
+        id: action-feature-ui
+        uses: ./.github/actions/ui
+        with:
+          dir-location: 'ui'
 
-      #- name: feature-core
-      #  id: action-feature-core
-      #  uses: ./.github/actions/core
-      #  with:
-      #    dir-location: 'platform'
+      - name: feature-core
+        id: action-feature-core
+        uses: ./.github/actions/core
+        with:
+          dir-location: 'platform'
 
-      #- name: feature-rest-server
-      #  id: action-rest-server
-      #  uses: ./.github/actions/rest-server
-      #  with:
-      #    dir-location: 'rest-server'
+      - name: feature-rest-server
+        id: action-rest-server
+        uses: ./.github/actions/rest-server
+        with:
+          dir-location: 'rest-server'
 
-      #- name: external-it
-      #  id: action-external-it
-      #  uses: ./.github/actions/external-it
-      #  with:
-      #    dir-location: 'external-it'
+      - name: external-it
+        id: action-external-it
+        uses: ./.github/actions/external-it
+        with:
+          dir-location: 'external-it'
 
-      #- name: dockerhub-login
-      #  run: |
+      - name: dockerhub-login
+        run: |
 
-      #    # This and the following steps are put here rather than put into an
-      #    # action because it is only ever called from this workflow.
+          # This and the following steps are put here rather than put into an
+          # action because it is only ever called from this workflow.
 
-      #    # Login to dockerhub. The session doesn't seem to carry across steps,
-      #    # re-test to confirm.
-      #    #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
-      #    echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+          # Login to dockerhub. The session doesn't seem to carry across steps,
+          # re-test to confirm.
+          #docker login -u ${{ secrets.DOCKERHUB_LOGIN }} -p ${{ secrets.DOCKERHUB_PASS }}
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
-      #- name: publish-image-core
-      #  run: |
+      - name: publish-image-core
+        run: |
 
-      #    # Login to dockerhub.
-      #    echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+          # Login to dockerhub.
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
-      #    # Publish core image
-      #    cd platform/
+          # Publish core image
+          cd platform/
 
-      #    # Tag and save the image as a file to be published. Both release version and latest.
-      #    docker tag opennms/horizon-stream-core:local opennms/horizon-stream-core:${{ env.RELEASE_TAG }}
-      #    docker tag opennms/horizon-stream-core:local opennms/horizon-stream-core:latest
+          # Tag and save the image as a file to be published. Both release version and latest.
+          docker tag opennms/horizon-stream-core:local opennms/horizon-stream-core:${{ env.RELEASE_TAG }}
+          docker tag opennms/horizon-stream-core:local opennms/horizon-stream-core:latest
 
-      #    docker push opennms/horizon-stream-core:${{ env.RELEASE_TAG }}
-      #    docker push opennms/horizon-stream-core:latest
-      #
-      #- name: publish-image-ui
-      #  run: |
+          docker push opennms/horizon-stream-core:${{ env.RELEASE_TAG }}
+          docker push opennms/horizon-stream-core:latest
+      
+      - name: publish-image-ui
+        run: |
 
-      #    # Login to dockerhub.
-      #    echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+          # Login to dockerhub.
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
-      #    # Tag and save the image as a file to be published. Both release version and latest.
-      #    docker tag opennms/horizon-stream-ui:local opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
-      #    docker tag opennms/horizon-stream-ui:local opennms/horizon-stream-ui:latest
+          # Tag and save the image as a file to be published. Both release version and latest.
+          docker tag opennms/horizon-stream-ui:local opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
+          docker tag opennms/horizon-stream-ui:local opennms/horizon-stream-ui:latest
 
-      #    docker push opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
-      #    docker push opennms/horizon-stream-ui:latest
+          docker push opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
+          docker push opennms/horizon-stream-ui:latest
 
-      #- name: publish-image-rest-server
-      #  run: |
+      - name: publish-image-rest-server
+        run: |
 
-      #    # Login to dockerhub. Probably could remove this, session created in previous step.
-      #    echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+          # Login to dockerhub. Probably could remove this, session created in previous step.
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
-      #    # Test build images
-      #    docker images
+          # Test build images
+          docker images
 
-      #    # Tag and save the image as a file to be published. Both release version and latest.
-      #    docker tag opennms/horizon-stream-rest-server:local opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
-      #    docker tag opennms/horizon-stream-rest-server:local opennms/horizon-stream-rest-server:latest
+          # Tag and save the image as a file to be published. Both release version and latest.
+          docker tag opennms/horizon-stream-rest-server:local opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
+          docker tag opennms/horizon-stream-rest-server:local opennms/horizon-stream-rest-server:latest
 
-      #    docker push opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
-      #    docker push opennms/horizon-stream-rest-server:latest
+          docker push opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
+          docker push opennms/horizon-stream-rest-server:latest
 
       - name: tag-release-branch
         run: |
@@ -129,11 +129,6 @@ jobs:
           # The following checkouts the release branch and merges develop into
           # it and then tags release.
           git fetch
-          git --no-pager log --decorate --graph --all --oneline | head -100
-          git remote -v
-          #git checkout release
-          #git pull origin release 
-          #git checkout release
           git tag ${{ env.RELEASE_TAG }}
           git push origin ${{ env.RELEASE_TAG }}
 
