@@ -32,7 +32,7 @@ jobs:
           echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
 
           # Validate tag format
-          # Format of PR name: RELEASE <tag> - <message>
+          # Format of commit message: RELEASE <tag> - <message>
           # Format of tag (change numbers or dev, but leave everything else): 
           #   v0.0.5-dev
           #   v0.0.5
@@ -43,6 +43,10 @@ jobs:
             echo "Tag format is invalid."
             exit 1
           fi
+
+          echo ${{ toJSON(github.event) }}
+
+          exit 1
 
       #- name: feature-ui
       #  id: action-feature-ui
