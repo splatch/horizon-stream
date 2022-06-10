@@ -128,7 +128,6 @@ jobs:
 
           # The following checkouts the release branch and merges develop into
           # it and then tags release.
-          # TODO: What if merge fails? How do we fix while maintaining integrity of release?
           git fetch
           git --no-pager log --decorate --graph --all --oneline | head -100
           git remote -v
