@@ -23,7 +23,7 @@ jobs:
       - name: init
         run: |
 
-          TAG=$(echo ${{ github.event.head_commit }} | awk '{ print $2 }')
+          TAG=$(echo ${{ github.event.head_commit.message }} | awk '{ print $2 }')
 
           echo "Head commit message: ${{ github.event.head_commit }}"
           echo "Extracted tag: $TAG."
