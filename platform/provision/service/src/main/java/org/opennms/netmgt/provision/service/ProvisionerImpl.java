@@ -34,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.opennms.horizon.db.model.OnmsIpInterface;
+import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.repository.api.NodeRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
@@ -51,23 +52,50 @@ public class ProvisionerImpl implements Provisioner {
 
     @Override
     public String publish(RequisitionDTO requisition) {
-        log.info("Publishing {}", requisition);
         requisition.validate();
 
+        log.info("Publishing Requisition {}", requisition);
         requisition.getNodes().values().forEach(node -> processNode(node));
-        return requisitionRepository.save(requisition);
+
+        RequisitionDTO existingRequisition = requisitionRepository.read(requisition.getId());
+
+        if (existingRequisition != null) {
+            return requisitionRepository.update(requisition);
+        }
+        else {
+            return requisitionRepository.save(requisition);
+        }
     }
 
     private void processNode(RequisitionNodeDTO nodeDTO) {
-        OnmsNode node = new OnmsNode();
-        node.setLabel(nodeDTO.getNodeLabel());
+        OnmsNode entityNode = new OnmsNode();
+        entityNode.setLabel(nodeDTO.getNodeLabel());
 
-        OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1");
-        iface.setIsManaged("M");
-        iface.setSnmpPrimary("N");
-        node.getIpInterfaces().add(iface);
+        entityNode.setLocation(createLocationIfNecessary(nodeDTO.getLocation()));
 
-        nodeRepository.save(node);
+        nodeDTO.getInterfaces().values().forEach( reqInterface -> {
+            OnmsIpInterface entityInterface = new OnmsIpInterface(reqInterface.getIpAddress().getHostAddress());
+            entityInterface.setIsManaged(reqInterface.getManaged().toString());
+            entityInterface.setSnmpPrimary(reqInterface.getSnmpPrimary().toString());
+            entityInterface.setNode(entityNode);
+            entityNode.getIpInterfaces().add(entityInterface);
+        });
+
+        log.info("Publishing Node {}", entityNode);
+        nodeRepository.save(entityNode);
+    }
+
+    private OnmsMonitoringLocation createLocationIfNecessary(String locationStr) {
+        //TODO: not complete, need to handle default if null, etc
+        OnmsMonitoringLocation location = nodeRepository.get(locationStr);
+
+        if ( location == null) {
+            location = new OnmsMonitoringLocation();
+            location.setLocationName(locationStr);
+            location.setMonitoringArea(locationStr);
+            nodeRepository.saveMonitoringLocation(location);
+        }
+        return location;
     }
 
     @Override

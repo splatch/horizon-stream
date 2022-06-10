@@ -25,9 +25,11 @@ public class RequisitionRepositoryImpl implements RequisitionRepository {
     }
 
     @Override
+    //TODO: return Optional<RequisitionDTO> for all sigs
     public RequisitionDTO read(String id) {
         HibernateRequisitionEntity hibernateRequisitionEntity = requisitionDAO.get(id);
-        return hibernateRequisitionEntity.getRequisition();
+
+        return hibernateRequisitionEntity == null ? null:hibernateRequisitionEntity.getRequisition();
     }
 
     @Override

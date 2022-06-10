@@ -1,13 +1,19 @@
 package org.opennms.horizon.repository.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
+import org.opennms.horizon.db.dao.api.MonitoringLocationDao;
 import org.opennms.horizon.db.dao.api.NodeDao;
+import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.repository.api.NodeRepository;
+//import org.opennms.horizon.repository.mapper.RequisitionInterfaceMapper;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class NodeRepositoryImpl implements NodeRepository {
     private final NodeDao nodeDao;
+    private final MonitoringLocationDao monitoringLocationDao;
 
     @Override
     public OnmsNode read(String id) {
@@ -27,5 +33,15 @@ public class NodeRepositoryImpl implements NodeRepository {
     @Override
     public void update(OnmsNode entity) {
        nodeDao.update(entity);
+    }
+
+    @Override
+    public OnmsMonitoringLocation get(String location) {
+        return monitoringLocationDao.get(location);
+    }
+
+    @Override
+    public void saveMonitoringLocation(OnmsMonitoringLocation onmsMonitoringLocation) {
+        monitoringLocationDao.save(onmsMonitoringLocation);
     }
 }

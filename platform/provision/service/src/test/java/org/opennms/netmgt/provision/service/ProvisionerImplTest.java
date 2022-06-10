@@ -1,16 +1,19 @@
 package org.opennms.netmgt.provision.service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import javax.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
@@ -20,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.opennms.horizon.db.model.PrimaryType;
 import org.opennms.horizon.repository.api.NodeRepository;
 import org.opennms.netmgt.provision.persistence.model.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
@@ -58,12 +62,17 @@ public class ProvisionerImplTest extends CamelTestSupport {
 
     @Test
     public void publishRequisition() throws Exception {
+        when(requisitionRepository.read(anyString())).thenReturn(null);
 
         provisioner.publish(requisitionDTO);
 
+
+        verify(requisitionRepository).read(anyString());
         verify(requisitionRepository).save(isA(RequisitionDTO.class));
         verifyNoMoreInteractions(requisitionRepository);
-        verify(nodeRepository, times(1)).save(any());
+        verify(nodeRepository).save(any());
+        verify(nodeRepository).get(anyString());
+        verify(nodeRepository).saveMonitoringLocation(any());
         verifyNoMoreInteractions(nodeRepository);
     }
 
@@ -102,13 +111,22 @@ public class ProvisionerImplTest extends CamelTestSupport {
         nodeDTO.setForeignId("blahForeignId");
         for (int i=0;i<5;i++) {
             RequisitionInterfaceDTO interfaceDTO = new RequisitionInterfaceDTO();
-            interfaceDTO.setIpAddr(String.format("192.168.1.%02d", i));
+            interfaceDTO.setIpAddr(String.format("192.168.1.%03d", i));
+            interfaceDTO.setSnmpPrimary(i == 0 ? PrimaryType.PRIMARY:PrimaryType.SECONDARY);
+            interfaceDTO.setManaged(true);
             nodeDTO.putInterface(interfaceDTO);
         }
         dto.putNode(nodeDTO);
-        log.info(gson.toJson(dto));
 
         assertNotNull(dto);
+        try {
+            dto.validate();
+            log.info(gson.toJson(dto));
+        }
+        catch (ValidationException ve) {
+            log.error(ve.getMessage());
+            fail();
+        }
     }
 
 }

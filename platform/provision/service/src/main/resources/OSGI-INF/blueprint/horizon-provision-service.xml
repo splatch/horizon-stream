@@ -16,7 +16,7 @@
   </camel:camelContext>
 
   <reference id="requisitionRepository" interface="org.opennms.netmgt.provision.persistence.model.RequisitionRepository"/>
-
+  <reference id="nodeRepository" interface="org.opennms.horizon.repository.api.NodeRepository"/>
   <reference id="grpcServer" interface="org.opennms.horizon.ipc.rpc.api.RpcClientFactory"/>
 
   <bean id="provisioner" class="org.opennms.netmgt.provision.service.ProvisionerImpl">

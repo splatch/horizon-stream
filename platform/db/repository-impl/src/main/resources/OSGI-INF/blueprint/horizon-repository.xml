@@ -11,10 +11,12 @@
   </cm:property-placeholder>
 
   <reference id="nodeDao" interface="org.opennms.horizon.db.dao.api.NodeDao"/>
+  <reference id="monitoringLocation" interface="org.opennms.horizon.db.dao.api.MonitoringLocationDao"/>
 
   <service interface="org.opennms.horizon.repository.api.NodeRepository">
     <bean class="org.opennms.horizon.repository.impl.NodeRepositoryImpl">
       <argument ref="nodeDao"/>
+      <argument ref="monitoringLocation"/>
     </bean>
   </service>
 
