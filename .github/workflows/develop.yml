@@ -17,7 +17,7 @@ on:
 jobs:
   develop:
     # If label for PR, closed on PR, or develop branch on push, then run., 
-    if: ${{ ( github.event.label.name == 'actions-develop' ) || ( github.event.action == 'closed' || ( github.event.ref == 'refs/heads/develop' ) }}
+    if: ${{ ( github.event.label.name == 'actions-develop' ) || ( github.event.action == 'closed' ) || ( github.event.ref == 'refs/heads/develop' ) }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
