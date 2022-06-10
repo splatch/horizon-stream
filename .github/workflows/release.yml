@@ -23,9 +23,10 @@ jobs:
       - name: init
         run: |
 
-          # Get tag from PR title.
-          TAG=$(echo ${{github.event.pull_request.title}} | awk '{ print $2 }')
-          echo "test - $TAG."
+          TAG=$(echo ${{ github.event.head_commit }} | awk '{ print $2 }')
+
+          echo "Head commit message: ${{ github.event.head_commit }}"
+          echo "Extracted tag: $TAG."
 
           echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
 
@@ -41,10 +42,6 @@ jobs:
             echo "Tag format is invalid."
             exit 1
           fi
-
-          echo ${{ toJSON(github.event) }}
-
-          exit 1
 
       #- name: feature-ui
       #  id: action-feature-ui
