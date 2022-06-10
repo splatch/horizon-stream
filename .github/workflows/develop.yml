@@ -29,7 +29,9 @@ jobs:
         run: |
 
           echo "For init steps."
-
+          git fetch
+          git --no-pager log --decorate --graph --all --oneline | head -100
+  
       #- name: feature-ui
       #  id: action-feature-ui
       #  uses: ./.github/actions/ui
