@@ -33,7 +33,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserSearchDTO extends UserDTO {
+public class UserSearchDTO extends UserBaseDTO {
     private Integer first = 0;
     private Integer max = 100;
 }

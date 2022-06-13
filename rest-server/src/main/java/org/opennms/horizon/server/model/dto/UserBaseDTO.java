@@ -28,35 +28,18 @@
 
 package org.opennms.horizon.server.model.dto;
 
-
-import java.util.Date;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class NodeDto {
+public abstract class UserBaseDTO {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
-    private Long id;
-    private Date createTime;
-    private Long parentId;
-    private String type;
-    private String sysOid;
-    private String sysName;
-    private String sysDescription;
-    private String sysLocation;
-    private String sysContact;
-    private String label;
-    private String labelSource;
-    private String netBiosName;
-    private String domainName;
-    private String operatingSystem;
-    private Date lastPoll;
-    private String foreignSource;
-    private String foreignId;
-    private Long locationId;
-    private Date lastIngressFlow;
-    private Date lastEgressFlow;
+    private String id;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private Boolean enabled;
 }
