@@ -41,6 +41,7 @@ import org.opennms.horizon.db.model.PrimaryType;
 @NoArgsConstructor
 public class RequisitionNodeDTO extends CategoriesAndMetadataDTO {
 
+    private Integer id;
     private String foreignId = null;
     private String location = null;
     private String building = null;

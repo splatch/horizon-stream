@@ -6,23 +6,22 @@
 
   <cm:property-placeholder persistent-id="org.opennms.horizon.provision.service" update-strategy="reload">
     <cm:default-properties>
-      <cm:property name="scan.endpoint" value="direct:scan"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
   <camel:camelContext id="provisionCamelContext"  allowUseOriginalMessage="false">
     <camel:contextScan/>
-    <camel:template id="scanProducer" defaultEndpoint="{{scan.endpoint}}"/>
   </camel:camelContext>
 
   <reference id="requisitionRepository" interface="org.opennms.netmgt.provision.persistence.model.RequisitionRepository"/>
+  <reference id="foreignSourceRepository" interface="org.opennms.netmgt.provision.persistence.model.ForeignSourceRepository"/>
   <reference id="nodeRepository" interface="org.opennms.horizon.repository.api.NodeRepository"/>
   <reference id="grpcServer" interface="org.opennms.horizon.ipc.rpc.api.RpcClientFactory"/>
 
   <bean id="provisioner" class="org.opennms.netmgt.provision.service.ProvisionerImpl">
     <argument ref="requisitionRepository"/>
-    <argument ref="scanProducer"/>
     <argument ref="nodeRepository"/>
+    <argument ref="nodeScanner"/>
   </bean>
 
   <bean id="serviceRegistry" class="org.opennms.core.soa.support.DefaultServiceRegistry"/>
@@ -45,10 +44,10 @@
 <!--    <property name="entityScopeProvider" ref=""/>-->
   </bean>
 
-  <bean id="nodeScanner" class="org.opennms.netmgt.provision.scan.NodeScanner" init-method="init">
+  <bean id="nodeScanner" class="org.opennms.netmgt.provision.scan.NodeScanner">
     <argument ref="provisionCamelContext"/>
-    <argument ref="provisioner"/>
     <argument ref="locationAwareDetector"/>
+    <argument ref="foreignSourceRepository"/>
   </bean>
 
   <service ref="provisioner" interface="org.opennms.netmgt.provision.service.Provisioner"/>

@@ -26,8 +26,8 @@ public class NodeRepositoryImpl implements NodeRepository {
     }
 
     @Override
-    public void save(OnmsNode entity) {
-       nodeDao.save(entity);
+    public Integer save(OnmsNode entity) {
+       return nodeDao.save(entity);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class NodeRepositoryImpl implements NodeRepository {
     }
 
     @Override
-    public void saveMonitoringLocation(OnmsMonitoringLocation onmsMonitoringLocation) {
-        monitoringLocationDao.save(onmsMonitoringLocation);
+    public String saveMonitoringLocation(OnmsMonitoringLocation onmsMonitoringLocation) {
+        return monitoringLocationDao.save(onmsMonitoringLocation);
     }
 }

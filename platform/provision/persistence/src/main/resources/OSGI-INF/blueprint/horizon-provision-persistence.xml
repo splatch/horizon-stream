@@ -22,7 +22,12 @@ http://aries.apache.org/xmlns/transactions/v2.0.0">
   <bean id="requisitionDao" class="org.opennms.netmgt.provision.persistence.RequisitionDao">
      <argument ref="entityManagerHolder"/>
   </bean>
-  
+
+  <service interface="org.opennms.netmgt.provision.persistence.model.ForeignSourceRepository">
+    <bean class="org.opennms.netmgt.provision.persistence.ForeignSourceRepositoryImpl">
+    </bean>
+  </service>
+
   <service interface="org.opennms.netmgt.provision.persistence.model.RequisitionRepository">
     <bean class="org.opennms.netmgt.provision.persistence.RequisitionRepositoryImpl">
       <argument ref="requisitionDao"/>

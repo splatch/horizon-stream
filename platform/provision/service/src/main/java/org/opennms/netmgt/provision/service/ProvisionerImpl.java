@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.service;
 
+import com.google.gson.Gson;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -47,15 +48,20 @@ import org.opennms.netmgt.provision.scan.NodeScanner;
 public class ProvisionerImpl implements Provisioner {
 
     private final RequisitionRepository requisitionRepository;
-    private final ProducerTemplate scanProducer;
     private final NodeRepository nodeRepository;
+    private final NodeScanner nodeScanner;
+
+    private Gson gson = new Gson();
 
     @Override
     public String publish(RequisitionDTO requisition) {
         requisition.validate();
 
         log.info("Publishing Requisition {}", requisition);
-        requisition.getNodes().values().forEach(node -> processNode(node));
+        requisition.getNodes().values().forEach(node -> {
+            Integer id = processNode(node);
+            node.setId(id);
+        });
 
         RequisitionDTO existingRequisition = requisitionRepository.read(requisition.getId());
 
@@ -67,7 +73,7 @@ public class ProvisionerImpl implements Provisioner {
         }
     }
 
-    private void processNode(RequisitionNodeDTO nodeDTO) {
+    private Integer processNode(RequisitionNodeDTO nodeDTO) {
         OnmsNode entityNode = new OnmsNode();
         entityNode.setLabel(nodeDTO.getNodeLabel());
 
@@ -82,7 +88,7 @@ public class ProvisionerImpl implements Provisioner {
         });
 
         log.info("Publishing Node {}", entityNode);
-        nodeRepository.save(entityNode);
+        return nodeRepository.save(entityNode);
     }
 
     private OnmsMonitoringLocation createLocationIfNecessary(String locationStr) {
@@ -120,6 +126,13 @@ public class ProvisionerImpl implements Provisioner {
 
     @Override
     public void performNodeScan() {
-        scanProducer.sendBody(NodeScanner.DIRECT_SCAN,"blah");
+        List<RequisitionDTO> requisitions = requisitionRepository.read();
+        log.info("Found {} requisitions for scanning", requisitions.size());
+        requisitions.forEach(req -> {
+            log.info("requisition: {}", req);
+            req.getNodes().values().forEach(node -> {
+                nodeScanner.scanNode(node);
+            });
+        });
     }
 }

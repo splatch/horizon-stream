@@ -29,6 +29,7 @@ import org.opennms.netmgt.provision.persistence.model.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionInterfaceDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionNodeDTO;
+import org.opennms.netmgt.provision.scan.NodeScanner;
 
 @Slf4j
 public class ProvisionerImplTest extends CamelTestSupport {
@@ -39,6 +40,8 @@ public class ProvisionerImplTest extends CamelTestSupport {
     RequisitionRepository requisitionRepository;
     @Mock
     NodeRepository nodeRepository;
+    @Mock
+    NodeScanner nodeScanner;
 
     Gson gson = new Gson();
     RequisitionDTO requisitionDTO;
@@ -49,9 +52,9 @@ public class ProvisionerImplTest extends CamelTestSupport {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        provisioner = new ProvisionerImpl(requisitionRepository, template, nodeRepository);
+        provisioner = new ProvisionerImpl(requisitionRepository, nodeRepository, nodeScanner);
 
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("import_dummy-empty.json");
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("import_dummy_requisition.json");
         if (stream == null) {
             throw new FileNotFoundException("Test file does not exist.");
         }
@@ -70,9 +73,9 @@ public class ProvisionerImplTest extends CamelTestSupport {
         verify(requisitionRepository).read(anyString());
         verify(requisitionRepository).save(isA(RequisitionDTO.class));
         verifyNoMoreInteractions(requisitionRepository);
-        verify(nodeRepository).save(any());
-        verify(nodeRepository).get(anyString());
-        verify(nodeRepository).saveMonitoringLocation(any());
+        verify(nodeRepository, times(2)).save(any());
+        verify(nodeRepository, times(2)).get(anyString());
+        verify(nodeRepository, times(2)).saveMonitoringLocation(any());
         verifyNoMoreInteractions(nodeRepository);
     }
 
@@ -106,17 +109,21 @@ public class ProvisionerImplTest extends CamelTestSupport {
     public void generateJson() {
         RequisitionDTO dto = new RequisitionDTO("blahId");
 
-        RequisitionNodeDTO nodeDTO = new RequisitionNodeDTO();
-        nodeDTO.setNodeLabel("blahNodeLabel");
-        nodeDTO.setForeignId("blahForeignId");
-        for (int i=0;i<5;i++) {
-            RequisitionInterfaceDTO interfaceDTO = new RequisitionInterfaceDTO();
-            interfaceDTO.setIpAddr(String.format("192.168.1.%03d", i));
-            interfaceDTO.setSnmpPrimary(i == 0 ? PrimaryType.PRIMARY:PrimaryType.SECONDARY);
-            interfaceDTO.setManaged(true);
-            nodeDTO.putInterface(interfaceDTO);
+        for(int j=1;j<3;j++) {
+            RequisitionNodeDTO nodeDTO = new RequisitionNodeDTO();
+            nodeDTO.setNodeLabel("blahNodeLabel"+j);
+            nodeDTO.setForeignId("blahForeignId"+j);
+            //TODO: think this should be a constant from somewhere
+            nodeDTO.setLocation("Default");
+            for (int i = 1; i < 6; i++) {
+                RequisitionInterfaceDTO interfaceDTO = new RequisitionInterfaceDTO();
+                interfaceDTO.setIpAddr(String.format("192.168.1.%03d", i));
+                interfaceDTO.setSnmpPrimary(i == 1 ? PrimaryType.PRIMARY : PrimaryType.SECONDARY);
+                interfaceDTO.setManaged(true);
+                nodeDTO.putInterface(interfaceDTO);
+            }
+            dto.putNode(nodeDTO);
         }
-        dto.putNode(nodeDTO);
 
         assertNotNull(dto);
         try {
