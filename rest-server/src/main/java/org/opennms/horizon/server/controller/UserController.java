@@ -35,6 +35,8 @@ import org.opennms.horizon.server.model.dto.ResetPasswordDTO;
 import org.opennms.horizon.server.model.dto.UserDTO;
 import org.opennms.horizon.server.model.dto.UserSearchDTO;
 import org.opennms.horizon.server.service.UserService;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,11 +49,22 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
+@SecurityRequirement(name = "security_auth")
+@Tag(name = "User management endpoints")
 public class UserController {
 
     private UserService service;
@@ -62,12 +75,26 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('admin')")
-    public List<UserDTO> searchUsers(UserSearchDTO searchDTO) {
+    @Operation(summary = "search users")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, array = @ArraySchema(schema = @Schema(implementation = UserDTO.class)))),
+        @ApiResponse(responseCode = "403", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE))
+    })
+
+    public List<UserDTO> searchUsers(@ParameterObject UserSearchDTO searchDTO) {
+        if(searchDTO == null) {
+            searchDTO = new UserSearchDTO();
+        }
         return service.searchUsers(searchDTO);
     }
 
     @GetMapping("/{userID}")
-    public ResponseEntity getUserById(@PathVariable String userID, @RequestHeader("Authorization") String authToken) {
+    @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class))),
+      @ApiResponse(responseCode = "404", content = @Content),
+      @ApiResponse(responseCode = "400", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE))
+    })
+    public ResponseEntity getUserById(@PathVariable String userID, @RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
         try {
             UserDTO user = service.getUserById(userID, authToken);
             if (user != null) {
@@ -81,6 +108,11 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasRole('admin')")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class))),
+        @ApiResponse(responseCode = "400", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE)),
+        @ApiResponse(responseCode = "403", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE))
+    })
     public ResponseEntity createUser(@RequestBody UserDTO userDTO) {
         try {
             UserDTO newUser = service.createUser(userDTO);
@@ -93,7 +125,12 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity updateUser(@PathVariable String userId, @RequestBody UserDTO userDTO, @RequestHeader("Authorization") String authToken) {
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class))),
+        @ApiResponse(responseCode = "404", content = @Content),
+        @ApiResponse(responseCode = "400", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE))
+    })
+    public ResponseEntity updateUser(@PathVariable String userId, @RequestBody UserDTO userDTO, @RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
         try{
         UserDTO updatedUser = service.updateUser(userId, userDTO, authToken);
         if(updatedUser!=null) {
@@ -107,7 +144,13 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('admin')")
-    public ResponseEntity deleteUser(@PathVariable String userId, @RequestHeader("Authorization") String authToken) {
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", content = @Content),
+        @ApiResponse(responseCode = "404", content = @Content),
+        @ApiResponse(responseCode = "400", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE)),
+        @ApiResponse(responseCode = "403", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE))
+    })
+    public ResponseEntity deleteUser(@PathVariable String userId, @RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
         try {
             if (service.deleteUser(userId, authToken)) {
                 return ResponseEntity.noContent().build();
@@ -119,7 +162,12 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/password")
-    public ResponseEntity resetPassword(@PathVariable String userId, @RequestBody ResetPasswordDTO passwordDto, @RequestHeader("Authorization") String authToken) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", content = @Content),
+            @ApiResponse(responseCode = "404", content = @Content),
+            @ApiResponse(responseCode = "400", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE))
+    })
+    public ResponseEntity resetPassword(@PathVariable String userId, @RequestBody ResetPasswordDTO passwordDto, @RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
         try {
             if(service.resetPassword(userId, passwordDto, authToken)){
                 return ResponseEntity.noContent().build();
