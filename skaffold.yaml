@@ -53,6 +53,18 @@ portForward:
     resourceName: my-minion
     port: 8201
     localPort: 38101
+  - resourceType: deployment
+    resourceName: my-kong-gateway
+    port: 8000
+    localPort: 8000
+  - resourceType: deployment
+    resourceName: my-kong-gateway
+    port: 8001
+    localPort: 8001
+  - resourceType: deployment
+    resourceName: my-kong-gateway
+    port: 8002
+    localPort: 8002
 
 deploy:
   kubectl:

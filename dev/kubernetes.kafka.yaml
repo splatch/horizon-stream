@@ -118,6 +118,27 @@ spec:
   selector:
     run: my-keycloak
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-gateway
+  labels:
+    run: my-kong-gateway
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      protocol: TCP
+      name: http
+    - port: 8001
+      protocol: TCP
+      name: http-admin
+    - port: 8002
+      protocol: TCP
+      name: http-gui
+  selector:
+    run: my-kong-gateway
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -517,6 +538,55 @@ spec:
           command: ["/app/dev/entrypoint.sh"]
           args: ["$(DOMAIN_KEYCLOAK)","$(DOMAIN_API)"]
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-kong-gateway
+spec:
+  selector:
+    matchLabels:
+      app: my-kong-gateway
+  template:
+    metadata:
+      labels:
+        app: my-kong-gateway
+    spec:
+      containers:
+        - name: kong-gateway
+          image: kong/kong-gateway:2.8.1.1-alpine
+          ports:
+            - containerPort: 8000
+            - containerPort: 8001
+            - containerPort: 8002
+          env:
+            - name: KONG_DATABASE
+              value: "postgres"
+            - name: KONG_PG_HOST
+              value: "postgres"
+            - name: KONG_PG_USER
+              value: "kong"
+            - name: KONG_PG_PASSWORD
+              value: "password123"
+            - name: KONG_PROXY_ACCESS_LOG
+              value: "/dev/stdout"
+            - name: KONG_ADMIN_ACCESS_LOG
+              value: "/dev/stdout"
+            - name: KONG_PROXY_ERROR_LOG
+              value: "/dev/stderr"
+            - name: KONG_ADMIN_ERROR_LOG
+              value: "/dev/stderr"
+            - name: KONG_ADMIN_LISTEN
+              value: "0.0.0.0:8001"
+            - name: KONG_ADMIN_GUI_URL
+              value: "http://localhost:8002"
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/bash
+                  - -c
+                  - "kong migrations bootstrap"
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -536,6 +606,9 @@ data:
     CREATE USER opennms with password 'opennms';
     CREATE DATABASE horizon_stream;
     GRANT ALL ON DATABASE horizon_stream TO opennms;
+    CREATE USER kong with password 'password123';
+    CREATE DATABASE kong;
+    GRANT ALL ON DATABASE kong TO kong;
 ---
 apiVersion: v1
 kind: ConfigMap
