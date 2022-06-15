@@ -1,13 +1,10 @@
 package org.opennms.netmgt.provision.scan;
 
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.stream.Collectors;
-import javax.swing.text.StyledEditorKit.ForegroundAction;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.camel.spi.CamelContextTracker;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.joda.time.Duration;
 import org.junit.Before;
@@ -41,13 +38,14 @@ public class NodeScannerTest extends CamelTestSupport {
         nodeScanner = new NodeScanner(context(), locationAwareDetectorClient, foreignSourceRepository);
 
         ForeignSourceDTO foreignSourceDTO = new ForeignSourceDTO();
-        foreignSourceDTO.setScanInterval(new Duration(60000));
+        foreignSourceDTO.setScanInterval(new Duration(6000));
 
         when(foreignSourceRepository.getForeignSource(anyString())).thenReturn(foreignSourceDTO);
     }
 
     @Test
-    public void scanNode() {
+    public void scanNode() throws Exception {
+        
         nodeScanner.scanNode(requisitionNodeDTO);
 
         context().getRoutes().forEach(route -> log.info("######### ROUTE: "+route.getId()));

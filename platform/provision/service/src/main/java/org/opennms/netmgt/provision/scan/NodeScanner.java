@@ -27,14 +27,8 @@ public class NodeScanner {
     private final LocationAwareDetectorClient locationAwareDetectorClient;
     private final ForeignSourceRepository foreignSourceRepository;
 
-    public void scanNode(RequisitionNodeDTO node) {
-        try {
+    public void scanNode(RequisitionNodeDTO node) throws Exception {
             context.addRoutes(createScheduledRoute(node));
-        }
-        catch (Exception e) {
-//            TODO: handle this correctly
-            log.error(e.getMessage());
-        }
     }
 
     private RouteBuilder createScheduledRoute(RequisitionNodeDTO node) {
@@ -46,12 +40,6 @@ public class NodeScanner {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-
-                if (context.getRoutes().stream().anyMatch(route -> route.getId().equals(routeId))) {
-                    log.info("NodeScanner :: Scheduled scan/route  for {} already exists, replacing it!", routeId);
-                    context.createFluentProducerTemplate().withDefaultEndpoint(String.format("controlbus:route?routeId=%s&action=stop", routeId)).withBody(null).send();
-                    context.removeRoute(routeId);
-                }
                 
                 from(routeOrigin).
                         routeId(routeId).
@@ -59,7 +47,6 @@ public class NodeScanner {
                         process(new SimpleScanner(node));
 
                 log.info("NodeScanner :: Created scheduled scan/route ({}) for {}", routeOrigin, routeId);
-
             }
         };
     }

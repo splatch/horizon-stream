@@ -69,8 +69,7 @@ public class ForeignSourceDTO implements Serializable, Comparable<ForeignSourceD
     protected XMLGregorianCalendar m_dateStamp;
 
     @XmlElement(name="scan-interval")
-    //TODO: Do we need these XML mappings?
-//    @XmlJavaTypeAdapter(StringIntervalAdapter.class)
+    @XmlJavaTypeAdapter(StringIntervalAdapter.class)
     private Duration m_scanInterval = Duration.standardDays(1);
 
     @XmlElementWrapper(name="detectors")

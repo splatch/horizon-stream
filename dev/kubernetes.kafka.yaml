@@ -612,6 +612,7 @@ metadata:
 spec:
   keycloakCRName: my-keycloak
   realm:
+    accessTokenLifespan: 6000
     id: opennms
     realm: opennms
     enabled: true

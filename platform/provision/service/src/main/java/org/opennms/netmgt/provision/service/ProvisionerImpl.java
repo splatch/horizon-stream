@@ -129,9 +129,13 @@ public class ProvisionerImpl implements Provisioner {
         List<RequisitionDTO> requisitions = requisitionRepository.read();
         log.info("Found {} requisitions for scanning", requisitions.size());
         requisitions.forEach(req -> {
-            log.info("requisition: {}", req);
+            log.info("Requisition: {}", req);
             req.getNodes().values().forEach(node -> {
-                nodeScanner.scanNode(node);
+                try {
+                    nodeScanner.scanNode(node);
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                }
             });
         });
     }
