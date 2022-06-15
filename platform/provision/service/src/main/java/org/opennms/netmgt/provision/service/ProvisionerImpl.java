@@ -35,10 +35,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.opennms.horizon.db.model.OnmsIpInterface;
+import org.opennms.horizon.db.model.OnmsMonitoredService;
 import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.repository.api.NodeRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
+import org.opennms.netmgt.provision.persistence.dto.RequisitionInterfaceDTO;
+import org.opennms.netmgt.provision.persistence.dto.RequisitionMonitoredServiceDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionNodeDTO;
 import org.opennms.netmgt.provision.persistence.model.RequisitionRepository;
 import org.opennms.netmgt.provision.scan.NodeScanner;
@@ -66,6 +69,7 @@ public class ProvisionerImpl implements Provisioner {
         RequisitionDTO existingRequisition = requisitionRepository.read(requisition.getId());
 
         if (existingRequisition != null) {
+            log.info("Updating existing requisition");
             return requisitionRepository.update(requisition);
         }
         else {
@@ -80,15 +84,33 @@ public class ProvisionerImpl implements Provisioner {
         entityNode.setLocation(createLocationIfNecessary(nodeDTO.getLocation()));
 
         nodeDTO.getInterfaces().values().forEach( reqInterface -> {
-            OnmsIpInterface entityInterface = new OnmsIpInterface(reqInterface.getIpAddress().getHostAddress());
-            entityInterface.setIsManaged(reqInterface.getManaged().toString());
-            entityInterface.setSnmpPrimary(reqInterface.getSnmpPrimary().toString());
+            // Create the Interface Entity
+            OnmsIpInterface entityInterface = processInterface(reqInterface);
             entityInterface.setNode(entityNode);
             entityNode.getIpInterfaces().add(entityInterface);
         });
 
         log.info("Publishing Node {}", entityNode);
         return nodeRepository.save(entityNode);
+    }
+
+    private OnmsIpInterface processInterface(RequisitionInterfaceDTO reqInterface) {
+        OnmsIpInterface entityInterface = new OnmsIpInterface(reqInterface.getIpAddress().getHostAddress());
+        entityInterface.setIsManaged(reqInterface.getManaged().toString());
+        entityInterface.setSnmpPrimary(reqInterface.getSnmpPrimary().toString());
+        // Create all the monitored services
+        reqInterface.getMonitoredServices().values().forEach(service -> {
+            OnmsMonitoredService monitoredService = processMoniteredService(service);
+            entityInterface.addMonitoredService(monitoredService);
+        });
+        return entityInterface;
+
+    }
+
+    private OnmsMonitoredService processMoniteredService(RequisitionMonitoredServiceDTO monitoredService) {
+        OnmsMonitoredService entityMonitoredService = new OnmsMonitoredService();
+        
+        return entityMonitoredService;
     }
 
     private OnmsMonitoringLocation createLocationIfNecessary(String locationStr) {
