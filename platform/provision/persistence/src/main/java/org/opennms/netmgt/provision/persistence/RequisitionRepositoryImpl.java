@@ -38,6 +38,11 @@ public class RequisitionRepositoryImpl implements RequisitionRepository {
     }
 
     @Override
+    public void delete(String id) {
+        requisitionDAO.delete(id);
+    }
+
+    @Override
     public String update(RequisitionDTO requisitionDTO) {
         HibernateRequisitionEntity hibernateRequisitionEntity = new HibernateRequisitionEntity(requisitionDTO.getId(), requisitionDTO);
         requisitionDAO.saveOrUpdate(hibernateRequisitionEntity);
