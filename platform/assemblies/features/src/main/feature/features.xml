@@ -232,6 +232,7 @@
         <feature>onms-httpclient</feature>
         <feature>onms-netty3</feature>
         <feature>camel-gson</feature>
+        <feature>camel-quartz</feature>
         <feature>horizon-db</feature>
         <feature>horizon-tracing</feature>
         <feature>horizon-grpc</feature>

@@ -21,8 +21,6 @@ import org.opennms.netmgt.provision.rpc.relocate.Callback;
 @Slf4j
 public class NodeScanner {
 
-    public static final String DIRECT_SCAN = "direct:scan";
-
     private final CamelContext context;
     private final LocationAwareDetectorClient locationAwareDetectorClient;
     private final ForeignSourceRepository foreignSourceRepository;
@@ -34,17 +32,22 @@ public class NodeScanner {
     private RouteBuilder createScheduledRoute(RequisitionNodeDTO node) {
         ForeignSourceDTO foreignSourceDTO = foreignSourceRepository.getForeignSource(node.getForeignId());
 
-        String routeOrigin = String.format("timer://%s?fixedRate=true&period=%d",node.getNodeLabel(), foreignSourceDTO.getScanInterval().getMillis());
+        //TODO: do we need to be more sophisticated on building the cron string?
+        String routeOrigin = String.format("customQuartz://%s?cron=0 0/%d * 1/1 * ? *&triggerStartDelay=20",node.getNodeLabel(), foreignSourceDTO.getScanInterval().getStandardMinutes());
+
         String routeId = String.format("SCHEDULED-SCANNER-%s", node.getNodeLabel());
         
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                
-                from(routeOrigin).
-                        routeId(routeId).
-                        log(LoggingLevel.INFO, String.format("NodeScanner :: performing scheduled scan for %s", routeId)).
-                        process(new SimpleScanner(node));
+                from(routeOrigin).routeId(routeId).
+                    process(new Processor() {
+                        @Override
+                        public void process(Exchange exchange) throws Exception {
+                            log.info("NodeScanner :: performing scheduled scan for {} on thread ({})", routeId, Thread.currentThread().getName());
+                        }
+                    }).
+                    process(new SimpleScanner(node));
 
                 log.info("NodeScanner :: Created scheduled scan/route ({}) for {}", routeOrigin, routeId);
             }

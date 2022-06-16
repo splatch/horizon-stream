@@ -6,6 +6,7 @@
 
   <cm:property-placeholder persistent-id="org.opennms.horizon.provision.service" update-strategy="reload">
     <cm:default-properties>
+      <cm:property name="quartz.threadpool.size" value="10"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -42,6 +43,19 @@
     <property name="detectorClientRpcModule" ref="detectorClientRpcModule"/>
     <property name="rpcClientFactory" ref="grpcServer"/>
 <!--    <property name="entityScopeProvider" ref=""/>-->
+  </bean>
+
+  <bean id="customQuartz" class="org.apache.camel.component.quartz.QuartzComponent">
+    <property name="properties">
+      <map>
+        <entry key="org.quartz.scheduler.instanceName" value="Scheduler"/>
+        <entry key="org.quartz.scheduler.instanceId" value="AUTO"/>
+        <entry key="org.quartz.scheduler.skipUpdateCheck" value="true"/>
+        <entry key="org.quartz.scheduler.jobFactory.class" value="org.quartz.simpl.SimpleJobFactory"/>
+        <entry key="org.quartz.threadPool.class" value="org.quartz.simpl.SimpleThreadPool"/>
+        <entry key="org.quartz.threadPool.threadCount" value="${quartz.threadpool.size}"/>
+      </map>
+    </property>
   </bean>
 
   <bean id="nodeScanner" class="org.opennms.netmgt.provision.scan.NodeScanner">
