@@ -118,6 +118,55 @@ spec:
   selector:
     run: my-keycloak
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  labels:
+    run: api-gateway
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      protocol: TCP
+      name: gateway-http
+  selector:
+    run: api-gateway
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      volumes:
+        - name: nginx-conf-volume
+          configMap:
+            name: nginx-conf-template
+      containers:
+        - name: api-gateway
+          image: nginx:1.21.6-alpine
+          ports:
+            - containerPort: 80
+          env:
+            - name: HORIZON_CORE_URL
+              value: "http://horizon-stream-core:8181"
+            - name: KEYCLOAK_URL
+              value: "http://keycloak:8080"
+            - name: KEYCLOAK_REALM
+              value: "opennms"
+          volumeMounts:
+            - name: nginx-conf-volume
+              mountPath: "/etc/nginx/templates/default.conf.template"
+              subPath: "default.conf.template"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -575,6 +624,37 @@ data:
       traps:
         trapd.listen.interface: "0.0.0.0"
         trapd.listen.port: 1162
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf-template
+data:
+  default.conf.template: |
+    server {
+      listen       80;
+      listen  [::]:80;
+      server_name  localhost;
+
+      location / {
+        auth_request /verifytoken;
+        auth_request_set $auth_status $upstream_status;
+
+        proxy_pass ${HORIZON_CORE_URL};
+      }
+
+      location /verifytoken {
+    	internal;
+    	proxy_pass ${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/userinfo;
+    	proxy_pass_request_body off;
+    	proxy_set_header Content-Length "";
+      }
+
+      error_page   500 502 503 504  /50x.html;
+      location = /50x.html {
+        root   /usr/share/nginx/html;
+      }
+    }
 ---
 apiVersion: v1
 kind: Secret
