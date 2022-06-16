@@ -95,7 +95,7 @@ public class ProvisionerImpl implements Provisioner {
 
     private OnmsIpInterface processInterface(RequisitionInterfaceDTO reqInterface) {
         OnmsIpInterface entityInterface = new OnmsIpInterface(reqInterface.getIpAddress().getHostAddress());
-        entityInterface.setIsManaged(reqInterface.getManaged().toString());
+        entityInterface.setIsManaged(reqInterface.getManaged() ? "M" : "F");
         entityInterface.setSnmpPrimary(reqInterface.getSnmpPrimary().toString());
         // Create all the monitored services
         reqInterface.getMonitoredServices().values().forEach(service -> {
