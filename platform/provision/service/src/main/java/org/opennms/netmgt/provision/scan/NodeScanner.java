@@ -40,6 +40,13 @@ public class NodeScanner {
         return new RouteBuilder() {
             @Override
             public void configure() throws Exception {
+
+                if (context.getRoute(routeId) != null) {
+                    log.info("NodeScanner :: Scheduled scan/route  for {} already exists, replacing it!", routeId);
+                    context.createFluentProducerTemplate().withDefaultEndpoint(String.format("controlbus:route?routeId=%s&action=stop", routeId)).withBody(null).send();
+                    context.removeRoute(routeId);
+                }
+
                 from(routeOrigin).routeId(routeId).
                     process(new Processor() {
                         @Override
