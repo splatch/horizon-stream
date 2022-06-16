@@ -30,6 +30,7 @@ package org.opennms.horizon.server.model.dto;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -37,13 +38,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UserDTO {
-    private String id;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private Boolean enabled;
+public class UserDTO extends UserBaseDTO {
     private List<String> roles;
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private List<String> requiredActions;
 }

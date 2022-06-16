@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.rpc.relocate.mate;
+package org.opennms.horizon.server.model.dto;
 
-import java.net.InetAddress;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
-public interface EntityScopeProvider {
-
-    interface Contexts {
-        String ASSET = "asset";
-        String INTERFACE = "interface";
-        String NODE = "node";
-        String SERVICE = "service";
-    }
-
-    Scope getScopeForNode(final Integer nodeId);
-
-    Scope getScopeForInterface(final Integer nodeId, final String ipAddress);
-
-    Scope getScopeForInterfaceByIfIndex(final Integer nodeId, final int ifIndex);
-
-    Scope getScopeForService(final Integer nodeId, final InetAddress ipAddress, final String serviceName);
+@Getter
+@Setter
+public abstract class UserBaseDTO {
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    private String id;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private Boolean enabled;
 }
