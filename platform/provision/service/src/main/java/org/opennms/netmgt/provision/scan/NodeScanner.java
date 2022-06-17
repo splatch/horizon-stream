@@ -33,6 +33,9 @@ public class NodeScanner {
         ForeignSourceDTO foreignSourceDTO = foreignSourceRepository.getForeignSource(node.getForeignId());
 
         //TODO: do we need to be more sophisticated on building the cron string?
+        // Below is a format for doing simple intervals without a CRON string
+        // String routeOrigin = String.format("customQuartz://%s?trigger.repeatInterval=%d&triggerStartDelay=20",node.getNodeLabel(), foreignSourceDTO.getScanInterval().getMillis());
+
         String routeOrigin = String.format("customQuartz://%s?cron=0 0/%d * 1/1 * ? *&triggerStartDelay=20",node.getNodeLabel(), foreignSourceDTO.getScanInterval().getStandardMinutes());
 
         String routeId = String.format("SCHEDULED-SCANNER-%s", node.getNodeLabel());

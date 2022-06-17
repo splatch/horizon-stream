@@ -69,9 +69,9 @@ public class NodeScannerTest extends CamelTestSupport {
         
         nodeScanner.scanNode(requisitionNodeDTO);
 
-        context().getRoutes().forEach(route -> log.info("######### ROUTE: "+route.getId()));
+//        context().getRoutes().forEach(route -> log.info("######### ROUTE: "+route.getId()));
 
-        assertTrue(context().getRoutes().stream().filter(route -> route.getId().startsWith("SCHEDULED-SCANNER")).collect(Collectors.toList()).size() > 0);
+        assertTrue(context().getRoutes().stream().filter(route -> route.getId().startsWith("SCHEDULED-SCANNER")).collect(Collectors.toList()).size() ==1 );
     }
 
     @Test
