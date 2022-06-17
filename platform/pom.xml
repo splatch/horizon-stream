@@ -14,7 +14,6 @@
     <modules>
         <module>3rdparty</module>
         <module>alarms</module>
-        <module>assemblies</module>
         <module>bom</module>
         <module>common</module>
         <module>core</module>
@@ -24,6 +23,8 @@
         <module>ipc</module>
         <module>snmp</module>
         <module>provision</module>
+        
+        <module>assemblies</module>
         <module>docker-it</module>
     </modules>
 

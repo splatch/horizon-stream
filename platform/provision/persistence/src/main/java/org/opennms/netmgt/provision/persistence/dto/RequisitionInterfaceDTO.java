@@ -38,9 +38,13 @@ package org.opennms.netmgt.provision.persistence.dto;
 import java.net.InetAddress;
 import java.util.HashMap;
 //import javax.xml.bind.ValidationException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import javax.validation.ValidationException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.opennms.horizon.core.lib.IPAddress;
 import org.opennms.horizon.core.lib.InetAddressUtils;
 import org.opennms.horizon.db.model.PrimaryType;
 
@@ -150,40 +154,37 @@ public class RequisitionInterfaceDTO extends CategoriesAndMetadataDTO {
     }
 
     //TODO: fix
-//    public void validate(RequisitionNode node) throws ValidationException {
-//        if (m_ipAddress == null) {
-//            if (m_ipAddressStr != null) {
-//                try {
-//                    m_ipAddress = new IPAddress(m_ipAddressStr).toInetAddress();
-//                } catch (IllegalArgumentException iae) {
-//                    LOG.warn(String.format("Invalid IP address %s", m_ipAddressStr));
-//                    throw new IPValidationException(String.format("Invalid IP address %s", m_ipAddressStr), iae);
-//                }
-//            }
-//            else {
-//                throw new ValidationException("Requisition interface 'ip-addr' is a required attribute!");
+    public void validate(RequisitionNodeDTO node) throws ValidationException {
+        //TODO: this already handled by setter, but make sure this approach will work sith json unmarshalling. Ie, do
+        // we need to allow only the String version to be specified? If so, rollback the consolidation here
+//        if (ipAddress != null) {
+//            try {
+//                ipAddress = new IPAddress(ipAddressStr).toInetAddress();
+//            } catch (IllegalArgumentException iae) {
+//                log.warn(String.format("Invalid IP address %s", ipAddressStr));
+//                throw new IPValidationException(String.format("Invalid IP address %s", ipAddressStr), iae);
 //            }
 //        }
-//
-//        if (m_monitoredServices != null) {
-//            Set<String> serviceNameSet = new HashSet<>();
-//            for (final RequisitionMonitoredService svc : m_monitoredServices) {
-//                svc.validate();
-//                if (!serviceNameSet.add(svc.getServiceName())) {
-//                    throw new ValidationException(String.format("Duplicate service name: %s", svc.getServiceName()));
-//                }
-//            }
-//        }
-//
-//        // there can be only one primary interface per node
-//        if (m_snmpPrimary == PrimaryType.PRIMARY) {
-//            long otherPrimaryInterfaces = node.getInterfaces().stream()
-//                    .filter(iface -> PrimaryType.PRIMARY == iface.getSnmpPrimary())
-//                    .filter(iface -> !iface.getIpAddr().equals(this.getIpAddr()))
-//                    .count();
-//            if (otherPrimaryInterfaces > 0) {
-//                throw new ValidationException("Node foreign ID (" + node.getForeignId() + ") contains multiple primary interfaces. Maximum one is allowed.");
-//            }
-//        }
-//    }
+
+        if (monitoredServices != null) {
+            Set<String> serviceNameSet = new HashSet<>();
+            for (final RequisitionMonitoredServiceDTO svc : monitoredServices.values()) {
+                svc.validate();
+                if (!serviceNameSet.add(svc.getServiceName())) {
+                    throw new ValidationException(String.format("Duplicate service name: %s", svc.getServiceName()));
+                }
+            }
+        }
+
+        // there can be only one primary interface per node
+        if (snmpPrimary == PrimaryType.PRIMARY) {
+            long otherPrimaryInterfaces = node.getInterfaces().values().stream()
+                    .filter(iface -> PrimaryType.PRIMARY == iface.getSnmpPrimary())
+                    .filter(iface -> !iface.getIpAddress().equals(this.getIpAddress()))
+                    .count();
+            if (otherPrimaryInterfaces > 0) {
+                throw new ValidationException("Node foreign ID (" + node.getForeignId() + ") contains multiple primary interfaces. Maximum one is allowed.");
+            }
+        }
+    }
 }

@@ -36,6 +36,7 @@
 
 package org.opennms.netmgt.provision.persistence.dto;
 
+import javax.validation.ValidationException;
 import lombok.Data;
 
 
@@ -52,16 +53,15 @@ public class RequisitionMonitoredServiceDTO  extends CategoriesAndMetadataDTO {
     public RequisitionMonitoredServiceDTO(String serviceName) {
         this.serviceName = serviceName;
     }
-
-//    TODO: Better way to do this
-//    public void validate() throws ValidationException {
-//        if (m_serviceName == null) {
-//            throw new ValidationException("Requisition monitored-service 'service-name' is a required attribute!");
-//        }
-//        if (m_categories != null) {
-//            for (final RequisitionCategory cat : m_categories) {
-//                cat.validate();
-//            }
-//        }
-//    }
+    
+    public void validate() throws ValidationException {
+        if (serviceName == null) {
+            throw new ValidationException("Requisition monitored-service 'service-name' is a required attribute!");
+        }
+        if (categories != null) {
+            for (final RequisitionCategoryDTO cat : categories.values()) {
+                cat.validate();
+            }
+        }
+    }
 }

@@ -17,6 +17,7 @@ public class RequisitionRepositoryImpl implements RequisitionRepository {
 
     @Override
     public String save(RequisitionDTO requisitionDTO) {
+        requisitionDTO.validate();
         HibernateRequisitionEntity hibernateRequisitionEntity = new HibernateRequisitionEntity(requisitionDTO.getId(), requisitionDTO);
         requisitionDAO.save(hibernateRequisitionEntity);
         log.info("Requisition {} persisted to database", hibernateRequisitionEntity.getRequisitionName());
@@ -24,16 +25,18 @@ public class RequisitionRepositoryImpl implements RequisitionRepository {
     }
 
     @Override
+    //TODO: return Optional<RequisitionDTO> for all sigs
     public RequisitionDTO read(String id) {
         HibernateRequisitionEntity hibernateRequisitionEntity = requisitionDAO.get(id);
-        return hibernateRequisitionEntity.getRequisition();
+
+        return hibernateRequisitionEntity == null ? null:hibernateRequisitionEntity.getRequisition();
     }
 
     @Override
     public void delete(String id) {
         requisitionDAO.delete(id);
     }
-
+    
     @Override
     public String update(RequisitionDTO requisitionDTO) {
         HibernateRequisitionEntity hibernateRequisitionEntity = new HibernateRequisitionEntity(requisitionDTO.getId(), requisitionDTO);

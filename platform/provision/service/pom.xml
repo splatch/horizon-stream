@@ -45,10 +45,6 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.camel.karaf</groupId>
       <artifactId>camel-core-osgi</artifactId>
       <version>${camel.version}</version>
@@ -79,6 +75,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.horizon.db</groupId>
+      <artifactId>repository-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.horizon.ipc.grpc</groupId>
       <artifactId>server</artifactId>
       <version>${project.version}</version>
@@ -96,6 +97,16 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-quartz</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-cron</artifactId>
+      <version>${camel.version}</version>
     </dependency>
   </dependencies>
 

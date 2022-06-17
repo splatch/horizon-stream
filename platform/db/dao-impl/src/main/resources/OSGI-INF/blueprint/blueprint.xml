@@ -43,6 +43,11 @@
             <argument ref="entityManagerHolder"/>
         </bean>
     </service>
+    <service interface="org.opennms.horizon.db.dao.api.MonitoringLocationDao">
+        <bean class="org.opennms.horizon.db.dao.impl.MonitoringLocationDaoHibernate">
+            <argument ref="entityManagerHolder"/>
+        </bean>
+    </service>
 
     <service interface="org.opennms.horizon.db.dao.api.IpInterfaceDao">
         <bean class="org.opennms.horizon.db.dao.impl.IpInterfaceDaoHibernate">
