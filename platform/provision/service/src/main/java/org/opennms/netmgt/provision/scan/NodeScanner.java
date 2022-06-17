@@ -51,12 +51,6 @@ public class NodeScanner {
                 }
 
                 from(routeOrigin).routeId(routeId).
-                    process(new Processor() {
-                        @Override
-                        public void process(Exchange exchange) throws Exception {
-                            log.info("NodeScanner :: performing scheduled scan for {} on thread ({})", routeId, Thread.currentThread().getName());
-                        }
-                    }).
                     process(new SimpleScanner(node));
 
                 log.info("NodeScanner :: Created scheduled scan/route ({}) for {}", routeOrigin, routeId);
@@ -71,6 +65,8 @@ public class NodeScanner {
 
         @Override
         public void process(Exchange exchange) throws Exception {
+            log.info("NodeScanner :: performing scheduled scan for {} on thread ({})", exchange.getFromRouteId(), Thread.currentThread().getName());
+
             PluginConfigDTO pluginConfigDTO = new PluginConfigDTO();
             pluginConfigDTO.setName("WebDetector");
             pluginConfigDTO.setPluginClass("org.opennms.netmgt.provision.detector.web.WebDetector");
