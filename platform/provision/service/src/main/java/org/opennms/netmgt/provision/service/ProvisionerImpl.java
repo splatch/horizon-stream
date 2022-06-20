@@ -38,10 +38,12 @@ import org.opennms.horizon.db.model.OnmsMonitoredService;
 import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.repository.api.NodeRepository;
+import org.opennms.netmgt.provision.persistence.dto.ForeignSourceDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionInterfaceDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionMonitoredServiceDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionNodeDTO;
+import org.opennms.netmgt.provision.persistence.model.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persistence.model.RequisitionRepository;
 import org.opennms.netmgt.provision.scan.NodeScanner;
 
@@ -50,6 +52,7 @@ import org.opennms.netmgt.provision.scan.NodeScanner;
 public class ProvisionerImpl implements Provisioner {
 
     private final RequisitionRepository requisitionRepository;
+    private final ForeignSourceRepository foreignSourceRepository;
     private final NodeRepository nodeRepository;
     private final NodeScanner nodeScanner;
 
@@ -159,5 +162,21 @@ public class ProvisionerImpl implements Provisioner {
                 }
             });
         });
+    }
+
+    @Override
+    public String publish(ForeignSourceDTO foreignSource) throws Exception {
+        foreignSource.validate();
+
+        ForeignSourceDTO existingForeignSource = foreignSourceRepository.read(foreignSource.getName());
+
+        //TODO: should just implement "saveorupdate" on the abstract DAO? Tough to do without a homogenous id field
+        if (existingForeignSource != null) {
+            log.info("Updating existing foreign source {}", foreignSource.getName());
+            return foreignSourceRepository.update(foreignSource);
+        }
+        else {
+            return foreignSourceRepository.save(foreignSource);
+        }
     }
 }

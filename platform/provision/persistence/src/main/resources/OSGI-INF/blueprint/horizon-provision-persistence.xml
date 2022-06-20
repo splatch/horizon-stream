@@ -23,8 +23,13 @@ http://aries.apache.org/xmlns/transactions/v2.0.0">
      <argument ref="entityManagerHolder"/>
   </bean>
 
+  <bean id="foreignSourceDao" class="org.opennms.netmgt.provision.persistence.ForeignSourceDao">
+    <argument ref="entityManagerHolder"/>
+  </bean>
+
   <service interface="org.opennms.netmgt.provision.persistence.model.ForeignSourceRepository">
     <bean class="org.opennms.netmgt.provision.persistence.ForeignSourceRepositoryImpl">
+      <argument ref="foreignSourceDao"/>
     </bean>
   </service>
 

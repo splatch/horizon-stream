@@ -22,6 +22,7 @@
 
   <bean id="provisioner" class="org.opennms.netmgt.provision.service.ProvisionerImpl">
     <argument ref="requisitionRepository"/>
+    <argument ref="foreignSourceRepository"/>
     <argument ref="nodeRepository"/>
     <argument ref="nodeScanner"/>
   </bean>

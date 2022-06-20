@@ -70,4 +70,10 @@ public interface ProvisionRestService {
     @POST
     @Path("scanNodes")
     Response scanNodes();
+
+    @POST
+    @Path("publish/foreignsource")
+    @Consumes({MediaType.APPLICATION_JSON})
+//    @RolesAllowed({"admin"})
+    Response publishForeignSource(final String foreignSource);
 }

@@ -30,7 +30,7 @@ public class NodeScanner {
     }
 
     private RouteBuilder createScheduledRoute(RequisitionNodeDTO node) {
-        ForeignSourceDTO foreignSourceDTO = foreignSourceRepository.getForeignSource(node.getForeignId());
+        ForeignSourceDTO foreignSourceDTO = foreignSourceRepository.read(node.getForeignId());
 
         //TODO: do we need to be more sophisticated on building the cron string?
         // Below is a format for doing simple intervals without a CRON string

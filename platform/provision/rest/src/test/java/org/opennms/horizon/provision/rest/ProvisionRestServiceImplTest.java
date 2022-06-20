@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opennms.horizon.db.dao.api.SessionUtils;
+import org.opennms.netmgt.provision.persistence.dto.ForeignSourceDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 import org.opennms.netmgt.provision.service.Provisioner;
 
@@ -55,23 +56,34 @@ public class ProvisionRestServiceImplTest {
 
     @Test
     public void publishRequisition() throws Exception{
-        when(provisioner.publish(any())).thenReturn("blahId");
+        when(provisioner.publish((RequisitionDTO) any())).thenReturn("blahId");
 
         Response response = provisionRestService.publishRequisition(requisitionJsonStr);
 
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        verify(provisioner).publish(any());
+        verify(provisioner).publish((RequisitionDTO) any());
+        verifyNoMoreInteractions(provisioner);
+    }
+
+    @Test
+    public void publishForeignSource() throws Exception{
+        when(provisioner.publish((ForeignSourceDTO) any())).thenReturn("blahId");
+
+        Response response = provisionRestService.publishForeignSource(requisitionJsonStr);
+
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        verify(provisioner).publish((ForeignSourceDTO) any());
         verifyNoMoreInteractions(provisioner);
     }
 
     @Test
     public void publishRequisitionError() throws Exception{
-        when(provisioner.publish(any())).thenThrow(new EntityExistsException());
+        when(provisioner.publish((RequisitionDTO) any())).thenThrow(new EntityExistsException());
 
         Response response = provisionRestService.publishRequisition(requisitionJsonStr);
 
         assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-        verify(provisioner).publish(any());
+        verify(provisioner).publish((RequisitionDTO) any());
         verifyNoMoreInteractions(provisioner);
     }
 
