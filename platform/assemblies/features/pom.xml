@@ -319,6 +319,11 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.provision</groupId>
+            <artifactId>detector-datagram</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.provision</groupId>
             <artifactId>detector-dhcp</artifactId>
             <version>${project.version}</version>
         </dependency>
