@@ -237,6 +237,7 @@
         <feature>horizon-tracing</feature>
         <feature>horizon-grpc</feature>
         <feature>horizon-configvar-scopes</feature>
+        <feature>3rdparty-bsf</feature>
 
         <feature>opennms-activemq-client-fix</feature>
 
@@ -252,6 +253,7 @@
         <bundle>mvn:org.opennms.horizon.provision/api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/core/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/detector-activemq/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.provision/detector-bsf/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/detector-datagram/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/detector-jdbc/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/detector-ssh/${project.version}</bundle>
@@ -395,6 +397,14 @@
     </feature>
     <feature name="onms-netty3" version="${project.version}" description="Netty3 Feature">
         <bundle>mvn:io.netty/netty/3.10.6.Final</bundle>
+    </feature>
+
+
+    <!--             -->
+    <!-- THIRD-PARTY -->
+    <!--             -->
+    <feature name="3rdparty-bsf" version="${bsf.version}" description="Apache :: Bean Scripting Framework">
+        <bundle>wrap:mvn:bsf/bsf/${bsf.version}</bundle>
     </feature>
 
 
