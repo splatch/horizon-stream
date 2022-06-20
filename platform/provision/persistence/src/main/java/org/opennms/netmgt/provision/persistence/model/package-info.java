@@ -27,6 +27,7 @@
  *******************************************************************************/
 
 @TypeDef(name = "RequisitionJsonType", typeClass = RequsitionJsonType.class)
+@TypeDef(name = "ForeignSourceJsonType", typeClass = ForeignSourceJsonType.class)
 
 package org.opennms.netmgt.provision.persistence.model;
 

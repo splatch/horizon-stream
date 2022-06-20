@@ -45,7 +45,7 @@ public class NodeScannerTest extends CamelTestSupport {
         ForeignSourceDTO foreignSourceDTO = new ForeignSourceDTO();
         foreignSourceDTO.setScanInterval(new Duration(6000));
 
-        when(foreignSourceRepository.getForeignSource(anyString())).thenReturn(foreignSourceDTO);
+        when(foreignSourceRepository.read(anyString())).thenReturn(foreignSourceDTO);
     }
 
     private void setupQuartz() {

@@ -2,6 +2,7 @@ package org.opennms.netmgt.provision.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.opennms.netmgt.provision.persistence.dto.ForeignSourceDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 
 public interface Provisioner {
@@ -16,4 +17,6 @@ public interface Provisioner {
     List<RequisitionDTO> read();
 
     void performNodeScan();
+
+    String publish(final ForeignSourceDTO foreignSource) throws Exception;
 }
