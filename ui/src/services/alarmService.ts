@@ -7,7 +7,7 @@ import { getMsgFromError } from './errorService'
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 
-const endpoint = '/alarms'
+const endpoint = '/alarms/list'
 
 const getAlarms = async (): Promise<AlarmResponseList> => {
   startSpinner()
