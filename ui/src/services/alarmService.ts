@@ -7,7 +7,7 @@ import { getMsgFromError } from './errorService'
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 
-const endpoint = '/alarms/list'
+const endpoint = '/alarms'
 
 const getAlarms = async (): Promise<AlarmResponseList> => {
   startSpinner()
@@ -20,7 +20,7 @@ const getAlarms = async (): Promise<AlarmResponseList> => {
   }
 
   try {
-    const resp = await api.get(endpoint)
+    const resp = await api.get(`${endpoint}/list`)
 
     if (!resp.data) return emptyResponse
 
