@@ -20,6 +20,7 @@
     <module>activemq</module>
     <module>bsf</module>
     <module>core</module>
+    <module>datagram</module>
 
     <module>dhcp</module>
     <module>jdbc</module>
