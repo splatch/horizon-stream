@@ -16,9 +16,10 @@
 </template>
   
 <script setup lang="ts">
-import { useAuthStore } from './store/authStore'
-const authStore = useAuthStore()
-authStore.getUserInfo()
+// Remove KC redirectUri theme param
+const route = useRoute()
+const router = useRouter()
+if (route.query.theme) router.push('/')
 </script>
   
 <style lang="scss">

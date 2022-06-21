@@ -1,20 +1,23 @@
-let interval1: NodeJS.Timer
-let interval2: NodeJS.Timer
-let interval3: NodeJS.Timer
-let interval4: NodeJS.Timer
+let interval1
+let interval2
+let interval3
+let interval4
 
-export const animateGradient = () => {
-  const isDark = useDark()
+const animateGradient = () => {
+  const theme = window.localStorage.getItem('theme')
+  const isDark = theme === 'dark'
 
+  // set backdrop gradient
   const dark = [10, 12, 27, 1]
   const light = [255, 255, 255, 0]
-  const backdrop = isDark.value ? dark : light
+  const backdrop = isDark ? dark : light
 
+  // set gradient color spectrum
   const rgbs = [[36, 49, 132, 0.3], [251, 135, 191, 0.3], [20, 209, 233, 0.3], backdrop]
 
-  const randum = (max: number, min = 0) => Math.round(Math.random() * (max - min) + min)
+  const randum = (max, min = 0) => Math.round(Math.random() * (max - min) + min)
 
-  const getRbga = (use?: number[]) => {
+  const getRbga = (use) => {
     const rgba = use || rgbs[randum(3)]
     return `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, ${rgba[3]})`
   }
@@ -33,7 +36,7 @@ export const animateGradient = () => {
     }
   }
 
-  const createStyles = (style: HTMLStyleElement, index: number, seconds: number) => {
+  const createStyles = (style, index, seconds) => {
     const a = blender()
     const b = blender()
     style.innerHTML = `.quad${index} {background: transparent}`
@@ -110,7 +113,7 @@ export const animateGradient = () => {
   }, 7000)
 }
 
-export const killGradient = () => {
+const killGradient = () => {
   const gradientClasses = ['quad0', 'quad1', 'quad2', 'quad3']
 
   for (const gClass of gradientClasses) {

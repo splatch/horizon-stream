@@ -1,0 +1,92 @@
+.hs-card {
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    width: 333px;
+    height: 490px;
+    position: absolute;
+    top: calc(50% - 265px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--feather-surface);
+    padding: 30px 66px 0px 66px;
+    border: 1px solid var(--feather-shade-4);
+    border-radius: 4px;
+}
+
+#hs-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+#hs-stream-title {
+    display: block;
+    margin-top: 6px;
+}
+
+.hs-sign-in {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.hs-sign-in-btn {
+    margin-bottom: 10px;
+}
+
+.hs-forgot-password-msg {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.hs-footer {
+    font-size: 12px;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    left: 0px;
+    text-align: center;
+    height: 35px;
+    border-top: 1px solid var(--feather-shade-4);
+    color: var(--feather-shade-1);
+}
+
+.hs-terms, .hs-privacy {
+    font-weight: 600;
+    line-height: 2.7;
+    cursor: pointer;
+}
+
+#hs-page-title {
+    color: var(--feather-primary-text-on-surface);
+    text-align: center;
+}
+  
+#hs-form-buttons {
+    margin-top: 5px;
+}
+
+#hs-back-link {
+    margin-top: 30px;
+}
+
+#hs-remember-me {
+    margin-bottom: 20px;
+}
+
+.hs-remember-me-checkbox {
+    width: 15px;
+    height: 15px;
+}
+
+.hs-remember-me-text {
+    display: inline-block;
+    margin-top: -1px;
+    position: absolute;
+    margin-left: 4px;
+}
+
+.pf-m-danger {
+    margin-bottom: 10px;
+    margin-top: -10px;
+}
