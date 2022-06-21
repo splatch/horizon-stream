@@ -721,6 +721,7 @@ spec:
     realm: opennms
     enabled: true
     loginTheme: "horizon-stream"
+    emailTheme: "horizon-stream"
     rememberMe: true
     resetPasswordAllowed: true
     attributes:
