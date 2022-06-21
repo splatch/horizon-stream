@@ -15,6 +15,7 @@ api.interceptors.request.use(
 
     const defaultHeaders = {
       Authorization: `Bearer ${token.value.access_token}`,
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     }
 
