@@ -256,6 +256,8 @@
         <bundle>mvn:org.opennms.horizon.provision/detector-bsf/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/detector-datagram/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/detector-jdbc/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.provision/detector-loop/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.provision/detector-snmp/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/detector-ssh/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/detector-web/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/persistence/${project.version}</bundle>
@@ -265,6 +267,10 @@
         <bundle>mvn:com.helger/dhcp4java/${dhcp4java.version}</bundle>
         <bundle>mvn:org.opennms.horizon/dhcpd/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/detector-dhcp/${project.version}</bundle>
+
+        <!-- TODO: which JCIFS dependency should be used?  The classic pom uses a shaded jar, but the feature has the un-shaded jar + bouncycastle? -->
+        <!-- https://issues.opennms.org/browse/NMS-13111 -->
+        <!--<bundle>mvn:org.opennms.horizon.provision/detector-smb/${project.version}</bundle>-->
     </feature>
 
     <!--                               -->
@@ -406,6 +412,11 @@
     <feature name="3rdparty-bsf" version="${bsf.version}" description="Apache :: Bean Scripting Framework">
         <bundle>wrap:mvn:bsf/bsf/${bsf.version}</bundle>
     </feature>
+    <feature name="jcifs" version="${jcifsVersion}" description="jcifs">
+        <feature>bcprov</feature>
+        <bundle>mvn:eu.agno3.jcifs/jcifs-ng/${jcifsVersion}</bundle>
+    </feature>
+
 
 
     <!--             -->

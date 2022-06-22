@@ -24,6 +24,9 @@
 
     <module>dhcp</module>
     <module>jdbc</module>
+    <module>loop</module>
+    <module>smb</module>
+    <module>snmp</module>
     <module>web</module>
     <module>rest</module>
 
