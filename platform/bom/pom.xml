@@ -88,6 +88,17 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>eu.agno3.jcifs</groupId>
+                <artifactId>jcifs-ng</artifactId>
+                <version>${jcifs.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
                 <version>${jakarta.annotation.version}</version>
