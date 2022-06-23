@@ -35,6 +35,12 @@ jobs:
         uses: ./.github/actions/ui
         with:
           dir-location: 'ui'
+  
+      - name: feature-keycloak-ui
+        id: action-feature-keycloak-ui
+        uses: ./.github/actions/keycloak-ui
+        with:
+          dir-location: 'keycloak-ui'
 
       - name: feature-core
         id: action-feature-core

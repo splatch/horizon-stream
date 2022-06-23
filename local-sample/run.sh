@@ -59,6 +59,7 @@ cat ../dev/kubernetes.kafka.yaml | \
   sed "s/opennms\/horizon-stream-core/opennms\/horizon-stream-core\:$IMAGE_TAG/" | \
   sed "s/opennms\/horizon-stream-api/opennms\/horizon-stream-rest-server\:$IMAGE_TAG/" | \
   sed "s/opennms\/horizon-stream-ui-dev/opennms\/horizon-stream-ui\:$IMAGE_TAG/" | \
+  sed "s/opennms\/horizon-stream-keycloak-dev/opennms\/horizon-stream-keycloak\:$IMAGE_TAG/" | \
   sed "s/frontendUrl: \"http:\/\/localhost:28080\"/frontendUrl: \"http:\/\/$DOMAIN_KEYCLOAK\"/" | \
   sed "s/localhost:28080/$DOMAIN_KEYCLOAK/" | \
   sed "s/localhost:9090/$DOMAIN_API/" | \
@@ -79,11 +80,20 @@ kubectl apply -f tmp/hs.yaml
 if [[ $CI_CD_RUN == true ]]; then
 printf "\n\n# Import Images for Testing \n"
 kind load docker-image opennms/horizon-stream-ui:local
+kind load docker-image opennms/horizon-stream-keycloak:local 
+  # This keycloak-ui is referenced from the crd-keycloak.yaml.
 kind load docker-image opennms/horizon-stream-core:local
 kind load docker-image opennms/horizon-stream-rest-server:local
-kubectl patch deployments my-horizon-stream-ui -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "imagePullPolicy":"Never"}]}}}}'
-kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core", "imagePullPolicy":"Never"}]}}}}'
-kubectl patch deployments my-horizon-stream-api -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
+
+kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui",  "image":"opennms/horizon-stream-ui:local"}]}}}}'
+kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","image":"opennms/horizon-stream-keycloak:local"}]}}}}'
+kubectl patch deployments my-horizon-stream-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "image":"opennms/horizon-stream-rest-server:local"}]}}}}'
+kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "image":"opennms/horizon-stream-core:local"}]}}}}'
+
+kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "imagePullPolicy":"Never"}]}}}}'
+kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","imagePullPolicy":"Never"}]}}}}'
+kubectl patch deployments my-horizon-stream-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
+kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
 fi
 
 printf "\nWaiting for startup of pods, could take a few minutes\n"

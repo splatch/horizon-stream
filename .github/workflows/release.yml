@@ -43,6 +43,12 @@ jobs:
             exit 1
           fi
 
+      - name: feature-keycloak-ui
+        id: action-feature-ui
+        uses: ./.github/actions/keycloak-ui
+        with:
+          dir-location: 'keycloak-ui'
+
       - name: feature-ui
         id: action-feature-ui
         uses: ./.github/actions/ui
@@ -106,6 +112,19 @@ jobs:
 
           docker push opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-ui:latest
+
+      - name: publish-image-keycloak-ui
+        run: |
+
+          # Login to dockerhub.
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+
+          # Tag and save the image as a file to be published. Both release version and latest.
+          docker tag opennms/horizon-stream-keycloak:local opennms/horizon-stream-keycloak:${{ env.RELEASE_TAG }}
+          docker tag opennms/horizon-stream-keycloak:local opennms/horizon-stream-keycloak:latest
+
+          docker push opennms/horizon-stream-keycloak:${{ env.RELEASE_TAG }}
+          docker push opennms/horizon-stream-keycloak:latest
 
       - name: publish-image-rest-server
         run: |
