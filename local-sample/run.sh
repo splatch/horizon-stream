@@ -62,7 +62,7 @@ cat ../dev/kubernetes.kafka.yaml | \
   sed "s/opennms\/horizon-stream-keycloak-dev/opennms\/horizon-stream-keycloak\:$IMAGE_TAG/" | \
   sed "s/frontendUrl: \"http:\/\/localhost:28080\"/frontendUrl: \"http:\/\/$DOMAIN_KEYCLOAK\"/" | \
   sed "s/localhost:28080/$DOMAIN_KEYCLOAK/" | \
-  sed "s/localhost:9090/$DOMAIN_API/" | \
+  sed "s/localhost:48080/$DOMAIN_API/" | \
   sed "s/imagePullPolicy: Never/imagePullPolicy: Always/" > tmp/hs.yaml
 
 cat ingress.TEMPLATE.yaml | \
@@ -75,9 +75,6 @@ cat ingress.TEMPLATE.yaml | \
 printf "\n\n# Deploy yaml files\n"
 
 kubectl apply -f tmp/hs.yaml
-
-# There are issues with this until we get to stable version.
-kubectl delete KeycloakRealmImport opennms
 
 # This is only for CI-CD pipeline
 if [[ $CI_CD_RUN == true ]]; then
@@ -97,10 +94,13 @@ kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spe
 kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","imagePullPolicy":"Never"}]}}}}'
 kubectl patch deployments my-horizon-stream-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
 kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
-fi
 
-# There are issues with this until we get to stable version.
-kubectl apply -f crd-keycloakrealmimport.yaml
+else
+
+kind load docker-image opennms/horizon-stream-keycloak:latest 
+kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
+
+fi
 
 printf "\nWaiting for startup of pods, could take a few minutes\n"
 
@@ -117,12 +117,18 @@ kubectl wait --for=condition=ready pod --timeout=600s -l run=my-zookeeper
 kubectl wait --for=condition=ready pod --timeout=600s -l app=my-horizon-stream-ui
 kubectl wait --for=condition=ready pod --timeout=600s -l app.kubernetes.io/name=keycloak-operator
 kubectl -n ingress-nginx wait --for=condition=ready pod --timeout=60s -l app.kubernetes.io/component=controller
- 
+
 # Wait...
 sleep 60
 
 kubectl apply -f services.yaml
 kubectl apply -f tmp/ingress.yaml
+ 
+# There are issues with this until we get to stable version.
+kubectl delete KeycloakRealmImport opennms
+
+# There are issues with this until we get to stable version.
+kubectl apply -f crd-keycloakrealmimport.yaml
 
 # Wait...
 sleep 60
