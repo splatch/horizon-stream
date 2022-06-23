@@ -76,6 +76,9 @@ printf "\n\n# Deploy yaml files\n"
 
 kubectl apply -f tmp/hs.yaml
 
+# There are issues with this until we get to stable version.
+kubectl delete KeycloakRealmImport opennms
+
 # This is only for CI-CD pipeline
 if [[ $CI_CD_RUN == true ]]; then
 printf "\n\n# Import Images for Testing \n"
@@ -95,6 +98,9 @@ kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spe
 kubectl patch deployments my-horizon-stream-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
 kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
 fi
+
+# There are issues with this until we get to stable version.
+kubectl apply -f crd-keycloakrealmimport.yaml
 
 printf "\nWaiting for startup of pods, could take a few minutes\n"
 
