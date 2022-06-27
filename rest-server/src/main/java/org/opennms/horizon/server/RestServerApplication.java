@@ -21,9 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @OpenAPIDefinition(info = @Info(title = "Horizon Stream REST API", version = "0.1.0-SNAPSHOT", description = "REST API docs with swagger ui"),
 	tags = @Tag(name = "Horizon Stream REST API", description = "Spring boot application")
 )
-@SecurityScheme(name = "security_auth", type = SecuritySchemeType.OAUTH2,
-	flows = @OAuthFlows(password = @OAuthFlow(tokenUrl = "${springdoc.oAuthFlow.tokenUrl}"))
-)
 public class RestServerApplication {
 
 	public static void main(String[] args) {

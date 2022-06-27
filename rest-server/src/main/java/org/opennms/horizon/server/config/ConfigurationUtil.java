@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,32 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.events.xml;
+package org.opennms.horizon.server.config;
 
-import java.util.Date;
+import org.opennms.horizon.server.service.PlatformGateway;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+@Configuration
+public class ConfigurationUtil {
+  @Value("${horizon-stream.core.url}")
+  private String platformUrl;
 
-import org.opennms.horizon.events.api.EventConstants;
-
-public class DateTimeAdapter extends XmlAdapter<String, Date> {
-
-    /** {@inheritDoc} */
-    @Override
-    public String marshal(final Date date) throws Exception {
-        return date == null ? null : EventConstants.formatToString(date);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Date unmarshal(final String string) throws Exception {
-        try{
-            Long time = Long.valueOf(string);
-            return new Date(time);
-        } catch (NumberFormatException e){
-
-        }
-        return (string == null || string.isEmpty()) ? null : EventConstants.parseToDate(string);
-    }
-
+  @Bean
+  public PlatformGateway createGateway() {
+    return new PlatformGateway(platformUrl);
+  }
 }

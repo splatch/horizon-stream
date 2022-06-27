@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,32 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.events.xml;
+package org.opennms.horizon.server.model;
 
-import java.util.Date;
+import java.util.List;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+public class AbstractCollectionDTO<T> {
+  protected List<T> objects;
+  protected Integer count;
+  protected Integer offset;
+  public Integer getCount() {
+    return count;
+  }
 
-import org.opennms.horizon.events.api.EventConstants;
+  public void setCount(Integer count) {
+    this.count = count;
+  }
 
-public class DateTimeAdapter extends XmlAdapter<String, Date> {
+  public Integer getOffset() {
+    return offset;
+  }
 
-    /** {@inheritDoc} */
-    @Override
-    public String marshal(final Date date) throws Exception {
-        return date == null ? null : EventConstants.formatToString(date);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Date unmarshal(final String string) throws Exception {
-        try{
-            Long time = Long.valueOf(string);
-            return new Date(time);
-        } catch (NumberFormatException e){
-
-        }
-        return (string == null || string.isEmpty()) ? null : EventConstants.parseToDate(string);
-    }
-
+  public void setOffset(Integer offset) {
+    this.offset = offset;
+  }
 }

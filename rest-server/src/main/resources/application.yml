@@ -16,10 +16,6 @@ spring:
     show-sql: true
   main:
     allow-bean-definition-overriding: true
-  # database schema
-  liquibase:
-    enabled: false
-    change-log: classpath:db/changelog/db.changelog-master.xml
   cache:
     caffeine:
       spec: maximumSize=10000,expireAfterWrite=600s

@@ -28,6 +28,8 @@
 
 package org.opennms.horizon.server.controller;
 
+import org.opennms.horizon.server.model.EventCollectionDTO;
+import org.opennms.horizon.server.model.EventDTO;
 import org.opennms.horizon.server.service.PlatformGateway;
 import org.springdoc.core.Constants;
 import org.springframework.http.MediaType;
@@ -40,22 +42,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @RequestMapping("/events")
-@SecurityRequirement(name = "security_auth")
 @Tag(name = "Event endpoints")
 public class EventController {
     private static final String EVENT_SAMPLE_POST = "{\"uei\":\"uei.opennms.org/alarms/trigger\",\"time\":\"2022-05-16T14:17:22.000Z\",\"source\":\"asn-cli-script\",\"descr\":\"A problem has been triggered...\",\"creation-time\":\"2022-05-10T14:17:22.000Z\",\"logmsg\":{\"notify\":true,\"dest\":\"A problem has been triggered on //...\"}}";
@@ -63,6 +61,11 @@ public class EventController {
     private final PlatformGateway gateway;
     public EventController(PlatformGateway gateway) {
         this.gateway = gateway;
+    }
+
+    @GetMapping
+    public ResponseEntity<EventCollectionDTO> list(@RequestHeader("Authorization") @Parameter(hidden = true) String authToken){
+        return gateway.get(PlatformGateway.URL_PATH_EVENTS, authToken, EventCollectionDTO.class);
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -73,14 +76,14 @@ public class EventController {
         @ApiResponse(responseCode = "202", content = @Content),
         @ApiResponse(responseCode = "400", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    public ResponseEntity create(@RequestBody JsonNode data, @RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
+    public ResponseEntity create(@RequestBody EventDTO data, @RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
         log.info("Received post event data {}", data);
-        return gateway.post(PlatformGateway.URL_PATH_EVENTS, authToken, data.toString());
+        return gateway.post(PlatformGateway.URL_PATH_EVENTS, authToken, data, String.class);
     }
 
     @GetMapping("/{id}")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, examples = @ExampleObject(value = EVENT_SAMPLE_GET)))
     public ResponseEntity<String> getEventById(@PathVariable Long id, @RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
-        return gateway.get(PlatformGateway.URL_PATH_EVENTS+"/"+id, authToken);
+        return gateway.get(PlatformGateway.URL_PATH_EVENTS+"/"+id, authToken, String.class);
     }
 }
