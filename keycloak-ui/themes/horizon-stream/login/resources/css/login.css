@@ -57,9 +57,22 @@
     cursor: pointer;
 }
 
-#hs-page-title {
+#hs-page-title,
+#hs-action-complete-text {
     color: var(--feather-primary-text-on-surface);
     text-align: center;
+    text-decoration: none;
+}
+
+#hs-proceed-text,
+#hs-proceed-text a,
+#hs-back-text,
+#hs-back-text a {
+    color: var(--feather-primary);
+    text-align: center;
+    text-decoration: none;
+    margin-top: 50px;
+    font-weight: bold;
 }
   
 #hs-form-buttons {
@@ -104,6 +117,7 @@
 }
 
 .instruction {
-    color: var(--feather-primary-text-on-surface)
+    color: var(--feather-primary-text-on-surface);
+    text-align: center;
 }
 
