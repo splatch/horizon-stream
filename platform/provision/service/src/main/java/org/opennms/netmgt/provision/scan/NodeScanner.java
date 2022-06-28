@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.opennms.horizon.db.model.OnmsMonitoringLocation;
@@ -30,13 +29,13 @@ public class NodeScanner {
     }
 
     private RouteBuilder createScheduledRoute(RequisitionNodeDTO node) {
-        ForeignSourceDTO foreignSourceDTO = foreignSourceRepository.getForeignSource(node.getForeignId());
+        ForeignSourceDTO foreignSourceDTO = foreignSourceRepository.read(node.getForeignId());
 
         //TODO: do we need to be more sophisticated on building the cron string?
         // Below is a format for doing simple intervals without a CRON string
         // String routeOrigin = String.format("customQuartz://%s?trigger.repeatInterval=%d&triggerStartDelay=20",node.getNodeLabel(), foreignSourceDTO.getScanInterval().getMillis());
 
-        String routeOrigin = String.format("customQuartz://%s?cron=0 0/%d * 1/1 * ? *&triggerStartDelay=20",node.getNodeLabel(), foreignSourceDTO.getScanInterval().getStandardMinutes());
+        String routeOrigin = String.format("customQuartz://%s?cron=0 0/%d * 1/1 * ? *",node.getNodeLabel(), foreignSourceDTO.getScanInterval().getStandardMinutes());
 
         String routeId = String.format("SCHEDULED-SCANNER-%s", node.getNodeLabel());
         
