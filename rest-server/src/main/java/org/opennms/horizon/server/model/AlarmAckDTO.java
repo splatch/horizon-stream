@@ -28,11 +28,13 @@
 
 package org.opennms.horizon.server.model;
 
+import io.leangen.graphql.annotations.GraphQLNonNull;
 import lombok.Getter;
 import lombok.Setter;
 @Getter
 @Setter
 public class AlarmAckDTO {
+  @GraphQLNonNull
   private String user;
   private String ticketId;
   private String ticketState;

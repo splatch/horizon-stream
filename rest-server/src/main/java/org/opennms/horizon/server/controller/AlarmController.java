@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -67,8 +68,12 @@ public class AlarmController {
             value = EXAMPLE_ALARM_LIST))),
         @ApiResponse(responseCode = "403", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE))
     })
-    public ResponseEntity<AlarmCollectionDTO> listAlarms(@RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
+    public ResponseEntity<?> listAlarms(@RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
+      try {
         return gateway.get(PlatformGateway.URL_PATH_ALARMS_LIST, authToken, AlarmCollectionDTO.class);
+      } catch (HttpStatusCodeException e) {
+        return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+      }
     }
 
     @PostMapping("/{id}/ack")
@@ -85,7 +90,11 @@ public class AlarmController {
 
     @PostMapping("/{id}/clear")
     @ApiResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE))
-    public ResponseEntity clearAlarm(@PathVariable Long id, @RequestHeader("Authorization") @Parameter(hidden = true) String authToken, @RequestBody AlarmAckDTO data) {
+    public ResponseEntity<?> clearAlarm(@PathVariable Long id, @RequestHeader("Authorization") @Parameter(hidden = true) String authToken, @RequestBody AlarmAckDTO data) {
+      try {
         return gateway.post(String.format(PlatformGateway.URL_PATH_ALARMS_CLEAR, id), authToken, data, String.class);
+      } catch (HttpStatusCodeException e) {
+        return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+      }
     }
 }

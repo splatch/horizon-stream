@@ -38,7 +38,6 @@
 		<docker.image.tag>local</docker.image.tag>
 		<docker.image.skipPush>false</docker.image.skipPush>
 		<docker.it.network>rest-server-it-network</docker.it.network>
-		<skipITs>true</skipITs>
 		<caffeine.cache.version>3.1.0</caffeine.cache.version>
 		<springdoc.openapi.version>1.6.9</springdoc.openapi.version>
 	</properties>
@@ -47,10 +46,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		<!--<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -59,11 +54,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
-		<!--<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -188,16 +178,6 @@
 				<skip-docker-image-build>false</skip-docker-image-build>
 			</properties>
 		</profile>
-		<!--<profile>
-			<id>run-it</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<properties>
-				<skip-docker-image-build>false</skip-docker-image-build>
-				<skipITs>false</skipITs>
-			</properties>
-		</profile>-->
 	</profiles>
 
 </project>

@@ -30,8 +30,6 @@ package org.opennms.horizon.server.service;
 
 import org.opennms.horizon.server.model.AlarmAckDTO;
 import org.opennms.horizon.server.model.AlarmCollectionDTO;
-import org.opennms.horizon.server.model.AlarmDTO;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -53,14 +51,11 @@ public class AlarmService {
 
   @GraphQLQuery
   public AlarmCollectionDTO listAlarms(@GraphQLEnvironment ResolutionEnvironment env) {
-    ResponseEntity<AlarmCollectionDTO> response = gateway.get(PlatformGateway.URL_PATH_ALARMS_LIST, gateway.getAuthHeader(env), AlarmCollectionDTO.class);
-    return response.getBody();
+    return gateway.get(PlatformGateway.URL_PATH_ALARMS_LIST, gateway.getAuthHeader(env), AlarmCollectionDTO.class).getBody();
   }
 
   @GraphQLMutation
   public String clearAlarm(@GraphQLArgument(name = "id") Long id, AlarmAckDTO ackDTO, @GraphQLEnvironment ResolutionEnvironment env) {
-    ResponseEntity<String> response = gateway.post(String.format(PlatformGateway.URL_PATH_ALARMS_CLEAR, id), gateway.getAuthHeader(env), ackDTO, String.class);
-    return response.getBody();
+    return gateway.post(String.format(PlatformGateway.URL_PATH_ALARMS_CLEAR, id), gateway.getAuthHeader(env), ackDTO, String.class).getBody();
   }
-
 }

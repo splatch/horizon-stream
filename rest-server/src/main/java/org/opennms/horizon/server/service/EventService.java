@@ -28,5 +28,32 @@
 
 package org.opennms.horizon.server.service;
 
+import org.opennms.horizon.server.model.EventCollectionDTO;
+import org.opennms.horizon.server.model.EventDTO;
+import org.springframework.stereotype.Service;
+
+import io.leangen.graphql.annotations.GraphQLEnvironment;
+import io.leangen.graphql.annotations.GraphQLMutation;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.execution.ResolutionEnvironment;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
+
+@GraphQLApi
+@Service
 public class EventService {
+  private final PlatformGateway gateway;
+
+  public EventService(PlatformGateway gateway) {
+    this.gateway = gateway;
+  }
+
+  @GraphQLQuery
+  public EventCollectionDTO listEvents(@GraphQLEnvironment ResolutionEnvironment env) {
+    return gateway.get(PlatformGateway.URL_PATH_EVENTS, gateway.getAuthHeader(env), EventCollectionDTO.class).getBody();
+  }
+
+  @GraphQLMutation
+  public Void createEvent(EventDTO event, @GraphQLEnvironment ResolutionEnvironment env) {
+    return gateway.post(PlatformGateway.URL_PATH_EVENTS, gateway.getAuthHeader(env), event, Void.class).getBody();
+  }
 }

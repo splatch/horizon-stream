@@ -35,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.leangen.graphql.annotations.GraphQLNonNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,6 +44,7 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventDTO {
   private Integer id;
+  @GraphQLNonNull
   private String uei;
   private String label;
   private Date time;
@@ -53,7 +55,6 @@ public class EventDTO {
   private ServiceTypeDTO serviceType;
   private String snmp;
   private List<EventParameterDTO> parameters;
-  @JsonFormat(shape = JsonFormat.Shape.STRING)
   private Date createTime;
   private String description;
   private String logGroup;
