@@ -5,7 +5,7 @@ metadata:
   labels:
     app: sso
 spec:
-  keycloakCRName: my-keycloak
+  keycloakCRName: example-keycloak
   realm:
     accessTokenLifespan: 6000
     id: opennms

@@ -1,0 +1,166 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: keycloak
+  name: localhost
+  namespace: my-keycloak-operator
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 8443
+    protocol: TCP
+    targetPort: 8443
+  selector:
+    app: keycloak-test
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: keycloak-test
+  name: localhost
+  namespace: my-keycloak-operator
+spec:
+  containers:
+  - args:
+    - start
+    - --auto-build
+    env:
+    - name: KC_CACHE_STACK
+      value: kubernetes
+    - name: KC_CACHE
+      value: ispn
+    - name: KC_HEALTH_ENABLED
+      value: "true"
+    - name: KC_DB
+      value: postgres
+    - name: KC_DB_URL_HOST
+      value: postgres-db
+    - name: KC_DB_USERNAME
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: keycloak-db-secret
+    - name: KC_DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: keycloak-db-secret
+    - name: KEYCLOAK_ADMIN
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: example-keycloak-initial-admin
+          optional: false
+    - name: KEYCLOAK_ADMIN_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: example-keycloak-initial-admin
+          optional: false
+    - name: jgroups.dns.query
+      value: localhost.my-keycloak-operator
+    - name: KC_HOSTNAME
+      value: localhost
+    - name: KC_HTTPS_CERTIFICATE_FILE
+      value: /mnt/certificates/tls.crt
+    - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+      value: /mnt/certificates/tls.key
+    - name: KC_PROXY
+      value: passthrough
+    image: quay.io/keycloak/keycloak:18.0.1
+    imagePullPolicy: Always
+    livenessProbe:
+      exec:
+        command:
+        - curl
+        - --insecure
+        - --head
+        - --fail
+        - --silent
+        - https://127.0.0.1:8443/health/live
+      failureThreshold: 150
+      initialDelaySeconds: 20
+      periodSeconds: 2
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: keycloak
+    ports:
+    - containerPort: 8443
+      protocol: TCP
+    - containerPort: 8080
+      protocol: TCP
+    readinessProbe:
+      exec:
+        command:
+        - curl
+        - --insecure
+        - --head
+        - --fail
+        - --silent
+        - https://127.0.0.1:8443/health/ready
+      failureThreshold: 250
+      initialDelaySeconds: 20
+      periodSeconds: 2
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /mnt/certificates
+      name: keycloak-tls-certificates
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-5mglx
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: kind-control-plane
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: keycloak-tls-certificates
+    secret:
+      defaultMode: 420
+      optional: false
+      secretName: example-tls-secret
+  - name: kube-api-access-5mglx
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: my-keycloak-operator
+  name: my-keycloak-operator
+spec:
+  finalizers:
+  - kubernetes
+

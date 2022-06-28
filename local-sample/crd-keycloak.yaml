@@ -1,0 +1,26 @@
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: example-keycloak
+  #namespace: default
+  labels:
+    app: sso
+spec:
+  instances: 1
+  #image: quay.io/keycloak/keycloak:18.0.0
+  disableDefaultIngress: true
+  serverConfiguration:
+    - name: db
+      value: postgres
+    - name: db-url-host
+      value: postgres-db
+    - name: db-username
+      secret:
+        name: keycloak-db-secret
+        key: username
+    - name: db-password
+      secret:
+        name: keycloak-db-secret
+        key: password
+  hostname: localhost
+  tlsSecret: example-tls-secret
