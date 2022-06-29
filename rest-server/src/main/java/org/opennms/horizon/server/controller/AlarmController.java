@@ -68,7 +68,7 @@ public class AlarmController {
             value = EXAMPLE_ALARM_LIST))),
         @ApiResponse(responseCode = "403", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE))
     })
-    public ResponseEntity<?> listAlarms(@RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
+    public ResponseEntity listAlarms(@RequestHeader("Authorization") @Parameter(hidden = true) String authToken) {
       try {
         return gateway.get(PlatformGateway.URL_PATH_ALARMS_LIST, authToken, AlarmCollectionDTO.class);
       } catch (HttpStatusCodeException e) {

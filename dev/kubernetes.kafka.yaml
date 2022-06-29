@@ -156,8 +156,8 @@ spec:
           ports:
             - containerPort: 80
           env:
-            - name: HORIZON_CORE_URL
-              value: "http://horizon-stream-core:8181"
+            - name: API_SERVER_URL
+              value: "http://horizon-stream-api:9090"
             - name: KEYCLOAK_URL
               value: "http://keycloak:8080"
             - name: KEYCLOAK_REALM
@@ -632,6 +632,8 @@ metadata:
 data:
   default.conf.template: |
     server {
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
       listen       80;
       listen  [::]:80;
       server_name  localhost;
@@ -663,7 +665,7 @@ data:
         auth_request /verifytoken;
         auth_request_set $auth_status $upstream_status;
 
-        proxy_pass ${HORIZON_CORE_URL};
+        proxy_pass ${API_SERVER_URL};
         add_header Access-Control-Allow-Origin * always;
       }
 
