@@ -1,6 +1,8 @@
 package org.opennms.keycloak.admin.client.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.keycloak.representations.AccessTokenResponse;
@@ -9,8 +11,7 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.opennms.keycloak.admin.client.exc.KeycloakAuthenticationException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class KeycloakResponseUtil {
 
@@ -35,19 +36,7 @@ public class KeycloakResponseUtil {
 //----------------------------------------
 
     public AccessTokenResponse parseAccessTokenResponse(HttpResponse response) throws KeycloakAuthenticationException {
-        int statusCode = response.getStatusLine().getStatusCode();
-
-        if (statusCode == HttpStatus.SC_OK) {
-            try (InputStream inputStream = response.getEntity().getContent()) {
-                AccessTokenResponse result = objectMapper.readValue(inputStream, AccessTokenResponse.class);
-
-                return result;
-            } catch (IOException ioException) {
-                throw new KeycloakAuthenticationException("failed to parse response body", ioException);
-            }
-        } else {
-            throw new KeycloakAuthenticationException("login request status " + statusCode);
-        }
+        return parseResponseCommon(response, AccessTokenResponse.class, "login request");
     }
 
     public UserRepresentation parseUserResponse(HttpResponse response) throws KeycloakAuthenticationException {
@@ -75,9 +64,7 @@ public class KeycloakResponseUtil {
 
         if (statusCode == HttpStatus.SC_OK) {
             try (InputStream inputStream = response.getEntity().getContent()) {
-                T result = objectMapper.readValue(inputStream, clazz);
-
-                return result;
+                return objectMapper.readValue(inputStream, clazz);
             } catch (IOException ioException) {
                 throw new KeycloakAuthenticationException("failed to parse response body", ioException);
             }

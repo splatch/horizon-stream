@@ -15,6 +15,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.MappingsRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -354,6 +355,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
         HttpResponse httpResponse = httpClient.execute(httpGet);
 
         int statusCode = httpResponse.getStatusLine().getStatusCode();
+        EntityUtils.consumeQuietly(httpResponse.getEntity()); //close the connection
 
         if (statusCode != HttpStatus.SC_OK) {
             throw new KeycloakOperationException("logout status " + statusCode);
