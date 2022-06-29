@@ -36,7 +36,7 @@ public class KeycloakResponseUtil {
 //----------------------------------------
 
     public AccessTokenResponse parseAccessTokenResponse(HttpResponse response) throws KeycloakAuthenticationException {
-        return parseResponseCommon(response, AccessTokenResponse.class, "retrieve access token");
+        return parseResponseCommon(response, AccessTokenResponse.class, "login request");
     }
 
     public UserRepresentation parseUserResponse(HttpResponse response) throws KeycloakAuthenticationException {
