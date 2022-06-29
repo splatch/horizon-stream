@@ -34,9 +34,9 @@ printf "\n# Add Dependencies\n"
 printf "################################################################################\n\n"
 
 # Add Dependency - Keycloak
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$VERSION_KEY_CLOAK/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$VERSION_KEY_CLOAK/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$VERSION_KEY_CLOAK/kubernetes/kubernetes.yml
+#kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$VERSION_KEY_CLOAK/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+#kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$VERSION_KEY_CLOAK/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+#kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$VERSION_KEY_CLOAK/kubernetes/kubernetes.yml
 
 # Verify (should get keycloaks and keycloakrealmiiimports)
 kubectl api-resources | grep keycloak
@@ -128,7 +128,7 @@ kubectl apply -f tmp/ingress.yaml
 kubectl delete KeycloakRealmImport opennms
 
 # There are issues with this until we get to stable version.
-kubectl apply -f crd-keycloakrealmimport.yaml
+#kubectl apply -f crd-keycloakrealmimport.yaml
 
 # Wait...
 sleep 60
