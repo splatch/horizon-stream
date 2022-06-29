@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"nginx.ingress.kubernetes.io/backend-protocol":"HTTPS"},"generation":1,"labels":{"app":"keycloak"},"name":"keycloak-ingress","namespace":"default"},"spec":{"ingressClassName":"nginx","rules":[{"host":"localhost","http":{"paths":[{"backend":{"service":{"name":"keycloak","port":{"number":8443}}},"path":"/auth","pathType":"ImplementationSpecific"}]}}],"tls":[{"hosts":["localhost"],"secretName":"example-tls-secret"}]}}
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+  creationTimestamp: "2022-06-29T14:28:27Z"
+  generation: 3
+  labels:
+    app: keycloak
+  name: keycloak-ingress
+  namespace: default
+  resourceVersion: "6912"
+  uid: 06876194-fd85-4d99-9a23-1b85c5ddc9b5
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: keycloak
+    http:
+      paths:
+      - backend:
+          service:
+            name: keycloak
+            port:
+              number: 8443
+        path: /auth
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - localhost
+    secretName: example-tls-secret-2
+status:
+  loadBalancer:
+    ingress:
+    - hostname: localhost

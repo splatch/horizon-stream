@@ -119,9 +119,9 @@ spec:
               name: example-keycloak-initial-admin
               optional: false
         - name: jgroups.dns.query
-          value: localhost.my-keycloak-operator
+          value: keycloak.my-keycloak-operator
         - name: KC_HOSTNAME
-          value: localhost
+          value: keycloak
         - name: KC_HTTPS_CERTIFICATE_FILE
           value: /mnt/certificates/tls.crt
         - name: KC_HTTPS_CERTIFICATE_KEY_FILE

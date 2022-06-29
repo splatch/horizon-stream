@@ -55,7 +55,7 @@ data:
     http_port = 
     
     # The public facing domain name used to access grafana from a browser
-    domain = localhost
+    domain = keycloak
     #domain = localhostkey
     
     # Redirect to correct domain if host header does not match domain
@@ -126,11 +126,15 @@ data:
     tls_skip_verify_insecure = true
     allow_sign_up = true
     client_id = grafana
-    #client_secret = grafana-client-secret
-    client_secret = qLC8U4oIcU0K4nhlYw9CzyTulCNItibU
-    auth_url =  https://localhost/auth/realms/opennms/protocol/openid-connect/auth
-    token_url = https://localhost/auth/realms/opennms/protocol/openid-connect/token
-    api_url =   https://localhost/auth/realms/opennms/protocol/openid-connect/userinfo
+    client_secret = grafana-client-secret
+    auth_url =  https://keycloak/auth/realms/master/protocol/openid-connect/auth
+    token_url = https://keycloak:8443/auth/realms/master/protocol/openid-connect/token
+    api_url =   https://keycloak:8443/auth/realms/master/protocol/openid-connect/userinfo
+    
+    #auth_url =  https://localhost/auth/realms/opennms/protocol/openid-connect/auth
+    #token_url = https://localhost/auth/realms/opennms/protocol/openid-connect/token
+    #api_url =   https://localhost/auth/realms/opennms/protocol/openid-connect/userinfo
+    
     #auth_url =  http://localhostkey/auth/realms/opennms/protocol/openid-connect/auth
     #token_url = http://localhostkey/auth/realms/opennms/protocol/openid-connect/token
     #api_url =   http://localhostkey/auth/realms/opennms/protocol/openid-connect/userinfo

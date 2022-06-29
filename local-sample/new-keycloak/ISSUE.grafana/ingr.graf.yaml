@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{},"name":"grafana-ingress","namespace":"default"},"spec":{"ingressClassName":"nginx","rules":[{"host":"localhost","http":{"paths":[{"backend":{"service":{"name":"grafana","port":{"number":3000}}},"path":"/grafana","pathType":"Prefix"}]}}],"tls":[{"hosts":["localhost"],"secretName":"example-tls-secret"}]}}
+  creationTimestamp: "2022-06-29T14:28:28Z"
+  generation: 3
+  name: grafana-ingress
+  namespace: default
+  resourceVersion: "6801"
+  uid: dafcb69c-0f52-4ecb-947e-9d3c26d88863
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: localhost
+    http:
+      paths:
+      - backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+        path: /grafana
+        pathType: Prefix
+  tls:
+  - hosts:
+    - localhost
+    secretName: example-tls-secret
+status:
+  loadBalancer:
+    ingress:
+    - hostname: localhost

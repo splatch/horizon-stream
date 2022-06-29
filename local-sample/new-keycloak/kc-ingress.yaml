@@ -10,8 +10,8 @@ metadata:
 spec:
   tls:
   - hosts:
-      - localhost
-    secretName: example-tls-secret
+      - keycloak
+    secretName: local-dev-tls-secret
   ingressClassName: nginx
   #defaultBackend:
   #  service:
@@ -19,7 +19,7 @@ spec:
   #    port:
   #      number: 8443
   rules:
-  - host: localhost
+  - host: keycloak
     http:
       paths:
       - backend:
@@ -27,6 +27,5 @@ spec:
             name: keycloak
             port:
               number: 8443
-              #number: 443
         path: /auth
         pathType: ImplementationSpecific

@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"keycloak"},"name":"keycloak","namespace":"default"},"spec":{"progressDeadlineSeconds":600,"replicas":1,"revisionHistoryLimit":10,"selector":{"matchLabels":{"app":"keycloak"}},"strategy":{"rollingUpdate":{"maxSurge":"25%","maxUnavailable":"25%"},"type":"RollingUpdate"},"template":{"metadata":{"labels":{"app":"keycloak"}},"spec":{"containers":[{"args":["start-dev","--http-relative-path /auth"],"env":[{"name":"KC_CACHE_STACK","value":"kubernetes"},{"name":"KC_CACHE","value":"ispn"},{"name":"KC_HEALTH_ENABLED","value":"true"},{"name":"KC_DB","value":"postgres"},{"name":"KC_DB_URL_HOST","value":"postgres-db"},{"name":"KC_DB_USERNAME","valueFrom":{"secretKeyRef":{"key":"username","name":"keycloak-db-secret"}}},{"name":"KC_DB_PASSWORD","valueFrom":{"secretKeyRef":{"key":"password","name":"keycloak-db-secret"}}},{"name":"KEYCLOAK_ADMIN","valueFrom":{"secretKeyRef":{"key":"username","name":"example-keycloak-initial-admin","optional":false}}},{"name":"KEYCLOAK_ADMIN_PASSWORD","valueFrom":{"secretKeyRef":{"key":"password","name":"example-keycloak-initial-admin","optional":false}}},{"name":"jgroups.dns.query","value":"localhost.my-keycloak-operator"},{"name":"KC_HOSTNAME","value":"localhost"},{"name":"KC_HTTPS_CERTIFICATE_FILE","value":"/mnt/certificates/tls.crt"},{"name":"KC_HTTPS_CERTIFICATE_KEY_FILE","value":"/mnt/certificates/tls.key"},{"name":"KC_PROXY","value":"passthrough"},{"name":"KC_HOSTNAME_STRICT_BACKCHANNEL","value":"true"},{"name":"KC_HOSTNAME_STRICT","value":"false"}],"image":"keycloak/keycloak:0.0.13","imagePullPolicy":"Never","name":"keycloak","ports":[{"containerPort":8443,"protocol":"TCP"},{"containerPort":8080,"protocol":"TCP"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","volumeMounts":[{"mountPath":"/mnt/certificates","name":"keycloak-tls-certificates"}]}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30,"volumes":[{"name":"keycloak-tls-certificates","secret":{"defaultMode":420,"optional":false,"secretName":"example-tls-secret"}}]}}}}
+  creationTimestamp: "2022-06-29T14:28:26Z"
+  generation: 2
+  labels:
+    app: keycloak
+  name: keycloak
+  namespace: default
+  resourceVersion: "7351"
+  uid: 1365ec23-6c75-4a96-8c27-03d3e2f67990
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: keycloak
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - args:
+        - start-dev
+        - --http-relative-path /auth
+        env:
+        - name: KC_CACHE_STACK
+          value: kubernetes
+        - name: KC_CACHE
+          value: ispn
+        - name: KC_HEALTH_ENABLED
+          value: "true"
+        - name: KC_DB
+          value: postgres
+        - name: KC_DB_URL_HOST
+          value: postgres-db
+        - name: KC_DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: keycloak-db-secret
+        - name: KC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: keycloak-db-secret
+        - name: KEYCLOAK_ADMIN
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: example-keycloak-initial-admin
+              optional: false
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: example-keycloak-initial-admin
+              optional: false
+        - name: jgroups.dns.query
+          value: keycloak.my-keycloak-operator
+        - name: KC_HOSTNAME
+          value: keycloak
+        - name: KC_HTTPS_CERTIFICATE_FILE
+          value: /mnt/certificates/tls.crt
+        - name: KC_HTTPS_CERTIFICATE_KEY_FILE
+          value: /mnt/certificates/tls.key
+        - name: KC_PROXY
+          value: passthrough
+        - name: KC_HOSTNAME_STRICT_BACKCHANNEL
+          value: "true"
+        - name: KC_HOSTNAME_STRICT
+          value: "false"
+        image: keycloak/keycloak:0.0.13
+        imagePullPolicy: Never
+        name: keycloak
+        ports:
+        - containerPort: 8443
+          protocol: TCP
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /mnt/certificates
+          name: keycloak-tls-certificates
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: keycloak-tls-certificates
+        secret:
+          defaultMode: 420
+          optional: false
+          secretName: example-tls-secret
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2022-06-29T14:28:28Z"
+    lastUpdateTime: "2022-06-29T14:28:28Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-06-29T14:28:27Z"
+    lastUpdateTime: "2022-06-29T15:17:44Z"
+    message: ReplicaSet "keycloak-575c85c85d" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 2
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1

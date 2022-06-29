@@ -23,7 +23,7 @@ spec:
   #  secretName: wildcard
   rules:
   #- host: grafana-sso.devtenant.oaaslite.opennms.com
-  - host: localhost
+  - host: keycloak
   #- host: localhostgrafana
     http:
       paths:
@@ -37,5 +37,5 @@ spec:
               number: 3000
   tls:
   - hosts:
-    - localhost
-    secretName: example-tls-secret
+    - keycloak
+    secretName: local-dev-tls-secret

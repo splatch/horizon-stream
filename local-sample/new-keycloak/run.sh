@@ -6,6 +6,11 @@ kind load docker-image grafana-test-sso:latest
 #openssl req -subj '/CN=localhost/O=Test Keycloak./C=US' -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
 #kubectl create secret tls example-tls-secret --cert certificate.pem --key key.pem
 
+openssl req -subj '/CN=keycloak/O=Test Keycloak./C=US' -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem
+kubectl create secret tls local-dev-tls-secret --cert certificate.pem --key key.pem
+rm certificate.pem
+rm key.pem
+
 # Install Keycloak
 kubectl apply -f secrets.yaml
 kubectl apply -f postgres.yaml
@@ -22,14 +27,23 @@ kubectl apply -f grafana-sso/grafana-sso-e-service.yaml
 kubectl apply -f grafana-sso/grafana-sso-f-ingress.yaml
 
 sleep 60
+
 #terraform init && terraform apply -auto-approve
-ACCESS_TOKEN=$(curl -k -X POST \
+
+ACCESS_TOKEN=$(curl -k \
   -d "client_id=admin-cli" \
   -d "username=admin" \
   -d "password=admin" \
   -d "grant_type=password" \
-  "https://localhost/auth/realms/master/protocol/openid-connect/token" | jq '.access_token')
+  "https://keycloak/auth/realms/master/protocol/openid-connect/token" | jq '.access_token')
+curl -k \
+  -H "Authorization: bearer $ACCESS_TOKEN" \
+  "https://keycloak/auth/realms/master"
+
+FILE_NAME=imports/opennms-realm.json
 curl -k -v POST \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
     -H "Content-Type: application/json" \
-    -d "@imports/opennms-realm.json" https://localhost/auth/admin/realms
+    -d @"${FILE_NAME}" https://keycloak/auth/admin/realms
+#    -d "@imports/opennms-realm.json" https://localhost/auth/admin/realms
+#    -H "Content-Type: application/x-www-form-urlencoded" \

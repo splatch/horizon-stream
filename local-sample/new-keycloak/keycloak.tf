@@ -13,7 +13,7 @@ provider "keycloak" {
   client_id                = "admin-cli"
   username                 = "admin"
   password                 = "admin"
-  url                      = "https://localhost"
+  url                      = "https://keycloak"
   tls_insecure_skip_verify = true
 }
 
@@ -82,7 +82,7 @@ resource "keycloak_openid_client" "grafana" {
   client_secret         = "grafana-client-secret"
   standard_flow_enabled = true
   valid_redirect_uris   = [
-    "http://grafana.kind.cluster/login/generic_oauth"
+    "*"
   ]
 }
 
