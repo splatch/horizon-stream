@@ -11,6 +11,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.keycloak.representations.AccessTokenResponse;
 import org.opennms.keycloak.admin.client.KeycloakAdminClient;
 import org.opennms.keycloak.admin.client.KeycloakAdminClientSession;
@@ -148,7 +149,7 @@ public class KeycloakAdminClientImpl implements KeycloakAdminClient {
         HttpResponse httpResponse = httpClient.execute(tokenPostRequest);
 
         AccessTokenResponse accessTokenResponse = keycloakResponseUtil.parseAccessTokenResponse(httpResponse);
-
+        EntityUtils.consumeQuietly(httpResponse.getEntity());  //make sure the connection is closed
         KeycloakAdminClientSessionImpl result = new KeycloakAdminClientSessionImpl();
         result.setClientId(clientId);
         result.setScope(scope);
