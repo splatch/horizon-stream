@@ -6,20 +6,30 @@
     </template>
 
     <template v-slot:rail>
-      <NavigationRail />
+      <NavigationRail :modelValue="store.navRailOpen" />
     </template>
 
-    <Spinner />
-    <Snackbar />
-    <router-view />
+    <div class="main-content">
+      <Spinner />
+      <Snackbar />
+      <router-view />
+    </div>
   </FeatherAppLayout>
 </template>
   
 <script setup lang="ts">
+import { useLayoutStore } from './store/layoutStore'
+
 // Remove KC redirectUri theme param
 const route = useRoute()
 const router = useRouter()
-if (route.query.theme) router.push('/')
+if (route.query.theme) router.replace(route.path)
+
+// transition nav rail open / close
+const store = useLayoutStore()
+const contentMargin = computed(() => store.navRailOpen ? '218px' : '0px')
+const ease = computed(() => store.navRailOpen ? '10ms' : '80ms')
+const maxWidth = computed(() => store.navRailOpen ? '223px' : '0px')
 </script>
   
 <style lang="scss">
@@ -28,26 +38,17 @@ if (route.query.theme) router.push('/')
 @import "@featherds/styles/themes/open-mixins";
 
 html {
-  height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
-@keyframes gradient {
-  to { opacity: 1; }
-  0% { -webkit-filter: blur(90px);}
-  50% { -webkit-filter: blur(100px);}
-  100% { -webkit-filter: blur(90px);}
-  from { transform : scale(0.8);}
-  to { transform : scale(1); }
-}
+.main-content {
+  margin-left: v-bind(contentMargin);
+  transition: margin-left 0.28s ease-in-out v-bind(ease);
+  max-width: calc(100% - v-bind(maxWidth));
 
-.app-content-container {
-  position: relative;
-}
-
-.layout {
-  max-width: 1500px;
-  margin: auto;
+  table {
+    width: 100%;
+  }
 }
 
 a {
@@ -57,9 +58,5 @@ a {
 
 .pointer {
   cursor: pointer;
-}
-
-table {
-  width: 100%;
 }
 </style>
