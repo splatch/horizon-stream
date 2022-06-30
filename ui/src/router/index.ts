@@ -16,6 +16,11 @@ const router = createRouter({
       component: Appliances
     },
     {
+      path: '/devices',
+      name: 'Devices',
+      component: () => import('@/containers/Devices.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
