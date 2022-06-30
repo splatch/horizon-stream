@@ -112,14 +112,18 @@ kubectl wait --for=condition=ready pod --timeout=600s -l run=my-horizon-stream-c
 kubectl wait --for=condition=ready pod --timeout=600s -l run=my-horizon-stream-api
 kubectl wait --for=condition=ready pod --timeout=600s -l run=my-kafka
 kubectl wait --for=condition=ready pod --timeout=600s -l run=my-postgres
-kubectl wait --for=condition=ready pod --timeout=600s -l run=my-keycloak
-kubectl wait --for=condition=ready pod --timeout=600s -l run=my-zookeeper
+kubectl wait --for=condition=ready pod --timeout=60s -l run=my-keycloak
+kubectl wait --for=condition=ready pod --timeout=60s -l run=my-zookeeper
 kubectl wait --for=condition=ready pod --timeout=600s -l app=my-horizon-stream-ui
 kubectl wait --for=condition=ready pod --timeout=600s -l app.kubernetes.io/name=keycloak-operator
 kubectl -n ingress-nginx wait --for=condition=ready pod --timeout=60s -l app.kubernetes.io/component=controller
 
 # Wait...
 sleep 60
+
+# Old ones, delete
+kubectl delete service/keycloak
+kubectl delete deployment.apps/my-keycloak
 
 kubectl apply -f services.yaml
 kubectl apply -f tmp/ingress.yaml

@@ -1,6 +1,6 @@
 {
-  "id": "opennms",
-  "realm": "opennms",
+  "id": "opennms-test",
+  "realm": "opennms-test",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
