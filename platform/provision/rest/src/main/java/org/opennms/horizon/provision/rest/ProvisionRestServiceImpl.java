@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.db.dao.api.SessionUtils;
+import org.opennms.netmgt.provision.persistence.dto.ForeignSourceDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 import org.opennms.netmgt.provision.service.Provisioner;
 
@@ -75,6 +76,19 @@ public class ProvisionRestServiceImpl implements ProvisionRestService {
         return this.sessionUtils.withReadOnlyTransaction(() -> {
             provisioner.performNodeScan();
             return Response.ok().build();
+        });
+    }
+
+    @Override
+    public Response publishForeignSource(String foreignSource) {
+        return this.sessionUtils.withTransaction(() -> {
+            try {
+                ForeignSourceDTO foreignSourceDTO = gson.fromJson(foreignSource, ForeignSourceDTO.class);
+                String id = provisioner.publish(foreignSourceDTO);
+                return Response.ok().entity(id).build();
+            } catch (Exception e) {
+                return Response.serverError().entity(e.getMessage()).build();
+            }
         });
     }
 }

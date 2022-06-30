@@ -19,12 +19,15 @@ import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.apache.commons.io.IOUtils;
+import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opennms.horizon.db.model.PrimaryType;
 import org.opennms.horizon.repository.api.NodeRepository;
+import org.opennms.netmgt.provision.persistence.dto.ForeignSourceDTO;
+import org.opennms.netmgt.provision.persistence.model.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persistence.model.RequisitionRepository;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionDTO;
 import org.opennms.netmgt.provision.persistence.dto.RequisitionInterfaceDTO;
@@ -36,8 +39,11 @@ public class ProvisionerImplTest extends CamelTestSupport {
 
     Provisioner provisioner;
     String requisitionJsonStr = null;
+    String foreignSourceJsonStr = null;
     @Mock
     RequisitionRepository requisitionRepository;
+    @Mock
+    ForeignSourceRepository foreignSourceRepository;
     @Mock
     NodeRepository nodeRepository;
     @Mock
@@ -45,6 +51,7 @@ public class ProvisionerImplTest extends CamelTestSupport {
 
     Gson gson = new Gson();
     RequisitionDTO requisitionDTO;
+    ForeignSourceDTO foreignSourceDTO;
 
     @Produce
     protected ProducerTemplate template;
@@ -52,7 +59,7 @@ public class ProvisionerImplTest extends CamelTestSupport {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        provisioner = new ProvisionerImpl(requisitionRepository, nodeRepository, nodeScanner);
+        provisioner = new ProvisionerImpl(requisitionRepository, foreignSourceRepository, nodeRepository, nodeScanner);
 
         InputStream stream = this.getClass().getClassLoader().getResourceAsStream("import_dummy_requisition.json");
         if (stream == null) {
@@ -60,6 +67,14 @@ public class ProvisionerImplTest extends CamelTestSupport {
         }
         requisitionJsonStr = IOUtils.toString(stream, StandardCharsets.UTF_8);
         requisitionDTO = gson.fromJson(requisitionJsonStr, RequisitionDTO.class);
+        stream.close();
+
+        stream = this.getClass().getClassLoader().getResourceAsStream("test_foreign_source.json");
+        if (stream == null) {
+            throw new FileNotFoundException("Test file does not exist.");
+        }
+        foreignSourceJsonStr = IOUtils.toString(stream, StandardCharsets.UTF_8);
+        foreignSourceDTO = gson.fromJson(foreignSourceJsonStr, ForeignSourceDTO.class);
         stream.close();
     }
 
@@ -77,6 +92,17 @@ public class ProvisionerImplTest extends CamelTestSupport {
         verify(nodeRepository, times(2)).get(anyString());
         verify(nodeRepository, times(2)).saveMonitoringLocation(any());
         verifyNoMoreInteractions(nodeRepository);
+    }
+
+    @Test
+    public void publishForeignSource() throws Exception {
+        when(foreignSourceRepository.read(anyString())).thenReturn(null);
+
+        provisioner.publish(foreignSourceDTO);
+
+        verify(foreignSourceRepository).read(anyString());
+        verify(foreignSourceRepository).save(isA(ForeignSourceDTO.class));
+        verifyNoMoreInteractions(foreignSourceRepository);
     }
 
     @Test
@@ -106,7 +132,7 @@ public class ProvisionerImplTest extends CamelTestSupport {
         verifyNoMoreInteractions(requisitionRepository);
     }
     @Test
-    public void generateJson() {
+    public void generateTestJsonForRequisition() {
         RequisitionDTO dto = new RequisitionDTO("blahId");
 
         for(int j=1;j<3;j++) {
@@ -124,6 +150,22 @@ public class ProvisionerImplTest extends CamelTestSupport {
             }
             dto.putNode(nodeDTO);
         }
+
+        assertNotNull(dto);
+        try {
+            dto.validate();
+            log.info(gson.toJson(dto));
+        }
+        catch (ValidationException ve) {
+            log.error(ve.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void generateTestJsonForForeignSource() {
+        ForeignSourceDTO dto = new ForeignSourceDTO("blahId");
+        dto.setScanInterval(new Duration(6000));
 
         assertNotNull(dto);
         try {
