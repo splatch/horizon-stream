@@ -31,29 +31,11 @@ package org.opennms.horizon.db.model.dto;
 import java.util.Date;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name="memo")
-@XmlAccessorType(XmlAccessType.NONE)
 public class MemoDTO {
-
-    @XmlAttribute(name="id")
     private Integer id;
-
-    @XmlElement(name="body")
     private String body;
-
-    @XmlElement(name="author")
     private String author;
-
-    @XmlElement(name="updated")
     private Date updated;
-
-    @XmlElement(name="created")
     private Date created;
 
     public Integer getId() {

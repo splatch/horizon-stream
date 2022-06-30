@@ -31,30 +31,16 @@ package org.opennms.horizon.db.model.dto;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.opennms.core.xml.JaxbListWrapper;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@XmlRootElement(name="alarms")
-@XmlAccessorType(XmlAccessType.NONE)
-public class AlarmCollectionDTO extends JaxbListWrapper<AlarmDTO> {
-
+public class AlarmCollectionDTO extends AbstractCollectionDTO<AlarmDTO> {
     public AlarmCollectionDTO() {
-        // No-arg constructor for JAXB
     }
-
     public AlarmCollectionDTO(final Collection<? extends AlarmDTO> alarms) {
-        super(alarms);
+        objects.addAll(alarms);
     }
-
-    @XmlElement(name="alarm")
-    @JsonProperty("alarm")
+    @JsonProperty("alarms")
     public List<AlarmDTO> getObjects() {
-        return super.getObjects();
+        return objects;
     }
 }

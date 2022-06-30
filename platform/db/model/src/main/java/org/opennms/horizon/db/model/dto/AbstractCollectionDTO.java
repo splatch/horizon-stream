@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,34 +28,35 @@
 
 package org.opennms.horizon.db.model.dto;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+public class AbstractCollectionDTO<T> {
+  protected List<T> objects = new ArrayList<>();
+  protected Integer totalCount;
+  protected Integer offset;
 
-public class ReductionKeyMemoDTO extends MemoDTO {
+  public Integer getTotalCount() {
+    return totalCount==null? objects.size(): totalCount;
+  }
 
-    @XmlElement(name="reductionkey")
-    private String reductionKey;
+  public void setTotalCount(Integer totalCount) {
+    this.totalCount = totalCount;
+  }
 
-    public String getReductionKey() {
-        return reductionKey;
-    }
+  public Integer getOffset() {
+    return offset;
+  }
 
-    public void setReductionKey(String reductionKey) {
-        this.reductionKey = reductionKey;
-    }
+  public void setOffset(Integer offset) {
+    this.offset = offset;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ReductionKeyMemoDTO that = (ReductionKeyMemoDTO) o;
-        return Objects.equals(reductionKey, that.reductionKey);
-    }
+  public List<T> getObjects() {
+    return objects;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), reductionKey);
-    }
+  public void setObjects(List<T> objects) {
+    this.objects = objects;
+  }
 }

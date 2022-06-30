@@ -30,20 +30,8 @@ package org.opennms.horizon.db.model.dto;
 
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "serviceType")
-@XmlAccessorType(XmlAccessType.NONE)
 public class ServiceTypeDTO {
-
-    @XmlAttribute(name="id")
     private Integer id;
-
-    @XmlElement(name="name")
     private String name;
 
     public Integer getId() {

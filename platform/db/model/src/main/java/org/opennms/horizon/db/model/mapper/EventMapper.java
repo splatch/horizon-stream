@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.db.model.mapper;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.opennms.horizon.core.lib.IPAddress;
 import org.opennms.horizon.db.model.OnmsEvent;
 import org.opennms.horizon.db.model.OnmsEventParameter;
 import org.opennms.horizon.db.model.OnmsServiceType;
@@ -83,6 +85,14 @@ public abstract class EventMapper {
             @Mapping(source = "severityLabel", target = "severity")
     })
     public abstract EventDTO eventToEventDTO(OnmsEvent event);
+
+    String inetAddressToString(InetAddress inetAddr) {
+        return inetAddr == null? null : new IPAddress(inetAddr).toDbString();
+    }
+
+    InetAddress stringToInetAddress(String ipAddr) {
+        return (ipAddr == null || ipAddr.isEmpty())? null : new IPAddress(ipAddr).toInetAddress();
+    }
 
     @InheritInverseConfiguration
     public abstract OnmsEvent eventDTOToEvent(EventDTO event);

@@ -27,22 +27,9 @@
  *******************************************************************************/
 package org.opennms.horizon.db.model.dto;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name="parameter")
-@XmlAccessorType(XmlAccessType.NONE)
 public class EventParameterDTO {
-
-    @XmlAttribute(name="name")
     private String name;
-
-    @XmlAttribute(name="value")
     private String value;
-
-    @XmlAttribute(name="type")
     private String type;
 
     public String getName() {

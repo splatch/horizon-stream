@@ -28,130 +28,49 @@
 
 package org.opennms.horizon.db.model.dto;
 
-import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
-import org.opennms.core.xml.InetAddressXmlAdapter;
-
-@XmlRootElement(name = "event")
-@XmlAccessorType(XmlAccessType.NONE)
 public class EventDTO {
-
-    @XmlAttribute(name = "id")
     private Integer id;
-
-    @XmlElement(name = "uei")
     private String uei;
-
-    @XmlElement(name = "label")
     private String label;
-
-    @XmlElement(name = "time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date time;
-
-    @XmlElement(name = "host")
     private String host;
-
-    @XmlElement(name = "source")
     private String source;
-
-    @XmlElement(name = "ipAddress")
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-    private InetAddress ipAddress;
-
-    @XmlElement(name = "snmpHost")
+    private String ipAddress;
     private String snmpHost;
-
-    @XmlElement(name = "serviceType")
     private ServiceTypeDTO serviceType;
-
-    @XmlElement(name = "snmp")
     private String snmp;
-
-    @XmlElementWrapper(name = "parameters")
-    @XmlElement(name = "parameter")
     private List<EventParameterDTO> parameters;
-
-    @XmlElement(name = "createTime")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
-
-    @XmlElement(name = "description")
     private String description;
-
-    @XmlElement(name = "logGroup")
     private String logGroup;
-
-    @XmlElement(name = "logMessage")
     private String logMessage;
-
-    @XmlAttribute(name = "severity")
     private String severity;
-
-    @XmlElement(name = "pathOutage")
     private String pathOutage;
-
-    @XmlElement(name = "correlation")
     private String correlation;
-
-    @XmlElement(name = "suppressedCount")
     private Integer suppressedCount;
-
-    @XmlElement(name = "operatorInstructions")
     private String operatorInstructions;
-
-    @XmlElement(name = "autoAction")
     private String autoAction;
-
-    @XmlElement(name = "operatorAction")
     private String operatorAction;
-
-    @XmlElement(name = "operationActionMenuText")
     private String operationActionMenuText;
-
-    @XmlElement(name = "notification")
     private String notification;
-
-    @XmlElement(name = "troubleTicket")
     private String troubleTicket;
-
-    @XmlElement(name = "troubleTicketState")
     private Integer troubleTicketState;
-
-    @XmlElement(name = "mouseOverText")
     private String mouseOverText;
-
-    @XmlAttribute(name = "log")
     private String log;
-
-    @XmlAttribute(name = "display")
     private String display;
-
-    @XmlElement(name = "ackUser")
     private String ackUser;
-
-    @XmlElement(name = "ackTime")
     private Date ackTime;
-
-    @XmlElement(name = "nodeId")
     private Integer nodeId;
-
-    @XmlElement(name = "nodeLabel")
     private String nodeLabel;
-
-    @XmlElement(name = "ifIndex")
     private Integer ifIndex;
-
-    @XmlElement(name = "location")
     private String location;
 
     public Integer getId() {
@@ -202,11 +121,11 @@ public class EventDTO {
         this.source = source;
     }
 
-    public InetAddress getIpAddress() {
+    public String getIpAddress() {
         return ipAddress;
     }
 
-    public void setIpAddress(InetAddress ipAddress) {
+    public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
     }
 

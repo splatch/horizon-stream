@@ -61,7 +61,6 @@ public abstract class AlarmMapper {
 
     @Mappings({
             @Mapping(source = "distPoller.location", target = "location"),
-            @Mapping(source = "ipAddr", target = "ipAddress"),
             @Mapping(source = "alarmType", target = "type"),
             @Mapping(ignore = true, target = "relatedAlarms"),
             @Mapping(source = "counter", target = "count"),
@@ -72,12 +71,20 @@ public abstract class AlarmMapper {
             @Mapping(source = "TTicketState", target = "troubleTicketState"),
             @Mapping(source = "alarmAckUser", target = "ackUser"),
             @Mapping(source = "alarmAckTime", target = "ackTime"),
-            @Mapping(source = "suppressedUser", target = "suppressedBy")
+            @Mapping(source = "suppressedUser", target = "suppressedBy"),
+            @Mapping(source = "ipAddr", target = "ipAddress")
     })
     public abstract AlarmDTO alarmToAlarmDTO(OnmsAlarm alarm);
 
     @InheritInverseConfiguration
     public abstract OnmsAlarm alarmDTOToAlarm(AlarmDTO alarm);
+    /*String inetAddressToString(InetAddress inetAddr) {
+        return inetAddr == null? null : new IPAddress(inetAddr).toDbString();
+    }
+
+    InetAddress stringToInetAddress(String ipAddr) {
+        return (ipAddr == null || ipAddr.isEmpty())? null : new IPAddress(ipAddr).toInetAddress();
+    }*/
 
     public Integer ackTypeToInteger(AckType ack) {
         return ack.getId();
