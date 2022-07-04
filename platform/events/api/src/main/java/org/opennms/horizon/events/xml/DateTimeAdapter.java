@@ -45,12 +45,6 @@ public class DateTimeAdapter extends XmlAdapter<String, Date> {
     /** {@inheritDoc} */
     @Override
     public Date unmarshal(final String string) throws Exception {
-        try{
-            Long time = Long.valueOf(string);
-            return new Date(time);
-        } catch (NumberFormatException e){
-
-        }
         return (string == null || string.isEmpty()) ? null : EventConstants.parseToDate(string);
     }
 
