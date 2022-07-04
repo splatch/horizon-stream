@@ -1,3 +1,3 @@
-<template>
-Appliances
-</template>
+<template>Appliances</template>
+<script></script>
+<style></style>

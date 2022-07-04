@@ -1,1 +1,3 @@
-;<template>Devices</template>
+<template>Devices</template>
+<script></script>
+<style></style>

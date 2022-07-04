@@ -4,7 +4,7 @@
   "embeddedLanguageFormatting": "off",
   "endOfLine": "crlf",
   "htmlWhitespaceSensitivity": "css",
-  "jsxBracketSameLine": false,
+  "jsxBracketSameLine": true,
   "jsxSingleQuote": false,
   "parser": "typescript",
   "printWidth": 120,
