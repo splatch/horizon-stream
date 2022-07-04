@@ -26,153 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.model.dto;
+package org.opennms.horizon.db.common.model;
 
-import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.opennms.core.xml.InetAddressXmlAdapter;
-
-@XmlRootElement(name="alarm")
-@XmlAccessorType(XmlAccessType.NONE)
 public class AlarmDTO {
-
-    @XmlAttribute(name="id")
     private Integer id;
-
-    @XmlElement(name="uei")
     private String uei;
-
-    @XmlElement(name="location")
     private String location;
-
-    @XmlElement(name="nodeId")
     private Integer nodeId;
-
-    @XmlElement(name="nodeLabel")
     private String nodeLabel;
-
-    @XmlElement(name="ipAddress")
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-    private InetAddress ipAddress;
-
-    @XmlElement(name = "serviceType")
+    private String ipAddress;
     private ServiceTypeDTO serviceType;
-
-    @XmlElement(name="reductionKey")
     private String reductionKey;
-
-    @XmlAttribute(name="type")
     private Integer type;
-
-    @XmlAttribute(name="count")
     private Integer count;
-
-    @XmlAttribute(name="severity")
     private String severity;
-
-    @XmlElement(name="firstEventTime")
     private Date firstEventTime;
-
-    @XmlElement(name="description")
     private String description;
-
-    @XmlElement(name="logMessage")
     private String logMessage;
-
-    @XmlElement(name="operatorInstructions")
     private String operatorInstructions;
-
-    @XmlElement(name="troubleTicket")
     private String troubleTicket;
-
-    @XmlElement(name="troubleTicketState")
     private Integer troubleTicketState;
-
-    @XmlElement(name = "troubleTicketLink")
     private String troubleTicketLink;
-
-    @XmlElement(name="mouseOverText")
     private String mouseOverText;
-
-    @XmlElement(name="suppressedUntil")
     private Date suppressedUntil;
-
-    @XmlElement(name="suppressedBy")
     private String suppressedBy;
-
-    @XmlElement(name="suppressedTime")
     private Date suppressedTime;
-
-    @XmlElement(name="ackUser")
     private String ackUser;
-
-    @XmlElement(name="ackTime")
     private Date ackTime;
-
-    @XmlElement(name="clearKey")
     private String clearKey;
-
-    @XmlElement(name="lastEvent")
     private EventDTO lastEvent;
-
-    @XmlElementWrapper(name="parameters")
-    @XmlElement(name="parameter")
     private List<EventParameterDTO> parameters;
-
-    @XmlElement(name="lastEventTime")
     private Date lastEventTime;
-
-    @XmlElement(name="applicationDN")
     private String applicationDN;
-
-    @XmlElement(name="managedObjectInstance")
     private String managedObjectInstance;
-
-    @XmlElement(name="managedObjectType")
     private String managedObjectType;
-
-    @XmlElement(name="ossPrimaryKey")
     private String ossPrimaryKey;
-
-    @XmlElement(name="x733AlarmType")
     private String x733AlarmType;
-
-    @XmlElement(name="x733ProbableCause")
     private Integer x733ProbableCause;
-
-    @XmlElement(name="qosAlarmState")
     private String qosAlarmState;
-
-    @XmlElement(name="firstAutomationTime")
     private Date firstAutomationTime;
-
-    @XmlElement(name="lastAutomationTime")
     private Date lastAutomationTime;
-
-    @XmlAttribute(name="ifIndex")
     private Integer ifIndex;
-
-    @XmlElement(name="reductionKeyMemo")
     private ReductionKeyMemoDTO reductionKeyMemo;
-
-    @XmlElement(name="stickyMemo")
     private MemoDTO stickyMemo;
-
-    @XmlElement(name="relatedAlarms")
     private List<AlarmSummaryDTO> relatedAlarms;
-
-    @XmlElement(name="affectedNodeCount")
     private Integer affectedNodeCount;
 
     public Integer getId() {
@@ -215,11 +116,11 @@ public class AlarmDTO {
         this.nodeLabel = nodeLabel;
     }
 
-    public InetAddress getIpAddress() {
+    public String getIpAddress() {
         return ipAddress;
     }
 
-    public void setIpAddress(InetAddress ipAddress) {
+    public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
     }
 

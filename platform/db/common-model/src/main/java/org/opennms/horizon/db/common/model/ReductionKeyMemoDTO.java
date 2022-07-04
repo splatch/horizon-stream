@@ -26,35 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.model.dto;
+package org.opennms.horizon.db.common.model;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public class ReductionKeyMemoDTO extends MemoDTO {
+    private String reductionKey;
 
-import org.opennms.core.xml.JaxbListWrapper;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-@XmlRootElement(name="alarms")
-@XmlAccessorType(XmlAccessType.NONE)
-public class AlarmCollectionDTO extends JaxbListWrapper<AlarmDTO> {
-
-    public AlarmCollectionDTO() {
-        // No-arg constructor for JAXB
+    public String getReductionKey() {
+        return reductionKey;
     }
 
-    public AlarmCollectionDTO(final Collection<? extends AlarmDTO> alarms) {
-        super(alarms);
+    public void setReductionKey(String reductionKey) {
+        this.reductionKey = reductionKey;
     }
 
-    @XmlElement(name="alarm")
-    @JsonProperty("alarm")
-    public List<AlarmDTO> getObjects() {
-        return super.getObjects();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ReductionKeyMemoDTO that = (ReductionKeyMemoDTO) o;
+        return Objects.equals(reductionKey, that.reductionKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), reductionKey);
     }
 }

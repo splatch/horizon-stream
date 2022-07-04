@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,21 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.model;
+package org.opennms.horizon.db.common.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Collection;
+import java.util.List;
 
-@Getter
-@Setter
-public class AlarmSummaryDTO {
-  private Integer id;
-  private Integer type;
-  private String severity;
-  private String reductionKey;
-  private String description;
-  private String label;
-  private String nodeLabel;
-  private String logMessage;
-  private String uei;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class EventCollectionDTO extends AbstractCollectionDTO<EventDTO> {
+
+    public EventCollectionDTO() {
+        // No-arg constructor for JAXB
+    }
+
+    public EventCollectionDTO(final Collection<? extends EventDTO> events) {
+        objects.addAll(events);
+    }
+
+    @JsonProperty("events")
+    public List<EventDTO> getEvents() {
+        return objects;
+    }
 }

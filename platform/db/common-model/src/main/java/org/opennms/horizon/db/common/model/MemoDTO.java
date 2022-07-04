@@ -26,41 +26,72 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.model.dto;
+package org.opennms.horizon.db.common.model;
 
+import java.util.Date;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public class MemoDTO {
+    private Integer id;
+    private String body;
+    private String author;
+    private Date updated;
+    private Date created;
 
-@XmlRootElement(name="reductionKeyMemo")
-@XmlAccessorType(XmlAccessType.NONE)
-public class ReductionKeyMemoDTO extends MemoDTO {
-
-    @XmlElement(name="reductionkey")
-    private String reductionKey;
-
-    public String getReductionKey() {
-        return reductionKey;
+    public Integer getId() {
+        return id;
     }
 
-    public void setReductionKey(String reductionKey) {
-        this.reductionKey = reductionKey;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public Date getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Date updated) {
+        this.updated = updated;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ReductionKeyMemoDTO that = (ReductionKeyMemoDTO) o;
-        return Objects.equals(reductionKey, that.reductionKey);
+        MemoDTO memoDTO = (MemoDTO) o;
+        return Objects.equals(id, memoDTO.id) &&
+                Objects.equals(body, memoDTO.body) &&
+                Objects.equals(author, memoDTO.author) &&
+                Objects.equals(updated, memoDTO.updated) &&
+                Objects.equals(created, memoDTO.created);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), reductionKey);
+        return Objects.hash(id, body, author, updated, created);
     }
 }
