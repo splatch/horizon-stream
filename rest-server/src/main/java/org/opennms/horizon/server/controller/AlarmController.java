@@ -28,8 +28,8 @@
 
 package org.opennms.horizon.server.controller;
 
-import org.opennms.horizon.server.model.AlarmAckDTO;
-import org.opennms.horizon.server.model.AlarmCollectionDTO;
+import org.opennms.horizon.db.common.model.AlarmAckDTO;
+import org.opennms.horizon.db.common.model.AlarmCollectionDTO;
 import org.opennms.horizon.server.service.PlatformGateway;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

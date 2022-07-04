@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.db.common.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -46,7 +47,7 @@ public class EventDTO {
     private String snmpHost;
     private ServiceTypeDTO serviceType;
     private String snmp;
-    private List<EventParameterDTO> parameters;
+    private List<EventParameterDTO> parameters = new ArrayList<>();
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     private String description;

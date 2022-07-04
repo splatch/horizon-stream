@@ -40,7 +40,9 @@ public class AlarmCollectionDTO extends AbstractCollectionDTO<AlarmDTO> {
         objects.addAll(alarms);
     }
     @JsonProperty("alarms")
-    public List<AlarmDTO> getObjects() {
+    public List<AlarmDTO> getAlarms() {
         return objects;
     }
+
+
 }

@@ -44,7 +44,7 @@ public class EventCollectionDTO extends AbstractCollectionDTO<EventDTO> {
     }
 
     @JsonProperty("events")
-    public List<EventDTO> getObjects() {
+    public List<EventDTO> getEvents() {
         return objects;
     }
 }
