@@ -56,10 +56,11 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.horizon.alarms.api.AlarmAckDTO;
+import org.opennms.horizon.db.common.model.AlarmAckDTO;
+import org.opennms.horizon.db.common.model.AlarmCollectionDTO;
+import org.opennms.horizon.db.common.model.AlarmDTO;
 import org.opennms.horizon.core.lib.SystemProperties;
 import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
 import org.opennms.horizon.db.dao.api.AlarmDao;
@@ -69,8 +70,6 @@ import org.opennms.horizon.db.model.AckType;
 import org.opennms.horizon.db.model.OnmsAcknowledgment;
 import org.opennms.horizon.db.model.OnmsAlarm;
 import org.opennms.horizon.db.model.TroubleTicketState;
-import org.opennms.horizon.db.model.dto.AlarmCollectionDTO;
-import org.opennms.horizon.db.model.dto.AlarmDTO;
 import org.opennms.horizon.db.model.mapper.AlarmMapper;
 import org.opennms.netmgt.alarmd.rest.AlarmRestService;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -78,6 +77,8 @@ import org.opennms.web.rest.support.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
+
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Basic Web Service using REST for {@link OnmsAlarm} entity, but from Karaf container.
@@ -186,7 +187,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     @GET
     @Path("list")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "admin" })
     @ApiResponse(
             description = "Retrieve the list of alarms"
@@ -217,7 +218,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     @POST
     @Path("{id}/ack")
-    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
     public String ackAlarm(@PathParam("id") int id, AlarmAckDTO alarmAck) {
         return sessionUtils.withTransaction(() -> {
             OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), alarmAck.getUser());
@@ -234,7 +235,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     @DELETE
     @Path("{id}/ack")
-    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
     public String unackAlarm(@PathParam("id") int id) {
         return sessionUtils.withTransaction(() -> {
             OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), "DELETE_USER__TODO_CLEAN_THIS_UP");
@@ -249,7 +250,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     @POST
     @Path("{id}/clear")
-    @Produces({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
     public String clearAlarm(@PathParam("id") int id, AlarmAckDTO alarmAck) {
         return sessionUtils.withTransaction(() -> {
             OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), alarmAck.getUser());

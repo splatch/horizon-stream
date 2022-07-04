@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,47 +25,38 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.horizon.db.model.dto;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+package org.opennms.horizon.db.common.model;
 
-@XmlRootElement(name="parameter")
-@XmlAccessorType(XmlAccessType.NONE)
-public class EventParameterDTO {
+import java.util.ArrayList;
+import java.util.List;
 
-    @XmlAttribute(name="name")
-    private String name;
+public class AbstractCollectionDTO<T> {
+  protected List<T> objects = new ArrayList<>();
+  protected Integer totalCount;
+  protected Integer offset;
 
-    @XmlAttribute(name="value")
-    private String value;
+  public Integer getTotalCount() {
+    return totalCount==null? objects.size(): totalCount;
+  }
 
-    @XmlAttribute(name="type")
-    private String type;
+  public void setTotalCount(Integer totalCount) {
+    this.totalCount = totalCount;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public Integer getOffset() {
+    return offset;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setOffset(Integer offset) {
+    this.offset = offset;
+  }
 
-    public String getValue() {
-        return value;
-    }
+  public List<T> getObjects() {
+    return objects;
+  }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
+  public void setObjects(List<T> objects) {
+    this.objects = objects;
+  }
 }

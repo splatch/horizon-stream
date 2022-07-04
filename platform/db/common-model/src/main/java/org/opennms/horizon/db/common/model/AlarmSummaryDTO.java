@@ -26,45 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.model.dto;
+package org.opennms.horizon.db.common.model;
 
 import java.beans.Transient;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name="alarm")
-@XmlAccessorType(XmlAccessType.NONE)
 public class AlarmSummaryDTO {
-
-    @XmlAttribute(name="id")
     private Integer id;
-
-    @XmlAttribute(name="type")
     private Integer type;
-
-    @XmlAttribute(name="severity")
     private String severity;
-
-    @XmlElement(name="reductionKey")
     private String reductionKey;
-
-    @XmlElement(name="description")
     private String description;
-
-    @XmlElement(name="label")
     private String label;
-
-    @XmlElement(name="nodeLabel")
     private String nodeLabel;
-
-    @XmlElement(name="logMessage")
     private String logMessage;
-
     private String uei;
 
     public Integer getId() {

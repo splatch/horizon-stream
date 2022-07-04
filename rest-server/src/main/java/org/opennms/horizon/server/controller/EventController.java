@@ -28,8 +28,8 @@
 
 package org.opennms.horizon.server.controller;
 
-import org.opennms.horizon.server.model.EventCollectionDTO;
-import org.opennms.horizon.server.model.EventDTO;
+import org.opennms.horizon.db.common.model.EventCollectionDTO;
+import org.opennms.horizon.db.common.model.EventDTO;
 import org.opennms.horizon.server.service.PlatformGateway;
 import org.springdoc.core.Constants;
 import org.springframework.http.MediaType;

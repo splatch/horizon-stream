@@ -28,8 +28,8 @@
 
 package org.opennms.horizon.server.service;
 
-import org.opennms.horizon.server.model.EventCollectionDTO;
-import org.opennms.horizon.server.model.EventDTO;
+import org.opennms.horizon.db.common.model.EventCollectionDTO;
+import org.opennms.horizon.db.common.model.EventDTO;
 import org.springframework.stereotype.Service;
 
 import io.leangen.graphql.annotations.GraphQLEnvironment;

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.model;
+package org.opennms.horizon.db.common.model;
 
-import java.util.Date;
+import java.util.Collection;
+import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Setter
-@Getter
-public class MemoDTO {
-  private Integer id;
-  private String body;
-  private String author;
-  private Date updated;
-  private Date created;
+public class AlarmCollectionDTO extends AbstractCollectionDTO<AlarmDTO> {
+    public AlarmCollectionDTO() {
+    }
+    public AlarmCollectionDTO(final Collection<? extends AlarmDTO> alarms) {
+        objects.addAll(alarms);
+    }
+    @JsonProperty("alarms")
+    public List<AlarmDTO> getAlarms() {
+        return objects;
+    }
+
+
 }

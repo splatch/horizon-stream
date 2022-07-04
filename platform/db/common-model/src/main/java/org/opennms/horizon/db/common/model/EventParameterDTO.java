@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,34 +25,12 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.horizon.db.common.model;
 
-package org.opennms.horizon.db.model.dto;
-
-import java.util.Objects;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "serviceType")
-@XmlAccessorType(XmlAccessType.NONE)
-public class ServiceTypeDTO {
-
-    @XmlAttribute(name="id")
-    private Integer id;
-
-    @XmlElement(name="name")
+public class EventParameterDTO {
     private String name;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private String value;
+    private String type;
 
     public String getName() {
         return name;
@@ -62,17 +40,19 @@ public class ServiceTypeDTO {
         this.name = name;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ServiceTypeDTO that = (ServiceTypeDTO) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name);
+    public String getValue() {
+        return value;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

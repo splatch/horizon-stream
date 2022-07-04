@@ -28,8 +28,8 @@
 
 package org.opennms.horizon.server.service;
 
-import org.opennms.horizon.server.model.AlarmAckDTO;
-import org.opennms.horizon.server.model.AlarmCollectionDTO;
+import org.opennms.horizon.db.common.model.AlarmAckDTO;
+import org.opennms.horizon.db.common.model.AlarmCollectionDTO;
 import org.springframework.stereotype.Service;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
