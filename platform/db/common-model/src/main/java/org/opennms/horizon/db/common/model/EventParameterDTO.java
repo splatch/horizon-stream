@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.horizon.db.model.dto;
+package org.opennms.horizon.db.common.model;
 
 public class EventParameterDTO {
     private String name;

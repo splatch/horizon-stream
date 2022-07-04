@@ -58,15 +58,14 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.opennms.horizon.db.common.model.EventCollectionDTO;
+import org.opennms.horizon.db.common.model.EventDTO;
 import org.opennms.horizon.db.dao.api.EventDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsEvent;
 import org.opennms.horizon.db.model.OnmsEventCollection;
-import org.opennms.horizon.db.model.dto.EventCollectionDTO;
-import org.opennms.horizon.db.model.dto.EventDTO;
 import org.opennms.horizon.db.model.mapper.EventMapper;
 import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.events.xml.Event;
@@ -78,6 +77,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 // TODO: SECURITY
 

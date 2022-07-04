@@ -46,8 +46,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.horizon.db.model.dto.EventCollectionDTO;
-import org.opennms.horizon.db.model.dto.EventDTO;
+import org.opennms.horizon.db.common.model.EventCollectionDTO;
+import org.opennms.horizon.db.common.model.EventDTO;
 
 @Path("events")
 public interface EventRestService {

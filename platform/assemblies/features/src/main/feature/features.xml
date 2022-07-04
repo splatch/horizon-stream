@@ -81,6 +81,7 @@
         <bundle>mvn:org.opennms.horizon.db/schema/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.db/schema-liquibase/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.db/model/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.db/common-model/${project.version}</bundle>
 
         <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
 

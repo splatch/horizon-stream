@@ -56,10 +56,11 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.horizon.alarms.api.AlarmAckDTO;
+import org.opennms.horizon.db.common.model.AlarmAckDTO;
+import org.opennms.horizon.db.common.model.AlarmCollectionDTO;
+import org.opennms.horizon.db.common.model.AlarmDTO;
 import org.opennms.horizon.core.lib.SystemProperties;
 import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
 import org.opennms.horizon.db.dao.api.AlarmDao;
@@ -69,8 +70,6 @@ import org.opennms.horizon.db.model.AckType;
 import org.opennms.horizon.db.model.OnmsAcknowledgment;
 import org.opennms.horizon.db.model.OnmsAlarm;
 import org.opennms.horizon.db.model.TroubleTicketState;
-import org.opennms.horizon.db.model.dto.AlarmCollectionDTO;
-import org.opennms.horizon.db.model.dto.AlarmDTO;
 import org.opennms.horizon.db.model.mapper.AlarmMapper;
 import org.opennms.netmgt.alarmd.rest.AlarmRestService;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -78,6 +77,8 @@ import org.opennms.web.rest.support.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
+
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Basic Web Service using REST for {@link OnmsAlarm} entity, but from Karaf container.

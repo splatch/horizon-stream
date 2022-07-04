@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,41 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.model.dto;
+package org.opennms.horizon.db.common.model;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ServiceTypeDTO {
-    private Integer id;
-    private String name;
+public class AbstractCollectionDTO<T> {
+  protected List<T> objects = new ArrayList<>();
+  protected Integer totalCount;
+  protected Integer offset;
 
-    public Integer getId() {
-        return id;
-    }
+  public Integer getTotalCount() {
+    return totalCount==null? objects.size(): totalCount;
+  }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+  public void setTotalCount(Integer totalCount) {
+    this.totalCount = totalCount;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public Integer getOffset() {
+    return offset;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setOffset(Integer offset) {
+    this.offset = offset;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ServiceTypeDTO that = (ServiceTypeDTO) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name);
-    }
+  public List<T> getObjects() {
+    return objects;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
-    }
+  public void setObjects(List<T> objects) {
+    this.objects = objects;
+  }
 }

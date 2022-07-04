@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.model.dto;
+package org.opennms.horizon.db.common.model;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+public class ServiceTypeDTO {
+    private Integer id;
+    private String name;
 
-public class EventCollectionDTO extends AbstractCollectionDTO<EventDTO> {
-
-    public EventCollectionDTO() {
-        // No-arg constructor for JAXB
+    public Integer getId() {
+        return id;
     }
 
-    public EventCollectionDTO(final Collection<? extends EventDTO> events) {
-        objects.addAll(events);
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    @JsonProperty("events")
-    public List<EventDTO> getObjects() {
-        return objects;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ServiceTypeDTO that = (ServiceTypeDTO) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

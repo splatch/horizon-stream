@@ -38,13 +38,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.opennms.horizon.db.common.model.EventDTO;
+import org.opennms.horizon.db.common.model.EventParameterDTO;
+import org.opennms.horizon.db.common.model.ServiceTypeDTO;
 import org.opennms.horizon.core.lib.IPAddress;
 import org.opennms.horizon.db.model.OnmsEvent;
 import org.opennms.horizon.db.model.OnmsEventParameter;
 import org.opennms.horizon.db.model.OnmsServiceType;
-import org.opennms.horizon.db.model.dto.EventDTO;
-import org.opennms.horizon.db.model.dto.EventParameterDTO;
-import org.opennms.horizon.db.model.dto.ServiceTypeDTO;
 import org.opennms.horizon.events.api.EventConfDao;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -26,36 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.model.dto;
+package org.opennms.horizon.db.common.model;
 
-import java.util.Objects;
+import java.util.Collection;
+import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ReductionKeyMemoDTO extends MemoDTO {
+public class EventCollectionDTO extends AbstractCollectionDTO<EventDTO> {
 
-    @XmlElement(name="reductionkey")
-    private String reductionKey;
-
-    public String getReductionKey() {
-        return reductionKey;
+    public EventCollectionDTO() {
+        // No-arg constructor for JAXB
     }
 
-    public void setReductionKey(String reductionKey) {
-        this.reductionKey = reductionKey;
+    public EventCollectionDTO(final Collection<? extends EventDTO> events) {
+        objects.addAll(events);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ReductionKeyMemoDTO that = (ReductionKeyMemoDTO) o;
-        return Objects.equals(reductionKey, that.reductionKey);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), reductionKey);
+    @JsonProperty("events")
+    public List<EventDTO> getObjects() {
+        return objects;
     }
 }
