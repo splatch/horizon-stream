@@ -40,7 +40,7 @@ import { getMockEvent } from '@/types/mocks'
 import { useAlarmsStore } from '@/store/alarmsStore'
 import { useEventsStore } from '@/store/eventsStore'
 import { useDashboardViewStore } from '@/store/dashboardViewStore'
-import { AlarmAckDtoInput } from '@/graphql/generatedTypes'
+import { AlarmAckDtoInput } from '@/graphql/operations'
 
 const dashboardViewStore = useDashboardViewStore()
 const eventsStore = useEventsStore()

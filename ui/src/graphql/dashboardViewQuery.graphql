@@ -1,10 +1,10 @@
-export default `{
+query Dashboard {
   listAlarms {
-    alarm {
+    alarms {
       id
       description
       severity
       lastEventTime
     }
   }
-}`
+}

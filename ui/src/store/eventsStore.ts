@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { useMutation } from 'villus'
-import { Mutation } from '@/graphql/generatedTypes'
-import createEventMutation from '@/graphql/Events/createEventMutation'
+import { CreateEventDocument } from '@/graphql/operations'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 
@@ -14,7 +13,7 @@ export const useEventsStore = defineStore('eventsStore', () => {
     execute: createEvent,
     error: createEventError,
     isFetching: createEventFetching
-  } = useMutation<Mutation>(createEventMutation)
+  } = useMutation(CreateEventDocument)
 
   // start / stop loading spinner
   watchEffect(() => {

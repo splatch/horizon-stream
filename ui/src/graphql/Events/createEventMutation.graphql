@@ -1,0 +1,3 @@
+mutation CreateEvent ($event: EventDTOInput!) {
+  createEvent (event: $event)
+}

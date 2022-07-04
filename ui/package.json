@@ -9,7 +9,10 @@
     "test": "vitest run",
     "lint": "eslint --ignore-path ./.gitignore --ext .ts,.vue .",
     "lint:fix": "eslint --ignore-path ./.gitignore --ext .ts,.vue . --fix",
-    "format": "prettier --ignore-path ./.gitignore --write \"**/*.+(ts)\""
+    "format": "prettier --ignore-path ./.gitignore --write \"**/*.+(ts)\"",
+    "generate": "graphql-codegen --config codegen.yml",
+    "prebuild": "yarn generate",
+    "predev": "yarn generate"
   },
   "dependencies": {
     "@dsb-norge/vue-keycloak-js": "^2.1.5-beta",
@@ -51,6 +54,11 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.7.0",
+    "@graphql-codegen/typed-document-node": "^2.2.14",
+    "@graphql-codegen/typescript": "2.6.0",
+    "@graphql-codegen/typescript-operations": "^2.4.3",
+    "@graphql-typed-document-node/core": "^3.1.1",
     "@pinia/testing": "^0.0.12",
     "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.30.0",

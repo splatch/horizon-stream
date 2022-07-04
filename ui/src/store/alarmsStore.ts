@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { useMutation } from 'villus'
-import { Mutation } from '@/graphql/generatedTypes'
-import clearAlarmMutation from '@/graphql/Alarms/clearAlarmMutation'
+import { ClearAlarmDocument } from '@/graphql/operations'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 
@@ -14,7 +13,7 @@ export const useAlarmsStore = defineStore('alarmsStore', () => {
     execute: clearAlarm,
     error: clearAlarmError,
     isFetching: clearAlarmFetching
-  } = useMutation<Mutation>(clearAlarmMutation)
+  } = useMutation(ClearAlarmDocument)
 
   // start / stop loading spinner
   watchEffect(() => {

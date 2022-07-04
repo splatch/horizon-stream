@@ -1,4 +1,4 @@
-import { EventDtoInput } from '@/graphql/generatedTypes'
+import { EventDtoInput } from '@/graphql/operations'
 import { add } from 'date-fns'
 
 const mockEvent: EventDtoInput = {
