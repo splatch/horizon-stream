@@ -6,6 +6,8 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AlarmsTable: typeof import('./src/components/Alarms/AlarmsTable.vue')['default']
+    Devices: typeof import('./src/components/Appliances/Devices/Devices.vue')['default']
+    DevicesTable: typeof import('./src/components/Appliances/Devices/DevicesTable.vue')['default']
     DeviceTable: typeof import('./src/components/Appliances/DeviceTable.vue')['default']
     FeatherAppBar: typeof import('@featherds/app-bar')['FeatherAppBar']
     FeatherAppBarLink: typeof import('@featherds/app-bar')['FeatherAppBarLink']

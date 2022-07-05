@@ -4,10 +4,3 @@ export interface Minion {
   latency: string
   cpu_util: string
 }
-
-export interface Device {
-  id: string
-  name: string
-  icmp_latency: string
-  snmp_uptime: string
-}
