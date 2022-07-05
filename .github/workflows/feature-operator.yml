@@ -1,0 +1,29 @@
+name: feature-operator
+
+on:  
+  push:
+    branches:
+      - '**'
+      - '!develop'
+      - '!release/**'
+    paths:
+      - 'operator/**'
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        # Is required to call actions.
+    
+      - name: Setup golang
+        uses: actions/setup-go@v3
+
+      - name: feature-operator
+        id: action-feature-operator
+        uses: ./.github/actions/operator
+        with:
+          dir-location: 'operator'
