@@ -19,9 +19,9 @@
 
 <script setup lang="ts">
 import { onMounted }from 'vue'
-import { useDevicesStore } from './devicesStore'
+import { useDeviceStore } from '@/store/deviceStore'
 
-const store = useDevicesStore()
+const store = useDeviceStore()
 
 onMounted(() => {
   store.aGetDevices()

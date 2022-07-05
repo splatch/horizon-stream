@@ -2,8 +2,7 @@ import { api } from '@/services/axiosInstances'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 import { getMsgFromError } from '@/services/errorService'
-import { defaultDevices, Device } from './devicesTypes'
-import { transformDeviceItems } from './devicesBff'
+import { defaultDevices, Device } from '@/types/appliances'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
@@ -29,7 +28,7 @@ const sDeviceItems = async (): Promise<Device[]> => {
     // const { data } = await api.get(endpoint[400])
     // const { data } = await api.get(endpoint[404])
 
-    return transformDeviceItems(data)
+    return data
   } catch (err: unknown) {
     showSnackbar({ error: true, msg: getMsgFromError(err) })
 

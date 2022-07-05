@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
-import { sDeviceItems } from './devicesService'
-import { Device } from './devicesTypes'
+import { sDeviceItems } from '@/services/deviceService'
+import { Device } from '@/types/appliances'
 
-export const useDevicesStore = defineStore('devicesStore', {
+export const useDeviceStore = defineStore('deviceStore', {
   state: () => ({
     deviceItems: <Device[]>[]
   }),
