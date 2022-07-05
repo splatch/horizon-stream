@@ -36,9 +36,7 @@ func (r *OpenNMSReconciler) InitServiceHandlers() {
 		&handlers.PostgresHandler{},
 		&handlers.KeycloakHandler{},
 		&handlers.OpenNMSHandler{},
-		//&handlers.GrafanaHandler{},
 		&handlers.IngressHandler{},
-		//&handlers.StunnelHandler{},
 		&handlers.ElasticsearchHandler{},
 	}
 }

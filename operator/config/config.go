@@ -9,6 +9,7 @@ type OperatorConfig struct {
 	Version                   string `mapstructure:"VERSION"`
 	DefaultOpenNMSValuesFile  string `mapstructure:"DEFAULT_OPENNMS_VALUES_FILE"`
 	DefaultOperatorValuesFile string `mapstructure:"DEFAULT_OPERATOR_VALUES_FILE"`
+	DefaultOpenNMSTemplateLoc string `mapstructure:"DEFAULT_OPENNMS_TEMPLATE_LOC"`
 	DevMode                   bool   `mapstructure:"DEV_MODE"`
 
 	//Image update

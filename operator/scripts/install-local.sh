@@ -14,7 +14,7 @@ make local-docker
 echo
 echo ___________Installing Helm Dependencies____________
 echo
-bash bin/install-helm-deps.sh
+bash scripts/install-helm-deps.sh
 
 echo
 echo _______________Wait For Dependencies_______________
@@ -29,4 +29,4 @@ echo Dependencies started.
 echo
 echo ________________Installing Operator________________
 echo
-helm upgrade -i operator-local ./charts/opennms-operator -f values.yaml
+helm upgrade -i operator-local ../charts/opennms-operator -f values.yaml

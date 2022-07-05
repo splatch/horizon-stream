@@ -1,5 +1,5 @@
-.PHONY: dependencies build alpine-build unit-test integration-test validate-build
-.PHONY: helm-dep helm-package
+.PHONY: dependencies build alpine-build unit-test integration-test
+.PHONY: local-docker copy-charts
 
 all: build
 
@@ -9,20 +9,14 @@ unit-test:
 integration-test:
 	echo "These are integration tests"
 
-validate-build:
-	circleci config validate .circleci/config.yml
-
-helm-dep:
-	helm dep update charts/opennms-operator
-
-helm-package: helm-dep
-	helm package charts/opennms-operator -d charts/packaged
-	helm repo index --url https://opennms.github.io/opennms-operator/charts/packaged --merge charts/packaged/index.yaml ./charts/packaged
-
 dependencies:
 	go mod download
 
-local-docker:
+copy-charts:
+	rm -rf charts/
+	cp -rf ../charts .
+
+local-docker: copy-charts
 	docker build -t opennms/operator:local-build .
 
 build:

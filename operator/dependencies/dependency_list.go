@@ -39,6 +39,4 @@ var charts = []helmclient.ChartSpec{
 	},
 }
 
-var handlerslist = []handlers.ServiceHandler{
-	&handlers.CertHandler{},
-}
+var handlerslist []handlers.ServiceHandler

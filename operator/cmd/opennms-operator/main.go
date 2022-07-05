@@ -15,8 +15,9 @@ limitations under the License.
 package main
 
 import (
-	"github.com/OpenNMS/opennms-operator/charts/dependencies"
 	"github.com/OpenNMS/opennms-operator/config"
+	"github.com/OpenNMS/opennms-operator/dependencies"
+	"github.com/OpenNMS/opennms-operator/internal/handlers"
 	"github.com/OpenNMS/opennms-operator/internal/image"
 	"github.com/OpenNMS/opennms-operator/internal/reconciler"
 	"github.com/OpenNMS/opennms-operator/internal/scheme"
@@ -37,6 +38,8 @@ var (
 
 func main() {
 	operatorConfig := config.LoadConfig()
+
+	handlers.ConfigFilePath = operatorConfig.DefaultOpenNMSTemplateLoc
 
 	loggerOptions := zap.Options{
 		Development: operatorConfig.DevMode, //TODO make this configurable
