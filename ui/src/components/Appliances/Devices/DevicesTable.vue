@@ -8,7 +8,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="device in store.getDeviceList" :key="device.id">
+      <tr v-for="device in store.gDeviceItems" :key="device.id">
         <td>{{ device.name }}</td>
         <td>{{ device.icmp_latency }}</td>
         <td>{{ device.snmp_uptime }}</td>
@@ -24,7 +24,7 @@ import { useDevicesStore } from './devicesStore'
 const store = useDevicesStore()
 
 onMounted(() => {
-  store.getDevices()
+  store.aGetDevices()
 })
 </script>
 

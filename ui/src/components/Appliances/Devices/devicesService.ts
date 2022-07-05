@@ -2,16 +2,17 @@ import { api } from '@/services/axiosInstances'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 import { getMsgFromError } from '@/services/errorService'
-import { defaultDevice, Device } from './devicesTypes'
-import { transformDeviceList } from './devicesBff'
+import { defaultDevices, Device } from './devicesTypes'
+import { transformDeviceItems } from './devicesBff'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 
 const endpoint = {
   default: '/get:devices',
-  400: '/get:devices:400',
-  404: '/get:devices:404'
+  empty: '/get:devices:empty',
+  400: '/get:devices:400', // custom error message: Request failed.
+  404: '/get:devices:404' // fallback error message: Could not complete request.
 }
 
 /**
@@ -19,22 +20,23 @@ const endpoint = {
  * 
  * @returns A list of devices
  */
-const getDevices = async (): Promise<Device[]> => {
-  startSpinner()
+const sDeviceItems = async (): Promise<Device[]> => {
+  startSpinner() 
 
   try {
     const { data } = await api.get(endpoint['default'])
+    // const { data } = await api.get(endpoint['empty'])
     // const { data } = await api.get(endpoint[400])
     // const { data } = await api.get(endpoint[404])
 
-    return transformDeviceList(data)
+    return transformDeviceItems(data)
   } catch (err: unknown) {
     showSnackbar({ error: true, msg: getMsgFromError(err) })
-    
-    return defaultDevice.list
+
+    return defaultDevices.items
   } finally {
     stopSpinner()
   }
 }
 
-export { getDevices }
+export { sDeviceItems }

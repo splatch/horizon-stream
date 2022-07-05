@@ -1,22 +1,22 @@
 import { defineStore } from 'pinia'
-import { getDevices } from './devicesService'
+import { sDeviceItems } from './devicesService'
 import { Device } from './devicesTypes'
 
 export const useDevicesStore = defineStore('devicesStore', {
   state: () => ({
-    deviceList: <Device[]>[]
+    deviceItems: <Device[]>[]
   }),
   getters: {
-    getDeviceList: state => state.deviceList
+    gDeviceItems: state => state.deviceItems
   },
   actions: {
-    async getDevices() {
+    async aGetDevices() {
       try {
-        const list: Device[] = await getDevices()
+        const items: Device[] = await sDeviceItems()
         
-        this.deviceList = list
+        this.deviceItems = items
       } catch (err) {
-        this.deviceList = []
+        this.deviceItems = []
       }
     }
   }

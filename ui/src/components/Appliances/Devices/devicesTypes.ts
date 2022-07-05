@@ -6,23 +6,23 @@ export interface Device {
 }
 
 export interface Devices {
-  list: Device[],
+  items: Device[],
   count: null | number,
   totalCount: number,
   offset: number
 }
 
-export const defaultDevice: Devices = {
-  list: [],
+export const defaultDevices: Devices = {
+  items: [],
   count: null,
   totalCount: 0,
   offset: 0
 }
 
 export interface State {
-  deviceList: Device[]
+  deviceItems: Device[]
 }
 
 export const defaultState: State = {
-  deviceList: []
+  deviceItems: []
 }
