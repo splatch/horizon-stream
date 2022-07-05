@@ -6,13 +6,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.opennms.horizon</groupId>
-        <artifactId>horizon</artifactId>
+        <groupId>org.opennms.horizon.3rdparty</groupId>
+        <artifactId>3rdparty</artifactId>
         <version>0.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.opennms.horizon.3rdparty</groupId>
     <artifactId>jcifs-shaded</artifactId>
 
     <name>OpenNMS :: Dependencies :: JCIFs :: Shaded</name>
