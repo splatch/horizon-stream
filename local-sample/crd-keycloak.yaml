@@ -22,5 +22,5 @@ spec:
       secret:
         name: keycloak-db-secret
         key: password
-  hostname: localhost
-  tlsSecret: example-tls-secret
+  hostname: keycloak # /etc/hosts
+  tlsSecret: local-dev-tls-secret

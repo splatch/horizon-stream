@@ -8,7 +8,7 @@ IMAGE_TAG=latest
 
 DOMAIN_CORE=localhostcore # Service on port 8181
 DOMAIN_KARAF=localhostkaraf # Service on port 8101
-DOMAIN_UI=localhostui 
-DOMAIN_KEYCLOAK=localhostkey
-DOMAIN_API=localhostapi 
+DOMAIN_UI=onmshs
+DOMAIN_KEYCLOAK=onmshs
+DOMAIN_API=localhostapi
 

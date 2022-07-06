@@ -10,7 +10,7 @@ metadata:
 spec:
   tls:
   - hosts:
-      - keycloak
+      - onmshs
     secretName: local-dev-tls-secret
   ingressClassName: nginx
   #defaultBackend:
@@ -19,7 +19,7 @@ spec:
   #    port:
   #      number: 8443
   rules:
-  - host: keycloak
+  - host: onmshs
     http:
       paths:
       - backend:

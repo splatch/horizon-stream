@@ -11,6 +11,7 @@ mkdir tmp/
 
 printf "\n# Pull in env vars.\n"
 
+# TODO - Put all secrets in hear as well.
 source config-run
 
 echo "$VERSION_KEY_CLOAK"
@@ -33,14 +34,6 @@ kubectl config get-contexts
 printf "\n# Add Dependencies\n"
 printf "################################################################################\n\n"
 
-# Add Dependency - Keycloak
-#kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$VERSION_KEY_CLOAK/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-#kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$VERSION_KEY_CLOAK/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
-#kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/$VERSION_KEY_CLOAK/kubernetes/kubernetes.yml
-
-# Verify (should get keycloaks and keycloakrealmiiimports)
-kubectl api-resources | grep keycloak
-
 # Add Dependency - Ingress Nginx
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 
@@ -61,8 +54,9 @@ cat ../dev/kubernetes.kafka.yaml | \
   sed "s/opennms\/horizon-stream-ui-dev/opennms\/horizon-stream-ui\:$IMAGE_TAG/" | \
   sed "s/opennms\/horizon-stream-keycloak-dev/opennms\/horizon-stream-keycloak\:$IMAGE_TAG/" | \
   sed "s/frontendUrl: \"http:\/\/localhost:28080\"/frontendUrl: \"http:\/\/$DOMAIN_KEYCLOAK\"/" | \
-  sed "s/localhost:28080/$DOMAIN_KEYCLOAK/" | \
-  sed "s/localhost:48080/$DOMAIN_API/" | \
+  sed "s/localhost:28080/https:\/\/$DOMAIN_KEYCLOAK\/auth/" | \
+  sed "s/localhost:48080/http:\/\/$DOMAIN_API/" | \
+  sed "s/keycloak-admin/admin/" | \
   sed "s/imagePullPolicy: Never/imagePullPolicy: Always/" > tmp/hs.yaml
 
 cat ingress.TEMPLATE.yaml | \
@@ -78,27 +72,54 @@ kubectl apply -f tmp/hs.yaml
 
 # This is only for CI-CD pipeline
 if [[ $CI_CD_RUN == true ]]; then
-printf "\n\n# Import Images for Testing \n"
-kind load docker-image opennms/horizon-stream-ui:local
-kind load docker-image opennms/horizon-stream-keycloak:local 
-  # This keycloak-ui is referenced from the crd-keycloak.yaml.
-kind load docker-image opennms/horizon-stream-core:local
-kind load docker-image opennms/horizon-stream-rest-server:local
-
-kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui",  "image":"opennms/horizon-stream-ui:local"}]}}}}'
-kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","image":"opennms/horizon-stream-keycloak:local"}]}}}}'
-kubectl patch deployments my-horizon-stream-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "image":"opennms/horizon-stream-rest-server:local"}]}}}}'
-kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "image":"opennms/horizon-stream-core:local"}]}}}}'
-
-kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "imagePullPolicy":"Never"}]}}}}'
-kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","imagePullPolicy":"Never"}]}}}}'
-kubectl patch deployments my-horizon-stream-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
-kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
+ 
+  printf "\n\n# Import Images for Testing \n"
+  kind load docker-image opennms/horizon-stream-ui:local
+  kind load docker-image opennms/horizon-stream-keycloak:local 
+    # This keycloak-ui is referenced from the crd-keycloak.yaml.
+  kind load docker-image opennms/horizon-stream-core:local
+  kind load docker-image opennms/horizon-stream-rest-server:local
+  
+  kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui",  "image":"opennms/horizon-stream-ui:local"}]}}}}'
+  kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","image":"opennms/horizon-stream-keycloak:local"}]}}}}'
+  kubectl patch deployments my-horizon-stream-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "image":"opennms/horizon-stream-rest-server:local"}]}}}}'
+  kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "image":"opennms/horizon-stream-core:local"}]}}}}'
+  
+  kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "imagePullPolicy":"Never"}]}}}}'
+  kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","imagePullPolicy":"Never"}]}}}}'
+  kubectl patch deployments my-horizon-stream-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
+  kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
 
 else
 
-kind load docker-image opennms/horizon-stream-keycloak:latest 
-kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
+  kind load docker-image opennms/horizon-stream-keycloak:latest 
+  kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
+  
+  # TODO: Once these images are published and stable, need to remove some of the
+  # following.
+  
+  # Need to put these on our Dockerhub account.
+  kind load docker-image keycloak/keycloak:0.0.13
+  kind load docker-image grafana-test-sso:latest
+
+  kind load docker-image opennms/horizon-stream-core:local
+  kubectl patch deployments my-horizon-stream-core   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core", "image":"opennms/horizon-stream-core:local"}]}}}}'
+  kubectl patch deployments my-horizon-stream-core   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core", "imagePullPolicy":"Never"}]}}}}'
+  kubectl patch deployments my-horizon-stream-core   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core", "env":[{"name": "KEYCLOAK_BASE_URL", "value":"https://keycloak:8443/auth"}]}]}}}}'
+  kubectl patch deployments my-horizon-stream-core   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core", "env":[{"name": "KEYCLOAK_ADMIN_USERNAME", "value":"admin"}]}]}}}}'
+  
+  kind load docker-image opennms/horizon-stream-rest-server:local
+  kubectl patch deployments my-horizon-stream-api   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "image":"opennms/horizon-stream-rest-server:local"}]}}}}'
+  kubectl patch deployments my-horizon-stream-api   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
+  kubectl patch deployments my-horizon-stream-api   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "env":[{"name": "KEYCLOAK_AUTH_SERVER_URL", "value":"https://keycloak:8443/auth"}]}]}}}}'
+  kubectl patch deployments my-horizon-stream-api   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "env":[{"name": "HORIZON_STREAM_KEYCLOAK_ADMIN_USERNAME", "value":"admin"}]}]}}}}'
+  
+  kind load docker-image opennms/horizon-stream-ui:local
+  kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "image":"opennms/horizon-stream-ui:local"}]}}}}'
+  kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "imagePullPolicy":"Never"}]}}}}'
+  kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "env":[{"name": "DOMAIN_KEYCLOAK", "value":"https://$DOMAIN_KEYCLOAK/auth"}]}]}}}}'
+  #kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "env":[{"name": "DOMAIN_API", "value":"https://$DOMAIN_KEYCLOAK/api"}]}]}}}}'
+  kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "env":[{"name": "DOMAIN_API", "value":"https://$DOMAIN_API/"}]}]}}}}'
 
 fi
 
@@ -137,16 +158,42 @@ kubectl delete KeycloakRealmImport opennms
 # Wait...
 sleep 60
  
+printf "\n\n# KeyCloak\n"
+printf "################################################################################\n\n"
+
+openssl req -subj "/CN=$DOMAIN_KEYCLOAK/O=Test Keycloak./C=US" -newkey rsa:2048 -nodes -keyout tmp/key.pem -x509 -days 365 -out tmp/certificate.pem
+kubectl create secret tls local-dev-tls-secret --cert tmp/certificate.pem --key tmp/key.pem
+
+# Install Keycloak
+kubectl apply -f secrets.yaml
+kubectl apply -f postgres.yaml
+sleep 20
+kubectl apply -f kc-deployment.yaml
+kubectl apply -f kc-service.yaml
+kubectl apply -f kc-ingress.yaml
+
+
+printf "\n\n# Grafana\n"
+printf "################################################################################\n\n"
+
+kubectl apply -f grafana-a-configmap.yaml
+kubectl apply -f grafana-b-secrets.yaml
+kubectl apply -f grafana-c-deployment.yaml
+kubectl apply -f grafana-d-service.yaml
+kubectl apply -f grafana-e-ingress.yaml
+
 printf "\n\n# Create user through keycloak.\n"
 printf "################################################################################\n\n"
 
-cd ../tools/
-./KC.login -H http://localhostkey/keycloak -u user001 -p passw0rd -R opennms
-./events.list -H http://$DOMAIN_CORE -t "$(< data/ACCESS_TOKEN.txt)"
-./events.publish -H http://$DOMAIN_CORE -t "$(< data/ACCESS_TOKEN.txt)"
-./events.list -H http://$DOMAIN_CORE -t "$(< data/ACCESS_TOKEN.txt)"
+./run.create-realm.sh 
 
 printf "\n\n# Output\n"
 printf "################################################################################\n\n"
 
-printf "\n\nDone\n\nGo to http://$DOMAIN_UI\n\n"
+printf "\n\n****************************************** \n"
+printf "*************** IMPORTANT **************** \n"
+printf "****************************************** \n"
+printf "  Run ./run.create-realm.sh.\n"
+printf "  See ISSUE.integrating_new_keycloak.md until gets integrated.\n"
+printf "  Done\n"
+printf "  Go to https://$DOMAIN_UI/ui/, IMPORTANT, make sure the trailing slash is there or else it does not work, TODO item. \n"

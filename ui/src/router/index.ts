@@ -3,7 +3,7 @@ import Dashboard from '@/containers/Dashboard.vue'
 import Appliances from '@/containers/Appliances.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/ui'),
   routes: [
     {
       path: '/',

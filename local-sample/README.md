@@ -1,3 +1,10 @@
+# Add New User to Keycloak
+
+Show how to do it with our SMTP server, but in README.md for local-sample/,
+tell the admin for on prem to use their own smtp server.
+
+Backend requires user to have admin role. Needs to be fixed.
+
 # Requirements
 
 Kind is installed.

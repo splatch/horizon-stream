@@ -121,7 +121,7 @@ spec:
         - name: jgroups.dns.query
           value: keycloak.my-keycloak-operator
         - name: KC_HOSTNAME
-          value: keycloak
+          value: onmshs
         - name: KC_HTTPS_CERTIFICATE_FILE
           value: /mnt/certificates/tls.crt
         - name: KC_HTTPS_CERTIFICATE_KEY_FILE
@@ -201,7 +201,7 @@ spec:
         secret:
           defaultMode: 420
           optional: false
-          secretName: example-tls-secret
+          secretName: local-dev-tls-secret
 
       #tolerations:
       #- effect: NoExecute

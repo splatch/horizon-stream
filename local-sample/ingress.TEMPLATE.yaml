@@ -9,31 +9,17 @@ spec:
   - host: [[LOCALHOSTUI]]
     http:
       paths:
-      - path: /
-        pathType: Prefix
+      - path: /ui
+        pathType: ImplementationSpecific
         backend:
           service:
             name: hs-ui
             port:
               number: 3000
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ingress-keycloak
-spec:
-  ingressClassName: nginx
-  rules:
-  - host: [[LOCALHOSTKEYCLOAK]]
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: keycloak
-            port:
-              number: 8080
+  tls:
+  - hosts:
+    - [[LOCALHOSTUI]]
+    secretName: local-dev-tls-secret
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

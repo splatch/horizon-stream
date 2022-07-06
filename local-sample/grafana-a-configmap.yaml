@@ -55,7 +55,7 @@ data:
     http_port = 
     
     # The public facing domain name used to access grafana from a browser
-    domain = keycloak
+    domain = onmshs
     #domain = localhostkey
     
     # Redirect to correct domain if host header does not match domain
@@ -127,14 +127,8 @@ data:
     allow_sign_up = true
     client_id = grafana
     client_secret = grafana-client-secret
-    auth_url =  https://keycloak/auth/realms/master/protocol/openid-connect/auth
-    token_url = https://keycloak:8443/auth/realms/master/protocol/openid-connect/token
-    api_url =   https://keycloak:8443/auth/realms/master/protocol/openid-connect/userinfo
-    
-    #auth_url =  https://localhost/auth/realms/opennms/protocol/openid-connect/auth
-    #token_url = https://localhost/auth/realms/opennms/protocol/openid-connect/token
-    #api_url =   https://localhost/auth/realms/opennms/protocol/openid-connect/userinfo
-    
-    #auth_url =  http://localhostkey/auth/realms/opennms/protocol/openid-connect/auth
-    #token_url = http://localhostkey/auth/realms/opennms/protocol/openid-connect/token
-    #api_url =   http://localhostkey/auth/realms/opennms/protocol/openid-connect/userinfo
+    auth_url =  https://onmshs/auth/realms/opennms/protocol/openid-connect/auth
+
+    # The following point to the service in the cluster.
+    token_url = https://keycloak:8443/auth/realms/opennms/protocol/openid-connect/token
+    api_url =   https://keycloak:8443/auth/realms/opennms/protocol/openid-connect/userinfo
