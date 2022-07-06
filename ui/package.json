@@ -11,8 +11,7 @@
     "lint:fix": "eslint --ignore-path ./.gitignore --ext .ts,.vue . --fix",
     "format": "prettier --ignore-path ./.gitignore --write \"**/*.+(ts)\"",
     "generate": "graphql-codegen --config codegen.yml",
-    "prebuild": "yarn generate",
-    "predev": "yarn generate"
+    "prebuild": "yarn generate"
   },
   "dependencies": {
     "@dsb-norge/vue-keycloak-js": "^2.1.5-beta",

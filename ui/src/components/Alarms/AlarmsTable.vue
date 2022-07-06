@@ -41,25 +41,31 @@ import { useAlarmsStore } from '@/store/alarmsStore'
 import { useEventsStore } from '@/store/eventsStore'
 import { useDashboardViewStore } from '@/store/dashboardViewStore'
 import { AlarmAckDtoInput } from '@/graphql/operations'
+import useSpinner from '@/composables/useSpinner'
 
 const dashboardViewStore = useDashboardViewStore()
 const eventsStore = useEventsStore()
 const alarmsStore = useAlarmsStore()
+const { startSpinner, stopSpinner } = useSpinner()
 
 const trigger = async () => {
+  startSpinner()
   await eventsStore.createEvent({ event: getMockEvent() })
-  setTimeout(() => {
-    dashboardViewStore.fetch()
+  setTimeout(async () => {
+    await dashboardViewStore.fetch()
+    stopSpinner()
   }, 350)
 }
 
 const clear = async () => {
+  startSpinner()
   const promises = dashboardViewStore.alarms.map((alarm) => 
     alarmsStore.clearAlarm({ id: alarm?.id, ackDTO: { user: 'admin' } as AlarmAckDtoInput }))
 
   await Promise.all(promises)
-  setTimeout(() => {
-    dashboardViewStore.fetch()
+  setTimeout(async () => {
+    await dashboardViewStore.fetch()
+    stopSpinner()
   }, 350)
 }
 </script>
