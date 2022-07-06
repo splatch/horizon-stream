@@ -51,12 +51,4 @@ public class AbstractCollectionDTO<T> {
   public void setOffset(Integer offset) {
     this.offset = offset;
   }
-
-  public List<T> getObjects() {
-    return objects;
-  }
-
-  public void setObjects(List<T> objects) {
-    this.objects = objects;
-  }
 }

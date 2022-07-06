@@ -626,17 +626,14 @@ public class EventRestServiceImpl implements EventRestService {
     }
 
     private EventCollectionDTO mapEventCollection(OnmsEventCollection onmsEventCollection, long totalCount) {
-        EventCollectionDTO result = new EventCollectionDTO();
-
         List<EventDTO> dtoList =
                 onmsEventCollection.getObjects().stream()
                         .map(this.m_eventMapper::eventToEventDTO)
                         .collect(Collectors.toList())
                 ;
 
-        result.setObjects(dtoList);
+        EventCollectionDTO result = new EventCollectionDTO(dtoList);
         result.setTotalCount((int)totalCount);
-
         return result;
     }
 
