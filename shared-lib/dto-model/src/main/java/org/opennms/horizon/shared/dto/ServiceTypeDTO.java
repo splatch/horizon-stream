@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,37 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.common.model;
+package org.opennms.horizon.shared.dto;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
-public class AbstractCollectionDTO<T> {
-  protected List<T> objects = new ArrayList<>();
-  protected Integer totalCount;
-  protected Integer offset;
+public class ServiceTypeDTO {
+    private Integer id;
+    private String name;
 
-  public Integer getTotalCount() {
-    return totalCount==null? objects.size(): totalCount;
-  }
+    public Integer getId() {
+        return id;
+    }
 
-  public void setTotalCount(Integer totalCount) {
-    this.totalCount = totalCount;
-  }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-  public Integer getOffset() {
-    return offset;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public void setOffset(Integer offset) {
-    this.offset = offset;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public List<T> getObjects() {
-    return objects;
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ServiceTypeDTO that = (ServiceTypeDTO) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name);
+    }
 
-  public void setObjects(List<T> objects) {
-    this.objects = objects;
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
 }

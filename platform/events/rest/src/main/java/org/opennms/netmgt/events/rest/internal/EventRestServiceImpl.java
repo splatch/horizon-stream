@@ -60,8 +60,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.opennms.horizon.db.common.model.EventCollectionDTO;
-import org.opennms.horizon.db.common.model.EventDTO;
 import org.opennms.horizon.db.dao.api.EventDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsEvent;
@@ -70,6 +68,8 @@ import org.opennms.horizon.db.model.mapper.EventMapper;
 import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.events.xml.Parm;
+import org.opennms.horizon.shared.dto.EventCollectionDTO;
+import org.opennms.horizon.shared.dto.EventDTO;
 import org.opennms.netmgt.events.rest.EventRestService;
 import org.opennms.netmgt.events.rest.ISO8601DateEditor;
 import org.opennms.netmgt.events.rest.StringXmlCalendarPropertyEditor;

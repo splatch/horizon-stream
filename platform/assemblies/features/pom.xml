@@ -367,6 +367,11 @@
             <artifactId>service</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>dto-model</artifactId>
+            <version>${horizon.shared.lib.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

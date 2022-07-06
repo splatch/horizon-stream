@@ -26,72 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.common.model;
+package org.opennms.horizon.shared.dto;
 
-import java.util.Date;
 import java.util.Objects;
 
-public class MemoDTO {
-    private Integer id;
-    private String body;
-    private String author;
-    private Date updated;
-    private Date created;
+public class ReductionKeyMemoDTO extends MemoDTO {
+    private String reductionKey;
 
-    public Integer getId() {
-        return id;
+    public String getReductionKey() {
+        return reductionKey;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setReductionKey(String reductionKey) {
+        this.reductionKey = reductionKey;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MemoDTO memoDTO = (MemoDTO) o;
-        return Objects.equals(id, memoDTO.id) &&
-                Objects.equals(body, memoDTO.body) &&
-                Objects.equals(author, memoDTO.author) &&
-                Objects.equals(updated, memoDTO.updated) &&
-                Objects.equals(created, memoDTO.created);
+        if (!super.equals(o)) return false;
+        ReductionKeyMemoDTO that = (ReductionKeyMemoDTO) o;
+        return Objects.equals(reductionKey, that.reductionKey);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, body, author, updated, created);
+        return Objects.hash(super.hashCode(), reductionKey);
     }
 }

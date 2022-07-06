@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.common.model;
+package org.opennms.horizon.shared.dto;
 
 import java.beans.Transient;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package org.opennms.horizon.db.common.model;
+package org.opennms.horizon.shared.dto;
 
 public class AlarmAckDTO {
     private String user;

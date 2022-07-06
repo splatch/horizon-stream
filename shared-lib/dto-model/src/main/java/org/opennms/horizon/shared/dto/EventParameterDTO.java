@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,26 +25,34 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.horizon.shared.dto;
 
-package org.opennms.horizon.db.common.model;
+public class EventParameterDTO {
+    private String name;
+    private String value;
+    private String type;
 
-import java.util.Collection;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class EventCollectionDTO extends AbstractCollectionDTO<EventDTO> {
-
-    public EventCollectionDTO() {
-        // No-arg constructor for JAXB
+    public String getName() {
+        return name;
     }
 
-    public EventCollectionDTO(final Collection<? extends EventDTO> events) {
-        objects.addAll(events);
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @JsonProperty("events")
-    public List<EventDTO> getEvents() {
-        return objects;
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
