@@ -28,9 +28,9 @@
 
 package org.opennms.horizon.server.controller;
 
-import org.opennms.horizon.db.common.model.AlarmAckDTO;
-import org.opennms.horizon.db.common.model.AlarmCollectionDTO;
 import org.opennms.horizon.server.service.PlatformGateway;
+import org.opennms.horizon.shared.dto.AlarmAckDTO;
+import org.opennms.horizon.shared.dto.AlarmCollectionDTO;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

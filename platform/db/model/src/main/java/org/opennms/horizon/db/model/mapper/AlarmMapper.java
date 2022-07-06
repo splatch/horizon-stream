@@ -41,14 +41,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
-import org.opennms.horizon.db.common.model.AlarmDTO;
-import org.opennms.horizon.db.common.model.AlarmSummaryDTO;
-import org.opennms.horizon.db.common.model.EventParameterDTO;
 import org.opennms.horizon.db.model.AckType;
 import org.opennms.horizon.db.model.OnmsAlarm;
 import org.opennms.horizon.db.model.OnmsEventParameter;
 import org.opennms.horizon.db.model.TroubleTicketState;
 import org.opennms.horizon.events.api.EventConfDao;
+import org.opennms.horizon.shared.dto.AlarmDTO;
+import org.opennms.horizon.shared.dto.AlarmSummaryDTO;
+import org.opennms.horizon.shared.dto.EventParameterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(componentModel = "spring", uses = {EventMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)

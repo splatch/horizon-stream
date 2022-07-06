@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,23 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.common.model;
+package org.opennms.horizon.shared.dto;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+public class AbstractCollectionDTO<T> {
+  protected List<T> objects = new ArrayList<>();
+  protected Integer totalCount;
+  protected Integer offset;
 
-public class AlarmCollectionDTO extends AbstractCollectionDTO<AlarmDTO> {
-    public AlarmCollectionDTO() {
-    }
-    public AlarmCollectionDTO(final Collection<? extends AlarmDTO> alarms) {
-        objects.addAll(alarms);
-    }
-    @JsonProperty("alarms")
-    public List<AlarmDTO> getAlarms() {
-        return objects;
-    }
+  public Integer getTotalCount() {
+    return totalCount==null? objects.size(): totalCount;
+  }
 
+  public void setTotalCount(Integer totalCount) {
+    this.totalCount = totalCount;
+  }
 
+  public Integer getOffset() {
+    return offset;
+  }
+
+  public void setOffset(Integer offset) {
+    this.offset = offset;
+  }
+
+  public List<T> getObjects() {
+    return objects;
+  }
+
+  public void setObjects(List<T> objects) {
+    this.objects = objects;
+  }
 }

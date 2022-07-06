@@ -40,6 +40,7 @@
 		<docker.it.network>rest-server-it-network</docker.it.network>
 		<caffeine.cache.version>3.1.0</caffeine.cache.version>
 		<springdoc.openapi.version>1.6.9</springdoc.openapi.version>
+		<horizon.shared.lib.version>0.1.0-SNAPSHOT</horizon.shared.lib.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -55,9 +56,9 @@
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.opennms.horizon.db</groupId>
-			<artifactId>common-model</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.opennms.horizon.shared</groupId>
+			<artifactId>dto-model</artifactId>
+			<version>${horizon.shared.lib.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -184,5 +185,18 @@
 			</properties>
 		</profile>
 	</profiles>
+
+	<repositories>
+		<repository>
+			<id>opennms-maven-3rdparty</id>
+			<url>https://packages.opennms.com/public/3rdparty/maven/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 </project>

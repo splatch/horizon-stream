@@ -23,7 +23,6 @@
     <module>model</module>
     <module>schema</module>
     <module>schema-liquibase</module>
-    <module>common-model</module>
   </modules>
 
 </project>
