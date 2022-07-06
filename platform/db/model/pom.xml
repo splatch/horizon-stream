@@ -39,9 +39,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.db</groupId>
-            <artifactId>common-model</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>dto-model</artifactId>
+            <version>${horizon.shared.lib.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
