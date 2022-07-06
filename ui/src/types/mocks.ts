@@ -1,10 +1,11 @@
-import { EventDtoInput } from '@/graphql/operations'
+import { EventDtoInput } from '@/types/graphql'
 import { add } from 'date-fns'
 
 const mockEvent: EventDtoInput = {
   uei: 'uei.opennms.org/alarms/trigger',
+  source: 'kanata-office',
   time: add(new Date(), { days: 1 }).toISOString(),
-  source: 'asn-cli-script',
+  description: 'A problem has been triggered...'
 }
 
 export const getMockEvent = (): EventDtoInput => mockEvent

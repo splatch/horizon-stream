@@ -7,7 +7,7 @@
   </FeatherNavigationRail>
 </template>
 <script setup lang=ts>
-import { useLayoutStore } from '@/store/layoutStore'
+import { useLayoutStore } from '@/store/Views/layoutStore'
 import Home from '@featherds/icon/action/Home'
 import Appliances from '@featherds/icon/hardware/Appliances'
 
