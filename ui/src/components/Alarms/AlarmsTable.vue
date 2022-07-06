@@ -18,7 +18,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="alarm in dashboardViewStore.alarms" :key="alarm?.id || ''">
+            <tr v-for="alarm in dashboardQueries.alarms" :key="alarm?.id || ''">
               <td>
                 <div class="severity">
                   <div :class="alarm?.severity?.toLowerCase()" class="status-box"></div>
@@ -37,34 +37,34 @@
 
 <script setup lang="ts">
 import { getMockEvent } from '@/types/mocks'
-import { useAlarmsStore } from '@/store/alarmsStore'
-import { useEventsStore } from '@/store/eventsStore'
-import { useDashboardViewStore } from '@/store/dashboardViewStore'
-import { AlarmAckDtoInput } from '@/graphql/operations'
+import { useAlarmMutations } from '@/store/Mutations/alarmMutations'
+import { useEventMutations } from '@/store/Mutations/eventMutations'
+import { useDashboardQueries } from '@/store/Queries/dashboardQueries'
+import { AlarmAckDtoInput } from '@/types/graphql'
 import useSpinner from '@/composables/useSpinner'
 
-const dashboardViewStore = useDashboardViewStore()
-const eventsStore = useEventsStore()
-const alarmsStore = useAlarmsStore()
+const dashboardQueries = useDashboardQueries()
+const eventMutations = useEventMutations()
+const alarmMutations = useAlarmMutations()
 const { startSpinner, stopSpinner } = useSpinner()
 
 const trigger = async () => {
   startSpinner()
-  await eventsStore.createEvent({ event: getMockEvent() })
+  await eventMutations.createEvent({ event: getMockEvent() })
   setTimeout(async () => {
-    await dashboardViewStore.fetch()
+    await dashboardQueries.fetch()
     stopSpinner()
   }, 350)
 }
 
 const clear = async () => {
   startSpinner()
-  const promises = dashboardViewStore.alarms.map((alarm) => 
-    alarmsStore.clearAlarm({ id: alarm?.id, ackDTO: { user: 'admin' } as AlarmAckDtoInput }))
+  const promises = dashboardQueries.alarms.map((alarm) => 
+    alarmMutations.clearAlarm({ id: alarm?.id, ackDTO: { user: 'admin' } as AlarmAckDtoInput }))
 
   await Promise.all(promises)
   setTimeout(async () => {
-    await dashboardViewStore.fetch()
+    await dashboardQueries.fetch()
     stopSpinner()
   }, 350)
 }

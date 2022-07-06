@@ -1,8 +1,8 @@
 import { useQuery } from 'villus'
 import { defineStore } from 'pinia'
-import { DashboardDocument, DashboardQuery } from '@/graphql/operations'
+import { DashboardDocument, DashboardQuery } from '@/types/graphql'
 
-export const useDashboardViewStore = defineStore('dashboardViewStore', () => {
+export const useDashboardQueries = defineStore('dashboardQueries', () => {
   const { data, execute } = useQuery<DashboardQuery>({
     query: DashboardDocument
   })

@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { useMutation } from 'villus'
-import { ClearAlarmDocument } from '@/graphql/operations'
+import { ClearAlarmDocument } from '@/types/graphql'
 
-export const useAlarmsStore = defineStore('alarmsStore', () => {
+export const useAlarmMutations = defineStore('alarmMutations', () => {
   // clear alarm
   const {
     execute: clearAlarm

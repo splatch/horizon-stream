@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { useMutation } from 'villus'
-import { CreateEventDocument } from '@/graphql/operations'
+import { CreateEventDocument } from '@/types/graphql'
 
-export const useEventsStore = defineStore('eventsStore', () => {
+export const useEventMutations = defineStore('eventMutations', () => {
   // create event
   const {
     execute: createEvent

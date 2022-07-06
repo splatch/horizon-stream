@@ -1,7 +1,6 @@
 import { createApp, h } from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
 import { createPinia } from 'pinia'
 import VueKeycloak from '@dsb-norge/vue-keycloak-js'
 import { KeycloakInstance } from '@dsb-norge/vue-keycloak-js/dist/types'
@@ -21,7 +20,6 @@ const app = createApp({
 })
   .use(router)
   .use(createPinia())
-  .use(store)
   .use(VueKeycloak, {
     init: {
       onLoad: 'login-required',
