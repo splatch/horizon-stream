@@ -1,0 +1,52 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opennms-ingress
+  namespace: {{ .Values.Namespace }}
+spec:
+  ingressClassName: ingress-nginx-{{ .Values.Namespace }}
+  rules:
+    - host: {{ .Values.Host }}
+      http:
+        paths:
+          - path: {{ .Values.OpenNMS.UI.Path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.OpenNMS.UI.ServiceName }}
+                port:
+                  number: 3000
+{{/*          - path: {{ .Values.Keycloak.Path }}*/}}
+{{/*            pathType: Prefix*/}}
+{{/*            backend:*/}}
+{{/*              service:*/}}
+{{/*                name: {{ .Values.Keycloak.ServiceName }}-discovery*/}}
+{{/*                port:*/}}
+{{/*                  number: 8080*/}}
+          - path: /karaf
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.OpenNMS.Core.ServiceName }}
+                port:
+                  number: 8101
+          - path: {{ .Values.OpenNMS.Core.Path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.OpenNMS.Core.ServiceName }}
+                port:
+                  number: 8181
+          - path: {{ .Values.OpenNMS.API.Path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.OpenNMS.API.ServiceName }}
+                port:
+                  number: 9090
+  {{ if .Values.TLS.Enabled }}
+  tls:
+    - hosts:
+        -  {{.Values.Host }}
+      secretName: {{ .Values.TLS.Cert.Name }}
+  {{ end }}
