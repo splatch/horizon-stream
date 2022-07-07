@@ -13,7 +13,6 @@ export const useDeviceStore = defineStore('deviceStore', {
     async aGetDevices() {
       try {
         const items: Device[] = await sDeviceItems()
-        
         this.deviceItems = items
       } catch (err) {
         this.deviceItems = []

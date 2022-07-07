@@ -52,7 +52,7 @@ describe('DeviceService.ts', () => {
       const stopSpinnerSpy = vi.spyOn(spinner, 'stopSpinner')
       
       await sDeviceItems()
-      
+
       expect(startSpinnerSpy.getMockName()).toEqual('startSpinner')
       // expect(startSpinnerSpy).toHaveBeenCalledOnce() // todo
 
