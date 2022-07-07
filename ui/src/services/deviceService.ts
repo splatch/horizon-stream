@@ -15,23 +15,20 @@ const endpoint = {
 }
 
 /**
- * Return list of devices, or show error message in case of error on API request
+ * Return list of devices, or show error message in case of API request failed
  * 
  * @returns A list of devices
  */
 const sDeviceItems = async (): Promise<Device[]> => {
   startSpinner() 
-
+  
   try {
     const { data } = await api.get(endpoint['default'])
-    // const { data } = await api.get(endpoint['empty'])
-    // const { data } = await api.get(endpoint[400])
-    // const { data } = await api.get(endpoint[404])
-
-    return data
+    
+    return data.items
   } catch (err: unknown) {
     showSnackbar({ error: true, msg: getMsgFromError(err) })
-
+    
     return defaultDevices.items
   } finally {
     stopSpinner()
