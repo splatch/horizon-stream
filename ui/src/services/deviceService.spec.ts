@@ -1,6 +1,5 @@
-import { sDeviceItems } from './deviceService'
+import deviceService from './deviceService'
 import { api } from '@/services/axiosInstances'
-import { defaultDevice, Device } from '@/types/appliances'
 
 describe('DeviceService.ts', () => {
   beforeEach(() => {
@@ -11,19 +10,24 @@ describe('DeviceService.ts', () => {
     test('Request should return a list of devices', async () => {
       const success = {
         data: {
-          items: [ defaultDevice ]
+          items: [{
+            id: '1',
+            name: 'device1',
+            icmp_latency: 'latency1',
+            snmp_uptime: 'uptime1'
+          }]
         }
       }
       api.get = vi.fn().mockResolvedValueOnce(success)
 
-      const items = await sDeviceItems()
+      const items = await deviceService.sDeviceItems()
       
       expect(api.get).toHaveBeenCalledOnce()
       expect(items).toEqual(success.data.items)
     })
 
     test('Request should return an empty list and show error message', async () => {
-      const failed: Array<Device> = []
+      const failed: any[] = []
       api.get = vi.fn().mockResolvedValueOnce(failed)
 
       const { default: useSnackbar } = await import('@/composables/useSnackbar')
@@ -33,7 +37,7 @@ describe('DeviceService.ts', () => {
       const errorService = await import('@/services/errorService')
       const errorServiceSpy = vi.spyOn(errorService, 'getMsgFromError')
       
-      const items = await sDeviceItems()
+      const items = await deviceService.sDeviceItems()
       
       expect(showSnackbarSpy.getMockName()).toEqual('showSnackbar')
       // expect(showSnackbarSpy).toHaveBeenCalledOnce() // todo
@@ -51,7 +55,7 @@ describe('DeviceService.ts', () => {
       const startSpinnerSpy = vi.spyOn(spinner, 'startSpinner')
       const stopSpinnerSpy = vi.spyOn(spinner, 'stopSpinner')
       
-      await sDeviceItems()
+      await deviceService.sDeviceItems()
 
       expect(startSpinnerSpy.getMockName()).toEqual('startSpinner')
       // expect(startSpinnerSpy).toHaveBeenCalledOnce() // todo

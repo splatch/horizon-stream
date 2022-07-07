@@ -35,4 +35,6 @@ const sDeviceItems = async (): Promise<Device[]> => {
   }
 }
 
-export { sDeviceItems }
+export default {
+  sDeviceItems
+}

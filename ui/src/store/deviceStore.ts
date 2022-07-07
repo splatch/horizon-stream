@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { sDeviceItems } from '@/services/deviceService'
+import deviceService from '@/services/deviceService'
 import { Device } from '@/types/appliances'
 
 export const useDeviceStore = defineStore('deviceStore', {
@@ -12,7 +12,7 @@ export const useDeviceStore = defineStore('deviceStore', {
   actions: {
     async aGetDevices() {
       try {
-        const items: Device[] = await sDeviceItems()
+        const items: Device[] = await deviceService.sDeviceItems()
         this.deviceItems = items
       } catch (err) {
         this.deviceItems = []
