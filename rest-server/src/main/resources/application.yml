@@ -18,13 +18,3 @@ horizon-stream:
 
 logging:
   file.path: /var/log/restServer
-#spring doc
-springdoc:
-  api-docs:
-    path: /api-docs
-  swagger-ui:
-    operations-sorter: method
-    oauth:
-      client_id: horizon-stream
-  packages-to-exclude:
-    - "io.leangen.graphql"

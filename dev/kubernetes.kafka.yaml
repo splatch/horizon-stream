@@ -467,32 +467,8 @@ spec:
           image: opennms/horizon-stream-api
           imagePullPolicy: Never
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres:5432/horizon_stream"
             - name: SPRING_CACHE_CAFFEINE_SPEC
               value: "maximumSize=10000,expireAfterWrite=60s"
-            - name: KEYCLOAK_AUTH_SERVER_URL
-              value: "http://keycloak:8080"
-            - name: KEYCLOAK_REALM
-              value: "opennms"
-            - name: KEYCLOAK_RESOURCE
-              value: "horizon-stream"
-            - name: KEYCLOAK_PUBLIC_CLIENT
-              value: "true"
-            - name: KEYCLOAK_USE_RESOURCE_ROLE_MAPPINGS
-              value: "true"
-            - name: KEYCLOAK_CORS
-              value: "true"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_ID
-              value: "admin-cli"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_USERNAME
-              value: "keycloak-admin"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_PASSWORD
-              value: "admin"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_POOL_SIZE
-              value: "3"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_POOL_TIMEOUT
-              value: "5"
             - name: HORIZON_STREAM_CORE_URL
               value: "http://horizon-stream-core:8181"
           ports:
