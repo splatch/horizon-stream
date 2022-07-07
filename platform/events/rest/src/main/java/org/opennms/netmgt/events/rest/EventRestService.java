@@ -46,15 +46,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.opennms.horizon.db.model.dto.EventCollectionDTO;
-import org.opennms.horizon.db.model.dto.EventDTO;
-import org.opennms.horizon.events.xml.Event;
+import org.opennms.horizon.shared.dto.EventCollectionDTO;
+import org.opennms.horizon.shared.dto.EventDTO;
 
 @Path("events")
 public interface EventRestService {
 
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("{eventId}")
     @RolesAllowed({"user", "admin"})
     EventDTO getEvent(@PathParam("eventId") Integer eventId);
@@ -79,7 +78,7 @@ public interface EventRestService {
      *             if any.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     EventCollectionDTO getEvents(@Context UriInfo uriInfo) throws ParseException;
 
@@ -92,7 +91,7 @@ public interface EventRestService {
      *             if any.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("between")
     @RolesAllowed({"user", "admin"})
     EventCollectionDTO getEventsBetween(@Context UriInfo uriInfo) throws ParseException;
@@ -128,7 +127,7 @@ public interface EventRestService {
 
 
     @POST
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed({"admin"})
-    Response publishEvent(final Event event);
+    Response publishEvent(final EventDTO eventDTO);
 }
