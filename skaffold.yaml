@@ -72,7 +72,6 @@ portForward:
     resourceName: horizon-mail-server
     port: 1025
     localPort: 1025
-
 deploy:
   kubectl:
     manifests:

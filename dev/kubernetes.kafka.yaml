@@ -158,11 +158,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: horizon-mail-server
+      run: horizon-mail-server
   template:
     metadata:
       labels:
-        app: horizon-mail-server
+        run: horizon-mail-server
     spec:
       containers:
         - name: mail-server
@@ -178,11 +178,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: api-gateway
+      run: api-gateway
   template:
     metadata:
       labels:
-        app: api-gateway
+        run: api-gateway
     spec:
       volumes:
         - name: nginx-conf-volume
@@ -413,8 +413,6 @@ spec:
                 secretKeyRef:
                   name: postgres-admin-secret
                   key: password
-            - name: KC_MAIL_HOST
-              value: mail-server
           ports:
             - containerPort: 8080
             - containerPort: 8443
@@ -823,3 +821,9 @@ spec:
           account:
             - "manage-account"
             - "view-profile"
+    smtpServer:
+      auth: "false"
+      host: "mail-server"
+      port: "1025"
+      user: "admin@horizion.stream.com"
+      from: "admin@horizion.stream.com"

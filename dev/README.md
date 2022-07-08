@@ -79,4 +79,6 @@ for i in $(docker images | grep skaffold | awk '{print $1":"$2}'); do docker rmi
 ```
 for i in $(docker images | grep skaffold | awk '{print $3}'); do docker rmi $i; done; docker images
 ```
+### Note 
+**The key-value pair of service metadata.labels need to math the value of deployment spec.selector.matchLabels and the value of template.metadata.labels** otherwise the cluster network can't connect to correct pod hostname.
 
