@@ -29,7 +29,8 @@ runs:
         # Release on 0.0.0 for now.
 
         # Full build, including docker image creation and Integration Tests
-        mvn -Prun-it clean install
+        #mvn -Prun-it clean install
+        mvn -Prun-it -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 clean install
         # Ran test, worked, took about 5mins.
 
         # How do we trigger the unit tests?
