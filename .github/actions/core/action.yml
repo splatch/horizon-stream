@@ -31,7 +31,8 @@ runs:
         # Full build, including docker image creation and Integration Tests
         #mvn -Prun-it clean install
         mvn -Prun-it -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 clean install
-        # Ran test, worked, took about 5mins.
+          # Added extra args to deal with time out issue, see
+          # https://github.com/actions/virtual-environments/issues/1499.
 
         # How do we trigger the unit tests?
 
