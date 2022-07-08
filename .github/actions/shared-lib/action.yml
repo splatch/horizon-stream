@@ -1,0 +1,22 @@
+name: 'Build and test shared-lib'
+description: 'This implements unit and built-time integration tests on shared-lib. There is no workflow for this, it gets called by other workflows, platform (core) and rest-server.'
+inputs:
+  dir-location:
+    description: 'The dir containing the change.'
+    required: true
+    default: 'none'
+
+runs:
+  using: "composite"
+  steps:
+    - name: build-image
+      run: |
+
+        cd ${{ inputs.dir-location }}
+
+        # When there are tests to run, put those here.
+
+        # Create the docker image.
+        mvn clean install
+
+      shell: bash
