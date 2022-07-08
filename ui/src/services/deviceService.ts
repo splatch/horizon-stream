@@ -24,6 +24,7 @@ const sDeviceItems = async (): Promise<Device[]> => {
   
   try {
     const { data } = await api.get(endpoint['default'])
+    // const { data } = await api.get(endpoint['400'])
     
     return data.items
   } catch (err: unknown) {

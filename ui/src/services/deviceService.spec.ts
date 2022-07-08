@@ -40,7 +40,7 @@ describe('DeviceService.ts', () => {
       const items = await deviceService.sDeviceItems()
       
       expect(showSnackbarSpy.getMockName()).toEqual('showSnackbar')
-      // expect(showSnackbarSpy).toHaveBeenCalledOnce() // todo
+      // expect(showSnackbarSpy).toHaveBeenCalledOnce() // todo: not working
 
       expect(errorServiceSpy.getMockName()).toEqual('getMsgFromError')
       expect(errorServiceSpy).toHaveBeenCalledOnce()
@@ -58,10 +58,10 @@ describe('DeviceService.ts', () => {
       await deviceService.sDeviceItems()
 
       expect(startSpinnerSpy.getMockName()).toEqual('startSpinner')
-      // expect(startSpinnerSpy).toHaveBeenCalledOnce() // todo
+      // expect(startSpinnerSpy).toHaveBeenCalledOnce() // todo: not working
 
       expect(stopSpinnerSpy.getMockName()).toEqual('stopSpinner')
-      // expect(stopSpinnerSpy).toHaveBeenCalledOnce() // todo
+      // expect(stopSpinnerSpy).toHaveBeenCalledOnce() // todo: not working
     })
   })
 })
