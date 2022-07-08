@@ -126,6 +126,7 @@
         <bundle>mvn:org.opennms.horizon.ipc.grpc/common/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.ipc.grpc/server/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.ipc/echo/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.ipc/heartbeat/${project.version}</bundle>
     </feature>
 
     <feature name="horizon-icmp" version="${project.version}" description="Horizon :: ICMP">
