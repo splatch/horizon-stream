@@ -133,6 +133,44 @@ spec:
   selector:
     run: api-gateway
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mail-server
+  labels:
+    run: horizon-mail-server
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8025
+      protocol: TCP
+      name: http
+    - port: 1025
+      protocol: TCP
+      name: smtp
+  selector:
+    run: horizon-mail-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: horizon-mail-server
+spec:
+  selector:
+    matchLabels:
+      app: horizon-mail-server
+  template:
+    metadata:
+      labels:
+        app: horizon-mail-server
+    spec:
+      containers:
+        - name: mail-server
+          image: mailhog/mailhog:latest
+          ports:
+            - containerPort: 8025
+            - containerPort: 1025
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -375,6 +413,8 @@ spec:
                 secretKeyRef:
                   name: postgres-admin-secret
                   key: password
+            - name: KC_MAIL_HOST
+              value: mail-server
           ports:
             - containerPort: 8080
             - containerPort: 8443
