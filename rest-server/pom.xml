@@ -180,7 +180,7 @@
 		</profile>
 	</profiles>
 
-	<repositories>
+	<!--<repositories>
 		<repository>
 			<id>opennms-maven-3rdparty</id>
 			<url>https://packages.opennms.com/public/3rdparty/maven/</url>
@@ -191,6 +191,6 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-	</repositories>
+	</repositories>-->
 
 </project>
