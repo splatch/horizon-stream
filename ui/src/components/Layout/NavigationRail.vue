@@ -13,12 +13,6 @@
         :icon="Appliances"
         title="Appliances"
       />
-      <FeatherRailItem
-        :class="{ selected: isSelected('/devices') }"
-        href="/devices"
-        :icon="Laptop"
-        title="Devices"
-      />
     </template>
   </FeatherNavigationRail>
 </template>
@@ -29,7 +23,6 @@
 import { useLayoutStore } from '@/store/layoutStore'
 import Home from '@featherds/icon/action/Home'
 import Appliances from '@featherds/icon/hardware/Appliances'
-import Laptop from '@featherds/icon/hardware/Laptop'
 
 const store = useLayoutStore()
 const route = useRoute()
