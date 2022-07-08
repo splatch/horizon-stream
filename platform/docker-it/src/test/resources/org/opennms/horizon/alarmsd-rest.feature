@@ -38,8 +38,8 @@ Feature: OpenNMS Alarm Daemon Rest
 
   Scenario: Admin user request /events endpoint with JSON
     Given JSON accept encoding
-    Given XML content type
-    Given POST request body in resource "test-data/event001.xml"
+    Given JSON content type
+    Given POST request body in resource "test-data/event001.json"
     Then login test user with keycloak
     Then send POST request at path "/events"
     Then verify the response code 202 was returned
@@ -49,9 +49,9 @@ Feature: OpenNMS Alarm Daemon Rest
     Then parse the JSON response
     Then verify JSON path expressions match
       | totalCount == 1                                                       |
-      | alarm[0].uei == uei.opennms.org/alarms/trigger                        |
-      | alarm[0].logMessage == A problem has been triggered on //x-service-x. |
-      | alarm[0].lastEvent.source == x-source-x                               |
+      | alarms[0].uei == uei.opennms.org/alarms/trigger                        |
+      | alarms[0].logMessage == A problem has been triggered on //x-service-x. |
+      | alarms[0].lastEvent.source == x-source-x                               |
 
   Scenario: MISSING CREDENTIALS on the /events endpoint
     Then send GET request at path "/events/count" with retry timeout 20000
@@ -66,14 +66,12 @@ Feature: OpenNMS Alarm Daemon Rest
 
   Scenario: Acknowledge an Alarm
     Given JSON accept encoding
-    Given XML content type
+    Given JSON content type
     Then login test user with keycloak
     Then request non-empty alarm list with retry timeout 20000
     Then verify the response code 200 was returned
     Then parse the JSON response
     Then extract ID of the first alarm
-    Given TEXT accept encoding
-    Given JSON content type
     Given POST request body in resource "test-data/ack001.json"
     Then send POST request at path "/alarms/${alarmId}/ack"
     Then verify the response code 200 was returned
@@ -82,6 +80,6 @@ Feature: OpenNMS Alarm Daemon Rest
     Then DEBUG dump the response body
     Then parse the JSON response
     Then verify JSON path expressions match
-      | alarm[0].ackUser == x-user-001-x         |
-      | alarm[0].troubleTicket == x-ticket-001-x |
-      | alarm[0].troubleTicketState == 8         |
+      | alarms[0].ackUser == x-user-001-x         |
+      | alarms[0].troubleTicket == x-ticket-001-x |
+      | alarms[0].troubleTicketState == 8         |

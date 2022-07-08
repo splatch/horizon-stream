@@ -18,7 +18,7 @@
 </template>
   
 <script setup lang="ts">
-import { useLayoutStore } from './store/layoutStore'
+import { useLayoutStore } from './store/Views/layoutStore'
 
 // Remove KC redirectUri theme param
 const route = useRoute()
