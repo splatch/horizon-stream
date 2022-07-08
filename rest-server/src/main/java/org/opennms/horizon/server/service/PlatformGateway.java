@@ -28,31 +28,25 @@
 
 package org.opennms.horizon.server.service;
 
-import java.io.IOException;
+import java.util.List;
 
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import graphql.GraphQLContext;
+import io.leangen.graphql.execution.ResolutionEnvironment;
+import io.leangen.graphql.spqr.spring.autoconfigure.DefaultGlobalContext;
+import io.leangen.graphql.util.ContextUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
 public class PlatformGateway {
     public static final String URL_PATH_EVENTS = "/events";
     public static final String URL_PATH_ALARMS = "/alarms";
@@ -60,86 +54,57 @@ public class PlatformGateway {
     public static final String URL_PATH_ALARMS_ACK = URL_PATH_ALARMS + "/%d/ack";
     public static final String URL_PATH_ALARMS_CLEAR = URL_PATH_ALARMS + "/%d/clear";
     private ObjectMapper jsonMapper = new ObjectMapper();
-    @Value("${horizon-stream.core.url}")
-    private String platformUrl;
+    private final String baseUrl;
 
-    public ResponseEntity post(String path, String authToken, String data) {
-        try {
-            HttpPost post = new HttpPost(platformUrl + path);
-            post.setEntity(new StringEntity(data));
-            post.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-            post.addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
-            post.addHeader(HttpHeaders.AUTHORIZATION, authToken);
-            try (CloseableHttpClient httpClient = HttpClients.createDefault();
-                 CloseableHttpResponse response = httpClient.execute(post)) {
-                return processResponse(response, false);
-            }
-        }catch (Exception e) {
-            log.error("Error happened when post {} at {} on platform", data, path, e);
-            return ResponseEntity.badRequest().build();
-        }
+    private RestTemplate restTemplate = new RestTemplate();
+
+    public PlatformGateway(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
-    public ResponseEntity<String> get(String path, String authToken) {
-        try {
-            HttpGet getRequest = new HttpGet(platformUrl + path);
-            getRequest.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-            getRequest.setHeader(HttpHeaders.AUTHORIZATION, authToken);
-            try (CloseableHttpClient client = HttpClients.createDefault();
-                 CloseableHttpResponse response = client.execute(getRequest)) {
-                return processResponse(response, true);
-            }
-        } catch (IOException e) {
-            log.error("Error happened when execute get request at {} on platform", path, e);
-            return null;
-        }
+    public String getAuthHeader(ResolutionEnvironment env) {
+        GraphQLContext graphQLContext = env.dataFetchingEnvironment.getContext();
+        DefaultGlobalContext context = (DefaultGlobalContext) ContextUtils.unwrapContext(graphQLContext);
+        ServletWebRequest request = (ServletWebRequest) context.getNativeRequest();
+        return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
 
-    public ResponseEntity put(String path, String authToken, String data) {
-        try {
-            HttpPut putRequest = new HttpPut(platformUrl + path);
-            putRequest.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-            putRequest.addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
-            putRequest.addHeader(HttpHeaders.AUTHORIZATION, authToken);
-            putRequest.setEntity(new StringEntity(data.toString()));
-            try(CloseableHttpClient client = HttpClients.createDefault();
-                CloseableHttpResponse response = client.execute(putRequest)) {
-                log.info("Put request to platform {} with data {} return code {}", path, data, response.getStatusLine().getStatusCode());
-                return processResponse(response, false);
-            }
-        } catch (IOException e) {
-            log.error("Error happened when put {} at {}", data, path);
-            return ResponseEntity.badRequest().build();
-        }
+    public <T> ResponseEntity<T> post(String path, String authToken, Object data, Class<T> returnType) {
+        HttpHeaders headers = createHeaders(authToken, true);
+        HttpEntity request = new HttpEntity(data, headers);
+        return executeRequest(path, HttpMethod.POST, request, returnType);
     }
 
-    public ResponseEntity delete(String path, String authToken) {
-        try {
-            HttpDelete deleteRequest = new HttpDelete(platformUrl + path);
-            deleteRequest.addHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_JSON.getMimeType());
-            deleteRequest.addHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
-            deleteRequest.addHeader(HttpHeaders.AUTHORIZATION, authToken);
-            try(CloseableHttpClient client = HttpClients.createDefault();
-                CloseableHttpResponse response = client.execute(deleteRequest)) {
-                log.info("delete request with url path {}", path);
-                return processResponse(response, false);
-            }
-
-        } catch (IOException e) {
-
-            return ResponseEntity.badRequest().build();
-        }
+    public <T> ResponseEntity<T> get(String path, String authToken, Class<T> returnType) {
+            HttpHeaders headers = createHeaders(authToken, false);
+            HttpEntity request = new HttpEntity(headers);
+            ResponseEntity<T> response = executeRequest(path, HttpMethod.GET, request, returnType);
+            return response;
     }
 
-    private ResponseEntity<String> processResponse(HttpResponse response, boolean withBody) throws IOException {
-        int status = response.getStatusLine().getStatusCode();
-        if(status == HttpStatus.SC_FORBIDDEN) {
-            return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body("User doesn't have permissions for this operation.");
+    public <T> ResponseEntity<T> put(String path, String authToken, Object data, Class<T> returnType) {
+        HttpHeaders headers = createHeaders(authToken, true);
+        HttpEntity request = new HttpEntity(data, headers);
+        return executeRequest(path, HttpMethod.PUT, request, returnType);
+    }
+
+    public ResponseEntity<String> delete(String path, String authToken) {
+        return executeRequest(path, HttpMethod.DELETE, new HttpEntity(createHeaders(authToken, false)), String.class);
+    }
+
+    private HttpHeaders createHeaders(String authToken, boolean hasRequestBody) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        headers.set(HttpHeaders.AUTHORIZATION, authToken);
+        if(hasRequestBody) {
+            headers.setContentType(MediaType.APPLICATION_JSON);
         }
-        if(withBody) {
-            return ResponseEntity.status(status).body(EntityUtils.toString(response.getEntity()));
-        } else {
-            return ResponseEntity.status(status).build();
-        }
+        return headers;
+    }
+
+    private <T> ResponseEntity<T> executeRequest(String path, HttpMethod method, HttpEntity request, Class<T> type) {
+        ResponseEntity<T> response = restTemplate.exchange(baseUrl + path, method, request, type);
+        log.info("Response from platform with code {}, {}", response.getStatusCode(), response.hasBody());
+        return response;
     }
 }

@@ -1,28 +1,28 @@
 package org.opennms.horizon.server;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
-import org.opennms.horizon.server.controller.NodeController;
-import org.opennms.horizon.server.dao.NodeRepository;
-import org.opennms.horizon.server.service.NodeService;
+import org.opennms.horizon.server.service.AlarmService;
+import org.opennms.horizon.server.service.EventService;
+import org.opennms.horizon.server.service.PlatformGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class RestServerApplicationTests {
 	@Autowired
-	NodeService nodeService;
+	private PlatformGateway gateway;
 	@Autowired
-	NodeRepository nodeRepository;
+	private AlarmService alarmService;
 	@Autowired
-	NodeController nodeController;
+	private EventService eventService;
 
 	@Test
 	void contextLoads() {
-		assertThat(nodeService).isNotNull();
-		assertThat(nodeRepository).isNotNull();
-		assertThat(nodeController).isNotNull();
+		assertNotNull(gateway);
+		assertNotNull(alarmService);
+		assertNotNull(eventService);
 	}
 
 }

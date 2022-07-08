@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opennms-nginx-errors
+  namespace: {{ .Values.Operator.Namespace }}
+  labels:
+    app.kubernetes.io/name: opennms-nginx-errors
+    app.kubernetes.io/part-of: {{ .Values.Operator.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opennms-nginx-errors
+      app.kubernetes.io/part-of: {{ .Values.Operator.Namespace }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: opennms-nginx-errors
+        app.kubernetes.io/part-of: {{ .Values.Operator.Namespace }}
+    spec:
+      containers:
+        - name: opennms-nginx-error-server
+          image: {{ .Values.customErrors.image }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DEBUG
+              value: "{{ .Values.customErrors.debug }}"

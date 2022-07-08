@@ -55,6 +55,11 @@
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.horizon.shared</groupId>
+      <artifactId>dto-model</artifactId>
+      <version>${horizon.shared.lib.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

@@ -313,6 +313,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.horizon.provision</groupId>
+            <artifactId>detector-loop</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.provision</groupId>
+            <artifactId>detector-smb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.provision</groupId>
+            <artifactId>detector-snmp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.horizon</groupId>
             <artifactId>dhcpd</artifactId>
             <version>${project.version}</version>
@@ -330,6 +345,11 @@
         <dependency>
             <groupId>org.opennms.horizon.provision</groupId>
             <artifactId>detector-dhcp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.provision</groupId>
+            <artifactId>detector-loop</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -366,6 +386,11 @@
             <groupId>org.opennms.horizon.provision</groupId>
             <artifactId>service</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>dto-model</artifactId>
+            <version>${horizon.shared.lib.version}</version>
         </dependency>
     </dependencies>
 

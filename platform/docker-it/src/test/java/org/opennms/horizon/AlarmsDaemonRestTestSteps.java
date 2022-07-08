@@ -341,7 +341,7 @@ public class AlarmsDaemonRestTestSteps {
 
     @Then("extract ID of the first alarm")
     public void extractIDOfTheFirstAlarm() {
-        this.alarmId = this.parsedJsonResponse.getInt("alarm[0].id");
+        this.alarmId = this.parsedJsonResponse.getInt("alarms[0].id");
     }
 
     @Then("acknowledge alarm")

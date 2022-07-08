@@ -18,15 +18,15 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="alarm in alarms" :key="alarm.id">
+            <tr v-for="alarm in dashboardQueries.alarms" :key="alarm?.id || ''">
               <td>
                 <div class="severity">
-                  <div :class="alarm.severity.toLowerCase()" class="status-box"></div>
-                  {{ alarm.severity }}
+                  <div :class="alarm?.severity?.toLowerCase()" class="status-box"></div>
+                  {{ alarm?.severity }}
                 </div>
               </td>
-              <td>{{ alarm.description }}</td>
-              <td v-date>{{ alarm.lastEventTime }}</td>
+              <td>{{ alarm?.description }}</td>
+              <td v-date>{{ alarm?.lastEventTime }}</td>
             </tr>
           </tbody>
         </table>
@@ -37,30 +37,37 @@
 
 <script setup lang="ts">
 import { getMockEvent } from '@/types/mocks'
-import { useAlarmStore } from '@/store/alarmStore'
-import { useEventStore } from '@/store/eventStore'
+import { useAlarmMutations } from '@/store/Mutations/alarmMutations'
+import { useEventMutations } from '@/store/Mutations/eventMutations'
+import { useDashboardQueries } from '@/store/Queries/dashboardQueries'
+import { AlarmAckDtoInput } from '@/types/graphql'
+import useSpinner from '@/composables/useSpinner'
 
-const alarmStore = useAlarmStore()
-const eventStore = useEventStore()
-
-const alarms = computed(() => alarmStore.alarms)
+const dashboardQueries = useDashboardQueries()
+const eventMutations = useEventMutations()
+const alarmMutations = useAlarmMutations()
+const { startSpinner, stopSpinner } = useSpinner()
 
 const trigger = async () => {
-  await eventStore.sendEvent(getMockEvent())
-  setTimeout(() => {
-    alarmStore.getAlarms()
+  startSpinner()
+  await eventMutations.createEvent({ event: getMockEvent() })
+  setTimeout(async () => {
+    await dashboardQueries.fetch()
+    stopSpinner()
   }, 350)
 }
 
 const clear = async () => {
-  const promises = alarms.value.map((alarm) => alarmStore.deleteAlarmById(alarm.id))
+  startSpinner()
+  const promises = dashboardQueries.alarms.map((alarm) => 
+    alarmMutations.clearAlarm({ id: alarm?.id, ackDTO: { user: 'admin' } as AlarmAckDtoInput }))
+
   await Promise.all(promises)
-  setTimeout(() => {
-    alarmStore.getAlarms()
+  setTimeout(async () => {
+    await dashboardQueries.fetch()
+    stopSpinner()
   }, 350)
 }
-
-onMounted(() => alarmStore.getAlarms())
 </script>
 
 <style lang="scss" scoped>

@@ -156,8 +156,8 @@ spec:
           ports:
             - containerPort: 80
           env:
-            - name: HORIZON_CORE_URL
-              value: "http://horizon-stream-core:8181"
+            - name: API_SERVER_URL
+              value: "http://horizon-stream-api:9090"
             - name: KEYCLOAK_URL
               value: "http://keycloak:8080"
             - name: KEYCLOAK_REALM
@@ -397,6 +397,9 @@ spec:
         - name: config-volume
           configMap:
             name: camel-config
+        - name: users-volume
+          secret:
+            secretName: karaf-users-secret
       containers:
         - name: horizon-stream-core
           image: opennms/horizon-stream-core
@@ -440,6 +443,10 @@ spec:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.eventd.camel.cfg"
               subPath: "useKafka"
+            - name: users-volume
+              mountPath: "/opt/horizon-stream/etc/users.properties"
+              subPath: "data"
+              readOnly: true
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -460,32 +467,8 @@ spec:
           image: opennms/horizon-stream-api
           imagePullPolicy: Never
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres:5432/horizon_stream"
             - name: SPRING_CACHE_CAFFEINE_SPEC
               value: "maximumSize=10000,expireAfterWrite=60s"
-            - name: KEYCLOAK_AUTH_SERVER_URL
-              value: "http://keycloak:8080"
-            - name: KEYCLOAK_REALM
-              value: "opennms"
-            - name: KEYCLOAK_RESOURCE
-              value: "horizon-stream"
-            - name: KEYCLOAK_PUBLIC_CLIENT
-              value: "true"
-            - name: KEYCLOAK_USE_RESOURCE_ROLE_MAPPINGS
-              value: "true"
-            - name: KEYCLOAK_CORS
-              value: "true"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_ID
-              value: "admin-cli"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_USERNAME
-              value: "keycloak-admin"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_PASSWORD
-              value: "admin"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_POOL_SIZE
-              value: "3"
-            - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_POOL_TIMEOUT
-              value: "5"
             - name: HORIZON_STREAM_CORE_URL
               value: "http://horizon-stream-core:8181"
           ports:
@@ -632,6 +615,8 @@ metadata:
 data:
   default.conf.template: |
     server {
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
       listen       80;
       listen  [::]:80;
       server_name  localhost;
@@ -662,9 +647,8 @@ data:
       location / {
         auth_request /verifytoken;
         auth_request_set $auth_status $upstream_status;
-
-        proxy_pass ${HORIZON_CORE_URL};
-        add_header Access-Control-Allow-Origin * always;
+        proxy_pass ${API_SERVER_URL};
+        proxy_hide_header Access-Control-Allow-Origin;
       }
 
       location /verifytoken {
@@ -706,6 +690,16 @@ type: Opaque
 stringData:
   username: kafka-user
   password: passw0rd
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: karaf-users-secret
+type: Opaque
+stringData:
+  data: |
+    admin=admin,_g_:admingroup
+    _g_\:admingroup=group,admin,manager,viewer,systembundles,ssh
 ---
 apiVersion: k8s.keycloak.org/v2alpha1
 kind: KeycloakRealmImport

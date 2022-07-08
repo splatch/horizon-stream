@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.Operator.serviceName }}
+  namespace: {{ .Values.Operator.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      name: {{ .Values.Operator.serviceName }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: {{ .Values.Operator.serviceName }}
+    spec:
+      serviceAccountName: {{ .Values.Operator.serviceName }}
+      containers:
+        - image:  {{ .Values.Operator.image }}
+          name: {{ .Values.Operator.serviceName }}
+          imagePullPolicy: {{ .Values.Operator.imagePullPolicy }}
+          env:
+            - name: DEV_MODE
+              value: "{{ .Values.Operator.devMode }}"
+            - name: IMAGE_UPDATE_FREQUENCY
+              value: "{{ .Values.Operator.imageUpdateFreq }}"
+          resources:
+            limits:
+              cpu: {{ .Values.Operator.resources.limits.cpu }}
+              memory: {{ .Values.Operator.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.Operator.resources.requests.cpu }}
+              memory: {{ .Values.Operator.resources.requests.memory }}
+      terminationGracePeriodSeconds: 10
