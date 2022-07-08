@@ -9,7 +9,7 @@ describe('deviceStore.ts', () => {
   })
 
   test('When request succeeded, it sets device\'s list to deviceItems', async () => {
-    const success: any[] = [{
+    const success = [{
       id: '1',
       name: 'device1',
       icmp_latency: 'latency1',
