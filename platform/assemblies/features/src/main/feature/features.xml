@@ -118,6 +118,7 @@
 
     <feature name="horizon-grpc" version="${project.version}" description="Horizon :: gRPC">
         <feature>horizon-ipc-api</feature>
+        <feature>horizon-db</feature>
 
         <bundle>mvn:org.opennms.horizon.3rdparty/grpc/${project.version}</bundle>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf.version}</bundle>
