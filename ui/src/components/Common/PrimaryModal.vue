@@ -1,19 +1,18 @@
 <template>
   <FeatherDialog v-model="visible" relative :labels="labels" @update:modelValue="$emit('close')">
-    <div class="content">
-      <!-- Main content -->
-      <slot name="content" />
+      <div class="content">
+        <!-- Main content -->
+        <slot name="content" />
+      </div>
 
       <!-- Footer content -->
       <template v-slot:footer>
         <slot name="footer" />
       </template>
-    </div>
   </FeatherDialog>
 </template>
 
 <script setup lang="ts">
-
 const props = defineProps({
   visible: {
     required: true,
@@ -35,8 +34,8 @@ watchEffect(() => labels.title = props.title)
 
 <style scoped lang="scss">
 .content {
-  min-height: 300px;
-  min-width: 550px;
+  min-height: 100px;
+  min-width: 450px;
   position: relative;
 }
 </style>
