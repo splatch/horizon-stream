@@ -133,6 +133,44 @@ spec:
   selector:
     run: api-gateway
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mail-server
+  labels:
+    run: horizon-mail-server
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8025
+      protocol: TCP
+      name: http
+    - port: 1025
+      protocol: TCP
+      name: smtp
+  selector:
+    run: horizon-mail-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: horizon-mail-server
+spec:
+  selector:
+    matchLabels:
+      run: horizon-mail-server
+  template:
+    metadata:
+      labels:
+        run: horizon-mail-server
+    spec:
+      containers:
+        - name: mail-server
+          image: mailhog/mailhog:latest
+          ports:
+            - containerPort: 8025
+            - containerPort: 1025
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -140,11 +178,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: api-gateway
+      run: api-gateway
   template:
     metadata:
       labels:
-        app: api-gateway
+        run: api-gateway
     spec:
       volumes:
         - name: nginx-conf-volume
@@ -530,11 +568,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: my-horizon-stream-ui
+      run: my-horizon-stream-ui
   template:
     metadata:
       labels:
-        app: my-horizon-stream-ui
+        run: my-horizon-stream-ui
     spec:
       containers:
         - name: horizon-stream-ui
@@ -783,3 +821,9 @@ spec:
           account:
             - "manage-account"
             - "view-profile"
+    smtpServer:
+      auth: "false"
+      host: "mail-server"
+      port: "1025"
+      user: "admin@horizion.stream.com"
+      from: "admin@horizion.stream.com"
