@@ -568,11 +568,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: my-horizon-stream-ui
+      run: my-horizon-stream-ui
   template:
     metadata:
       labels:
-        app: my-horizon-stream-ui
+        run: my-horizon-stream-ui
     spec:
       containers:
         - name: horizon-stream-ui
