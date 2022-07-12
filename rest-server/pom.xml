@@ -31,28 +31,21 @@
 	</dependencyManagement>
 	<properties>
 		<java.version>11</java.version>
-		<mapstruct.version>1.4.2.Final</mapstruct.version>
 		<lombok.version>1.18.22</lombok.version>
 		<lombok.binding.version>0.2.0</lombok.binding.version>
-		<liquibase.version>4.9.1</liquibase.version>
 		<graphql.spqr.version>0.0.6</graphql.spqr.version>
 		<skip-docker-image-build>true</skip-docker-image-build>
 		<docker.image.tag>local</docker.image.tag>
 		<docker.image.skipPush>false</docker.image.skipPush>
 		<docker.it.network>rest-server-it-network</docker.it.network>
-		<cucumber.version>7.3.4</cucumber.version>
-		<skipITs>true</skipITs>
 		<caffeine.cache.version>3.1.0</caffeine.cache.version>
 		<springdoc.openapi.version>1.6.9</springdoc.openapi.version>
+		<horizon.shared.lib.version>0.1.0-SNAPSHOT</horizon.shared.lib.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -63,14 +56,9 @@
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
-			<version>${liquibase.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
+			<groupId>org.opennms.horizon.shared</groupId>
+			<artifactId>dto-model</artifactId>
+			<version>${horizon.shared.lib.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -79,29 +67,9 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>${mapstruct.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>io.leangen.graphql</groupId>
 			<artifactId>graphql-spqr-spring-boot-starter</artifactId>
 			<version>${graphql.spqr.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-spring-boot-starter</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-admin-client</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -112,17 +80,6 @@
 			<artifactId>caffeine</artifactId>
 			<version>${caffeine.cache.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>${springdoc.openapi.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-security</artifactId>
-			<version>${springdoc.openapi.version}</version>
-		</dependency>
-
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -130,74 +87,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>2.1.212</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-suite-engine</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.cucumber</groupId>
-			<artifactId>cucumber-java</artifactId>
-			<version>${cucumber.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.cucumber</groupId>
-			<artifactId>cucumber-junit-platform-engine</artifactId>
-			<version>${cucumber.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.cucumber</groupId>
-			<artifactId>cucumber-picocontainer</artifactId>
-			<version>${cucumber.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.vintage</groupId>
-			<artifactId>junit-vintage-engine</artifactId>
-			<version>5.8.2</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.hamcrest</groupId>
-					<artifactId>hamcrest-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>io.rest-assured</groupId>
-			<artifactId>rest-assured-common</artifactId>
-			<version>5.0.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.rest-assured</groupId>
-			<artifactId>rest-assured</artifactId>
-			<version>5.0.1</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.codehaus.groovy</groupId>
-					<artifactId>groovy-xml</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>io.rest-assured</groupId>
-			<artifactId>rest-assured-all</artifactId>
-			<version>5.0.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -212,11 +103,6 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<annotationProcessorPaths>
-						<path>
-							<groupId>org.mapstruct</groupId>
-							<artifactId>mapstruct-processor</artifactId>
-							<version>${mapstruct.version}</version>
-						</path>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
@@ -270,176 +156,6 @@
 						<goals><goal>build</goal></goals>
 						<phase>package</phase>
 					</execution>
-					<execution>
-						<!-- Docker compose for IT test  -->
-						<configuration>
-							<skip>${skipITs}</skip>
-							<showLogs>true</showLogs>
-							<autoCreateCustomNetworks>true</autoCreateCustomNetworks>
-							<images>
-								<image>
-									<!--Postgres DB container -->
-									<name>postgres-it-image</name>
-									<alias>postgres-host</alias>
-									<build>
-										<from>postgres:13.3-alpine</from>
-										<assemblies>
-											<assembly>
-												<name>work</name>
-												<targetDir>/</targetDir>
-												<inline>
-													<id>copy-sql</id>
-													<files>
-														<file>
-															<source>${project.build.directory}/test-classes/db-init.sql</source>
-															<outputDirectory>/docker-entrypoint-initdb.d</outputDirectory>
-														</file>
-													</files>
-												</inline>
-											</assembly>
-										</assemblies>
-									</build>
-									<run>
-										<env>
-											<POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD>
-										</env>
-										<ports>
-											<port>postgres-db-port:5432</port>
-										</ports>
-										<wait>
-											<log>(?s)PostgreSQL init process complete; ready for start up..*database system is ready to accept connections</log>
-										</wait>
-										<ports>
-											<port>postgresql.port:5432</port>
-										</ports>
-										<network>
-											<mode>custom</mode>
-											<name>${docker.it.network}</name>
-											<alias>postgres-host</alias>
-										</network>
-									</run>
-								</image>
-								<image>
-									<!-->Keycloak container-->
-									<name>keycloak-it-image</name>
-									<alias>keycloak</alias>
-									<build>
-										<from>quay.io/keycloak/keycloak:18.0.0</from>
-									</build>
-									<run>
-										<cmd>start-dev</cmd>
-										<env>
-											<KEYCLOAK_CREATE_ADMIN_USER>true</KEYCLOAK_CREATE_ADMIN_USER>
-											<KEYCLOAK_ADMIN>keycloak-admin</KEYCLOAK_ADMIN>
-											<KEYCLOAK_ADMIN_PASSWORD>admin</KEYCLOAK_ADMIN_PASSWORD>
-											<KEYCLOAK_DATABASE_HOST>postgres-host</KEYCLOAK_DATABASE_HOST>
-											<KEYCLOAK_DATABASE_USER>postgres</KEYCLOAK_DATABASE_USER>
-											<KEYCLOAK_DATABASE_PASSWORD>unused</KEYCLOAK_DATABASE_PASSWORD>
-										</env>
-										<ports>
-											<port>keycloak-http.port:8080</port>
-											<port>keycloak-https.port:8443</port>
-										</ports>
-										<wait>
-											<log>Keycloak .* on JVM .* started in .* Listening on: http.*</log>
-											<time>120000</time>
-										</wait>
-										<network>
-											<mode>custom</mode>
-											<name>${docker.it.network}</name>
-											<alias>keycloak-host</alias>
-										</network>
-									</run>
-								</image>
-								<image>
-									<!--Rest Server Container-->
-									<name>rest-api-image</name>
-									<alias>rest-application</alias>
-									<build>
-										<from>opennms/horizon-stream-api:local</from>
-									</build>
-									<run>
-										<ports>
-											<port>rest-api-http:9090</port>
-										</ports>
-										<env>
-											<!-- Need to make sure address=* is in the DEBUG OPTS otherwise it listens on the container's localhost only -->
-<!--											<JAVA_OPTS>-Djava.security.egd=file:/dev/./urandom -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_OPTS>-->
-											<SPRING_DATASOURCE_URL>jdbc:postgresql://postgres-host:5432/horizon_stream</SPRING_DATASOURCE_URL>
-											<KEYCLOAK_AUTH_SERVER_URL>http://keycloak-host:8080</KEYCLOAK_AUTH_SERVER_URL>
-											<KEYCLOAK_REALM>opennms</KEYCLOAK_REALM>
-											<HORIZON_STREAM_KEYCLOAK_ADMIN_USERNAME>keycloak-admin</HORIZON_STREAM_KEYCLOAK_ADMIN_USERNAME>
-											<HORIZON_STREAM_KEYCLOAK_ADMIN_PASSWORD>admin</HORIZON_STREAM_KEYCLOAK_ADMIN_PASSWORD>
-										</env>
-										<wait>
-											<log>Application is ready</log>
-											<time>300000</time>
-										</wait>
-										<network>
-											<mode>custom</mode>
-											<name>${docker.it.network}</name>
-											<alias>application</alias>
-										</network>
-									</run>
-								</image>
-							</images>
-						</configuration>
-						<id>prepare-docker-environment</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>build</goal>
-							<goal>start</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>stop-docker-environment</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default</id>
-						<phase>none</phase>
-					</execution>
-					<execution>
-						<id>rest-server-it-tests</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>integration-test</goal>
-						</goals>
-						<configuration>
-							<classesDirectory>${project.build.outputDirectory}</classesDirectory>
-							<skipITs>${skipITs}</skipITs>
-							<reuseForks>true</reuseForks>
-							<useSystemClassLoader>false</useSystemClassLoader>
-							<systemProperties>
-								<property>
-									<name>rest-server-url</name>
-									<value>http://localhost:${rest-api-http}</value>
-								</property>
-								<property>
-									<name>keycloak.url</name>
-									<value>http://localhost:${keycloak-http.port}</value>
-								</property>
-							</systemProperties>
-							<includes>
-								<include>**/*IT.java</include>
-							</includes>
-						</configuration>
-					</execution>
-					<execution>
-						<id>rest-server-it-verify</id>
-						<goals>
-							<goal>verify</goal>
-						</goals>
-					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -462,16 +178,19 @@
 				<skip-docker-image-build>false</skip-docker-image-build>
 			</properties>
 		</profile>
-		<profile>
-			<id>run-it</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<properties>
-				<skip-docker-image-build>false</skip-docker-image-build>
-				<skipITs>false</skipITs>
-			</properties>
-		</profile>
 	</profiles>
+
+	<!--<repositories>
+		<repository>
+			<id>opennms-maven-3rdparty</id>
+			<url>https://packages.opennms.com/public/3rdparty/maven/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>-->
 
 </project>
