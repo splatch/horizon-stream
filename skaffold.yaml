@@ -64,7 +64,14 @@ portForward:
     resourceName: api-gateway
     port: 80
     localPort: 48080
-
+  - resourceType: deployment
+    resourceName: horizon-mail-server
+    port: 8025
+    localPort: 8025
+  - resourceType: deployment
+    resourceName: horizon-mail-server
+    port: 1025
+    localPort: 1025
 deploy:
   kubectl:
     manifests:
