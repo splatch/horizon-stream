@@ -1,12 +1,12 @@
 <template>
   <FeatherButton 
     primary
-    @click="openNotificationsModal"
+    @click="openModal"
     data-test="notifications-btn">
       Outbound Notifications
   </FeatherButton>
 
-  <PrimaryModal title="Outbound Notifications" :visible="isModalOpen">
+  <PrimaryModal title="Outbound Notifications">
     <template v-slot:content>
       <p class="title" data-test="notifications-modal">
         Pager Duty
@@ -39,17 +39,25 @@
 
 <script setup lang="ts">
 import { useNotificationMutations } from '@/store/Mutations/notificationMutations'
+import useModal from '@/composables/useModal'
+import useSnackbar from '@/composables/useSnackbar'
 
+const { showSnackbar } = useSnackbar()
+const { openModal, closeModal } = useModal()
 const notificationMutations = useNotificationMutations()
 
-const isModalOpen = ref(false)
-const routingKey = ref()
+const routingKey = ref<string>()
 
-const openNotificationsModal = () => isModalOpen.value = true
-const closeModal = () => isModalOpen.value = false
 const save = async () => {
-  await notificationMutations.sendPagerDutyRoutingKey({ routingKey: routingKey.value })
-  closeModal()
+  await notificationMutations.sendPagerDutyRoutingKey({ key: routingKey.value })
+  if (!notificationMutations.error) {
+    routingKey.value = undefined 
+    closeModal()
+
+    showSnackbar({
+      msg: 'Routing key successfuly saved.'
+    })
+  }
 }
 </script>
 

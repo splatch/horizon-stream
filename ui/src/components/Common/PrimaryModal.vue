@@ -1,5 +1,5 @@
 <template>
-  <FeatherDialog v-model="visible" relative :labels="labels" @update:modelValue="$emit('close')">
+  <FeatherDialog v-model="isModalOpen" relative :labels="labels" @update:modelValue="$emit('close')">
       <div class="content">
         <!-- Main content -->
         <slot name="content" />
@@ -13,9 +13,14 @@
 </template>
 
 <script setup lang="ts">
+import useModal from '@/composables/useModal'
+
+const { isVisible } = useModal()
+
+const isModalOpen = ref(false)
+
 const props = defineProps({
   visible: {
-    required: true,
     type: Boolean
   },
   title: {
@@ -29,6 +34,8 @@ const labels = reactive({
   close: 'Close'
 })
 
+// modal can be opened by prop or composable call
+watchEffect(() => isModalOpen.value = props.visible || isVisible.value)
 watchEffect(() => labels.title = props.title)
 </script>
 
