@@ -1,5 +1,5 @@
 <template>
-  <FeatherDialog v-model="isModalOpen" relative :labels="labels" @update:modelValue="$emit('close')">
+  <FeatherDialog hideClose v-model="isModalOpen" :labels="labels" @update:modelValue="$emit('close')">
       <div class="content">
         <!-- Main content -->
         <slot name="content" />
