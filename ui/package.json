@@ -2,6 +2,9 @@
   "name": "ui",
   "version": "0.0.0",
   "license": "AGPL v3",
+  "type": "module",
+  "private": true,
+  "workspaces": [ "mock-graphql" ],
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
