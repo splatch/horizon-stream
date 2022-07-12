@@ -31,7 +31,7 @@
         </plugins>
     </build>
 
-    <distributionManagement>
+    <!--<distributionManagement>
         <snapshotRepository>
             <id>cloudsmith</id>
             <url>https://maven.cloudsmith.io/opennms/3rdparty/</url>
@@ -40,6 +40,6 @@
             <id>cloudsmith</id>
             <url>https://maven.cloudsmith.io/opennms/3rdparty/</url>
         </repository>
-    </distributionManagement>
+    </distributionManagement>-->
 
 </project>
