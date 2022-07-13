@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { useMutation } from 'villus'
 import useSpinner from '@/composables/useSpinner'
 
-import saveRoutingKeyMockMutation from '@/graphql/Notifications/saveRoutingKeyMockMutation'
+import { SaveRoutingKeyDocument } from '@/types/graphql-mocks'
 
 const { startSpinner, stopSpinner } = useSpinner()
 
@@ -12,7 +12,7 @@ export const useNotificationMutations = defineStore('notificationMutations', () 
     execute: sendPagerDutyRoutingKey,
     isFetching,
     error
-  } = useMutation(saveRoutingKeyMockMutation) // TODO: Use real mutation once available
+  } = useMutation(SaveRoutingKeyDocument)
 
   watchEffect(() => {
     if (isFetching.value) {

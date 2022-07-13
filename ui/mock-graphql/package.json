@@ -1,11 +1,11 @@
 {
   "name": "mock-graphql",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "serve": "nodemon",
+    "serve": "nodemon --experimental-specifier-resolution=node index.ts",
     "generate": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
@@ -15,6 +15,8 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.8.0",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
   }
 }
