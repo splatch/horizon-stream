@@ -5,7 +5,6 @@ import DeviceTable from '@/components/Appliances/DeviceTable.vue'
 import { setActivePinia } from 'pinia'
 
 describe('DeviceTable.vue', () => {
-
   beforeEach(() => {
     const deviceItems = computed(() => [{
       id: '1',
@@ -44,7 +43,7 @@ describe('DeviceTable.vue', () => {
     })
   })
     
-  it('should have an empty table when there\'s no device', async () =>{
+  it('should have an empty table when there\'s no device', () =>{
     const wrapper = mount(DeviceTable, { 
       global: { plugins: [createTestingPinia({
         initialState: { 
@@ -57,7 +56,7 @@ describe('DeviceTable.vue', () => {
     expect(deviceItem.exists()).toBe(false)
   })
     
-  it('should display a list when there\'s device', async () => {
+  it('should display a list when there\'s device', () => {
     const wrapper = mount(DeviceTable)
     const deviceItem = wrapper.find('[data-test="device-item"]')
     expect(deviceItem.exists()).toBe(true)
