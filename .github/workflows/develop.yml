@@ -47,6 +47,18 @@ jobs:
       #  uses: ./.github/actions/keycloak-ui
       #  with:
       #    dir-location: 'keycloak-ui'
+      
+      #- name: shared-lib
+      #  id: action-shared-lib
+      #  uses: ./.github/actions/shared-lib
+      #  with:
+      #    dir-location: 'shared-lib'
+
+      #- name: feature-core
+      #  id: action-feature-core
+      #  uses: ./.github/actions/core
+      #  with:
+      #    dir-location: 'platform'
 
       #- name: feature-core
       #  id: action-feature-core

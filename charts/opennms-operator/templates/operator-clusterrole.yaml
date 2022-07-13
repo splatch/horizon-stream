@@ -139,3 +139,15 @@ rules:
       - patch
       - update
       - watch
+  - apiGroups:
+      - elasticsearch.k8s.elastic.co
+    resources: 
+      - elasticsearches
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch

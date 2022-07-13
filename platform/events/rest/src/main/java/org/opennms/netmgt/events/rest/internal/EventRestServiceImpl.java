@@ -58,18 +58,18 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.opennms.horizon.db.dao.api.EventDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsEvent;
 import org.opennms.horizon.db.model.OnmsEventCollection;
-import org.opennms.horizon.db.model.dto.EventCollectionDTO;
-import org.opennms.horizon.db.model.dto.EventDTO;
 import org.opennms.horizon.db.model.mapper.EventMapper;
 import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.events.xml.Event;
+import org.opennms.horizon.events.xml.Parm;
+import org.opennms.horizon.shared.dto.EventCollectionDTO;
+import org.opennms.horizon.shared.dto.EventDTO;
 import org.opennms.netmgt.events.rest.EventRestService;
 import org.opennms.netmgt.events.rest.ISO8601DateEditor;
 import org.opennms.netmgt.events.rest.StringXmlCalendarPropertyEditor;
@@ -77,6 +77,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 // TODO: SECURITY
 
@@ -151,7 +153,7 @@ public class EventRestServiceImpl implements EventRestService {
      * @return a {@link OnmsEvent} object.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("{eventId}")
     @ApiResponse(
             description = "Retrieve an event by ID"
@@ -191,7 +193,7 @@ public class EventRestServiceImpl implements EventRestService {
      *             if any.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({"user", "admin"})
     @ApiResponse(
             description = "Retrieve a list of events"
@@ -211,7 +213,7 @@ public class EventRestServiceImpl implements EventRestService {
      *             if any.
      */
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("between")
     // @RolesAllowed({"user", "admin"})
     @ApiResponse(
@@ -293,17 +295,17 @@ public class EventRestServiceImpl implements EventRestService {
 
 
     @POST
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Consumes(MediaType.APPLICATION_JSON)
     // @RolesAllowed({"admin"})
     @ApiResponse(
             description = "Publish a new event"
     )
-    public Response publishEvent(final Event event) {
-        if (event.getSource() == null) {
-            event.setSource("ReST");
+    public Response publishEvent(final EventDTO dto) {
+        if (dto.getSource() == null) {
+            dto.setSource("ReST");
         }
-        if (event.getTime() == null) {
-            event.setTime(new Date());
+        if (dto.getTime() == null) {
+            dto.setTime(new Date());
         }
         try {
 // TODO: validation
@@ -324,6 +326,13 @@ public class EventRestServiceImpl implements EventRestService {
 //                                .build()
 //                );
 //            }
+            Event event = new Event(); //TODO: Event and EventDTO are the same we need to clean up
+            event.setTime(dto.getTime());
+            event.setSource(dto.getSource());
+            event.setCreationTime(dto.getTime());
+            event.setUei(dto.getUei());
+            event.setDescr(dto.getDescription());
+            event.setParmCollection(dto.getParameters().stream().map(p-> new Parm(p.getName(), p.getValue())).collect(Collectors.toList()));
             m_eventForwarder.sendNowSync(event);
             return Response.accepted().build();
         } catch (Exception exc) {
@@ -617,17 +626,14 @@ public class EventRestServiceImpl implements EventRestService {
     }
 
     private EventCollectionDTO mapEventCollection(OnmsEventCollection onmsEventCollection, long totalCount) {
-        EventCollectionDTO result = new EventCollectionDTO();
-
         List<EventDTO> dtoList =
                 onmsEventCollection.getObjects().stream()
                         .map(this.m_eventMapper::eventToEventDTO)
                         .collect(Collectors.toList())
                 ;
 
-        result.setObjects(dtoList);
-        result.setCount((int)totalCount);
-
+        EventCollectionDTO result = new EventCollectionDTO(dtoList);
+        result.setTotalCount((int)totalCount);
         return result;
     }
 

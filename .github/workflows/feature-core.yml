@@ -24,6 +24,12 @@ jobs:
 
           echo "For init steps."
 
+      - name: shared-lib
+        id: action-shared-lib
+        uses: ./.github/actions/shared-lib
+        with:
+          dir-location: 'shared-lib'
+
       - name: feature-core
         id: action-feature-core
         uses: ./.github/actions/core
