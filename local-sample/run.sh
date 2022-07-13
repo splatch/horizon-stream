@@ -119,6 +119,9 @@ else
   # TODO: Publish this image.
   kind load docker-image opennms/horizon-stream-keycloak:latest 
   kubectl -n local-instance patch deployments keycloak -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak", "imagePullPolicy":"Never"}]}}}}'
+  
+  kind load docker-image opennms/horizon-stream-grafana:latest
+  kubectl -n local-instance patch deployments grafana -p '{"spec": {"template": {"spec":{"containers":[{"name": "grafana", "imagePullPolicy":"Never"}]}}}}'
 
   #kubectl -n local-instance wait --for=condition=ready pod --timeout=120s -l app=opennms-ui
   sleep 120
