@@ -51,7 +51,7 @@
 
 
     <bean id="minionRestServiceImpl" class="org.opennms.horizon.minion.rest.internal.MinionRestServiceImpl" scope="singleton">
-        <argument  ref="minionDao" />
+        <argument ref="minionDao" />
         <argument ref="sessionUtils"/>
     </bean>
 

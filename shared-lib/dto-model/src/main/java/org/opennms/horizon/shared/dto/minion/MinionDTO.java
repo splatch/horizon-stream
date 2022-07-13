@@ -26,27 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.db.model.dto;
+package org.opennms.horizon.shared.dto.minion;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
-@XmlRootElement(name="minion")
-@XmlAccessorType(XmlAccessType.NONE)
 public class MinionDTO {
 
-    @XmlID
-    @XmlAttribute(name="id")
     private String id;
 
-    @XmlAttribute(name="label")
     private String label;
 
-    @XmlAttribute(name="location")
     private String location;
 
     public String getId() {

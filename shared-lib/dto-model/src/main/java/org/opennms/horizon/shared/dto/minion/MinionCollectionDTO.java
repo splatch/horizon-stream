@@ -26,32 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.minion.rest;
+package org.opennms.horizon.shared.dto.minion;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.opennms.horizon.shared.dto.AbstractCollectionDTO;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.util.Collection;
+import java.util.List;
 
+public class MinionCollectionDTO extends AbstractCollectionDTO<MinionDTO> {
 
-@Path("minions")
-public interface MinionRestService {
+    public MinionCollectionDTO() {
+    }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("{id}")
-    @RolesAllowed({"user", "admin"})
-    @GET
-    Response getMinion(@PathParam("id") String id);
+    public MinionCollectionDTO(Collection<? extends MinionDTO> collection) {
+        this.objects.addAll(collection);
+    }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({"user", "admin"})
-    @GET
-    Response getMinions(@QueryParam("location") String location,
-                        @QueryParam("label") String label);
+    @JsonProperty("minions")
+    public List<MinionDTO> getMinions() {
+        return objects;
+    }
 
 }

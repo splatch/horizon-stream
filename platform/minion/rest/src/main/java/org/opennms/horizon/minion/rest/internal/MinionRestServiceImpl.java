@@ -32,12 +32,20 @@ import com.google.common.base.Strings;
 import org.opennms.horizon.db.dao.api.MinionDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsMinion;
-import org.opennms.horizon.db.model.dto.MinionDTO;
+import org.opennms.horizon.shared.dto.minion.MinionCollectionDTO;
+import org.opennms.horizon.shared.dto.minion.MinionDTO;
 import org.opennms.horizon.minion.rest.MinionRestService;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.stream.Collectors;
 
+@Path("minions")
 public class MinionRestServiceImpl implements MinionRestService {
 
     private final MinionDao minionDao;
@@ -50,7 +58,10 @@ public class MinionRestServiceImpl implements MinionRestService {
     }
 
     @Override
-    public Response getMinion(String id) {
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Response getMinion(@PathParam("id") String id) {
         OnmsMinion minion = sessionUtils.withReadOnlyTransaction(() -> minionDao.findById(id));
         if (minion == null) {
             return Response.noContent().build();
@@ -59,25 +70,29 @@ public class MinionRestServiceImpl implements MinionRestService {
     }
 
     @Override
-    public Response getMinions(String location, String label) {
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Response getMinions(@QueryParam("location") String location, @QueryParam("label")String label) {
 
-        var builder = minionDao.getEntityManager().getCriteriaBuilder();
-        var criteriaQuery = builder.createQuery(OnmsMinion.class);
-        var root = criteriaQuery.from(OnmsMinion.class);
-        if (!Strings.isNullOrEmpty(location)) {
-            criteriaQuery.where(builder.like(root.get("location"), location));
-        }
-        if (!Strings.isNullOrEmpty(label)) {
-            criteriaQuery.where(builder.like(root.get("label"), label));
-        }
-        var query = minionDao.getEntityManager().createQuery(criteriaQuery);
-        var minions = sessionUtils.withReadOnlyTransaction(query::getResultList);
+        var minions = sessionUtils.withReadOnlyTransaction(() -> {
+            var builder = minionDao.getEntityManager().getCriteriaBuilder();
+            var criteriaQuery = builder.createQuery(OnmsMinion.class);
+            var root = criteriaQuery.from(OnmsMinion.class);
+            if (!Strings.isNullOrEmpty(location)) {
+                criteriaQuery.where(builder.like(root.get("location"), location));
+            }
+            if (!Strings.isNullOrEmpty(label)) {
+                criteriaQuery.where(builder.like(root.get("label"), label));
+            }
+            var query = minionDao.getEntityManager().createQuery(criteriaQuery);
+            return query.getResultList();
+        });
         if (minions.isEmpty()) {
             return Response.noContent().build();
         }
         var minionDTOS = minions.stream().map(this::mapper).collect(Collectors.toList());
 
-        return Response.ok(minionDTOS).build();
+        return Response.ok(new MinionCollectionDTO(minionDTOS)).build();
     }
 
     private MinionDTO mapper(OnmsMinion minion) {
