@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
-import DeviceTable from './DeviceTable.vue'
+import DeviceTable from '@/components/Appliances/DeviceTable.vue'
 
 describe('DeviceTable.vue', () => {
   describe('Required columns', () => {

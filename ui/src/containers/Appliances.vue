@@ -1,12 +1,11 @@
 <template>
-<DeviceTable />
-<div class="btns">
-  <NotificationsCtrl />
-</div>
+  <div class="btns">
+    <NotificationsCtrl />
+  </div>
+  <DeviceTable />
 </template>
 
 <script lang="ts" setup>
-import DeviceTable from'@/components/Appliances/DeviceTable.vue'
 
 </script>
 

@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
-import Appliances from './Appliances.vue'
+import Appliances from '@/containers/Appliances.vue'
 import DeviceTable from '@/components/Appliances/DeviceTable.vue'
 
 describe('Appliances.vue', () => {

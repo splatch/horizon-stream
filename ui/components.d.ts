@@ -3,8 +3,6 @@
 // Read more: https://github.com/vuejs/core/pull/3399
 import '@vue/runtime-core'
 
-export {}
-
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AlarmsTable: typeof import('./src/components/Alarms/AlarmsTable.vue')['default']
@@ -33,3 +31,5 @@ declare module '@vue/runtime-core' {
     Spinner: typeof import('./src/components/Common/Spinner.vue')['default']
   }
 }
+
+export {}
