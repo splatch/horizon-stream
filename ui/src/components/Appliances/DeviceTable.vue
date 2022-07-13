@@ -19,18 +19,7 @@
 
 <script setup lang="ts">
 import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
-import useSpinner from '@/composables/useSpinner'
-
 const appliancesQueries = useAppliancesQueries()
-const { startSpinner, stopSpinner} = useSpinner()
-
-onMounted( () => {
-  startSpinner()
-  setTimeout(async () => {
-    await appliancesQueries.fetch()
-    stopSpinner()
-  }, 350)
-})
 </script>
 
 <style lang="scss">

@@ -1,10 +1,33 @@
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
-import { createClient, VILLUS_CLIENT } from 'villus'
+import { createClient, setActiveClient } from 'villus'
 import DeviceTable from '@/components/Appliances/DeviceTable.vue'
+import { setActivePinia } from 'pinia'
 
 describe('DeviceTable.vue', () => {
-  describe.skip('Required columns', () => {
+
+  beforeEach(() => {
+    const deviceItems = computed(() => [{
+      id: '1',
+      name: 'device1',
+      icmp_latency: 'latency1',
+      snmp_uptime: 'uptime1'
+    }]) 
+
+    setActivePinia(createTestingPinia({
+      initialState: { 
+        appliancesQueries  : { 
+          listDevices: deviceItems
+        }
+      }
+    }))
+
+    setActiveClient(createClient({
+      url: 'http://test/graphql'
+    }))
+  })
+
+  describe('Required columns', () => {
     const requiredColumns = [
       ['Device', 'col-device'],
       ['Latency', 'col-latency'],
@@ -21,7 +44,7 @@ describe('DeviceTable.vue', () => {
     })
   })
     
-  it.skip('should have an empty table when there\'s no device', async () =>{
+  it('should have an empty table when there\'s no device', async () =>{
     const wrapper = mount(DeviceTable, { 
       global: { plugins: [createTestingPinia({
         initialState: { 
@@ -35,28 +58,7 @@ describe('DeviceTable.vue', () => {
   })
     
   it('should display a list when there\'s device', async () => {
-    const deviceItems = [{
-      id: '1',
-      name: 'device1',
-      icmp_latency: 'latency1',
-      snmp_uptime: 'uptime1'
-    }]
-
-    const wrapper = mount(DeviceTable, { 
-      global: { plugins: [createTestingPinia({
-        initialState: { 
-          appliancesQueries  : { 
-            listDevices: deviceItems
-          }
-        }
-      })],
-      provide: {
-        [VILLUS_CLIENT as unknown as string]: createClient({
-          url: 'http://test/graphql'
-        })
-      } }
-    })
-    
+    const wrapper = mount(DeviceTable)
     const deviceItem = wrapper.find('[data-test="device-item"]')
     expect(deviceItem.exists()).toBe(true)
   })
