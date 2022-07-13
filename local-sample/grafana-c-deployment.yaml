@@ -25,7 +25,7 @@ spec:
       containers:
         - name: grafana
           #image: grafana/grafana:8.2.0
-          image: grafana-test-sso:latest
+          image: opennms/horizon-stream-grafana:latest
           imagePullPolicy: IfNotPresent
           envFrom:
           - secretRef:

@@ -31,15 +31,15 @@ runs:
         #docker ps 
         #docker stats --no-stream
 
+        cd local-sample/
+        
+        source config-run 
+        echo "Domain: " $DOMAIN   
+
         # Setup localhost DNS
         cat /etc/hosts
-        sudo echo "127.0.0.1 localhostcore" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 localhostui" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 localhostkey" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 localhostapi" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 localhostkaraf" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 $DOMAIN" | sudo tee -a /etc/hosts
 
-        cd local-sample/
         sed -i.bak 's/IMAGE_TAG=latest/IMAGE_TAG=local/g' config-run
         sed -i.bak 's/CI_CD_RUN=false/CI_CD_RUN=true/g' config-run
         ./run.sh
