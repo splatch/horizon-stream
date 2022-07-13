@@ -1,11 +1,11 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import typeDefs from './typeDefs.js'
-import { user, users } from './Queries/data.js'
+import { device, listDevices } from './store/Queries/devices.js'
 
 const resolvers = {
   Query: {
-    foo: () => user,
-    bar: () => users
+    device: () => device,
+    listDevices: () => listDevices
   },
   Mutation: {
     saveRoutingKey: (_, { key }) => key

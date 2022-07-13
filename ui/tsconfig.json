@@ -12,10 +12,9 @@
     "skipLibCheck": true,
     "lib": ["esnext", "dom"],
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
+    "forceConsistentCasingInFileNames": true,
     "types": ["vitest/globals"]
   },
   "include": [
@@ -28,7 +27,6 @@
     "keycloak.config.ts",
     "tests"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
+
