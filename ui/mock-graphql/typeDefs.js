@@ -7,6 +7,9 @@ const typeDefs = `
   type Query {
     foo: User!
     bar: [User!]!
+  },
+  type Mutation {
+    saveRoutingKey(key: String!): String
   }
 `
 

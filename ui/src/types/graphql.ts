@@ -25,7 +25,6 @@ export type AlarmAckDtoInput = {
 export type AlarmCollectionDto = {
   __typename?: 'AlarmCollectionDTO';
   alarms?: Maybe<Array<Maybe<AlarmDto>>>;
-  objects?: Maybe<Array<Maybe<AlarmDto>>>;
   offset?: Maybe<Scalars['Int']>;
   totalCount?: Maybe<Scalars['Int']>;
 };
@@ -92,7 +91,6 @@ export type AlarmSummaryDto = {
 export type EventCollectionDto = {
   __typename?: 'EventCollectionDTO';
   events?: Maybe<Array<Maybe<EventDto>>>;
-  objects?: Maybe<Array<Maybe<EventDto>>>;
   offset?: Maybe<Scalars['Int']>;
   totalCount?: Maybe<Scalars['Int']>;
 };
