@@ -7,7 +7,7 @@ on:
       - '!develop'
       - '!release/**'
     paths:
-      - 'keycloak-ui/**'
+      - 'grafana/**'
 
 jobs:
 
@@ -24,8 +24,8 @@ jobs:
 
           echo "For init steps."
 
-      - name: feature-keycloak-ui
-        id: action-feature-keycloak-ui
-        uses: ./.github/actions/keycloak-ui
+      - name: feature-grafana
+        id: action-feature-grafana
+        uses: ./.github/actions/grafana
         with:
-          dir-location: 'keycloak-ui'
+          dir-location: 'grafana'
