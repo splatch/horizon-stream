@@ -41,3 +41,19 @@ export interface State {
 export const defaultState: State = {
   deviceItems: []
 }
+
+export const DevicesQuery = `
+  {
+    listDevices {
+      devices {
+        id
+        name
+        icmp_latency
+        snmp_uptime
+      }
+      count
+      totalCount
+      offset
+    }
+  }
+`

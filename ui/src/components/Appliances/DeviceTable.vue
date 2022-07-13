@@ -8,7 +8,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="device in store.gDeviceItems" :key="device.id" data-test="device-item">
+      <tr v-for="device in appliancesQueries.listDevices" :key="device.id" data-test="device-item">
         <td>{{ device.name }}</td>
         <td>{{ device.icmp_latency }}</td>
         <td>{{ device.snmp_uptime }}</td>
@@ -18,13 +18,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useDeviceStore } from '@/store/deviceStore'
+import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
+import useSpinner from '@/composables/useSpinner'
 
-const store = useDeviceStore()
+const appliancesQueries = useAppliancesQueries()
+const { startSpinner, stopSpinner} = useSpinner()
 
-onMounted(() => {
-  store.aGetDevices()
+onMounted( () => {
+  startSpinner()
+  setTimeout(async () => {
+    await appliancesQueries.fetch()
+    stopSpinner()
+  }, 350)
 })
 </script>
 
