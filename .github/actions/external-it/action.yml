@@ -18,17 +18,8 @@ runs:
         #docker version
         #kubectl -h
 
-        brew -v
-
-        echo "Install Operator SDK"
-        GOPROXY="https://proxy.golang.org|direct"
-        go version
-        git clone https://github.com/operator-framework/operator-sdk
-        cd operator-sdk
-        git checkout master
-        make install
-
-        ls
+        # Install dependencies
+        brew install operator-sdk
         operator-sdk
         which operator-sdk
 
