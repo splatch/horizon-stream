@@ -3,6 +3,8 @@
 // Read more: https://github.com/vuejs/core/pull/3399
 import '@vue/runtime-core'
 
+export {}
+
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AlarmsTable: typeof import('./src/components/Alarms/AlarmsTable.vue')['default']
@@ -11,7 +13,9 @@ declare module '@vue/runtime-core' {
     FeatherAppBarLink: typeof import('@featherds/app-bar')['FeatherAppBarLink']
     FeatherAppLayout: typeof import('@featherds/app-layout')['FeatherAppLayout']
     FeatherButton: typeof import('@featherds/button')['FeatherButton']
+    FeatherDialog: typeof import('@featherds/dialog')['FeatherDialog']
     FeatherIcon: typeof import('@featherds/icon')['FeatherIcon']
+    FeatherInput: typeof import('@featherds/input')['FeatherInput']
     FeatherNavigationRail: typeof import('@featherds/navigation-rail')['FeatherNavigationRail']
     FeatherRailItem: typeof import('@featherds/navigation-rail')['FeatherRailItem']
     FeatherSnackbar: typeof import('@featherds/snackbar')['FeatherSnackbar']
@@ -19,6 +23,7 @@ declare module '@vue/runtime-core' {
     Menubar: typeof import('./src/components/Layout/Menubar.vue')['default']
     MinionsTable: typeof import('./src/components/Appliances/MinionsTable.vue')['default']
     NavigationRail: typeof import('./src/components/Layout/NavigationRail.vue')['default']
+    NotificationsCtrl: typeof import('./src/components/Appliances/NotificationsCtrl.vue')['default']
     PrimaryModal: typeof import('./src/components/Common/PrimaryModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -26,5 +31,3 @@ declare module '@vue/runtime-core' {
     Spinner: typeof import('./src/components/Common/Spinner.vue')['default']
   }
 }
-
-export {}

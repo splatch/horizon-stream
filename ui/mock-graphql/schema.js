@@ -6,6 +6,9 @@ const resolvers = {
   Query: {
     foo: () => user,
     bar: () => users
+  },
+  Mutation: {
+    saveRoutingKey: (_, { key }) => key
   }
 }
 
