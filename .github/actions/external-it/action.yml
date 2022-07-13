@@ -26,6 +26,10 @@ runs:
         git checkout master
         make install
 
+        ls
+        operator-sdk
+        which operator-sdk
+
       shell: bash
 
     - name: Create & Setup Cluster

@@ -60,12 +60,6 @@ jobs:
       #  with:
       #    dir-location: 'platform'
 
-      #- name: feature-core
-      #  id: action-feature-core
-      #  uses: ./.github/actions/core
-      #  with:
-      #    dir-location: 'platform'
-
       #- name: feature-rest-server
       #  id: action-rest-server
       #  uses: ./.github/actions/rest-server
