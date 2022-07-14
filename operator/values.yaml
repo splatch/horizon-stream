@@ -3,10 +3,10 @@ Operator:
   image: opennms/operator:bleeding
   resources:
     limits:
-      cpu: 1
-      memory: 500Mi
+      cpu: 0
+      memory: 50Mi
     requests:
-      cpu: 1
-      memory: 500Mi
+      cpu: 0
+      memory: 50Mi
 TLS:
   Enabled: false

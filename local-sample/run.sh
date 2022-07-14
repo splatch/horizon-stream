@@ -89,6 +89,11 @@ kubectl -n local-instance apply -f grafana-c-deployment.yaml
 kubectl -n local-instance apply -f grafana-d-service.yaml
 kubectl -n local-instance apply -f grafana-e-ingress.yaml
 
+printf "\n\n# HS Ingress\n"
+printf "################################################################################\n\n"
+
+kubectl -n local-instance apply -f hs-ingress.yaml
+
 printf "\n\n# Update Configs Based on Env\n"
 printf "################################################################################\n\n"
 
