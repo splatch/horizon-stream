@@ -30,13 +30,13 @@ Types of development & testing:
 1. Start from the project's root directory.
 2. ``` kind create cluster```
    * There are options to create multiple clusters with different names and switch between them. 
-1. Confirm connection to cluster:
+3. Confirm connection to cluster:
    * ``` kubectl config get-contexts```
    * ``` kubectl get all```
 
    **NOTE**: if you get the error `The connection to the server localhost:8080 was refused - did you specify the right host or port?`, run the following:
    * `kubectl config use-context kind-kind`
-1. Install the Keycloak Operator
+4. Install the Keycloak Operator
     ```shell
     $ kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
     $ kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/18.0.0/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
@@ -44,15 +44,15 @@ Types of development & testing:
     # Verify (should get keycloaks and keycloakrealmiiimports)
     $ kubectl api-resources | grep keycloak
     ```
-1. Deploy the project into the cluster.
+5. Deploy the project into the cluster.
    1. Dev mode with file watching and port forwarding: `skaffold dev`
    2. Build and deploy once without enabling the dev loop: `skaffold run`
       * Forward ports automatically: `skaffold run --port-forward`
    3. Debug mode with automatic debug ports into containers: `skaffold debug`
       * Most of the dev loop is disabled in debug mode to prevent interfering with debug sessions. Reenable these features with `skaffold debug --auto-build --auto-sync --auto-deploy`
-1. Wait for all services to come up.
-1. Visit the front end in a web browser: http://localhost:3000/
-1. Run the Keycloak scripts to test that the build was successful:
+6. Wait for all services to come up.
+7. Visit the front end in a web browser: http://localhost:3000/
+8. Run the Keycloak scripts to test that the build was successful:
    ```shell
    cd tools
    ./KC.login -H localhost:28080 -u user001 -p passw0rd -R opennms
@@ -61,7 +61,7 @@ Types of development & testing:
    ./events.list -H localhost:18181 -t "$(< data/ACCESS_TOKEN.txt)"
    ```
    You should see log output with event JSON.
-8. Manually configure keycloak to work with localhost login.
+9. Manually configure keycloak to work with localhost login.
    1. Add realm `opennms`, if one does not exist from the scripts above. 
    2. Add client `horizon-stream`.
       * On the client page, set `Standard Flow Enabled` to `OFF`.
@@ -69,7 +69,9 @@ Types of development & testing:
    3. Add a user
       * On the user credentials tab, add a password.
       * On the user details tab, deselect the `Update Password` chip in the `Required User Actions` field.
+      
 
+10. The mail serve web UI can be accessed at http://localhost:8025
 Pruning docker images from process:
 * Removes based on image-name:tag
 ```
@@ -79,4 +81,7 @@ for i in $(docker images | grep skaffold | awk '{print $1":"$2}'); do docker rmi
 ```
 for i in $(docker images | grep skaffold | awk '{print $3}'); do docker rmi $i; done; docker images
 ```
+### Note 
+**The key-value pair of service metadata.labels need to math the value of deployment spec.selector.matchLabels and the value of template.metadata.labels** otherwise the cluster network can't connect to correct pod hostname.
+For example: don't use ```run: mail-server``` in one place and ```app: mail-server``` in other places
 

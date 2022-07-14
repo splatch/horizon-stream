@@ -18,7 +18,7 @@
 </template>
   
 <script setup lang="ts">
-import { useLayoutStore } from './store/layoutStore'
+import { useLayoutStore } from './store/Views/layoutStore'
 
 // Remove KC redirectUri theme param
 const route = useRoute()
@@ -36,6 +36,7 @@ const maxWidth = computed(() => store.navRailOpen ? '223px' : '0px')
 @import "@featherds/styles/lib/grid";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/open-mixins";
+@import "@featherds/table/scss/table";
 
 html {
   overflow-x: hidden;
@@ -48,6 +49,25 @@ html {
 
   table {
     width: 100%;
+    @include table;
+  }
+
+  .data-table tr {
+    @for $i from 1 through 50 {
+    &:nth-child(#{$i}) {
+      transition: all 0.3s ease $i * 0.05s;
+    }
+    }
+  }
+  .data-table-enter-active,
+  .data-table-leave-active {
+    transform: translateX(0px);
+    opacity:1;
+  }
+  .data-table-enter-from,
+  .data-table-leave-to {
+    transform: translateX(30px);
+    opacity:0;
   }
 }
 

@@ -18,7 +18,7 @@
       />
 
     <div class="headline4-mixin"
-      @click="API.logout()">
+      @click="logout()">
       Logout
     </div>
     </template>
@@ -29,7 +29,7 @@
 import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import Logo from '@/assets/Logo.vue'
 import useKeycloak from '@/composables/useKeycloak'
-import API from '@/services'
+import { logout } from '@/services/authService'
 
 const { keycloak } = useKeycloak()
 
@@ -37,7 +37,7 @@ const isDark = useDark({
   selector: 'body',
   attribute: 'class',
   valueDark: 'open-dark',
-  valueLight: 'open-light',
+  valueLight: 'open-light'
 })
 
 const toggleDark = useToggle(isDark)
