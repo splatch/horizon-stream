@@ -60,6 +60,9 @@ jobs:
         with:
           dir-location: 'rest-server'
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: external-it
         id: action-external-it
         uses: ./.github/actions/external-it
