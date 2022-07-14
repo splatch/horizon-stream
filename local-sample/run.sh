@@ -48,7 +48,10 @@ kubectl -n opennms get all
 sleep 120
 kubectl -n opennms describe deployment.apps/opennms-operator 
 kubectl -n opennms logs deployment.apps/opennms-operator 
-kubectl -n opennms wait --for=condition=ready pod --timeout=360s -l name=opennms-operator
+kubectl -n opennms wait --for=condition=ready pod --timeout=120s -l name=opennms-operator
+kubectl -n opennms get all
+kubectl get ns
+kubectl -n opennms logs deployment.apps/opennms-operator 
 
 # Wait for the operator to get some items started.
 sleep 120
