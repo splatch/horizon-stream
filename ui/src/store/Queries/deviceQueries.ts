@@ -8,7 +8,7 @@ export const useDeviceQueries = defineStore('deviceQueries', {
       query: DevicesQuery
     })
 
-    const listDevices = computed(() => data.value?.listDevices?.devices || [])
+    const listDevices = computed(() => data.value?.listDevices?.items || [])
 
     return {
       listDevices,

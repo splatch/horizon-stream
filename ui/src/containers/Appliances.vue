@@ -2,7 +2,8 @@
   <div class="btns">
     <NotificationsCtrl />
   </div>
-  <DeviceTable /><br/><br/><br/>
+  <DeviceTable />
+  <br/><br/>
   <MinionsTable />
 </template>
 

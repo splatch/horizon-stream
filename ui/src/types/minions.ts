@@ -1,8 +1,8 @@
 export interface Minion {
   id: string
+  label: string
   status: string
-  latency: string
-  cpu_util: string
+  location: string
 }
 
 export interface Minions {
@@ -17,9 +17,9 @@ export const MinionsQuery = `
     listMinions {
       items {
         id
+        label
         status
-        latency
-        cpu_util
+        location
       }
       count
       totalCount

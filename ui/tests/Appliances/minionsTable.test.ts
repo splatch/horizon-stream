@@ -28,9 +28,9 @@ describe('MinionsTable.vue', () => {
 
   describe('Required columns', () => {
     const requiredColumns = [
+      ['Label', 'col-label'],
       ['Status', 'col-status'],
-      ['Latency', 'col-latency'],
-      ['CPU Util', 'col-cpu-util']
+      ['Location', 'col-location']
     ]
 
     it.each(requiredColumns)('should have "%s" column', (_, dataTest) => {
