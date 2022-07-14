@@ -36,12 +36,7 @@ runs:
         #docker ps 
         #docker stats --no-stream
 
-        pwd
-
         cd local-sample/
-        
-        pwd
-        ls
 
         source config-run 
         echo "Domain: " $DOMAIN   
