@@ -35,6 +35,7 @@ import org.opennms.horizon.db.model.OnmsMinion;
 import org.opennms.horizon.shared.dto.minion.MinionCollectionDTO;
 import org.opennms.horizon.shared.dto.minion.MinionDTO;
 import org.opennms.horizon.minion.rest.MinionRestService;
+import org.opennms.horizon.shared.dto.minion.Status;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -51,6 +52,8 @@ public class MinionRestServiceImpl implements MinionRestService {
     private final MinionDao minionDao;
 
     private final SessionUtils sessionUtils;
+
+    private final static long MINION_HEARTBEAT_INTERVAL = 30000; // in msec
 
     public MinionRestServiceImpl(MinionDao minionDao, SessionUtils sessionUtils) {
         this.minionDao = minionDao;
@@ -72,7 +75,7 @@ public class MinionRestServiceImpl implements MinionRestService {
     @Override
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response getMinions(@QueryParam("location") String location, @QueryParam("label")String label) {
+    public Response getMinions(@QueryParam("location") String location, @QueryParam("label") String label) {
 
         var minions = sessionUtils.withReadOnlyTransaction(() -> {
             var builder = minionDao.getEntityManager().getCriteriaBuilder();
@@ -100,6 +103,15 @@ public class MinionRestServiceImpl implements MinionRestService {
         minionDTO.setId(minion.getId());
         minionDTO.setLabel(minion.getLabel());
         minionDTO.setLocation(minion.getLocation());
+        minionDTO.setStatus(deriveMinionStatus(minion).toString());
         return minionDTO;
+    }
+
+    private Status deriveMinionStatus(OnmsMinion minion) {
+        final long lastSeen = System.currentTimeMillis() - minion.getLastUpdated().getTime();
+        if (lastSeen < 2 * MINION_HEARTBEAT_INTERVAL) {
+            return Status.UP;
+        }
+        return Status.DOWN;
     }
 }

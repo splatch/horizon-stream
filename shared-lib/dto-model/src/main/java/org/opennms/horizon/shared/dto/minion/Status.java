@@ -28,60 +28,7 @@
 
 package org.opennms.horizon.shared.dto.minion;
 
-import java.util.Objects;
-
-public class MinionDTO {
-
-    private String id;
-
-    private String label;
-
-    private String location;
-
-    private String status;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MinionDTO)) return false;
-        MinionDTO minionDTO = (MinionDTO) o;
-        return Objects.equals(id, minionDTO.id) && Objects.equals(label, minionDTO.label) && Objects.equals(location, minionDTO.location) && Objects.equals(status, minionDTO.status);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, label, location, status);
-    }
+public enum Status {
+    UP,
+    DOWN
 }
