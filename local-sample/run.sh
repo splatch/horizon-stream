@@ -47,6 +47,9 @@ cd ../local-sample/
 # Wait for the operator to get some items started.
 sleep 60
 
+kubectl config get-contexts
+kubectl get ns
+
 printf "\n\n# Add TLS Secret\n"
 printf "################################################################################\n\n"
 
@@ -82,7 +85,7 @@ printf "########################################################################
 
 # This is only for CI-CD pipeline
 if [[ $CI_CD_RUN == true ]]; then
-
+  
   # Remove this ingress, forces http->https, we do not have that ready yet for
   # automated testing in the ci-cd pipeline.
   kubectl -n local-instance delete deployment.apps/ingress-nginx-controller 
