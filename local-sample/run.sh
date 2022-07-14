@@ -44,6 +44,8 @@ bash scripts/install-local.sh
 bash scripts/create-instance.sh
 cd ../local-sample/
 
+kubectl -n opennms get all
+
 # Wait for the operator to get some items started.
 sleep 120
 
