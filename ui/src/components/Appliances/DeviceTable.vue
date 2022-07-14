@@ -7,19 +7,23 @@
         <th scope="col" data-test="col-uptime">SNMP Uptime</th>
       </tr>
     </thead>
-    <tbody>
-      <tr v-for="device in appliancesQueries.listDevices" :key="device.id" data-test="device-item">
+    <TransitionGroup tag="tbody" :css="false" @before-enter="onBeforeEnter" @enter="onEnter" @leave="onLeave">
+      <tr v-for="(device, index) in appliancesQueries.listDevices" :key="device.id" :data-index="index"
+        data-test="device-item">
         <td>{{ device.name }}</td>
         <td>{{ device.icmp_latency }}</td>
         <td>{{ device.snmp_uptime }}</td>
       </tr>
-    </tbody>
+    </TransitionGroup>
   </table>
 </template>
 
 <script setup lang="ts">
 import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
+import useTransitionGroup from '@/composables/useTransitionGroup'
+
 const appliancesQueries = useAppliancesQueries()
+const { onBeforeEnter, onEnter, onLeave } = useTransitionGroup()
 </script>
 
 <style lang="scss">
