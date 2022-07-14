@@ -45,6 +45,9 @@ bash scripts/create-instance.sh
 cd ../local-sample/
 
 kubectl -n opennms get all
+kubectl -n opennms describe deployment.apps/opennms-operator 
+kubectl -n opennms logs deployment.apps/opennms-operator 
+#kubectl -n opennms wait --for=condition=ready pod --timeout=600s -l app=postgresql-db
 
 # Wait for the operator to get some items started.
 sleep 120
