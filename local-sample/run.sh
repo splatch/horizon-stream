@@ -45,7 +45,7 @@ bash scripts/create-instance.sh
 cd ../local-sample/
 
 # Wait for the operator to get some items started.
-sleep 60
+sleep 120
 
 kubectl config get-contexts
 kubectl get ns
