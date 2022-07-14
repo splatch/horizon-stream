@@ -20,23 +20,24 @@ import (
 	"helm.sh/helm/v3/pkg/repo"
 )
 
+// TODO - reevaluate this
 var repositories = []repo.Entry{
-	{
-		Name: "mittwald",
-		URL:  "https://helm.mittwald.de",
-	},
-	{
-		Name: "opennms",
-		URL:  "https://opennms.github.io/horizon-stream/charts/packaged",
-	},
+	//{
+	//	Name: "mittwald",
+	//	URL:  "https://helm.mittwald.de",
+	//},
+	//{
+	//	Name: "opennms",
+	//	URL:  "https://opennms.github.io/horizon-stream/charts/packaged",
+	//},
 }
 
 var charts = []helmclient.ChartSpec{
-	{
-		ChartName:   "mittwald/kubernetes-replicator",
-		ReleaseName: "kubernetes-replicator",
-		Namespace:   "kubernetes-replicator",
-	},
+	//{
+	//	ChartName:   "mittwald/kubernetes-replicator",
+	//	ReleaseName: "kubernetes-replicator",
+	//	Namespace:   "default",
+	//},
 }
 
 var handlerslist []handlers.ServiceHandler
