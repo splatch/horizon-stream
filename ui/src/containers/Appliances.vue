@@ -2,7 +2,8 @@
   <div class="btns">
     <NotificationsCtrl />
   </div>
-  <DeviceTable />
+  <DeviceTable /><br/><br/><br/>
+  <MinionsTable />
 </template>
 
 <script lang="ts" setup>
