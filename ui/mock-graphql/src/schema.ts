@@ -11,7 +11,7 @@ const resolvers = {
     listMinions: () => listMinions
   },
   Mutation: {
-    saveRoutingKey: (_, { key }) => key
+    saveRoutingKey: (_: any, { key }: { key: string }) => key
   }
 }
 

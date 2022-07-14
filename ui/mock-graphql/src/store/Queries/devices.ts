@@ -1,3 +1,4 @@
+// @ts-nocheck
 import casual from 'casual'
 
 const rndNumber = () => Math.floor(Math.random() * 100)
