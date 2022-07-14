@@ -5,9 +5,9 @@ const rndNumber = () => Math.floor(Math.random() * 100)
 casual.define('minion', function () {
   return {
     id: casual.uuid,
-    status: casual.word,
-    latency: rndNumber(),
-    cpu_util: `${rndNumber()}%`
+    label: casual.word,
+    status: casual.safe_color_name,
+    location: casual.city
   }
 })
 

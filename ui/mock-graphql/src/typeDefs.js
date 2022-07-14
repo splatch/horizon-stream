@@ -12,10 +12,10 @@ const typeDefs = `
     offset: String!
   },
   type Minion {
-    id: ID!
+    id: String!
+    label: String!
     status: String!
-    latency: String!
-    cpu_util: String!
+    location: String!
   }
   type ListMinions {
     items: [Minion!]!
