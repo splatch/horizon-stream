@@ -109,13 +109,15 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		}
 	}
 
+	//TODO - reenable below with HS-232
+
 	// start recurrent image check if not started
-	if !r.ImageChecker.ImageCheckerForInstanceRunning(instance) {
-		r.ImageChecker.StartImageCheckerForInstance(instance, autoUpdateServices)
-	}
+	//if !r.ImageChecker.ImageCheckerForInstanceRunning(instance) {
+	//	r.ImageChecker.StartImageCheckerForInstance(instance, autoUpdateServices)
+	//}
 
 	//prompt an update to the instance's service, if any
-	r.ImageChecker.UpdateServices(instance)
+	//r.ImageChecker.UpdateServices(instance)
 
 	// all clear, instance is ready
 	r.updateStatus(ctx, &instance, true, "instance ready")

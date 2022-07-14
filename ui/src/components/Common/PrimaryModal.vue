@@ -1,22 +1,26 @@
 <template>
-  <FeatherDialog v-model="visible" relative :labels="labels" @update:modelValue="$emit('close')">
-    <div class="content">
-      <!-- Main content -->
-      <slot name="content" />
+  <FeatherDialog hideClose v-model="isModalOpen" :labels="labels" @update:modelValue="$emit('close')">
+      <div class="content">
+        <!-- Main content -->
+        <slot name="content" />
+      </div>
 
       <!-- Footer content -->
       <template v-slot:footer>
         <slot name="footer" />
       </template>
-    </div>
   </FeatherDialog>
 </template>
 
 <script setup lang="ts">
+import useModal from '@/composables/useModal'
+
+const { isVisible } = useModal()
+
+const isModalOpen = ref(false)
 
 const props = defineProps({
   visible: {
-    required: true,
     type: Boolean
   },
   title: {
@@ -30,13 +34,15 @@ const labels = reactive({
   close: 'Close'
 })
 
+// modal can be opened by prop or composable call
+watchEffect(() => isModalOpen.value = props.visible || isVisible.value)
 watchEffect(() => labels.title = props.title)
 </script>
 
 <style scoped lang="scss">
 .content {
-  min-height: 300px;
-  min-width: 550px;
+  min-height: 100px;
+  min-width: 450px;
   position: relative;
 }
 </style>
