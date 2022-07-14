@@ -1,8 +1,8 @@
 import { useQuery } from 'villus'
 import { defineStore } from 'pinia'
-import { DevicesQuery } from '@/types/appliances'
+import { DevicesQuery } from '@/types/device'
 
-export const useAppliancesQueries = defineStore('appliancesQueries', {
+export const useDeviceQueries = defineStore('deviceQueries', {
   state: () => {
     const { data, execute } = useQuery({
       query: DevicesQuery

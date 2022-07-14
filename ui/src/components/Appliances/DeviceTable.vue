@@ -8,8 +8,7 @@
       </tr>
     </thead>
     <TransitionGroup name="data-table" tag="tbody">
-      <tr v-for="(device, index) in appliancesQueries.listDevices" :key="device.id" :data-index="index"
-        data-test="device-item">
+      <tr v-for="(device, index) in deviceQueries.listDevices" :key="device.id" :data-index="index" data-test="device-item">
         <td>{{ device.name }}</td>
         <td>{{ device.icmp_latency }}</td>
         <td>{{ device.snmp_uptime }}</td>
@@ -19,6 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
-const appliancesQueries = useAppliancesQueries()
+import { useDeviceQueries } from '@/store/Queries/deviceQueries'
+const deviceQueries = useDeviceQueries()
 </script>
