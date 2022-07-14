@@ -3,6 +3,8 @@
 // Read more: https://github.com/vuejs/core/pull/3399
 import '@vue/runtime-core'
 
+export {}
+
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AlarmsTable: typeof import('./src/components/Alarms/AlarmsTable.vue')['default']
@@ -27,9 +29,10 @@ declare module '@vue/runtime-core' {
     PrimaryModal: typeof import('./src/components/Common/PrimaryModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Slot: typeof import('./src/components/Appliances/Slot.vue')['default']
     Snackbar: typeof import('./src/components/Common/Snackbar.vue')['default']
     Spinner: typeof import('./src/components/Common/Spinner.vue')['default']
+    TransitionList: typeof import('./src/components/Appliances/TransitionList.vue')['default']
+    TransitionTable: typeof import('./src/components/Appliances/TransitionTable.vue')['default']
   }
 }
-
-export {}
