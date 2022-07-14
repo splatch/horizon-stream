@@ -11,5 +11,5 @@
 * [ ] Follows Horizon Stream's [development guidelines.](https://github.com/OpenNMS/horizon-stream/wiki/Development-Guidelines)
 * [ ] Appropriate reviewer(s) have been selected.
 * [ ] Jira issue(s) have been updated to "In Review".
-* [ ] Includes appropriate tests.
+* [ ] Includes [appropriate tests.](https://github.com/OpenNMS/horizon-stream/wiki/Test-Strategy)
 * [ ] Documentation has been updated as necessary.

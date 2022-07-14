@@ -24,7 +24,7 @@ tab_width = 2
 [*.scss]
 indent_size = 2
 
-[*.vue]
+[{*.vue,*.ts,*.js}]
 indent_size = 2
 tab_width = 2
 
