@@ -19,6 +19,7 @@ import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.keycloak.OAuth2Constants.PASSWORD;
 
 public class HorizonStreamTestSteps {
@@ -119,6 +120,11 @@ public class HorizonStreamTestSteps {
     @Then("verify HTTP response code = {int}")
     public void verifyHTTPResponseCode(int expectedResponseCode) {
         assertEquals(expectedResponseCode, restResponse.getStatusCode());
+    }
+
+    @Then("verify has Minion location = {string}")
+    public void verifyMinionResponse(String location) {
+        assertTrue(restResponse.getBody().print().contains(location));
     }
 
 //========================================
