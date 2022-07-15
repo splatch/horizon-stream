@@ -30,19 +30,17 @@ package org.opennms.horizon.inventory.device.rest.impl;
 
 import java.util.List;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.inventory.device.rest.api.DeviceRestAPI;
 import org.opennms.horizon.inventory.device.service.DeviceService;
+import org.opennms.horizon.shared.dto.DeviceCollectionDTO;
+import org.opennms.horizon.shared.dto.DeviceDTO;
 
-@Path("/devices")
 public class DeviceRestAPIImpl implements DeviceRestAPI {
   private DeviceService service;
 
@@ -50,16 +48,20 @@ public class DeviceRestAPIImpl implements DeviceRestAPI {
     this.service = service;
   }
 
-  @GET
-  @Path("/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  public OnmsNode getById(@PathParam("id") Integer id, @Context UriInfo uriInfo) {
+  public DeviceDTO getById(Integer id) {
     return service.getById(id);
   }
 
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  public List<OnmsNode> findAll() {
-    return service.findAll();
+  public DeviceCollectionDTO findAll() {
+    return service.searchDevices();
+  }
+
+  @Override
+  public Response createDevice(final DeviceDTO device) {
+    try {
+      return Response.ok(service.createDevice(device)).build();
+    } catch (Exception e){
+      return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+    }
   }
 }

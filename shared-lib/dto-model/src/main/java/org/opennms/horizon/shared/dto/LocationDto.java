@@ -28,38 +28,19 @@
 
 package org.opennms.horizon.shared.dto;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class DeviceDTO {
-  private Integer id;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-  private Date createTime;
-  private Integer parentId;
-  private String type;
-  private String sysOid;
-  private String sysName;
-  private String sysDescription;
-  private String sysLocation;
-  private String sysContact;
-  private String label;
-  private String labelSource;
-  private String netBiosName;
-  private String domainName;
-  private String operatingSystem;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-  private Date lastPoll;
-  private String foreignSource;
-  private String foreignId;
+public class LocationDto {
   private String location;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-  private Date lastIngressFlow;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-  private Date lastEgressFlow;
+  private String monitoringArea;
+  private String geolocation;
+  private Double latitude;
+  private Double longitude;
+  private Integer priority;
+  private List<String> tags;
 }
