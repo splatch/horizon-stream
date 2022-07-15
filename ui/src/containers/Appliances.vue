@@ -4,6 +4,8 @@
     <NotificationsCtrl />
   </div>
   <DeviceTable />
+  <br/><br/>
+  <MinionsTable />
 </template>
 
 <script lang="ts" setup>

@@ -14,7 +14,7 @@ casual.define('device', function () {
 
 casual.define('listDevices', function () {
   return {
-    devices: [casual.device, casual.device, casual.device],
+    items: [casual.device, casual.device, casual.device],
     count: rndNumber(),
     totalCount: rndNumber(),
     offset: rndNumber()

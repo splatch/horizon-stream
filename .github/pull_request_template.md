@@ -1,11 +1,15 @@
-## JIRA Link
-https://issues.opennms.org/browse/HS-xx
+## Description
+<!-- Describe this Pull Request, what it changes, and why it's necessary. -->
+
+## Jira link(s)
+- https://issues.opennms.org/browse/HS-xx
+
+## Flagged for review
+<!-- Flag things as "needs a close look" for reviewers, if necessary. Include as much detail as possible (line numbers, concerns, and so on). -->
 
 ## Checklist
-* [ ] JIRA has been updated to 'in review'.
-* [ ] Unit tests have been added as part of the PR.
-* [ ] Manual tests have been completed, and notes added to JIRA.
-* [ ] Details have been provided to docs team (if necessary)
-* [ ] Screenshot(s) included (applicable to changes with a visual impact).
-
-## Details of the change
+* [ ] Follows Horizon Stream's [development guidelines.](https://github.com/OpenNMS/horizon-stream/wiki/Development-Guidelines)
+* [ ] Appropriate reviewer(s) have been selected.
+* [ ] Jira issue(s) have been updated to "In Review".
+* [ ] Includes [appropriate tests.](https://github.com/OpenNMS/horizon-stream/wiki/Test-Strategy)
+* [ ] Documentation has been updated as necessary.
