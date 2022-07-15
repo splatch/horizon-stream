@@ -7,6 +7,7 @@ import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.hamcrest.Matchers;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.AccessTokenResponse;
@@ -16,10 +17,10 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.HttpHeaders;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
+import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.keycloak.OAuth2Constants.PASSWORD;
 
 public class HorizonStreamTestSteps {
@@ -119,12 +120,18 @@ public class HorizonStreamTestSteps {
 
     @Then("verify HTTP response code = {int}")
     public void verifyHTTPResponseCode(int expectedResponseCode) {
-        assertEquals(expectedResponseCode, restResponse.getStatusCode());
+        // Wait till Minion is registered to Horizon Core
+        await().atMost(90, TimeUnit.SECONDS).pollDelay(0, TimeUnit.SECONDS)
+            .pollInterval(5, TimeUnit.SECONDS)
+            .until(()-> restResponse.getStatusCode(), Matchers.is(expectedResponseCode));
     }
 
     @Then("verify response has Minion location = {string}")
     public void verifyMinionResponse(String location) {
-        assertTrue(restResponse.getBody().print().contains(location));
+        // Wait till Minion is registered to Horizon Core
+        await().atMost(90, TimeUnit.SECONDS).pollDelay(0, TimeUnit.SECONDS)
+            .pollInterval(5, TimeUnit.SECONDS)
+            .until(()-> restResponse.getBody().print(), Matchers.containsString(location));
     }
 
 //========================================
