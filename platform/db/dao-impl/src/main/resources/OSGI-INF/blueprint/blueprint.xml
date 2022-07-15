@@ -79,5 +79,10 @@
         </bean>
     </service>
 
+    <service interface="org.opennms.horizon.db.dao.api.MinionDao">
+        <bean class="org.opennms.horizon.db.dao.impl.MinionDaoHibernate">
+            <argument ref="entityManagerHolder"/>
+        </bean>
+    </service>
 
 </blueprint>

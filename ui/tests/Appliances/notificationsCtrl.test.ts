@@ -9,7 +9,7 @@ const wrapper = mount(Appliances, {
     plugins: [createTestingPinia()],
     provide: {
       [VILLUS_CLIENT as unknown as string]: createClient({
-        url: 'http://test/graphql',
+        url: 'http://test/graphql'
       })
     }
   }

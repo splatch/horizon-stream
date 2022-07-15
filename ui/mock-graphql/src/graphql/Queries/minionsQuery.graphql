@@ -1,0 +1,13 @@
+query ListMinions {
+  listMinions {
+    items {
+      id
+      label
+      status
+      location
+    }
+    count
+    totalCount
+    offset
+  }
+}

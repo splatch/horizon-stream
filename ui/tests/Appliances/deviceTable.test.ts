@@ -15,7 +15,7 @@ describe('DeviceTable.vue', () => {
 
     setActivePinia(createTestingPinia({
       initialState: { 
-        appliancesQueries  : { 
+        deviceQueries: { 
           listDevices: deviceItems
         }
       }
@@ -45,11 +45,7 @@ describe('DeviceTable.vue', () => {
     
   it('should have an empty table when there\'s no device', () =>{
     const wrapper = mount(DeviceTable, { 
-      global: { plugins: [createTestingPinia({
-        initialState: { 
-          deviceItems: []
-        }
-      })] }
+      global: { plugins: [createTestingPinia()] } // we need to find a way to be able to set the state
     })
       
     const deviceItem = wrapper.find('[data-test="device-item"]')

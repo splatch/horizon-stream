@@ -9,10 +9,9 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-	<bean id="snmpDetector" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" destroy-method="destroy" />
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<ref component-id="snmpDetector" />
+		<bean class="org.opennms.netmgt.provision.detector.snmp.SnmpDetectorFactory" />
 	</service>
 
 	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">

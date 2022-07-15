@@ -1,6 +1,6 @@
 query ListDevices {
   listDevices {
-    devices {
+    items {
       id
       name
       icmp_latency

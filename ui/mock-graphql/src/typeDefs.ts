@@ -6,7 +6,19 @@ const typeDefs = `
     snmp_uptime: String!
   }
   type ListDevices {
-    devices: [Device!]!
+    items: [Device!]!
+    count: String!
+    totalCount: String!
+    offset: String!
+  },
+  type Minion {
+    id: String!
+    label: String!
+    status: String!
+    location: String!
+  }
+  type ListMinions {
+    items: [Minion!]!
     count: String!
     totalCount: String!
     offset: String!
@@ -14,6 +26,8 @@ const typeDefs = `
   type Query {
     device: Device!
     listDevices: ListDevices!
+    minion: Minion!
+    listMinions: ListMinions!
   },
   type Mutation {
     saveRoutingKey(key: String!): String
