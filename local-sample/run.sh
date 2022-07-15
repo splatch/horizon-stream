@@ -11,14 +11,14 @@ mkdir tmp/
 
 printf "\n# Pull in env vars.\n"
 
-source config-run
+source ./local-sample/config-run
 
 echo "Domain: $DOMAIN"
 
 printf "\n# Create Kind cluster\n"
 printf "################################################################################\n\n"
 
-kind create cluster --config=config-kind.yaml
+kind create cluster --config=./local-sample/config-kind.yaml
 
 printf "\n\n# Confirm connection\n"
 
@@ -39,7 +39,7 @@ kubectl -n ingress-nginx wait --for=condition=ready pod --timeout=60s -l app.kub
 printf "\n\n# Install OpenNMS Operator\n"
 printf "################################################################################\n\n"
 
-cd ../operator/
+cd ./operator/
 bash scripts/install-local.sh
 bash scripts/create-instance.sh
 cd ../local-sample/
@@ -105,18 +105,20 @@ if [[ $CI_CD_RUN == true ]]; then
   kind load docker-image opennms/horizon-stream-keycloak:local 
   kind load docker-image opennms/horizon-stream-core:local
   kind load docker-image opennms/horizon-stream-rest-server:local
+
+  sleep 120
   
-  kubectl patch deployments opennms-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui",  "image":"opennms/horizon-stream-ui:local"}]}}}}'
-  kubectl patch deployments opennms-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","image":"opennms/horizon-stream-core:local"}]}}}}'
-  kubectl patch deployments opennms-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "image":"opennms/horizon-stream-rest-server:local"}]}}}}'
-  kubectl patch deployments keycloak     -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "image":"opennms/horizon-stream-keycloak:local"}]}}}}'
-  kubectl patch deployments grafana      -p '{"spec": {"template": {"spec":{"containers":[{"name": "grafana",           "image":"opennms/horizon-stream-grafana:local"}]}}}}'
+  kubectl -n local-instance patch deployments opennms-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui",  "image":"opennms/horizon-stream-ui:local"}]}}}}'
+  kubectl -n local-instance patch deployments opennms-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","image":"opennms/horizon-stream-core:local"}]}}}}'
+  kubectl -n local-instance patch deployments opennms-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "image":"opennms/horizon-stream-rest-server:local"}]}}}}'
+  kubectl -n local-instance patch deployments keycloak     -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "image":"opennms/horizon-stream-keycloak:local"}]}}}}'
+  kubectl -n local-instance patch deployments grafana      -p '{"spec": {"template": {"spec":{"containers":[{"name": "grafana",           "image":"opennms/horizon-stream-grafana:local"}]}}}}'
   
-  kubectl patch deployments opennms-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "imagePullPolicy":"Never"}]}}}}'
-  kubectl patch deployments opennms-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","imagePullPolicy":"Never"}]}}}}'
-  kubectl patch deployments opennms-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
-  kubectl patch deployments keycloak     -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
-  kubectl patch deployments grafana      -p '{"spec": {"template": {"spec":{"containers":[{"name": "grafana",           "imagePullPolicy":"Never"}]}}}}'
+  kubectl -n local-instance patch deployments opennms-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "imagePullPolicy":"Never"}]}}}}'
+  kubectl -n local-instance patch deployments opennms-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","imagePullPolicy":"Never"}]}}}}'
+  kubectl -n local-instance patch deployments opennms-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
+  kubectl -n local-instance patch deployments keycloak     -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
+  kubectl -n local-instance patch deployments grafana      -p '{"spec": {"template": {"spec":{"containers":[{"name": "grafana",           "imagePullPolicy":"Never"}]}}}}'
 
   kubectl -n local-instance patch deployments opennms-ui -p "{\"spec\": {\"template\": {\"spec\":{\"containers\":[{\"name\": \"opennms-ui\", \"env\":[{\"name\": \"DOMAIN_KEYCLOAK\", \"value\":\"https://$DOMAIN/auth\"}]}]}}}}"
 
@@ -156,7 +158,7 @@ fi
 printf "\n\n# Create realm, user, and role mappings through keycloak api.\n"
 printf "################################################################################\n\n"
 
-./run.kc-config.sh
+./local-sample/run.kc-config.sh
 
 printf "\n\n# Output\n"
 printf "################################################################################\n\n"

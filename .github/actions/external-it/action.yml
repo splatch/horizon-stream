@@ -36,9 +36,9 @@ runs:
         #docker ps 
         #docker stats --no-stream
 
-        cd local-sample/
+        #cd local-sample/
 
-        source config-run 
+        source ./local-sample/config-run 
         echo "Domain: " $DOMAIN   
 
         # Setup localhost DNS
@@ -47,7 +47,7 @@ runs:
 
         sed -i.bak 's/IMAGE_TAG=latest/IMAGE_TAG=local/g' config-run
         sed -i.bak 's/CI_CD_RUN=false/CI_CD_RUN=true/g' config-run
-        ./run.sh
+        ./local-sample/run.sh
 
         # List images in kind cluster container.  
         # ISSUE: This produces an error, not required if the '$ kubectl apply
