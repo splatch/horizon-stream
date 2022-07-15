@@ -3,6 +3,8 @@
 printf "\n# Init\n"
 printf "################################################################################\n\n"
 
+cd ./local-sample/
+
 printf "\n# Clear and remake tmp/ dir"
 # Contains files not to be committed to github.
 
@@ -11,14 +13,14 @@ mkdir tmp/
 
 printf "\n# Pull in env vars.\n"
 
-source ./local-sample/config-run
+source ./config-run
 
 echo "Domain: $DOMAIN"
 
 printf "\n# Create Kind cluster\n"
 printf "################################################################################\n\n"
 
-kind create cluster --config=./local-sample/config-kind.yaml
+kind create cluster --config=./config-kind.yaml
 
 printf "\n\n# Confirm connection\n"
 
@@ -39,7 +41,7 @@ kubectl -n ingress-nginx wait --for=condition=ready pod --timeout=60s -l app.kub
 printf "\n\n# Install OpenNMS Operator\n"
 printf "################################################################################\n\n"
 
-cd ./operator/
+cd ../operator/
 bash scripts/install-local.sh
 bash scripts/create-instance.sh
 cd ../local-sample/
