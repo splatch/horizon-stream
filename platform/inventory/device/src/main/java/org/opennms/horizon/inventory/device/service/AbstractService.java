@@ -33,10 +33,12 @@ import java.util.List;
 
 import org.opennms.horizon.db.dao.api.OnmsDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
+import org.opennms.horizon.inventory.device.utils.BaseMapper;
 
-public abstract class AbstractService<T, ID extends Serializable> {
+public abstract class AbstractService<T, D, ID extends Serializable> {
   protected OnmsDao<T, ID> dao;
   protected SessionUtils sessionUtils;
+  protected BaseMapper<T, D> mapper;
 
   public void setDao(OnmsDao<T, ID> dao) {
     this.dao = dao;
@@ -46,13 +48,23 @@ public abstract class AbstractService<T, ID extends Serializable> {
     this.sessionUtils = sessionUtils;
   }
 
-  public T getById(ID id) {
-    return sessionUtils.withReadOnlyTransaction(()-> dao.get(id));
+  public void setMapper(BaseMapper mapper) {
+    this.mapper = mapper;
   }
 
-  public List<T> findAll() {
-    return sessionUtils.withReadOnlyTransaction(
+  public D getById(ID id) {
+    T entity = sessionUtils.withReadOnlyTransaction(()-> dao.get(id));
+    return mapper.toDto(entity);
+  }
+
+  public List<D> findAll() {
+    List<T> list =  sessionUtils.withReadOnlyTransaction(
         () -> dao.findAll()
     );
+    return mapper.listToDto(list);
+  }
+
+  public ID createEntity(T entity) {
+    return sessionUtils.withTransaction(() -> dao.save(entity));
   }
 }

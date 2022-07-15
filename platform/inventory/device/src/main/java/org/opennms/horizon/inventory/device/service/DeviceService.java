@@ -28,7 +28,27 @@
 
 package org.opennms.horizon.inventory.device.service;
 
-import org.opennms.horizon.db.model.OnmsNode;
+import java.util.Date;
+import java.util.List;
 
-public class DeviceService extends AbstractService<OnmsNode, Integer> {
+import org.opennms.horizon.db.model.OnmsNode;
+import org.opennms.horizon.shared.dto.DeviceCollectionDTO;
+import org.opennms.horizon.shared.dto.DeviceDTO;
+
+public class DeviceService extends AbstractService<OnmsNode, DeviceDTO, Integer> {
+  private static final String DEFAULT_LOCATION = "Default";
+
+  public DeviceCollectionDTO searchDevices() {
+    List<DeviceDTO> deviceDTOS = findAll();
+    return new DeviceCollectionDTO(deviceDTOS);
+  }
+
+  public Integer createDevice(DeviceDTO newDevice) {
+    if(newDevice.getLocation() == null) {
+      newDevice.setLocation(DEFAULT_LOCATION);
+    }
+    OnmsNode node = mapper.fromDto(newDevice);
+    node.setCreateTime(new Date());
+    return createEntity(node);
+  }
 }
