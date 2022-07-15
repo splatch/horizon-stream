@@ -1,0 +1,3 @@
+mutation SaveDevice ($device: DeviceInput!) {
+  saveDevice (device: $device)
+}

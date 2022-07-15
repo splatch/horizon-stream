@@ -6,7 +6,7 @@
       Outbound Notifications
   </FeatherButton>
 
-  <PrimaryModal title="Outbound Notifications">
+  <PrimaryModal title="Outbound Notifications" :visible="isVisible">
     <template v-slot:content>
       <p class="title" data-test="notifications-modal">
         Pager Duty
@@ -43,13 +43,13 @@ import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
 
 const { showSnackbar } = useSnackbar()
-const { openModal, closeModal } = useModal()
+const { openModal, closeModal, isVisible } = useModal()
 const notificationMutations = useNotificationMutations()
 
 const routingKey = ref<string>()
 
 const save = async () => {
-  await notificationMutations.sendPagerDutyRoutingKey({ key: routingKey.value })
+  await notificationMutations.sendPagerDutyRoutingKey({ key: routingKey.value as string })
   if (!notificationMutations.error) {
     routingKey.value = undefined 
     closeModal()
