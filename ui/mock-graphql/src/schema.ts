@@ -1,11 +1,14 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
-import { device, listDevices } from './store/Queries/devices'
 import typeDefs from './typeDefs'
+import { device, listDevices } from './data/device'
+import { minion, listMinions } from './data/minions'
 
 const resolvers = {
   Query: {
     device: () => device,
-    listDevices: () => listDevices
+    listDevices: () => listDevices,
+    minion: () => minion,
+    listMinions: () => listMinions
   },
   Mutation: {
     saveRoutingKey: (_: any, { key }: { key: string }) => key
