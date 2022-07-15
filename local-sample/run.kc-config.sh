@@ -24,7 +24,7 @@ printf "\n# Add Realm\n"
 ################################################################################
 
 # IMPORTANT: Do this quickly after the token, not sure the session length on commandline.
-FILE_NAME=./local-sample/imports/test-opennms-realm.json
+FILE_NAME=./imports/test-opennms-realm.json
 
 # Create Realm
 curl -k POST \
