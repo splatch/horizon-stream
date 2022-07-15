@@ -1,7 +1,7 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import typeDefs from './typeDefs.js'
-import { device, listDevices } from './store/Queries/devices.js'
-import { minion, listMinions } from './store/Queries/minions.js'
+import { device, listDevices } from './store/Queries/device'
+import { minion, listMinions } from './store/Queries/minions'
 
 const resolvers = {
   Query: {
