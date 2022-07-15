@@ -69,7 +69,7 @@ runs:
         # Cucumber test
         cd ${{ inputs.dir-location }}
         mvn clean install
-        HORIZON_STREAM_BASE_URL=http://localhostui
+        HORIZON_STREAM_BASE_URL=http://localhostcore
         KEYCLOAK_BASE_URL=http://localhostkey
         KEYCLOAK_REALM=opennms
         KEYCLOAK_USERNAME=user001
