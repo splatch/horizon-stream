@@ -122,7 +122,7 @@ public class HorizonStreamTestSteps {
         assertEquals(expectedResponseCode, restResponse.getStatusCode());
     }
 
-    @Then("verify has Minion location = {string}")
+    @Then("verify response has Minion location = {string}")
     public void verifyMinionResponse(String location) {
         assertTrue(restResponse.getBody().print().contains(location));
     }
