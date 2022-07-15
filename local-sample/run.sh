@@ -158,7 +158,7 @@ fi
 printf "\n\n# Create realm, user, and role mappings through keycloak api.\n"
 printf "################################################################################\n\n"
 
-./local-sample/run.kc-config.sh
+./run.kc-config.sh
 
 printf "\n\n# Output\n"
 printf "################################################################################\n\n"
