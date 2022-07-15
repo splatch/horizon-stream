@@ -104,6 +104,7 @@ public class MinionRestServiceImpl implements MinionRestService {
         minionDTO.setLabel(minion.getLabel());
         minionDTO.setLocation(minion.getLocation());
         minionDTO.setStatus(deriveMinionStatus(minion).toString());
+        minionDTO.setLastUpdated(minion.getLastUpdated());
         return minionDTO;
     }
 

@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.shared.dto.minion;
 
+import java.util.Date;
 import java.util.Objects;
 
 public class MinionDTO {
@@ -39,6 +40,8 @@ public class MinionDTO {
     private String location;
 
     private String status;
+
+    private Date lastUpdated;
 
     public String getId() {
         return id;
@@ -72,16 +75,24 @@ public class MinionDTO {
         this.status = status;
     }
 
+    public Date getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(Date lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof MinionDTO)) return false;
         MinionDTO minionDTO = (MinionDTO) o;
-        return Objects.equals(id, minionDTO.id) && Objects.equals(label, minionDTO.label) && Objects.equals(location, minionDTO.location) && Objects.equals(status, minionDTO.status);
+        return Objects.equals(id, minionDTO.id) && Objects.equals(label, minionDTO.label) && Objects.equals(location, minionDTO.location) && Objects.equals(status, minionDTO.status) && Objects.equals(lastUpdated, minionDTO.lastUpdated);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, label, location, status);
+        return Objects.hash(id, label, location, status, lastUpdated);
     }
 }
