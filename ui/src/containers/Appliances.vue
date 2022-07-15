@@ -1,5 +1,6 @@
 <template>
   <div class="btns">
+    <AddDeviceCtrl />
     <NotificationsCtrl />
   </div>
   <DeviceTable />
@@ -13,5 +14,6 @@
 .btns {
   display: flex;
   justify-content: flex-end;
+  gap: 5px;
 }
 </style>

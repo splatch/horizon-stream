@@ -8,7 +8,8 @@ const resolvers = {
     listDevices: () => listDevices
   },
   Mutation: {
-    saveRoutingKey: (_: any, { key }: { key: string }) => key
+    saveRoutingKey: (_: any, { key }) => key,
+    saveDevice: (_: any, { device }) => device.name
   }
 }
 
