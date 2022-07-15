@@ -8,7 +8,10 @@ casual.define('minion', function () {
     id: casual.uuid,
     label: casual.word,
     status: casual.safe_color_name,
-    location: casual.city
+    location: casual.city,
+    date: casual.date(),
+    latency: rndNumber(),
+    uptime: casual.unix_time
   }
 })
 
