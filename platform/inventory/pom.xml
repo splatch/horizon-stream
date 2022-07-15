@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.opennms.horizon.inventory</groupId>
     <artifactId>inventory</artifactId>
-    <name>>OpenNMS Horizon :: Inventory</name>
+    <name>OpenNMS Horizon :: Inventory</name>
     <packaging>pom</packaging>
 
 

@@ -37,12 +37,17 @@ import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
-@Mapper(componentModel = "spring")
+@Mapper(uses = {LocationMapper.class})
 public abstract class DeviceMapper implements BaseMapper<OnmsNode, DeviceDTO> {
 
   protected NodeDao nodeDao;
   protected MonitoringLocationDao locationDao;
   protected SessionUtils sessionUtils;
+  protected LocationMapper locationMapper;
+
+  public void setLocationMapper(LocationMapper locationMapper) {
+    this.locationMapper = locationMapper;
+  }
 
   public void setNodeDao(NodeDao nodeDao) {
     this.nodeDao = nodeDao;

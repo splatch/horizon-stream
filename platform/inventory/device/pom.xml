@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>device</artifactId>
-    <name>>OpenNMS Horizon :: Inventory :: Device</name>
+    <name>OpenNMS Horizon :: Inventory :: Device</name>
     <packaging>bundle</packaging>
 
     <properties>

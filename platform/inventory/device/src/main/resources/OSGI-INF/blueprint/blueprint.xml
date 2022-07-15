@@ -7,7 +7,10 @@
     <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils" />
     <reference id="locationDao" interface="org.opennms.horizon.db.dao.api.MonitoringLocationDao" />
 
+    <bean id="locationMapper" class="org.opennms.horizon.inventory.device.utils.LocationMapperImpl" />
+
     <bean id="deviceMapper" class="org.opennms.horizon.inventory.device.utils.DeviceMapperImpl">
+        <property name="locationMapper" ref="locationMapper" />
         <property name="nodeDao" ref="nodeDao" />
         <property name="sessionUtils" ref="sessionUtils" />
         <property name="locationDao" ref="locationDao" />
@@ -17,6 +20,7 @@
         <property name="dao" ref="nodeDao" />
         <property name="sessionUtils" ref="sessionUtils" />
         <property name="mapper" ref="deviceMapper" />
+        <property name="locationDao" ref="locationDao" />
     </bean>
 
     <bean id="deviceRestImpl" class="org.opennms.horizon.inventory.device.rest.impl.DeviceRestAPIImpl">
