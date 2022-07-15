@@ -444,8 +444,8 @@ spec:
           imagePullPolicy: Never
           args: [ "-f" ]
           env:
-            - name: JAVA_TOOL_OPTIONS # Let `skaffold debug` see that this is a jvm container
-              value: "-Djava.security.egd=file:/dev/./urandom"
+            - name: JAVA_TOOL_OPTIONS # Presence of this var lets `skaffold debug` see that this is a jvm container
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
             - name: PGSQL_SERVICE_NAME
               value: "postgres"
             - name: PGSQL_ADMIN_USERNAME
@@ -505,6 +505,8 @@ spec:
           image: opennms/horizon-stream-api
           imagePullPolicy: Never
           env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
             - name: SPRING_CACHE_CAFFEINE_SPEC
               value: "maximumSize=10000,expireAfterWrite=60s"
             - name: HORIZON_STREAM_CORE_URL

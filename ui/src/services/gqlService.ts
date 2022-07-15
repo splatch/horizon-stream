@@ -25,19 +25,24 @@ const errorNotificationPlugin = definePlugin(({ afterQuery }) => {
 
     let notificationMsg = 'An unknown error has occured.'
 
-    if (response?.status === 401) {
+    const hasError = (errorCode: number) => {
+      const strError = errorCode.toString()
+      return response?.status === errorCode || error.message.includes(strError)
+    }
+
+    if (hasError(401)) {
       notificationMsg = 'Using invalid or expired credentials.'
     }
 
-    else if (response?.status === 403) {
+    else if (hasError(403)) {
       notificationMsg = 'The user does not have access rights.'
     }
 
-    else if (response?.status === 409) {
+    else if (hasError(409)) {
       notificationMsg = 'Conflicting entry has occured.'
     }
 
-    else if (response?.status == 500) {
+    else if (hasError(500)) {
       notificationMsg = 'Server error has occured.'
     }
 
