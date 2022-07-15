@@ -66,8 +66,8 @@ jobs:
         with:
           dir-location: 'rest-server'
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      #- name: Setup tmate session
+      #  uses: mxschmitt/action-tmate@v3
 
       - name: external-it
         id: action-external-it
