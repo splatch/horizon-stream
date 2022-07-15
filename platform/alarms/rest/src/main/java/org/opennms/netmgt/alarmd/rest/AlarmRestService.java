@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.rest;
 
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -50,6 +51,7 @@ public interface AlarmRestService {
     @GET
     @Path("list") // curl -X GET http://localhost:8181/cxf/alarmservice/alarms/list
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({"user", "admin"})
     Response getAlarms(@Context final SecurityContext securityContext, final UriInfo uriInfo);
 
     // OnmsAlarm get(Long id);  v1??
@@ -58,12 +60,14 @@ public interface AlarmRestService {
     @PUT
     @Path("{id}/memo") // curl -X PUT http://localhost:8181/cxf/alarmservice/alarms/1/memo -d 'user=mark&body=not null'
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @RolesAllowed({"user", "admin"})
     Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params);
 
 
     @PUT
     @Path("{id}/journal") // curl -X PUT http://localhost:8181/cxf/alarmservice/alarms/1/journal -d 'user=mark&body=not null'
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @RolesAllowed({"user", "admin"})
     Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params);
 
 /*
@@ -79,6 +83,7 @@ public interface AlarmRestService {
     @DELETE
     @Path("{id}/memo") // curl -X DELETE http://localhost:8181/cxf/alarmservice/alarms/1/memo -d 'user=mark&body=not null'
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @RolesAllowed({"admin"})
     Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId);
 
 }
