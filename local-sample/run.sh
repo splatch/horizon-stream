@@ -59,9 +59,10 @@ cat ../dev/kubernetes.kafka.yaml | \
   sed "s/opennms\/horizon-stream-core/opennms\/horizon-stream-core\:$IMAGE_TAG/" | \
   sed "s/opennms\/horizon-stream-api/opennms\/horizon-stream-rest-server\:$IMAGE_TAG/" | \
   sed "s/opennms\/horizon-stream-ui-dev/opennms\/horizon-stream-ui\:$IMAGE_TAG/" | \
+  sed "s/opennms\/horizon-stream-keycloak-dev/opennms\/horizon-stream-keycloak\:$IMAGE_TAG/" | \
   sed "s/frontendUrl: \"http:\/\/localhost:28080\"/frontendUrl: \"http:\/\/$DOMAIN_KEYCLOAK\"/" | \
   sed "s/localhost:28080/$DOMAIN_KEYCLOAK/" | \
-  sed "s/localhost:9090/$DOMAIN_API/" | \
+  sed "s/localhost:48080/$DOMAIN_API/" | \
   sed "s/imagePullPolicy: Never/imagePullPolicy: Always/" > tmp/hs.yaml
 
 cat ingress.TEMPLATE.yaml | \
@@ -79,11 +80,26 @@ kubectl apply -f tmp/hs.yaml
 if [[ $CI_CD_RUN == true ]]; then
 printf "\n\n# Import Images for Testing \n"
 kind load docker-image opennms/horizon-stream-ui:local
+kind load docker-image opennms/horizon-stream-keycloak:local 
+  # This keycloak-ui is referenced from the crd-keycloak.yaml.
 kind load docker-image opennms/horizon-stream-core:local
 kind load docker-image opennms/horizon-stream-rest-server:local
-kubectl patch deployments my-horizon-stream-ui -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "imagePullPolicy":"Never"}]}}}}'
-kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core", "imagePullPolicy":"Never"}]}}}}'
-kubectl patch deployments my-horizon-stream-api -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
+
+kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui",  "image":"opennms/horizon-stream-ui:local"}]}}}}'
+kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","image":"opennms/horizon-stream-core:local"}]}}}}'
+kubectl patch deployments my-horizon-stream-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "image":"opennms/horizon-stream-rest-server:local"}]}}}}'
+kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "image":"opennms/horizon-stream-keycloak:local"}]}}}}'
+
+kubectl patch deployments my-horizon-stream-ui   -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-ui", "imagePullPolicy":"Never"}]}}}}'
+kubectl patch deployments my-horizon-stream-core -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-core","imagePullPolicy":"Never"}]}}}}'
+kubectl patch deployments my-horizon-stream-api  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
+kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
+
+else
+
+kind load docker-image opennms/horizon-stream-keycloak:latest 
+kubectl patch deployments my-keycloak            -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "imagePullPolicy":"Never"}]}}}}'
+
 fi
 
 printf "\nWaiting for startup of pods, could take a few minutes\n"
@@ -101,12 +117,18 @@ kubectl wait --for=condition=ready pod --timeout=600s -l run=my-zookeeper
 kubectl wait --for=condition=ready pod --timeout=600s -l app=my-horizon-stream-ui
 kubectl wait --for=condition=ready pod --timeout=600s -l app.kubernetes.io/name=keycloak-operator
 kubectl -n ingress-nginx wait --for=condition=ready pod --timeout=60s -l app.kubernetes.io/component=controller
- 
+
 # Wait...
 sleep 60
 
 kubectl apply -f services.yaml
 kubectl apply -f tmp/ingress.yaml
+ 
+# There are issues with this until we get to stable version.
+kubectl delete KeycloakRealmImport opennms
+
+# There are issues with this until we get to stable version.
+kubectl apply -f crd-keycloakrealmimport.yaml
 
 # Wait...
 sleep 60
@@ -123,4 +145,4 @@ cd ../tools/
 printf "\n\n# Output\n"
 printf "################################################################################\n\n"
 
-printf "\n\nDone\n\nGo to $DOMAIN_UI\n\n"
+printf "\n\nDone\n\nGo to http://$DOMAIN_UI\n\n"

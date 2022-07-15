@@ -1,24 +1,9 @@
 name: release
 
-# This triggers only when pull request is merged (closed) into branches of
-# 'release/**'. The process is to create a new release branch from the previous
-# release branch, then create a PR from develop branch to that new release.
-# When all is approved, then merge and it should trigger this workflow. After
-# which, merge new release branch into develop. Then, developers can pull
-# develop branch and merge it into the various feature branches. Follows
-# gitflow.
 on:
-  pull_request:
-    branches: 
-      - 'release/**'
-    types: [closed]
-
-# Tmp, just until I get something working. Develop this first, all pieces on
-# release, then pull out what needed for other workflows.
-#on:  
-#  push:
-#    branches:
-#      - 'develop'
+  push:
+    branches:
+      - 'release'
 
 # For now, we have put all steps into a single job, this will allow for just
 # one vm to run. We use actions to factor out the functionality. If there is a
@@ -38,24 +23,43 @@ jobs:
       - name: init
         run: |
 
-          # This filters the tag number off of the branch (release/tab_number),
-          # puts it as an env variable to be used through out below and passed
-          # to actions for tagging the docker images after they are created.          
-          echo "branch: " ${{ github.ref }}
-          # The above github.ref, we expect this format: release/0.0.1.
-          # If that changes, update the following statement.
-          TAG=$(echo ${{ github.ref }} | sed -E  's/(.*)\/(.*)/\2/')
-          echo "tag: " "$TAG" # Appears
-          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
-          echo "release: " ${{ env.RELEASE_TAG }} # Not appears
+          TAG=$(echo ${{ github.event.head_commit.message }} | awk '{ print $2 }')
 
-          # TODO: Create a git tag for this branch as well.
+          echo "Head commit message: ${{ github.event.head_commit.message }}"
+          echo "Extracted tag: $TAG."
+
+          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
+
+          # Validate tag format
+          # Format of commit message: RELEASE <tag> - <message>
+          # Format of tag (change numbers or dev, but leave everything else): 
+          #   v0.0.5-dev
+          #   v0.0.5
+          if [[ $TAG =~ ^v[0-9]+.[0-9]+.([0-9]+-[a-z]+|[0-9]+)$ ]]
+          then
+            echo "Valid format, proceed with test."
+          else
+            echo "Tag format is invalid."
+            exit 1
+          fi
+
+      - name: feature-keycloak-ui
+        id: action-feature-ui
+        uses: ./.github/actions/keycloak-ui
+        with:
+          dir-location: 'keycloak-ui'
 
       - name: feature-ui
         id: action-feature-ui
         uses: ./.github/actions/ui
         with:
           dir-location: 'ui'
+
+      - name: shared-lib
+        id: action-shared-lib
+        uses: ./.github/actions/shared-lib
+        with:
+          dir-location: 'shared-lib'
 
       - name: feature-core
         id: action-feature-core
@@ -68,13 +72,19 @@ jobs:
         uses: ./.github/actions/rest-server
         with:
           dir-location: 'rest-server'
+      
+      - name: feature-operator
+        id: action-feature-operator
+        uses: ./.github/actions/operator
+        with:
+          dir-location: 'operator'
 
       - name: external-it
         id: action-external-it
         uses: ./.github/actions/external-it
         with:
           dir-location: 'external-it'
-
+      
       - name: dockerhub-login
         run: |
 
@@ -115,6 +125,19 @@ jobs:
           docker push opennms/horizon-stream-ui:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-ui:latest
 
+      - name: publish-image-keycloak-ui
+        run: |
+
+          # Login to dockerhub.
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+
+          # Tag and save the image as a file to be published. Both release version and latest.
+          docker tag opennms/horizon-stream-keycloak:local opennms/horizon-stream-keycloak:${{ env.RELEASE_TAG }}
+          docker tag opennms/horizon-stream-keycloak:local opennms/horizon-stream-keycloak:latest
+
+          docker push opennms/horizon-stream-keycloak:${{ env.RELEASE_TAG }}
+          docker push opennms/horizon-stream-keycloak:latest
+
       - name: publish-image-rest-server
         run: |
 
@@ -130,4 +153,27 @@ jobs:
 
           docker push opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-rest-server:latest
+      
+      - name: publish-image-operator
+        run: |
+
+          # Login to dockerhub.
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+
+          # Tag and save the image as a file to be published. Both release version and latest.
+          docker tag opennms/operator:local opennms/operator:${{ env.RELEASE_TAG }}
+          docker tag opennms/operator:local opennms/operator:latest
+
+          docker push opennms/operator:${{ env.RELEASE_TAG }}
+          docker push opennms/operator:latest
+
+      - name: tag-release-branch
+        run: |
+
+          # The following checkouts the release branch and merges develop into
+          # it and then tags release.
+          git fetch
+          git tag ${{ env.RELEASE_TAG }}
+          git push origin ${{ env.RELEASE_TAG }}
+
 

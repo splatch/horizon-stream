@@ -47,5 +47,4 @@ public class DateTimeAdapter extends XmlAdapter<String, Date> {
     public Date unmarshal(final String string) throws Exception {
         return (string == null || string.isEmpty()) ? null : EventConstants.parseToDate(string);
     }
-
 }

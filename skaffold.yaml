@@ -29,31 +29,61 @@ build:
         - '**/*.vue'
     docker:
       dockerfile: dev/Dockerfile
+  - image: opennms/horizon-stream-keycloak-dev
+    context: keycloak-ui
+    sync:
+      infer:
+        - 'themes/**'
+    docker:
+      dockerfile: Dockerfile
 
 portForward:
   - resourceType: deployment
     resourceName: my-horizon-stream-ui
-    port: 3000
+    port: 3000 # Vite dev server
   - resourceType: deployment
     resourceName: my-horizon-stream-api
-    port: 9090
+    port: 9090 # HTTP
+  - resourceType: deployment
+    resourceName: my-horizon-stream-api
+    port: 5005 # Debug
+    localPort: 5006
   - resourceType: deployment
     resourceName: my-horizon-stream-core
-    port: 8181
+    port: 8181 # HTTP
     localPort: 18181
   - resourceType: deployment
     resourceName: my-horizon-stream-core
-    port: 8101
+    port: 8101 # SSH
     localPort: 18101
   - resourceType: deployment
+    resourceName: my-horizon-stream-core
+    port: 5005 # Debug
+    localPort: 5005
+  - resourceType: deployment
     resourceName: my-keycloak
-    port: 8080
+    port: 8080 # HTTP
     localPort: 28080
   - resourceType: deployment
     resourceName: my-minion
-    port: 8201
+    port: 8201 # SSH
     localPort: 38101
-
+  - resourceType: deployment
+    resourceName: api-gateway
+    port: 80 # HTTP
+    localPort: 48080
+  - resourceType: deployment
+    resourceName: horizon-mail-server
+    port: 8025 # HTTP
+    localPort: 8025
+  - resourceType: deployment
+    resourceName: horizon-mail-server
+    port: 1025 # SMTP
+    localPort: 1025
+  - resourceType: deployment
+    resourceName: my-postgres
+    port: 5432 # Postgres
+    localPort: 5432
 deploy:
   kubectl:
     manifests:
