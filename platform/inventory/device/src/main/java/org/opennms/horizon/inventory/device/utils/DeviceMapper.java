@@ -35,7 +35,7 @@ import org.opennms.horizon.db.dao.api.NodeDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
-import org.opennms.horizon.shared.dto.DeviceDTO;
+import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
 @Mapper(componentModel = "spring")
 public abstract class DeviceMapper implements BaseMapper<OnmsNode, DeviceDTO> {

@@ -26,32 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.shared.dto;
+package org.opennms.horizon.shared.dto.event;
 
-import java.util.Objects;
+import java.util.Collection;
+import java.util.List;
 
-public class ReductionKeyMemoDTO extends MemoDTO {
-    private String reductionKey;
+import org.opennms.horizon.shared.dto.AbstractCollectionDTO;
 
-    public String getReductionKey() {
-        return reductionKey;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class AlarmCollectionDTO extends AbstractCollectionDTO<AlarmDTO> {
+    public AlarmCollectionDTO() {
+    }
+    public AlarmCollectionDTO(final Collection<? extends AlarmDTO> alarms) {
+        objects.addAll(alarms);
+    }
+    @JsonProperty("alarms")
+    public List<AlarmDTO> getAlarms() {
+        return objects;
     }
 
-    public void setReductionKey(String reductionKey) {
-        this.reductionKey = reductionKey;
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        ReductionKeyMemoDTO that = (ReductionKeyMemoDTO) o;
-        return Objects.equals(reductionKey, that.reductionKey);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), reductionKey);
-    }
 }

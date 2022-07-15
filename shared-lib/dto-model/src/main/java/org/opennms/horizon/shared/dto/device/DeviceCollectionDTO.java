@@ -26,40 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.shared.dto;
+package org.opennms.horizon.shared.dto.device;
 
-import java.util.Date;
+import java.util.Collection;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import org.opennms.horizon.shared.dto.AbstractCollectionDTO;
 
-import lombok.Getter;
-import lombok.Setter;
+public class DeviceCollectionDTO extends AbstractCollectionDTO<DeviceDTO> {
+  public DeviceCollectionDTO(final Collection<? extends DeviceDTO> devices) {
+    objects.addAll(devices);
+  }
 
-@Getter
-@Setter
-public class DeviceDTO {
-  private Integer id;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-  private Date createTime;
-  private Integer parentId;
-  private String type;
-  private String sysOid;
-  private String sysName;
-  private String sysDescription;
-  private String sysLocation;
-  private String sysContact;
-  private String label;
-  private String labelSource;
-  private String netBiosName;
-  private String domainName;
-  private String operatingSystem;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-  private Date lastPoll;
-  private String foreignSource;
-  private String foreignId;
-  private String location;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-  private Date lastIngressFlow;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-  private Date lastEgressFlow;
+  public List<DeviceDTO> getDevices() {
+    return objects;
+  }
 }

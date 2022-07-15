@@ -32,8 +32,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.horizon.db.model.OnmsNode;
-import org.opennms.horizon.shared.dto.DeviceCollectionDTO;
-import org.opennms.horizon.shared.dto.DeviceDTO;
+import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
+import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
 public class DeviceService extends AbstractService<OnmsNode, DeviceDTO, Integer> {
   private static final String DEFAULT_LOCATION = "Default";

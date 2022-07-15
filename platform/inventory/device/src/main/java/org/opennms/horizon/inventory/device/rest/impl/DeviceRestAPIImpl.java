@@ -28,18 +28,12 @@
 
 package org.opennms.horizon.inventory.device.rest.impl;
 
-import java.util.List;
-
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
-import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.inventory.device.rest.api.DeviceRestAPI;
 import org.opennms.horizon.inventory.device.service.DeviceService;
-import org.opennms.horizon.shared.dto.DeviceCollectionDTO;
-import org.opennms.horizon.shared.dto.DeviceDTO;
+import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
+import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
 public class DeviceRestAPIImpl implements DeviceRestAPI {
   private DeviceService service;

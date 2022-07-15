@@ -26,10 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.shared.dto;
+package org.opennms.horizon.shared.dto.event;
 
 import java.util.Collection;
 import java.util.List;
+
+import org.opennms.horizon.shared.dto.AbstractCollectionDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
