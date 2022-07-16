@@ -28,33 +28,22 @@
 
 package org.opennms.horizon.inventory.device.utils;
 
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.opennms.horizon.db.dao.api.MonitoringLocationDao;
 import org.opennms.horizon.db.dao.api.NodeDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
-import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
-@Mapper(uses = {LocationMapper.class})
+@Mapper(componentModel = "spring", uses = {LocationMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public abstract class DeviceMapper implements BaseMapper<OnmsNode, DeviceDTO> {
-
   protected NodeDao nodeDao;
-  protected MonitoringLocationDao locationDao;
   protected SessionUtils sessionUtils;
   protected LocationMapper locationMapper;
 
-  public void setLocationMapper(LocationMapper locationMapper) {
-    this.locationMapper = locationMapper;
-  }
-
   public void setNodeDao(NodeDao nodeDao) {
     this.nodeDao = nodeDao;
-  }
-
-  public void setLocationDao(MonitoringLocationDao locationDao) {
-    this.locationDao = locationDao;
   }
 
   public void setSessionUtils(SessionUtils sessionUtils) {
@@ -75,19 +64,12 @@ public abstract class DeviceMapper implements BaseMapper<OnmsNode, DeviceDTO> {
     entity.setParent(dto.getParentId() != null? parentIDToNode(dto.getParentId()): null);
   }
 
-  public String getLocationId(OnmsMonitoringLocation location) {
-    return location != null? location.getLocationName() : null;
-  }
-
-  public OnmsMonitoringLocation idToLocation(String location) {
-    return location != null? sessionUtils.withReadOnlyTransaction(() -> locationDao.get(location)) : null;
-  }
-
   public OnmsNode parentIDToNode(Integer parentId) {
     return parentId != null? sessionUtils.withReadOnlyTransaction(() -> nodeDao.get(parentId)) : null;
   }
 
   public Integer parentNodeToId(OnmsNode parent) {
     return parent != null? parent.getId() : null;
+
   }
 }

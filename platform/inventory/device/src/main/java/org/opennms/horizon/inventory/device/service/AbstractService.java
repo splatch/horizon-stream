@@ -53,15 +53,19 @@ public abstract class AbstractService<T, D, ID extends Serializable> {
   }
 
   public D getById(ID id) {
-    T entity = sessionUtils.withReadOnlyTransaction(()-> dao.get(id));
-    return mapper.toDto(entity);
+    return  sessionUtils.withReadOnlyTransaction(()->
+    {
+      T entity = dao.get(id);
+      return mapper.toDto(entity);
+    });
   }
 
   public List<D> findAll() {
-    List<T> list =  sessionUtils.withReadOnlyTransaction(
-        () -> dao.findAll()
-    );
-    return mapper.listToDto(list);
+    return sessionUtils.withReadOnlyTransaction(() ->
+    {
+      List<T> list = dao.findAll();
+      return mapper.listToDto(list);
+    });
   }
 
   public ID createEntity(T entity) {

@@ -36,7 +36,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LocationDto {
-  private String location;
+  private String locationName;
   private String monitoringArea;
   private String geolocation;
   private Double latitude;

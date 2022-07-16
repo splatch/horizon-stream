@@ -57,7 +57,7 @@ public class DeviceDTO {
   private Date lastPoll;
   private String foreignSource;
   private String foreignId;
-  private String location;
+  private LocationDto location;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private Date lastIngressFlow;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

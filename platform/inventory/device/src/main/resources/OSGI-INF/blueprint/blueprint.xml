@@ -10,10 +10,9 @@
     <bean id="locationMapper" class="org.opennms.horizon.inventory.device.utils.LocationMapperImpl" />
 
     <bean id="deviceMapper" class="org.opennms.horizon.inventory.device.utils.DeviceMapperImpl">
-        <property name="locationMapper" ref="locationMapper" />
+        <argument ref="locationMapper" />
         <property name="nodeDao" ref="nodeDao" />
         <property name="sessionUtils" ref="sessionUtils" />
-        <property name="locationDao" ref="locationDao" />
     </bean>
 
     <bean id="deviceService" class="org.opennms.horizon.inventory.device.service.DeviceService">
