@@ -121,7 +121,7 @@ public class HorizonStreamTestSteps {
     @Then("verify HTTP response code = {int}")
     public void verifyHTTPResponseCode(int expectedResponseCode) {
         // Wait till Minion is registered to Horizon Core
-        await().atMost(90, TimeUnit.SECONDS).pollDelay(0, TimeUnit.SECONDS)
+        await().atMost(180, TimeUnit.SECONDS).pollDelay(0, TimeUnit.SECONDS)
             .pollInterval(5, TimeUnit.SECONDS)
             .until(()-> restResponse.getStatusCode(), Matchers.is(expectedResponseCode));
     }
@@ -129,7 +129,7 @@ public class HorizonStreamTestSteps {
     @Then("verify response has Minion location = {string}")
     public void verifyMinionResponse(String location) {
         // Wait till Minion is registered to Horizon Core
-        await().atMost(90, TimeUnit.SECONDS).pollDelay(0, TimeUnit.SECONDS)
+        await().atMost(180, TimeUnit.SECONDS).pollDelay(0, TimeUnit.SECONDS)
             .pollInterval(5, TimeUnit.SECONDS)
             .until(()-> restResponse.getBody().print(), Matchers.containsString(location));
     }
