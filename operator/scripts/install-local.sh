@@ -14,7 +14,7 @@ make local-docker
 echo
 echo ___________Installing Helm Dependencies____________
 echo
-bash scripts/install-helm-deps.sh
+bash scripts/install-helm-deps-local.sh
 
 echo
 echo _______________Wait For Dependencies_______________
