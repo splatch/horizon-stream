@@ -5,21 +5,32 @@ import io.cucumber.java.en.Then;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.config.SSLConfig;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.hamcrest.Matchers;
+
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.AccessTokenResponse;
+import org.opennms.horizon.utils.TestTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.HttpHeaders;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import static com.jayway.awaitility.Awaitility.await;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
+import static io.restassured.RestAssured.given;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.keycloak.OAuth2Constants.PASSWORD;
 
@@ -77,7 +88,13 @@ public class HorizonStreamTestSteps {
     }
 
     @Then("login to Keycloak")
-    public void loginToKeycloak() {
+    public void loginToKeycloak() throws NoSuchAlgorithmException, KeyManagementException {
+        ResteasyClientBuilder restClientBuilder = new ResteasyClientBuilder();
+        restClientBuilder.disableTrustManager();
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, new TestTrustManager[]{new TestTrustManager()}, new SecureRandom());
+        restClientBuilder.sslContext(sslContext);
+
         keycloakClient =
                 KeycloakBuilder.builder()
                     .serverUrl(keycloakBaseUrl)
@@ -85,7 +102,8 @@ public class HorizonStreamTestSteps {
                     .realm(keycloakRealm)
                     .username(keycloakUsername)
                     .password(keycloakPassword)
-                    .clientId("admin-cli") // TBD
+                    .clientId("admin-cli")// TBD
+                    .resteasyClient(restClientBuilder.build())
                     .build()
         ;
 
@@ -140,6 +158,7 @@ public class HorizonStreamTestSteps {
 
     private RestAssuredConfig createRestAssuredTestConfig() {
         return RestAssuredConfig.config()
+            .sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL"))
                 .httpClient(HttpClientConfig.httpClientConfig()
                         .setParam("http.connection.timeout", DEFAULT_HTTP_SOCKET_TIMEOUT)
                         .setParam("http.socket.timeout", DEFAULT_HTTP_SOCKET_TIMEOUT)

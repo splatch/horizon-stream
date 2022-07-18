@@ -1,7 +1,8 @@
 const typeDefs = `
   type Device {
-    id: ID!
+    id: String!
     name: String!
+    status: String!
     icmp_latency: String!
     snmp_uptime: String!
   }
@@ -24,12 +25,12 @@ const typeDefs = `
     label: String!
     status: String!
     location: String!
+    lastUpdated: String!
+    icmp_latency: String!
+    snmp_uptime: String!
   }
   type ListMinions {
-    items: [Minion!]!
-    count: String!
-    totalCount: String!
-    offset: String!
+    minions: [Minion!]!
   },
   type Query {
     device: Device!

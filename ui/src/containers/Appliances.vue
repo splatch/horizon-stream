@@ -1,11 +1,12 @@
 <template>
   <div class="btns">
-    <AddDeviceCtrl />
     <NotificationsCtrl />
+    <AddDeviceCtrl />
   </div>
-  <DeviceTable />
-  <br/><br/>
-  <MinionsTable />
+  <div class="minions-device-container">
+    <div class="minions-table"><MinionsTable /></div>
+    <div class="device-table"><DeviceTable /></div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -17,5 +18,14 @@
   display: flex;
   justify-content: flex-end;
   gap: 5px;
+}
+.minions-device-container {
+  display: flex;
+}
+.minions-table {
+  width: 40%;
+}
+.device-table {
+  width: 60%;
 }
 </style>

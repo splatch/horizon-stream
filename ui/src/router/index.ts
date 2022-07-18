@@ -1,18 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Dashboard from '@/containers/Dashboard.vue'
+import Appliances from '@/containers/Appliances.vue'
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
-      name: 'Dashboard',
-      component: Dashboard
+      name: 'Appliances',
+      component: Appliances
     },
     {
-      path: '/appliances',
-      name: 'Appliances',
-      component: ()=>import('@/containers/Appliances.vue')
+      path: '/test', // For now, keep the alarms test available at this route
+      name: 'Alarms',
+      component: () => import('@/containers/Alarms.vue')
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect

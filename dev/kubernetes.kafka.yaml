@@ -583,9 +583,9 @@ spec:
             - containerPort: 3000
           env:
             - name: DOMAIN_API
-              value: "localhost:48080"
+              value: "http://localhost:48080"
             - name: DOMAIN_KEYCLOAK
-              value: "localhost:28080"
+              value: "http://localhost:28080"
           command: ["/app/dev/entrypoint.sh"]
           args: ["$(DOMAIN_KEYCLOAK)","$(DOMAIN_API)"]
 ---

@@ -8,7 +8,7 @@ export const useMinionsQueries = defineStore('minionsQueries', {
       query: ListMinionsDocument
     })
 
-    const listMinions = computed(() => data.value?.listMinions?.items || [])
+    const listMinions = computed(() => data.value?.listMinions?.minions || [])
 
     return {
       listMinions,

@@ -13,20 +13,22 @@
     <template v-slot:right>
       <FeatherIcon
         :icon="LightDarkMode"
-        class="pointer light-dark"
+        class="pointer menu-icon"
         @click="toggleDark()"
       />
 
-    <div class="headline4-mixin"
-      @click="logout()">
-      Logout
-    </div>
+      <FeatherIcon
+        :icon="LogOut"
+        class="pointer menu-icon logout"
+        @click="logout()"
+      />
     </template>
   </FeatherAppBar>
 </template>
     
 <script setup lang="ts">
 import LightDarkMode from '@featherds/icon/action/LightDarkMode'
+import LogOut from '@featherds/icon/action/LogOut'
 import Logo from '@/assets/Logo.vue'
 import useKeycloak from '@/composables/useKeycloak'
 import { logout } from '@/services/authService'
@@ -42,18 +44,6 @@ const isDark = useDark({
 
 const toggleDark = useToggle(isDark)
 </script>
-
-<style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
-@import "@featherds/styles/mixins/typography";
-
-.headline4-mixin {
-  @include headline4;
-  color: var($primary-text-on-color);
-  margin: 10px 0px 10px 15px;
-  cursor: pointer;
-}
-</style>
 
 <style lang="scss">
 @import "@featherds/styles/themes/open-mixins";
@@ -72,9 +62,13 @@ body {
 .open-dark {
   @include open-dark;
 }
-.light-dark {
+.menu-icon {
   font-size: 24px;
   margin-top: 2px;
+  margin-right: 15px;
+  &.logout {
+    margin-right: 45px;
+  }
 }
 </style>
   
