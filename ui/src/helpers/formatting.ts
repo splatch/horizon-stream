@@ -6,7 +6,7 @@ export const formatItemBgColor = (list: [any]) => list.map(item => {
   }
   
   let statusClass = bg.success
-  if(item?.status === 'down') statusClass = bg.error
+  if(item?.status === 'DOWN') statusClass = bg.error
 
   let latencyClass = bg.success
   if(Number(item?.icmp_latency) >= 100) latencyClass = bg.error

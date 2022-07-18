@@ -8,7 +8,7 @@ casual.define('minion', function () {
     label: `minion-${casual.word}`,
     status: rndStatus(),
     location: casual.city,
-    date: casual.date(),
+    lastUpdated: casual.date(),
     icmp_latency: rndLatency(),
     snmp_uptime: rndUptime()
   }
@@ -16,10 +16,10 @@ casual.define('minion', function () {
 
 casual.define('listMinions', function () {
   return {
-    items: [casual.minion, casual.minion, casual.minion, casual.minion, casual.minion],
-    count: rndNumber(),
-    totalCount: rndNumber(),
-    offset: rndNumber()
+    minions: [casual.minion, casual.minion, casual.minion, casual.minion, casual.minion]
+    // count: rndNumber(),
+    // totalCount: rndNumber(),
+    // offset: rndNumber()
   }
 })
 

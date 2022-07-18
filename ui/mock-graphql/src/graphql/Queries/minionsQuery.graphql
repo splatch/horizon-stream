@@ -1,16 +1,13 @@
 query ListMinions {
   listMinions {
-    items {
+    minions {
       id
       label
       status
       location
-      date
+      lastUpdated
       icmp_latency
       snmp_uptime
     }
-    count
-    totalCount
-    offset
   }
 }
