@@ -1,7 +1,7 @@
 <template>
   <div class="btns">
-    <AddDeviceCtrl />
     <NotificationsCtrl />
+    <AddDeviceCtrl />
   </div>
   <DeviceTable />
   <br/><br/>
