@@ -6,9 +6,9 @@ casual.define('device', function () {
   return {
     id: casual.uuid,
     name: `device-${casual.word}`,
-    status: rndStatus(),
     icmp_latency: rndLatency(),
-    snmp_uptime: rndUptime()
+    snmp_uptime: rndUptime(),
+    status: rndStatus()
   }
 })
 

@@ -9,9 +9,11 @@ describe('MinionsTable.vue', () => {
     const minionItems = computed(() => [{
       id: '1',
       date: 'date1',
-      label: 'Minion1',
-      latency: 'latency1',
-      uptime: 'uptime1'
+      label: 'minion1',
+      status: 'status1',
+      location: 'location1',
+      icmp_latency: 'latency1',
+      snmp_uptime: 'uptime1'
     }]) 
 
     setActivePinia(createTestingPinia({
