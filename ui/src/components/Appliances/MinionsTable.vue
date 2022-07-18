@@ -24,6 +24,5 @@ import { useMinionsQueries } from '@/store/Queries/minionsQueries'
 import { formatItemBgColor } from '@/helpers/formatting'
 
 const minionsQueries = useMinionsQueries()
-
 const listMinionsWithBgColor = computed(() => formatItemBgColor(minionsQueries.listMinions))
 </script>

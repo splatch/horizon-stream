@@ -13,8 +13,6 @@
 </script>
 
 <style scoped lang="scss">
-// @import "@featherds/styles/themes/variables";
-
 .btns {
   display: flex;
   justify-content: flex-end;

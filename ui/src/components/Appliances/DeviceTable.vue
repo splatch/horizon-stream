@@ -3,7 +3,7 @@
     <div class="search-filter">
       <FeatherInput v-model="searchValue" type="text" label="Search device" :background="true" />
       <FeatherButton icon="Filter">
-        <FeatherIcon :icon="filterIcon" />
+        <FeatherIcon :icon="FilterAlt" />
       </FeatherButton>
     </div>
     <table class="tl1 tl2 tl3 data-table" summary="Devices" data-test="device-table">
@@ -33,11 +33,9 @@ import { useDeviceQueries } from '@/store/Queries/deviceQueries'
 import { formatItemBgColor } from '@/helpers/formatting'
 
 const deviceQueries = useDeviceQueries()
-
-const filterIcon = computed(() => markRaw(FilterAlt))
-const searchValue = ''
-
 const listDevicesWithBgColor = computed(() => formatItemBgColor(deviceQueries.listDevices))
+
+const searchValue = ''
 </script>
 
 <style lang="scss" scoped>
@@ -53,10 +51,6 @@ const listDevicesWithBgColor = computed(() => formatItemBgColor(deviceQueries.li
   margin-top: var($spacing-xl);
   > .feather-input-container {
     width: 50%;
-  }
-  .feather-input-label {
-    background-color: red;
-    // background-color: var($background);
   }
 }
 </style>
