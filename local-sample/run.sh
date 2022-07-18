@@ -47,14 +47,9 @@ bash scripts/create-instance.sh
 cd ../local-sample/
 
 kubectl -n opennms wait --for=condition=ready pod --timeout=120s -l name=opennms-operator
-kubectl -n opennms get all
-kubectl get ns
 
 # Wait for the operator to get some items started.
 sleep 120
-
-kubectl config get-contexts
-kubectl get ns
 
 printf "\n\n# Add TLS Secret\n"
 printf "################################################################################\n\n"
