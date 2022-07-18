@@ -23,5 +23,3 @@
 import { useMinionsQueries } from '@/store/Queries/minionsQueries'
 const minionQueries = useMinionsQueries()
 </script>
-
-
