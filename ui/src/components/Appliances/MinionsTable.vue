@@ -21,27 +21,9 @@
 
 <script setup lang="ts">
 import { useMinionsQueries } from '@/store/Queries/minionsQueries'
+import { formatItemBgColor } from '@/helpers/formatting'
+
 const minionsQueries = useMinionsQueries()
 
-const listMinionsWithBgColor = computed(() => {
-  return minionsQueries.listMinions.map(minion => {
-    let statusClass = 'bg-success'
-    if(minion.status === 'down') statusClass = 'bg-error'
-
-    let latencyClass = 'bg-success'
-    if(Number(minion.icmp_latency) >= 100) latencyClass = 'bg-error'
-    else if(Number(minion.icmp_latency) >= 60) latencyClass = 'bg-warning'
-
-    let uptimeClass = 'bg-success'
-    if(Number(minion.snmp_uptime) >= 168) uptimeClass = 'bg-error'
-    else if(Number(minion.snmp_uptime) >= 48) uptimeClass = 'bg-warning'
-
-    return {
-      ...minion,
-      statusClass,
-      latencyClass,
-      uptimeClass
-    }
-  })
-})
+const listMinionsWithBgColor = computed(() => formatItemBgColor(minionsQueries.listMinions))
 </script>

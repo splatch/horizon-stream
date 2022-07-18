@@ -5,7 +5,7 @@ import { rndNumber, rndStatus, rndLatency, rndUptime } from '../helpers/random'
 casual.define('minion', function () {
   return {
     id: casual.uuid,
-    label: casual.word,
+    label: `minion-${casual.word}`,
     status: rndStatus(),
     location: casual.city,
     date: casual.date(),

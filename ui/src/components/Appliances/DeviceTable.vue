@@ -10,8 +10,8 @@
       <thead>
         <tr>
           <th scope="col" data-test="col-device">Device</th>
-          <th scope="col" data-test="col-latency">ICMP Latency</th>
-          <th scope="col" data-test="col-uptime">SNMP Uptime</th>
+          <th scope="col" data-test="col-latency">ICMP Latency (ms)</th>
+          <th scope="col" data-test="col-uptime">SNMP Uptime (hrs)</th>
           <th scope="col" data-test="col-status">Status</th>
         </tr>
       </thead>
