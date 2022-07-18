@@ -30,8 +30,8 @@ package org.opennms.horizon.inventory.device.utils;
 
 import org.mapstruct.Mapper;
 import org.opennms.horizon.db.model.OnmsMonitoringLocation;
-import org.opennms.horizon.shared.dto.device.LocationDto;
+import org.opennms.horizon.shared.dto.device.LocationDTO;
 
 @Mapper
-public abstract class LocationMapper implements BaseMapper<OnmsMonitoringLocation, LocationDto> {
+public abstract class LocationMapper implements BaseMapper<OnmsMonitoringLocation, LocationDTO> {
 }

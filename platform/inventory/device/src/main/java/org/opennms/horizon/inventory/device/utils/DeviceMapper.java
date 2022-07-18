@@ -70,6 +70,5 @@ public abstract class DeviceMapper implements BaseMapper<OnmsNode, DeviceDTO> {
 
   public Integer parentNodeToId(OnmsNode parent) {
     return parent != null? parent.getId() : null;
-
   }
 }

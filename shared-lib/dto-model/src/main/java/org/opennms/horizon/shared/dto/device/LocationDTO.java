@@ -35,7 +35,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LocationDto {
+public class LocationDTO {
   private String locationName;
   private String monitoringArea;
   private String geolocation;
