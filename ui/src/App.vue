@@ -37,6 +37,7 @@ const maxWidth = computed(() => store.navRailOpen ? '223px' : '0px')
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/open-mixins";
 @import "@featherds/table/scss/table";
+@import "@featherds/styles/themes/variables";
 
 html {
   overflow-x: hidden;
@@ -78,5 +79,15 @@ a {
 
 .pointer {
   cursor: pointer;
+}
+
+.bg-success {
+  background-color: var($success);
+}
+.bg-error {
+  background-color: var($error);
+}
+.bg-warning {
+  background-color: var($warning);
 }
 </style>

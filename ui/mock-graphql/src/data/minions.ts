@@ -1,23 +1,25 @@
 // @ts-nocheck
 import casual from 'casual'
-
-const rndNumber = () => Math.floor(Math.random() * 100)
+import { rndNumber, rndStatus, rndLatency, rndUptime } from '../helpers/random'
 
 casual.define('minion', function () {
   return {
     id: casual.uuid,
-    label: casual.word,
-    status: casual.safe_color_name,
-    location: casual.city
+    label: `minion-${casual.word}`,
+    status: rndStatus(),
+    location: casual.city,
+    lastUpdated: casual.date(),
+    icmp_latency: rndLatency(),
+    snmp_uptime: rndUptime()
   }
 })
 
 casual.define('listMinions', function () {
   return {
-    items: [casual.minion, casual.minion, casual.minion, casual.minion, casual.minion],
-    count: rndNumber(),
-    totalCount: rndNumber(),
-    offset: rndNumber()
+    minions: [casual.minion, casual.minion, casual.minion, casual.minion, casual.minion]
+    // count: rndNumber(),
+    // totalCount: rndNumber(),
+    // offset: rndNumber()
   }
 })
 
