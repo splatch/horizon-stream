@@ -6,8 +6,8 @@ query ListMinions {
       status
       location
       date
-      latency
-      uptime
+      icmp_latency
+      snmp_uptime
     }
     count
     totalCount

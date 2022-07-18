@@ -18,8 +18,8 @@ const typeDefs = `
     status: String!
     location: String!
     date: String!
-    latency: String!
-    uptime: String!
+    icmp_latency: String!
+    snmp_uptime: String!
   }
   type ListMinions {
     items: [Minion!]!

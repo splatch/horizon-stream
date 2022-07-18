@@ -1,15 +1,14 @@
 // @ts-nocheck
 import casual from 'casual'
-
-const rndNumber = () => Math.floor(Math.random() * 100)
+import { rndNumber, rndStatus, rndLatency, rndUptime } from '../helpers/random'
 
 casual.define('device', function () {
   return {
     id: casual.uuid,
     name: casual.word,
-    status: casual.safe_color_name,
-    icmp_latency: rndNumber(),
-    snmp_uptime: casual.unix_time
+    status: rndStatus(),
+    icmp_latency: rndLatency(),
+    snmp_uptime: rndUptime()
   }
 })
 

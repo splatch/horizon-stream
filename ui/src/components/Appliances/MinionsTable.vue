@@ -9,11 +9,11 @@
       </tr>
     </thead>
     <TransitionGroup name="data-table" tag="tbody">
-      <tr v-for="(minion, index) in minionQueries.listMinions" :key="minion.id" :data-index="index" data-test="minion-item">
+      <tr v-for="(minion, index) in listMinionsWithBgColor" :key="minion.id" :data-index="index" data-test="minion-item">
         <td>{{ minion.date }}</td>
         <td>{{ minion.label }}</td>
-        <td>{{ minion.latency }}</td>
-        <td>{{ minion.uptime }}</td>
+        <td :class="minion.latencyClass">{{ minion.icmp_latency }}</td>
+        <td :class="minion.uptimeClass">{{ minion.snmp_uptime }}</td>
       </tr>
     </TransitionGroup>
   </table>
@@ -21,5 +21,27 @@
 
 <script setup lang="ts">
 import { useMinionsQueries } from '@/store/Queries/minionsQueries'
-const minionQueries = useMinionsQueries()
+const minionsQueries = useMinionsQueries()
+
+const listMinionsWithBgColor = computed(() => {
+  return minionsQueries.listMinions.map(minion => {
+    let statusClass = 'bg-success'
+    if(minion.status === 'down') statusClass = 'bg-error'
+
+    let latencyClass = 'bg-success'
+    if(Number(minion.icmp_latency) >= 100) latencyClass = 'bg-error'
+    else if(Number(minion.icmp_latency) >= 60) latencyClass = 'bg-warning'
+
+    let uptimeClass = 'bg-success'
+    if(Number(minion.snmp_uptime) >= 168) uptimeClass = 'bg-error'
+    else if(Number(minion.snmp_uptime) >= 48) uptimeClass = 'bg-warning'
+
+    return {
+      ...minion,
+      statusClass,
+      latencyClass,
+      uptimeClass
+    }
+  })
+})
 </script>
