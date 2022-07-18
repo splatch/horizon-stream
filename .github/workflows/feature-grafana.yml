@@ -1,0 +1,31 @@
+name: feature-grafana
+
+on:  
+  push:
+    branches:
+      - '**'
+      - '!develop'
+      - '!release/**'
+    paths:
+      - 'grafana/**'
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        # Is required to call actions.
+
+      - name: init
+        run: |
+
+          echo "For init steps."
+
+      - name: feature-grafana
+        id: action-feature-grafana
+        uses: ./.github/actions/grafana
+        with:
+          dir-location: 'grafana'

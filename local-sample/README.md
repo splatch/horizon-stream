@@ -6,6 +6,10 @@ Kubectl is installed.
 
 Running on Mac or Linux.
 
+# Process
+
+IMPORTANT: Run from repo root dir.
+
 ```
 sudo vi /etc/hosts
 ```

@@ -4,13 +4,19 @@ metadata:
   name: local-instance
 spec:
   allowedUsers: []
-  host: onmslocal
+  host: ignore-for-now-onmshs
   namespace: local-instance
   core:
     version: opennms/horizon-stream-core
+    cpu: "0"
+    mem: 100Mi
   api:
     version: opennms/horizon-stream-rest-server
+    cpu: "0"
+    mem: 100Mi
   ui:
     version: opennms/horizon-stream-ui
+    cpu: "0"
+    mem: 100Mi
   postgres:
     version: postgres:13.3-alpine
