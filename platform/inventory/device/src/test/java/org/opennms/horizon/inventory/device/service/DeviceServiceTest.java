@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.opennms.horizon.db.dao.api.MonitoringLocationDao;
 import org.opennms.horizon.db.dao.api.NodeDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
+import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.inventory.device.utils.DeviceMapper;
 import org.opennms.horizon.inventory.device.utils.DeviceMapperImpl;
@@ -81,7 +82,8 @@ public class DeviceServiceTest {
     assertEquals(1, id.intValue());
     verify(mockNodeDao).save(any(OnmsNode.class));
     verifyNoMoreInteractions(mockNodeDao);
-    verifyNoInteractions(mockLocationDao);
+    verify(mockLocationDao).saveOrUpdate(any(OnmsMonitoringLocation.class));
+    verifyNoMoreInteractions(mockLocationDao);
   }
 
   @Test
