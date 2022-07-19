@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.horizon.db.dao.api.MonitoringLocationDao;
-import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
