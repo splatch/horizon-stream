@@ -9,16 +9,20 @@
     <div class="data-table">
       <TransitionGroup name="data-table" tag="div">
         <div class="card" v-for="(device) in listDevicesWithBgColor" :key="device.id" data-test="device-item">
-          <div class="column name">{{ device.name }}</div>
-          <div class="column" :class="device.latencyClass">
+          <div class="column name" data-test="col-device">
+            {{ device.name }}
+          </div>
+          <div class="column" :class="device.latencyClass" data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
             {{ device.icmp_latency }}
           </div>
-          <div class="column" :class="device.uptimeClass">
+          <div class="column" :class="device.uptimeClass" data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
             {{ device.snmp_uptime }}
           </div>
-          <div class="column" :class="device.statusClass">{{ device.status }}</div>
+          <div class="column" :class="device.statusClass" data-test="col-status">
+            {{ device.status }}
+          </div>
         </div>
       </TransitionGroup>
     </div>

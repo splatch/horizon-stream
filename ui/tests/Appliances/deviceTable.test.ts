@@ -27,6 +27,18 @@ describe('DeviceTable.vue', () => {
     }))
   })
 
+  const requiredColumns = [
+    ['Device', 'col-device'],
+    ['Latency', 'col-latency'],
+    ['Uptime', 'col-uptime'],
+    ['Status', 'col-status']
+  ]
+  it.each(requiredColumns)('should have "%s" column', async (_, dataTest) => {
+    const wrapper = mount(DeviceTable)
+    const elem = wrapper.find(`[data-test="${dataTest}"]`)
+    expect(elem.exists()).toBe(true)
+  })
+
   it('should have an empty table when there\'s no device', () =>{
     const wrapper = mount(DeviceTable, { 
       global: { plugins: [createTestingPinia()] } // we need to find a way to be able to set the state
