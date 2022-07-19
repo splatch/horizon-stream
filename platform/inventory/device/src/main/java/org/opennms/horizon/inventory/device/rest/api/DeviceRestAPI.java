@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.inventory.device.rest.api;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -55,5 +56,6 @@ public interface DeviceRestAPI {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
+  @RolesAllowed("admin")
   Response createDevice(final DeviceDTO device);
 }

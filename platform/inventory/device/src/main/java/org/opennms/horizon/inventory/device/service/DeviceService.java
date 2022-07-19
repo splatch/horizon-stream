@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.horizon.db.dao.api.MonitoringLocationDao;
+import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
@@ -52,6 +53,8 @@ public class DeviceService extends AbstractService<OnmsNode, DeviceDTO, Integer>
     OnmsNode node = mapper.fromDto(newDevice);
     if(node.getLocation() == null) {
       node.setLocation(sessionUtils.withReadOnlyTransaction(() -> locationDao.getDefaultLocation()));
+    } else {
+        sessionUtils.withTransaction(() ->locationDao.saveOrUpdate(node.getLocation()));
     }
     node.setCreateTime(new Date());
     return createEntity(node);

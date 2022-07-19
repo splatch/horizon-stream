@@ -31,14 +31,11 @@ package org.opennms.horizon.shared.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.leangen.graphql.annotations.GraphQLQuery;
-
 public class AbstractCollectionDTO<T> {
   protected List<T> objects = new ArrayList<>();
   protected Integer totalCount;
   protected Integer offset;
 
-  @GraphQLQuery(name = "totalCount")
   public Integer getTotalCount() {
     return totalCount==null? objects.size(): totalCount;
   }
@@ -47,7 +44,6 @@ public class AbstractCollectionDTO<T> {
     this.totalCount = totalCount;
   }
 
-  @GraphQLQuery(name = "offset")
   public Integer getOffset() {
     return offset;
   }
