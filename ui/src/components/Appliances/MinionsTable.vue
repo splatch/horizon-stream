@@ -1,31 +1,28 @@
 <template>
-  <table class="tl1 tl2 tl3" summary="Minions">
+  <table class="tl1 tl2 tl3 data-table" summary="Minions" data-test="minions-table">
     <thead>
       <tr>
-        <th scope="col">Minion Status</th>
-        <th scope="col">Latency</th>
-        <th scope="col">CPU Util</th>
+        <th scope="col" data-test="col-date">Date</th>
+        <th scope="col" data-test="col-minion">Minion</th>
+        <th scope="col" data-test="col-latency">Latency</th>
+        <th scope="col" data-test="col-uptime">Uptime</th>
       </tr>
     </thead>
-    <tbody>
-      <tr v-for="minion in minions" :key="minion.id">
-        <td>{{ minion.status }}</td>
-        <td>{{ minion.latency }}</td>
-        <td>{{ minion.cpu_util }}</td>
+    <TransitionGroup name="data-table" tag="tbody">
+      <tr v-for="(minion, index) in listMinionsWithBgColor" :key="minion.id" :data-index="index" data-test="minion-item">
+        <td>{{ minion.lastUpdated }}</td>
+        <td>{{ minion.label }}</td>
+        <td :class="minion.latencyClass">{{ minion.icmp_latency }}</td>
+        <td :class="minion.uptimeClass">{{ minion.snmp_uptime }}</td>
       </tr>
-    </tbody>
+    </TransitionGroup>
   </table>
 </template>
 
 <script setup lang="ts">
-import { Minion } from '@/types/appliances'
-const minions = computed<Minion[]>(() => [])
+import { useMinionsQueries } from '@/store/Queries/minionsQueries'
+import { formatItemBgColor } from '@/helpers/formatting'
+
+const minionsQueries = useMinionsQueries()
+const listMinionsWithBgColor = computed(() => formatItemBgColor(minionsQueries.listMinions))
 </script>
-
-<style lang="scss">
-@import "@featherds/table/scss/table";
-table {
-  @include table;
-}
-</style>
-

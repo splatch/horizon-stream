@@ -36,12 +36,18 @@ jobs:
         with:
           dir-location: 'ui'
   
+      - name: feature-grafana
+        id: action-feature-grafana
+        uses: ./.github/actions/grafana
+        with:
+          dir-location: 'grafana'
+
       - name: feature-keycloak-ui
         id: action-feature-keycloak-ui
         uses: ./.github/actions/keycloak-ui
         with:
           dir-location: 'keycloak-ui'
-
+      
       - name: shared-lib
         id: action-shared-lib
         uses: ./.github/actions/shared-lib
@@ -59,6 +65,9 @@ jobs:
         uses: ./.github/actions/rest-server
         with:
           dir-location: 'rest-server'
+
+      #- name: Setup tmate session
+      #  uses: mxschmitt/action-tmate@v3
 
       - name: external-it
         id: action-external-it

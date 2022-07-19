@@ -88,6 +88,8 @@
                                 <feature>horizon-provision</feature>
                                 <feature>horizon-snmp</feature>
                                 <feature>horizon-tracing</feature>
+                                <feature>horizon-minion-rest</feature>
+                                <feature>horizon-inventory</feature>
                                 <feature>jackson</feature>
                                 <feature>java-native-access</feature>
                                 <feature>kie-drools</feature>
@@ -385,6 +387,11 @@
         <dependency>
             <groupId>org.opennms.horizon.provision</groupId>
             <artifactId>service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion</groupId>
+            <artifactId>org.opennms.horizon.minion.rest</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

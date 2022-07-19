@@ -1,15 +1,15 @@
-import Appliances from '@/containers/Appliances.vue'
+import NotificationsCtrl from '@/components/Appliances/NotificationsCtrl.vue'
 import { createTestingPinia } from '@pinia/testing'
 import { mount } from '@vue/test-utils'
 import { createClient, VILLUS_CLIENT } from 'villus'
 import { useNotificationMutations } from '@/store/Mutations/notificationMutations'
 
-const wrapper = mount(Appliances, { 
+const wrapper = mount(NotificationsCtrl, { 
   global: { 
     plugins: [createTestingPinia()],
     provide: {
       [VILLUS_CLIENT as unknown as string]: createClient({
-        url: 'http://test/graphql',
+        url: 'http://test/graphql'
       })
     }
   }

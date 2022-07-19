@@ -18,6 +18,11 @@ runs:
         #docker version
         #kubectl -h
 
+        # Install dependencies
+        brew install operator-sdk
+        operator-sdk
+        which operator-sdk
+
       shell: bash
 
     - name: Create & Setup Cluster
@@ -31,18 +36,18 @@ runs:
         #docker ps 
         #docker stats --no-stream
 
+        #cd local-sample/
+
+        source ./local-sample/config-run 
+        echo "Domain: " $DOMAIN   
+
         # Setup localhost DNS
         cat /etc/hosts
-        sudo echo "127.0.0.1 localhostcore" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 localhostui" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 localhostkey" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 localhostapi" | sudo tee -a /etc/hosts
-        sudo echo "127.0.0.1 localhostkaraf" | sudo tee -a /etc/hosts
+        sudo echo "127.0.0.1 $DOMAIN" | sudo tee -a /etc/hosts
 
-        cd local-sample/
-        sed -i.bak 's/IMAGE_TAG=latest/IMAGE_TAG=local/g' config-run
-        sed -i.bak 's/CI_CD_RUN=false/CI_CD_RUN=true/g' config-run
-        ./run.sh
+        sed -i.bak 's/IMAGE_TAG=latest/IMAGE_TAG=local/g' ./local-sample/config-run
+        sed -i.bak 's/CI_CD_RUN=false/CI_CD_RUN=true/g' ./local-sample/config-run
+        ./local-sample/run.sh
 
         # List images in kind cluster container.  
         # ISSUE: This produces an error, not required if the '$ kubectl apply
@@ -69,11 +74,11 @@ runs:
         # Cucumber test
         cd ${{ inputs.dir-location }}
         mvn clean install
-        HORIZON_STREAM_BASE_URL=http://localhostui
-        KEYCLOAK_BASE_URL=http://localhostkey
+        HORIZON_STREAM_BASE_URL=https://onmshs/core
+        KEYCLOAK_BASE_URL=https://onmshs/auth
         KEYCLOAK_REALM=opennms
-        KEYCLOAK_USERNAME=user001
-        KEYCLOAK_PASSWORD=passw0rd
+        KEYCLOAK_USERNAME=admin
+        KEYCLOAK_PASSWORD=admin
         export HORIZON_STREAM_BASE_URL KEYCLOAK_BASE_URL KEYCLOAK_REALM KEYCLOAK_USERNAME KEYCLOAK_PASSWORD
         PROJECT_VERSION="$(mvn -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive -q org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)"
         java -jar "external-horizon-stream-it/target/external-horizon-stream-it-${PROJECT_VERSION}.jar"

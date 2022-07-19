@@ -1,0 +1,13 @@
+query ListMinions {
+  listMinions {
+    minions {
+      id
+      label
+      status
+      location
+      lastUpdated
+      icmp_latency
+      snmp_uptime
+    }
+  }
+}

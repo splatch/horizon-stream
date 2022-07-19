@@ -181,7 +181,7 @@ public class EventRestServiceImpl implements EventRestService {
             description = "Retrieve the count of events"
     )
     public String getCount() {
-        return Long.toString(m_eventDao.countAll());
+        return this.sessionUtils.withReadOnlyTransaction(() -> Long.toString(m_eventDao.countAll()));
     }
 
     /**
