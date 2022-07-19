@@ -6,24 +6,22 @@
         <FeatherIcon :icon="FilterAlt" />
       </FeatherButton>
     </div>
-    <table class="tl1 tl2 tl3 data-table" summary="Devices" data-test="device-table">
-      <thead>
-        <tr>
-          <th scope="col" data-test="col-device">Device</th>
-          <th scope="col" data-test="col-latency">ICMP Latency (ms)</th>
-          <th scope="col" data-test="col-uptime">SNMP Uptime (hrs)</th>
-          <th scope="col" data-test="col-status">Status</th>
-        </tr>
-      </thead>
-      <TransitionGroup name="data-table" tag="tbody">
-        <tr v-for="(device, index) in listDevicesWithBgColor" :key="device.id" :data-index="index" data-test="device-item">
-          <td>{{ device.name }}</td>
-          <td :class="device.latencyClass">{{ device.icmp_latency }}</td>
-          <td :class="device.uptimeClass">{{ device.snmp_uptime }}</td>
-          <td :class="device.statusClass">{{ device.status }}</td>
-        </tr>
+    <div class="data-table">
+      <TransitionGroup name="data-table" tag="div">
+        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="device.id" data-test="device-item">
+          <div class="column name">{{ device.name }}</div>
+          <div class="column" :class="device.latencyClass">
+            <pre class="title">ICMP Latency</pre>
+            {{ device.icmp_latency }}
+          </div>
+          <div class="column" :class="device.uptimeClass">
+            <pre class="title">SNMP Uptime</pre>
+            {{ device.snmp_uptime }}
+          </div>
+          <div class="column" :class="device.statusClass">{{ device.status }}</div>
+        </div>
       </TransitionGroup>
-    </table>
+    </div>
   </div>
 </template>
 
@@ -40,6 +38,8 @@ const searchValue = ''
 
 <style lang="scss" scoped>
 @import "@featherds/styles/themes/variables";
+@import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/mixins/typography";
 
 .device-container {
   margin-left: var($spacing-xl)
@@ -51,6 +51,38 @@ const searchValue = ''
   margin-top: var($spacing-xl);
   > .feather-input-container {
     width: 50%;
+  }
+}
+
+.card {
+  @include elevation(2);
+  display: flex;
+  margin-bottom: 2px;
+  border-radius: 1px;
+  
+  div {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    width: 20%;
+    padding: 8px;
+    border-right: 1px solid var($shade-3);
+    line-height: 15px;
+    font-weight: bold;
+
+    &.name {
+      @include subtitle1;
+      width: 40%;
+      color: var($primary);
+    }
+
+    .title {
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 100;
+      margin: 0px;
+    }
   }
 }
 </style>
