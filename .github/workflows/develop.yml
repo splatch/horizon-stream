@@ -54,6 +54,13 @@ jobs:
         with:
           dir-location: 'shared-lib'
 
+      # Commented out until fixed, for now.
+      #- name: feature-operator
+      #  id: action-feature-operator
+      #  uses: ./.github/actions/operator
+      #  with:
+      #    dir-location: 'operator'
+
       - name: feature-core
         id: action-feature-core
         uses: ./.github/actions/core
