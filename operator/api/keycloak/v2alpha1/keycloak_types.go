@@ -69,10 +69,14 @@ type KeycloakList struct {
 
 // REALM IMPORT
 
+// +kubebuilder:object:generate=true
+
 type KeycloakRealmImportSpec struct {
 	KeycloakCRName string `yaml:"keycloakCRName"`
 	Realm          Realm  `yaml:"realm"`
 }
+
+// +kubebuilder:object:generate=true
 
 type Realm struct {
 	AccessTokenLifeSpan  int        `yaml:"accessTokenLifeSpan"`
@@ -89,9 +93,13 @@ type Realm struct {
 	Users                []User     `yaml:"users"`
 }
 
+// +kubebuilder:object:generate=true
+
 type Attributes struct {
 	FrontendURL string `yaml:"frontendURL"`
 }
+
+// +kubebuilder:object:generate=true
 
 type Client struct {
 	Id                        string   `yaml:"id"`
@@ -106,6 +114,8 @@ type Client struct {
 	OptionalClientScopes      []string `yaml:"optionalClientScopes"`
 }
 
+// +kubebuilder:object:generate=true
+
 type Roles struct {
 	Realm []RealmRole `yaml:"realm"`
 }
@@ -115,6 +125,8 @@ type RealmRole struct {
 	Name      string `yaml:"name"`
 	Composite bool   `yaml:"composite"`
 }
+
+// +kubebuilder:object:generate=true
 
 type User struct {
 	Username      string       `yaml:"username"`
@@ -136,14 +148,21 @@ type SecretCred struct {
 	Key  string `yaml:"key"`
 }
 
+// +kubebuilder:object:generate=true
+
 type ClientRole struct {
 	Account         []string `yaml:"account"`
 	RealmManagement []string `yaml:"realmManagement"`
 }
 
+// +kubebuilder:object:generate=true
+
 type KeycloakRealmImportStatus struct {
 	// todo?
 }
+
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 
 // KeycloakRealmImport - is the Schema for KeycloakRealmImport
 type KeycloakRealmImport struct {
@@ -154,6 +173,8 @@ type KeycloakRealmImport struct {
 	Status KeycloakRealmImportStatus `json:"status,omitempty"`
 }
 
+// +kubebuilder:object:root=true
+
 // KeycloakRealmImportList - contains a list of KeycloakRealmImportList
 type KeycloakRealmImportList struct {
 	metav1.TypeMeta `json:",inline"`
@@ -162,5 +183,5 @@ type KeycloakRealmImportList struct {
 }
 
 func init() {
-	SchemeBuilder.Register(&Keycloak{}, &KeycloakList{})
+	SchemeBuilder.Register(&Keycloak{}, &KeycloakList{}, &KeycloakRealmImport{}, &KeycloakRealmImportList{})
 }
