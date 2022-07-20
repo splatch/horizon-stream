@@ -43,8 +43,12 @@ Postgres:
   VolumeSize: 10Gi
 Keycloak:
   Path: /auth
-  ServiceName: keycloak
+  ServiceName: onms-keycloak
   Password: notset
+  UUID:
+    ClientId: placeholder
+    BaseUserId: placeholder
+    AdminUserId: placeholder
 Grafana:
   Image: placeholder
 Ingress:

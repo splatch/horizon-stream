@@ -1,12 +1,24 @@
-apiVersion: keycloak.org/v1alpha1
+apiVersion: k8s.keycloak.org/v2alpha1
 kind: Keycloak
 metadata:
-  name: keycloak
+  name: {{ .Values.Keycloak.ServiceName }}
   namespace: {{ .Values.Namespace }}
   labels:
     app: keycloak
 spec:
   instances: 1
-  externalAccess:
-    enabled: true
-    host: {{ .Values.Host }}/keycloak
+  hostname: {{ .Values.Host }}
+  tlsSecret: {{ .Values.TLS.Cert.Name }}
+  serverConfiguration:
+    - name: db
+        value: postgres
+    - name: db-url-host
+        value: {{ .Values.Postgres.ServiceName }}
+    - name: db-username
+        secret:
+          name: postgres
+          key: keycloakUser
+    - name: db-password
+        secret:
+          name: postgres
+          key: keycloakPwd
