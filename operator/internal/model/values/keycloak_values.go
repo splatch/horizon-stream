@@ -14,8 +14,18 @@ limitations under the License.
 
 package values
 
+import "github.com/google/uuid"
+
 type KeycloakValues struct {
-	Path        string `yaml:"Path"`
-	ServiceName string `yaml:"ServiceName"`
-	Password    string `yaml:"Password"`
+	Path          string   `yaml:"Path"`
+	ServiceName   string   `yaml:"ServiceName"`
+	AdminPassword string   `yaml:"AdminPassword"`
+	UserPassword  string   `yaml:"UserPassword"`
+	UUID          UUIDList `yaml:"UUID"`
+}
+
+type UUIDList struct {
+	ClientId    uuid.UUID `yaml:"ClientId"`
+	BaseUserId  uuid.UUID `yaml:"BaseUserId"`
+	AdminUserId uuid.UUID `yaml:"AdminUserId"`
 }

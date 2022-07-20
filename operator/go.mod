@@ -12,6 +12,7 @@ require (
 	github.com/mittwald/go-helm-client v0.8.4
 	github.com/spf13/viper v1.10.1
 	github.com/stretchr/testify v1.7.1
+	github.com/operator-framework/api v0.15.0
 	go.uber.org/zap v1.20.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 	helm.sh/helm/v3 v3.8.1
