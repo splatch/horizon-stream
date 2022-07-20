@@ -222,7 +222,7 @@ kubectl -n local-instance get ingress
 
 # Keycloak needs some time, after it is shown to be running, before its API is
 # functioning. When we move to keycloak operator, this could be removed.
-sleep 180
+sleep 240
 
 printf "\n\n# Create realm, user, and role mappings through keycloak api.\n"
 printf "################################################################################\n\n"
@@ -236,8 +236,6 @@ printf "\n\n# Output\n"
 printf "################################################################################\n\n"
 
 printf "\n\nDone\n\nGo to https://$DOMAIN\n\n"
-
-sleep 120
 
 ## Debug
 #cd ../external-it/
