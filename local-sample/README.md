@@ -15,23 +15,16 @@ sudo vi /etc/hosts
 ```
 Add with the following to /etc/hosts:
 ```
-127.0.0.1 localhostui
-127.0.0.1 localhostkey
-127.0.0.1 localhostapi
-127.0.0.1 localhostcore
+127.0.0.1 onmshs
 ```
-
-Run the following: ```cd local-sample```
 
 Change the dns to the above dns entries in config-run to match the /etc/hosts file: ```vi config-run```
 
-Run ```run.sh```. Takes a while.
+Run the following: ```./local-sample/run.sh```. Takes a while.
 
 Confirm that ingresses have been updated (pending issue), there should be 5 ingresses: ```kubectl get ingress```
 
-If none appear from the previous statement, then run ```kubectl apply -f tmp/ingress.yaml``` else move onto the next statement.
-
-Go to http://localhostui in the web browser. Login with user ```admin``` with pw ```admin```.
+Go to https://onmshs in the web browser. Login with user ```admin``` with pw ```admin```.
 
 # Cleanup
 

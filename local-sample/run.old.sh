@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# DEBUG NOTE: 
-# 
-# Because this leverages a lot of background processes, if there is
-# an issue with images not being made. Run each build manually in the same way
-# done in the script below and see the output.
-#
-# If needed, we could output the mvn and docker build info to log files in tmp/. 
-
 ENV_RUN=$1
 
 if [[ $ENV_RUN == "local" ]] || [[ $ENV_RUN == "dev" ]] || [[ $ENV_RUN == "cicd" ]]; then
@@ -33,33 +25,6 @@ printf "\n# Pull in env vars for $1.\n"
 source ./config-run
 
 echo "Domain: $DOMAIN"
-
-# Start background docker image builds.
-if [[ $ENV_RUN == "dev" ]] || [[ $ENV_RUN == "cicd" ]]; then
-
-  echo 0 > tmp/HS_CORE
-  echo 0 > tmp/HS_GRAFANA
-  echo 0 > tmp/HS_UI
-  echo 0 > tmp/HS_KEYCLOAK_UI
-  echo 0 > tmp/HS_REST_SERVER
-
-  # This is required to run before some of the builds below can be run.
-  cd ../shared-lib/; mvn clean install
-  cd ../local-sample/
-
-  source tmp.core.sh&
-  source tmp.grafana.sh&
-  source tmp.keycloak-ui.sh&
-  source tmp.rest-server.sh&
-  source tmp.ui.sh&
-  
-  HS_CORE=$(cat tmp/HS_CORE)
-  HS_GRAFANA=$(cat tmp/HS_GRAFANA)
-  HS_UI=$(cat tmp/HS_UI)
-  HS_KEYCLOAK_UI=$(cat tmp/HS_KEYCLOAK_UI)
-  HS_REST_SERVER=$(cat tmp/HS_REST_SERVER)
-
-fi
 
 printf "\n# Create Kind cluster\n"
 printf "################################################################################\n\n"
@@ -117,7 +82,7 @@ printf "\n\n# Grafana\n"
 printf "################################################################################\n\n"
 
 # TODO: Publish this image.
-#kind load docker-image opennms/horizon-stream-grafana:latest
+#kind load docker-image opennms/horizon-stream-grafana:latest 
 
 kubectl -n local-instance apply -f grafana-a-configmap.yaml
 kubectl -n local-instance apply -f grafana-b-secrets.yaml
@@ -133,64 +98,71 @@ kubectl -n local-instance apply -f hs-ingress.yaml
 printf "\n\n# Update Configs Based on Env\n"
 printf "################################################################################\n\n"
 
-Run the following.
+if [[ $ENV_RUN == "local" ]]; then
 
-# Run 
+  echo "Pulls public repos."
 
+elif [[ $ENV_RUN == "dev" ]]; then
 
-printf "\n\n# IF ENV_RUN is dev or cicd, then import the images created once ready, does checks \n"
-printf "################################################################################\n\n"
+  # Build shared-lib/
+  cd ../shared-lib/; mvn clean install
 
-# At end, run this. Once all background processes are complete, then import the
-# images.
-if [[ $ENV_RUN == "dev" ]] || [[ $ENV_RUN == "cicd" ]]; then
+  # Build all images:
+  cd ../platform/; mvn -Prun-it clean install
+  cd ../keycloak-ui/; docker build -t opennms/horizon-stream-keycloak:local -f ./Dockerfile . 
+  cd ../grafana/; docker build -t opennms/horizon-stream-grafana:local -f ./Dockerfile .
+  cd ../rest-server/; mvn clean install jib:dockerBuild -Dimage=opennms/horizon-stream-rest-server:local
+  cd ../ui/; docker build -t opennms/horizon-stream-ui:local -f ./dev/Dockerfile .
 
-  counter=0
-  
-  until \
-    [ $HS_UI -eq 1 ] && \
-    [ $HS_CORE -eq 1 ] && \
-    [ $HS_GRAFANA -eq 1 ] && \
-    [ $HS_KEYCLOAK_UI -eq 1 ] && \
-    [ $HS_REST_SERVER -eq 1 ]
-  do
-    sleep 2
-  
-    echo Counter: $counter
-    ((counter++))
-  
-    HS_CORE=$(cat tmp/HS_CORE)
-    HS_GRAFANA=$(cat tmp/HS_GRAFANA)
-    HS_UI=$(cat tmp/HS_UI)
-    HS_KEYCLOAK_UI=$(cat tmp/HS_KEYCLOAK_UI)
-    HS_REST_SERVER=$(cat tmp/HS_REST_SERVER)
-  
-    echo $HS_CORE
-    echo $HS_GRAFANA
-    echo $HS_UI
-    echo $HS_KEYCLOAK_UI
-    echo $HS_REST_SERVER
-  
-  done
-  
-  echo "Images created"
+  # Go back to local sample dir.
+  cd ../local-sample/
 
-  # Do import.
-  printf "\n\n# Import Images for Testing, run in background \n"
-  kind load docker-image opennms/horizon-stream-grafana:local&
-  kind load docker-image opennms/horizon-stream-ui:local&
-  kind load docker-image opennms/horizon-stream-keycloak:local&
-  kind load docker-image opennms/horizon-stream-core:local&
-  kind load docker-image opennms/horizon-stream-rest-server:local&
+  docker images
+
+  # TODO: Publish this image.
+  kind load docker-image opennms/horizon-stream-keycloak:latest 
+  kubectl -n local-instance patch deployments keycloak -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak", "imagePullPolicy":"Never"}]}}}}'
+  
+  kind load docker-image opennms/horizon-stream-grafana:latest
+  kubectl -n local-instance patch deployments grafana -p '{"spec": {"template": {"spec":{"containers":[{"name": "grafana", "imagePullPolicy":"Never"}]}}}}'
+
+  #kubectl -n local-instance wait --for=condition=ready pod --timeout=120s -l app=opennms-ui
+  sleep 120
+
+  echo # IMPORTANT: If the following do not catch, then update them manually until we can get these integrated.
+  # TODO: Publish this image.
+  kind load docker-image opennms/horizon-stream-ui:0.0.14
+  kubectl -n local-instance patch deployments opennms-ui -p '{"spec": {"template": {"spec":{"containers":[{"name": "opennms-ui", "image":"opennms/horizon-stream-ui:0.0.14"}]}}}}'
+  kubectl -n local-instance patch deployments opennms-ui -p '{"spec": {"template": {"spec":{"containers":[{"name": "opennms-ui", "imagePullPolicy":"Never"}]}}}}'
+  kubectl -n local-instance patch deployments opennms-ui -p "{\"spec\": {\"template\": {\"spec\":{\"containers\":[{\"name\": \"opennms-ui\", \"env\":[{\"name\": \"DOMAIN_KEYCLOAK\", \"value\":\"https://$DOMAIN/auth\"}]}]}}}}"
 
   sleep 120
- 
+
+  # The ingress is not working, just use the default installed one.
+  # TODO: This fails if the opennms operator has not created this object yet.
+  kubectl -n local-instance patch ingress opennms-ingress -p '{"spec":{"ingressClassName":"nginx"}}'
+
+elif [[ $ENV_RUN == "cicd" ]]; then
+
+  # Remove this ingress, forces http->https, we do not have that ready yet for
+  # automated testing in the ci-cd pipeline.
+  kubectl -n local-instance delete deployment.apps/ingress-nginx-controller 
+
+  printf "\n\n# Import Images for Testing \n"
+  kind load docker-image opennms/horizon-stream-grafana:local
+  kind load docker-image opennms/horizon-stream-ui:local
+  kind load docker-image opennms/horizon-stream-keycloak:local 
+  kind load docker-image opennms/horizon-stream-core:local
+  kind load docker-image opennms/horizon-stream-rest-server:local
+
+  sleep 120
+  
   kubectl -n local-instance patch deployments opennms-ui           -p '{"spec": {"template": {"spec":{"containers":[{"name": "opennms-ui",  "image":"opennms/horizon-stream-ui:local"}]}}}}'
   kubectl -n local-instance patch deployments opennms-core         -p '{"spec": {"template": {"spec":{"containers":[{"name": "opennms-core","image":"opennms/horizon-stream-core:local"}]}}}}'
   kubectl -n local-instance patch deployments opennms-rest-server  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "image":"opennms/horizon-stream-rest-server:local"}]}}}}'
   kubectl -n local-instance patch deployments keycloak             -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "image":"opennms/horizon-stream-keycloak:local"}]}}}}'
   kubectl -n local-instance patch deployments grafana              -p '{"spec": {"template": {"spec":{"containers":[{"name": "grafana",           "image":"opennms/horizon-stream-grafana:local"}]}}}}'
- 
+  
   kubectl -n local-instance patch deployments opennms-ui           -p '{"spec": {"template": {"spec":{"containers":[{"name": "opennms-ui", "imagePullPolicy":"Never"}]}}}}'
   kubectl -n local-instance patch deployments opennms-core         -p '{"spec": {"template": {"spec":{"containers":[{"name": "opennms-core","imagePullPolicy":"Never"}]}}}}'
   kubectl -n local-instance patch deployments opennms-rest-server  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
@@ -205,6 +177,8 @@ if [[ $ENV_RUN == "dev" ]] || [[ $ENV_RUN == "cicd" ]]; then
   # TODO: This fails if the opennms operator has not created this object yet.
   kubectl -n local-instance patch ingress opennms-ingress -p '{"spec":{"ingressClassName":"nginx"}}'
 
+else
+  printf "\n\nIssue, ENV_RUN must have been over written.\n\n"
 fi
 
 printf "\n\n# Create realm, user, and role mappings through keycloak api.\n"
@@ -216,3 +190,8 @@ printf "\n\n# Output\n"
 printf "################################################################################\n\n"
 
 printf "\n\nDone\n\nGo to https://$DOMAIN\n\n"
+
+printf "\n\n# TODO\n"
+printf "################################################################################\n\n"
+
+printf "\nUpdate the ingress from operator to use the nginx className.\n"
