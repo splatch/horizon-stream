@@ -137,7 +137,7 @@ printf "########################################################################
 
 # At end, run this. Once all background processes are complete, then import the
 # images.
-if [[ $ENV_RUN == "dev" ]] || [[ $ENV_RUN == "cicd" ]]; then
+if [[ $ENV_RUN == "dev" ]]; then
 
   counter=0
   
@@ -186,6 +186,8 @@ if [[ $ENV_RUN == "dev" ]] || [[ $ENV_RUN == "cicd" ]]; then
   kind load docker-image opennms/horizon-stream-core:local&
   kind load docker-image opennms/horizon-stream-rest-server:local&
 
+  # Need to wait for the images to be loaded, if we setup a Kind registry, this
+  # could be removed.
   sleep 120
 
   # Debug
@@ -218,6 +220,8 @@ fi
 kubectl -n local-instance get pods
 kubectl -n local-instance get ingress
 
+# Keycloak needs some time, after it is shown to be running, before its API is
+# functioning. When we move to keycloak operator, this could be removed.
 sleep 180
 
 printf "\n\n# Create realm, user, and role mappings through keycloak api.\n"
@@ -232,3 +236,17 @@ printf "\n\n# Output\n"
 printf "################################################################################\n\n"
 
 printf "\n\nDone\n\nGo to https://$DOMAIN\n\n"
+
+sleep 120
+
+## Debug
+#cd ../external-it/
+#mvn clean install
+#HORIZON_STREAM_BASE_URL=https://onmshs/core
+#KEYCLOAK_BASE_URL=https://onmshs/auth
+#KEYCLOAK_REALM=opennms
+#KEYCLOAK_USERNAME=admin
+#KEYCLOAK_PASSWORD=admin
+#export HORIZON_STREAM_BASE_URL KEYCLOAK_BASE_URL KEYCLOAK_REALM KEYCLOAK_USERNAME KEYCLOAK_PASSWORD
+#PROJECT_VERSION="$(mvn -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive -q org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)"
+#java -jar "external-horizon-stream-it/target/external-horizon-stream-it-${PROJECT_VERSION}.jar"

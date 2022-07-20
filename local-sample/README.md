@@ -20,7 +20,7 @@ Add with the following to /etc/hosts:
 
 Change the dns to the above dns entries in config-run to match the /etc/hosts file: ```vi config-run```
 
-Run the following: ```./local-sample/run.sh```. Takes a while.
+Run the following: ```./local-sample/run.sh local```. Takes a while.
 
 Confirm that ingresses have been updated (pending issue), there should be 5 ingresses: ```kubectl get ingress```
 
@@ -38,15 +38,6 @@ ps -axf | grep kubectl
 
 # Testing Images Not Published But Built Locally
 
-Rebuild the image:
-```
-cd ui/
-docker build -t opennms/horizon-stream-ui:1.0.1 -f ./dev/Dockerfile .
+Run the following: ```./local-sample/run.sh dev```. Takes a while.
 
-kind load docker-image opennms/horizon-stream-ui:1.0.1
-
-kubectl edit deployment.apps/my-horizon-stream-ui 
-# Change: spec.template.spec.containers.image: opennms/horizon-stream-ui:latest -> spec.template.spec.containers.image: opennms/horizon-stream-ui:1.0.1
-# Change: spec.template.spec.containers.imagePullPolicy: Always -> spec.template.spec.containers.imagePullPolicy: Never
-```
 
