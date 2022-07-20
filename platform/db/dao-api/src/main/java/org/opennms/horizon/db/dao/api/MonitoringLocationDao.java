@@ -40,6 +40,7 @@ import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 public interface MonitoringLocationDao extends OnmsDao<OnmsMonitoringLocation, String> {
 
 	String DEFAULT_MONITORING_LOCATION_ID = "Default";
+    String DEFAULT_MONITORING_AREA = "localhost";
 
 	OnmsMonitoringLocation getDefaultLocation();
 }
