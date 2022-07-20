@@ -21,11 +21,12 @@
 }
 .minions-device-container {
   display: flex;
-}
-.minions-table {
-  width: 40%;
-}
-.device-table {
-  width: 60%;
+  
+  .minions-table {
+    width: 40%;
+  }
+  .device-table {
+    width: 60%;
+  }
 }
 </style>
