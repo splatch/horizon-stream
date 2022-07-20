@@ -100,9 +100,9 @@ func setCorePasswords(tv values.TemplateValues) values.TemplateValues {
 	tv.Values.Keycloak.AdminPassword = security.GeneratePassword(true)
 	tv.Values.Keycloak.UserPassword = security.GeneratePassword(true)
 
-	tv.Values.Keycloak.UUID.ClientId, _ = uuid.NewUUID()
-	tv.Values.Keycloak.UUID.AdminUserId, _ = uuid.NewUUID()
-	tv.Values.Keycloak.UUID.BaseUserId, _ = uuid.NewUUID()
+	tv.Values.Keycloak.UUID.ClientId = uuid.New()
+	tv.Values.Keycloak.UUID.AdminUserId = uuid.New()
+	tv.Values.Keycloak.UUID.BaseUserId = uuid.New()
 	return tv
 }
 
