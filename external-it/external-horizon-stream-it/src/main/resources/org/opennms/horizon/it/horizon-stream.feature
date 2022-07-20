@@ -19,4 +19,4 @@ Feature: Hello World
     Then login to Keycloak
     Then send GET request to horizon-stream at path "/minions"
     Then verify HTTP response code = 200
-    Then verify response has Minion location = "minion-location"
+    Then verify response has Minion location = "Default"
