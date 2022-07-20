@@ -53,7 +53,8 @@ html {
     @include table;
   }
 
-  .data-table tr {
+  .data-table tr,
+  .data-table div {
     @for $i from 1 through 50 {
     &:nth-child(#{$i}) {
       transition: all 0.3s ease $i * 0.05s;
@@ -83,11 +84,14 @@ a {
 
 .bg-success {
   background-color: var($success);
+  color: var($primary-text-on-color);
 }
 .bg-error {
   background-color: var($error);
+  color: var($primary-text-on-color);
 }
 .bg-warning {
   background-color: var($warning);
+  color: var($primary-text-on-warning);
 }
 </style>
