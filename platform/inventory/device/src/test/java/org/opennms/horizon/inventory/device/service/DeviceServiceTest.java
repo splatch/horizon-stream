@@ -77,10 +77,8 @@ public class DeviceServiceTest {
     LocationDTO location = new LocationDTO();
     DeviceDTO device = new DeviceDTO();
     device.setLocation(location);
-    doReturn(1).when(mockNodeDao).save(any(OnmsNode.class));
-    Integer id = deviceService.createDevice(device);
-    assertEquals(1, id.intValue());
-    verify(mockNodeDao).save(any(OnmsNode.class));
+    deviceService.createDevice(device);
+    verify(mockNodeDao).saveOrUpdate(any(OnmsNode.class));
     verifyNoMoreInteractions(mockNodeDao);
     verify(mockLocationDao).saveOrUpdate(any(OnmsMonitoringLocation.class));
     verifyNoMoreInteractions(mockLocationDao);
@@ -89,11 +87,9 @@ public class DeviceServiceTest {
   @Test
   public void testCreateDeviceWithDefaultLocation() {
     DeviceDTO device = new DeviceDTO();
-    doReturn(1).when(mockNodeDao).save(any(OnmsNode.class));
-    Integer id = deviceService.createDevice(device);
-    assertEquals(1, id.intValue());
-    verify(mockNodeDao).save(any(OnmsNode.class));
-    verify(mockLocationDao).getDefaultLocation();
+    deviceService.createDevice(device);
+    verify(mockNodeDao).saveOrUpdate(any(OnmsNode.class));
+    verify(mockLocationDao).saveOrUpdate(any(OnmsMonitoringLocation.class));
     verifyNoMoreInteractions(mockLocationDao);
     verifyNoMoreInteractions(mockNodeDao);
   }

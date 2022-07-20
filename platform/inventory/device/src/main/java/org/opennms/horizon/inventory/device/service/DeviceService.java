@@ -32,11 +32,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.opennms.horizon.db.dao.api.MonitoringLocationDao;
+import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.horizon.db.model.OnmsNode;
 import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
 public class DeviceService extends AbstractService<OnmsNode, DeviceDTO, Integer> {
+  private static String DEFAULT_LOCATION = "Default";
+  private static String DEFAULT_MONITOR_AREA = "localhost";
   private MonitoringLocationDao locationDao;
 
   public void setLocationDao(MonitoringLocationDao locationDao) {
@@ -48,14 +51,16 @@ public class DeviceService extends AbstractService<OnmsNode, DeviceDTO, Integer>
     return new DeviceCollectionDTO(deviceDTOS);
   }
 
-  public Integer createDevice(DeviceDTO newDevice) {
+  public void createDevice(DeviceDTO newDevice) {
     OnmsNode node = mapper.fromDto(newDevice);
     if(node.getLocation() == null) {
-      node.setLocation(sessionUtils.withReadOnlyTransaction(() -> locationDao.getDefaultLocation()));
-    } else {
-        sessionUtils.withTransaction(() ->locationDao.saveOrUpdate(node.getLocation()));
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+        location.setLocationName(DEFAULT_LOCATION);
+        location.setMonitoringArea(DEFAULT_MONITOR_AREA);
+        node.setLocation(location);
     }
+    sessionUtils.withTransaction(() ->locationDao.saveOrUpdate(node.getLocation()));
     node.setCreateTime(new Date());
-    return createEntity(node);
+    createEntity(node);
   }
 }

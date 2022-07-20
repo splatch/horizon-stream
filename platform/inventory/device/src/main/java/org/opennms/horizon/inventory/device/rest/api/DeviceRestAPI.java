@@ -38,7 +38,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
 @Path("/devices")
@@ -47,11 +46,11 @@ public interface DeviceRestAPI {
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  DeviceDTO getById(@PathParam("id") Integer id);
+  Response getById(@PathParam("id") Integer id);
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  DeviceCollectionDTO findAll();
+  Response findAll();
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)

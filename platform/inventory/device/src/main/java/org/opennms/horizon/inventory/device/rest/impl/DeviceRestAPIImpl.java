@@ -32,7 +32,6 @@ import javax.ws.rs.core.Response;
 
 import org.opennms.horizon.inventory.device.rest.api.DeviceRestAPI;
 import org.opennms.horizon.inventory.device.service.DeviceService;
-import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
 public class DeviceRestAPIImpl implements DeviceRestAPI {
@@ -42,18 +41,23 @@ public class DeviceRestAPIImpl implements DeviceRestAPI {
     this.service = service;
   }
 
-  public DeviceDTO getById(Integer id) {
-    return service.getById(id);
+  public Response getById(Integer id) {
+      DeviceDTO device = service.getById(id);
+      if(device == null) {
+          return Response.noContent().build();
+      }
+    return Response.ok(device).build();
   }
 
-  public DeviceCollectionDTO findAll() {
-    return service.searchDevices();
+  public Response findAll() {
+    return Response.ok(service.searchDevices()).build();
   }
 
   @Override
   public Response createDevice(final DeviceDTO device) {
     try {
-      return Response.ok(service.createDevice(device)).build();
+        service.createDevice(device);
+      return Response.ok("created").build();
     } catch (Exception e){
       return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
     }
