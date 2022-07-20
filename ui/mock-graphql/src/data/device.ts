@@ -5,8 +5,8 @@ import { rndNumber, rndStatus, rndLatency, rndUptime } from '../helpers/random'
 casual.define('device', function () {
   return {
     id: casual.uuid,
-    name: `device-${casual.word}`,
-    icmp_latency: rndLatency(),
+    name: `DEVICE-${casual.word}`,
+    icmp_latency: rndLatency() + 'ms',
     snmp_uptime: rndUptime(),
     status: rndStatus()
   }
