@@ -8,9 +8,9 @@ casual.define('minion', function () {
     label: `minion-${casual.word}`,
     status: rndStatus(),
     location: casual.city,
-    lastUpdated: casual.date(),
-    icmp_latency: rndLatency(),
-    snmp_uptime: rndUptime()
+    lastUpdated: casual.date()
+    // icmp_latency: rndLatency(),
+    // snmp_uptime: rndUptime()
   }
 })
 
