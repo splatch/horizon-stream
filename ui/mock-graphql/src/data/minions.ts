@@ -9,8 +9,6 @@ casual.define('minion', function () {
     status: rndStatus(),
     location: casual.city,
     lastUpdated: casual.date()
-    // icmp_latency: rndLatency(),
-    // snmp_uptime: rndUptime()
   }
 })
 
