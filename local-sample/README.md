@@ -1,8 +1,9 @@
 # Requirements
 
-Kind is installed.
-
-Kubectl is installed.
+Install the following if not installed:
+* Kind
+* Kubectl
+* Operator-sdk (https://sdk.operatorframework.io/docs/installation/)
 
 Running on Mac or Linux.
 
