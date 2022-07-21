@@ -41,14 +41,14 @@ spec:
           - "microprofile-jwt"
     roles:
       realm:
-      - id: {{ .Values.Keycloak.UUID.BaseUserID }}
+      - id: {{ .Values.Keycloak.UUID.BaseUserId }}
         name: user
         composite: false
-      - id: {{ .Values.Keycloak.UUID.AdminUserID }}
+      - id: {{ .Values.Keycloak.UUID.AdminUserId }}
         name: admin
         composite: false
     users:
-      - username: "admin"
+      - username: {{ .Values.Keycloak.AdminUsername }}
         email: "admin@test.opennms.org"
         enabled: True
         emailVerified: False
@@ -68,13 +68,14 @@ spec:
             - "view-users"
             - "query-users"
             - "create-client"
-      - username: "user001"
+      - username: {{ .Values.Keycloak.UserUsername }}
         firstName: "User001"
         lastName: ""
         email: "user001@test.opennms.org"
         enabled: True
         emailVerified: False
         credentials:
+          - type: "password"
             secret:
               name: keycloak-credentials
               value: userPwd
