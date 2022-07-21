@@ -59,7 +59,8 @@ public class DeviceService {
   }
 
   @GraphQLMutation
-  public String addDevice(DeviceDTO device, @GraphQLEnvironment ResolutionEnvironment env) {
-    return gateway.post(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), device, String.class).getBody();
+  public Integer addDevice(DeviceDTO device, @GraphQLEnvironment ResolutionEnvironment env) {
+    return gateway.post(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), device, Integer.class).getBody();
   }
 }
+

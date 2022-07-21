@@ -49,7 +49,7 @@ public class DeviceService extends AbstractService<OnmsNode, DeviceDTO, Integer>
     return new DeviceCollectionDTO(deviceDTOS);
   }
 
-  public void createDevice(DeviceDTO newDevice) {
+  public Integer createDevice(DeviceDTO newDevice) {
     OnmsNode node = mapper.fromDto(newDevice);
     if(node.getLocation() == null) {
         OnmsMonitoringLocation defaultLocation = sessionUtils.withReadOnlyTransaction(()->locationDao.getDefaultLocation());
@@ -62,6 +62,6 @@ public class DeviceService extends AbstractService<OnmsNode, DeviceDTO, Integer>
     }
     sessionUtils.withTransaction(() ->locationDao.saveOrUpdate(node.getLocation()));
     node.setCreateTime(new Date());
-    createEntity(node);
+    return createEntity(node);
   }
 }

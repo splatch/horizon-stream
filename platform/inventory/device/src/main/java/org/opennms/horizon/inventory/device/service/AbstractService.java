@@ -68,7 +68,7 @@ public abstract class AbstractService<T, D, ID extends Serializable> {
     });
   }
 
-  public void createEntity(T entity) {
-    sessionUtils.withTransaction(() -> dao.save(entity));
+  public ID createEntity(T entity) {
+    return sessionUtils.withTransaction(() -> dao.save(entity));
   }
 }

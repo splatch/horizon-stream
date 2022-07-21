@@ -56,8 +56,7 @@ public class DeviceRestAPIImpl implements DeviceRestAPI {
   @Override
   public Response createDevice(final DeviceDTO device) {
     try {
-        service.createDevice(device);
-      return Response.ok("created").build();
+        return Response.ok(service.createDevice(device)).build();
     } catch (Exception e){
       return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
     }

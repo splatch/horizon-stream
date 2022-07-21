@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.inventory.device.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -55,6 +56,8 @@ public class DeviceServiceTest {
   private DeviceService deviceService;
   private NodeDao mockNodeDao;
   private MonitoringLocationDao mockLocationDao;
+  private Integer id;
+  private DeviceDTO device;
 
   @Before
   public void setup() {
@@ -67,15 +70,19 @@ public class DeviceServiceTest {
     deviceService.setLocationDao(mockLocationDao);
     deviceService.setMapper(deviceMapper);
     deviceService.setSessionUtils(new MockSessionUtils());
+    device = new DeviceDTO();
+    id = 1;
+
+      doNothing().when(mockLocationDao).saveOrUpdate(any(OnmsMonitoringLocation.class));
+      doReturn(id).when(mockNodeDao).save(any(OnmsNode.class));
   }
 
   @Test
   public void testCreateDeviceWithLocation() {
     LocationDTO location = new LocationDTO();
-    DeviceDTO device = new DeviceDTO();
     device.setLocation(location);
-    doNothing().when(mockLocationDao).saveOrUpdate(any(OnmsMonitoringLocation.class));
-    deviceService.createDevice(device);
+    Integer deviceID = deviceService.createDevice(device);
+    assertEquals(id, deviceID);
     verify(mockNodeDao).save(any(OnmsNode.class));
     verifyNoMoreInteractions(mockNodeDao);
     verify(mockLocationDao).saveOrUpdate(any(OnmsMonitoringLocation.class));
@@ -84,11 +91,10 @@ public class DeviceServiceTest {
 
   @Test
   public void testCreateDeviceWithDefaultLocation() {
-    DeviceDTO device = new DeviceDTO();
     OnmsMonitoringLocation defaultLocation = new OnmsMonitoringLocation();
     doReturn(defaultLocation).when(mockLocationDao).getDefaultLocation();
-    doNothing().when(mockLocationDao).saveOrUpdate(any(OnmsMonitoringLocation.class));
-    deviceService.createDevice(device);
+    Integer deviceID = deviceService.createDevice(device);
+    assertEquals(id, deviceID);
     verify(mockNodeDao).save(any(OnmsNode.class));
     verify(mockLocationDao).getDefaultLocation();
     verify(mockLocationDao).saveOrUpdate(any(OnmsMonitoringLocation.class));
