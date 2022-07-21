@@ -256,6 +256,8 @@ kubectl -n local-instance patch deployments opennms-core -p "{\"spec\": {\"templ
 
 kubectl -n local-instance apply -f to-be-added-to-operator.yaml
 
+sleep 60
+
 ## Debug
 #cd ../external-it/
 #mvn clean install

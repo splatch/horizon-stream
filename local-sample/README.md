@@ -4,6 +4,7 @@ Install the following if not installed:
 * Kind
 * Kubectl
 * Operator-sdk (https://sdk.operatorframework.io/docs/installation/)
+* Helm3
 
 Running on Mac or Linux.
 
