@@ -19,7 +19,9 @@ import "github.com/google/uuid"
 type KeycloakValues struct {
 	Path          string   `yaml:"Path"`
 	ServiceName   string   `yaml:"ServiceName"`
+	AdminUsername string   `yaml:"AdminUsername"`
 	AdminPassword string   `yaml:"AdminPassword"`
+	UserUsername  string   `yaml:"UserUsername"`
 	UserPassword  string   `yaml:"UserPassword"`
 	Image         string   `yaml:"Image"`
 	UUID          UUIDList `yaml:"UUID"`

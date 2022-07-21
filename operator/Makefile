@@ -1,5 +1,5 @@
 .PHONY: dependencies build alpine-build unit-test integration-test
-.PHONY: local-docker copy-charts
+.PHONY: local-docker copy-charts kubebuilder
 
 all: build
 
@@ -20,7 +20,7 @@ copy-charts:
 	rm -rf charts/
 	cp -rf ../charts .
 
-local-docker: copy-charts
+local-docker: copy-charts kubebuilder
 	docker build -t opennms/operator:local-build .
 
 build:

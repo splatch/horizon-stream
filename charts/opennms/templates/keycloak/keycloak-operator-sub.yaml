@@ -4,8 +4,7 @@ metadata:
   name: keycloak-operator
   namespace: {{ .Values.Namespace }}
 spec:
-  channel: alpha
+  channel: candidate
   name: keycloak-operator
   source: operatorhubio-catalog
   sourceNamespace: olm
-  startingCSV: keycloak-operator.v18.0.0 

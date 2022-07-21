@@ -22,22 +22,27 @@ import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 // KeycloakSpec - defines the desired state of Keycloak
 type KeycloakSpec struct {
-	Instances    int                   `yaml:"instances"`
-	Hostname     string                `yaml:"hostname"`
-	TLSSecret    string                `yaml:"tlsSecret"`
-	Image        string                `yaml:"image"`
-	ServerConfig []ServerConfiguration `yaml:"serverConfiguration"`
+	Instances             int                   `json:"instances"`
+	DisableDefaultIngress bool                  `json:"disableDefaultIngress"`
+	Hostname              string                `json:"hostname"`
+	TlsSecret             string                `json:"tlsSecret"`
+	Image                 string                `json:"image"`
+	ServerConfiguration   []ServerConfiguration `json:"serverConfiguration"`
 }
+
+// +kubebuilder:object:generate=true
 
 type ServerConfiguration struct {
-	Name   string       `yaml:"name"`
-	Value  string       `yaml:"value"`
-	Secret SecretConfig `yaml:"secret"`
+	Name   string        `json:"name"`
+	Value  string        `json:"value"`
+	Secret *SecretConfig `json:"secret,omitempty"`
 }
 
+// +kubebuilder:object:generate=true
+
 type SecretConfig struct {
-	Name string `yaml:"name"`
-	Key  string `yaml:"key"`
+	Name string `json:"name,omitempty"`
+	Key  string `json:"key,omitempty"`
 }
 
 // +kubebuilder:object:generate=true
@@ -73,87 +78,87 @@ type KeycloakList struct {
 // +kubebuilder:object:generate=true
 
 type KeycloakRealmImportSpec struct {
-	KeycloakCRName string `yaml:"keycloakCRName"`
-	Realm          Realm  `yaml:"realm"`
+	KeycloakCRName string `json:"keycloakCRName"`
+	Realm          Realm  `json:"realm"`
 }
 
 // +kubebuilder:object:generate=true
 
 type Realm struct {
-	AccessTokenLifeSpan  int        `yaml:"accessTokenLifeSpan"`
-	Id                   string     `yaml:"id"`
-	Realm                string     `yaml:"realm"`
-	Enabled              bool       `yaml:"enabled"`
-	LoginTheme           string     `yaml:"loginTheme"`
-	EmailTheme           string     `yaml:"emailTheme"`
-	RememberMe           bool       `yaml:"rememberMe"`
-	ResetPasswordAllowed bool       `yaml:"resetPasswordAllowed"`
-	Attributes           Attributes `yaml:"attributes"`
-	Clients              []Client   `yaml:"clients"`
-	Roles                Roles      `yaml:"roles"`
-	Users                []User     `yaml:"users"`
+	AccessTokenLifeSpan  int        `json:"accessTokenLifeSpan"`
+	Id                   string     `json:"id"`
+	Realm                string     `json:"realm"`
+	Enabled              bool       `json:"enabled"`
+	LoginTheme           string     `json:"loginTheme"`
+	EmailTheme           string     `json:"emailTheme"`
+	RememberMe           bool       `json:"rememberMe"`
+	ResetPasswordAllowed bool       `json:"resetPasswordAllowed"`
+	Attributes           Attributes `json:"attributes"`
+	Clients              []Client   `json:"clients"`
+	Roles                Roles      `json:"roles"`
+	Users                []User     `json:"users"`
 }
 
 // +kubebuilder:object:generate=true
 
 type Attributes struct {
-	FrontendURL string `yaml:"frontendURL"`
+	FrontendURL string `json:"frontendURL"`
 }
 
 // +kubebuilder:object:generate=true
 
 type Client struct {
-	Id                        string   `yaml:"id"`
-	ClientId                  string   `yaml:"clientId"`
-	StandardFlowEnabled       bool     `yaml:"standardFlowEnabled"`
-	Enabled                   bool     `yaml:"enabled"`
-	WebOrigins                []string `yaml:"webOrigins"`
-	RedirectUris              []string `yaml:"redirectUris"`
-	PublicClient              bool     `yaml:"publicClient"`
-	DirectAccessGrantsEnabled bool     `yaml:"directAccessGrantsEnabled"`
-	DefaultClientScopes       []string `yaml:"defaultClientScopes"`
-	OptionalClientScopes      []string `yaml:"optionalClientScopes"`
+	Id                        string   `json:"id"`
+	ClientId                  string   `json:"clientId"`
+	StandardFlowEnabled       bool     `json:"standardFlowEnabled"`
+	Enabled                   bool     `json:"enabled"`
+	WebOrigins                []string `json:"webOrigins"`
+	RedirectUris              []string `json:"redirectUris"`
+	PublicClient              bool     `json:"publicClient"`
+	DirectAccessGrantsEnabled bool     `json:"directAccessGrantsEnabled"`
+	DefaultClientScopes       []string `json:"defaultClientScopes"`
+	OptionalClientScopes      []string `json:"optionalClientScopes"`
 }
 
 // +kubebuilder:object:generate=true
 
 type Roles struct {
-	Realm []RealmRole `yaml:"realm"`
+	Realm []RealmRole `json:"realm"`
 }
 
 type RealmRole struct {
-	Id        string `yaml:"id"`
-	Name      string `yaml:"name"`
-	Composite bool   `yaml:"composite"`
+	Id        string `json:"id"`
+	Name      string `json:"name"`
+	Composite bool   `json:"composite"`
 }
 
 // +kubebuilder:object:generate=true
 
 type User struct {
-	Username      string       `yaml:"username"`
-	Email         string       `yaml:"email"`
-	Enabled       bool         `yaml:"enabled"`
-	EmailVerified bool         `yaml:"emailVerified"`
-	Credentials   []Credential `yaml:"credentials"`
-	RealmRoles    []string     `yaml:"realmRoles"`
-	ClientRoles   []ClientRole `yaml:"clientRoles"`
+	Username      string       `json:"username"`
+	Email         string       `json:"email"`
+	Enabled       bool         `json:"enabled"`
+	EmailVerified bool         `json:"emailVerified"`
+	Credentials   []Credential `json:"credentials"`
+	RealmRoles    []string     `json:"realmRoles"`
+	ClientRoles   ClientRole   `json:"clientRoles"`
 }
 
 type Credential struct {
-	Type   string     `yaml:"type"`
-	Secret SecretCred `yaml:"secret"`
+	Type   string     `json:"type"`
+	Secret SecretCred `json:"secret"`
 }
 
 type SecretCred struct {
-	Name string `yaml:"name"`
-	Key  string `yaml:"key"`
+	Name string `json:"name"`
+	Key  string `json:"key"`
 }
 
 // +kubebuilder:object:generate=true
 
 type ClientRole struct {
-	Account         []string `yaml:"account"`
-	RealmManagement []string `yaml:"realmManagement"`
+	Account         []string `json:"account"`
+	RealmManagement []string `json:"realm-management"`
 }
 
 // +kubebuilder:object:generate=true

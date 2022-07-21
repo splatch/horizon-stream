@@ -10,16 +10,17 @@ spec:
   hostname: {{ .Values.Host }}
   tlsSecret: {{ .Values.TLS.Cert.Name }}
   image: {{ .Values.Keycloak.Image }}
+  disableDefaultIngress: true
   serverConfiguration:
     - name: db
-        value: postgres
+      value: postgres
     - name: db-url-host
-        value: {{ .Values.Postgres.ServiceName }}
+      value: {{ .Values.Postgres.ServiceName }}
     - name: db-username
-        secret:
-          name: postgres
-          key: keycloakUser
+      secret:
+        name: postgres
+        key: keycloakUser
     - name: db-password
-        secret:
-          name: postgres
-          key: keycloakPwd
+      secret:
+        name: postgres
+        key: keycloakPwd
