@@ -21,6 +21,7 @@ type KeycloakValues struct {
 	ServiceName   string   `yaml:"ServiceName"`
 	AdminPassword string   `yaml:"AdminPassword"`
 	UserPassword  string   `yaml:"UserPassword"`
+	Image         string   `yaml:"Image"`
 	UUID          UUIDList `yaml:"UUID"`
 }
 

@@ -44,7 +44,9 @@ Postgres:
 Keycloak:
   Path: /auth
   ServiceName: onms-keycloak
-  Password: notset
+  AdminPassword: notset
+  UserPassword: notset
+  Image: opennms/horizon-stream-keycloak:latest
   UUID:
     ClientId: placeholder
     BaseUserId: placeholder
