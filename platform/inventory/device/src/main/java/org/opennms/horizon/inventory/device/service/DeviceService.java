@@ -56,7 +56,7 @@ public class DeviceService extends AbstractService<OnmsNode, DeviceDTO, Integer>
         if(defaultLocation == null) {
             defaultLocation = new OnmsMonitoringLocation();
             defaultLocation.setLocationName(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
-            defaultLocation.setMonitoringArea(MonitoringLocationDao.DEFAULT_MONITORING_AREA);
+            defaultLocation.setMonitoringArea(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         }
         node.setLocation(defaultLocation);
     }
