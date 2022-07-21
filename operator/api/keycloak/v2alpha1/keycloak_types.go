@@ -25,6 +25,7 @@ type KeycloakSpec struct {
 	Instances    int                   `yaml:"instances"`
 	Hostname     string                `yaml:"hostname"`
 	TLSSecret    string                `yaml:"tlsSecret"`
+	Image        string                `yaml:"image"`
 	ServerConfig []ServerConfiguration `yaml:"serverConfiguration"`
 }
 

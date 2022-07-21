@@ -9,6 +9,7 @@ spec:
   instances: 1
   hostname: {{ .Values.Host }}
   tlsSecret: {{ .Values.TLS.Cert.Name }}
+  image: {{ .Values.Keycloak.Image }}
   serverConfiguration:
     - name: db
         value: postgres
