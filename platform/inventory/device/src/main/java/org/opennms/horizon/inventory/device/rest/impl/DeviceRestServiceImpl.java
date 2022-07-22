@@ -30,11 +30,11 @@ package org.opennms.horizon.inventory.device.rest.impl;
 
 import javax.ws.rs.core.Response;
 
-import org.opennms.horizon.inventory.device.rest.api.DeviceRestAPI;
+import org.opennms.horizon.inventory.device.rest.api.DeviceRestService;
 import org.opennms.horizon.inventory.device.service.DeviceService;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
-public class DeviceRestAPIImpl implements DeviceRestAPI {
+public class DeviceRestServiceImpl implements DeviceRestService {
   private DeviceService service;
 
   public void setService(DeviceService service) {
