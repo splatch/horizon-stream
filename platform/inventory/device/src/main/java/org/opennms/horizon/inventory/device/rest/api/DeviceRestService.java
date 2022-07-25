@@ -41,7 +41,7 @@ import javax.ws.rs.core.Response;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
 @Path("/devices")
-public interface DeviceRestAPI {
+public interface DeviceRestService {
 
   @GET
   @Path("/{id}")
