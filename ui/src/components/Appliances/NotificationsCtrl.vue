@@ -4,14 +4,7 @@
     data-test="notifications-btn"
     @click="openModal"
   >
-    <template v-slot:icon>
-      <FeatherIcon 
-        :icon="Send" 
-        aria-hidden="true" 
-        focusable="false" 
-      />
-      Outbound Notification
-    </template>
+    Outbound Notification
   </FeatherButton>
 
   <PrimaryModal title="Outbound Notifications" :visible="isVisible">
@@ -46,7 +39,6 @@
 </template>
 
 <script setup lang="ts">
-import Send from '@featherds/icon/action/Send'
 import { useNotificationMutations } from '@/store/Mutations/notificationMutations'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
