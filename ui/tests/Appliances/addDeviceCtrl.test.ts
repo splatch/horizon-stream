@@ -58,9 +58,9 @@ test('The save btn should enable if name and IP are added', async () => {
   expect(saveBtn.attributes('aria-disabled')).toBeUndefined()
 })
 
-test('The save mutation is called', async () => {
+test('The add device mutation is called', async () => {
   const deviceMutations = useDeviceMutations()
-  const saveDevice = vi.spyOn(deviceMutations, 'saveDevice')
+  const addDevice = vi.spyOn(deviceMutations, 'addDevice')
 
   await wrapper.get('[data-test="add-device-btn"]').trigger('click')
 
@@ -73,5 +73,5 @@ test('The save mutation is called', async () => {
   await saveBtn.trigger('click')
 
   // expect save device query to be called
-  expect(saveDevice).toHaveBeenCalledTimes(1)
+  expect(addDevice).toHaveBeenCalledTimes(1)
 })

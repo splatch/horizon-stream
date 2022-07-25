@@ -1,6 +1,6 @@
 import { useQuery } from 'villus'
 import { defineStore } from 'pinia'
-import { ListMinionsDocument } from '@/types/graphql-mocks'
+import { ListMinionsDocument } from '@/types/graphql'
 
 export const useMinionsQueries = defineStore('minionsQueries', {
   state: () => {

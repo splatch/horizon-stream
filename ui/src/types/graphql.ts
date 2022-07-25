@@ -88,6 +88,60 @@ export type AlarmSummaryDto = {
   uei?: Maybe<Scalars['String']>;
 };
 
+export type DeviceCollectionDto = {
+  __typename?: 'DeviceCollectionDTO';
+  devices?: Maybe<Array<Maybe<DeviceDto>>>;
+  offset?: Maybe<Scalars['Int']>;
+  totalCount?: Maybe<Scalars['Int']>;
+};
+
+export type DeviceDto = {
+  __typename?: 'DeviceDTO';
+  createTime?: Maybe<Scalars['Date']>;
+  domainName?: Maybe<Scalars['String']>;
+  foreignId?: Maybe<Scalars['String']>;
+  foreignSource?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Int']>;
+  label?: Maybe<Scalars['String']>;
+  labelSource?: Maybe<Scalars['String']>;
+  lastEgressFlow?: Maybe<Scalars['Date']>;
+  lastIngressFlow?: Maybe<Scalars['Date']>;
+  lastPoll?: Maybe<Scalars['Date']>;
+  location?: Maybe<LocationDto>;
+  netBiosName?: Maybe<Scalars['String']>;
+  operatingSystem?: Maybe<Scalars['String']>;
+  parentId?: Maybe<Scalars['Int']>;
+  sysContact?: Maybe<Scalars['String']>;
+  sysDescription?: Maybe<Scalars['String']>;
+  sysLocation?: Maybe<Scalars['String']>;
+  sysName?: Maybe<Scalars['String']>;
+  sysOid?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+};
+
+export type DeviceDtoInput = {
+  createTime?: InputMaybe<Scalars['Date']>;
+  domainName?: InputMaybe<Scalars['String']>;
+  foreignId?: InputMaybe<Scalars['String']>;
+  foreignSource?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Int']>;
+  label?: InputMaybe<Scalars['String']>;
+  labelSource?: InputMaybe<Scalars['String']>;
+  lastEgressFlow?: InputMaybe<Scalars['Date']>;
+  lastIngressFlow?: InputMaybe<Scalars['Date']>;
+  lastPoll?: InputMaybe<Scalars['Date']>;
+  location?: InputMaybe<LocationDtoInput>;
+  netBiosName?: InputMaybe<Scalars['String']>;
+  operatingSystem?: InputMaybe<Scalars['String']>;
+  parentId?: InputMaybe<Scalars['Int']>;
+  sysContact?: InputMaybe<Scalars['String']>;
+  sysDescription?: InputMaybe<Scalars['String']>;
+  sysLocation?: InputMaybe<Scalars['String']>;
+  sysName?: InputMaybe<Scalars['String']>;
+  sysOid?: InputMaybe<Scalars['String']>;
+  type?: InputMaybe<Scalars['String']>;
+};
+
 export type EventCollectionDto = {
   __typename?: 'EventCollectionDTO';
   events?: Maybe<Array<Maybe<EventDto>>>;
@@ -185,6 +239,27 @@ export type EventParameterDtoInput = {
   value?: InputMaybe<Scalars['String']>;
 };
 
+export type LocationDto = {
+  __typename?: 'LocationDTO';
+  geolocation?: Maybe<Scalars['String']>;
+  latitude?: Maybe<Scalars['Float']>;
+  locationName?: Maybe<Scalars['String']>;
+  longitude?: Maybe<Scalars['Float']>;
+  monitoringArea?: Maybe<Scalars['String']>;
+  priority?: Maybe<Scalars['Int']>;
+  tags?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+export type LocationDtoInput = {
+  geolocation?: InputMaybe<Scalars['String']>;
+  latitude?: InputMaybe<Scalars['Float']>;
+  locationName?: InputMaybe<Scalars['String']>;
+  longitude?: InputMaybe<Scalars['Float']>;
+  monitoringArea?: InputMaybe<Scalars['String']>;
+  priority?: InputMaybe<Scalars['Int']>;
+  tags?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
 export type MemoDto = {
   __typename?: 'MemoDTO';
   author?: Maybe<Scalars['String']>;
@@ -194,11 +269,34 @@ export type MemoDto = {
   updated?: Maybe<Scalars['Date']>;
 };
 
+export type MinionCollectionDto = {
+  __typename?: 'MinionCollectionDTO';
+  minions?: Maybe<Array<Maybe<MinionDto>>>;
+  offset?: Maybe<Scalars['Int']>;
+  totalCount?: Maybe<Scalars['Int']>;
+};
+
+export type MinionDto = {
+  __typename?: 'MinionDTO';
+  id?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  lastUpdated?: Maybe<Scalars['Date']>;
+  location?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['String']>;
+};
+
 /** Mutation root */
 export type Mutation = {
   __typename?: 'Mutation';
+  addDevice?: Maybe<Scalars['Int']>;
   clearAlarm?: Maybe<Scalars['String']>;
   createEvent?: Maybe<Scalars['Boolean']>;
+};
+
+
+/** Mutation root */
+export type MutationAddDeviceArgs = {
+  device?: InputMaybe<DeviceDtoInput>;
 };
 
 
@@ -217,8 +315,24 @@ export type MutationCreateEventArgs = {
 /** Query root */
 export type Query = {
   __typename?: 'Query';
+  deviceById?: Maybe<DeviceDto>;
   listAlarms?: Maybe<AlarmCollectionDto>;
+  listDevices?: Maybe<DeviceCollectionDto>;
   listEvents?: Maybe<EventCollectionDto>;
+  listMinions?: Maybe<MinionCollectionDto>;
+  minionById?: Maybe<MinionDto>;
+};
+
+
+/** Query root */
+export type QueryDeviceByIdArgs = {
+  id?: InputMaybe<Scalars['Int']>;
+};
+
+
+/** Query root */
+export type QueryMinionByIdArgs = {
+  id?: InputMaybe<Scalars['String']>;
 };
 
 export type ReductionKeyMemoDto = {
@@ -242,6 +356,11 @@ export type ServiceTypeDtoInput = {
   name?: InputMaybe<Scalars['String']>;
 };
 
+export type AlarmsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AlarmsQuery = { __typename?: 'Query', listAlarms?: { __typename?: 'AlarmCollectionDTO', alarms?: Array<{ __typename?: 'AlarmDTO', id?: number | null, description?: string | null, severity?: string | null, lastEventTime?: any | null } | null> | null } | null };
+
 export type ClearAlarmMutationVariables = Exact<{
   id: Scalars['Long'];
   ackDTO: AlarmAckDtoInput;
@@ -250,6 +369,18 @@ export type ClearAlarmMutationVariables = Exact<{
 
 export type ClearAlarmMutation = { __typename?: 'Mutation', clearAlarm?: string | null };
 
+export type AddDeviceMutationVariables = Exact<{
+  device: DeviceDtoInput;
+}>;
+
+
+export type AddDeviceMutation = { __typename?: 'Mutation', addDevice?: number | null };
+
+export type ListDevicesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListDevicesQuery = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number | null, label?: string | null } | null> | null } | null };
+
 export type CreateEventMutationVariables = Exact<{
   event: EventDtoInput;
 }>;
@@ -257,12 +388,15 @@ export type CreateEventMutationVariables = Exact<{
 
 export type CreateEventMutation = { __typename?: 'Mutation', createEvent?: boolean | null };
 
-export type DashboardQueryVariables = Exact<{ [key: string]: never; }>;
+export type ListMinionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type DashboardQuery = { __typename?: 'Query', listAlarms?: { __typename?: 'AlarmCollectionDTO', alarms?: Array<{ __typename?: 'AlarmDTO', id?: number | null, description?: string | null, severity?: string | null, lastEventTime?: any | null } | null> | null } | null };
+export type ListMinionsQuery = { __typename?: 'Query', listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string | null, label?: string | null, status?: string | null, location?: string | null, lastUpdated?: any | null } | null> | null } | null };
 
 
+export const AlarmsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Alarms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listAlarms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alarms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"severity"}},{"kind":"Field","name":{"kind":"Name","value":"lastEventTime"}}]}}]}}]}}]} as unknown as DocumentNode<AlarmsQuery, AlarmsQueryVariables>;
 export const ClearAlarmDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ClearAlarm"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Long"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ackDTO"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AlarmAckDTOInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"clearAlarm"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"ackDTO"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ackDTO"}}}]}]}}]} as unknown as DocumentNode<ClearAlarmMutation, ClearAlarmMutationVariables>;
+export const AddDeviceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddDevice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"device"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DeviceDTOInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addDevice"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"device"},"value":{"kind":"Variable","name":{"kind":"Name","value":"device"}}}]}]}}]} as unknown as DocumentNode<AddDeviceMutation, AddDeviceMutationVariables>;
+export const ListDevicesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListDevices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listDevices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"devices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}}]}}]}}]}}]} as unknown as DocumentNode<ListDevicesQuery, ListDevicesQueryVariables>;
 export const CreateEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"event"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventDTOInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"event"},"value":{"kind":"Variable","name":{"kind":"Name","value":"event"}}}]}]}}]} as unknown as DocumentNode<CreateEventMutation, CreateEventMutationVariables>;
-export const DashboardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Dashboard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listAlarms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"alarms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"severity"}},{"kind":"Field","name":{"kind":"Name","value":"lastEventTime"}}]}}]}}]}}]} as unknown as DocumentNode<DashboardQuery, DashboardQueryVariables>;
+export const ListMinionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListMinions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listMinions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"minions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdated"}}]}}]}}]}}]} as unknown as DocumentNode<ListMinionsQuery, ListMinionsQueryVariables>;

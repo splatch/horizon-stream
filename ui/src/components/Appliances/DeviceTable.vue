@@ -10,7 +10,7 @@
       <TransitionGroup name="data-table" tag="div">
         <div class="card" v-for="(device) in listDevicesWithBgColor" :key="device.id" data-test="device-item">
           <div class="column name" data-test="col-device">
-            {{ device.name }}
+            {{ device.label }}
           </div>
           <div class="column" :class="device.latencyClass" data-test="col-latency">
             <pre class="title">ICMP Latency</pre>

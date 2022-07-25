@@ -20,7 +20,7 @@
       <FeatherInput
         data-test="name-input"
         label="Name"
-        v-model="device.name"
+        v-model="device.label"
       />
 
       <!-- Management IP -->
@@ -50,7 +50,7 @@
       <FeatherButton 
         data-test="save-btn" 
         primary
-        :disabled="!device.name || !device.management_ip"
+        :disabled="!device.label || !device.management_ip"
         @click="save">
           Test & Save
       </FeatherButton>
@@ -76,7 +76,7 @@ const { openModal, closeModal, isVisible } = useModal()
 const deviceMutations = useDeviceMutations()
 
 const defaultDevice = {
-  name: undefined,
+  label: undefined,
   management_ip: undefined,
   community_string: undefined,
   port: undefined
@@ -85,7 +85,7 @@ const defaultDevice = {
 const device = reactive(defaultDevice)
 
 const save = async () => {
-  await deviceMutations.saveDevice({ device })
+  await deviceMutations.addDevice({ device })
 
 
   if (!deviceMutations.error) {

@@ -1,0 +1,8 @@
+query ListDevices {
+  listDevices {
+    devices {
+      id
+      label
+    }
+  }
+}

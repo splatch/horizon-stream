@@ -1,0 +1,11 @@
+query ListMinions {
+  listMinions {
+    minions {
+      id
+      label
+      status
+      location
+      lastUpdated
+    }
+  }
+}
