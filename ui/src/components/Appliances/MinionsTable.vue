@@ -27,7 +27,7 @@
           <td>{{ minion.icmp_latency }}</td>
           <td>{{ minion.snmp_uptime }}</td>
           <td>
-            <div :class="minion.statusClass">
+            <div :class="minion.statusBgColor" data-test="minion-item-status">
               {{ minion.status }}
             </div>
           </td>

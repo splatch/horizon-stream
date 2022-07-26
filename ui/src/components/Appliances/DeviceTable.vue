@@ -33,14 +33,14 @@
           </div>
           <div data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
-            <div class="value" :class="device.latencyClass">{{ device.icmp_latency }}</div>
+            <div class="value" :class="device.latencyBgColor">{{ device.icmp_latency }}</div>
           </div>
           <div data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
-            <div class="value" :class="device.uptimeClass">{{ device.snmp_uptime }}</div>
+            <div class="value" :class="device.uptimeBgColor">{{ device.snmp_uptime }}</div>
           </div>
           <div data-test="col-status">
-            <div class="value" :class="device.statusClass">{{ device.status }}</div>
+            <div class="value" :class="device.statusBgColor">{{ device.status }}</div>
           </div>
         </div>
       </TransitionGroup>
