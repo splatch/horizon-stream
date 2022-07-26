@@ -17,8 +17,14 @@
 </template>
 
 <script lang="ts" setup>
+import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import useKeycloak from '@/composables/useKeycloak'
+
 const { keycloak } = useKeycloak()
+const appliancesStore = useAppliancesStore()
+
+const minionTableWidth = computed<string>(() => appliancesStore.minionsTableOpen ? '40%' : '0%')
+const gapWidth = computed<string>(() => appliancesStore.minionsTableOpen ? '20px' : '0px')
 </script>
 
 <style scoped lang="scss">
@@ -39,13 +45,35 @@ const { keycloak } = useKeycloak()
 }
 .minions-device-container {
   display: flex;
-  gap: 20px;
+  gap: v-bind(gapWidth);
   
   .minions-table {
-    width: 40%;
+    width: v-bind(minionTableWidth);
+    transition: width 0.4s ease-out;
   }
   .device-table {
-    width: 60%;
+    flex-grow: 1;
+  }
+}
+
+// small screen / tablet / mobile
+$breakpoint: 1024px;
+@media (max-width: $breakpoint) {
+  .header-container {
+    display: block;
+    .btns {
+      display: block;
+    }
+  }
+  .minions-device-container {
+    display: block;
+    .minions-table {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .device-table {
+      width: 100%;
+    }
   }
 }
 </style>
