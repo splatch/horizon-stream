@@ -12,15 +12,15 @@
           <div class="column name" data-test="col-device">
             {{ device.name }}
           </div>
-          <div class="column" :class="device.latencyClass" data-test="col-latency">
+          <div class="column" :class="device.latencyBgColor" data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
             {{ device.icmp_latency }}
           </div>
-          <div class="column" :class="device.uptimeClass" data-test="col-uptime">
+          <div class="column" :class="device.uptimeBgColor" data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
             {{ device.snmp_uptime }}
           </div>
-          <div class="column" :class="device.statusClass" data-test="col-status">
+          <div class="column" :class="device.statusBgColor" data-test="col-status">
             {{ device.status }}
           </div>
         </div>

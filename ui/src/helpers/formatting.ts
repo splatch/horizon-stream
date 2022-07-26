@@ -1,3 +1,8 @@
+/**
+ * 
+ * @param list 
+ * @returns 
+ */
 export const formatItemBgColor = (list: any[]) => list.map(item => {
   const bg = {
     ok: 'bg-ok',
@@ -5,22 +10,22 @@ export const formatItemBgColor = (list: any[]) => list.map(item => {
     unknown: 'bg-unknown'
   }
   
-  let statusClass = bg.ok
-  if(item?.status === 'DOWN') statusClass = bg.failed
-  else if(item?.status === 'UNKNOWN') statusClass = bg.unknown
+  let statusBgColor = bg.ok
+  if(item?.status === 'DOWN') statusBgColor = bg.failed
+  else if(item?.status === 'UNKNOWN') statusBgColor = bg.unknown
 
-  let latencyClass = bg.ok
-  if(item?.icmp_latency === 'FAILED') latencyClass = bg.failed
-  else if(item?.icmp_latency === 'UNKNOWN') latencyClass = bg.unknown
+  let latencyBgColor = bg.ok
+  if(item?.icmp_latency === 'FAILED') latencyBgColor = bg.failed
+  else if(item?.icmp_latency === 'UNKNOWN') latencyBgColor = bg.unknown
 
-  let uptimeClass = bg.ok
-  if(item?.snmp_uptime === 'FAILED') uptimeClass = bg.failed
-  else if(item?.snmp_uptime === 'UNKNOWN') uptimeClass = bg.unknown
+  let uptimeBgColor = bg.ok
+  if(item?.snmp_uptime === 'FAILED') uptimeBgColor = bg.failed
+  else if(item?.snmp_uptime === 'UNKNOWN') uptimeBgColor = bg.unknown
 
   return {
     ...item,
-    statusClass,
-    latencyClass,
-    uptimeClass
+    statusBgColor,
+    latencyBgColor,
+    uptimeBgColor
   }
 })

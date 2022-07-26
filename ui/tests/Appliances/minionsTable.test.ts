@@ -117,11 +117,16 @@ describe('MinionsTable.vue', () => {
         minionsQueriesStore(computed(() => minionsItems))
       })
   
+      /**
+       * Filter in status' value and background css class
+       * @param elems Elements of the selector
+       * @returns Array of arrays [['OK', 'bg-ok'],[...]]
+       */
       const formatValueBackground = (elems: any[]) => {
         return elems.map((elem: { classes: () => any; text: () => any }) => {
-          const css = elem.classes().filter((cl: string | string[]) => cl.indexOf('bg-') >= 0)[0]
           const val = ['OK', 'FAILED', 'UNKNOWN'].filter((val: string) => elem.text().indexOf(val) >= 0)[0]
-          return [ val, css]
+          const css = elem.classes().filter((cl: string | string[]) => cl.indexOf('bg-') >= 0)[0]
+          return [ val, css ]
         })
       }
   
@@ -175,11 +180,17 @@ describe('MinionsTable.vue', () => {
         minionsQueriesStore(computed(() => minionsItems)) 
       })
   
+      /**
+       * Filter in status' value and background css class
+       * @param elems Elements of the selector
+       * @returns Array of arrays [['OK', 'bg-ok'],[...]]
+       */
       const formatValueBackground = (elems: any[]) => {
+
         return elems.map((elem: { classes: () => any; text: () => any }) => {
-          const css = elem.classes().filter((cl: string | string[]) => cl.indexOf('bg-') >= 0)[0]
           const val = ['UP','DOWN'].filter((val: string) => elem.text().indexOf(val) >= 0)[0]
-          return [ val, css]
+          const css = elem.classes().filter((cl: string | string[]) => cl.indexOf('bg-') >= 0)[0]
+          return [ val, css ]
         })
       }
   

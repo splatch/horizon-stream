@@ -15,7 +15,7 @@
         <td>{{ minion.id }}</td>
         <td>{{ minion.icmp_latency }}</td>
         <td>{{ minion.snmp_uptime }}</td>
-        <td :class="minion.statusClass" class="ta-center" data-test="minion-item-status">{{ minion.status }}</td>
+        <td :class="minion.statusBgColor" class="ta-center" data-test="minion-item-status">{{ minion.status }}</td>
       </tr>
     </TransitionGroup>
   </table>
