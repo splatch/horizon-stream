@@ -104,7 +104,7 @@ describe('DeviceTable.vue', () => {
       test('Latency OK/FAILED/UNKNOWN should have the corresponding background color', () => {
         const wrapper = mount(DeviceTable)
 
-        const latencies = formatValueBackground(wrapper.findAll('[data-test="col-latency"]'))
+        const latencies = formatValueBackground(wrapper.findAll('[data-test="col-latency"] > .value'))
         const expectedValueBackground = [
           ['OK', 'bg-ok'],
           ['FAILED', 'bg-failed'],
@@ -116,7 +116,7 @@ describe('DeviceTable.vue', () => {
       test('Uptime OK/FAILED/UNKNOWN should have the corresponding background color', () => {
         const wrapper = mount(DeviceTable)
 
-        const uptimes = formatValueBackground(wrapper.findAll('[data-test="col-uptime"]'))
+        const uptimes = formatValueBackground(wrapper.findAll('[data-test="col-uptime"] > .value'))
         const expectedValueBackground = [
           ['OK', 'bg-ok'],
           ['FAILED', 'bg-failed'],
@@ -163,7 +163,7 @@ describe('DeviceTable.vue', () => {
       test('Status UP/DOWN should have the corresponding background color', () => {
         const wrapper = mount(DeviceTable)
 
-        const statuses = formatValueBackground(wrapper.findAll('[data-test="col-status"]'))
+        const statuses = formatValueBackground(wrapper.findAll('[data-test="col-status"] > .value'))
         const expectedValueBackground = [
           ['UP', 'bg-ok'],
           ['DOWN', 'bg-failed']
