@@ -1,8 +1,8 @@
-export const formatItemBgColor = (list: [any]) => list.map(item => {
+export const formatItemBgColor = (list: any[]) => list.map(item => {
   const bg = {
     ok: 'bg-ok',
-    unknown: 'bg-unknown',
-    failed: 'bg-failed'
+    failed: 'bg-failed',
+    unknown: 'bg-unknown'
   }
   
   let statusClass = bg.ok
