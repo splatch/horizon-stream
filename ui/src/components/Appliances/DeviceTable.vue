@@ -1,7 +1,15 @@
 <template>
   <TableCard>
     <div class="header">
-      <div class="title">Devices</div>
+      <div class="title-container">
+        <FeatherButton 
+          icon="Show Minions" 
+          @click="appliancesStore.showMinionsTable"
+          v-if="!appliancesStore.minionsTableOpen">
+          <FeatherIcon :icon="ChevronRight" />
+        </FeatherButton>
+        <span class="title">Devices</span>
+      </div>
 
       <FeatherInput class="search" v-model="searchValue" label="Devices">
         <template v-slot:pre>
@@ -53,10 +61,14 @@ import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Sort from '@featherds/icon/action/Sort'
 import Search from '@featherds/icon/action/Search'
 import Instances from '@featherds/icon/hardware/Instances'
+import ChevronRight from "@featherds/icon/navigation/ChevronRight";
 import { useDeviceQueries } from '@/store/Queries/deviceQueries'
 import { formatItemBgColor } from '@/helpers/formatting'
+import { useAppliancesStore } from '@/store/Views/appliancesStore'
 
 const deviceQueries = useDeviceQueries()
+const appliancesStore = useAppliancesStore()
+
 const listDevicesWithBgColor = computed(() => formatItemBgColor(deviceQueries.listDevices))
 
 const searchValue = ''
@@ -70,9 +82,14 @@ const searchValue = ''
 .header {
   display: flex;
   justify-content: space-between;
-  .title {
-    @include headline3;
-    margin-left: 15px;
+
+  .title-container {
+    display: flex;
+    .title {
+      @include headline3;
+      margin-left: 15px;
+      margin-top: 2px;
+    }
   }
   
   .search {
