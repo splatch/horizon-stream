@@ -1,6 +1,6 @@
   
 <template>
-  <FeatherAppLayout class="feather-styles layout">
+  <FeatherAppLayout contentLayout="full" class="feather-styles layout">
     <template v-slot:header>
       <Menubar />
     </template>
@@ -27,7 +27,7 @@ if (route.query.theme) router.replace(route.path)
 
 // transition nav rail open / close
 const store = useLayoutStore()
-const contentMargin = computed(() => store.navRailOpen ? '218px' : '0px')
+const contentMargin = computed(() => store.navRailOpen ? '230px' : '15px')
 const ease = computed(() => store.navRailOpen ? '10ms' : '80ms')
 const maxWidth = computed(() => store.navRailOpen ? '223px' : '0px')
 </script>
@@ -45,6 +45,7 @@ html {
 
 .main-content {
   margin-left: v-bind(contentMargin);
+  margin-right: 15px;
   transition: margin-left 0.28s ease-in-out v-bind(ease);
   max-width: calc(100% - v-bind(maxWidth));
 
