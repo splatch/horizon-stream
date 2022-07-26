@@ -2,10 +2,12 @@
   <TableCard>
     <div class="header">
       <div class="title-container">
-        <FeatherButton 
+        <FeatherButton
+          data-test="show-minions-btn"
           icon="Show Minions" 
           @click="appliancesStore.showMinionsTable"
-          v-if="!appliancesStore.minionsTableOpen">
+          v-if="!appliancesStore.minionsTableOpen"
+        >
           <FeatherIcon :icon="ChevronRight" />
         </FeatherButton>
         <span class="title">Devices</span>
@@ -61,7 +63,7 @@ import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Sort from '@featherds/icon/action/Sort'
 import Search from '@featherds/icon/action/Search'
 import Instances from '@featherds/icon/hardware/Instances'
-import ChevronRight from "@featherds/icon/navigation/ChevronRight";
+import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 import { useDeviceQueries } from '@/store/Queries/deviceQueries'
 import { formatItemBgColor } from '@/helpers/formatting'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'

@@ -5,7 +5,11 @@
         <div class="title">
           Minions ({{ minionsQueries.listMinions.length }})
         </div>
-        <FeatherButton icon="Hide Minions" @click="appliancesStore.hideMinionsTable">
+        <FeatherButton 
+          data-test="hide-minions-btn"
+          icon="Hide Minions" 
+          @click="appliancesStore.hideMinionsTable"
+        >
           <FeatherIcon :icon="ChevronLeft" />
         </FeatherButton>
       </div>
@@ -42,7 +46,7 @@
 import { useMinionsQueries } from '@/store/Queries/minionsQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import { formatItemBgColor } from '@/helpers/formatting'
-import ChevronLeft from "@featherds/icon/navigation/ChevronLeft";
+import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 
 const appliancesStore = useAppliancesStore()
 const minionsQueries = useMinionsQueries()
