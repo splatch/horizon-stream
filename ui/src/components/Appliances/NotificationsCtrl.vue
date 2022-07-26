@@ -21,18 +21,18 @@
 
     <template v-slot:footer>
       <FeatherButton 
+        data-test="cancel-btn" 
+        secondary 
+        @click="closeModal">
+          Cancel
+      </FeatherButton>
+      
+      <FeatherButton 
         data-test="save-btn" 
         primary
         :disabled="!routingKey"
         @click="save">
           Save
-      </FeatherButton>
-
-      <FeatherButton 
-        data-test="cancel-btn" 
-        secondary 
-        @click="closeModal">
-          Cancel
       </FeatherButton>
     </template>
   </PrimaryModal>
