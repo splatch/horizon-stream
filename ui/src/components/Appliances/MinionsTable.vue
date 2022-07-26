@@ -9,6 +9,7 @@
           <FeatherIcon :icon="ChevronLeft" />
         </FeatherButton>
       </div>
+
       <table class="tl1 tl2 tl3 tl4 tc5 data-table" summary="Minions" data-test="minions-table">
         <thead>
           <tr>
@@ -26,7 +27,7 @@
             <td>{{ minion.icmp_latency }}</td>
             <td>{{ minion.snmp_uptime }}</td>
             <td>
-              <div :class="minion.statusClass">
+              <div :class="minion.statusBgColor" data-test="minion-item-status">
                 {{ minion.status }}
               </div>
             </td>

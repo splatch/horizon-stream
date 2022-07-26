@@ -20,6 +20,7 @@ import (
 	"github.com/OpenNMS/opennms-operator/internal/model/values"
 	valuesutil "github.com/OpenNMS/opennms-operator/internal/util/crd"
 	"github.com/OpenNMS/opennms-operator/internal/util/security"
+	"github.com/google/uuid"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
@@ -43,6 +44,7 @@ func (r *OpenNMSReconciler) UpdateValues(ctx context.Context, instance v1alpha1.
 	if !existingCreds { // only set new passwords if they weren't already created by a previous operator
 		templateValues = setCorePasswords(templateValues)
 	}
+
 	templateValues, existingCreds = r.CheckForExistingPostgresCreds(ctx, templateValues, namespace)
 	if !existingCreds {
 		templateValues = setPostgresPassword(templateValues)
@@ -56,18 +58,23 @@ func (r *OpenNMSReconciler) UpdateValues(ctx context.Context, instance v1alpha1.
 //CheckForExistingCoreCreds - checks if core credentials already exist for a given namespace
 func (r *OpenNMSReconciler) CheckForExistingCoreCreds(ctx context.Context, v values.TemplateValues, namespace string) (values.TemplateValues, bool) {
 	var credSecret v1.Secret
-	err := r.Client.Get(ctx, types.NamespacedName{Namespace: namespace, Name: "onms-initial-creds"}, &credSecret)
+	err := r.Client.Get(ctx, types.NamespacedName{Namespace: namespace, Name: "keycloak-credentials"}, &credSecret)
 	if err != nil {
 		return v, false
 	}
-	existingAdminPwd := string(credSecret.Data["admin"])
-	existingMinionPwd := string(credSecret.Data["minion"])
-	if existingAdminPwd == "" || existingMinionPwd == "" {
+	existingAdminPwd := string(credSecret.Data["adminPwd"])
+	existingUserPwd := string(credSecret.Data["userPwd"])
+	if existingAdminPwd == "" || existingUserPwd == "" {
 		return v, false
 	}
-	//TODO rework for keycloak
-	//v.Values.Auth.AdminPass = existingAdminPwd
-	//v.Values.Auth.MinionPass = existingMinionPwd
+	clientId := string(credSecret.Data["clientId"])
+	adminId := string(credSecret.Data["adminId"])
+	userId := string(credSecret.Data["userId"])
+	v.Values.Keycloak.AdminPassword = existingAdminPwd
+	v.Values.Keycloak.UserPassword = existingUserPwd
+	v.Values.Keycloak.UUID.ClientId = uuid.MustParse(clientId)
+	v.Values.Keycloak.UUID.AdminUserId = uuid.MustParse(adminId)
+	v.Values.Keycloak.UUID.BaseUserId = uuid.MustParse(userId)
 	return v, true
 }
 
@@ -90,9 +97,12 @@ func (r *OpenNMSReconciler) CheckForExistingPostgresCreds(ctx context.Context, v
 
 //setCorePasswords - sets randomly generated passwords for the core if not already set
 func setCorePasswords(tv values.TemplateValues) values.TemplateValues {
-	//TODO rework for keycloak
-	//tv.Values.Auth.AdminPass = security.GeneratePassword(true)
-	//tv.Values.Auth.MinionPass = security.GeneratePassword(true)
+	tv.Values.Keycloak.AdminPassword = security.GeneratePassword(true)
+	tv.Values.Keycloak.UserPassword = security.GeneratePassword(true)
+
+	tv.Values.Keycloak.UUID.ClientId = uuid.New()
+	tv.Values.Keycloak.UUID.AdminUserId = uuid.New()
+	tv.Values.Keycloak.UUID.BaseUserId = uuid.New()
 	return tv
 }
 
