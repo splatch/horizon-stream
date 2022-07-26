@@ -48,18 +48,18 @@
 
     <template v-slot:footer>
       <FeatherButton 
+        data-test="cancel-btn" 
+        secondary 
+        @click="closeModal">
+          Cancel
+      </FeatherButton>
+      
+      <FeatherButton 
         data-test="save-btn" 
         primary
         :disabled="!device.name || !device.management_ip"
         @click="save">
           Test & Save
-      </FeatherButton>
-
-      <FeatherButton 
-        data-test="cancel-btn" 
-        secondary 
-        @click="closeModal">
-          Cancel
       </FeatherButton>
     </template>
   </PrimaryModal>

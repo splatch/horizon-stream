@@ -158,6 +158,7 @@ const searchValue = ''
       display: inline-table;
       border-radius: 5px;
       padding: 3px;
+      text-align: center;
     }
   }
 }
