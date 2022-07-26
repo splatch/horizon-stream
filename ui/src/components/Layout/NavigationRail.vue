@@ -4,7 +4,7 @@
       <FeatherRailItem
         :class="{ selected: isSelected('/') }"
         href="/"
-        :icon="Appliances"
+        :icon="Server"
         title="Appliances"
       />
     </template>
@@ -13,7 +13,7 @@
 
 <script setup lang=ts>
 import { useLayoutStore } from '@/store/Views/layoutStore'
-import Appliances from '@featherds/icon/hardware/Appliances'
+import Server from '@featherds/icon/hardware/Server'
 
 const store = useLayoutStore()
 const route = useRoute()

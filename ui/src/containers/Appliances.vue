@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useAppliancesStore } from '@/store/Views/appliancesStore';
+import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import useKeycloak from '@/composables/useKeycloak'
 
 const { keycloak } = useKeycloak()
@@ -53,6 +53,27 @@ const gapWidth = computed<string>(() => appliancesStore.minionsTableOpen ? '20px
   }
   .device-table {
     flex-grow: 1;
+  }
+}
+
+// small screen / tablet / mobile
+$breakpoint: 1024px;
+@media (max-width: $breakpoint) {
+  .header-container {
+    display: block;
+    .btns {
+      display: block;
+    }
+  }
+  .minions-device-container {
+    display: block;
+    .minions-table {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .device-table {
+      width: 100%;
+    }
   }
 }
 </style>

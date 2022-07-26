@@ -13,8 +13,8 @@
       <table class="tl1 tl2 tl3 tl4 tc5 data-table" summary="Minions" data-test="minions-table">
         <thead>
           <tr>
-            <th scope="col" data-test="col-date">Date</th>
-            <th scope="col" data-test="col-minion">Minion</th>
+            <th scope="col" data-test="col-date">Time</th>
+            <th scope="col" data-test="col-minion">Name</th>
             <th scope="col" data-test="col-latency">Latency</th>
             <th scope="col" data-test="col-uptime">Uptime</th>
             <th scope="col" data-test="col-status">Status</th>
