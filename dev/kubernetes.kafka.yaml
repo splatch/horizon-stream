@@ -181,6 +181,48 @@ spec:
   selector:
     run: prometheus-pushgateway
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    run: grafana
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      protocol: TCP
+      name: grafana-http
+  selector:
+    run: grafana
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  selector:
+    matchLabels:
+      run: grafana
+  template:
+    metadata:
+      labels:
+        run: grafana
+    spec:
+      volumes:
+        - name: hs-grafana-ds
+          configMap:
+            name: grafana-datasource-config
+      containers:
+        - name: grafana
+          image: grafana/grafana
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: hs-grafana-ds
+              mountPath: "/etc/grafana/provisioning/datasources/default.yml"
+              subPath: "default.yml"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -668,6 +710,30 @@ spec:
               value: "http://localhost:28080"
           command: ["/app/dev/entrypoint.sh"]
           args: ["$(DOMAIN_KEYCLOAK)","$(DOMAIN_API)"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasource-config
+data:
+  default.yml: |
+    apiVersion: 1
+    
+    datasources:
+      - name: hs-metrics
+        type: prometheus
+        access: proxy
+        orgId: 1
+        url: http://prometheus:9090
+        isDefault: false
+        jsonData:
+          httpHeaderName1: "X-Scope-OrgID"
+        ## <string> json object of data that will be encrypted.
+        secureJsonData:
+          httpHeaderValue1: "{{ .Values.Namespace }}"
+        version: 1
+        # <bool> allow users to edit datasources from the UI.
+        editable: false
 ---
 apiVersion: v1
 kind: ConfigMap
