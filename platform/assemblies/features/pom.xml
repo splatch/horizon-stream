@@ -411,6 +411,11 @@
             <artifactId>device</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.metrics</groupId>
+            <artifactId>impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

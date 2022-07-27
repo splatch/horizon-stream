@@ -134,6 +134,7 @@
         <feature>java-native-access</feature>
         <feature>guava</feature>
         <feature>horizon-grpc</feature>
+        <feature>horizon-metrics-api</feature>
         <feature version="${jackson.version}">jackson</feature>
 
         <bundle>mvn:org.opennms.horizon.3rdparty/json-patch-osgi/${project.version}</bundle>
@@ -457,11 +458,11 @@
     </feature>
 
     <feature name="horizon-metrics-api" version="${project.version}">
-        <bundle>mvn:org.opennms.horizon.metrics/api/${project.version}</bundle>
         <bundle>mvn:io.prometheus/simpleclient/${prometheus.version}</bundle>
         <bundle>mvn:io.prometheus/simpleclient_tracer_otel/${prometheus.version}</bundle>
         <bundle>mvn:io.prometheus/simpleclient_tracer_common/${prometheus.version}</bundle>
         <bundle>mvn:io.prometheus/simpleclient_tracer_otel_agent/${prometheus.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.metrics/api/${project.version}</bundle>
     </feature>
 
     <feature name="horizon-metrics-prometheus" version="${project.version}">

@@ -8,10 +8,10 @@
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
 
-    <reference id="messageConsumerManager" interface="org.opennms.horizon.ipc.sink.api.MessageConsumerManager"/>
+    <reference id="messageConsumerManager" interface="org.opennms.horizon.ipc.sink.api.MessageConsumerManager" availability="optional"/>
     <reference id="minionDao" interface="org.opennms.horizon.db.dao.api.MinionDao"/>
     <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils" />
-    <reference id="metricsAdapter" interface="org.opennms.horizon.metrics.api.OnmsMetricsAdapter" />
+    <reference id="metricsAdapter" interface="org.opennms.horizon.metrics.api.OnmsMetricsAdapter" availability="optional"/>
 
     <bean id="heartbeatConsumer" class="org.opennms.minion.heartbeat.HeartbeatConsumer" init-method="init">
         <argument ref="messageConsumerManager"/>
