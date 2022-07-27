@@ -56,10 +56,10 @@ type Timeseries struct {
 //BaseServiceResources - defines basic resource needs of a service
 type BaseServiceResources struct {
 	// Image tag version of OpenNMS.
-	Version string `json:"version,omitempty"`
-	MEM     string `json:"mem,omitempty"`
-	Disk    string `json:"disk,omitempty"`
-	CPU     string `json:"cpu,omitempty"`
+	Image   string   `json:"image,omitempty"`
+	MEM     string   `json:"mem,omitempty"`
+	Disk    string   `json:"disk,omitempty"`
+	CPU     string   `json:"cpu,omitempty"`
 }
 
 // OpenNMSStatus - defines the observed state of OpenNMS
