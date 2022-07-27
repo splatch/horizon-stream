@@ -73,7 +73,7 @@ const appliancesStore = useAppliancesStore()
 
 const listDevicesWithBgColor = computed(() => formatItemBgColor(deviceQueries.listDevices))
 
-const searchValue = ''
+const searchValue = ref('')
 </script>
 
 <style lang="scss" scoped>
