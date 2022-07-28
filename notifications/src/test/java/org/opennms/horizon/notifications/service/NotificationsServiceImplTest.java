@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications;
+package org.opennms.horizon.notifications.service;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,13 +34,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opennms.horizon.notifications.service.NotificationsService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NotificationsServiceTest {
+public class NotificationsServiceImplTest {
 
     @InjectMocks
-    NotificationsService notificationsService;
+    NotificationsServiceImpl notificationsService;
 
     @Test
     public void testGetPagerDutyKey() throws Exception {
