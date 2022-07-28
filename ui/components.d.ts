@@ -30,5 +30,6 @@ declare module '@vue/runtime-core' {
     RouterView: typeof import('vue-router')['RouterView']
     Snackbar: typeof import('./src/components/Common/Snackbar.vue')['default']
     Spinner: typeof import('./src/components/Common/Spinner.vue')['default']
+    TableCard: typeof import('./src/components/Common/TableCard.vue')['default']
   }
 }

@@ -67,12 +67,12 @@ spec:
             - name: KEYCLOAK_BASE_URL
               value: "http://{{ .Values.Keycloak.ServiceName }}:8080"
             - name: KEYCLOAK_ADMIN_USERNAME
-              value: "keycloak-admin"
+              value: "{{ .Values.Keycloak.AdminUsername }}"
             - name: KEYCLOAK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: keycloak
-                  key: password
+                  name: keycloak-credentials
+                  key: adminPwd
           volumeMounts:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.alarmd.camel.cfg"
