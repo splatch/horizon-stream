@@ -26,26 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.rest;
+package org.opennms.horizon.notifications.service;
 
-import org.opennms.horizon.notifications.service.INotificationsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-@RequestMapping("/notifications")
-public class NotificationsRestController {
-
-    @Autowired
-    private INotificationsService notificationsService;
-
-    @GetMapping("/pagerDutyKey")
-    public ResponseEntity<String> getPagerDutyKey() {
-        String key = notificationsService.getPagerDutyKey();
-        return new ResponseEntity<>(key, HttpStatus.OK);
-    }
+public interface INotificationService {
+    String getPagerDutyKey();
 }
