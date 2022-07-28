@@ -1,22 +1,23 @@
 const typeDefs = `
   type Device {
     id: String!
-    name: String!
+    label: String!
     status: String!
     icmp_latency: String!
     snmp_uptime: String!
+    createTime: String!
   }
   input DeviceInput {
-    createTime: Date
+    createTime: String
     domainName: String
     foreignId: String
     foreignSource: String
     id: Int
     label: String
     labelSource: String
-    lastEgressFlow: Date
-    lastIngressFlow: Date
-    lastPoll: Date
+    lastEgressFlow: String
+    lastIngressFlow: String
+    lastPoll: String
     location: LocationDTOInput
     netBiosName: String
     operatingSystem: String
@@ -38,10 +39,7 @@ const typeDefs = `
     tags: [String]
   }
   type ListDevices {
-    items: [Device!]!
-    count: String!
-    totalCount: String!
-    offset: String!
+    devices: [Device!]!
   }
   type Minion {
     id: String!

@@ -3,6 +3,7 @@ query ListDevices {
     devices {
       id
       label
+      createTime
     }
   }
 }
