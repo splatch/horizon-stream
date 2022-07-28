@@ -26,26 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications;
+package org.opennms.horizon.notifications.service;
 
-import static org.junit.Assert.assertEquals;
+import org.springframework.stereotype.Service;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.opennms.horizon.notifications.service.NotificationsService;
+@Service
+public class NotificationsServiceImpl implements INotificationsService {
 
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationsServiceTest {
-
-    @InjectMocks
-    NotificationsService notificationsService;
-
-    @Test
-    public void testGetPagerDutyKey() throws Exception {
-        String ret = notificationsService.getPagerDutyKey();
-
-        assertEquals("ABC", ret);
+    public String getPagerDutyKey() {
+        return "ABC";
     }
 }
