@@ -59,7 +59,7 @@
         primary
         :disabled="!device.name || !device.management_ip"
         @click="save">
-          Test & Save
+          Save
       </FeatherButton>
     </template>
   </PrimaryModal>

@@ -92,6 +92,10 @@ portForward:
     resourceName: prometheus-pushgateway
     port: 9091 #prometheus-pushgateway tcp
     localPort: 59091
+  - resourceType: deployment
+    resourceName: grafana
+    port: 3000 #grafana HTTP
+    localPort: 53000
 deploy:
   kubectl:
     manifests:

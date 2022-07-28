@@ -71,6 +71,11 @@ table {
   overflow-x: scroll;
   display: block;
 
+  thead {
+    background: var($background);
+    text-transform: uppercase;
+  }
+
   td {
     white-space: nowrap;
     div {
