@@ -39,11 +39,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class NotificationsServiceImplTest {
 
     @InjectMocks
-    NotificationsServiceImpl notificationsService;
+    NotificationServiceImpl notificationService;
 
     @Test
     public void testGetPagerDutyKey() throws Exception {
-        String ret = notificationsService.getPagerDutyKey();
+        String ret = notificationService.getPagerDutyKey();
 
         assertEquals("ABC", ret);
     }

@@ -28,24 +28,33 @@
 
 package org.opennms.horizon.notifications.rest;
 
-import org.opennms.horizon.notifications.service.INotificationsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RestController
-@RequestMapping("/notifications")
-public class NotificationsRestController {
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.opennms.horizon.notifications.service.INotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+@WebMvcTest
+public class NotificationRestControllerTest {
 
     @Autowired
-    private INotificationsService notificationsService;
+    private MockMvc mockMvc;
 
-    @GetMapping("/pagerDutyKey")
-    public ResponseEntity<String> getPagerDutyKey() {
-        String key = notificationsService.getPagerDutyKey();
-        return new ResponseEntity<>(key, HttpStatus.OK);
+    @MockBean
+    private INotificationService notificationsService;
+
+    @Test
+    public void testGetPagerDutyKey() throws Exception {
+        String key = "xyz";
+        Mockito.when(notificationsService.getPagerDutyKey()).thenReturn(key);
+        mockMvc.perform(get("/notifications/pagerDutyKey"))
+            .andDo(print())
+            .andExpect(status().isOk());
     }
 }
