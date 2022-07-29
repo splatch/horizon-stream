@@ -39,8 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.opennms.horizon.notifications.service.INotificationService;
->>>>>>> 8c71e2f0 (HS-202: code review comments)
+import org.opennms.horizon.notifications.service.NotificationService;
+>>>>>>> ca199ed0 (changed the interface name to keep consistency)
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
