@@ -36,8 +36,8 @@
               <div class="name-cell">
                 <FeatherIcon :icon="Instances" class="icon"/>
                 <div class="text">
-                  <div class="name">{{ device.name }}</div>
-                  <div class="server">Server Added --/--/--</div>
+                  <div class="name">{{ device.label }}</div>
+                  <div class="server">{{ device.createTime }}</div>
                 </div>
               </div>
           </div>
@@ -67,11 +67,26 @@ import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 import { useDeviceQueries } from '@/store/Queries/deviceQueries'
 import { formatItemBgColor } from '@/helpers/formatting'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
+import { DeviceDto } from '@/types/graphql'
+
+interface ExtendedDeviceDTO extends DeviceDto {
+  id: number // override as required
+
+  // TODO: These fields not yet on the BE
+  status: string
+  icmp_latency: string
+  snmp_uptime: string
+
+  // Color fields
+  uptimeBgColor: string
+  latencyBgColor: string
+  statusBgColor: string
+}
 
 const deviceQueries = useDeviceQueries()
 const appliancesStore = useAppliancesStore()
 
-const listDevicesWithBgColor = computed(() => formatItemBgColor(deviceQueries.listDevices))
+const listDevicesWithBgColor = computed<ExtendedDeviceDTO[]>(() => formatItemBgColor(deviceQueries.listDevices))
 
 const searchValue = ref('')
 </script>

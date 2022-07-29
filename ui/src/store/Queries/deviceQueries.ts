@@ -1,6 +1,6 @@
 import { useQuery } from 'villus'
 import { defineStore } from 'pinia'
-import { ListDevicesDocument } from '@/types/graphql-mocks'
+import { ListDevicesDocument } from '@/types/graphql'
 
 export const useDeviceQueries = defineStore('deviceQueries', {
   state: () => {
@@ -8,7 +8,7 @@ export const useDeviceQueries = defineStore('deviceQueries', {
       query: ListDevicesDocument
     })
 
-    const listDevices = computed(() => data.value?.listDevices?.items || [])
+    const listDevices = computed(() => data.value?.listDevices?.devices || [])
 
     return {
       listDevices,

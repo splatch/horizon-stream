@@ -3,9 +3,6 @@ query ListDevices {
     devices {
       id
       label
-      status
-      icmp_latency
-      snmp_uptime
       createTime
     }
   }

@@ -1,4 +1,4 @@
-query Dashboard {
+query Alarms {
   listAlarms {
     alarms {
       id

@@ -20,7 +20,7 @@
       <FeatherInput
         data-test="name-input"
         label="Name"
-        v-model="device.name"
+        v-model="device.label"
       />
 
       <!-- Management IP -->
@@ -54,10 +54,11 @@
           Cancel
       </FeatherButton>
       
+      <!-- TODO: Management IP should also be required, when available. -->
       <FeatherButton 
         data-test="save-btn" 
         primary
-        :disabled="!device.name || !device.management_ip"
+        :disabled="!device.label" 
         @click="save">
           Save
       </FeatherButton>
@@ -68,25 +69,26 @@
 <script setup lang="ts">
 import Add from '@featherds/icon/action/Add'
 import { useDeviceMutations } from '@/store/Mutations/deviceMutations'
+import { useDeviceQueries } from '@/store/Queries/deviceQueries'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
 
 const { showSnackbar } = useSnackbar()
 const { openModal, closeModal, isVisible } = useModal()
 const deviceMutations = useDeviceMutations()
+const deviceQueries = useDeviceQueries()
 
 const defaultDevice = {
-  name: undefined,
+  label: undefined,
   management_ip: undefined,
   community_string: undefined,
   port: undefined
 }
 
-const device = reactive(defaultDevice)
+const device = reactive({...defaultDevice})
 
 const save = async () => {
-  await deviceMutations.saveDevice({ device })
-
+  await deviceMutations.addDevice({ device })
 
   if (!deviceMutations.error) {
     // clears device obj on successful save
@@ -97,6 +99,12 @@ const save = async () => {
     showSnackbar({
       msg: 'Device successfuly saved.'
     })
+
+    // Timeout because device may not be available right away
+    // TODO: Replace timeout with websocket/polling
+    setTimeout(() => {
+      deviceQueries.fetch()
+    }, 350)
   }
 }
 </script>
