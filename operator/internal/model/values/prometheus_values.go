@@ -1,8 +1,8 @@
 package values
 
 type PrometheusValues struct {
-	ServerValues      PrometheusServiceValues `yaml:"Server"`
-	PushGatewayValues PrometheusServiceValues `yaml:"PushGateway"`
+	Server      PrometheusServiceValues `yaml:"Server"`
+	PushGateway PrometheusServiceValues `yaml:"PushGateway"`
 }
 
 type PrometheusServiceValues struct {

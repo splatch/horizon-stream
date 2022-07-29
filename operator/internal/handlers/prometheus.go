@@ -28,7 +28,7 @@ func (h *PrometheusHandler) ProvideConfig(values values.TemplateValues) []client
 	h.Config = []client.Object{
 		&prometheusConfigMap,
 		&prometheusService,
-		&pushGateWayDeployment,
+		&prometheusDeployment,
 		&pushGatewayService,
 		&pushGateWayDeployment,
 	}

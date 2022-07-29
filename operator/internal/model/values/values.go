@@ -23,6 +23,7 @@ type Values struct {
 	Namespace        string                 `yaml:"Namespace"`
 	Host             string                 `yaml:"Host"`
 	TestDeploy       bool                   `yaml:"TestDeploy"`
+	Prometheus       PrometheusValues       `yaml:"Prometheus"`
 	OpenNMS          OpenNMSValues          `yaml:"OpenNMS"`
 	TLS              TLSValues              `yaml:"TLS"`
 	Postgres         PostgresValues         `yaml:"Postgres"`
@@ -32,5 +33,4 @@ type Values struct {
 	Kafka            KafkaValues            `yaml:"Kafka"`
 	NodeRestrictions NodeRestrictionsValues `yaml:"NodeRestrictions"`
 	Operator         OperatorValues         `yaml:"Operator"`
-	Prometheus       PrometheusValues       `yaml:"Prometheus"`
 }

@@ -55,6 +55,6 @@ Prometheus:
   Server:
     ServiceName: prometheus
     Image: prom/prometheus
-  Pushgateway:
+  PushGateway:
     ServiceName: prometheus-pushgateway
     Image: prom/pushgateway
