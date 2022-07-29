@@ -32,4 +32,5 @@ type Values struct {
 	Kafka            KafkaValues            `yaml:"Kafka"`
 	NodeRestrictions NodeRestrictionsValues `yaml:"NodeRestrictions"`
 	Operator         OperatorValues         `yaml:"Operator"`
+	Prometheus       PrometheusValues       `yaml:"Prometheus"`
 }
