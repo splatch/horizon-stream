@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.opennms.horizon.notifications.service.INotificationService;
+import org.opennms.horizon.notifications.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -47,7 +47,7 @@ public class NotificationRestControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private INotificationService notificationsService;
+    private NotificationService notificationsService;
 
     @Test
     public void testGetPagerDutyKey() throws Exception {

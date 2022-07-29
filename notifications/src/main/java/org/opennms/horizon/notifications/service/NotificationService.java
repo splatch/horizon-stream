@@ -28,6 +28,6 @@
 
 package org.opennms.horizon.notifications.service;
 
-public interface INotificationService {
+public interface NotificationService {
     String getPagerDutyKey();
 }

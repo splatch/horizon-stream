@@ -31,7 +31,7 @@ package org.opennms.horizon.notifications.service;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NotificationServiceImpl implements INotificationService {
+public class NotificationServiceImpl implements NotificationService {
 
     public String getPagerDutyKey() {
         return "ABC";
