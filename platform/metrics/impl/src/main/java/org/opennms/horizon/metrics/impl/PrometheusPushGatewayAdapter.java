@@ -34,18 +34,18 @@ import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 
 import java.io.IOException;
 
-public class OnmsMetricsAdapterImpl implements OnmsMetricsAdapter {
+public class PrometheusPushGatewayAdapter implements OnmsMetricsAdapter {
 
     private final PushGateway pushGateway;
     private final String DEFAULT_JOB_PUSHGATEWAY = "horizon-core";
 
-    public OnmsMetricsAdapterImpl(String pushGatewayUrl) {
+    public PrometheusPushGatewayAdapter(String pushGatewayUrl) {
         this.pushGateway = new PushGateway(pushGatewayUrl);
     }
 
 
     @Override
     public void push(Collector collector) throws IOException {
-        pushGateway.push(collector, DEFAULT_JOB_PUSHGATEWAY);
+        pushGateway.pushAdd(collector, DEFAULT_JOB_PUSHGATEWAY);
     }
 }

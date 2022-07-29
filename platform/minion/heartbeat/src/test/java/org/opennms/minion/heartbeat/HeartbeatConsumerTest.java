@@ -28,6 +28,9 @@
 
 package org.opennms.minion.heartbeat;
 
+import io.prometheus.client.Collector;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.Gauge;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.horizon.core.identity.IdentityImpl;
@@ -39,11 +42,13 @@ import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static org.mockito.Mockito.mock;
@@ -55,11 +60,13 @@ public class HeartbeatConsumerTest {
         MinionDao minionDao = new MockMinionDao();
         SessionUtils sessionUtils = new MockSessionUtils();
         MessageConsumerManager messageConsumerManager = mock(MessageConsumerManager.class);
-        OnmsMetricsAdapter onmsMetricsAdapter = mock(OnmsMetricsAdapter.class);
+        MockMetricsAdapter onmsMetricsAdapter = new MockMetricsAdapter();
+
         HeartbeatConsumer heartbeatConsumer = new HeartbeatConsumer(messageConsumerManager, minionDao, sessionUtils, onmsMetricsAdapter);
 
         // No Minion exists in DB yet
         String minionId = "minion-01";
+        String location = "minion";
         MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO(new IdentityImpl(minionId, "minion", "MINION"));
         Instant currentTime = Instant.now();
         Date currentDate = Date.from(currentTime);
@@ -69,9 +76,12 @@ public class HeartbeatConsumerTest {
         OnmsMinion minion = minionDao.findById(minionId);
         // Minion last updated should match what's passed on with the message.
         Assert.assertEquals(minion.getLastUpdated(), currentDate);
-
+        String[] labelNames = {"instance", "location"};
+        String[] labelValues = {minionId, location};
+        Assert.assertEquals(0, getGauge(onmsMetricsAdapter.getCollectorRegistry(), "minion_up_time", "sec", labelNames, labelValues), 100);
         // Now that minion exists, send an update with latest timestamp that is 30 secs after currentTime.
-        Instant afterTime = currentTime.plusSeconds(30);
+        int heartBeatDelta = 30;
+        Instant afterTime = currentTime.plusSeconds(heartBeatDelta);
         minionIdentityDTO.setTimestamp(Date.from(afterTime));
         // Send an update to Heartbeat Consumer
         heartbeatConsumer.handleMessage(minionIdentityDTO);
@@ -87,7 +97,17 @@ public class HeartbeatConsumerTest {
         minion = minionDao.findById(minionId);
         // Minion last updated shouldn't match what's passed on with the message.
         Assert.assertNotEquals(minion.getLastUpdated(), Date.from(beforeTime));
+        Assert.assertEquals(heartBeatDelta, getGauge(onmsMetricsAdapter.getCollectorRegistry(), "minion_up_time", "sec", labelNames, labelValues), 100);
+    }
 
+    public static double getGauge(CollectorRegistry collectorRegistry,
+                                  String name,
+                                  String unit,
+                                  String[] labelNames,
+                                  String[] labelValues) {
+        Gauge gauge = Gauge.build().name(name).help("Gauge value")
+            .unit(unit).labelNames(labelNames).register(collectorRegistry);
+        return gauge.labels(labelValues).get();
     }
 
     public static class MockSessionUtils implements SessionUtils {
@@ -174,4 +194,20 @@ public class HeartbeatConsumerTest {
         }
 
     }
+
+    public static class MockMetricsAdapter implements OnmsMetricsAdapter {
+
+        CollectorRegistry collectorRegistry;
+
+        @Override
+        public void push(Collector collector) throws IOException {
+            collectorRegistry = new CollectorRegistry();
+            collectorRegistry.register(collector);
+        }
+
+        public CollectorRegistry getCollectorRegistry() {
+            return collectorRegistry;
+        }
+    }
+
 }

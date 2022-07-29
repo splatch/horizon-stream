@@ -457,19 +457,28 @@
         <bundle>mvn:org.opennms.horizon.inventory/device/${project.version}</bundle>
     </feature>
 
-    <feature name="horizon-metrics-api" version="${project.version}">
+    <feature name="prometheus-client" version="${prometheus.version}">
         <bundle>mvn:io.prometheus/simpleclient/${prometheus.version}</bundle>
         <bundle>mvn:io.prometheus/simpleclient_tracer_otel/${prometheus.version}</bundle>
         <bundle>mvn:io.prometheus/simpleclient_tracer_common/${prometheus.version}</bundle>
         <bundle>mvn:io.prometheus/simpleclient_tracer_otel_agent/${prometheus.version}</bundle>
+    </feature>
+
+    <feature name="prometheus-push-gateway" version="${prometheus.version}">
+        <feature>prometheus-client</feature>
+        <bundle>mvn:io.prometheus/simpleclient_common/${prometheus.version}</bundle>
+        <bundle>mvn:io.prometheus/simpleclient_pushgateway/${prometheus.version}</bundle>
+    </feature>
+
+    <feature name="horizon-metrics-api" version="${project.version}">
+        <feature>prometheus-client</feature>
         <bundle>mvn:org.opennms.horizon.metrics/api/${project.version}</bundle>
     </feature>
 
     <feature name="horizon-metrics-prometheus" version="${project.version}">
         <feature>horizon-metrics-api</feature>
+        <feature>prometheus-push-gateway</feature>
         <bundle>mvn:org.opennms.horizon.metrics/impl/${project.version}</bundle>
-        <bundle>mvn:io.prometheus/simpleclient_common/${prometheus.version}</bundle>
-        <bundle>mvn:io.prometheus/simpleclient_pushgateway/${prometheus.version}</bundle>
     </feature>
 
 </features>
