@@ -52,12 +52,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: postgres
-                  key: adminUser
+                  key: opennmsUser
             - name: PGSQL_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres
-                  key: adminPwd
+                  key: opennmsPwd
             - name: KAFKA_BROKER_HOST
               value: "{{ .Values.Kafka.URL }}"
             - name: KAFKA_BROKER_PORT

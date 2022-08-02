@@ -18,6 +18,7 @@ type PostgresValues struct {
 	ServiceName      string `yaml:"ServiceName"`
 	Image            string `yaml:"Image"`
 	AdminPassword    string `yaml:"AdminPassword"`
+	OpenNMSPassword  string `yaml:"OpenNMSPassword"`
 	KeycloakPassword string `yaml:"KeycloakPassword"`
 	VolumeSize       string `yaml:"VolumeSize"`
 }

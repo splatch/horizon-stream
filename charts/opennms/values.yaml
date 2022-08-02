@@ -37,8 +37,9 @@ OpenNMS:
         Memory: 1Gi
 Postgres:
   ServiceName: postgres
-  Image: postgres:13.3-alpine
+  Image: postgres
   AdminPassword: notset
+  OpenNMSPassword: notset
   KeycloakPassword: notset
   VolumeSize: 10Gi
 Keycloak:

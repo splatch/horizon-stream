@@ -109,6 +109,7 @@ func setCorePasswords(tv values.TemplateValues) values.TemplateValues {
 //setCorePasswords - sets randomly generated password for Postgres if not already set
 func setPostgresPassword(tv values.TemplateValues) values.TemplateValues {
 	tv.Values.Postgres.AdminPassword = security.GeneratePassword(false)
+	tv.Values.Postgres.OpenNMSPassword = security.GeneratePassword(false)
 	tv.Values.Postgres.KeycloakPassword = security.GeneratePassword(false)
 	return tv
 }
