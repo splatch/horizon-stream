@@ -6,6 +6,7 @@
     <reference id="nodeDao" interface="org.opennms.horizon.db.dao.api.NodeDao" />
     <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils" />
     <reference id="locationDao" interface="org.opennms.horizon.db.dao.api.MonitoringLocationDao" />
+    <reference id="eventForwarder" interface="org.opennms.horizon.events.api.EventForwarder" availability="optional"/>
 
     <bean id="locationMapper" class="org.opennms.horizon.inventory.device.utils.LocationMapperImpl" />
 
@@ -24,6 +25,7 @@
 
     <bean id="deviceRestImpl" class="org.opennms.horizon.inventory.device.rest.impl.DeviceRestServiceImpl">
         <property name="service" ref="deviceService"/>
+        <property name="eventForwarder" ref="eventForwarder"/>
     </bean>
 
     <service id="deviceRestService" ref="deviceRestImpl" interface="org.opennms.horizon.inventory.device.rest.api.DeviceRestService">

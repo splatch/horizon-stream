@@ -155,22 +155,16 @@ public class SimpleMinionRpcMonitor {
             EchoResponse response = client.execute(request).get();
             long responseTime = ( System.nanoTime() / 1000000 ) - response.getId();
             LOG.info("ECHO RESPONSE: node-id={}; node-location={}; duration={}ms", nodeId, nodeLocation, responseTime);
-            updateMetrics(responseTime, nodeId, nodeId, nodeLocation);
+            updateMetrics(responseTime, nodeId, nodeLocation);
         } catch (InterruptedException|ExecutionException t) {
             LOG.warn("ECHO REQUEST failed", t);
         }
     }
 
-    private void updateMetrics(long responseTime, String minionId, String... labelValues) {
+    private void updateMetrics(long responseTime, String... labelValues) {
         Gauge responseTimeGauge = Gauge.build().name("minion_response_time").help("Response time of Minion RPC")
             .unit("msec").labelNames("instance", "location").create();
         responseTimeGauge.labels(labelValues).set(responseTime);
-        try {
-            metricsAdapter.push(responseTimeGauge);
-            LOG.debug("Updated response time metrics for {}", minionId);
-        } catch (IOException e) {
-            LOG.error("Exception while pushing response time metrics", e);
-        }
-
+        metricsAdapter.push(responseTimeGauge);
     }
 }

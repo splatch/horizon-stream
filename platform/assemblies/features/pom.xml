@@ -103,6 +103,7 @@
                                 <feature>camel-kafka</feature>
                                 <feature>camel-activemq</feature>
                                 <feature>horizon-metrics-prometheus</feature>
+                                <feature>horizon-core-monitor</feature>
                             </features>
                         </configuration>
                     </execution>

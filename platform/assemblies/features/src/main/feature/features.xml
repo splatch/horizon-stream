@@ -134,7 +134,6 @@
         <feature>java-native-access</feature>
         <feature>guava</feature>
         <feature>horizon-grpc</feature>
-        <feature>horizon-metrics-api</feature>
         <feature version="${jackson.version}">jackson</feature>
 
         <bundle>mvn:org.opennms.horizon.3rdparty/json-patch-osgi/${project.version}</bundle>
@@ -163,7 +162,14 @@
         <bundle>mvn:org.opennms.core.ipc.twin/common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/publisher/${project.version}</bundle>
+    </feature>
 
+    <feature name="horizon-core-monitor" version="${project.version}">
+        <feature>horizon-metrics-api</feature>
+        <feature>horizon-events-api</feature>
+        <feature>horizon-db</feature>
+        <feature>horizon-icmp</feature>
+        <feature>horizon-snmp</feature>
         <bundle>mvn:org.opennms.horizon.core/monitor/${project.version}</bundle>
     </feature>
 
@@ -454,6 +460,7 @@
     <feature name="horizon-inventory" version="${project.version}">
         <feature>horizon-db</feature>
         <feature>horizon-core-rest</feature>
+        <feature>horizon-events-api</feature>
         <bundle>mvn:org.opennms.horizon.inventory/device/${project.version}</bundle>
     </feature>
 

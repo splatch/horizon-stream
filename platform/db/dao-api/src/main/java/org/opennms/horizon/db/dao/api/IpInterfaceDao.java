@@ -32,6 +32,7 @@ import org.opennms.horizon.core.lib.IPAddress;
 import org.opennms.horizon.db.model.OnmsIpInterface;
 
 import java.net.InetAddress;
+import java.util.List;
 
 /**
  * <p>IpInterfaceDao interface.</p>
@@ -45,6 +46,8 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
     OnmsIpInterface findByNodeIdAndIpAddress(Integer nodeId, String ipAddress);
 
     OnmsIpInterface findPrimaryInterfaceByNodeId(Integer nodeId);
+
+    List<OnmsIpInterface> findInterfacesByNodeId(Integer nodeId);
 
 //
 //    /**
