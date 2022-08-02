@@ -9,20 +9,20 @@ OpenNMS:
     Resources:
       Limits:
         Cpu: 2
-        Memory: 2Gi
+        Memory: 4Gi
       Requests:
-        Cpu: 100m
-        Memory: 1Gi
+        Cpu: 2
+        Memory: 2Gi
   API:
     Path: /api
     ServiceName: opennms-rest-server
     Image: opennms/horizon-stream-rest-server
     Resources:
       Limits:
-        Cpu: 100m
-        Memory: 1Gi
+        Cpu: 2
+        Memory: 2Gi
       Requests:
-        Cpu: 100m
+        Cpu: 1
         Memory: 1Gi
   UI:
     Path: /
@@ -30,10 +30,10 @@ OpenNMS:
     Image: opennms/horizon-stream-ui
     Resources:
       Limits:
-        Cpu: 1
-        Memory: 1Gi
+        Cpu: 2
+        Memory: 2Gi
       Requests:
-        Cpu: 100m
+        Cpu: 1
         Memory: 1Gi
 Postgres:
   ServiceName: postgres
@@ -55,10 +55,6 @@ Keycloak:
     AdminUserId: 00000000-0000-0000-0000-000000000000
 Grafana:
   Image: placeholder
-Ingress:
-  ControllerImage: k8s.gcr.io/ingress-nginx/controller:v1.1.0
-  SecretJobImage: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1@sha256:64d8c73dca984af206adf9d6d7e46aa550362b1d7a01f3a0a91b20cc67868660
-  WebhookPatchJobImage: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1@sha256:64d8c73dca984af206adf9d6d7e46aa550362b1d7a01f3a0a91b20cc67868660
 Prometheus:
   Server:
     ServiceName: prometheus

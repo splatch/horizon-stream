@@ -1,0 +1,16 @@
+apiVersion: k8s.opennms.com/v1alpha1
+kind: OpenNMS
+metadata:
+  name: local-instance
+spec:
+  allowedUsers: []
+  host: onmshs
+  namespace: local-instance
+  core:
+    image: opennms/horizon-stream-core
+  api:
+    image: opennms/horizon-stream-rest-server
+  ui:
+    image: opennms/horizon-stream-ui
+  postgres:
+    image: postgres:13.3-alpine
