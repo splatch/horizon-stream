@@ -9,7 +9,7 @@ if [ $? -ne 0 ]; then exit; fi
 echo
 echo _______________Building Docker Image_______________
 echo
-make local-docker
+make kubebuilder local-docker
 if [ $? -ne 0 ]; then exit; fi
 
 echo
