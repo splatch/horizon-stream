@@ -22,6 +22,20 @@
         label="Name"
         v-model="device.label"
       />
+      
+      <!-- Location name -->
+      <FeatherInput
+        data-test="location-name-input"
+        label="Location Name"
+        v-model="device.location.locationName"
+      />
+      
+      <!-- Monitoring area -->
+      <FeatherInput
+        data-test="monitoring-area-input"
+        label="Monitoring Area"
+        v-model="device.location.monitoringArea"
+      />
 
       <!-- Management IP -->
       <FeatherInput
@@ -100,8 +114,10 @@ const defaultDevice = {
   snmpCommunityString: undefined,
   port: undefined,
   location: {
+    locationName: undefined, // required
     latitude: undefined,
-    longitude: undefined
+    longitude: undefined,
+    monitoringArea: undefined //required
   }
 }
 
