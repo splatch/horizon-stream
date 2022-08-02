@@ -41,18 +41,20 @@ test('The cancel btn should close the modal', async () => {
   expect(modalInput.exists()).toBeFalsy()
 })
 
-test('The save btn should enable if name and IP are added', async () => {
+test('The save btn should enable if name, location name and monitoring are added', async () => {
   await wrapper.get('[data-test="add-device-btn"]').trigger('click')
   
   const nameInput = wrapper.get('[data-test="name-input"] .feather-input')
-  const ipInput = wrapper.get('[data-test="ip-input"] .feather-input')
+  const locationNameInput = wrapper.get('[data-test="location-name-input"] .feather-input')
+  const monitoringAreaInput = wrapper.get('[data-test="monitoring-area-input"] .feather-input')
   const saveBtn = wrapper.get('[data-test="save-btn"]')
 
   // should be disabled
   expect(saveBtn.attributes('aria-disabled')).toBe('true')
   
   await nameInput.setValue('some name')
-  await ipInput.setValue('some IP')
+  await locationNameInput.setValue('some location name')
+  await monitoringAreaInput.setValue('some monitoring area')
   
   // should be enabled
   expect(saveBtn.attributes('aria-disabled')).toBeUndefined()
@@ -65,11 +67,14 @@ test('The add device mutation is called', async () => {
   await wrapper.get('[data-test="add-device-btn"]').trigger('click')
 
   const nameInput = wrapper.get('[data-test="name-input"] .feather-input')
-  const ipInput = wrapper.get('[data-test="ip-input"] .feather-input')
+  const locationNameInput = wrapper.get('[data-test="location-name-input"] .feather-input')
+  const monitoringAreaInput = wrapper.get('[data-test="monitoring-area-input"] .feather-input')
+  
   const saveBtn = wrapper.get('[data-test="save-btn"]')
 
-  await nameInput.setValue('name')
-  await ipInput.setValue('ip')
+  await nameInput.setValue('some name')
+  await locationNameInput.setValue('some location name')
+  await monitoringAreaInput.setValue('some monitoring area')
   await saveBtn.trigger('click')
 
   // expect save device query to be called
