@@ -28,12 +28,23 @@
 
 package org.opennms.horizon.notifications.service;
 
+import org.opennms.horizon.notifications.api.PagerDutyAPI;
+import org.opennms.horizon.notifications.dto.NotificationDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
+    @Autowired
+    private PagerDutyAPI pagerDutyAPI;
+
     public String getPagerDutyKey() {
-        return "ABC";
+        return "ABCD";
+    }
+
+    @Override
+    public String postNotification(NotificationDTO notification) throws Exception {
+        return pagerDutyAPI.postNotification(notification);
     }
 }

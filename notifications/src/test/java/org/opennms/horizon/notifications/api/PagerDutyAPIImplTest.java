@@ -26,40 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opennms.horizon.notifications.api.PagerDutyAPIImpl;
+import org.opennms.horizon.notifications.dto.NotificationDTO;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NotificationsServiceImplTest {
-
+public class PagerDutyAPIImplTest {
     @InjectMocks
-    NotificationServiceImpl notificationService;
-
-    @Mock
     PagerDutyAPIImpl pagerDutyAPI;
 
+    // TODO: Set up a test that doesn't actually send a message
+    @Ignore
     @Test
-    public void testGetPagerDutyKey() throws Exception {
-        String ret = notificationService.getPagerDutyKey();
-
-        assertEquals("ABCD", ret);
+    public void postNotifications() throws Exception {
+        NotificationDTO notificationDTO = getNotification();
+        pagerDutyAPI.postNotification(notificationDTO);
     }
 
-    @Test
-    public void testPostNotification() throws Exception {
-        Mockito.when(pagerDutyAPI.postNotification(any())).thenReturn("A");
-        String ret = notificationService.postNotification(null);
-
-        assertEquals("A", ret);
+    private NotificationDTO getNotification() {
+        NotificationDTO notificationDTO = new NotificationDTO();
+        notificationDTO.setMessage("Exciting message to go here");
+        notificationDTO.setDedupKey("srv01/mysql");
+        return notificationDTO;
     }
 }

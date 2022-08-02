@@ -26,40 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.api.dto;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import lombok.Getter;
+import lombok.Setter;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.opennms.horizon.notifications.api.PagerDutyAPIImpl;
-
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationsServiceImplTest {
-
-    @InjectMocks
-    NotificationServiceImpl notificationService;
-
-    @Mock
-    PagerDutyAPIImpl pagerDutyAPI;
-
-    @Test
-    public void testGetPagerDutyKey() throws Exception {
-        String ret = notificationService.getPagerDutyKey();
-
-        assertEquals("ABCD", ret);
-    }
-
-    @Test
-    public void testPostNotification() throws Exception {
-        Mockito.when(pagerDutyAPI.postNotification(any())).thenReturn("A");
-        String ret = notificationService.postNotification(null);
-
-        assertEquals("A", ret);
-    }
+@Getter
+@Setter
+public class PagerDutyEventDTO {
+    PagerDutyPayloadDTO payload;
+    String routing_key;
+    String dedup_key;
+    String event_action;
+    String client;
+    String client_url;
 }

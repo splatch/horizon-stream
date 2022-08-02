@@ -29,26 +29,37 @@
 package org.opennms.horizon.notifications.rest;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.opennms.horizon.notifications.service.NotificationService;
 =======
+=======
+import static org.mockito.ArgumentMatchers.any;
+>>>>>>> edf80691 (HS-201: Call PagerDuty from notifications service)
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.opennms.horizon.notifications.dto.NotificationDTO;
 import org.opennms.horizon.notifications.service.NotificationService;
 >>>>>>> ca199ed0 (changed the interface name to keep consistency)
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest
 public class NotificationRestControllerTest {
@@ -66,5 +77,27 @@ public class NotificationRestControllerTest {
         mockMvc.perform(get("/notifications/pagerDutyKey"))
             .andDo(print())
             .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testPostNotification() throws Exception {
+        String key = "xyz";
+        String content = getNotification();
+        Mockito.when(notificationsService.postNotification(any())).thenReturn(key);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(post("/notifications").headers(headers).content(content))
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
+    private String getNotification() throws JsonProcessingException {
+        NotificationDTO dto = new NotificationDTO();
+        dto.setMessage("Message");
+        dto.setDedupKey("dedup");
+
+        ObjectMapper om = new ObjectMapper();
+        return om.writeValueAsString(dto);
     }
 }

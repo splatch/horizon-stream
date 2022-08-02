@@ -28,6 +28,10 @@
 
 package org.opennms.horizon.notifications.service;
 
+import org.opennms.horizon.notifications.dto.NotificationDTO;
+
 public interface NotificationService {
     String getPagerDutyKey();
+
+    String postNotification(NotificationDTO notification) throws Exception;
 }

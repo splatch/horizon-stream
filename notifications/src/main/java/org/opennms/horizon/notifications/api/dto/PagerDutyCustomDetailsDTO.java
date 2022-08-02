@@ -26,40 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.api.dto;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.opennms.horizon.notifications.api.PagerDutyAPIImpl;
+import lombok.Getter;
+import lombok.Setter;
 
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationsServiceImplTest {
+@Getter
+@Setter
+public class PagerDutyCustomDetailsDTO {
+    // TODO: Change to something useful to us. Currently first draft to prove can call into PagerDuty
+    @JsonProperty("free space")
+    String free_space;
 
-    @InjectMocks
-    NotificationServiceImpl notificationService;
+    @JsonProperty("ping time")
+    String ping_time;
 
-    @Mock
-    PagerDutyAPIImpl pagerDutyAPI;
-
-    @Test
-    public void testGetPagerDutyKey() throws Exception {
-        String ret = notificationService.getPagerDutyKey();
-
-        assertEquals("ABCD", ret);
-    }
-
-    @Test
-    public void testPostNotification() throws Exception {
-        Mockito.when(pagerDutyAPI.postNotification(any())).thenReturn("A");
-        String ret = notificationService.postNotification(null);
-
-        assertEquals("A", ret);
-    }
+    @JsonProperty("load avg")
+    String load_avg;
 }
