@@ -5,7 +5,10 @@ import { createClient, VILLUS_CLIENT } from 'villus'
 import { useNotificationMutations } from '@/store/Mutations/notificationMutations'
 
 const wrapper = mount(NotificationsCtrl, { 
-  global: { 
+  global: {
+    stubs: {
+      teleport: true
+    },
     plugins: [createTestingPinia()],
     provide: {
       [VILLUS_CLIENT as unknown as string]: createClient({

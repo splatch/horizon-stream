@@ -5,7 +5,10 @@ import { createClient, VILLUS_CLIENT } from 'villus'
 import { useDeviceMutations } from '@/store/Mutations/deviceMutations'
 
 const wrapper = mount(AddDeviceCtrl, { 
-  global: { 
+  global: {
+    stubs: {
+      teleport: true
+    },
     plugins: [createTestingPinia()],
     provide: {
       [VILLUS_CLIENT as unknown as string]: createClient({
