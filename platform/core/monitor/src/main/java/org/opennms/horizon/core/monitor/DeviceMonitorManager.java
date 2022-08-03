@@ -73,7 +73,8 @@ public class DeviceMonitorManager implements EventListener {
     private final ThreadFactory monitorThreadFactory = new ThreadFactoryBuilder()
         .setNameFormat("monitor-runner-%d")
         .build();
-    private final Map<String, Long> snmpinitialUpTime = new ConcurrentHashMap<>();
+    // Cache SNMP Uptime for each Interface.
+    private final Map<String, Long> snmpUpTimeCache = new ConcurrentHashMap<>();
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(25, monitorThreadFactory);
 
 
@@ -166,18 +167,18 @@ public class DeviceMonitorManager implements EventListener {
         Gauge upTimeGauge = Gauge.build().name("snmp_uptime").help("SNMP Up Time")
             .unit("sec").labelNames("instance").create();
         if (status) {
-            Long prevUpTimeInMsec = snmpinitialUpTime.get(ipAddress);
+            Long prevUpTimeInMsec = snmpUpTimeCache.get(ipAddress);
             long totalUpTimeInMsec = 0;
             if (prevUpTimeInMsec != null && prevUpTimeInMsec.longValue() != INVALID_UP_TIME) {
                 totalUpTimeInMsec = System.currentTimeMillis() - prevUpTimeInMsec;
             }
-            snmpinitialUpTime.put(ipAddress, System.currentTimeMillis());
+            snmpUpTimeCache.put(ipAddress, System.currentTimeMillis());
 
             long totalUpTimeInSec = TimeUnit.MILLISECONDS.toSeconds(totalUpTimeInMsec);
             upTimeGauge.labels(ipAddress).set(totalUpTimeInSec);
         } else {
             upTimeGauge.labels(ipAddress).set(INVALID_UP_TIME);
-            snmpinitialUpTime.put(ipAddress, INVALID_UP_TIME);
+            snmpUpTimeCache.put(ipAddress, INVALID_UP_TIME);
         }
         metricsAdapter.push(upTimeGauge);
     }
