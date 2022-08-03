@@ -38,14 +38,14 @@
 </template>
 
 <script setup lang="ts">
-import { IdLabelProps, SearchResultResponse } from '@/types'
+import { IdLabelProps } from '@/types'
 import { PropType } from 'vue'
-import { useStore } from 'vuex'
 import { ContextMenuType } from './topology.constants'
 import { Node as VNode } from 'v-network-graph'
 import { useTopologyFocus } from './topology.composables'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 
-const store = useStore()
+const topologyStore = useTopologyStore()
 const router = useRouter()
 const { addFocusObject, addFocusObjects, replaceFocusObjects, removeFocusObjectsByIds } = useTopologyFocus()
 
@@ -96,7 +96,7 @@ const { x, y, contextMenuType } = toRefs(props)
 const compX = computed(() => x.value + 'px')
 const compY = computed(() => y.value + 'px')
 const contextMenu = computed<ContextMenuType>(() => contextMenuType.value)
-const containerId = computed<string>(() => store.state.topologyModule.container)
+const containerId = computed(() => topologyStore.container)
 
 const nodeIsFocused = computed(() => {
   let idsToCheck
@@ -108,14 +108,13 @@ const nodeIsFocused = computed(() => {
   }
 
   for (const id of idsToCheck) {
-    if (store.state.topologyModule.focusObjects.map((obj: IdLabelProps) => obj.id).includes(id)) {
+    if (topologyStore.focusObjects.map((obj: IdLabelProps) => obj.id).includes(id)) {
       return true
     }
   }
 
   return false
 })
-
 
 const openNodeInfoPage = () => {
   const route = router.resolve(`/node/${props.node.id}`)
@@ -124,20 +123,22 @@ const openNodeInfoPage = () => {
 
 const openNodeResourcePage = async () => {
   if (!props.node.label) return
-  const results: SearchResultResponse[] = await store.dispatch('searchModule/search', props.node.label)
 
-  if (results) {
-    const route = router.resolve(`/resource-graphs/${results[0].results[0].identifier}`)
-    window.open(route.href, '_blank')
-  }
+  // TODO: Add GQL Call for search
+  // const results: SearchResultResponse[] = await store.dispatch('searchModule/search', props.node.label)
+
+  // if (results) {
+  //   const route = router.resolve(`/resource-graphs/${results[0].results[0].identifier}`)
+  //   window.open(route.href, '_blank')
+  // }
 }
 
 const navigateToSubLayer = (namespace: string) => {
-  store.dispatch('topologyModule/getTopologyGraphByContainerAndNamespace', { containerId: containerId.value, namespace })
+  topologyStore.getTopologyGraphByContainerAndNamespace({ containerId: containerId.value, namespace })
 }
 
 const refreshNow = () => props.refresh()
-const openIconModal = () => store.dispatch('topologyModule/setModalState', true)
+const openIconModal = () => topologyStore.modalState = true
 </script>
 
 <style scoped lang="scss">

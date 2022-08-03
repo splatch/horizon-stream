@@ -73,14 +73,16 @@ import ViewSelect from '@/components/Topology/ViewSelect.vue'
 import TopologySearch from '@/components/Topology/TopologySearch.vue'
 import MapSearch from '@/components/Map/MapSearch.vue'
 import DrawerBtn from '@/components/Topology/DrawerBtn.vue'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 
 const store = useStore()
+const topologyStore = useTopologyStore()
 const { startSpinner, stopSpinner } = useSpinner()
 const split = ref()
 const nodesReady = ref(false)
 const leafletComponent = ref()
 
-const isTopologyView = computed<boolean>(() => store.state.topologyModule.isTopologyView)
+const isTopologyView = computed<boolean>(() => topologyStore.isTopologyView)
 
 const minimizeBottomPane = () => {
   // override splitpane event
@@ -108,14 +110,14 @@ onMounted(async () => {
   stopSpinner()
   resize()
   nodesReady.value = true
-  store.dispatch('topologyModule/getVerticesAndEdges')
+  topologyStore.getVerticesAndEdges()
 })
 
 onActivated(() => store.dispatch('appModule/setNavRailOpen', false))
 onDeactivated(() => {
   store.dispatch('appModule/setNavRailOpen', true)
-  store.dispatch('topologyModule/setSelectedView', ViewType.map) // default layout
-  store.dispatch('topologyModule/setSelectedDisplay', DisplayType.nodes) // default graph
+  topologyStore.setSelectedView(ViewType.map)
+  topologyStore.setSelectedDisplay(DisplayType.nodes)
 })
 </script>
 

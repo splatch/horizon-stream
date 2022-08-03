@@ -24,26 +24,26 @@
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 import { FeatherListItem, FeatherList } from '@featherds/list'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Close from '@featherds/icon/navigation/Cancel'
 
-const store = useStore()
-const graphsDisplay = computed(() => store.state.topologyModule.topologyGraphsDisplay)
+const topologyStore = useTopologyStore()
+const graphsDisplay = computed(() => topologyStore.topologyGraphsDisplay)
 const selectedNamespace = ref()
 
 const selectTopologyGraph = (namespace: string) => {
-  store.dispatch('topologyModule/getTopologyGraphByContainerAndNamespace', { containerId: store.state.topologyModule.topologyGraphsDisplay.id, namespace })
+  topologyStore.getTopologyGraphByContainerAndNamespace({ containerId: topologyStore.topologyGraphsDisplay.id, namespace })
 }
 
-const namespace = computed(() => store.state.topologyModule.namespace)
+const namespace = computed(() => topologyStore.namespace)
 watch(namespace, (ns) => {
   selectedNamespace.value = ns
 })
 
-const closeDrawer = () => store.dispatch('topologyModule/setRightDrawerState', false)
+const closeDrawer = () => topologyStore.isRightDrawerOpen = false
 </script>
 
 <style
@@ -62,4 +62,3 @@ const closeDrawer = () => store.dispatch('topologyModule/setRightDrawerState', f
   }
 }
 </style>
-

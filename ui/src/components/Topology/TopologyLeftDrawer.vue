@@ -17,13 +17,13 @@
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 import { FeatherDrawer } from '@featherds/drawer'
 
-const store = useStore()
-const isOpen = computed<boolean>(() => store.state.topologyModule.isLeftDrawerOpen)
+const topologyStore = useTopologyStore()
+const isOpen = computed<boolean>(() => topologyStore.isLeftDrawerOpen)
 
-const closeDrawer = () => store.dispatch('topologyModule/closeLeftDrawer')
+const closeDrawer = () => topologyStore.isLeftDrawerOpen = false
 
 onMounted(() => {
   // remove feather default focus
@@ -66,4 +66,3 @@ body > .feather-menu-dropdown {
     z-index: calc(var(--feather-zindex-modal) + 1) !important; // to have the list diplayed above search content element
   }
 </style>
-

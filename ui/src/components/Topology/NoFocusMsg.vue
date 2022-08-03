@@ -32,12 +32,12 @@
   lang="ts"
 >
 import { FeatherButton } from '@featherds/button'
-import { useStore } from 'vuex'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 import { useTopologyFocus } from './topology.composables'
 
-const store = useStore()
+const topologyStore = useTopologyStore()
 const { useDefaultFocus } = useTopologyFocus()
-const defaultObjects = computed<Node[]>(() => store.state.topologyModule.defaultObjects)
+const defaultObjects = computed<Node[]>(() => topologyStore.defaultObjects)
 </script>
 
 <style
@@ -80,4 +80,3 @@ const defaultObjects = computed<Node[]>(() => store.state.topologyModule.default
   }
 }
 </style>
-

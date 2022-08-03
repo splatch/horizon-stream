@@ -95,7 +95,7 @@
   lang="ts"
 >
 import 'v-network-graph/lib/style.css'
-import { useStore } from 'vuex'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 import { VNetworkGraph, defineConfigs, Layouts, Edges, Nodes, SimpleLayout, EventHandlers, NodeEvent, Instance, ViewEvent, Node, Edge } from 'v-network-graph'
 import { ForceLayout, ForceNodeDatum, ForceEdgeDatum } from 'v-network-graph/lib/force-layout'
 import ContextMenu from './ContextMenu.vue'
@@ -105,6 +105,7 @@ import { SimulationNodeDatum } from 'd3'
 import { ContextMenuType, ViewType } from './topology.constants'
 import TopologyModal from './TopologyModal.vue'
 import ICON_PATHS from './icons/iconPaths'
+import { IdLabelProps } from '@/types'
 
 interface d3Node extends Required<SimulationNodeDatum> {
   id: string
@@ -117,7 +118,7 @@ defineProps({
   }
 })
 
-const store = useStore()
+const topologyStore = useTopologyStore()
 const zoomLevel = ref(1)
 const graph = ref<Instance>()
 const selectedNodes = ref<string[]>([]) // string ids
@@ -164,13 +165,13 @@ const displayTooltip = (show = false) => {
   }
 }
 
-const vertices = computed<Nodes>(() => store.state.topologyModule.vertices)
-const edges = computed<Edges>(() => store.state.topologyModule.edges)
-const layout = computed<Layouts>(() => store.getters['topologyModule/getLayout'])
-const namespace = computed(() => store.state.topologyModule.namespace)
-const focusObjects = computed<string[]>(() => store.state.topologyModule.focusObjects || [])
-const highlightFocusedObjects = computed<boolean>(() => store.state.topologyModule.highlightFocusedObjects)
-const selectedView = computed<string>(() => store.state.topologyModule.selectedView)
+const vertices = computed<Nodes>(() => topologyStore.vertices)
+const edges = computed<Edges>(() => topologyStore.edges)
+const layout = computed<Layouts>(() => topologyStore.getLayout)
+const namespace = computed(() => topologyStore.namespace)
+const focusObjects = computed<IdLabelProps[]>(() => topologyStore.focusObjects || [])
+const highlightFocusedObjects = computed(() => topologyStore.highlightFocusedObjects)
+const selectedView = computed(() => topologyStore.selectedView)
 
 const tooltipPos = computed(() => {
   const defaultPos = { left: '-9999px', top: '-99999px' }
@@ -330,7 +331,7 @@ watch(layout, async (layout) => {
 
 watch(namespace, async () => {
   // to have d3Nodes with coordinates for tooltip positioning
-  d3ForceEnabled.value = store.state.topologyModule.selectedView === ViewType.d3
+  d3ForceEnabled.value = topologyStore.selectedView === ViewType.d3
 
   trigger.value = false
   await nextTick()
@@ -348,7 +349,7 @@ const setColor = (item: Node | Edge) => {
 const configs = reactive(
   defineConfigs({
     view: {
-      layoutHandler: store.state.topologyModule.selectedView === ViewType.d3 ? forceLayout : new SimpleLayout()
+      layoutHandler: topologyStore.selectedView === ViewType.d3 ? forceLayout : new SimpleLayout()
     },
     node: {
       selectable: true,
@@ -364,8 +365,6 @@ const configs = reactive(
     }
   })
 )
-
-// onMounted(() => useDefaultFocus())
 </script>
 
 <style
@@ -409,4 +408,3 @@ const configs = reactive(
   }
 }
 </style>
-
