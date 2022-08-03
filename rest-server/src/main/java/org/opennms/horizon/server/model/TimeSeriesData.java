@@ -35,9 +35,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TimeSerialsData {
+public class TimeSeriesData {
     private String metricName;
     private String instance;
     private Date time;
-    private long value;
+    private double value;
 }

@@ -28,10 +28,12 @@
 
 package org.opennms.horizon.server.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import org.opennms.horizon.server.model.TimeSerialsData;
+import org.opennms.horizon.server.model.TimeSeriesData;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,7 +44,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import io.leangen.graphql.annotations.GraphQLQuery;
@@ -65,53 +69,52 @@ public class PrometheusTSDBServiceImpl implements TSDBService {
 
     @GraphQLQuery
     @Override
-    public  TimeSerialsData getMinionUpTime(String minionId) {
-        return getLatestTSData(METRIC_MINION_UPTIME, minionId);
-    }
-
-    @GraphQLQuery
-    @Override
-    public TimeSerialsData getMinionResponseTime(String minionId) {
-        return getLatestTSData(METRIC_MINION_RESPONSE, minionId);
-    }
-
-    @GraphQLQuery
-    @Override
-    public TimeSerialsData getICMPRoundTripTime(String ipAddress) {
-        return getLatestTSData(ICMP_ROUND_TRIP, ipAddress);
-    }
-
-    @GraphQLQuery
-    @Override
-    public TimeSerialsData getSNMPUPTime(String ipAddress) {
-        return getLatestTSData(SNMP_UPTIME, ipAddress);
-    }
-
-    private TimeSerialsData getLatestTSData(String metricName, String instance) {
-        String requestStr = String.format(QUERY_TEMPLATE, metricName, instance);
+    public TimeSeriesData getMetric(String name, String instance, Map<String, String> labels) {
+        String requestStr = String.format(QUERY_TEMPLATE, name, instance);
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         ResponseEntity<JsonNode> response = restTemplate.exchange(tsdbURL+requestStr, HttpMethod.GET, new HttpEntity<>(headers), JsonNode.class);
-        TimeSerialsData data = new TimeSerialsData();
+        TimeSeriesData data = new TimeSeriesData();
         if(response.getStatusCode().equals(HttpStatus.OK)) {
-            data.setMetricName(metricName);
+            data.setMetricName(name);
             data.setInstance(instance);
-            populateDataWithJsonNode(data, response.getBody());
+            if(response.hasBody()) {
+                populateDataWithJsonNode(data, response.getBody(), labels);
+            }
         }
         return data;
     }
 
-    private void populateDataWithJsonNode(TimeSerialsData data, JsonNode jsonNode) {
-        JsonNode result = jsonNode.get("data").get("result");
-        if(result != null && result.size()> 0) {
-            for(JsonNode node: (ArrayNode)result) {
-                if(node.get("metric").get("instance").asText().equals(data.getInstance())) {
-                    ArrayNode value = (ArrayNode) result.get(0).get("value");
-                    data.setTime(new Date((long) (value.get(0).asDouble() * 1000)));
-                    data.setValue(value.get(1).asLong());
+    private void populateDataWithJsonNode(TimeSeriesData data, JsonNode jsonNode, Map<String, String> labels) {
+        ArrayNode results = (ArrayNode) jsonNode.path("data").path("result");
+        List<JsonNode> filteredList = new ArrayList<>();
+        for(JsonNode result: results) {
+            JsonNode metric = result.path("metric");
+            if(metric.get("instance").asText().equals(data.getInstance())&& labelMatched(metric, labels)) {
+                filteredList.add(result);
+            }
+        }
+        if(filteredList.size()>0) { //todo is there cases more than one result node found?
+            JsonNode metricResult = filteredList.get(0);
+            JsonNode valueNode = metricResult.path("value");
+            data.setTime(new Date((long)valueNode.get(0).asDouble()*1000));
+            data.setValue(valueNode.get(1).asDouble());
+        }
+    }
+    private boolean labelMatched(JsonNode metric, Map<String, String> labels) {
+        boolean matched = true;
+        if(labels != null && labels.size() > 0) {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> metricKeyValues = mapper.convertValue(metric, new TypeReference<Map<String, String>>() {
+            });
+
+            for(Map.Entry<String, String> label: labels.entrySet()) {
+                if(!metricKeyValues.containsKey(label.getKey()) || !metricKeyValues.get(label.getKey()).equals(label.getValue())) {
+                    matched = false;
                     break;
                 }
             }
         }
+        return matched;
     }
 }

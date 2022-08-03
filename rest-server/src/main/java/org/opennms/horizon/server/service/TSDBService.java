@@ -28,11 +28,10 @@
 
 package org.opennms.horizon.server.service;
 
-import org.opennms.horizon.server.model.TimeSerialsData;
+import java.util.Map;
+
+import org.opennms.horizon.server.model.TimeSeriesData;
 
 public interface TSDBService {
-    TimeSerialsData getMinionUpTime(String minionId);
-    TimeSerialsData getMinionResponseTime(String minionId);
-    TimeSerialsData getICMPRoundTripTime(String ipAddress);
-    TimeSerialsData getSNMPUPTime(String ipAddress);
+    TimeSeriesData getMetric(String name, String instance, Map<String, String> labels);
 }
