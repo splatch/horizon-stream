@@ -4,7 +4,6 @@
 echo __________________Installing OLM___________________
 echo
 operator-sdk olm install
-if [ $? -ne 0 ]; then exit; fi
 
 echo
 echo _______________Building Docker Image_______________

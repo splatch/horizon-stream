@@ -98,11 +98,11 @@ func (h *IngressHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 		&webhookClusterRole,
 		&webhookClusterRoleBinding,
 
-		&controllerDeployment,
 		&createSecret,
+		&controllerDeployment,
+		&validatingWebhook,
 		&patchWebhook,
 
-		&validatingWebhook,
 		&controllerIngressClass,
 		&opennmsIngress,
 	}

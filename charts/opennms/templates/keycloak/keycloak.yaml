@@ -12,8 +12,6 @@ spec:
   image: {{ .Values.Keycloak.Image }}
   disableDefaultIngress: true
   serverConfiguration:
-    - name: db
-      value: postgres
     - name: db-url-host
       value: {{ .Values.Postgres.ServiceName }}
     - name: db-username
