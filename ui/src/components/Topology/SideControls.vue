@@ -30,9 +30,9 @@ import { FeatherIcon } from '@featherds/icon'
 import RefreshIcon from '@featherds/icon/navigation/Refresh'
 import TopologyRightDrawer from './TopologyRightDrawer.vue'
 import { PropType } from 'vue'
-import { useStore } from 'vuex'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 
-const store = useStore()
+const topologyStore = useTopologyStore()
 
 defineProps({
   refreshGraph: {
@@ -41,12 +41,12 @@ defineProps({
   }
 })
 
-const graphsSubLayers = computed(() => store.state.topologyModule.topologyGraphsSubLayers)
-watch(graphsSubLayers, (gsl) => {
-  store.dispatch('topologyModule/setRightDrawerState', gsl.length > 1)
-})
+const graphsSubLayers = computed(() => topologyStore.topologyGraphsSubLayers)
+const width = computed<string>(() => topologyStore.isRightDrawerOpen ? '250px' : '65px')
 
-const width = computed<string>(() => store.state.topologyModule.isRightDrawerOpen ? '250px' : '65px')
+watch(graphsSubLayers, (gsl) => {
+  topologyStore.isRightDrawerOpen = Boolean(gsl.length > 1)
+})
 </script>
 
 <style
@@ -92,4 +92,3 @@ const width = computed<string>(() => store.state.topologyModule.isRightDrawerOpe
   }
 }
 </style>
-

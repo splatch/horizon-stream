@@ -9,24 +9,20 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import { FeatherChip } from '@featherds/chips'
 import ExpandLess from '@featherds/icon/navigation/ExpandLess'
 import ExpandMore from '@featherds/icon/navigation/ExpandMore'
 
-const store = useStore()
-const semanticZoomlevel = computed<number>(() => store.state.topologyModule.semanticZoomLevel)
+const topologyStore = useTopologyStore()
+const semanticZoomlevel = computed<number>(() => topologyStore.semanticZoomLevel)
 
-const increaseSemanticZoomLevel = () => {
-  const updatedSemanticZoomLevel = semanticZoomlevel.value + 1
-  store.dispatch('topologyModule/setSemanticZoomLevel', updatedSemanticZoomLevel)
-}
+const increaseSemanticZoomLevel = () => topologyStore.setSemanticZoomLevel(semanticZoomlevel.value + 1)
 
 const decreaseSemanticZoomLevel = () => {
   if (semanticZoomlevel.value === 0) return
-  const updatedSemanticZoomLevel = semanticZoomlevel.value - 1
-  store.dispatch('topologyModule/setSemanticZoomLevel', updatedSemanticZoomLevel)
+  topologyStore.setSemanticZoomLevel(semanticZoomlevel.value - 1)
 }
 </script>

@@ -19,12 +19,11 @@
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
-import { useStore } from 'vuex'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 
-const store = useStore()
-
-const isOpen = computed<boolean>(() => store.state.topologyModule.isLeftDrawerOpen)
-const openLeftDrawer = () => store.dispatch('topologyModule/openLeftDrawer')
+const topologyStore = useTopologyStore()
+const isOpen = computed<boolean>(() => topologyStore.isLeftDrawerOpen)
+const openLeftDrawer = () => topologyStore.isLeftDrawerOpen = true
 </script>
 
 <style
@@ -44,4 +43,3 @@ const openLeftDrawer = () => store.dispatch('topologyModule/openLeftDrawer')
   }
 }
 </style>
-

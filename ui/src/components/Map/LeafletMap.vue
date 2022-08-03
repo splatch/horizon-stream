@@ -87,11 +87,12 @@ import CriticalIcon from '@/assets/Critical-icon.png'
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
 import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
-import { Edges } from 'v-network-graph'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 
 const markerCluster = ref()
 const computedEdges = ref<number[][][]>()
 const store = useStore()
+const topologyStore = useTopologyStore()
 const map = ref()
 const route = useRoute()
 const leafletReady = ref<boolean>(false)
@@ -175,7 +176,7 @@ const setMarkerColor = (severity: string | undefined) => {
 
 const computeEdges = () => {
   const interestedNodesCoordinateMap = getNodeCoordinateMap.value
-  const edges: Edges = store.state.topologyModule.edges
+  const edges = topologyStore.edges
 
   const edgeCoordinatesPairs:number[][][] = []
 

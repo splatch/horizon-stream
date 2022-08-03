@@ -51,28 +51,26 @@
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { Views, ViewType, DisplayType } from './topology.constants'
 import { TopologyGraphList } from '@/types/topology'
 
-const store = useStore()
+const topologyStore = useTopologyStore()
 
-const views = computed<Record<string, boolean>>(() => ({[store.state.topologyModule.selectedView]: true}))
-const displays = computed<Record<string, boolean>>(() => ({[store.state.topologyModule.selectedDisplay]: true}))
-
-const isTopologyView = computed<boolean>(() => store.state.topologyModule.isTopologyView)
-
-const graphs = computed<TopologyGraphList[]>(() => store.getters['topologyModule/getGraphs'])
+const views = computed<Record<string, boolean>>(() => ({[topologyStore.selectedView]: true}))
+const displays = computed<Record<string, boolean>>(() => ({[topologyStore.selectedDisplay]: true}))
+const isTopologyView = computed<boolean>(() => topologyStore.isTopologyView)
+const graphs = computed<TopologyGraphList[]>(() => topologyStore.getGraphs)
 
 const selectView = (view: string) => {
-  store.dispatch('topologyModule/setSelectedView', view) // save to state
+  topologyStore.setSelectedView(view)
 }
 
 const selectDisplay = (display: string) => {
-  store.dispatch('topologyModule/setSelectedDisplay', DisplayType[display]) // save to state
+  topologyStore.setSelectedDisplay(DisplayType[display])
 }
 
 onMounted(() => {
@@ -111,4 +109,3 @@ body > .feather-menu-dropdown > .feather-dropdown {
   }
 }
 </style>
-

@@ -19,7 +19,7 @@
   </FeatherDialog>
 </template>
 <script setup lang=ts>
-import { useStore } from 'vuex'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherButton } from '@featherds/button'
 import ICON_PATHS from './icons/iconPaths'
@@ -31,15 +31,13 @@ const props = defineProps({
   }
 })
 
-const store = useStore()
+const topologyStore = useTopologyStore()
 const selectedIconKey = ref()
 const { nodeId } = toRefs(props)
 
 const modalState = computed({
-  get: () => store.state.topologyModule.modalState,
-  set: (value: boolean) => {
-    store.dispatch('topologyModule/setModalState', value)
-  },
+  get: () => topologyStore.modalState,
+  set: (value: boolean) => topologyStore.modalState = value
 })
 
 const labels = {
@@ -49,7 +47,7 @@ const labels = {
 
 const selectIcon = (key: string) => selectedIconKey.value = key
 const changeIcon = () => {
-  store.dispatch('topologyModule/changeIcon', { [nodeId.value]: selectedIconKey.value })
+  topologyStore.changeIcon({ [nodeId.value]: selectedIconKey.value })
   close()
 }
 const close = () => modalState.value = false

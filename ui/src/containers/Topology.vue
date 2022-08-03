@@ -12,12 +12,12 @@
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
 import NetworkGraph from '@/components/Topology/NetworkGraph.vue'
 import SideControls from '@/components/Topology/SideControls.vue'
 import { DisplayType } from '@/components/Topology/topology.constants'
+import { useTopologyStore } from '@/store/Views/topologyStore'
 
-const store = useStore()
+const topologyStore = useTopologyStore()
 const displayGraph = ref(true)
 
 const refreshGraph = async () => {
@@ -27,8 +27,10 @@ const refreshGraph = async () => {
 }
 
 onMounted(async () => {
-  await store.dispatch('topologyModule/getTopologyGraphs')
-  await store.dispatch('topologyModule/setSelectedDisplay', DisplayType.nodes) // set default graph
+  // TODO: Make intitial gql graphs call
+  // await store.dispatch('topologyModule/getTopologyGraphs')
+
+  topologyStore.setSelectedDisplay(DisplayType.nodes) // set default graph
 })
 </script>
 
