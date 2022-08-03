@@ -10,6 +10,10 @@ echo _______________Building Docker Image_______________
 echo
 make local-docker
 
+echo
+echo _______Pushing Docker Image into Kind Cluster______
+echo
+kind load docker-image opennms/operator:local-build
 
 echo
 echo ___________Installing Helm Dependencies____________

@@ -80,9 +80,7 @@ printf "########################################################################
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 
 # Wait for the ingress to get some items started.
-sleep 60
-
-kubectl -n ingress-nginx wait --for=condition=ready pod --timeout=60s -l app.kubernetes.io/component=controller
+kubectl -n ingress-nginx wait --for=condition=ready pod --timeout=120s -l app.kubernetes.io/component=controller
 
 printf "\n\n# Install OpenNMS Operator\n"
 printf "################################################################################\n\n"
@@ -95,7 +93,9 @@ cd ../local-sample/
 kubectl -n opennms wait --for=condition=ready pod --timeout=120s -l name=opennms-operator
 
 # Wait for the operator to get some items started.
-sleep 120
+kubectl -n opennms wait --for=condition=ready pod --timeout=120s -l name=opennms-core
+kubectl -n opennms wait --for=condition=ready pod --timeout=120s -l name=opennms-ui
+kubectl -n opennms wait --for=condition=ready pod --timeout=120s -l name=opennms-rest-server
 
 printf "\n\n# Add TLS Secret\n"
 printf "################################################################################\n\n"
@@ -205,7 +205,7 @@ if [[ $ENV_RUN == "dev" ]] || [[ $ENV_RUN == "cicd" ]]; then
   kubectl -n local-instance patch deployments opennms-rest-server  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "image":"opennms/horizon-stream-rest-server:local"}]}}}}'
   kubectl -n local-instance patch deployments keycloak             -p '{"spec": {"template": {"spec":{"containers":[{"name": "keycloak",           "image":"opennms/horizon-stream-keycloak:local"}]}}}}'
   kubectl -n local-instance patch deployments grafana              -p '{"spec": {"template": {"spec":{"containers":[{"name": "grafana",           "image":"opennms/horizon-stream-grafana:local"}]}}}}'
- 
+
   kubectl -n local-instance patch deployments opennms-ui           -p '{"spec": {"template": {"spec":{"containers":[{"name": "opennms-ui", "imagePullPolicy":"Never"}]}}}}'
   kubectl -n local-instance patch deployments opennms-core         -p '{"spec": {"template": {"spec":{"containers":[{"name": "opennms-core","imagePullPolicy":"Never"}]}}}}'
   kubectl -n local-instance patch deployments opennms-rest-server  -p '{"spec": {"template": {"spec":{"containers":[{"name": "horizon-stream-api", "imagePullPolicy":"Never"}]}}}}'
