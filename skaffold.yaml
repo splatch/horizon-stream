@@ -109,6 +109,10 @@ portForward:
     resourceName: grafana
     port: 3000 #grafana HTTP
     localPort: 53000
+  - resourceType: deployment
+    resourceName: my-kafka
+    port: 9092 # kafka tcp
+    localPort: 9092
 deploy:
   kubectl:
     manifests:

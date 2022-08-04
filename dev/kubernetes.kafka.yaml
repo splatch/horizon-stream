@@ -432,6 +432,8 @@ spec:
               value: "CLIENT://kafka:9092"
             - name: KAFKA_CFG_INTER_BROKER_LISTENER_NAME
               value: "CLIENT"
+            - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
+              value: "true"
             - name: KAFKA_CLIENT_USERS
               valueFrom:
                 secretKeyRef:
@@ -670,6 +672,8 @@ spec:
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
           ports:
             - containerPort: 8080
 ---
