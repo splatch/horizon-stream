@@ -90,14 +90,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useStore } from 'vuex'
-import { Alarm, AlarmQueryParameters, FeatherSortObject } from '@/types'
+import { useMapStore } from '@/store/Views/mapStore'
+import { Alarm, AlarmQueryParameters, FeatherSortObject } from '@/types/map'
 import { FeatherSelect } from '@featherds/select'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 
-const store = useStore()
-const alarms = computed<Alarm[]>(() => store.getters['mapModule/getAlarms'])
+const mapStore = useMapStore()
+const alarms = computed<Alarm[]>(() => mapStore.getAlarms())
 const alarmOptions = [
   { id: 1, option: 'Not Selected' },
   { id: 2, option: 'Acknowledge' },
@@ -153,7 +153,7 @@ const selectAlarmAck = async () => {
   let numFail = 0
   const respCollection: any = []
   selectedAlarms.forEach((alarm: Alarm) => {
-    const resp = store.dispatch('mapModule/modifyAlarm', {
+    const resp = mapStore.modifyAlarm({
       pathVariable: alarm.id, queryParameters: alarmQueryParameters
     })
     respCollection.push(resp)
@@ -165,7 +165,7 @@ const selectAlarmAck = async () => {
     }
   })
   // update and reset selections
-  store.dispatch('mapModule/getAlarms')
+  mapStore.getAlarms()
   all.value = false
   alarmCheckboxes.value = {}
 }
@@ -185,7 +185,7 @@ const sortChanged = (sortObj: FeatherSortObject) => {
     sortStates[key] = SORT.NONE
   }
   sortStates[`${sortObj.property}`] = sortObj.value
-  store.dispatch('mapModule/setAlarmSortObject', sortObj)
+  mapStore.setAlarmSortObject(sortObj)
 }
 
 onMounted(() => {

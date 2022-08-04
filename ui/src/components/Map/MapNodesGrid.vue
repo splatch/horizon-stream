@@ -108,17 +108,17 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useStore } from 'vuex'
-import { Coordinates, Node, FeatherSortObject } from '@/types'
+import { useMapStore } from '@/store/Views/mapStore'
+import { Coordinates, Node, FeatherSortObject } from '@/types/map'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 
-const store = useStore()
-const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
-const nodeLabelAlarmServerityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
+const mapStore = useMapStore()
+const nodes = computed<Node[]>(() => mapStore.getNodes())
+const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
 
 const doubleClickHandler = (node: Node) => {
   const coordinate: Coordinates = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
-  store.dispatch('mapModule/setMapCenter', coordinate)
+  mapStore.setMapCenter(coordinate)
 }
 
 const sortStates: any = reactive({
@@ -141,7 +141,7 @@ const sortChanged = (sortObj: FeatherSortObject) => {
     sortStates[key] = SORT.NONE
   }
   sortStates[`${sortObj.property}`] = sortObj.value
-  store.dispatch('mapModule/setNodeSortObject', sortObj)
+  mapStore.setNodeSortObject(sortObj)
 }
 
 onMounted(() => {

@@ -77,8 +77,7 @@ import {
   LPolyline
 } from '@vue-leaflet/vue-leaflet'
 import MarkerCluster from './MarkerCluster.vue'
-import { useStore } from 'vuex'
-import { Node } from '@/types'
+import { Node } from '@/types/map'
 import NormalIcon from '@/assets/Normal-icon.png'
 import WarninglIcon from '@/assets/Warning-icon.png'
 import MinorIcon from '@/assets/Minor-icon.png'
@@ -88,10 +87,11 @@ import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
 import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
 import { useTopologyStore } from '@/store/Views/topologyStore'
+import { useMapStore } from '@/store/Views/mapStore'
 
 const markerCluster = ref()
 const computedEdges = ref<number[][][]>()
-const store = useStore()
+const mapStore = useMapStore()
 const topologyStore = useTopologyStore()
 const map = ref()
 const route = useRoute()
@@ -102,14 +102,15 @@ const iconWidth = 25
 const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
 const nodeClusterCoords = ref<Record<string, number[]>>({})
-const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => store.state.mapModule.mapCenter[k]))
-const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
-const allNodes = computed<Node[]>(() => store.state.mapModule.nodesWithCoordinates)
+
+const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => mapStore.mapCenter[k]))
+const nodes = computed<Node[]>(() => mapStore.getNodes())
+const allNodes = computed<Node[]>(() => mapStore.nodesWithCoordinates)
 const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value
   return nodes.value.map((node) => coordinatedMap.get(node.id))
 })
-const nodeLabelAlarmServerityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
+const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
 
 const getHighestSeverity = (severitites: string[]) => {
   let highestSeverity = 'NORMAL'
@@ -152,7 +153,6 @@ const iconCreateFunction = (cluster: Cluster) => {
   return divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
 }
 
-const setIcon = (node: Node) => setMarkerColor(nodeLabelAlarmServerityMap.value[node.label])
 
 const setMarkerColor = (severity: string | undefined) => {
   if (severity) {
@@ -221,7 +221,7 @@ const onLeafletReady = async () => {
     await nextTick()
 
     // save the bounds to state
-    store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+    // store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
 
     try {
       leafletObject.value.fitBounds(bounds.value)
@@ -238,7 +238,7 @@ const onLeafletReady = async () => {
 
 const onMoveEnd = () => {
   zoom.value = leafletObject.value.getZoom()
-  store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+  // store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
 }
 
 const flyToNode = (nodeLabelOrId: string) => {

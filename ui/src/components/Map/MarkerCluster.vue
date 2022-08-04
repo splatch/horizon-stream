@@ -9,7 +9,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css'
 import { propsBinder, remapEvents } from '@vue-leaflet/vue-leaflet/src/utils'
 import {
   render,
-  setup as layerSetup,
+  setup as layerSetup
 } from '@vue-leaflet/vue-leaflet/src/functions/layer'
 
 const props = {
@@ -67,7 +67,7 @@ export default {
         LayerGroup,
         Marker,
         Point,
-        Util,
+        Util
       } = await import('leaflet/dist/leaflet-src.esm')
 
       /** create a fake window.L from just the bits we need to make markercluster load properly **/
@@ -85,7 +85,7 @@ export default {
         LayerGroup,
         Marker,
         Point,
-        Util,
+        Util
       }
       window['L'] = L
 
@@ -106,7 +106,7 @@ export default {
       addLayerToMainMap({
         ...props,
         ...methods,
-        leafletObject: leafletRef.value,
+        leafletObject: leafletRef.value
       })
 
       ready.value = true
@@ -124,6 +124,6 @@ export default {
   },
   render() {
     return render(this.ready, this.$slots)
-  },
+  }
 }
 </script>
