@@ -24,4 +24,4 @@ COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
 COPY --chown=1000 themes themes
 
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "--verbose"]

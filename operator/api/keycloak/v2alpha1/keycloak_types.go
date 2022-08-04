@@ -145,8 +145,8 @@ type User struct {
 }
 
 type Credential struct {
-	Type   string     `json:"type"`
-	Secret SecretCred `json:"secret"`
+	Type  string `json:"type"`
+	Value string `json:"value"`
 }
 
 type SecretCred struct {

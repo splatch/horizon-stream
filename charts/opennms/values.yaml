@@ -49,10 +49,9 @@ Keycloak:
   AdminPassword: notset
   UserUseranme: user001
   UserPassword: notset
-  #Image: opennms/horizon-stream-keycloak:latest
-  #Image: quay.io/keycloak/keycloak:19.0.1
-  Image: localhost:5000/kc-test
+  Image: opennms/horizon-stream-keycloak:latest
   UUID:
+    RealmId: 00000000-0000-0000-0000-000000000000
     ClientId: 00000000-0000-0000-0000-000000000000
     BaseUserId: 00000000-0000-0000-0000-000000000000
     AdminUserId: 00000000-0000-0000-0000-000000000000

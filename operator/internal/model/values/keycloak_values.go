@@ -28,6 +28,7 @@ type KeycloakValues struct {
 }
 
 type UUIDList struct {
+	RealmId     uuid.UUID `yaml:"RealmId"`
 	ClientId    uuid.UUID `yaml:"ClientId"`
 	BaseUserId  uuid.UUID `yaml:"BaseUserId"`
 	AdminUserId uuid.UUID `yaml:"AdminUserId"`

@@ -67,11 +67,13 @@ func (r *OpenNMSReconciler) CheckForExistingCoreCreds(ctx context.Context, v val
 	if existingAdminPwd == "" || existingUserPwd == "" {
 		return v, false
 	}
+	realmId := string(credSecret.Data["realmId"])
 	clientId := string(credSecret.Data["clientId"])
 	adminId := string(credSecret.Data["adminId"])
 	userId := string(credSecret.Data["userId"])
 	v.Values.Keycloak.AdminPassword = existingAdminPwd
 	v.Values.Keycloak.UserPassword = existingUserPwd
+	v.Values.Keycloak.UUID.RealmId = uuid.MustParse(realmId)
 	v.Values.Keycloak.UUID.ClientId = uuid.MustParse(clientId)
 	v.Values.Keycloak.UUID.AdminUserId = uuid.MustParse(adminId)
 	v.Values.Keycloak.UUID.BaseUserId = uuid.MustParse(userId)
@@ -100,6 +102,7 @@ func setCorePasswords(tv values.TemplateValues) values.TemplateValues {
 	tv.Values.Keycloak.AdminPassword = security.GeneratePassword(true)
 	tv.Values.Keycloak.UserPassword = security.GeneratePassword(true)
 
+	tv.Values.Keycloak.UUID.RealmId = uuid.New()
 	tv.Values.Keycloak.UUID.ClientId = uuid.New()
 	tv.Values.Keycloak.UUID.AdminUserId = uuid.New()
 	tv.Values.Keycloak.UUID.BaseUserId = uuid.New()

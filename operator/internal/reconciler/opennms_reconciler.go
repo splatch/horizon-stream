@@ -79,6 +79,8 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 				}
 				if kind == "v1.Deployment" || kind == "v1.Job" || kind == "v1.StatefulSet" {
 					return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
+				} else if kind == "v1alpha1.Subscription" || kind == "v2alpha1.KeycloakRealmImport" || kind == "v2alpha1.Keycloak" {
+					return ctrl.Result{RequeueAfter: 30 * time.Second}, nil //TODO this needs to check if the Realm Import job completes before moving on
 				}
 			} else {
 				r.Log.Info("checking resource for update", "namespace", resource.GetNamespace(), "name", resource.GetName(), "kind", kind)
