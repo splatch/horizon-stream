@@ -10,3 +10,4 @@ Operator:
       memory: 500Mi
 TLS:
   Enabled: false
+
