@@ -43,6 +43,10 @@ html {
   overflow-x: hidden;
 }
 
+body {
+  margin: 0
+}
+
 .main-content {
   margin-left: v-bind(contentMargin);
   margin-right: 15px;

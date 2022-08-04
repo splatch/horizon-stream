@@ -143,5 +143,9 @@ onDeactivated(() => {
     background: var($primary-text-on-surface) !important;
   }
 }
+
+.feather-col-12 {
+  padding: 0
+}
 </style>
 
