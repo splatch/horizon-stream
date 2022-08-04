@@ -33,5 +33,5 @@ import java.util.Map;
 import org.opennms.horizon.server.model.TimeSeriesData;
 
 public interface TSDBService {
-    TimeSeriesData getMetric(String name, String instance, Map<String, String> labels);
+    TimeSeriesData getMetric(String name, Map<String, String> labels);
 }

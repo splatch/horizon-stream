@@ -28,7 +28,6 @@
 
 package org.opennms.horizon.server.service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -44,70 +43,62 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @GraphQLApi
 @Service
 public class PrometheusTSDBServiceImpl implements TSDBService {
     @Value("${tsdb.url}")
     private String tsdbURL;
-    private static final String QUERY_TEMPLATE = "?query=%s&instance=%s";
+    private static final String QUERY_TEMPLATE = "query=%s{%s}";
+    private static final String LABEL_INSTANCE = "instance";
     private final RestTemplate restTemplate = new RestTemplate();
 
     @GraphQLQuery
     @Override
-    public TimeSeriesData getMetric(String name, String instance, Map<String, String> labels) {
-        String requestStr = String.format(QUERY_TEMPLATE, name, instance);
+    public TimeSeriesData getMetric(String name, Map<String, String> labels) {
+        if(!labels.containsKey(LABEL_INSTANCE)) {
+            log.warn("Metric query {} without instance label", name);
+        }
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        ResponseEntity<JsonNode> response = restTemplate.exchange(tsdbURL+requestStr, HttpMethod.GET, new HttpEntity<>(headers), JsonNode.class);
+        String urlEncodedQuery = generatePayloadString(name, labels);
+        ResponseEntity<JsonNode> response = restTemplate.exchange(tsdbURL, HttpMethod.POST, new HttpEntity<>(urlEncodedQuery,headers), JsonNode.class);
         TimeSeriesData data = new TimeSeriesData();
         if(response.getStatusCode().equals(HttpStatus.OK)) {
             data.setMetricName(name);
-            data.setInstance(instance);
-            if(response.hasBody()) {
-                populateDataWithJsonNode(data, response.getBody(), labels);
+
+            JsonNode jsonNode = response.getBody();
+            if(jsonNode != null) {
+                ArrayNode valueNode = (ArrayNode) jsonNode.path("data").path("result").get(0).path("value");
+                if (valueNode != null && valueNode.size() > 0) {
+                    data.setTime(new Date((long) valueNode.get(0).asDouble() * 1000));
+                    data.setValue(valueNode.get(1).asDouble());
+                }
+                data.setInstance(jsonNode.path("data").path("result").get(0).path("metric").path("instance").asText());
             }
         }
         return data;
     }
 
-    private void populateDataWithJsonNode(TimeSeriesData data, JsonNode jsonNode, Map<String, String> labels) {
-        ArrayNode results = (ArrayNode) jsonNode.path("data").path("result");
-        List<JsonNode> filteredList = new ArrayList<>();
-        for(JsonNode result: results) {
-            JsonNode metric = result.path("metric");
-            if(metric.get("instance").asText().equals(data.getInstance())&& labelMatched(metric, labels)) {
-                filteredList.add(result);
-            }
-        }
-        if(filteredList.size()>0) { //todo is there cases more than one result node found?
-            JsonNode metricResult = filteredList.get(0);
-            JsonNode valueNode = metricResult.path("value");
-            data.setTime(new Date((long)valueNode.get(0).asDouble()*1000));
-            data.setValue(valueNode.get(1).asDouble());
-        }
-    }
-    private boolean labelMatched(JsonNode metric, Map<String, String> labels) {
-        boolean matched = true;
-        if(labels != null && labels.size() > 0) {
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> metricKeyValues = mapper.convertValue(metric, new TypeReference<Map<String, String>>() {
-            });
-
-            for(Map.Entry<String, String> label: labels.entrySet()) {
-                if(!metricKeyValues.containsKey(label.getKey()) || !metricKeyValues.get(label.getKey()).equals(label.getValue())) {
-                    matched = false;
-                    break;
+    private String generatePayloadString(String name, Map<String, String> labels) {
+        StringBuilder filterStr = new StringBuilder();
+        if(labels != null && labels.size()> 0 ){
+            String filterTmp = "%s=\"%s\"";
+            for (Map.Entry<String, String> entry: labels.entrySet()) {
+                if(filterStr.length()>0) {
+                    filterStr.append(",");
                 }
+                filterStr.append(String.format(filterTmp, entry.getKey(), entry.getValue()));
             }
         }
-        return matched;
+        return String.format(QUERY_TEMPLATE, name, filterStr);
     }
 }
