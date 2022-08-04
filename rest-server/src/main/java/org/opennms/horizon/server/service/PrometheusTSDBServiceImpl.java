@@ -55,16 +55,9 @@ import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 @GraphQLApi
 @Service
 public class PrometheusTSDBServiceImpl implements TSDBService {
-
     @Value("${tsdb.url}")
     private String tsdbURL;
-
     private static final String QUERY_TEMPLATE = "?query=%s&instance=%s";
-    private static final String METRIC_MINION_UPTIME = "minion_uptime_sec";
-    private static final String METRIC_MINION_RESPONSE = "minion_response_time_msec";
-    private static final String SNMP_UPTIME = "snmp_uptime_sec";
-    private static final String ICMP_ROUND_TRIP = "icmp_round_trip_time_msec";
-
     private final RestTemplate restTemplate = new RestTemplate();
 
     @GraphQLQuery
