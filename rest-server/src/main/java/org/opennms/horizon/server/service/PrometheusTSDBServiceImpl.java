@@ -28,23 +28,18 @@
 
 package org.opennms.horizon.server.service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.horizon.server.model.TimeSeriesData;
+import org.opennms.horizon.server.model.TimeSeriesQueryResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
@@ -62,7 +57,7 @@ public class PrometheusTSDBServiceImpl implements TSDBService {
 
     @GraphQLQuery
     @Override
-    public TimeSeriesData getMetric(String name, Map<String, String> labels) {
+    public TimeSeriesQueryResult getMetric(String name, Map<String, String> labels) {
         if(!labels.containsKey(LABEL_INSTANCE)) {
             log.warn("Metric query {} without instance label", name);
         }
@@ -70,22 +65,8 @@ public class PrometheusTSDBServiceImpl implements TSDBService {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         String urlEncodedQuery = generatePayloadString(name, labels);
-        ResponseEntity<JsonNode> response = restTemplate.exchange(tsdbURL, HttpMethod.POST, new HttpEntity<>(urlEncodedQuery,headers), JsonNode.class);
-        TimeSeriesData data = new TimeSeriesData();
-        if(response.getStatusCode().equals(HttpStatus.OK)) {
-            data.setMetricName(name);
-
-            JsonNode jsonNode = response.getBody();
-            if(jsonNode != null) {
-                ArrayNode valueNode = (ArrayNode) jsonNode.path("data").path("result").get(0).path("value");
-                if (valueNode != null && valueNode.size() > 0) {
-                    data.setTime(new Date((long) valueNode.get(0).asDouble() * 1000));
-                    data.setValue(valueNode.get(1).asDouble());
-                }
-                data.setInstance(jsonNode.path("data").path("result").get(0).path("metric").path("instance").asText());
-            }
-        }
-        return data;
+        ResponseEntity<TimeSeriesQueryResult> response = restTemplate.exchange(tsdbURL, HttpMethod.POST, new HttpEntity<>(urlEncodedQuery,headers), TimeSeriesQueryResult.class);
+        return response.getBody();
     }
 
     private String generatePayloadString(String name, Map<String, String> labels) {

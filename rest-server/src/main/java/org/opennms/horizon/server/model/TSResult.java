@@ -28,16 +28,15 @@
 
 package org.opennms.horizon.server.model;
 
-import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class TimeSeriesData {
-    private String metricName;
-    private String instance;
-    private Date time;
-    private double value;
+public class TSResult {
+    private Map<String, String> metric;
+    List<Double> value;
 }

@@ -26,12 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.service;
+package org.opennms.horizon.server.model;
 
-import java.util.Map;
+import java.util.Date;
 
-import org.opennms.horizon.server.model.TimeSeriesQueryResult;
+import lombok.Getter;
+import lombok.Setter;
 
-public interface TSDBService {
-    TimeSeriesQueryResult getMetric(String name, Map<String, String> labels);
+@Getter
+@Setter
+public class TimeSeriesQueryResult {
+    private String status;
+    private TSData data;
 }
