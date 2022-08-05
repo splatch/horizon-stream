@@ -97,7 +97,7 @@ import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 
 const mapStore = useMapStore()
-const alarms = computed<Alarm[]>(() => mapStore.getAlarms())
+const alarms = computed<Alarm[]>(() => mapStore.fetchAlarms)
 const alarmOptions = [
   { id: 1, option: 'Not Selected' },
   { id: 2, option: 'Acknowledge' },
@@ -165,7 +165,7 @@ const selectAlarmAck = async () => {
     }
   })
   // update and reset selections
-  mapStore.getAlarms()
+  mapStore.fetchAlarms
   all.value = false
   alarmCheckboxes.value = {}
 }
@@ -185,7 +185,7 @@ const sortChanged = (sortObj: FeatherSortObject) => {
     sortStates[key] = SORT.NONE
   }
   sortStates[`${sortObj.property}`] = sortObj.value
-  mapStore.setAlarmSortObject(sortObj)
+  mapStore.alarmSortObject = sortObj
 }
 
 onMounted(() => {

@@ -104,13 +104,13 @@ const iconSize = [iconWidth, iconHeight]
 const nodeClusterCoords = ref<Record<string, number[]>>({})
 
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => mapStore.mapCenter[k]))
-const nodes = computed<Node[]>(() => mapStore.getNodes())
+const nodes = computed<Node[]>(() => mapStore.getNodes)
 const allNodes = computed<Node[]>(() => mapStore.nodesWithCoordinates)
 const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value
   return nodes.value.map((node) => coordinatedMap.get(node.id))
 })
-const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
+const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap)
 
 const getHighestSeverity = (severitites: string[]) => {
   let highestSeverity = 'NORMAL'
@@ -153,7 +153,6 @@ const iconCreateFunction = (cluster: Cluster) => {
   return divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
 }
 
-
 const setMarkerColor = (severity: string | undefined) => {
   if (severity) {
     switch (severity.toUpperCase()) {
@@ -173,6 +172,8 @@ const setMarkerColor = (severity: string | undefined) => {
   }
   return NormalIcon
 }
+
+const setIcon = (node: Node) => setMarkerColor(nodeLabelAlarmServerityMap.value[node.label])
 
 const computeEdges = () => {
   const interestedNodesCoordinateMap = getNodeCoordinateMap.value
@@ -221,7 +222,7 @@ const onLeafletReady = async () => {
     await nextTick()
 
     // save the bounds to state
-    // store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+    mapStore.mapBounds = leafletObject.value.getBounds()
 
     try {
       leafletObject.value.fitBounds(bounds.value)
@@ -238,7 +239,7 @@ const onLeafletReady = async () => {
 
 const onMoveEnd = () => {
   zoom.value = leafletObject.value.getZoom()
-  // store.dispatch('mapModule/setMapBounds', leafletObject.value.getBounds())
+  mapStore.mapBounds = leafletObject.value.getBounds()
 }
 
 const flyToNode = (nodeLabelOrId: string) => {

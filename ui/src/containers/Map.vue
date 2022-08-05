@@ -72,10 +72,10 @@ import TopologySearch from '@/components/Topology/TopologySearch.vue'
 import MapSearch from '@/components/Map/MapSearch.vue'
 import DrawerBtn from '@/components/Topology/DrawerBtn.vue'
 import { useTopologyStore } from '@/store/Views/topologyStore'
+import { useLayoutStore } from '@/store/Views/layoutStore'
 import { useMapStore } from '@/store/Views/mapStore'
-import { useAppStore } from '@/store/Views/appStore'
 
-const appStore = useAppStore()
+const layoutStore = useLayoutStore()
 const mapStore = useMapStore()
 const topologyStore = useTopologyStore()
 const { startSpinner, stopSpinner } = useSpinner()
@@ -106,17 +106,17 @@ const setBoundingBox = (nodeLabels: string[]) => leafletComponent.value.setBound
 
 onMounted(async () => {
   startSpinner()
-  mapStore.getNodes()
-  mapStore.getAlarms()
+  mapStore.fetchNodes
+  mapStore.fetchAlarms
   stopSpinner()
   resize()
   nodesReady.value = true
   topologyStore.getVerticesAndEdges()
 })
 
-onActivated(() => appStore.setNavRailOpen(false))
+onActivated(() => layoutStore.setNavRailOpen(false))
 onDeactivated(() => {
-  appStore.setNavRailOpen(true)
+  layoutStore.setNavRailOpen(true)
   topologyStore.setSelectedView(ViewType.map)
   topologyStore.setSelectedDisplay(DisplayType.nodes)
 })

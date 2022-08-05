@@ -113,12 +113,12 @@ import { Coordinates, Node, FeatherSortObject } from '@/types/map'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 
 const mapStore = useMapStore()
-const nodes = computed<Node[]>(() => mapStore.getNodes())
-const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
+const nodes = computed<Node[]>(() => mapStore.fetchNodes)
+const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap)
 
 const doubleClickHandler = (node: Node) => {
   const coordinate: Coordinates = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
-  mapStore.setMapCenter(coordinate)
+  mapStore.mapCenter = coordinate
 }
 
 const sortStates: any = reactive({
@@ -141,7 +141,7 @@ const sortChanged = (sortObj: FeatherSortObject) => {
     sortStates[key] = SORT.NONE
   }
   sortStates[`${sortObj.property}`] = sortObj.value
-  mapStore.setNodeSortObject(sortObj)
+  mapStore.nodeSortObject = sortObj
 }
 
 onMounted(() => {

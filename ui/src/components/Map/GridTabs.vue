@@ -15,8 +15,8 @@ import { Alarm, Node } from '@/types/map'
 const mapStore = useMapStore()
 const router = useRouter()
 const route = useRoute()
-const nodes = computed<Node[]>(() => mapStore.getNodes())
-const alarms = computed<Alarm[]>(() => mapStore.getAlarms())
+const nodes = computed<Node[]>(() => mapStore.fetchNodes)
+const alarms = computed<Alarm[]>(() => mapStore.fetchAlarms)
 const alarmTab = ref()
 const nodesTab = ref()
 

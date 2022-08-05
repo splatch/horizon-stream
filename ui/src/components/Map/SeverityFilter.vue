@@ -27,7 +27,7 @@ const options = [
 ]
 const selectedSeverity = ref(options[0])
 
-const onSeveritySelect = () => mapStore.setSelectedSeverity(selectedSeverity.value.id)
+const onSeveritySelect = () => mapStore.selectedSeverity = selectedSeverity.value.id
 </script>
 
 <style lang="scss">

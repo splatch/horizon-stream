@@ -4,8 +4,8 @@ import { Node, Alarm, Coordinates, QueryParameters, AlarmModificationQueryVariab
 import { LatLngBounds } from 'leaflet'
 import { SORT } from '@featherds/table'
 import { numericSeverityLevel } from '@/components/Map/utils'
-// import { orderBy } from 'lodash'
-// import { latLng } from 'leaflet'
+import { orderBy } from 'lodash'
+import { latLng } from 'leaflet'
 
 export interface State {
   nodesWithCoordinates: Node[]
@@ -33,7 +33,7 @@ export const useMapStore = defineStore('mapStore', {
       alarmSortObject: { property: 'id', value: SORT.DESCENDING }
     },
   actions: {
-    async getNodes(queryParameters?: QueryParameters) {
+    async fetchNodes(queryParameters?: QueryParameters) {
       const defaultParams = queryParameters || { limit: 5000, offset: 0 }
       // todo: add graphQL query
       const resp = undefined
@@ -50,7 +50,7 @@ export const useMapStore = defineStore('mapStore', {
         this.interestedNodesID = nodes.map((node) => node.id)
       }
     },
-    async getAlarms (queryParameters?: QueryParameters) {
+    async fetchAlarms (queryParameters?: QueryParameters) {
       const defaultParams = queryParameters || { limit: 5000, offset: 0 }
       // todo: add graphQL query
       const resp = [] as Alarm[]
@@ -59,34 +59,10 @@ export const useMapStore = defineStore('mapStore', {
         this.alarms = resp
       }
     },
-    resetInterestedNodesID() {
-      this.interestedNodesID = this.nodesWithCoordinates.map((node: Node) => node.id)
-    },
-    setInterestedNodesId(ids: string[]) {
-      this.interestedNodesID = ids
-    },
-    setMapCenter(center: Coordinates) {
-      this.mapCenter = center
-    },
-    setMapBounds(bounds: LatLngBounds) {
-      this.mapBounds = bounds
-    },
     async modifyAlarm(alarmQueryVariable: AlarmModificationQueryVariable) {
       // todo: add graphQL query
       const resp = {}
       return resp
-    },
-    setSelectedSeverity(selectedSeverity: string) {
-      this.selectedSeverity = selectedSeverity
-    },
-    setSearchedNodeLabels(nodeLabels: string[]){
-      this.searchedNodeLabels = nodeLabels
-    },
-    setNodeSortObject(sortObj: FeatherSortObject) {
-      this.nodeSortObject = sortObj
-    },
-    setAlarmSortObject(sortObj: FeatherSortObject) {
-      this.alarmSortObject = sortObj
     }
   },
   getters: {
@@ -100,9 +76,9 @@ export const useMapStore = defineStore('mapStore', {
       })
     
       return map
-    }
-    /* getNodes(state: State): Node[] {
-      const severityMap = this.getNodeAlarmSeverityMap(state)
+    },
+    getNodes(state: State): Node[] {
+      const severityMap = state.getNodeAlarmSeverityMap
       const selectedNumericSeverityLevel = numericSeverityLevel(state.selectedSeverity)
     
       // copy the vuex nodes
@@ -136,16 +112,8 @@ export const useMapStore = defineStore('mapStore', {
       if (state.searchedNodeLabels.length) {
         nodes = nodes.filter((node) => state.searchedNodeLabels.includes(node.label))
       }
-    
-      return nodes
-    }, */
-    // getNodeLabels(state: State) { this.getNodes(state).map((node: Node) => node.label) },
-    /* getAlarms(state: State): Alarm[] {
-      const nodeLabels = this.getNodeLabels(state)
-      const alarms = state.alarms.filter((alarm: Alarm) => nodeLabels.includes(alarm.nodeLabel))
 
-      // sort and return the alarms
-      return orderBy(alarms, state.alarmSortObject.property, state.alarmSortObject.value)
-    } */
+      return nodes
+    }
   }
 })
