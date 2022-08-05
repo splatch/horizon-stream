@@ -38,7 +38,7 @@ const gapWidth = computed<string>(() => appliancesStore.minionsTableOpen ? '20px
     font-weight: bold;
   }
   .btns {
-    display: flex;
+    display: flex !important;
     justify-content: flex-end;
     gap: 20px;
   }
