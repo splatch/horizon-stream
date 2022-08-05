@@ -12,15 +12,18 @@
     <inceptionYear>2022</inceptionYear>
 
     <modules>
-
-        <module>model</module>
         <module>plugins</module>
+        <module>model</module>
     </modules>
 
     <properties>
-<!--        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
-<!--        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>-->
-<!--        <dropwizard.metrics.version>3.1.2</dropwizard.metrics.version>-->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <java.version>11</java.version>
+
+        <!--        <dropwizard.metrics.version>3.1.2</dropwizard.metrics.version>-->
 <!--        <activemq.version>5.17.1</activemq.version>-->
 <!--        <aries.jax.rs.whiteboard.version>2.0.1</aries.jax.rs.whiteboard.version>-->
 <!--        <aries.jpa.api.version>2.7.3</aries.jpa.api.version>-->
