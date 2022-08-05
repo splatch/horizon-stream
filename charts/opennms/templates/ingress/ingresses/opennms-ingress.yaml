@@ -4,7 +4,7 @@ metadata:
   name: opennms-ingress
   namespace: {{ .Values.Namespace }}
 spec:
-  ingressClassName: ingress-nginx-{{ .Values.Namespace }}
+  ingressClassName: nginx
   rules:
     - host: {{ .Values.Host }}
       http:

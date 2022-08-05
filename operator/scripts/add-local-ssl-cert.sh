@@ -19,7 +19,10 @@ echo
 
 mkdir tmp
 
-openssl req -subj "/CN=onmshs/O=Test Keycloak./C=US" -newkey rsa:2048 -nodes -keyout tmp/key.pem -x509 -days 365 -out tmp/certificate.pem
+openssl genrsa -out tmp/ca.key
+openssl req -new -x509 -days 365 -key tmp/ca.key -subj "/CN=onmshs/O=Test Keycloak./C=US" -out tmp/ca.crt
+openssl req -newkey rsa:2048 -nodes -keyout tmp/server.key -subj "/CN=onmshs/O=Test Keycloak./C=US" -out tmp/server.csr
+openssl x509 -req -extfile <(printf "subjectAltName=DNS:onmshs") -days 365 -in tmp/server.csr -CA tmp/ca.crt -CAkey tmp/ca.key -CAcreateserial -out tmp/server.crt
 if [ $? -ne 0 ]; then exit; fi
-kubectl -n local-instance create secret tls tls-cert-wildcard --cert tmp/certificate.pem --key tmp/key.pem
+kubectl -n local-instance create secret tls tls-cert-wildcard --cert tmp/server.crt --key tmp/server.key
 if [ $? -ne 0 ]; then exit; fi
