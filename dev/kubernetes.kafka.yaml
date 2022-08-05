@@ -676,6 +676,10 @@ spec:
               value: "kafka:9092"
           ports:
             - containerPort: 8080
+      initContainers:
+        - name: notifications-wait-for-kafka
+          image: busybox:1.28
+          command:  ["sh", "-c", "until nc -z kafka 9092 > /dev/null; do echo 'Waiting for kafka:9092 to become available...'; sleep 2; done;"]
 ---
 apiVersion: apps/v1
 kind: Deployment
