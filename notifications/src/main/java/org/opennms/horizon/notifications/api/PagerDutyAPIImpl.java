@@ -31,10 +31,12 @@ package org.opennms.horizon.notifications.api;
 import java.net.URI;
 import java.time.Instant;
 
+import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.api.dto.PagerDutyCustomDetailsDTO;
 import org.opennms.horizon.notifications.api.dto.PagerDutyEventDTO;
 import org.opennms.horizon.notifications.api.dto.PagerDutyPayloadDTO;
 import org.opennms.horizon.notifications.dto.NotificationDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -48,6 +50,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class PagerDutyAPIImpl implements PagerDutyAPI {
 
+    @Autowired
+    PagerDutyDao pagerDutyDao;
+
     @Override
     public String postNotification(NotificationDTO notification) throws Exception {
         String event = getEvent(notification);
@@ -55,7 +60,7 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
 
         String baseUrl = "https://events.pagerduty.com/v2/enqueue";
         URI uri = new URI(baseUrl);
-        String token = getPagerDutyAuthToken();
+        String token = getAuthToken();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Token token="+token);
@@ -74,12 +79,19 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
         return "";
     }
 
-    private String getPagerDutyAuthToken() {
-        return "HARDCODED";
+    public String getAuthToken() {
+        PagerDutyConfigDTO config = pagerDutyDao.getConfig();
+        return config.getToken();
+    }
+
+    @Override
+    public void initConfig(PagerDutyConfigDTO config) {
+        pagerDutyDao.initConfig(config);
     }
 
     private String getPagerDutyIntegrationKey() {
-        return "HARDCODED";
+        PagerDutyConfigDTO config = pagerDutyDao.getConfig();
+        return config.getIntegrationkey();
     }
 
     private String getEvent(NotificationDTO notification) throws JsonProcessingException {

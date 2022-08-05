@@ -26,31 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.config;
 
-import org.opennms.horizon.notifications.api.PagerDutyAPI;
-import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.dto.NotificationDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import javax.sql.DataSource;
 
-@Service
-public class NotificationServiceImpl implements NotificationService {
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-    @Autowired
-    private PagerDutyAPI pagerDutyAPI;
-
-    public String getPagerDutyKey() throws Exception {
-        return pagerDutyAPI.getAuthToken();
-    }
-
-    @Override
-    public String postNotification(NotificationDTO notification) throws Exception {
-        return pagerDutyAPI.postNotification(notification);
-    }
-
-    @Override
-    public void postPagerDutyConfig(PagerDutyConfigDTO config) throws Exception {
-        pagerDutyAPI.initConfig(config);
+@Configuration
+public class JpaConfig {
+    @Bean
+    public DataSource getDataSource()
+    {
+        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.url("jdbc:postgresql://postgres:5432/pagerduty");
+        dataSourceBuilder.username("pagerduty");
+        dataSourceBuilder.password("passw0rd");
+        return dataSourceBuilder.build();
     }
 }

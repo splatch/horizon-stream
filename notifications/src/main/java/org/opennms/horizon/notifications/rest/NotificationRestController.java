@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.notifications.rest;
 
+import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.dto.NotificationDTO;
 import org.opennms.horizon.notifications.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class NotificationRestController {
     private NotificationService notificationsService;
 
     @GetMapping("/pagerDutyKey")
-    public ResponseEntity<String> getPagerDutyKey() {
+    public ResponseEntity<String> getPagerDutyKey() throws Exception {
         String key = notificationsService.getPagerDutyKey();
         return new ResponseEntity<>(key, HttpStatus.OK);
     }
@@ -56,5 +57,11 @@ public class NotificationRestController {
     public ResponseEntity<String> postNotification(@RequestBody NotificationDTO notification) throws Exception {
         String key = notificationsService.postNotification(notification);
         return new ResponseEntity<>(key, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/config", consumes="application/json")
+    public ResponseEntity<String> postPagerDutyConfig(@RequestBody PagerDutyConfigDTO config) throws Exception {
+        notificationsService.postPagerDutyConfig(config);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 }

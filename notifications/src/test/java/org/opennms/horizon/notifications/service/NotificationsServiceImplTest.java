@@ -50,9 +50,10 @@ public class NotificationsServiceImplTest {
 
     @Test
     public void testGetPagerDutyKey() throws Exception {
+        Mockito.when(pagerDutyAPI.getAuthToken()).thenReturn("ABCDE");
         String ret = notificationService.getPagerDutyKey();
 
-        assertEquals("ABCD", ret);
+        assertEquals("ABCDE", ret);
     }
 
     @Test

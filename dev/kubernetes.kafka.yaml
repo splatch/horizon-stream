@@ -477,6 +477,9 @@ spec:
         - name: postgres-keycloak-initial-script
           configMap:
             name: postgres-keycloak-initial-sql
+        - name: postgres-pagerduty-initial-script
+          configMap:
+            name: postgres-pagerduty-initial-sql
       containers:
         - name: postgres
           image: postgres:13.3-alpine
@@ -504,6 +507,9 @@ spec:
             - mountPath: "/docker-entrypoint-initdb.d/postgres.keycloak.initial.script.sql"
               name: postgres-keycloak-initial-script
               subPath: "postgres.keycloak.initial.script.sql"
+            - mountPath: "/docker-entrypoint-initdb.d/postgres.pagerduty.initial.script.sql"
+              name: postgres-pagerduty-initial-script
+              subPath: "postgres.pagerduty.initial.script.sql"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -814,6 +820,16 @@ data:
     CREATE USER keycloak with password 'passw0rd';
     CREATE DATABASE keycloak;
     GRANT ALL ON DATABASE keycloak TO keycloak;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-pagerduty-initial-sql
+data:
+  postgres.pagerduty.initial.script.sql: |
+    CREATE USER pagerduty with password 'passw0rd';
+    CREATE DATABASE pagerduty;
+    GRANT ALL ON DATABASE pagerduty TO pagerduty;
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -45,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.dto.NotificationDTO;
 import org.opennms.horizon.notifications.service.NotificationService;
 >>>>>>> ca199ed0 (changed the interface name to keep consistency)
@@ -92,10 +93,28 @@ public class NotificationRestControllerTest {
             .andExpect(status().isOk());
     }
 
+    @Test
+    public void testInitConfig() throws Exception {
+        String content = getConfig();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(post("/notifications/config").headers(headers).content(content))
+            .andDo(print())
+            .andExpect(status().isOk());
+    }
+
     private String getNotification() throws JsonProcessingException {
         NotificationDTO dto = new NotificationDTO();
         dto.setMessage("Message");
         dto.setDedupKey("dedup");
+
+        ObjectMapper om = new ObjectMapper();
+        return om.writeValueAsString(dto);
+    }
+
+    private String getConfig() throws JsonProcessingException {
+        PagerDutyConfigDTO dto = new PagerDutyConfigDTO("token", "integration");
 
         ObjectMapper om = new ObjectMapper();
         return om.writeValueAsString(dto);

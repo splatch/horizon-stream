@@ -26,31 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.api;
 
-import org.opennms.horizon.notifications.api.PagerDutyAPI;
 import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.dto.NotificationDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class NotificationServiceImpl implements NotificationService {
-
-    @Autowired
-    private PagerDutyAPI pagerDutyAPI;
-
-    public String getPagerDutyKey() throws Exception {
-        return pagerDutyAPI.getAuthToken();
-    }
-
-    @Override
-    public String postNotification(NotificationDTO notification) throws Exception {
-        return pagerDutyAPI.postNotification(notification);
-    }
-
-    @Override
-    public void postPagerDutyConfig(PagerDutyConfigDTO config) throws Exception {
-        pagerDutyAPI.initConfig(config);
-    }
+public interface PagerDutyDao {
+    PagerDutyConfigDTO getConfig();
+    void initConfig(PagerDutyConfigDTO config);
 }
