@@ -43,10 +43,6 @@ public class MinionDTO {
 
     private Date lastUpdated;
 
-    private double latency;
-
-    private double upTime;
-
     public String getId() {
         return id;
     }
@@ -87,32 +83,17 @@ public class MinionDTO {
         this.lastUpdated = lastUpdated;
     }
 
-    public double getLatency() {
-        return latency;
-    }
-
-    public void setLatency(double latency) {
-        this.latency = latency;
-    }
-
-    public double getUpTime() {
-        return upTime;
-    }
-
-    public void setUpTime(double upTime) {
-        this.upTime = upTime;
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof MinionDTO)) return false;
         MinionDTO minionDTO = (MinionDTO) o;
-        return Double.compare(minionDTO.latency, latency) == 0 && Double.compare(minionDTO.upTime, upTime) == 0 && Objects.equals(id, minionDTO.id) && Objects.equals(label, minionDTO.label) && Objects.equals(location, minionDTO.location) && Objects.equals(status, minionDTO.status) && Objects.equals(lastUpdated, minionDTO.lastUpdated);
+        return Objects.equals(id, minionDTO.id) && Objects.equals(label, minionDTO.label) && Objects.equals(location, minionDTO.location) && Objects.equals(status, minionDTO.status) && Objects.equals(lastUpdated, minionDTO.lastUpdated);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, label, location, status, lastUpdated, latency, upTime);
+        return Objects.hash(id, label, location, status, lastUpdated);
     }
 }
