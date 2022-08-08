@@ -18,6 +18,7 @@
         <module>minion-grpc</module>
         <module>minion-metrics</module>
         <module>scheduler</module>
+        <module>ignite-worker</module>
     </modules>
 
     <properties>
