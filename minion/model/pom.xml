@@ -10,9 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>model</artifactId>
-
     <packaging>bundle</packaging>
-
     <name>OpenNms Horizon :: Minion :: Model</name>
 
     <description>Model for Minion</description>

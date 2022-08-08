@@ -9,6 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <packaging>bundle</packaging>
     <artifactId>whiteboard-core</artifactId>
     <name>OpenNms Horizon :: Minion :: gRPC :: Whiteboard :: Core</name>
 

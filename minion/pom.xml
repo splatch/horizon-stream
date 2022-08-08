@@ -17,9 +17,12 @@
         <module>ipc</module>
         <module>minion-grpc</module>
         <module>minion-metrics</module>
+        <module>scheduler</module>
     </modules>
 
     <properties>
+        <skipUTs>false</skipUTs>
+        <skipITs>false</skipITs>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>11</maven.compiler.source>
@@ -297,11 +300,6 @@
                 <artifactId>metrics-core</artifactId>
                 <version>${dropwizard-metrics.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.dropwizard.metrics</groupId>
-                <artifactId>metrics-core</artifactId>
-                <version>${dropwizard-metrics.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>junit</groupId>
@@ -455,6 +453,7 @@
                             <version>2.10.0</version>
                         </palantirJavaFormat>
                         <licenseHeader>
+<!--                            //TODO: Where is this defined at?-->
                             <file>${maven.multiModuleProjectDirectory}/spotless/header-java.txt</file>
                         </licenseHeader>
                     </java>
