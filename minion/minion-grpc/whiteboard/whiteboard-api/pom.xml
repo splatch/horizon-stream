@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>whiteboard-api</artifactId>
-    <name>OpenNMS Horizon :: Minion :: gRPC :: Whiteboard :: API</name>
+    <name>OpenNms Horizon :: Minion :: gRPC :: Whiteboard :: Api</name>
     <description>API for gRPC receivers.</description>
 
 </project>

@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>twin-common</artifactId>
-    <name>OpenNms Horizon :: Minion :: IPC  :: TWIN :: COMMON</name>
+    <name>OpenNms Horizon :: Minion :: Ipc  :: Twin :: Common</name>
     <packaging>bundle</packaging>
 
     <dependencies>

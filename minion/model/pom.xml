@@ -13,7 +13,7 @@
 
     <packaging>bundle</packaging>
 
-    <name>OpenNms Horizon :: Minion :: MODEL</name>
+    <name>OpenNms Horizon :: Minion :: Model</name>
 
     <description>Model for Minion</description>
 

@@ -12,7 +12,7 @@
     <artifactId>twin-api</artifactId>
     <packaging>bundle</packaging>
 
-    <name>OpenNms Horizon :: Minion :: IPC  :: TWIN :: API</name>
+    <name>OpenNms Horizon :: Minion :: Ipc  :: Twin :: Api</name>
 
     <dependencies>
         <dependency>

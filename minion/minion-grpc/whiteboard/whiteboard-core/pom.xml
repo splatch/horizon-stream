@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>whiteboard-core</artifactId>
-    <name>OpenNMS Horizon :: Minion :: gRPC :: Whiteboard :: Core</name>
+    <name>OpenNms Horizon :: Minion :: gRPC :: Whiteboard :: Core</name>
 
     <dependencies>
         <dependency>

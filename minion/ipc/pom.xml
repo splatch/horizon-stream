@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
 
     <artifactId>ipc</artifactId>
-    <name>OpenNms Horizon :: Minion :: IPC</name>
+    <name>OpenNms Horizon :: Minion :: Ipc</name>
 
     <modules>
         <module>ipc-api</module>

@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>client</artifactId>
-    <name>OpenNms Horizon :: Minion :: IPC  :: GRPC :: CLIENT</name>
+    <name>OpenNms Horizon :: Minion :: Ipc  :: gRPC :: Client</name>
 
     <packaging>bundle</packaging>
     

@@ -12,7 +12,7 @@
     <artifactId>minion-grpc</artifactId>
     <packaging>pom</packaging>
 
-    <name>OpenNMS Horizon :: Minion :: gRPC</name>
+    <name>OpenNms Horizon :: Minion :: gRPC</name>
     <modules>
         <module>whiteboard</module>
         <module>workflow</module>

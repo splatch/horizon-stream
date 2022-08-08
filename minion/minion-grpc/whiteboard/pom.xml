@@ -11,7 +11,7 @@
 
     <artifactId>whiteboard</artifactId>
     <packaging>pom</packaging>
-    <name>OpenNMS Horizon :: Minion :: gRPC :: Whiteboard</name>
+    <name>OpenNms Horizon :: Minion :: gRPC :: Whiteboard</name>
 
     <modules>
         <module>whiteboard-api</module>

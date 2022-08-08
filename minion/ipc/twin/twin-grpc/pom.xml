@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>twin-grpc</artifactId>
-    <name>OpenNms Horizon :: Minion :: IPC  :: TWIN :: GRPC</name>
+    <name>OpenNms Horizon :: Minion :: Ipc  :: Twin :: gRPC</name>
 
     <packaging>pom</packaging>
     <modules>
