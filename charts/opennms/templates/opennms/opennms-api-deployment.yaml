@@ -44,7 +44,7 @@ spec:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://{{ .Values.Postgres.ServiceName }}:5432/horizon_stream"
             - name: KEYCLOAK_AUTH_SERVER_URL
-              value: "http://{{ .Values.Keycloak.ServiceName }}:8080"
+              value: "http://{{ .Values.Keycloak.ServiceName }}:{{ .Values.Keycloak.Port }}"
             - name: KEYCLOAK_RESOURCE
               value: "horizon-stream"
             - name: KEYCLOAK_PUBLIC_CLIENT

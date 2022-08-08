@@ -44,6 +44,7 @@ Postgres:
   VolumeSize: 10Gi
 Keycloak:
   Path: /auth
+  Port: 7800
   ServiceName: onms-keycloak
   AdminUsername: keycloak-admin
   AdminPassword: notset

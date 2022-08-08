@@ -22,7 +22,7 @@ spec:
               service:
                 name: {{ .Values.Keycloak.ServiceName }}-discovery
                 port:
-                  number: 8080
+                  number: {{ .Values.Keycloak.Port }}
           - path: /karaf
             pathType: Prefix
             backend:
