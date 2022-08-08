@@ -10,22 +10,22 @@
     </cm:default-properties>
   </cm:property-placeholder>
 
-  <camel:camelContext id="alertRoutingContext" allowUseOriginalMessage="false">
+  <camel:camelContext id="registrationRoutingContext" allowUseOriginalMessage="false">
     <camel:contextScan/>
     <camel:template id="registrationProducer" defaultEndpoint="{{routing.uri}}"/>
   </camel:camelContext>
 
   <reference id="messageDispatcherFactory" interface="org.opennms.horizon.ipc.sink.api.MessageDispatcherFactory" />
 
-  <bean id="alertingService" class = "org.opennms.poc.alerting.AlertingServiceImpl">
+  <bean id="registrationService" class = "org.opennms.poc.alerting.RegistrationServiceImpl">
     <argument ref="registrationProducer"/>
   </bean>
 
-  <bean id="minionRouting" class="org.opennms.poc.alerting.MinionRouting">
+  <bean id="pluginRegistrationRouting" class="org.opennms.poc.alerting.PluginRegistrationRouting">
     <argument value="${routing.uri}"/>
     <argument ref="messageDispatcherFactory"/>
   </bean>
 
-  <service ref="alertingService" interface="org.opennms.poc.alerting.AlertingService"/>
+  <service ref="registrationService" interface="org.opennms.poc.alerting.RegistrationService"/>
 
 </blueprint>

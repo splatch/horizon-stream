@@ -5,7 +5,7 @@ import org.apache.camel.ProducerTemplate;
 import org.opennms.poc.ignite.model.workflows.PluginMetadata;
 
 @AllArgsConstructor
-public class AlertingServiceImpl implements AlertingService {
+public class RegistrationServiceImpl implements RegistrationService {
     private final ProducerTemplate producerTemplate;
 
     @Override

@@ -2,7 +2,7 @@ package org.opennms.poc.alerting;
 
 import org.opennms.poc.ignite.model.workflows.PluginMetadata;
 
-public interface AlertingService {
+public interface RegistrationService {
     void notifyOfPluginRegistration(PluginMetadata pluginMetadataJson);
 
 }

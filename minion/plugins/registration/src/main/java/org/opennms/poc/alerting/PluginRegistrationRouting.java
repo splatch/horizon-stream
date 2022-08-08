@@ -16,7 +16,7 @@ import org.opennms.poc.alerting.proto.PluginConfigMessage.PluginConfigMeta;
 import org.opennms.poc.ignite.model.workflows.PluginMetadata;
 
 @Slf4j
-public class MinionRouting extends RouteBuilder {
+public class PluginRegistrationRouting extends RouteBuilder {
 
     private final String routeUri;
     public static final String ROUTE_ID =  "MINION_REGISTRATION";
@@ -26,7 +26,7 @@ public class MinionRouting extends RouteBuilder {
     //TODO: make this configurable
     private final long someDelay=10000;
 
-    public MinionRouting(String uri, MessageDispatcherFactory messageDispatcherFactory) {
+    public PluginRegistrationRouting(String uri, MessageDispatcherFactory messageDispatcherFactory) {
         this.routeUri = uri;
         dispatcher = messageDispatcherFactory.createSyncDispatcher(new PluginConfigSinkModule());
     }
