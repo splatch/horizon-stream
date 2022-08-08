@@ -41,10 +41,9 @@
             <artifactId>model</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        //TODO: fix this-->
         <dependency>
-            <groupId>org.opennms.poc</groupId>
-            <artifactId>metrics</artifactId>
+            <groupId>org.opennms.horizon.minion</groupId>
+            <artifactId>minion-metrics</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

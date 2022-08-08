@@ -16,6 +16,7 @@
         <module>model</module>
         <module>ipc</module>
         <module>minion-grpc</module>
+        <module>minion-metrics</module>
     </modules>
 
     <properties>
