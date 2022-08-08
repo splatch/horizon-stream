@@ -19,14 +19,10 @@ runs:
         # Create the docker image.
         docker build -t opennms/horizon-stream-keycloak:local -f ./Dockerfile .
       shell: bash
-    
-    - name: dockerhub-login
-      run: |
-        echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
-      shell: bash
 
     - name: publish-image-keycloak-ui
       run: |
+        echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
         docker tag opennms/horizon-stream-keycloak:local opennms/horizon-stream-keycloak:test
 
         docker push opennms/horizon-stream-keycloak:test
