@@ -1,4 +1,4 @@
-#Builder
+#Builder 1
 FROM quay.io/keycloak/keycloak:19.0.1 as builder
 
 ENV KC_HEALTH_ENABLED=true
