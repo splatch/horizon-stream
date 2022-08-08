@@ -29,3 +29,12 @@ jobs:
         uses: ./.github/actions/keycloak-ui
         with:
           dir-location: 'keycloak-ui'
+
+      - name: publish-image-keycloak-ui
+        run: |
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+
+          docker tag opennms/horizon-stream-keycloak:local opennms/horizon-stream-keycloak:test
+  
+          docker push opennms/horizon-stream-keycloak:test
+        shell: bash
