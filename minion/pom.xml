@@ -15,6 +15,7 @@
         <module>plugins</module>
         <module>model</module>
         <module>ipc</module>
+        <module>minion-grpc</module>
     </modules>
 
     <properties>

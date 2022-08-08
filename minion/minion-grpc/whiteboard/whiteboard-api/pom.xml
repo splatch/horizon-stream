@@ -3,20 +3,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>ipc</artifactId>
+        <artifactId>whiteboard</artifactId>
         <groupId>org.opennms.horizon.minion</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <name>OpenNms Horizon :: Minion :: IPC  :: TWIN</name>
 
-    <artifactId>twin</artifactId>
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>twin-api</module>
-        <module>twin-common</module>
-        <module>twin-grpc</module>
-    </modules>
+    <artifactId>whiteboard-api</artifactId>
+    <name>OpenNMS Horizon :: Minion :: gRPC :: Whiteboard :: API</name>
+    <description>API for gRPC receivers.</description>
 
 </project>

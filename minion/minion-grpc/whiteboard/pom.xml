@@ -3,20 +3,24 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>ipc</artifactId>
+        <artifactId>minion-grpc</artifactId>
         <groupId>org.opennms.horizon.minion</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <name>OpenNms Horizon :: Minion :: IPC  :: TWIN</name>
 
-    <artifactId>twin</artifactId>
+    <artifactId>whiteboard</artifactId>
     <packaging>pom</packaging>
+    <name>OpenNMS Horizon :: Minion :: gRPC :: Whiteboard</name>
 
     <modules>
-        <module>twin-api</module>
-        <module>twin-common</module>
-        <module>twin-grpc</module>
+        <module>whiteboard-api</module>
+        <module>whiteboard-core</module>
     </modules>
+
+    <properties>
+        <maven.compiler.source>18</maven.compiler.source>
+        <maven.compiler.target>18</maven.compiler.target>
+    </properties>
 
 </project>
