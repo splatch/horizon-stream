@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>ipc-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
