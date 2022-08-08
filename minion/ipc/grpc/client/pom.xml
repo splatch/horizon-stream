@@ -12,12 +12,6 @@
     <artifactId>client</artifactId>
     <name>OpenNms Horizon :: Minion :: IPC  :: GRPC :: CLIENT</name>
 
-
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
-
     <packaging>bundle</packaging>
     
     <description>Client side of gRPC.</description>
