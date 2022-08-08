@@ -14,6 +14,8 @@ spec:
   serverConfiguration:
     - name: db-url-host
       value: {{ .Values.Postgres.ServiceName }}
+    - name: http-relative-path
+      value: {{ .Values.Keycloak.Path }}
     - name: db-username
       secret:
         name: postgres
@@ -22,3 +24,7 @@ spec:
       secret:
         name: postgres
         key: keycloakPwd
+    - name: hostname-strict
+      value: "false"
+    - name: hostname-strict-backchannel
+      value: "true"

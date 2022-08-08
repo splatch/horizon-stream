@@ -25,7 +25,7 @@ OpenNMS:
         Cpu: 1
         Memory: 1Gi
   UI:
-    Path: /
+    Path: /ui
     ServiceName: opennms-ui
     Image: opennms/horizon-stream-ui
     Resources:
@@ -43,8 +43,8 @@ Postgres:
   KeycloakPassword: notset
   VolumeSize: 10Gi
 Keycloak:
-  Path: /auth
-  Port: 7800
+  Path: /
+  Port: 8443
   ServiceName: onms-keycloak
   AdminUsername: keycloak-admin
   AdminPassword: notset

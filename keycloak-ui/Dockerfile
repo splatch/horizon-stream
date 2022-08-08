@@ -11,7 +11,7 @@ USER 0
 RUN microdnf install tar # allows for Skaffold file sync
 
 RUN curl -sL https://github.com/aerogear/keycloak-metrics-spi/releases/download/2.5.3/keycloak-metrics-spi-2.5.3.jar -o /opt/keycloak/providers/keycloak-metrics-spi-2.5.3.jar
-RUN /opt/keycloak/bin/kc.sh build --db=postgres
+RUN /opt/keycloak/bin/kc.sh build --db=postgres --health-enabled=false
 
 WORKDIR /opt/keycloak
 
