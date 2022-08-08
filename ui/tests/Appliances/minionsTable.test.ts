@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import MinionsTable from '@/components/Appliances/MinionsTable.vue'
-import minionsQueriesStore from '../store/minionsQueries'
+import applianceQueriesStore from '../store/applianceQueries'
 
 describe('MinionsTable.vue', () => {
   describe('Required columns', () => {
@@ -25,7 +25,7 @@ describe('MinionsTable.vue', () => {
           location: 'default'
         }
       ] 
-      minionsQueriesStore(computed(() => minionsItems))
+      applianceQueriesStore(undefined, computed(() => minionsItems))
     })
 
     const requiredColumns = [
@@ -46,7 +46,7 @@ describe('MinionsTable.vue', () => {
     
   describe('Minions list', () => {
     it('should have an empty table when there\'s no minion', () =>{
-      minionsQueriesStore(computed(() => []))
+      applianceQueriesStore(undefined, computed(() => []))
       const wrapper = mount(MinionsTable)
         
       const minionItem = wrapper.find('[data-test="minion-item"]')
@@ -74,7 +74,7 @@ describe('MinionsTable.vue', () => {
           location: 'default'
         }
       ] 
-      minionsQueriesStore(computed(() => minionsItems))
+      applianceQueriesStore(undefined, computed(() => minionsItems))
       const wrapper = mount(MinionsTable)
       
       const minionItem = wrapper.find('[data-test="minion-item"]')
@@ -114,7 +114,7 @@ describe('MinionsTable.vue', () => {
             location: 'default'
           }
         ] 
-        minionsQueriesStore(computed(() => minionsItems))
+        applianceQueriesStore(undefined, computed(() => minionsItems))
       })
   
       /**
@@ -177,7 +177,7 @@ describe('MinionsTable.vue', () => {
             location: 'default'
           }
         ] 
-        minionsQueriesStore(computed(() => minionsItems)) 
+        applianceQueriesStore(undefined, computed(() => minionsItems)) 
       })
   
       /**

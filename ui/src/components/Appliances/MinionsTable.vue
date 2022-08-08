@@ -3,7 +3,7 @@
     <TableCard v-if="appliancesStore.minionsTableOpen">
       <div class="header">
         <div class="title">
-          Minions ({{ minionsQueries.listMinions.length }})
+          Minions ({{ applianceQueries.tableMinions.length }})
         </div>
         <FeatherButton 
           data-test="hide-minions-btn"
@@ -44,14 +44,14 @@
 </template>
 
 <script setup lang="ts">
-import { useMinionsQueries } from '@/store/Queries/minionsQueries'
+import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import { formatItemBgColor } from '@/helpers/formatting'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 
 const appliancesStore = useAppliancesStore()
-const minionsQueries = useMinionsQueries()
-const listMinionsWithBgColor = computed(() => formatItemBgColor(minionsQueries.listMinions))
+const applianceQueries = useApplianceQueries()
+const listMinionsWithBgColor = computed(() => formatItemBgColor(applianceQueries.tableMinions))
 </script>
 
 <style lang="scss" scoped>

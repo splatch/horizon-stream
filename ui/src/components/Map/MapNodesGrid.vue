@@ -38,7 +38,7 @@
             @sort-changed="sortChanged"
           >LABEL SOURCE</FeatherSortHeader>
 
-          <FeatherSortHeader
+          <!-- <FeatherSortHeader
             scope="col"
             property="lastCapabilitiesScan"
             :sort="sortStates.lastCapabilitiesScan"
@@ -50,7 +50,7 @@
             property="primaryInterface"
             :sort="sortStates.primaryInterface"
             @sort-changed="sortChanged"
-          >PRIMARY INTERFACE</FeatherSortHeader>
+          >PRIMARY INTERFACE</FeatherSortHeader> -->
 
           <FeatherSortHeader
             scope="col"
@@ -89,19 +89,19 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="node in nodes" :key="node.id" @dblclick="doubleClickHandler(node)">
-          <td class="first-td" :class="nodeLabelAlarmServerityMap[node.label]">{{ node.id }}</td>
-          <td>{{ node.foreignSource }}</td>
-          <td>{{ node.foreignId }}</td>
-          <td>{{ node.label }}</td>
-          <td>{{ node.labelSource }}</td>
-          <td v-date>{{ node.lastCapabilitiesScan }}</td>
-          <td>{{ node.primaryInterface }}</td>
-          <td>{{ node.sysObjectId }}</td>
-          <td>{{ node.sysName }}</td>
-          <td>{{ node.sysDescription }}</td>
-          <td>{{ node.sysContact }}</td>
-          <td>{{ node.sysLocation }}</td>
+        <tr v-for="device in geomapQueries.devicesForGeomap" :key="(device?.id as number)" @dblclick="doubleClickHandler(device as Partial<DeviceDto>)">
+          <td class="first-td" :class="nodeLabelAlarmServerityMap[device?.label as string]">{{ device?.id }}</td>
+          <td>{{ device?.foreignSource }}</td>
+          <td>{{ device?.foreignId }}</td>
+          <td>{{ device?.label }}</td>
+          <td>{{ device?.labelSource }}</td>
+          <!-- <td v-date>{{ device?.lastCapabilitiesScan }}</td> -->
+          <!-- <td>{{ device?.primaryInterface }}</td> -->
+          <td>{{ device?.sysOid }}</td>
+          <td>{{ device?.sysName }}</td>
+          <td>{{ device?.sysDescription }}</td>
+          <td>{{ device?.sysContact }}</td>
+          <td>{{ device?.sysLocation }}</td>
         </tr>
       </tbody>
     </table>
@@ -109,16 +109,20 @@
 </template>
 <script setup lang="ts">
 import { useMapStore } from '@/store/Views/mapStore'
-import { Coordinates, Node, FeatherSortObject } from '@/types/map'
+import { useGeomapQueries } from '@/store/Queries/geomapQueries'
+import { Coordinates, FeatherSortObject } from '@/types/map'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+import { DeviceDto } from '@/types/graphql';
 
 const mapStore = useMapStore()
-const nodes = computed<Node[]>(() => mapStore.fetchNodes)
+const geomapQueries = useGeomapQueries()
 const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap)
 
-const doubleClickHandler = (node: Node) => {
-  const coordinate: Coordinates = { latitude: node.assetRecord.latitude, longitude: node.assetRecord.longitude }
-  mapStore.mapCenter = coordinate
+const doubleClickHandler = (device: Partial<DeviceDto>) => {
+  if (device.location?.latitude && device.location.longitude) {
+    const coordinate: Coordinates = { latitude: device?.location?.latitude, longitude: device?.location?.longitude }
+    mapStore.mapCenter = coordinate
+  }
 }
 
 const sortStates: any = reactive({
