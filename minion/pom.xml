@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.opennms.horizon</groupId>
+    <groupId>org.opennms.horizon.minion</groupId>
     <artifactId>minion</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
@@ -15,13 +15,6 @@
         <module>plugins</module>
         <module>model</module>
         <module>ipc</module>
-        <module>ipc/api</module>
-        <module>ipc/echo</module>
-        <module>ipc/grpc</module>
-        <module>ipc/twin</module>
-        <module>ipc/twin/twin-api</module>
-        <module>ipc/twin/twin-common</module>
-        <module>ipc/twin/twin-grpc</module>
     </modules>
 
     <properties>

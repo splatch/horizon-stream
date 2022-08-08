@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>minion</artifactId>
-        <groupId>org.opennms.horizon</groupId>
+        <groupId>org.opennms.horizon.minion</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,6 +13,12 @@
     <artifactId>ipc</artifactId>
     <name>OpenNms Horizon :: Minion :: IPC</name>
 
+    <modules>
+        <module>ipc-api</module>
+        <module>echo</module>
+        <module>grpc</module>
+        <module>twin</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
