@@ -134,6 +134,7 @@
         <feature>java-native-access</feature>
         <feature>guava</feature>
         <feature>horizon-grpc</feature>
+        <feature>horizon-metrics-api</feature>
         <feature version="${jackson.version}">jackson</feature>
 
         <bundle>mvn:org.opennms.horizon.3rdparty/json-patch-osgi/${project.version}</bundle>
