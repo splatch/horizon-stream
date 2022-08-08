@@ -61,9 +61,6 @@ $breakpoint: 1024px;
 @media (max-width: $breakpoint) {
   .header-container {
     display: block;
-    .btns {
-      display: block;
-    }
   }
   .minions-device-container {
     display: block;

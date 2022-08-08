@@ -17,12 +17,14 @@
   lang="ts"
 >
 import { debounce } from 'lodash'
-import { useStore } from 'vuex'
+import { useMapStore } from '@/store/Views/mapStore'
+import { useSearchStore } from '@/store/Views/searchStore'
 import { FeatherAutocomplete } from '@featherds/autocomplete'
 
 const emit = defineEmits(['fly-to-node', 'set-bounding-box'])
 
-const store = useStore()
+const mapStore = useMapStore()
+const searchStore = useSearchStore()
 const searchStr = ref()
 const loading = ref(false)
 const defaultLabels = { noResults: 'Searching...' }
@@ -30,7 +32,7 @@ const labels = ref(defaultLabels)
 
 const selectItem: any = (items: { label: string }[]) => {
   const nodeLabels = items.map((item) => item.label)
-  store.dispatch('mapModule/setSearchedNodeLabels', nodeLabels)
+  mapStore.searchedNodeLabels = nodeLabels
   if (nodeLabels.length) {
     if (nodeLabels.length === 1) {
       // fly to last selected node
@@ -50,14 +52,14 @@ const resetLabelsAndSearch = (value: string) => {
 const search = debounce(async (value: string) => {
   if (!value) return
   loading.value = true
-  await store.dispatch('searchModule/search', value)
+  await searchStore.search(value)
   labels.value = { noResults: 'No results found' }
   loading.value = false
 }, 1000)
 
 const results = computed(() => {
-  if (store.state.searchModule.searchResults[0]) {
-    return store.state.searchModule.searchResults[0].results
+  if (searchStore.searchResults[0]) {
+    return searchStore.searchResults[0].results
   }
   return []
 })

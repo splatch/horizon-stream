@@ -15,8 +15,8 @@
           max-size="100"
           :size="72"
         >
-          <DrawerBtn />
-          <TopologyLeftDrawer>
+          <!-- <DrawerBtn /> -->
+          <!-- <TopologyLeftDrawer>
             <template v-slot:search>
               <TopologySearch v-if="isTopologyView" />
               <MapSearch
@@ -29,11 +29,10 @@
             <template v-slot:view>
               <ViewSelect />
             </template>
-          </TopologyLeftDrawer>
-          <Topology v-if="isTopologyView" />
+          </TopologyLeftDrawer> -->
+          <!-- <Topology v-if="isTopologyView" /> -->
           <LeafletMap
             v-if="nodesReady"
-            v-show="!isTopologyView"
             ref="leafletComponent"
           />
         </pane>
@@ -59,7 +58,6 @@ export default { name: 'MapKeepAlive' }
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import LeafletMap from '../components/Map/LeafletMap.vue'
@@ -74,8 +72,11 @@ import TopologySearch from '@/components/Topology/TopologySearch.vue'
 import MapSearch from '@/components/Map/MapSearch.vue'
 import DrawerBtn from '@/components/Topology/DrawerBtn.vue'
 import { useTopologyStore } from '@/store/Views/topologyStore'
+import { useLayoutStore } from '@/store/Views/layoutStore'
+import { useMapStore } from '@/store/Views/mapStore'
 
-const store = useStore()
+const layoutStore = useLayoutStore()
+const mapStore = useMapStore()
 const topologyStore = useTopologyStore()
 const { startSpinner, stopSpinner } = useSpinner()
 const split = ref()
@@ -105,17 +106,17 @@ const setBoundingBox = (nodeLabels: string[]) => leafletComponent.value.setBound
 
 onMounted(async () => {
   startSpinner()
-  await store.dispatch('mapModule/getNodes')
-  await store.dispatch('mapModule/getAlarms')
+  mapStore.fetchNodes
+  mapStore.fetchAlarms
   stopSpinner()
   resize()
   nodesReady.value = true
   topologyStore.getVerticesAndEdges()
 })
 
-onActivated(() => store.dispatch('appModule/setNavRailOpen', false))
+onActivated(() => layoutStore.setNavRailOpen(false))
 onDeactivated(() => {
-  store.dispatch('appModule/setNavRailOpen', true)
+  layoutStore.setNavRailOpen(true)
   topologyStore.setSelectedView(ViewType.map)
   topologyStore.setSelectedDisplay(DisplayType.nodes)
 })
@@ -141,6 +142,10 @@ onDeactivated(() => {
   .splitpanes__splitter::before {
     background: var($primary-text-on-surface) !important;
   }
+}
+
+.feather-col-12 {
+  padding: 0
 }
 </style>
 
