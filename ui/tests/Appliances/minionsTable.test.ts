@@ -10,8 +10,8 @@ describe('MinionsTable.vue', () => {
           id: '1',
           date: 'date1',
           label: 'minion1',
-          icmp_latency: 'OK',
-          snmp_uptime: 'OK',
+          icmp_latency: 5,
+          snmp_uptime: 5,
           status: 'UP',
           location: 'default'
         }, 
@@ -19,8 +19,8 @@ describe('MinionsTable.vue', () => {
           id: '2',
           date: 'date2',
           label: 'minion2',
-          icmp_latency: 'OK',
-          snmp_uptime: 'OK',
+          icmp_latency: 5,
+          snmp_uptime: 5,
           status: 'DOWN',
           location: 'default'
         }
@@ -59,8 +59,8 @@ describe('MinionsTable.vue', () => {
           id: '1',
           date: 'date1',
           label: 'minion1',
-          icmp_latency: 'OK',
-          snmp_uptime: 'OK',
+          icmp_latency: 5,
+          snmp_uptime: 5,
           status: 'UP',
           location: 'default'
         }, 
@@ -68,8 +68,8 @@ describe('MinionsTable.vue', () => {
           id: '2',
           date: 'date2',
           label: 'minion2',
-          icmp_latency: 'OK',
-          snmp_uptime: 'OK',
+          icmp_latency: 5,
+          snmp_uptime: 5,
           status: 'DOWN',
           location: 'default'
         }
@@ -90,8 +90,8 @@ describe('MinionsTable.vue', () => {
             id: '1',
             date: 'date1',
             label: 'minion1',
-            icmp_latency: 'OK',
-            snmp_uptime: 'OK',
+            icmp_latency: 5,
+            snmp_uptime: 5,
             status: 'UP',
             location: 'default'
           }, 
@@ -99,8 +99,8 @@ describe('MinionsTable.vue', () => {
             id: '2',
             date: 'date2',
             label: 'minion2',
-            icmp_latency: 'FAILED',
-            snmp_uptime: 'FAILED',
+            icmp_latency: 2000,
+            snmp_uptime: 0,
             status: 'DOWN',
             location: 'default'
           }, 
@@ -108,8 +108,8 @@ describe('MinionsTable.vue', () => {
             id: '3',
             date: 'date3',
             label: 'minion3',
-            icmp_latency: 'UNKNOWN',
-            snmp_uptime: 'UNKNOWN',
+            icmp_latency: undefined,
+            snmp_uptime: undefined,
             status: 'DOWN',
             location: 'default'
           }
@@ -162,8 +162,8 @@ describe('MinionsTable.vue', () => {
             id: '1',
             date: 'date1',
             label: 'minion1',
-            icmp_latency: 'OK',
-            snmp_uptime: 'OK',
+            icmp_latency: 5,
+            snmp_uptime: 5,
             status: 'UP',
             location: 'default'
           }, 
@@ -171,8 +171,8 @@ describe('MinionsTable.vue', () => {
             id: '2',
             date: 'date2',
             label: 'minion2',
-            icmp_latency: 'FAILED',
-            snmp_uptime: 'FAILED',
+            icmp_latency: 300,
+            snmp_uptime: 0,
             status: 'DOWN',
             location: 'default'
           }

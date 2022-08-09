@@ -1,6 +1,8 @@
 import { useQuery } from 'villus'
 import { defineStore } from 'pinia'
-import { ListDevicesForTableDocument, ListMinionsForTableDocument, ListMinionsAndDevicesForTablesDocument } from '@/types/graphql'
+import { ListDevicesForTableDocument, ListMinionsForTableDocument, ListMinionsAndDevicesForTablesDocument, ListMinionsForTableQuery } from '@/types/graphql'
+import { ExtendedMinionDTO } from '@/types/minion'
+import { Ref } from 'vue'
 
 export const useApplianceQueries = defineStore('applianceQueries', {
   state: () => {
@@ -24,7 +26,7 @@ export const useApplianceQueries = defineStore('applianceQueries', {
         query: ListMinionsForTableDocument
       })
 
-      tableMinions.value = minionsData.value?.listMinions?.minions || []
+      tableMinions.value = addMetricsToMinions(minionsData)
     }
 
 
@@ -33,9 +35,22 @@ export const useApplianceQueries = defineStore('applianceQueries', {
       query: ListMinionsAndDevicesForTablesDocument
     })
 
+    const addMetricsToMinions = (data: Ref<ListMinionsForTableQuery | null>)=> {
+      const minions = data.value?.listMinions?.minions as ExtendedMinionDTO[] || []
+      const minionLatency = data.value?.minionLatency?.data?.result?.[0]?.value?.[1] || 0
+      const minionUptime = data.value?.minionUptime?.data?.result?.[0]?.value?.[1] || 0
+
+      if(minions[0]) {
+        minions[0].icmp_latency = minionLatency
+        minions[0].snmp_uptime = minionUptime
+      }
+
+      return minions
+    }
+
     watchEffect(() => {
+      tableMinions.value = addMetricsToMinions(minionsAndDevices)
       tableDevices.value = minionsAndDevices.value?.listDevices?.devices || []
-      tableMinions.value = minionsAndDevices.value?.listMinions?.minions || []
     })
 
     return {
