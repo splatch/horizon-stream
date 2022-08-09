@@ -1,0 +1,38 @@
+import { mount } from '@vue/test-utils'
+import MapNodesGrid from '@/components/Map/MapNodesGrid.vue'
+import { createTestingPinia } from '@pinia/testing'
+import { createClient, VILLUS_CLIENT } from 'villus'
+
+let wrapper: any
+
+beforeEach(() => {
+  wrapper= mount(MapNodesGrid, {
+    global: {
+      plugins: [ createTestingPinia() ],
+      provide: {
+        [VILLUS_CLIENT as unknown as string]: createClient({
+          url: 'https://test/graphql'
+        })
+      }
+    }
+  })
+})
+
+const columns = [
+  [ 'ID', 'col-id' ],
+  [ 'FOREIGN SOURCE', 'col-foreign-source' ],
+  [ 'FOREIGN ID', 'col-foreign-id' ],
+  [ 'LABEL', 'col-label' ],
+  [ 'LABEL SOURCE', 'col-label-source' ],
+  [ 'LAST CAP SCAN', 'col-last-cap-scan' ],
+  [ 'PRIMARY INTERFACE', 'col-primary-interface' ],
+  [ 'SYSOBJECTID', 'col-sys-object-id' ],
+  [ 'SYSNAME', 'col-sys-name' ],
+  [ 'SYSDESCRIPTION', 'col-sys-description' ],
+  [ 'SYSCONTACT', 'col-sys-contact' ],
+  [ 'SYSLOCATION', 'col-sys-location' ]
+]
+it.each(columns)('should have %s column', (_, col) => {
+  const elem = wrapper.get(`[data-test="${col}"]`)
+  expect(elem.exists()).toBeTruthy()
+})

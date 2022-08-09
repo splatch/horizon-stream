@@ -8,6 +8,7 @@
             property="id"
             :sort="sortStates.id"
             @sort-changed="sortChanged"
+            data-test="col-id"
           >ID</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -15,6 +16,7 @@
             property="foreignSource"
             :sort="sortStates.foreignSource"
             @sort-changed="sortChanged"
+            data-test="col-foreign-source"
           >FOREIGN SOURCE</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -22,6 +24,7 @@
             property="foreignId"
             :sort="sortStates.foreignId"
             @sort-changed="sortChanged"
+            data-test="col-foreign-id"
           >FOREIGN ID</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -29,6 +32,7 @@
             property="label"
             :sort="sortStates.label"
             @sort-changed="sortChanged"
+            data-test="col-label"
           >LABEL</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -36,6 +40,7 @@
             property="labelSource"
             :sort="sortStates.labelSource"
             @sort-changed="sortChanged"
+            data-test="col-label-source"
           >LABEL SOURCE</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -43,6 +48,7 @@
             property="lastCapabilitiesScan"
             :sort="sortStates.lastCapabilitiesScan"
             @sort-changed="sortChanged"
+            data-test="col-last-cap-scan"
           >LAST CAP SCAN</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -50,6 +56,7 @@
             property="primaryInterface"
             :sort="sortStates.primaryInterface"
             @sort-changed="sortChanged"
+            data-test="col-primary-interface"
           >PRIMARY INTERFACE</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -57,6 +64,7 @@
             property="sysObjectId"
             :sort="sortStates.sysObjectId"
             @sort-changed="sortChanged"
+            data-test="col-sys-object-id"
           >SYSOBJECTID</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -64,6 +72,7 @@
             property="sysName"
             :sort="sortStates.sysName"
             @sort-changed="sortChanged"
+            data-test="col-sys-name"
           >SYSNAME</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -71,6 +80,7 @@
             property="sysDescription"
             :sort="sortStates.sysDescription"
             @sort-changed="sortChanged"
+            data-test="col-sys-description"
           >SYSDESCRIPTION</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -78,6 +88,7 @@
             property="sysContact"
             :sort="sortStates.sysContact"
             @sort-changed="sortChanged"
+            data-test="col-sys-contact"
           >SYSCONTACT</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -85,10 +96,11 @@
             property="sysLocation"
             :sort="sortStates.sysLocation"
             @sort-changed="sortChanged"
+            data-test="col-sys-location"
           >SYSLOCATION</FeatherSortHeader>
         </tr>
       </thead>
-      <tbody>
+      <tbody data-test="node-list">
         <tr v-for="node in nodes" :key="node.id" @dblclick="doubleClickHandler(node)">
           <td class="first-td" :class="nodeLabelAlarmServerityMap[node.label]">{{ node.id }}</td>
           <td>{{ node.foreignSource }}</td>
