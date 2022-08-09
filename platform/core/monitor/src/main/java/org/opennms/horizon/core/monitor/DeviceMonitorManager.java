@@ -62,13 +62,13 @@ public class DeviceMonitorManager implements EventListener {
     private static final String SYS_OBJECTID_INSTANCE = ".1.3.6.1.2.1.1.2.0";
     private static final Long INVALID_UP_TIME = -1L;
     private static final String DEFAULT_LOCATION = "Default";
-    private LocationAwarePingClient locationAwarePingClient;
-    private LocationAwareSnmpClient locationAwareSnmpClient;
+    private final LocationAwarePingClient locationAwarePingClient;
+    private final LocationAwareSnmpClient locationAwareSnmpClient;
     private final EventSubscriptionService eventSubscriptionService;
     private final NodeDao nodeDao;
     private final IpInterfaceDao ipInterfaceDao;
     private final SessionUtils sessionUtils;
-    private OnmsMetricsAdapter metricsAdapter;
+    private final OnmsMetricsAdapter metricsAdapter;
     private final List<OnmsNode> nodeCache = new ArrayList<>();
     private final ThreadFactory monitorThreadFactory = new ThreadFactoryBuilder()
         .setNameFormat("monitor-runner-%d")
@@ -80,11 +80,18 @@ public class DeviceMonitorManager implements EventListener {
 
     public DeviceMonitorManager(EventSubscriptionService eventSubscriptionService,
                                 NodeDao nodeDao,
-                                IpInterfaceDao ipInterfaceDao, SessionUtils sessionUtils) {
+                                IpInterfaceDao ipInterfaceDao,
+                                SessionUtils sessionUtils,
+                                LocationAwarePingClient locationAwarePingClient,
+                                LocationAwareSnmpClient locationAwareSnmpClient,
+                                OnmsMetricsAdapter metricsAdapter) {
         this.eventSubscriptionService = eventSubscriptionService;
         this.nodeDao = nodeDao;
         this.ipInterfaceDao = ipInterfaceDao;
         this.sessionUtils = sessionUtils;
+        this.locationAwarePingClient = locationAwarePingClient;
+        this.locationAwareSnmpClient = locationAwareSnmpClient;
+        this.metricsAdapter = metricsAdapter;
     }
 
     public void init() {
@@ -204,15 +211,4 @@ public class DeviceMonitorManager implements EventListener {
         scheduledThreadPoolExecutor.shutdown();
     }
 
-    public void setLocationAwarePingClient(LocationAwarePingClient locationAwarePingClient) {
-        this.locationAwarePingClient = locationAwarePingClient;
-    }
-
-    public void setLocationAwareSnmpClient(LocationAwareSnmpClient locationAwareSnmpClient) {
-        this.locationAwareSnmpClient = locationAwareSnmpClient;
-    }
-
-    public void setMetricsAdapter(OnmsMetricsAdapter metricsAdapter) {
-        this.metricsAdapter = metricsAdapter;
-    }
 }

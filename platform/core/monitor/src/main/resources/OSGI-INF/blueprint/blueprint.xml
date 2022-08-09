@@ -7,13 +7,13 @@
 
     <reference id="rpcClientFactory" interface="org.opennms.horizon.ipc.rpc.api.RpcClientFactory"/>
     <reference id="minionManager" interface="org.opennms.core.ipc.grpc.server.manager.MinionManager"/>
-    <reference id="metricsAdapter" interface="org.opennms.horizon.metrics.api.OnmsMetricsAdapter" availability="optional"/>
+    <reference id="metricsAdapter" interface="org.opennms.horizon.metrics.api.OnmsMetricsAdapter"/>
     <reference id="eventSubscriptionService" interface="org.opennms.horizon.events.api.EventSubscriptionService"/>
     <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils" />
     <reference id="nodeDao" interface="org.opennms.horizon.db.dao.api.NodeDao" />
     <reference id="ipInterfaceDao" interface="org.opennms.horizon.db.dao.api.IpInterfaceDao" />
-    <reference id="locationAwarePingClient" interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient" availability="optional"/>
-    <reference id="locationAwareSnmpClient" interface="org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient" availability="optional"/>
+    <reference id="locationAwarePingClient" interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"/>
+    <reference id="locationAwareSnmpClient" interface="org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient"/>
 
     <bean id="minionRpcMonitorManager" class="org.opennms.horizon.core.monitor.MinionRpcMonitorManager" init-method="init">
         <property name="rpcClientFactory" ref="rpcClientFactory"/>
@@ -37,8 +37,8 @@
         <argument ref="nodeDao"/>
         <argument ref="ipInterfaceDao"/>
         <argument ref="sessionUtils"/>
-        <property name="locationAwarePingClient" ref="locationAwarePingClient"/>
-        <property name="locationAwareSnmpClient" ref="locationAwareSnmpClient"/>
-        <property name="metricsAdapter" ref="metricsAdapter"/>
+        <argument ref="locationAwarePingClient"/>
+        <argument ref="locationAwareSnmpClient"/>
+        <argument ref="metricsAdapter"/>
     </bean>
 </blueprint>
