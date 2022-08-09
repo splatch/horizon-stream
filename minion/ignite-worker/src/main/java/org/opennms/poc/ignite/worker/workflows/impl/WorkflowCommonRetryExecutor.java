@@ -1,7 +1,7 @@
 package org.opennms.poc.ignite.worker.workflows.impl;
 
 import java.util.concurrent.TimeUnit;
-import org.opennms.poc.ignite.model.workflows.Workflow;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflow;
 import org.opennms.poc.ignite.worker.workflows.RetriableExecutor;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutionResultProcessor;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutorLocalService;

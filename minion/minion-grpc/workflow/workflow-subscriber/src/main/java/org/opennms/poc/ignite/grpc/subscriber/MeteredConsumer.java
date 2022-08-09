@@ -8,7 +8,7 @@ import com.codahale.metrics.MetricRegistry;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.opennms.horizon.core.identity.Identity;
-import org.opennms.poc.ignite.model.workflows.Results;
+import org.opennms.horizon.minion.ignite.model.workflows.Results;
 import org.opennms.poc.metrics.MetricsProvider;
 
 public class MeteredConsumer implements Consumer<Results>, MetricsProvider {

@@ -2,7 +2,7 @@ package org.opennms.poc.ignite.worker.workflows.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.opennms.poc.ignite.model.workflows.Workflow;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflow;
 import org.opennms.poc.ignite.worker.ignite.registries.OsgiServiceHolder;
 import org.opennms.poc.ignite.worker.workflows.RetriableExecutor;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutionResultProcessor;

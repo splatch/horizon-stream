@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.opennms.horizon.core.lib.IPAddress;
-import org.opennms.poc.ignite.model.workflows.Workflow;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflow;
 import org.opennms.poc.ignite.worker.ignite.registries.OsgiServiceHolder;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutionResultProcessor;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutorLocalService;

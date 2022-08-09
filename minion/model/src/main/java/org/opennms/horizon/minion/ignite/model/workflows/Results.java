@@ -1,4 +1,4 @@
-package org.opennms.poc.ignite.model.workflows;
+package org.opennms.horizon.minion.ignite.model.workflows;
 
 import java.util.ArrayList;
 import java.util.List;

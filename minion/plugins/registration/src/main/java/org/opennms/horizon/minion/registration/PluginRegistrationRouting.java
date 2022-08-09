@@ -13,7 +13,7 @@ import org.opennms.horizon.minion.registration.proto.FieldConfigMeta;
 import org.opennms.horizon.minion.registration.proto.FieldConfigMeta.Builder;
 import org.opennms.horizon.minion.registration.proto.PluginConfigMessage;
 import org.opennms.horizon.minion.registration.proto.PluginConfigMessage.PluginConfigMeta;
-import org.opennms.poc.ignite.model.workflows.PluginMetadata;
+import org.opennms.horizon.minion.ignite.model.workflows.PluginMetadata;
 
 @Slf4j
 public class PluginRegistrationRouting extends RouteBuilder {

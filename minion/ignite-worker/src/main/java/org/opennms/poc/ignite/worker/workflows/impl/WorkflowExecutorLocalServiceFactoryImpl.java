@@ -1,6 +1,6 @@
 package org.opennms.poc.ignite.worker.workflows.impl;
 
-import org.opennms.poc.ignite.model.workflows.Workflow;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflow;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutionResultProcessor;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutorLocalService;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutorLocalServiceFactory;

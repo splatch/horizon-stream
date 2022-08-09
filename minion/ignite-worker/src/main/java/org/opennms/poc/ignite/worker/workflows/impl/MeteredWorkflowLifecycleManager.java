@@ -8,7 +8,7 @@ import com.codahale.metrics.MetricSet;
 import java.util.Collections;
 import java.util.Map;
 import org.opennms.horizon.core.identity.Identity;
-import org.opennms.poc.ignite.model.workflows.Workflows;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflows;
 import org.opennms.poc.ignite.worker.workflows.WorkflowLifecycleManager;
 
 public class MeteredWorkflowLifecycleManager implements WorkflowLifecycleManager, MetricSet {

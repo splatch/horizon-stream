@@ -4,7 +4,7 @@ import java.io.IOException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import org.opennms.poc.ignite.grpc.publisher.WorkflowPublisher;
-import org.opennms.poc.ignite.model.workflows.Workflows;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflows;
 
 public class DigitalTwinWorkflowInjector implements WorkflowInjector {
 

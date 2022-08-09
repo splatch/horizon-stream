@@ -3,7 +3,7 @@ package org.opennms.poc.ignite.worker.workflows.impl;
 import org.apache.ignite.IgniteLogger;
 import org.apache.ignite.resources.LoggerResource;
 import org.apache.ignite.services.Service;
-import org.opennms.poc.ignite.model.workflows.Workflow;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflow;
 import org.opennms.poc.ignite.worker.ignite.registries.OsgiServiceHolder;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutorLocalService;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutorLocalServiceFactory;

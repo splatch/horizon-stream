@@ -5,7 +5,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.opennms.poc.ignite.model.workflows.Workflows;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflows;
 
 @Path("/injector/workflow")
 @Produces(MediaType.APPLICATION_JSON)

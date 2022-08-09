@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import org.opennms.poc.ignite.model.workflows.Workflow;
-import org.opennms.poc.ignite.model.workflows.Workflows;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflow;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflows;
 
 public class WorkflowRepository {
 

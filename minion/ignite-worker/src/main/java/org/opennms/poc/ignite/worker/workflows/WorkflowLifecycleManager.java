@@ -1,6 +1,6 @@
 package org.opennms.poc.ignite.worker.workflows;
 
-import org.opennms.poc.ignite.model.workflows.Workflows;
+import org.opennms.horizon.minion.ignite.model.workflows.Workflows;
 
 /**
  * Responsible for management of task lifecycle.

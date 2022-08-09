@@ -22,7 +22,7 @@ import org.opennms.horizon.minion.plugin.api.ServiceDetectorRequest;
 import org.opennms.horizon.minion.plugin.api.ServiceDetectorResults;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorManager;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;
-import org.opennms.poc.ignite.model.workflows.PluginMetadata;
+import org.opennms.horizon.minion.ignite.model.workflows.PluginMetadata;
 import org.opennms.poc.ignite.worker.ignite.registries.DetectorRegistry;
 import org.opennms.poc.ignite.worker.ignite.registries.MonitorRegistry;
 import org.opennms.horizon.minion.plugin.api.MonitoredService;
