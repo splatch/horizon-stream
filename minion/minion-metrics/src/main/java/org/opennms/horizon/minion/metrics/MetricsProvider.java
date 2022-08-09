@@ -1,4 +1,4 @@
-package org.opennms.poc.metrics;
+package org.opennms.horizon.minion.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 

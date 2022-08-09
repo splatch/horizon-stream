@@ -1,4 +1,4 @@
-package org.opennms.poc.metrics.internal;
+package org.opennms.horizon.minion.metrics.internal;
 
 import com.codahale.metrics.MetricRegistry;
 import io.prometheus.client.Collector.MetricFamilySamples;

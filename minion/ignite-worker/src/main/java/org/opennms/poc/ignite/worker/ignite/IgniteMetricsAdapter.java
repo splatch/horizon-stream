@@ -22,7 +22,7 @@ import org.apache.ignite.spi.metric.ReadOnlyMetricRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.opennms.horizon.core.identity.Identity;
-import org.opennms.poc.metrics.MetricsProvider;
+import org.opennms.horizon.minion.metrics.MetricsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

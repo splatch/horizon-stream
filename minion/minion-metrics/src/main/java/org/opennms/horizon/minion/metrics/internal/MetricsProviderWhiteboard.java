@@ -1,4 +1,4 @@
-package org.opennms.poc.metrics.internal;
+package org.opennms.horizon.minion.metrics.internal;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
@@ -10,8 +10,7 @@ import com.codahale.metrics.MetricRegistryListener;
 import com.codahale.metrics.Timer;
 import com.savoirtech.eos.pattern.whiteboard.AbstractWhiteboard;
 import com.savoirtech.eos.util.ServiceProperties;
-import java.util.function.Supplier;
-import org.opennms.poc.metrics.MetricsProvider;
+import org.opennms.horizon.minion.metrics.MetricsProvider;
 import org.osgi.framework.BundleContext;
 
 public class MetricsProviderWhiteboard extends AbstractWhiteboard<MetricsProvider, MetricRegistry> implements
