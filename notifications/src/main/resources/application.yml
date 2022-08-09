@@ -11,15 +11,8 @@ spring:
       properties:
         spring.json.trusted.packages: "org.opennms.horizon.shared.dto.event"
 
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
 horizon:
   kafka:
-    events:
-      topic: org.opennms.horizon.notifications.events
-      concurrency: 1
     alarms:
       topic: org.opennms.horizon.notifications.alarms
       concurrency: 1
