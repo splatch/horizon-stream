@@ -1,21 +1,10 @@
-import { mount } from '@vue/test-utils'
 import MapAlarmsGrid from '@/components/Map/MapAlarmsGrid.vue'
-import { createTestingPinia } from '@pinia/testing'
-import { createClient, VILLUS_CLIENT } from 'villus'
+import setupWrapper from '../helpers/setupWrapper'
 
 let wrapper: any
 
 beforeEach(() => {
-  wrapper= mount(MapAlarmsGrid, {
-    global: {
-      plugins: [ createTestingPinia() ],
-      provide: {
-        [VILLUS_CLIENT as unknown as string]: createClient({
-          url: 'https://test/graphql'
-        })
-      }
-    }
-  })
+  wrapper= setupWrapper(MapAlarmsGrid)
 })
 
 const columns = [
@@ -38,8 +27,8 @@ it('should have a dropdown selection input', () => {
 })
 
 describe('selectAlarmAck method', () => {
-  // todo: when alarm list data avail, assert the modifyAlarm() has been called ()
-  test.skip('...', () => {
+  test.todo('...', () => {
+    // when alarm list data avail, assert the modifyAlarm() has been called correctly
     expect(true).toBeTruthy()
   })
 })

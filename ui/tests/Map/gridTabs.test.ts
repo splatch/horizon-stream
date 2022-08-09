@@ -1,22 +1,11 @@
-import { mount } from '@vue/test-utils'
 import GridTabs from '@/components/Map/GridTabs.vue'
-import { createTestingPinia } from '@pinia/testing'
-import { createClient, VILLUS_CLIENT } from 'villus'
 import useRouter from '@/composables/useRouter'
+import setupWrapper from '../helpers/setupWrapper'
 
 let wrapper: any
 
 beforeEach(() => {
-  wrapper = mount(GridTabs, {
-    global: { 
-      plugins: [createTestingPinia()] ,
-      provide: {
-        [VILLUS_CLIENT as unknown as string]: createClient({
-          url: 'https://test/graphql'
-        })
-      }
-    }
-  })
+  wrapper = setupWrapper(GridTabs)
 })
 
 it('should redirect to the alarm list', async () => {

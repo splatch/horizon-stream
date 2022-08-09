@@ -1,21 +1,10 @@
-import { mount } from '@vue/test-utils'
 import MapNodesGrid from '@/components/Map/MapNodesGrid.vue'
-import { createTestingPinia } from '@pinia/testing'
-import { createClient, VILLUS_CLIENT } from 'villus'
+import setupWrapper from '../helpers/setupWrapper'
 
 let wrapper: any
 
 beforeEach(() => {
-  wrapper= mount(MapNodesGrid, {
-    global: {
-      plugins: [ createTestingPinia() ],
-      provide: {
-        [VILLUS_CLIENT as unknown as string]: createClient({
-          url: 'https://test/graphql'
-        })
-      }
-    }
-  })
+  wrapper= setupWrapper(MapNodesGrid)
 })
 
 const columns = [
