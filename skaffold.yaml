@@ -112,7 +112,7 @@ portForward:
   - resourceType: deployment
     resourceName: my-kafka
     port: 9092 # kafka tcp
-    localPort: 9092
+    localPort: 9092 # to use an external producer, we must set "kafka" alongside "localhost" in /etc/hosts
 deploy:
   kubectl:
     manifests:
