@@ -20,9 +20,7 @@ const alarms = computed<Alarm[]>(() => mapStore.fetchAlarms)
 const alarmTab = ref()
 const nodesTab = ref()
 
-const goToAlarms = () => {
-  router.push(`/map${route.query.nodeid ? '?nodeid=' + route.query.nodeid : ''}`)
-}
+const goToAlarms = () => router.push(`/map${route.query.nodeid ? '?nodeid=' + route.query.nodeid : ''}`)
 
 const goToNodes = () => router.push('/map/nodes')
 
