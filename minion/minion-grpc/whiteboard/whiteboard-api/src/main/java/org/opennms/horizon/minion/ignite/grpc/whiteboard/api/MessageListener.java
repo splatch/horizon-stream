@@ -1,4 +1,4 @@
-package org.opennms.poc.ignite.grpc.whiteboard.api;
+package org.opennms.horizon.minion.ignite.grpc.whiteboard.api;
 
 import java.util.function.Consumer;
 

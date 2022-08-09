@@ -18,7 +18,7 @@
     </argument>
   </bean>
 
-  <service ref="subscriber" interface="org.opennms.poc.ignite.grpc.whiteboard.api.MessageListener">
+  <service ref="subscriber" interface="org.opennms.horizon.minion.ignite.grpc.whiteboard.api.MessageListener">
     <service-properties>
       <entry key="message.listener.topic" value="workflow" />
     </service-properties>

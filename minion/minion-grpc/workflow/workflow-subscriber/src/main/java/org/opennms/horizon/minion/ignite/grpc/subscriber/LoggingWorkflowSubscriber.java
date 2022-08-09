@@ -1,6 +1,6 @@
 package org.opennms.horizon.minion.ignite.grpc.subscriber;
 
-import org.opennms.poc.ignite.grpc.whiteboard.api.MessageListener;
+import org.opennms.horizon.minion.ignite.grpc.whiteboard.api.MessageListener;
 import org.opennms.horizon.minion.ignite.model.workflows.Workflows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

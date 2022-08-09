@@ -5,7 +5,7 @@
 
   <reference id="subscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" filter="(strategy=grpc)" />
 
-  <bean class="org.opennms.poc.ignite.grpc.whiteboard.internal.GrpcWhiteboard" init-method="start" destroy-method="stop">
+  <bean class="org.opennms.horizon.minion.ignite.grpc.whiteboard.internal.GrpcWhiteboard" init-method="start" destroy-method="stop">
     <argument ref="blueprintBundleContext" />
     <argument ref="subscriber" />
   </bean>

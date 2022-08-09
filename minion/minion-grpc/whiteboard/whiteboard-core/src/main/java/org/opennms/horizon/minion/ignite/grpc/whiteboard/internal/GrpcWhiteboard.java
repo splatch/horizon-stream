@@ -1,6 +1,6 @@
-package org.opennms.poc.ignite.grpc.whiteboard.internal;
+package org.opennms.horizon.minion.ignite.grpc.whiteboard.internal;
 
-import static org.opennms.poc.ignite.grpc.whiteboard.api.MessageListener.MESSAGE_LISTENER_TOPIC;
+import static org.opennms.horizon.minion.ignite.grpc.whiteboard.api.MessageListener.MESSAGE_LISTENER_TOPIC;
 
 import com.savoirtech.eos.pattern.whiteboard.AbstractWhiteboard;
 import com.savoirtech.eos.util.ServiceProperties;
@@ -8,7 +8,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.function.Consumer;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
-import org.opennms.poc.ignite.grpc.whiteboard.api.MessageListener;
+import org.opennms.horizon.minion.ignite.grpc.whiteboard.api.MessageListener;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
