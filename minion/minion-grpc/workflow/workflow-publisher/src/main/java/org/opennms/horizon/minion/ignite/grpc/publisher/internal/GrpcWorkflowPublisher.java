@@ -1,4 +1,4 @@
-package org.opennms.poc.ignite.grpc.publisher.internal;
+package org.opennms.horizon.minion.ignite.grpc.publisher.internal;
 
 import java.io.IOException;
 import org.opennms.core.ipc.twin.api.TwinPublisher;

@@ -5,11 +5,11 @@
 
   <reference id="workflowPublisher" interface="org.opennms.poc.ignite.grpc.publisher.WorkflowPublisher" />
 
-  <bean id="injector" class="org.opennms.poc.ignite.grpc.injector.internal.rest.DigitalTwinWorkflowInjector">
+  <bean id="injector" class="org.opennms.horizon.minion.ignite.grpc.injector.internal.rest.DigitalTwinWorkflowInjector">
     <argument ref="workflowPublisher" />
   </bean>
 
-  <service id="workflowInjectorRestSvc" ref="injector" interface="org.opennms.poc.ignite.grpc.injector.internal.rest.WorkflowInjector">
+  <service id="workflowInjectorRestSvc" ref="injector" interface="org.opennms.horizon.minion.ignite.grpc.injector.internal.rest.WorkflowInjector">
     <service-properties>
       <entry key="osgi.jaxrs.resource" value="true"/>
     </service-properties>

@@ -1,4 +1,4 @@
-package org.opennms.poc.ignite.grpc.subscriber;
+package org.opennms.horizon.minion.ignite.grpc.subscriber;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.NullValue;
@@ -6,16 +6,16 @@ import com.google.protobuf.Value;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import org.opennms.poc.ignite.grpc.workflow.contract.WorkflowResults;
-import org.opennms.poc.ignite.grpc.workflow.contract.WorkflowResults.Builder;
-import org.opennms.poc.ignite.grpc.workflow.contract.WorkflowResults.WorkflowResult;
+import org.opennms.horizon.minion.ignite.grpc.workflow.contract.WorkflowResults;
+import org.opennms.horizon.minion.ignite.grpc.workflow.contract.WorkflowResults.Builder;
+import org.opennms.horizon.minion.ignite.grpc.workflow.contract.WorkflowResults.WorkflowResult;
 import org.opennms.horizon.minion.ignite.model.workflows.Result;
 import org.opennms.horizon.minion.ignite.model.workflows.Results;
 import org.opennms.horizon.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.horizon.ipc.sink.api.SyncDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.poc.ignite.grpc.workflow.WorkflowSinkModule;
+import org.opennms.horizon.minion.ignite.grpc.workflow.WorkflowSinkModule;
 
 public class ResultsConsumer implements Consumer<Results> {
 

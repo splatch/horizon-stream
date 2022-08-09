@@ -1,4 +1,4 @@
-package org.opennms.poc.ignite.grpc.subscriber;
+package org.opennms.horizon.minion.ignite.grpc.subscriber;
 
 import static com.codahale.metrics.MetricRegistry.name;
 

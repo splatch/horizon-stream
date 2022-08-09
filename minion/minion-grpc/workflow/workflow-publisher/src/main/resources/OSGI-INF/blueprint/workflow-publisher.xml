@@ -6,7 +6,7 @@
 
   <reference id="publisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher" filter="(strategy=grpc)" />
 
-  <bean id="workflowPublisher" class="org.opennms.poc.ignite.grpc.publisher.internal.GrpcWorkflowPublisher" init-method="start">
+  <bean id="workflowPublisher" class="org.opennms.horizon.minion.ignite.grpc.publisher.internal.GrpcWorkflowPublisher" init-method="start">
     <argument ref="publisher" />
   </bean>
 

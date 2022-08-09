@@ -1,4 +1,4 @@
-package org.opennms.poc.ignite.grpc.injector.internal.rest;
+package org.opennms.horizon.minion.ignite.grpc.injector.internal.rest;
 
 import java.io.IOException;
 import javax.ws.rs.WebApplicationException;

@@ -1,4 +1,4 @@
-package org.opennms.poc.ignite.grpc.injector.internal.rest;
+package org.opennms.horizon.minion.ignite.grpc.injector.internal.rest;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;

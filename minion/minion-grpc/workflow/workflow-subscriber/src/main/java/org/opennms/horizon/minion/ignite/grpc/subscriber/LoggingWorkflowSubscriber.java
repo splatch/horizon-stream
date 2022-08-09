@@ -1,4 +1,4 @@
-package org.opennms.poc.ignite.grpc.subscriber;
+package org.opennms.horizon.minion.ignite.grpc.subscriber;
 
 import org.opennms.poc.ignite.grpc.whiteboard.api.MessageListener;
 import org.opennms.horizon.minion.ignite.model.workflows.Workflows;
