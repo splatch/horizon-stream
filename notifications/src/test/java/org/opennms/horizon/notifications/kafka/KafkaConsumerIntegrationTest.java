@@ -42,6 +42,7 @@ class KafkaConsumerIntegrationTest {
     private String alarmsTopic;
 
     private Producer<String, AlarmDTO> alarmProducer;
+    private Producer<String, String> stringProducer;
 
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
@@ -58,6 +59,10 @@ class KafkaConsumerIntegrationTest {
         DefaultKafkaProducerFactory<String, AlarmDTO> alarmFactory
             = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new JsonSerializer<>());
         alarmProducer = alarmFactory.createProducer();
+
+        DefaultKafkaProducerFactory<String, String> stringFactory
+            = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new StringSerializer());
+        stringProducer = stringFactory.createProducer();
     }
 
     @Test
@@ -73,6 +78,19 @@ class KafkaConsumerIntegrationTest {
 
         AlarmDTO capturedAlarm = alarmCaptor.getValue();
         assertEquals(alarm.getId(), capturedAlarm.getId());
+    }
+
+    @Test
+    void testStringKafkaConsumer() {
+        int id = 1234;
+        stringProducer.send(new ProducerRecord<>(alarmsTopic, String.format("{\"id\": %d}", id)));
+        stringProducer.flush();
+
+        verify(kafkaConsumer, timeout(KAFKA_TIMEOUT).times(1))
+            .consume(alarmCaptor.capture());
+
+        AlarmDTO capturedAlarm = alarmCaptor.getValue();
+        assertEquals(id, capturedAlarm.getId());
     }
 
     @AfterAll
