@@ -1,4 +1,4 @@
-package org.opennms.poc.scheduler;
+package org.opennms.horizon.minion.scheduler;
 
 import java.util.concurrent.TimeUnit;
 

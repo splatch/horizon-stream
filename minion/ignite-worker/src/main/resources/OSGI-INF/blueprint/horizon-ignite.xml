@@ -13,7 +13,7 @@
   </cm:property-placeholder>
 
   <reference id="identity" interface="org.opennms.horizon.core.identity.Identity"/>
-  <reference id="opennmsScheduler" interface="org.opennms.poc.scheduler.OpennmsScheduler"/>
+  <reference id="opennmsScheduler" interface="org.opennms.horizon.minion.scheduler.OpennmsScheduler"/>
   <reference id="resultPublisher" interface="java.util.function.Consumer" filter="(message.publisher.topic=workflow-result)" />
   <reference id="registrationService" interface="org.opennms.poc.alerting.RegistrationService"/>
 

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutorLocalServiceFactory;
 import org.opennms.poc.plugin.api.ServiceDetectorManager;
 import org.opennms.poc.plugin.api.ServiceMonitorManager;
-import org.opennms.poc.scheduler.OpennmsScheduler;
+import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 
 @Slf4j
 public class OsgiServiceHolder {

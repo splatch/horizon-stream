@@ -1,4 +1,4 @@
-package org.opennms.poc.scheduler.impl;
+package org.opennms.horizon.minion.scheduler.impl;
 
 import com.cronutils.model.Cron;
 import com.cronutils.model.CronType;
@@ -7,7 +7,7 @@ import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 import lombok.Getter;
 import lombok.Setter;
-import org.opennms.poc.scheduler.OpennmsScheduler;
+import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package org.opennms.poc.scheduler.impl;
+package org.opennms.horizon.minion.scheduler.impl;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;

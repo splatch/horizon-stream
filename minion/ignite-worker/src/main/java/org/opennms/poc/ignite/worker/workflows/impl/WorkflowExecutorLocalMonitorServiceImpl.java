@@ -18,7 +18,7 @@ import org.opennms.poc.plugin.api.ServiceMonitor;
 import org.opennms.poc.plugin.api.ServiceMonitorManager;
 import org.opennms.poc.plugin.api.ServiceMonitorResponse;
 import org.opennms.poc.plugin.config.PluginConfigInjector;
-import org.opennms.poc.scheduler.OpennmsScheduler;
+import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

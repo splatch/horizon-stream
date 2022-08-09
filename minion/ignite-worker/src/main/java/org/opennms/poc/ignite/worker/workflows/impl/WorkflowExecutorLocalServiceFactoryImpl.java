@@ -5,7 +5,7 @@ import org.opennms.poc.ignite.worker.workflows.WorkflowExecutionResultProcessor;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutorLocalService;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutorLocalServiceFactory;
 import org.opennms.poc.plugin.config.PluginConfigInjector;
-import org.opennms.poc.scheduler.OpennmsScheduler;
+import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
