@@ -20,7 +20,7 @@ spec:
             pathType: ImplementationSpecific
             backend:
               service:
-                name: {{ .Values.Keycloak.ServiceName }}-discovery
+                name: {{ .Values.Keycloak.ServiceName }}-service
                 port:
                   number: {{ .Values.Keycloak.Port }}
           - path: /karaf
