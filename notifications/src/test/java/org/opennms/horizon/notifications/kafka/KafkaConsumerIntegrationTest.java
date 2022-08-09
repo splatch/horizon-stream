@@ -96,5 +96,6 @@ class KafkaConsumerIntegrationTest {
     @AfterAll
     void shutdown() {
         alarmProducer.close();
+        stringProducer.close();
     }
 }
