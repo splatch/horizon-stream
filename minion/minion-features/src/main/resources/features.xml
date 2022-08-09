@@ -1,0 +1,324 @@
+<features name="ignite-poc" xmlns="http://karaf.apache.org/xmlns/features/v1.6.0">
+
+<!--    <repository>mvn:org.apache.ignite/ignite-osgi-karaf/2.12.0/xml/features</repository>-->
+    <repository>mvn:org.apache.aries.jax.rs/org.apache.aries.jax.rs.features/${aries.jax.rs.whiteboard.version}/xml</repository>
+    <repository>mvn:org.apache.cxf.karaf/apache-cxf/${cxf.version}/xml/features</repository>
+    <repository>mvn:org.apache.camel.karaf/apache-camel/${camel.version}/xml/features</repository>
+
+    <feature name="guava" description="Google Guava" version="${project.version}">
+        <bundle dependency="true">mvn:com.google.guava/guava/${guava.version}</bundle>
+        <bundle dependency="true">mvn:com.google.guava/failureaccess/1.0.1</bundle>
+    </feature>
+
+    <feature name="ignite-poc" version="${project.version}" >
+        <feature>camel-gson</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-core</feature>
+        <feature version="${project.version}">guava</feature>
+        <feature>cxf-jackson</feature>
+        <feature version="${project.version}">ignite</feature>
+        <feature>aries-blueprint</feature>
+        <feature version="${project.version}" dependency="true">alerting</feature>
+        <feature version="${project.version}">eos</feature>
+        <feature version="${project.version}">ignite-poc-model</feature>
+        <feature version="${project.version}">poc-grpc</feature>
+        <feature version="${project.version}">poc-cron</feature>
+        <feature version="${project.version}">poc-metrics</feature>
+
+        <bundle>mvn:org.opennms.horizon.minion/ignite-worker/${project.version}</bundle>
+        <bundle>wrap:mvn:org.apache.ignite/ignite-kubernetes/${ignite.version}</bundle>
+    </feature>
+
+    <feature name="alerting" description="Plugin registration alerting" version="${project.version}">
+        <bundle>mvn:org.opennms.horizon.minion/registration/${project.version}</bundle>
+    </feature>
+
+    <feature name="eos" description="Savoirtech EOS Whiteboard" version="${project.version}">
+        <bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.4</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/18.0</bundle>
+        <bundle dependency="true">mvn:com.savoirtech.eos/eos-core/${eos.version}</bundle>
+    </feature>
+
+    <feature name="poc-horizon-core" version="${project.version}">
+        <feature prerequisite="true">wrap</feature>
+        <bundle>mvn:org.opennms.horizon.core/identity/${opennms-horizon.version}</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.core/xml/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=org.opennms.horizon.core.lib;resolution:=optional,org.eclipse.persistence.*;resolution:=optional,org.springframework*;resolution:=optional,*</bundle>
+
+        <bundle dependency="true">mvn:commons-io/commons-io/${commons.io.version}</bundle>
+        <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
+    </feature>
+
+    <feature name="horizon-core-lib" version="${opennms-horizon.version}">
+        <feature prerequisite="true">wrap</feature>
+<!--        $overwrite=merge&amp;Import-Package=org.opennms.horizon.core.lib;resolution:=optional,*-->
+        <bundle>wrap:mvn:org.opennms.horizon.core/lib/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=*;resolution:=optional</bundle>
+    </feature>
+
+    <feature name="horizon-ipc-api" version="${project.version}">
+        <feature>horizon-core-lib</feature>
+        <bundle>mvn:org.opennms.horizon.minion/ipc-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="poc-grpc-horizon" description="Horizon gRPC apis" version="${project.version}">
+        <details>Import of Horizon gRPC apis.</details>
+        <feature prerequisite="true">wrap</feature>
+        <feature>shell</feature>
+        <feature>aries-blueprint</feature>
+        <feature>poc-horizon-core</feature>
+        <feature>rate-limited-logger</feature>
+        <feature>metrics</feature>
+        <feature>guava</feature>
+        <feature>poc-opentracing</feature>
+
+        <bundle>mvn:org.opennms.horizon.3rdparty/grpc/${opennms-horizon.version}</bundle>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf.version}</bundle>
+    </feature>
+
+    <feature name="poc-grpc-client" description="gRPC client" version="${project.version}">
+        <feature>poc-grpc-horizon</feature>
+        <feature>poc-tracing-stub</feature>
+        <feature>horizon-ipc-api</feature>
+        <feature>poc-metrics</feature>
+
+        <bundle>mvn:org.opennms.horizon.minion/contract/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.minion/client/${project.version}</bundle>
+    </feature>
+
+    <feature name="poc-grpc-ipc-twin" description="Digital twin api with gRPC channel" version="${project.version}">
+        <feature>jackson</feature>
+        <feature>poc-grpc-horizon</feature>
+        <feature>poc-grpc-client</feature>
+        <feature>poc-metrics</feature>
+        <feature>horizon-core-lib</feature>
+
+        <!-- shallow copy of horizon dependencies -->
+        <bundle>mvn:org.opennms.horizon.3rdparty/json-patch-osgi/${opennms-horizon.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.3rdparty/jackson-coreutils-osgi/${opennms-horizon.version}</bundle>
+        <bundle>mvn:com.github.fge/msg-simple/1.1</bundle>
+        <bundle>mvn:com.github.fge/btf/1.2</bundle>
+        <bundle>mvn:com.google.code.findbugs/jsr305/3.0.2</bundle>
+
+        <bundle>mvn:org.opennms.horizon.minion/twin-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.minion/twin-common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.minion/subscriber/${project.version}</bundle>
+    </feature>
+
+    <feature name="ignite-poc-model" description="POC Model" version="${project.version}">
+        <feature version="${project.version}">plugins-api</feature>
+        <bundle>mvn:org.opennms.horizon.minion/model/${project.version}</bundle>
+    </feature>
+
+    <feature name="poc-twin-api" version="${project.version}">
+        <feature>guava</feature>
+        <bundle>mvn:org.opennms.horizon.minion/twin-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="poc-grpc-messaging-api" description="Messaging API" version="${project.version}">
+        <bundle>mvn:org.opennms.horizon.minion/whiteboard-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="poc-grpc-messaging-core" version="${project.version}">
+        <feature version="${project.version}">poc-grpc-messaging-api</feature>
+        <feature version="${project.version}">poc-grpc-ipc-twin</feature>
+        <feature version="${project.version}">ignite-poc-model</feature>
+        <feature version="${project.version}">eos</feature>
+        <feature version="${project.version}">poc-twin-api</feature>
+
+        <bundle>mvn:org.opennms.horizon.minion/whiteboard-core/${project.version}</bundle>
+    </feature>
+
+    <feature name="poc-grpc-workflow" version="${project.version}">
+        <feature version="${project.version}">poc-grpc-messaging-api</feature>
+        <feature version="${project.version}">poc-grpc-ipc-twin</feature>
+        <feature version="${project.version}">ignite-poc-model</feature>
+        <feature version="${project.version}">poc-grpc-ipc-twin</feature>
+        <feature version="${project.version}">poc-grpc-client</feature>
+        <feature version="${project.version}">poc-metrics</feature>
+
+        <bundle>mvn:org.opennms.horizon.minion/module/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.minion/workflow-subscriber/${project.version}</bundle>
+    </feature>
+
+    <feature name="poc-grpc" description="gRPC communication layer" version="${project.version}">
+        <details>All-in-one feature to activate gRPC functionality.</details>
+        <feature version="${project.version}">poc-grpc-ipc-twin</feature>
+        <feature version="${project.version}">poc-grpc-workflow</feature>
+        <feature version="${project.version}">poc-grpc-messaging-core</feature>
+    </feature>
+
+    <feature name="ignite" version="${project.version}">
+        <feature version="${project.version}">rest-utils</feature>
+        <feature version="${project.version}">ignite-core</feature>
+    </feature>
+
+    <feature name="ignite-core" version="${project.version}">
+        <feature version="${project.version}">plugins-api</feature>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-cache-api/1.0.0_1</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.ignite/ignite-osgi/${ignite.version}</bundle>
+        <bundle>wrap:mvn:org.apache.ignite/ignite-core/${ignite.version}$DynamicImport-Package=*</bundle>
+    </feature>
+
+    <feature name="plugins-api" version="${project.version}">
+        <feature version="${project.version}">guava</feature>
+        <bundle>mvn:org.apache.commons/commons-jexl/2.1.1</bundle>
+        <bundle>mvn:org.opennms.horizon.core/lib/${opennms-horizon.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.minion/plugins-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="poc-tracing-stub" version="${project.version}">
+        <feature>poc-opentracing</feature>
+        <bundle>mvn:org.opennms.horizon.core.tracing/api/${opennms-horizon.version}</bundle>
+<!--        !!!!!!!-->
+        <bundle>mvn:org.opennms.horizon.minion/tracing-stub/${project.version}</bundle>
+    </feature>
+
+    <feature name="rest-utils" version="${project.version}">
+
+        <feature>cxf</feature>
+        <feature>cxf-jaxrs</feature>
+        <feature>cxf-sse</feature>
+        <feature>cxf-rs-description-openapi-v3</feature>
+        <feature>cxf-rs-security-oauth2</feature>
+
+        <bundle>mvn:org.apache.aries.component-dsl/org.apache.aries.component-dsl.component-dsl/1.2.2</bundle>
+        <bundle>mvn:org.apache.aries.jax.rs/org.apache.aries.jax.rs.openapi.resource/${aries.jax.rs.whiteboard.version}</bundle>
+        <feature>aries-jax-rs-whiteboard</feature>
+        <feature>aries-jax-rs-whiteboard-jackson</feature>
+        <bundle>mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
+
+    </feature>
+
+    <feature name="snmp-plugins" description="OpenNMS SNMP Plugins" version="${project.version}">
+        <feature>plugins-api</feature>
+        <feature>horizon-events-api</feature>
+        <bundle>wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0</bundle>
+        <bundle>mvn:org.opennms.horizon.minion/SNMP/${project.version}</bundle>
+        <feature version="${project.version}">poc-horizon-snmp</feature>
+    </feature>
+
+    <feature name="icmp-plugins" description="OpenNMS ICMP Plugins" version="${project.version}">
+<!--        horizon-stream bundles needed for ICMP-->
+        <feature>aries-blueprint</feature>
+        <feature>plugins-api</feature>
+        <feature>jna</feature>
+
+        <bundle>mvn:org.opennms/jicmp-api/2.0.1</bundle>
+        <bundle>mvn:org.opennms/jicmp6-api/2.0.1</bundle>
+
+        <bundle>mvn:org.opennms.horizon.icmp/api/${opennms-horizon.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.icmp/jna/${opennms-horizon.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.icmp/jni/${opennms-horizon.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.icmp/jni6/${opennms-horizon.version}</bundle>
+
+        <bundle>mvn:org.opennms.horizon.icmp/api/${opennms-horizon.version}</bundle>
+        <bundle>mvn:org.opennms.lib/org.opennms.lib.tracker/${opennms.tracker.version}</bundle>
+
+        <bundle>mvn:org.opennms.horizon.minion/ICMP/${project.version}</bundle>
+    </feature>
+
+    <feature name="web-listen-plugin" version="${project.version}">
+        <feature version="${jetty.version}">pax-jetty</feature>
+        <bundle>mvn:org.opennms.horizon.minion/WEB-LISTEN/${project.version}</bundle>
+    </feature>
+
+<!--    <feature name="fake-connector-plugin" description="OpenNMS FAKE Connector Plugin" version="${project.version}">-->
+<!--        <bundle>mvn:org.opennms.horizon.minion.plugins/FAKE-CONNECTOR/${project.version}</bundle>-->
+<!--    </feature>-->
+
+<!--    <feature name="test-tcp-connector-plugin" description="OpenNMS Test TCP Connector Plugin" version="${project.version}">-->
+<!--        <bundle>mvn:org.opennms.horizon.minion.plugins/TEST-TCP-CONNECTOR/${project.version}</bundle>-->
+<!--    </feature>-->
+
+    <feature name="eclipse-stuff" version="${project.version}">
+        <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.moxy/2.5.1</bundle>
+        <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.core/2.5.1</bundle>
+        <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/2.5.1</bundle>
+        <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/2.5.1</bundle>
+    </feature>
+
+    <feature name="poc-opentracing" version="${project.version}">
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-api/0.31.0</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-noop/0.31.0</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-util/0.31.0</bundle>
+    </feature>
+
+<!--    // horizon stream bundles and features needed for SNMP-->
+    <feature name="poc-horizon-snmp" version="${project.version}" description="Horizon :: SNMP">
+        <feature version="${project.version}">poc-grpc-horizon</feature>
+        <feature version="${opennms-horizon.version}">horizon-events-api</feature>
+
+        <bundle dependency="true">mvn:commons-io/commons-io/${commons.io.version}</bundle>
+        <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
+<!--        <bundle dependency="true">wrap:mvn:org.snmp4j/snmp4j/${snmp4j.version}</bundle>-->
+
+        <bundle>mvn:org.opennms.horizon.snmp/api/${opennms-horizon.version}</bundle>
+<!--        <bundle>mvn:org.opennms.horizon.snmp/rpc-impl/${project.version}</bundle>-->
+<!--        <bundle>mvn:org.opennms.horizon.snmp/snmp4j/${project.version}</bundle>-->
+<!--        <bundle>mvn:org.opennms.horizon.snmp/shell/${project.version}</bundle>-->
+    </feature>
+
+    <feature name="poc-cron" version="${project.version}">
+        <bundle>mvn:com.cronutils/cron-utils/${cron-utils.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.minion/scheduler/${project.version}</bundle>
+    </feature>
+
+    <feature name="poc-metrics" version="${project.version}">
+        <feature>http</feature>
+        <feature>metrics</feature>
+        <feature>prometheus</feature>
+        <feature>prometheus-dropwizard</feature>
+        <feature>eos</feature>
+        <bundle>mvn:org.opennms.horizon.minion/minion-metrics/${project.version}</bundle>
+    </feature>
+
+    <feature name="metrics">
+        <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizard-metrics.version}</bundle>
+    </feature>
+
+    <feature name="prometheus">
+        <bundle>mvn:io.prometheus/simpleclient/${prometheus.version}</bundle>
+        <bundle>mvn:io.prometheus/simpleclient_common/${prometheus.version}</bundle>
+    </feature>
+
+    <feature name="prometheus-dropwizard">
+        <feature>metrics</feature>
+        <feature>prometheus</feature>
+        <bundle>mvn:io.prometheus/simpleclient_dropwizard/${prometheus.version}</bundle>
+        <bundle>mvn:io.prometheus/simpleclient_tracer_common/${prometheus.version}</bundle>
+        <bundle>mvn:io.prometheus/simpleclient_tracer_otel/${prometheus.version}</bundle>
+        <bundle>mvn:io.prometheus/simpleclient_tracer_otel_agent/${prometheus.version}</bundle>
+    </feature>
+
+    <feature name="rate-limited-logger" version="2.0.2" description="Rate Limited Logger">
+        <bundle>mvn:joda-time/joda-time/2.1</bundle>
+        <bundle>wrap:mvn:com.swrve/rate-limited-logger/2.0.2</bundle>
+    </feature>
+
+    <feature name="jna" version="4.4.0" description="Java Native Access (JNA)">
+        <bundle>mvn:net.java.dev.jna/jna/4.4.0</bundle>
+        <bundle>mvn:net.java.dev.jna/jna-platform/4.4.0</bundle>
+    </feature>
+
+    <feature name="jackson" version="2.13.1">
+        <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxrs-api-2.1/2.9.1</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/2.13.1</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/2.13.1</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/2.13.1</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.13.1</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.13.1</bundle>
+        <bundle>mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.13.1</bundle>
+    </feature>
+
+    <!-- copy events api -->
+    <feature name="horizon-events-api" version="${opennms-horizon.version}" description="Horizon :: Events :: API">
+        <feature prerequisite="true">wrap</feature>
+        <feature>poc-grpc-ipc-twin</feature>
+
+        <bundle dependency="true">mvn:javax.validation/validation-api/2.0.1.Final</bundle>
+        <bundle>wrap:mvn:org.json/json/20171018$Export-Package=org.json</bundle>
+        <bundle>mvn:org.opennms.horizon.snmp/api/${opennms-horizon.version}</bundle>
+
+        <bundle>wrap:mvn:org.opennms.horizon.events/api/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=org.springframework*;resolution:=optional,*</bundle>
+    </feature>
+
+</features>

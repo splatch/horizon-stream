@@ -19,6 +19,10 @@
         <module>minion-metrics</module>
         <module>scheduler</module>
         <module>ignite-worker</module>
+        <module>tracing-stub</module>
+        <module>minion-features</module>
+        <module>docker-assembly</module>
+        <module>assembly</module>
     </modules>
 
     <properties>
