@@ -15,7 +15,7 @@
   <reference id="identity" interface="org.opennms.horizon.core.identity.Identity"/>
   <reference id="opennmsScheduler" interface="org.opennms.horizon.minion.scheduler.OpennmsScheduler"/>
   <reference id="resultPublisher" interface="java.util.function.Consumer" filter="(message.publisher.topic=workflow-result)" />
-  <reference id="registrationService" interface="org.opennms.poc.alerting.RegistrationService"/>
+  <reference id="registrationService" interface="org.opennms.horizon.minion.registration.RegistrationService"/>
 
   <bean id="workflowRepository" class="org.opennms.poc.ignite.worker.workflows.WorkflowRepository"/>
 
@@ -76,11 +76,11 @@
     <argument ref="blueprintBundleContext" />
     <argument ref="registrationService" />
   </bean>
-  <bean id="pluginConfigScanner" class="org.opennms.poc.plugin.config.PluginConfigScanner" />
-  <bean id="pluginConfigInjector" class="org.opennms.poc.plugin.config.PluginConfigInjector">
+  <bean id="pluginConfigScanner" class="org.opennms.horizon.minion.plugin.config.PluginConfigScanner" />
+  <bean id="pluginConfigInjector" class="org.opennms.horizon.minion.plugin.config.PluginConfigInjector">
     <argument ref="pluginConfigScanner"/>
   </bean>
-<!--  <bean id="pluginDetector" class="org.opennms.poc.plugin.config.PluginDetector">-->
+<!--  <bean id="pluginDetector" class="PluginDetector">-->
 <!--    <argument ref="monitorRegistry" />-->
 <!--    <argument ref="detectorRegistry" />-->
 <!--    <argument ref="pluginConfigScanner" />-->

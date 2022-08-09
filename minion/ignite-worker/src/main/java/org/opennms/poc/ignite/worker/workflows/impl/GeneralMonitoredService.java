@@ -1,7 +1,7 @@
 package org.opennms.poc.ignite.worker.workflows.impl;
 
 import java.net.InetAddress;
-import org.opennms.poc.plugin.api.MonitoredService;
+import org.opennms.horizon.minion.plugin.api.MonitoredService;
 
 // TODO: why an interface - this seems like a straight-forward model?
 public class GeneralMonitoredService implements MonitoredService {

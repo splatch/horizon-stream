@@ -3,8 +3,8 @@ package org.opennms.poc.ignite.worker.ignite.registries;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutorLocalServiceFactory;
-import org.opennms.poc.plugin.api.ServiceDetectorManager;
-import org.opennms.poc.plugin.api.ServiceMonitorManager;
+import org.opennms.horizon.minion.plugin.api.ServiceDetectorManager;
+import org.opennms.horizon.minion.plugin.api.ServiceMonitorManager;
 import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 
 @Slf4j

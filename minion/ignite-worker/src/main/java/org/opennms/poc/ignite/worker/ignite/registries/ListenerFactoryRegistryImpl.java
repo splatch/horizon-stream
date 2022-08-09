@@ -2,7 +2,7 @@ package org.opennms.poc.ignite.worker.ignite.registries;
 
 import com.savoirtech.eos.pattern.whiteboard.KeyedWhiteboard;
 import lombok.extern.slf4j.Slf4j;
-import org.opennms.poc.plugin.api.ListenerFactory;
+import org.opennms.horizon.minion.plugin.api.ListenerFactory;
 import org.osgi.framework.BundleContext;
 
 @Slf4j

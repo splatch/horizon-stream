@@ -1,7 +1,7 @@
 package org.opennms.poc.ignite.worker.ignite.registries;
 
 import java.util.Map;
-import org.opennms.poc.plugin.api.ServiceDetectorManager;
+import org.opennms.horizon.minion.plugin.api.ServiceDetectorManager;
 
 public interface DetectorRegistry {
 

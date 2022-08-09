@@ -11,7 +11,7 @@ import org.opennms.poc.ignite.model.workflows.Result;
 import org.opennms.poc.ignite.model.workflows.Results;
 import org.opennms.poc.ignite.worker.queue.impl.AsyncProcessingQueueImpl;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutionResultProcessor;
-import org.opennms.poc.plugin.api.ServiceMonitorResponse;
+import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

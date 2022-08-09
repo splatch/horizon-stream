@@ -1,6 +1,6 @@
 package org.opennms.poc.ignite.worker.workflows;
 
-import org.opennms.poc.plugin.api.ServiceMonitorResponse;
+import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;
 
 public interface WorkflowExecutionResultProcessor {
     /**

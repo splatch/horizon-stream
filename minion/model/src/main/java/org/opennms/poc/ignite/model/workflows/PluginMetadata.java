@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.opennms.poc.plugin.api.FieldConfigMeta;
+import org.opennms.horizon.minion.plugin.api.FieldConfigMeta;
 
 @AllArgsConstructor
 @Getter

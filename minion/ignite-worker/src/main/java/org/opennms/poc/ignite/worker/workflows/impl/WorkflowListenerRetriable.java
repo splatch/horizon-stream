@@ -6,8 +6,8 @@ import org.opennms.poc.ignite.model.workflows.Workflow;
 import org.opennms.poc.ignite.worker.ignite.registries.OsgiServiceHolder;
 import org.opennms.poc.ignite.worker.workflows.RetriableExecutor;
 import org.opennms.poc.ignite.worker.workflows.WorkflowExecutionResultProcessor;
-import org.opennms.poc.plugin.api.Listener;
-import org.opennms.poc.plugin.api.ListenerFactory;
+import org.opennms.horizon.minion.plugin.api.Listener;
+import org.opennms.horizon.minion.plugin.api.ListenerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

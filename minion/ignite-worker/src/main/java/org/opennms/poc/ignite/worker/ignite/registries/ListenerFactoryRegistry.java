@@ -1,6 +1,6 @@
 package org.opennms.poc.ignite.worker.ignite.registries;
 
-import org.opennms.poc.plugin.api.ListenerFactory;
+import org.opennms.horizon.minion.plugin.api.ListenerFactory;
 
 public interface ListenerFactoryRegistry {
 
