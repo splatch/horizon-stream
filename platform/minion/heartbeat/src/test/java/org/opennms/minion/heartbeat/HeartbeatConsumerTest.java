@@ -200,7 +200,7 @@ public class HeartbeatConsumerTest {
         CollectorRegistry collectorRegistry;
 
         @Override
-        public void push(Collector collector) throws IOException {
+        public void push(Collector collector) {
             collectorRegistry = new CollectorRegistry();
             collectorRegistry.register(collector);
         }
