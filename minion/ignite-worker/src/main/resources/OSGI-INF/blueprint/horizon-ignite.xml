@@ -17,29 +17,29 @@
   <reference id="resultPublisher" interface="java.util.function.Consumer" filter="(message.publisher.topic=workflow-result)" />
   <reference id="registrationService" interface="org.opennms.horizon.minion.registration.RegistrationService"/>
 
-  <bean id="workflowRepository" class="org.opennms.poc.ignite.worker.workflows.WorkflowRepository"/>
+  <bean id="workflowRepository" class="org.opennms.horizon.minion.ignite.worker.workflows.WorkflowRepository"/>
 
-  <bean id="igniteMetrics" class="org.opennms.poc.ignite.worker.ignite.IgniteMetricsAdapter" init-method="start" destroy-method="stop">
+  <bean id="igniteMetrics" class="org.opennms.horizon.minion.ignite.worker.ignite.IgniteMetricsAdapter" init-method="start" destroy-method="stop">
     <argument ref="identity" />
   </bean>
   <service ref="igniteMetrics" interface="org.opennms.horizon.minion.metrics.MetricsProvider" />
 
-  <bean id="workerIgniteConfiguration" class="org.opennms.poc.ignite.worker.ignite.WorkerIgniteConfiguration">
+  <bean id="workerIgniteConfiguration" class="org.opennms.horizon.minion.ignite.worker.ignite.WorkerIgniteConfiguration">
     <argument ref="igniteMetrics" />
     <argument value="${useKubernetes}"/>
     <argument value="${kubernetes.service-name}"/>
   </bean>
 
-  <bean id="ignite" class="org.opennms.poc.ignite.worker.ignite.IgnitionFactory" factory-method="create" destroy-method="close">
+  <bean id="ignite" class="org.opennms.horizon.minion.ignite.worker.ignite.IgnitionFactory" factory-method="create" destroy-method="close">
     <argument ref="workerIgniteConfiguration"/>
   </bean>
 
-  <bean id="ignitePocRestServiceImpl" class="org.opennms.poc.ignite.worker.rest.IgniteWorkerRestControllerImpl" scope="singleton">
+  <bean id="ignitePocRestServiceImpl" class="org.opennms.horizon.minion.ignite.worker.rest.IgniteWorkerRestControllerImpl" scope="singleton">
     <argument ref="ignite"/>
     <argument ref="workflowRepository"/>
   </bean>
 
-  <service id="ignitePocRestService" ref="ignitePocRestServiceImpl" interface="org.opennms.poc.ignite.worker.rest.IgniteWorkerRestController">
+  <service id="ignitePocRestService" ref="ignitePocRestServiceImpl" interface="org.opennms.horizon.minion.ignite.worker.rest.IgniteWorkerRestController">
     <service-properties>
       <entry key="osgi.jaxrs.resource" value="true"/>
     </service-properties>
@@ -52,27 +52,27 @@
   </bean>
 
   <bean id="workflowExecutionResultProcessor"
-        class="org.opennms.poc.ignite.worker.workflows.impl.WorkflowExecutionResultProcessorImpl"
+        class="org.opennms.horizon.minion.ignite.worker.workflows.impl.WorkflowExecutionResultProcessorImpl"
         init-method="init"
   >
     <argument ref="resultPublisher" />
     <property name="executor" ref="resultProcessorThreadPoolExecutor"/>
   </bean>
 
-  <bean id="listenerFactoryRegistry" class="org.opennms.poc.ignite.worker.ignite.registries.ListenerFactoryRegistryImpl">
+  <bean id="listenerFactoryRegistry" class="org.opennms.horizon.minion.ignite.worker.ignite.registries.ListenerFactoryRegistryImpl">
     <argument ref="blueprintBundleContext"/>
   </bean>
 
-  <bean id="serviceConnectorFactoryRegistry" class="org.opennms.poc.ignite.worker.ignite.registries.ServiceConnectorFactoryRegistryImpl">
+  <bean id="serviceConnectorFactoryRegistry" class="org.opennms.horizon.minion.ignite.worker.ignite.registries.ServiceConnectorFactoryRegistryImpl">
     <argument ref="blueprintBundleContext"/>
   </bean>
 
   <!-- plugin configuration framework -->
-  <bean id="detectorRegistry" class="org.opennms.poc.ignite.worker.ignite.registries.DetectorRegistryImpl">
+  <bean id="detectorRegistry" class="org.opennms.horizon.minion.ignite.worker.ignite.registries.DetectorRegistryImpl">
     <argument ref="blueprintBundleContext" />
     <argument ref="registrationService" />
   </bean>
-  <bean id="monitorRegistry" class="org.opennms.poc.ignite.worker.ignite.registries.MonitorRegistryImpl">
+  <bean id="monitorRegistry" class="org.opennms.horizon.minion.ignite.worker.ignite.registries.MonitorRegistryImpl">
     <argument ref="blueprintBundleContext" />
     <argument ref="registrationService" />
   </bean>
@@ -89,7 +89,7 @@
   <!-- /plugin configuration framework -->
 
   <bean id="workflowExecutorLocalServiceFactory"
-        class="org.opennms.poc.ignite.worker.workflows.impl.WorkflowExecutorLocalServiceFactoryImpl">
+        class="org.opennms.horizon.minion.ignite.worker.workflows.impl.WorkflowExecutorLocalServiceFactoryImpl">
 
     <argument ref="opennmsScheduler"/>
     <argument ref="workflowExecutionResultProcessor"/>
@@ -97,7 +97,7 @@
   </bean>
 
 <!--  Creating an instance here just to get the static fields set, but we don't really need to reference this instance -->
-  <bean id="osgiServiceHolder" class="org.opennms.poc.ignite.worker.ignite.registries.OsgiServiceHolder">
+  <bean id="osgiServiceHolder" class="org.opennms.horizon.minion.ignite.worker.ignite.registries.OsgiServiceHolder">
     <argument ref="opennmsScheduler"/>
     <argument ref="monitorRegistry" />
     <argument ref="detectorRegistry" />
@@ -106,16 +106,16 @@
     <argument ref="serviceConnectorFactoryRegistry"/>
   </bean>
 
-  <bean id="workflowLifecycleManager" class="org.opennms.poc.ignite.worker.workflows.impl.WorkflowLifecycleManagerImpl" destroy-method="close">
+  <bean id="workflowLifecycleManager" class="org.opennms.horizon.minion.ignite.worker.workflows.impl.WorkflowLifecycleManagerImpl" destroy-method="close">
     <property name="ignite" ref="ignite"/>
   </bean>
 
-  <bean id="meteredWorkflowLifecycleManager" class="org.opennms.poc.ignite.worker.workflows.impl.MeteredWorkflowLifecycleManager">
+  <bean id="meteredWorkflowLifecycleManager" class="org.opennms.horizon.minion.ignite.worker.workflows.impl.MeteredWorkflowLifecycleManager">
     <argument ref="identity" />
     <argument ref="workflowLifecycleManager" />
   </bean>
 
-  <bean id="workflowLifecycleAdapter" class="org.opennms.poc.ignite.worker.workflows.impl.TwinToWorkflowLifecycleManagerAdapter">
+  <bean id="workflowLifecycleAdapter" class="org.opennms.horizon.minion.ignite.worker.workflows.impl.TwinToWorkflowLifecycleManagerAdapter">
     <argument ref="meteredWorkflowLifecycleManager" />
   </bean>
 

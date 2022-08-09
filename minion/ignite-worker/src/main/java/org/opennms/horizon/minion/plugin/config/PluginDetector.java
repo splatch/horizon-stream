@@ -6,8 +6,8 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.opennms.horizon.minion.ignite.model.workflows.PluginMetadata;
 import org.opennms.horizon.minion.ignite.model.workflows.WorkflowType;
-import org.opennms.poc.ignite.worker.ignite.registries.DetectorRegistry;
-import org.opennms.poc.ignite.worker.ignite.registries.MonitorRegistry;
+import org.opennms.horizon.minion.ignite.worker.ignite.registries.DetectorRegistry;
+import org.opennms.horizon.minion.ignite.worker.ignite.registries.MonitorRegistry;
 import org.opennms.horizon.minion.plugin.api.ServiceDetectorManager;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorManager;
 

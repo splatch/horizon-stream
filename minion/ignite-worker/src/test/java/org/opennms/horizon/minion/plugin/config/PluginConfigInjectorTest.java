@@ -21,7 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.opennms.horizon.minion.plugin.api.FieldConfigMeta;
 import org.opennms.horizon.minion.plugin.api.ServiceDetector;
 import org.opennms.horizon.minion.plugin.api.ServiceDetectorResults;
-import org.opennms.poc.ignite.worker.ignite.registries.DetectorRegistry;
+import org.opennms.horizon.minion.ignite.worker.ignite.registries.DetectorRegistry;
 import org.opennms.horizon.minion.plugin.api.ServiceDetectorManager;
 import org.opennms.horizon.minion.plugin.api.annotations.HorizonConfig;
 
