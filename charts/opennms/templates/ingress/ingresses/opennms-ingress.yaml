@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: opennms-ingress
   namespace: {{ .Values.Namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
 spec:
   ingressClassName: nginx
   rules:
