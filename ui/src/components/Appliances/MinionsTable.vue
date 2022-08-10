@@ -54,13 +54,11 @@
 <script setup lang="ts">
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
-import { BGColors, formatItemBgColor } from '@/helpers/formatting'
+import { formatItemBgColor } from '@/helpers/formatting'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import { add, intervalToDuration, formatDuration } from 'date-fns'
-import { ExtendedMinionDTO } from '@/types/minion'
+import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
 import { ComputedRef } from 'vue'
-
-interface ExtendedMinionDTOWithBGColors extends ExtendedMinionDTO, BGColors {}
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()

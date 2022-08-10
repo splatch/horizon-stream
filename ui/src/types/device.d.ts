@@ -1,3 +1,4 @@
+import { BGColors } from "@/helpers/formatting"
 import { DeviceDto } from "./graphql"
 
 interface ExtendedDeviceDTO extends DeviceDto {
@@ -5,3 +6,5 @@ interface ExtendedDeviceDTO extends DeviceDto {
   snmp_uptime: string
   status: string
 }
+
+interface ExtendedDeviceDTOWithBGColors extends ExtendedDeviceDTO, BGColors {}
