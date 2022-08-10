@@ -17,7 +17,7 @@ spec:
                 port:
                   number: 3000
           - path: {{ .Values.Keycloak.Path }}
-            pathType: ImplementationSpecific
+            pathType: Prefix
             backend:
               service:
                 name: {{ .Values.Keycloak.ServiceName }}-service

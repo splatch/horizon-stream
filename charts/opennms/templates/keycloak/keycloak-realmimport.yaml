@@ -17,7 +17,7 @@ spec:
     rememberMe: true
     resetPasswordAllowed: true
     attributes:
-      frontendUrl: "http://{{ .Values.Host }}"
+      frontendUrl: "http://{{ .Values.Host }}{{ .Values.Keycloak.Path }}"
     clients:
       - id: {{ .Values.Keycloak.UUID.ClientId }}
         clientId: horizon-stream
