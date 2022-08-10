@@ -5,6 +5,7 @@ import MinionsTable from '@/components/Appliances/MinionsTable.vue'
 import AddDeviceCtrl from '@/components/Appliances/AddDeviceCtrl.vue'
 import setupWrapper from '../helpers/setupWrapper'
 import useKeycloak from '@/composables/useKeycloak'
+import { KeycloakInstance } from '@dsb-norge/vue-keycloak-js/dist/types'
 
 
 const wrapper = setupWrapper({
@@ -14,7 +15,7 @@ const wrapper = setupWrapper({
 
 it('should have a header',  async () => {
   const { setKeycloak } = useKeycloak()
-  await setKeycloak({ authenticated: true })
+  await setKeycloak({ authenticated: true } as KeycloakInstance)
   
   const headerWelcome = wrapper.get('[data-test="header-welcome"]')
   expect(headerWelcome.exists()).toBe(true)

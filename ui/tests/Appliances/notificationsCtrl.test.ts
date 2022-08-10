@@ -10,19 +10,6 @@ const wrapper = setupWrapper({
     }
   }
 }) 
-/* const wrapper = mount(NotificationsCtrl, { 
-  global: {
-    stubs: {
-      teleport: true
-    },
-    plugins: [createTestingPinia()],
-    provide: {
-      [VILLUS_CLIENT as unknown as string]: createClient({
-        url: 'http://test/graphql'
-      })
-    }
-  }
-}) */
 
 test('The component mounts', () => {
   expect(wrapper).toBeTruthy()
