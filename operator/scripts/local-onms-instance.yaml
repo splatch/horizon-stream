@@ -8,9 +8,12 @@ spec:
   namespace: local-instance
   core:
     image: opennms/horizon-stream-core
+    cpu: "0"
   api:
     image: opennms/horizon-stream-rest-server
+    cpu: "0"
   ui:
     image: opennms/horizon-stream-ui
+    cpu: "0"
   postgres:
     image: postgres:13.3-alpine

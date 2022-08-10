@@ -34,12 +34,14 @@ func (h *KeycloakHandler) ProvideConfig(values values.TemplateValues) []client.O
 	var credSecret corev1.Secret
 	var keycloak unstructured.Unstructured
 	var realmImport unstructured.Unstructured
+	var service corev1.Service
 
 	yaml.LoadYaml(filepath("keycloak/keycloak-operator-group.yaml"), values, &opGroup)
 	yaml.LoadYaml(filepath("keycloak/keycloak-operator-sub.yaml"), values, &opSub)
 	yaml.LoadYaml(filepath("keycloak/keycloak-cred-secret.yaml"), values, &credSecret)
 	yaml.LoadYaml(filepath("keycloak/keycloak.yaml"), values, &keycloak)
 	yaml.LoadYaml(filepath("keycloak/keycloak-realmimport.yaml"), values, &realmImport)
+	yaml.LoadYaml(filepath("keycloak/keycloak-service.yaml"), values, &service)
 
 	h.Config = []client.Object{
 		&opGroup,
@@ -47,6 +49,7 @@ func (h *KeycloakHandler) ProvideConfig(values values.TemplateValues) []client.O
 		&credSecret,
 		&keycloak,
 		&realmImport,
+		&service,
 	}
 
 	return h.Config

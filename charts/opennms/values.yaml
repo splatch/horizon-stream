@@ -48,7 +48,7 @@ Keycloak:
   ServiceName: onms-keycloak
   AdminUsername: keycloak-admin
   AdminPassword: notset
-  UserUseranme: user001
+  UserUsername: user001
   UserPassword: notset
   Image: opennms/horizon-stream-keycloak:test
   UUID:
@@ -59,6 +59,7 @@ Keycloak:
 Grafana:
   Image: placeholder
 Prometheus:
+  Enabled: false
   Server:
     ServiceName: prometheus
     Image: prom/prometheus

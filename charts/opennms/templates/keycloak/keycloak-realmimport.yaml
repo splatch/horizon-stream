@@ -3,7 +3,7 @@ kind: KeycloakRealmImport
 metadata:
   name: {{ .Values.Keycloak.ServiceName }}-ri
   labels:
-    app: sso
+    app: keycloak-ri
   namespace: {{ .Values.Namespace }}
 spec:
   keycloakCRName: {{ .Values.Keycloak.ServiceName }}
