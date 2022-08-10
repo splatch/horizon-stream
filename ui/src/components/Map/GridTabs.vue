@@ -1,8 +1,8 @@
 <template>
   <FeatherTabContainer class="tabs">
     <template v-slot:tabs>
-      <FeatherTab ref="alarmTab" @click="goToAlarms">Alarms({{ alarms.length }})</FeatherTab>
-      <FeatherTab ref="nodesTab" @click="goToNodes">Nodes({{ nodes.length }})</FeatherTab>
+      <FeatherTab ref="alarmTab" @click="goToAlarms" data-test="alarm-tab">Alarms({{ alarms.length }})</FeatherTab>
+      <FeatherTab ref="nodesTab" @click="goToNodes" data-test="nodes-tab">Nodes({{ nodes.length }})</FeatherTab>
     </template>
   </FeatherTabContainer>
   <router-view />
@@ -21,6 +21,7 @@ const alarmTab = ref()
 const nodesTab = ref()
 
 const goToAlarms = () => router.push(`/map${route.query.nodeid ? '?nodeid=' + route.query.nodeid : ''}`)
+
 const goToNodes = () => router.push('/map/nodes')
 
 onActivated(() => {

@@ -1,7 +1,6 @@
 <template>
   <div class="header-container">
-    <div class="welcome" 
-      v-if="keycloak?.authenticated">
+    <div class="welcome" v-if="keycloak?.authenticated" data-test="header-welcome">
         Welcome, {{ keycloak.tokenParsed?.preferred_username }}
     </div>
     <div class="btns">

@@ -1,22 +1,15 @@
 import NotificationsCtrl from '@/components/Appliances/NotificationsCtrl.vue'
-import { createTestingPinia } from '@pinia/testing'
-import { mount } from '@vue/test-utils'
-import { createClient, VILLUS_CLIENT } from 'villus'
 import { useNotificationMutations } from '@/store/Mutations/notificationMutations'
+import setupWrapper from '../helpers/setupWrapper'
 
-const wrapper = mount(NotificationsCtrl, { 
+const wrapper = setupWrapper({
+  component: NotificationsCtrl,
   global: {
     stubs: {
       teleport: true
-    },
-    plugins: [createTestingPinia()],
-    provide: {
-      [VILLUS_CLIENT as unknown as string]: createClient({
-        url: 'http://test/graphql'
-      })
     }
   }
-})
+}) 
 
 test('The component mounts', () => {
   expect(wrapper).toBeTruthy()
