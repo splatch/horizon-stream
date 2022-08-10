@@ -111,8 +111,8 @@ portForward:
     localPort: 53000
   - resourceType: deployment
     resourceName: my-kafka
-    port: 9090 # kafka tcp local-client port
-    localPort: 9090
+    port: 59092 # kafka tcp local client port
+    localPort: 59092 # default port for kafka broker
 deploy:
   kubectl:
     manifests:
