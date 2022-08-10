@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import DeviceTable from '@/components/Appliances/DeviceTable.vue'
-import deviceQueriesStore from '../store/deviceQueries'
+import applianceQueriesStore from '../store/applianceQueries'
 
 describe('DeviceTable.vue', () => {
   describe('Required columns', () => {
@@ -14,7 +14,7 @@ describe('DeviceTable.vue', () => {
           status: 'UP'
         }
       ]
-      deviceQueriesStore(computed(() => deviceItems)) 
+      applianceQueriesStore(computed(() => deviceItems)) 
     })
 
     const requiredColumns = [
@@ -34,7 +34,7 @@ describe('DeviceTable.vue', () => {
 
   describe('Device list', () => {
     it('should have an empty table when there\'s no device', () =>{
-      deviceQueriesStore(computed(() => [])) 
+      applianceQueriesStore(computed(() => [])) 
       const wrapper = mount(DeviceTable)
          
       const deviceItem = wrapper.find('[data-test="device-item"]')
@@ -51,7 +51,7 @@ describe('DeviceTable.vue', () => {
           status: 'DOWN'
         }
       ]
-      deviceQueriesStore(computed(() => deviceItems)) 
+      applianceQueriesStore(computed(() => deviceItems)) 
       const wrapper = mount(DeviceTable)
 
       const deviceItem = wrapper.find('[data-test="device-item"]')
@@ -85,7 +85,7 @@ describe('DeviceTable.vue', () => {
             status: 'DOWN'
           }
         ] 
-        deviceQueriesStore(computed(() => deviceItems)) 
+        applianceQueriesStore(computed(() => deviceItems)) 
       })
   
       /**
@@ -144,7 +144,7 @@ describe('DeviceTable.vue', () => {
             status: 'DOWN'
           }
         ] 
-        deviceQueriesStore(computed(() => deviceItems)) 
+        applianceQueriesStore(computed(() => deviceItems)) 
       })
 
       /**

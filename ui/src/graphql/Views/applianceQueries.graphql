@@ -1,0 +1,34 @@
+fragment DeviceTableParts on Query {
+  listDevices {
+    devices {
+      id
+      label
+      createTime
+    }
+  }
+}
+
+fragment MinionTableParts on Query {
+  listMinions {
+    minions {
+      id
+      label
+      status
+      location
+      lastUpdated
+    }
+  }
+}
+
+query ListDevicesForTable {
+  ...DeviceTableParts
+}
+
+query ListMinionsForTable {
+  ...MinionTableParts
+}
+
+query ListMinionsAndDevicesForTables {
+  ...DeviceTableParts
+  ...MinionTableParts
+}

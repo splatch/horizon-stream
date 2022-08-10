@@ -20,7 +20,7 @@ copy-charts:
 	rm -rf charts/
 	cp -rf ../charts .
 
-local-docker: copy-charts kubebuilder
+local-docker: copy-charts
 	docker build -t opennms/operator:local-build .
 
 build:

@@ -28,26 +28,26 @@
           :options="{ showCoverageOnHover: false, chunkedLoading: true, iconCreateFunction }"
         >
           <LMarker
-            v-for="node of nodes"
-            :key="node.label"
-            :lat-lng="[node.assetRecord.latitude, node.assetRecord.longitude]"
-            :name="node.label"
-            :options="{ id: node.id }"
+            v-for="device of geomapQueries.devicesForGeomap"
+            :key="device?.label"
+            :lat-lng="[device?.location?.latitude, device?.location?.longitude]"
+            :name="device?.label"
+            :options="{ id: device?.id }"
           >
             <LPopup>
               Node:
               <router-link
-                :to="`/node/${node.id}`"
+                :to="`/node/${device?.id}`"
                 target="_blank"
-                >{{ node.label }}</router-link
+                >{{ device?.label }}</router-link
               >
               <br />
-              Severity: {{ nodeLabelAlarmServerityMap[node.label] || 'NORMAL' }}
+              Severity: {{ nodeLabelAlarmServerityMap[device?.label] || 'NORMAL' }}
               <br />
-              Category: {{ node.categories.length ? node.categories[0].name : 'N/A' }}
+              <!-- Category: {{ device?.categories?.length ? device?.categories[0].name : 'N/A' }} -->
             </LPopup>
             <LIcon
-              :icon-url="setIcon(node)"
+              :icon-url="setIcon(device as Partial<DeviceDto>)"
               :icon-size="iconSize"
             />
           </LMarker>
@@ -78,7 +78,6 @@ import {
   LPolyline
 } from '@vue-leaflet/vue-leaflet'
 import MarkerCluster from './MarkerCluster.vue'
-import { Node } from '@/types/map'
 import NormalIcon from '@/assets/Normal-icon.png'
 import WarninglIcon from '@/assets/Warning-icon.png'
 import MinorIcon from '@/assets/Minor-icon.png'
@@ -89,11 +88,14 @@ import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
 import { useTopologyStore } from '@/store/Views/topologyStore'
 import { useMapStore } from '@/store/Views/mapStore'
+import { useGeomapQueries } from '@/store/Queries/geomapQueries'
+import { DeviceDto } from '@/types/graphql'
 
 const markerCluster = ref()
 const computedEdges = ref<number[][][]>()
 const mapStore = useMapStore()
 const topologyStore = useTopologyStore()
+const geomapQueries = useGeomapQueries()
 const map = ref()
 const route = useRoute()
 const leafletReady = ref<boolean>(false)
@@ -105,11 +107,9 @@ const iconSize = [iconWidth, iconHeight]
 const nodeClusterCoords = ref<Record<string, number[]>>({})
 
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => mapStore.mapCenter[k]))
-const nodes = computed<Node[]>(() => mapStore.getNodes)
-const allNodes = computed<Node[]>(() => mapStore.nodesWithCoordinates)
 const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value
-  return nodes.value.map((node) => coordinatedMap.get(node.id))
+  return geomapQueries.devicesForGeomap.map((node) => coordinatedMap.get(node?.id))
 })
 const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap)
 
@@ -154,7 +154,9 @@ const iconCreateFunction = (cluster: Cluster) => {
   return divIcon({ html: `<span class=${highestSeverity}>` + cluster.getChildCount() + '</span>' })
 }
 
-const setMarkerColor = (severity: string | undefined) => {
+const setIcon = (device?: Partial<DeviceDto>) => setMarkerColor(device?.label)
+
+const setMarkerColor = (severity: string | undefined | null) => {
   if (severity) {
     switch (severity.toUpperCase()) {
       case 'NORMAL':
@@ -173,8 +175,6 @@ const setMarkerColor = (severity: string | undefined) => {
   }
   return NormalIcon
 }
-
-const setIcon = (node: Node) => setMarkerColor(nodeLabelAlarmServerityMap.value[node.label])
 
 const computeEdges = () => {
   const interestedNodesCoordinateMap = getNodeCoordinateMap.value
@@ -205,9 +205,11 @@ const computeEdges = () => {
 
 const getNodeCoordinateMap = computed(() => {
   const map = new Map()
-  allNodes.value.forEach((node: Node) => {
-    map.set(node.id, [node.assetRecord.latitude, node.assetRecord.longitude])
-    map.set(node.label, [node.assetRecord.latitude, node.assetRecord.longitude])
+  geomapQueries.devicesForGeomap.forEach((device) => {
+    if (device) {
+      map.set(device.id, [device.location?.latitude, device.location?.longitude])
+      map.set(device.label, [device.location?.latitude, device.location?.longitude])
+    }
   })
   return map
 })
