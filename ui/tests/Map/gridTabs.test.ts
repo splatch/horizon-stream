@@ -1,44 +1,43 @@
 import GridTabs from '@/components/Map/GridTabs.vue'
-import useRouter from '@/composables/useRouter'
+import router from '@/router'
 import setupWrapper from '../helpers/setupWrapper'
 
 let wrapper: any
 
 beforeEach(() => {
   wrapper = setupWrapper({
-    component: GridTabs
+    component: GridTabs,
+    global: {
+      plugins: [router]
+    }
   })
 })
 
 it('should redirect to the alarm list', async () => {
-  const router = useRouter()
   const push = vi.spyOn(router, 'push')
 
   await wrapper.get('[data-test="alarm-tab"]').trigger('click')
 
   expect(push).toHaveBeenCalledTimes(1)
-  expect(push).toHaveBeenCalledWith({path: '/map'})
+  expect(push).toHaveBeenCalledWith('/map')
 }),
 
 it('should redirect to the alarm of a node', async () => {
-  const router = useRouter()
   const push = vi.spyOn(router, 'push')
 
-  const route = useRoute()
-  route.query.nodeId = '1234'
-
-  await wrapper.get('[data-test="alarm-tab"]').trigger('click')
-
+  router.push('/map?nodeId=1234')
   expect(push).toHaveBeenCalledTimes(1)
-  expect(push).toHaveBeenCalledWith({path: '/map?nodeId=1234'})
+  
+  await wrapper.get('[data-test="alarm-tab"]').trigger('click')
+  expect(push).toHaveBeenCalledTimes(2)
+  expect(push).toHaveBeenCalledWith('/map?nodeId=1234')
 })
 
 it('should redirect to the node list', async () => {
-  const router = useRouter()
   const push = vi.spyOn(router, 'push')
 
   await wrapper.get('[data-test="nodes-tab"]').trigger('click')
 
   expect(push).toHaveBeenCalledTimes(1)
-  expect(push).toHaveBeenCalledWith({path: '/map/nodes'})
+  expect(push).toHaveBeenCalledWith('/map/nodes')
 })

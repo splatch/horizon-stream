@@ -1,5 +1,6 @@
 import SeverityFilter from '@/components/Map/SeverityFilter.vue'
 import { useMapStore } from '@/store/Views/mapStore'
+import { findByText } from 'tests/helpers/utils'
 import setupWrapper from '../helpers/setupWrapper'
 
 let wrapper: any
@@ -15,7 +16,9 @@ test('select input item should set `selectedSeverity` in store', async () => {
   const mapStore = useMapStore()
   const severitySelectInput = wrapper.get('.feather-select-input')
   
-  await severitySelectInput.setValue(expectedValue)
+  await severitySelectInput.trigger('click')
+  const minorOption = findByText(wrapper, 'span', 'Minor')
+  await minorOption.trigger('click')
   
   expect(mapStore.selectedSeverity).toBe(expectedValue)
 })
