@@ -87,13 +87,13 @@ func (r *OpenNMSReconciler) CheckForExistingPostgresCreds(ctx context.Context, v
 	}
 	adminPwd := string(credSecret.Data["adminPwd"])
 	keycloakPwd := string(credSecret.Data["keycloakPwd"])
-	pagerdutyPwd := string(credSecret.Data["pagerdutyPwd"])
-	if adminPwd == "" || keycloakPwd == "" || pagerdutyPwd == "" {
+	notificationPwd := string(credSecret.Data["notificationPwd"])
+	if adminPwd == "" || keycloakPwd == "" || notificationPwd == "" {
 		return v, false
 	}
 	v.Values.Postgres.AdminPassword = adminPwd
 	v.Values.Postgres.KeycloakPassword = keycloakPwd
-	v.Values.Postgres.PagerdutyPassword = pagerdutyPwd
+	v.Values.Postgres.NotificationPassword = notificationPwd
 	return v, true
 }
 
@@ -112,6 +112,6 @@ func setCorePasswords(tv values.TemplateValues) values.TemplateValues {
 func setPostgresPassword(tv values.TemplateValues) values.TemplateValues {
 	tv.Values.Postgres.AdminPassword = security.GeneratePassword(false)
 	tv.Values.Postgres.KeycloakPassword = security.GeneratePassword(false)
-	tv.Values.Postgres.PagerdutyPassword = security.GeneratePassword(false)
+	tv.Values.Postgres.NotificationPassword = security.GeneratePassword(false)
 	return tv
 }

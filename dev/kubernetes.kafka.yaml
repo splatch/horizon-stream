@@ -477,9 +477,9 @@ spec:
         - name: postgres-keycloak-initial-script
           configMap:
             name: postgres-keycloak-initial-sql
-        - name: postgres-pagerduty-initial-script
+        - name: postgres-notification-initial-script
           configMap:
-            name: postgres-pagerduty-initial-sql
+            name: postgres-notification-initial-sql
       containers:
         - name: postgres
           image: postgres:13.3-alpine
@@ -507,9 +507,9 @@ spec:
             - mountPath: "/docker-entrypoint-initdb.d/postgres.keycloak.initial.script.sql"
               name: postgres-keycloak-initial-script
               subPath: "postgres.keycloak.initial.script.sql"
-            - mountPath: "/docker-entrypoint-initdb.d/postgres.pagerduty.initial.script.sql"
-              name: postgres-pagerduty-initial-script
-              subPath: "postgres.pagerduty.initial.script.sql"
+            - mountPath: "/docker-entrypoint-initdb.d/postgres.notification.initial.script.sql"
+              name: postgres-notification-initial-script
+              subPath: "postgres.notification.initial.script.sql"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -824,12 +824,12 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-pagerduty-initial-sql
+  name: postgres-notification-initial-sql
 data:
-  postgres.pagerduty.initial.script.sql: |
-    CREATE USER pagerduty with password 'passw0rd';
-    CREATE DATABASE pagerduty;
-    GRANT ALL ON DATABASE pagerduty TO pagerduty;
+  postgres.notification.initial.script.sql: |
+    CREATE USER notification with password 'passw0rd';
+    CREATE DATABASE notification;
+    GRANT ALL ON DATABASE notification TO notification;
 ---
 apiVersion: v1
 kind: ConfigMap

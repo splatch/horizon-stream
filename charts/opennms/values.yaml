@@ -40,7 +40,7 @@ Postgres:
   Image: postgres:13.3-alpine
   AdminPassword: notset
   KeycloakPassword: notset
-  PagerdutyPassword: notset
+  NotificationPassword: notset
   VolumeSize: 10Gi
 Keycloak:
   Path: /auth

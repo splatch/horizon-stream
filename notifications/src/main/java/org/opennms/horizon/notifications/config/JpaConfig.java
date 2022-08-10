@@ -40,8 +40,8 @@ public class JpaConfig {
     public DataSource getDataSource()
     {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.url("jdbc:postgresql://postgres:5432/pagerduty");
-        dataSourceBuilder.username("pagerduty");
+        dataSourceBuilder.url("jdbc:postgresql://postgres:5432/notification");
+        dataSourceBuilder.username("notification");
         dataSourceBuilder.password("passw0rd");
         return dataSourceBuilder.build();
     }

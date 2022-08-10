@@ -19,6 +19,6 @@ type PostgresValues struct {
 	Image            string `yaml:"Image"`
 	AdminPassword    string `yaml:"AdminPassword"`
 	KeycloakPassword string `yaml:"KeycloakPassword"`
-	PagerdutyPassword string `yaml:"PagerdutyPassword"`
+	NotificationPassword string `yaml:"NotificationPassword"`
 	VolumeSize       string `yaml:"VolumeSize"`
 }

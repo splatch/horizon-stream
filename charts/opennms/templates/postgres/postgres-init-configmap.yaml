@@ -14,7 +14,7 @@ data:
     CREATE USER keycloak with password '{{ .Values.Postgres.KeycloakPassword }}';
     CREATE DATABASE keycloak;
     GRANT ALL ON DATABASE keycloak TO keycloak;
-  postgres.pagerduty.initial.script.sql: |
-    CREATE USER pagerduty with password '{{ .Values.Postgres.PagerdutyPassword }}';
-    CREATE DATABASE pagerduty;
-    GRANT ALL ON DATABASE pagerduty TO pagerduty;
+  postgres.notification.initial.script.sql: |
+    CREATE USER notification with password '{{ .Values.Postgres.NotificationPassword }}';
+    CREATE DATABASE notification;
+    GRANT ALL ON DATABASE notification TO notification;
