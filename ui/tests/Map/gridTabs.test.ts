@@ -5,7 +5,9 @@ import setupWrapper from '../helpers/setupWrapper'
 let wrapper: any
 
 beforeEach(() => {
-  wrapper = setupWrapper(GridTabs)
+  wrapper = setupWrapper({
+    component: GridTabs
+  })
 })
 
 it('should redirect to the alarm list', async () => {

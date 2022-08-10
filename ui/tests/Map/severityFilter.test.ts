@@ -5,7 +5,9 @@ import setupWrapper from '../helpers/setupWrapper'
 let wrapper: any
 
 beforeEach(() => {
-  wrapper = setupWrapper(SeverityFilter)
+  wrapper = setupWrapper({
+    component: SeverityFilter
+  })
 })
 
 test('select input item should set `selectedSeverity` in store', async () => {

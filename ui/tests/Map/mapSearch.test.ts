@@ -4,7 +4,9 @@ import setupWrapper from '../helpers/setupWrapper'
 let wrapper: any
 
 beforeEach(() => {
-  wrapper = setupWrapper(MapSearch)
+  wrapper = setupWrapper({
+    component: MapSearch
+  })
 })
 
 test.todo('...', () => {

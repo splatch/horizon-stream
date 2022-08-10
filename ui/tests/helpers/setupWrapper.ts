@@ -2,20 +2,16 @@ import { mount, shallowMount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { VILLUS_CLIENT, createClient } from 'villus'
 
-interface MountingOptions {
-  stubs?: Record<string, any>,
-  plugins?: [...any[]],
-  provide?: Record<string, any>
-}
+const wrapper = (mountingOption: Record<string, any>): any => {
+  const { component, global = {}, type = 'mount' } = mountingOption
+  const  { stubs = {}, plugins = [], provide = {} } = global
 
-const wrapper = (component: any, mountingType = 'mount', global: MountingOptions = {}): any => {
-  const { stubs, plugins, provide } = global
   const globalOptions: Record<string, any> = {
     global: {
       stubs: { ...stubs },
       plugins: [ 
         createTestingPinia(),
-        plugins 
+        ...plugins 
       ],
       provide: {
         [VILLUS_CLIENT as unknown as string]: createClient({
@@ -26,7 +22,7 @@ const wrapper = (component: any, mountingType = 'mount', global: MountingOptions
     }
   }
   
-  if(mountingType === 'mount') return mount(component, globalOptions)
+  if(type === 'mount') return mount(component, globalOptions)
 
   return shallowMount(component, globalOptions)
 }

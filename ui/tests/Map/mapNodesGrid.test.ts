@@ -4,7 +4,9 @@ import setupWrapper from '../helpers/setupWrapper'
 let wrapper: any
 
 beforeEach(() => {
-  wrapper= setupWrapper(MapNodesGrid)
+  wrapper= setupWrapper({
+    component: MapNodesGrid
+  })
 })
 
 const columns = [
