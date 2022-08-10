@@ -1,4 +1,4 @@
-FROM quay.io/keycloak/keycloak:18.0.1 as builder
+FROM quay.io/keycloak/keycloak:19.0.1 as builder
  
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
@@ -14,11 +14,10 @@ RUN /opt/keycloak/bin/kc.sh build --http-relative-path=/auth
  
 USER 1000
  
-FROM quay.io/keycloak/keycloak:18.0.1
+FROM quay.io/keycloak/keycloak:19.0.1
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 WORKDIR /opt/keycloak
  
 COPY --chown=1000 themes themes
 
- 
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "--verbose"]
