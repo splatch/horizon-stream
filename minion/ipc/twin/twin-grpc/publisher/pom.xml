@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>publisher</artifactId>
-    <name>OpenNms Horizon :: Minion :: Ipc  :: Twin :: gRPC :: Publisher</name>
+    <name>OpenNms Horizon :: Minion :: Ipc :: Twin :: gRPC :: Publisher</name>
     <packaging>bundle</packaging>
 
     <dependencies>

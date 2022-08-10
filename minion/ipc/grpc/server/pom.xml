@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>server</artifactId>
-    <name>OpenNms Horizon :: Minion :: Ipc  :: gRPC :: Server</name>
+    <name>OpenNms Horizon :: Minion :: Ipc :: gRPC :: Server</name>
 
     <dependencies>
         <dependency>

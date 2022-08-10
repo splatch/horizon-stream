@@ -10,12 +10,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>scheduler</artifactId>
-    <packaging>bundle</packaging>
 
+    <packaging>bundle</packaging>
     <name>OpenNms Horizon :: Minion :: Scheduler</name>
-    <description>
-        Scheduler for handling tasks by period or cron expression.
-    </description>
+    <description>Scheduler for handling tasks by period or cron expression.</description>
 
     <properties>
         <skipTests>false</skipTests>

@@ -9,8 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <packaging>bundle</packaging>
     <artifactId>ICMP</artifactId>
+
+    <packaging>bundle</packaging>
     <name>OpenNms Horizon :: Minion :: Plugins :: ICMP</name>
 
     <dependencies>

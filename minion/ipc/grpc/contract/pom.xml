@@ -12,7 +12,7 @@
     <artifactId>contract</artifactId>
     <packaging>bundle</packaging>
 
-    <name>OpenNms Horizon :: Minion :: Ipc  :: gRPC :: Contract</name>
+    <name>OpenNms Horizon :: Minion :: Ipc :: gRPC :: Contract</name>
 
     <description>The gRPC service contract.</description>
 
@@ -38,11 +38,6 @@
             <artifactId>javax.annotation-api</artifactId>
             <version>1.2</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

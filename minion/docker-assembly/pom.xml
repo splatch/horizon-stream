@@ -10,10 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>docker-assembly</artifactId>
+
     <name>OpenNms Horizon :: Minion :: Docker</name>
-    <description>
-        Create docker image for the application.
-    </description>
+    <description>Create docker image for the application.</description>
 
     <properties>
         <skip-docker-image-build>false</skip-docker-image-build>

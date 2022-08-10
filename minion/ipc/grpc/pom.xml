@@ -10,7 +10,7 @@
     <artifactId>grpc</artifactId>
 
     <modelVersion>4.0.0</modelVersion>
-    <name>OpenNms Horizon :: Minion :: Ipc  :: gRPC</name>
+    <name>OpenNms Horizon :: Minion :: Ipc :: gRPC</name>
     <packaging>pom</packaging>
 
     <modules>

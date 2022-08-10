@@ -10,8 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>minion-metrics</artifactId>
-    <packaging>bundle</packaging>
+
     <name>OpenNms Horizon :: Minion :: Metrics </name>
+    <packaging>bundle</packaging>
     <description>Metrics integration</description>
 
     <dependencies>
