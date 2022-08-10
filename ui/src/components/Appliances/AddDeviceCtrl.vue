@@ -99,14 +99,14 @@
 <script setup lang="ts">
 import Add from '@featherds/icon/action/Add'
 import { useDeviceMutations } from '@/store/Mutations/deviceMutations'
-import { useDeviceQueries } from '@/store/Queries/deviceQueries'
+import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
 
 const { showSnackbar } = useSnackbar()
 const { openModal, closeModal, isVisible } = useModal()
 const deviceMutations = useDeviceMutations()
-const deviceQueries = useDeviceQueries()
+const applianceQueries = useApplianceQueries()
 
 const defaultDevice = {
   label: undefined,
@@ -139,7 +139,7 @@ const save = async () => {
     // Timeout because device may not be available right away
     // TODO: Replace timeout with websocket/polling
     setTimeout(() => {
-      deviceQueries.fetch()
+      applianceQueries.fetchDevicesForTable()
     }, 350)
   }
 }

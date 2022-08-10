@@ -64,7 +64,7 @@ import Sort from '@featherds/icon/action/Sort'
 import Search from '@featherds/icon/action/Search'
 import Instances from '@featherds/icon/hardware/Instances'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
-import { useDeviceQueries } from '@/store/Queries/deviceQueries'
+import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import { formatItemBgColor } from '@/helpers/formatting'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import { DeviceDto } from '@/types/graphql'
@@ -83,10 +83,10 @@ interface ExtendedDeviceDTO extends DeviceDto {
   statusBgColor: string
 }
 
-const deviceQueries = useDeviceQueries()
 const appliancesStore = useAppliancesStore()
+const applianceQueries = useApplianceQueries()
 
-const listDevicesWithBgColor = computed<ExtendedDeviceDTO[]>(() => formatItemBgColor(deviceQueries.listDevices))
+const listDevicesWithBgColor = computed<ExtendedDeviceDTO[]>(() => formatItemBgColor(applianceQueries.tableDevices))
 
 const searchValue = ref('')
 </script>
