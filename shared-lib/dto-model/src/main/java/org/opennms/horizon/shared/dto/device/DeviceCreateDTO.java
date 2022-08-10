@@ -26,35 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.device.rest.api;
+package org.opennms.horizon.shared.dto.device;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import lombok.Getter;
+import lombok.Setter;
 
-import org.opennms.horizon.shared.dto.device.DeviceCreateDTO;
+@Getter
+@Setter
+public class DeviceCreateDTO {
 
-@Path("/devices")
-public interface DeviceRestService {
+    private String label;
+    private String location;
+    private String monitoringArea;
+    private String managementIp;
+    private String snmpCommunityString;
+    private Integer port;
+    private Double latitude;
+    private Double longitude;
 
-  @GET
-  @Path("/{id}")
-  @Produces(MediaType.APPLICATION_JSON)
-  Response getById(@PathParam("id") Integer id);
-
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  Response findAll();
-
-  @POST
-  @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
-  @RolesAllowed("admin")
-  Response createDevice(DeviceCreateDTO deviceCreateDTO);
 }
