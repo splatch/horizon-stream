@@ -5,7 +5,7 @@
     <parent>
         <artifactId>minion</artifactId>
         <groupId>org.opennms.horizon.minion</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>assembly</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>0.1.0-SNAPSHOT</version>
             <type>tar.gz</type>
             <!--<classifier>tar.gz</classifier>-->
         </dependency>
