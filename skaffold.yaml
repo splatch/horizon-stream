@@ -109,6 +109,10 @@ portForward:
     resourceName: grafana
     port: 3000 #grafana HTTP
     localPort: 53000
+  - resourceType: deployment
+    resourceName: my-kafka
+    port: 59092 # kafka tcp local client port
+    localPort: 59092 # default port for kafka broker
 deploy:
   kubectl:
     manifests:
