@@ -1,5 +1,5 @@
 import MapSearch from '@/components/Map/MapSearch.vue'
-import setupWrapper from '../helpers/setupWrapper'
+import setupWrapper from 'tests/setupWrapper'
 
 let wrapper: any
 

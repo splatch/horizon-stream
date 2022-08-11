@@ -1,9 +1,9 @@
 /**
- * 
+ * Change color background on metrics value
  * @param list 
- * @returns 
+ * @returns list of items with added metrics background color prop 
  */
-export const formatItemBgColor = (list: any[]) => list.map(item => {
+export const formatItemBgColor = (list: any[]): Record<string, string>[] => list.map(item => {
   const bg = {
     ok: 'bg-ok',
     failed: 'bg-failed',

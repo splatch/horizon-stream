@@ -1,6 +1,6 @@
 import NotificationsCtrl from '@/components/Appliances/NotificationsCtrl.vue'
 import { useNotificationMutations } from '@/store/Mutations/notificationMutations'
-import setupWrapper from '../helpers/setupWrapper'
+import setupWrapper from 'tests/setupWrapper'
 
 const wrapper = setupWrapper({
   component: NotificationsCtrl,

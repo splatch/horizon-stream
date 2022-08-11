@@ -1,5 +1,5 @@
 import MapAlarmsGrid from '@/components/Map/MapAlarmsGrid.vue'
-import setupWrapper from '../helpers/setupWrapper'
+import setupWrapper from 'tests/setupWrapper'
 
 let wrapper: any
 

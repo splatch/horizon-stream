@@ -65,9 +65,9 @@ import Search from '@featherds/icon/action/Search'
 import Instances from '@featherds/icon/hardware/Instances'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
-import { formatItemBgColor } from '@/helpers/formatting'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import { DeviceDto } from '@/types/graphql'
+import { formatItemBgColor } from './appliances.helpers'
 
 interface ExtendedDeviceDTO extends DeviceDto {
   id: number // override as required
