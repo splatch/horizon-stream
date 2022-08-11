@@ -6,6 +6,9 @@ import Components from 'unplugin-vue-components/vite'
 import featherResolver from './auto-feather-resolver'
 
 export default defineConfig({
+  server: {
+    https: true
+  },
   resolve: {
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,

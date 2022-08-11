@@ -8,7 +8,7 @@ operator-sdk olm install
 echo
 echo _______________Building Docker Image_______________
 echo
-make kubebuilder local-docker
+make local-docker
 if [ $? -ne 0 ]; then exit; fi
 
 echo

@@ -10,7 +10,7 @@ spec:
   realm:
     accessTokenLifespan: 6000
     id: {{ .Values.Keycloak.UUID.RealmId }}
-    realm: {{ .Values.Keycloak.ServiceName }}
+    realm: opennms
     enabled: true
     loginTheme: "horizon-stream"
     emailTheme: "horizon-stream"
