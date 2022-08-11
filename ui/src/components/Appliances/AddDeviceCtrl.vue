@@ -22,19 +22,33 @@
         label="Name"
         v-model="device.label"
       />
+      
+      <!-- Location name -->
+      <FeatherInput
+        data-test="location-name-input"
+        label="Location"
+        v-model="device.location"
+      />
+      
+      <!-- Monitoring area -->
+      <FeatherInput
+        data-test="monitoring-area-input"
+        label="Monitoring Area"
+        v-model="device.monitoringArea"
+      />
 
       <!-- Management IP -->
       <FeatherInput
         data-test="ip-input"
         label="Management IP"
-        v-model="device.management_ip"
+        v-model="device.managementIp"
       />
 
       <!-- Community String -->
       <FeatherInput
         data-test="string-input"
         label="Community String (Optional)"
-        v-model="device.community_string"
+        v-model="device.snmpCommunityString"
       />
 
       <!-- Port -->
@@ -43,6 +57,22 @@
         data-test="port-input"
         label="Port (Optional)"
         v-model="device.port"
+      />
+      
+      <!-- Latitude -->
+      <FeatherInput
+        type="number"
+        data-test="port-latitude"
+        label="Latitude (Optional)"
+        v-model="device.latitude"
+      />
+      
+      <!-- Longitude -->
+      <FeatherInput
+        type="number"
+        data-test="port-longitude"
+        label="Longitude (Optional)"
+        v-model="device.longitude"
       />
     </template>
 
@@ -54,11 +84,10 @@
           Cancel
       </FeatherButton>
       
-      <!-- TODO: Management IP should also be required, when available. -->
       <FeatherButton 
         data-test="save-btn" 
         primary
-        :disabled="!device.label" 
+        :disabled="!device.label || !device.location || !device.managementIp || !device.monitoringArea" 
         @click="save">
           Save
       </FeatherButton>
@@ -69,20 +98,24 @@
 <script setup lang="ts">
 import Add from '@featherds/icon/action/Add'
 import { useDeviceMutations } from '@/store/Mutations/deviceMutations'
-import { useDeviceQueries } from '@/store/Queries/deviceQueries'
+import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
 
 const { showSnackbar } = useSnackbar()
 const { openModal, closeModal, isVisible } = useModal()
 const deviceMutations = useDeviceMutations()
-const deviceQueries = useDeviceQueries()
+const applianceQueries = useApplianceQueries()
 
 const defaultDevice = {
   label: undefined,
-  management_ip: undefined,
-  community_string: undefined,
-  port: undefined
+  managementIp: undefined,
+  snmpCommunityString: undefined,
+  port: undefined,
+  latitude: undefined,
+  longitude: undefined,
+  monitoringArea: undefined,
+  location: undefined
 }
 
 const device = reactive({...defaultDevice})
@@ -103,7 +136,7 @@ const save = async () => {
     // Timeout because device may not be available right away
     // TODO: Replace timeout with websocket/polling
     setTimeout(() => {
-      deviceQueries.fetch()
+      applianceQueries.fetchDevicesForTable()
     }, 350)
   }
 }

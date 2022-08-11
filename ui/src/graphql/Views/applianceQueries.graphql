@@ -1,0 +1,58 @@
+fragment DeviceTableParts on Query {
+  listDevices {
+    devices {
+      id
+      label
+      createTime
+    }
+  }
+}
+
+fragment MinionTableParts on Query {
+  listMinions {
+    minions {
+      id
+      label
+      status
+      location
+      lastUpdated
+    }
+  }
+}
+
+fragment MetricParts on TimeSeriesQueryResult {
+  data {
+    result {
+      value
+    }
+  }
+}
+
+fragment MinionUptimeParts on Query {
+  minionUptime: metric(name: "minion_uptime_sec", labels: { location: "Default", instance: "minion-01" }) {
+    ...MetricParts
+  }
+}
+
+fragment MinionLatencyParts on Query {
+  minionLatency: metric(name: "minion_response_time_msec", labels: { location: "Default", instance: "minion-01" }) {
+    ...MetricParts
+  }
+}
+
+query ListDevicesForTable {
+  ...DeviceTableParts
+}
+
+query ListMinionsForTable {
+  ...MinionTableParts
+  ...MinionUptimeParts
+  ...MinionLatencyParts
+}
+
+query ListMinionsAndDevicesForTables {
+  ...DeviceTableParts
+  ...MinionTableParts
+  ...MinionUptimeParts
+  ...MinionLatencyParts
+}

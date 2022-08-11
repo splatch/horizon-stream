@@ -1,12 +1,14 @@
 import { createTestingPinia } from '@pinia/testing'
 import { setActivePinia } from 'pinia'
 import { createClient, setActiveClient } from 'villus'
+import { ComputedRef } from 'vue'
 
-const setActive = (listDevices: any) => {
+const setActive = (tableDevices?: ComputedRef<any[]>, tableMinions?: ComputedRef<any[]>) => {
   setActivePinia(createTestingPinia({
     initialState: { 
-      deviceQueries: { 
-        listDevices
+      applianceQueries: { 
+        tableDevices,
+        tableMinions
       }
     }
   }))
