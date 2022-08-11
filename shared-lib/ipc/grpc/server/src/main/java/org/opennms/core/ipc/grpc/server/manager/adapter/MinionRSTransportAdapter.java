@@ -6,7 +6,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.opennms.cloud.grpc.minion.CloudServiceGrpc.CloudServiceImplBase;
 import org.opennms.cloud.grpc.minion.CloudToMinionMessage;
-import org.opennms.cloud.grpc.minion.MinionHeader;
+import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.cloud.grpc.minion.MinionToCloudMessage;
 import org.opennms.cloud.grpc.minion.RpcRequestProto;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
@@ -14,12 +14,12 @@ import org.opennms.cloud.grpc.minion.RpcResponseProto;
 public class MinionRSTransportAdapter extends CloudServiceImplBase {
 
     private final Function<StreamObserver<RpcRequestProto>, StreamObserver<RpcResponseProto>> cloudToMinionRPC;
-    private final BiConsumer<MinionHeader, StreamObserver<CloudToMinionMessage>> cloudToMinionMessages;
+    private final BiConsumer<Identity, StreamObserver<CloudToMinionMessage>> cloudToMinionMessages;
     private final BiConsumer<RpcRequestProto, StreamObserver<RpcResponseProto>> minionToCloudRPC;
     private final Function<StreamObserver<Empty>, StreamObserver<MinionToCloudMessage>> minionToCloudMessages;
 
     public MinionRSTransportAdapter(Function<StreamObserver<RpcRequestProto>, StreamObserver<RpcResponseProto>> cloudToMinionRPC,
-        BiConsumer<MinionHeader, StreamObserver<CloudToMinionMessage>> cloudToMinionMessages,
+        BiConsumer<Identity, StreamObserver<CloudToMinionMessage>> cloudToMinionMessages,
         BiConsumer<RpcRequestProto, StreamObserver<RpcResponseProto>> minionToCloudRPC,
         Function<StreamObserver<Empty>, StreamObserver<MinionToCloudMessage>> minionToCloudMessages) {
         this.cloudToMinionRPC = cloudToMinionRPC;
@@ -34,7 +34,7 @@ public class MinionRSTransportAdapter extends CloudServiceImplBase {
     }
 
     @Override
-    public void cloudToMinionMessages(MinionHeader request, StreamObserver<CloudToMinionMessage> responseObserver) {
+    public void cloudToMinionMessages(Identity request, StreamObserver<CloudToMinionMessage> responseObserver) {
         cloudToMinionMessages.accept(request, responseObserver);
     }
 

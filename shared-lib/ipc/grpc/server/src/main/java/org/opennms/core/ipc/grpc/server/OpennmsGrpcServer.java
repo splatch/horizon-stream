@@ -51,7 +51,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import org.opennms.cloud.grpc.minion.CloudToMinionMessage;
-import org.opennms.cloud.grpc.minion.MinionHeader;
+import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.cloud.grpc.minion.MinionToCloudMessage;
 import org.opennms.cloud.grpc.minion.RpcRequestProto;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
@@ -124,7 +124,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     // Maintains the map of sink consumer executor and by module Id.
     private final Map<String, ExecutorService> sinkConsumersByModuleId = new ConcurrentHashMap<>();
     private BiConsumer<RpcRequestProto, StreamObserver<RpcResponseProto>> incomingRpcHandler;
-    private BiConsumer<MinionHeader, StreamObserver<CloudToMinionMessage>> outgoingMessageHandler;
+    private BiConsumer<Identity, StreamObserver<CloudToMinionMessage>> outgoingMessageHandler;
 
 //========================================
 // Constructor
@@ -333,7 +333,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         this.incomingRpcHandler = handler;
     }
 
-    public void setOutgoingMessageHandler(BiConsumer<MinionHeader, StreamObserver<CloudToMinionMessage>> outgoingMessageHandler) {
+    public void setOutgoingMessageHandler(BiConsumer<Identity, StreamObserver<CloudToMinionMessage>> outgoingMessageHandler) {
         this.outgoingMessageHandler = outgoingMessageHandler;
     }
 

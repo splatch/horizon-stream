@@ -3,7 +3,7 @@ package org.opennms.miniongateway.grpc.server;
 import com.codahale.metrics.MetricRegistry;
 import io.grpc.stub.StreamObserver;
 import org.opennms.cloud.grpc.minion.CloudToMinionMessage;
-import org.opennms.cloud.grpc.minion.MinionHeader;
+import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.cloud.grpc.minion.RpcRequestProto;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
 import org.opennms.core.grpc.common.GrpcIpcServer;
@@ -89,7 +89,7 @@ public class GrpcServerConfig {
         @Autowired LocationIndependentRpcClientFactory locationIndependentRpcClientFactory,
         @Autowired MinionRpcStreamConnectionManager minionRpcStreamConnectionManager,
         @Autowired @Qualifier("minionToCloudRPCProcessor") BiConsumer<RpcRequestProto, StreamObserver<RpcResponseProto>> minionToCloudRPCProcessor,
-        @Autowired @Qualifier("cloudToMinionMessageProcessor") BiConsumer<MinionHeader, StreamObserver<CloudToMinionMessage>> cloudToMinionMessageProcessor
+        @Autowired @Qualifier("cloudToMinionMessageProcessor") BiConsumer<Identity, StreamObserver<CloudToMinionMessage>> cloudToMinionMessageProcessor
     ) throws Exception {
 
         OpennmsGrpcServer server = new OpennmsGrpcServer(serverBuilder, Arrays.asList(
