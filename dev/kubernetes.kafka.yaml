@@ -1177,3 +1177,26 @@ data:
   opennms-identity: |
     identity.id=${env:HOSTNAME:-UNKNOWN}
     identity.location=${env:LOCATION:-cloud}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: role-endpoints
+rules:
+- apiGroups: ["", "*"]
+  resources: ["endpoints"]
+  verbs: ["get", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: role-endpoints-rb
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
+roleRef:
+  kind: Role
+  name: role-endpoints
+  apiGroup: ""
