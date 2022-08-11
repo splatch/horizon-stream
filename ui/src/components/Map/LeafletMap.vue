@@ -42,7 +42,7 @@
                 >{{ device?.label }}</router-link
               >
               <br />
-              Severity: {{ nodeLabelAlarmServerityMap[device?.label] || 'NORMAL' }}
+              Severity: {{ nodeLabelAlarmServerityMap[device?.label as string] || 'NORMAL' }}
               <br />
               <!-- Category: {{ device?.categories?.length ? device?.categories[0].name : 'N/A' }} -->
             </LPopup>
@@ -82,6 +82,7 @@ import WarninglIcon from '@/assets/Warning-icon.png'
 import MinorIcon from '@/assets/Minor-icon.png'
 import MajorIcon from '@/assets/Major-icon.png'
 import CriticalIcon from '@/assets/Critical-icon.png'
+// @ts-ignore
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
 import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
@@ -105,7 +106,7 @@ const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
 const nodeClusterCoords = ref<Record<string, number[]>>({})
 
-const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => mapStore.mapCenter[k]))
+const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => (mapStore.mapCenter as any)[k] ))
 const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value
   return geomapQueries.devicesForGeomap.map((node) => coordinatedMap.get(node?.id))

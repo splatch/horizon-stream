@@ -114,9 +114,9 @@ onMounted(async () => {
   topologyStore.getVerticesAndEdges()
 })
 
-onActivated(() => layoutStore.setNavRailOpen(false))
+onActivated(() => layoutStore.navRailOpen = false)
 onDeactivated(() => {
-  layoutStore.setNavRailOpen(true)
+  layoutStore.navRailOpen = true
   topologyStore.setSelectedView(ViewType.map)
   topologyStore.setSelectedDisplay(DisplayType.nodes)
 })

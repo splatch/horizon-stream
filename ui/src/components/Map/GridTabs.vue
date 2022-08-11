@@ -9,14 +9,16 @@
 </template>
 <script setup lang="ts">
 import { useMapStore } from '@/store/Views/mapStore'
+import { useGeomapQueries } from '@/store/Queries/geomapQueries'
 import { FeatherTab, FeatherTabContainer } from '@featherds/tabs'
-import { Alarm, Node } from '@/types/map'
+import { Alarm } from '@/types/map'
 
 const mapStore = useMapStore()
+const geomapQueries = useGeomapQueries()
 const router = useRouter()
 const route = useRoute()
-const nodes = computed<Node[]>(() => mapStore.fetchNodes)
-const alarms = computed<Alarm[]>(() => mapStore.fetchAlarms)
+const nodes = computed(() => geomapQueries.devicesForGeomap)
+const alarms = computed<Alarm[]>(() => mapStore.fetchAlarms())
 const alarmTab = ref()
 const nodesTab = ref()
 

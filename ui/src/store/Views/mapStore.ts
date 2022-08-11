@@ -36,21 +36,21 @@ export const useMapStore = defineStore('mapStore', {
     async fetchNodes(queryParameters?: QueryParameters) {
       const defaultParams = queryParameters || { limit: 5000, offset: 0 }
       // todo: add graphQL query
-      const resp = undefined
+      const resp: any = undefined
   
       if (resp) {
         const nodes = resp.node.filter(
-          (node) =>
+          (node: Node) =>
             !(node.assetRecord.latitude == null || node.assetRecord.latitude.length === 0) &&
             !(node.assetRecord.longitude == null || node.assetRecord.longitude.length === 0)
         )
 
         this.nodesWithCoordinates = nodes
 
-        this.interestedNodesID = nodes.map((node) => node.id)
+        this.interestedNodesID = nodes.map((node: Node) => node.id)
       }
     },
-    async fetchAlarms (queryParameters?: QueryParameters) {
+    fetchAlarms (queryParameters?: QueryParameters) {
       const defaultParams = queryParameters || { limit: 5000, offset: 0 }
       // todo: add graphQL query
       const resp = [] as Alarm[]
@@ -58,6 +58,8 @@ export const useMapStore = defineStore('mapStore', {
       if (resp) {
         this.alarms = resp
       }
+
+      return this.alarms
     },
     async modifyAlarm(alarmQueryVariable: AlarmModificationQueryVariable) {
       // todo: add graphQL query
@@ -78,7 +80,7 @@ export const useMapStore = defineStore('mapStore', {
       return map
     },
     getNodes(state: State): Node[] {
-      const severityMap = state.getNodeAlarmSeverityMap
+      const severityMap = this.getNodeAlarmSeverityMap
       const selectedNumericSeverityLevel = numericSeverityLevel(state.selectedSeverity)
     
       // copy the vuex nodes
