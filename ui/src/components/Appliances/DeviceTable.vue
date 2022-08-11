@@ -31,7 +31,7 @@
     </div>
     <div class="data-table">
       <TransitionGroup name="data-table" tag="div">
-        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="device.id" data-test="device-item">
+        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" data-test="device-item">
           <div class="name" data-test="col-device">
               <div class="name-cell">
                 <FeatherIcon :icon="Instances" class="icon"/>
@@ -66,27 +66,14 @@ import Instances from '@featherds/icon/hardware/Instances'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
-import { DeviceDto } from '@/types/graphql'
+import { ExtendedDeviceDTOWithBGColors } from '@/types/device'
+import { ComputedRef } from 'vue'
 import { formatItemBgColor } from './appliances.helpers'
-
-interface ExtendedDeviceDTO extends DeviceDto {
-  id: number // override as required
-
-  // TODO: These fields not yet on the BE
-  status: string
-  icmp_latency: string
-  snmp_uptime: string
-
-  // Color fields
-  uptimeBgColor: string
-  latencyBgColor: string
-  statusBgColor: string
-}
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()
 
-const listDevicesWithBgColor = computed<ExtendedDeviceDTO[]>(() => formatItemBgColor(applianceQueries.tableDevices))
+const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableDevices))
 
 const searchValue = ref('')
 </script>

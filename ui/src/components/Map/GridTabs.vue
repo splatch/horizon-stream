@@ -1,22 +1,24 @@
 <template>
   <FeatherTabContainer class="tabs">
     <template v-slot:tabs>
-      <FeatherTab ref="alarmTab" @click="goToAlarms" data-test="alarm-tab">Alarms({{ alarms.length }})</FeatherTab>
-      <FeatherTab ref="nodesTab" @click="goToNodes" data-test="nodes-tab">Nodes({{ nodes.length }})</FeatherTab>
+      <FeatherTab ref="alarmTab" @click="goToAlarms" data-test="alarm-tab">Alarms({{ alarms?.length }})</FeatherTab>
+      <FeatherTab ref="nodesTab" @click="goToNodes" data-test="nodes-tab">Nodes({{ nodes?.length }})</FeatherTab>
     </template>
   </FeatherTabContainer>
   <router-view />
 </template>
 <script setup lang="ts">
 import { useMapStore } from '@/store/Views/mapStore'
+import { useGeomapQueries } from '@/store/Queries/geomapQueries'
 import { FeatherTab, FeatherTabContainer } from '@featherds/tabs'
-import { Alarm, Node } from '@/types/map'
+import { Alarm } from '@/types/map'
 
 const mapStore = useMapStore()
+const geomapQueries = useGeomapQueries()
 const router = useRouter()
 const route = useRoute()
-const nodes = computed<Node[]>(() => mapStore.fetchNodes)
-const alarms = computed<Alarm[]>(() => mapStore.fetchAlarms)
+const nodes = computed(() => geomapQueries.devicesForGeomap)
+const alarms = computed<Alarm[]>(() => mapStore.fetchAlarms())
 const alarmTab = ref()
 const nodesTab = ref()
 

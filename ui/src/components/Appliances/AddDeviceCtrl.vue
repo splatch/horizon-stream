@@ -26,21 +26,21 @@
       <!-- Location name -->
       <FeatherInput
         data-test="location-name-input"
-        label="Location Name"
-        v-model="device.location.locationName"
+        label="Location"
+        v-model="device.location"
       />
       
       <!-- Monitoring area -->
       <FeatherInput
         data-test="monitoring-area-input"
         label="Monitoring Area"
-        v-model="device.location.monitoringArea"
+        v-model="device.monitoringArea"
       />
 
       <!-- Management IP -->
       <FeatherInput
         data-test="ip-input"
-        label="Management IP (Optional temp)"
+        label="Management IP"
         v-model="device.managementIp"
       />
 
@@ -64,7 +64,7 @@
         type="number"
         data-test="port-latitude"
         label="Latitude (Optional)"
-        v-model="device.location.latitude"
+        v-model="device.latitude"
       />
       
       <!-- Longitude -->
@@ -72,7 +72,7 @@
         type="number"
         data-test="port-longitude"
         label="Longitude (Optional)"
-        v-model="device.location.longitude"
+        v-model="device.longitude"
       />
     </template>
 
@@ -84,11 +84,10 @@
           Cancel
       </FeatherButton>
       
-      <!-- TODO: Management IP should also be required, when available. -->
       <FeatherButton 
         data-test="save-btn" 
         primary
-        :disabled="!device.label" 
+        :disabled="!device.label || !device.location || !device.managementIp || !device.monitoringArea" 
         @click="save">
           Save
       </FeatherButton>
@@ -113,12 +112,10 @@ const defaultDevice = {
   managementIp: undefined,
   snmpCommunityString: undefined,
   port: undefined,
-  location: {
-    locationName: undefined, // required
-    latitude: undefined,
-    longitude: undefined,
-    monitoringArea: undefined //required
-  }
+  latitude: undefined,
+  longitude: undefined,
+  monitoringArea: undefined,
+  location: undefined
 }
 
 const device = reactive({...defaultDevice})
