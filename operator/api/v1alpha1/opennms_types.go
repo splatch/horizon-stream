@@ -18,6 +18,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// +kubebuilder:object:generate=true
+
 // OpenNMSSpec defines the desired state of OpenNMS
 type OpenNMSSpec struct {
 	// Domain name used in ingress rule
@@ -56,11 +58,13 @@ type Timeseries struct {
 //BaseServiceResources - defines basic resource needs of a service
 type BaseServiceResources struct {
 	// Image tag version of OpenNMS.
-	Image   string   `json:"image,omitempty"`
-	MEM     string   `json:"mem,omitempty"`
-	Disk    string   `json:"disk,omitempty"`
-	CPU     string   `json:"cpu,omitempty"`
+	Image string `json:"image,omitempty"`
+	MEM   string `json:"mem,omitempty"`
+	Disk  string `json:"disk,omitempty"`
+	CPU   string `json:"cpu,omitempty"`
 }
+
+// +kubebuilder:object:generate=true
 
 // OpenNMSStatus - defines the observed state of OpenNMS
 type OpenNMSStatus struct {
@@ -75,6 +79,8 @@ type ImageUpdateConfig struct {
 	Update string `json:"update,omitempty"`
 }
 
+// +kubebuilder:object:generate=true
+
 // ImageStatus - defines current status of used image for OpenNMS container
 type ImageStatus struct {
 	// true if latest image used, false otherwise
@@ -84,6 +90,8 @@ type ImageStatus struct {
 	// list of services that have updates available
 	ServicesToUpdate string `json:"servicesToUpdate,omitempty"`
 }
+
+// +kubebuilder:object:generate=true
 
 //ReadinessStatus - the ready status of the ONMS instance
 type ReadinessStatus struct {

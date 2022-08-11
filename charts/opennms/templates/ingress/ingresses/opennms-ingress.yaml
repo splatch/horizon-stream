@@ -3,8 +3,10 @@ kind: Ingress
 metadata:
   name: opennms-ingress
   namespace: {{ .Values.Namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
 spec:
-  ingressClassName: ingress-nginx-{{ .Values.Namespace }}
+  ingressClassName: nginx
   rules:
     - host: {{ .Values.Host }}
       http:
@@ -16,13 +18,13 @@ spec:
                 name: {{ .Values.OpenNMS.UI.ServiceName }}
                 port:
                   number: 3000
-{{/*          - path: {{ .Values.Keycloak.Path }}*/}}
-{{/*            pathType: Prefix*/}}
-{{/*            backend:*/}}
-{{/*              service:*/}}
-{{/*                name: {{ .Values.Keycloak.ServiceName }}-discovery*/}}
-{{/*                port:*/}}
-{{/*                  number: 8080*/}}
+          - path: {{ .Values.Keycloak.Path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.Keycloak.ServiceName }}
+                port:
+                  number: {{ .Values.Keycloak.Port }}
           - path: /karaf
             pathType: Prefix
             backend:
@@ -44,9 +46,7 @@ spec:
                 name: {{ .Values.OpenNMS.API.ServiceName }}
                 port:
                   number: 9090
-  {{ if .Values.TLS.Enabled }}
   tls:
     - hosts:
         -  {{.Values.Host }}
       secretName: {{ .Values.TLS.Cert.Name }}
-  {{ end }}

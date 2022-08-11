@@ -44,7 +44,7 @@ spec:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://{{ .Values.Postgres.ServiceName }}:5432/horizon_stream"
             - name: KEYCLOAK_AUTH_SERVER_URL
-              value: "http://{{ .Values.Keycloak.ServiceName }}:8080"
+              value: "http://{{ .Values.Keycloak.ServiceName }}:{{ .Values.Keycloak.Port }}"
             - name: KEYCLOAK_RESOURCE
               value: "horizon-stream"
             - name: KEYCLOAK_PUBLIC_CLIENT
@@ -56,9 +56,12 @@ spec:
             - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_ID
               value: "admin-cli"
             - name: HORIZON_STREAM_KEYCLOAK_ADMIN_USERNAME
-              value: "keycloak-admin"
+              value: "{{ .Values.Keycloak.AdminUsername }}"
             - name: HORIZON_STREAM_KEYCLOAK_ADMIN_PASSWORD
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-credentials
+                  key: adminPwd
             - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_POOL_SIZE
               value: "3"
             - name: HORIZON_STREAM_KEYCLOAK_ADMIN_CLIENT_POOL_TIMEOUT

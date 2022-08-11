@@ -45,7 +45,6 @@ spec:
           {{ end }}
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port
               # value: "-Djava.security.egd=file:/dev/./urandom"
             - name: PGSQL_SERVICE_NAME
               value: {{ .Values.Postgres.ServiceName }}
@@ -53,12 +52,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: postgres
-                  key: adminUser
+                  key: opennmsUser
             - name: PGSQL_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres
-                  key: adminPwd
+                  key: opennmsPwd
             - name: KAFKA_BROKER_HOST
               value: "{{ .Values.Kafka.URL }}"
             - name: KAFKA_BROKER_PORT
@@ -66,14 +65,14 @@ spec:
             - name: ACTIVEMQ_BROKER_URL
               value: "tcp://localhost:61616"
             - name: KEYCLOAK_BASE_URL
-              value: "http://{{ .Values.Keycloak.ServiceName }}:8080"
+              value: "http://{{ .Values.Keycloak.ServiceName }}:{{ .Values.Keycloak.Port }}"
             - name: KEYCLOAK_ADMIN_USERNAME
-              value: "keycloak-admin"
+              value: "{{ .Values.Keycloak.AdminUsername }}"
             - name: KEYCLOAK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: keycloak
-                  key: password
+                  name: keycloak-credentials
+                  key: adminPwd
           volumeMounts:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.alarmd.camel.cfg"

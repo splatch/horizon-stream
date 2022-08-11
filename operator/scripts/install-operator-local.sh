@@ -8,7 +8,8 @@ operator-sdk olm install
 echo
 echo _______________Building Docker Image_______________
 echo
-make local-docker
+make kubebuilder local-docker
+if [ $? -ne 0 ]; then exit; fi
 
 echo
 echo _______Pushing Docker Image into Kind Cluster______
@@ -19,6 +20,7 @@ echo
 echo ___________Installing Helm Dependencies____________
 echo
 bash scripts/install-helm-deps-local.sh
+if [ $? -ne 0 ]; then exit; fi
 
 echo
 echo _______________Wait For Dependencies_______________
@@ -28,9 +30,11 @@ do
     sleep 5
     echo Waiting for dependencies to start....
 done
+if [ $? -ne 0 ]; then exit; fi
 echo Dependencies started.
 
 echo
 echo ________________Installing Operator________________
 echo
-helm upgrade -i operator-local ../charts/opennms-operator -f values.yaml
+helm upgrade -i operator-local ../charts/opennms-operator -f scripts/local-operator-values.yaml --namespace opennms --create-namespace
+if [ $? -ne 0 ]; then exit; fi

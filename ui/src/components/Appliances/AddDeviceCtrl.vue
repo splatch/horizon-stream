@@ -1,12 +1,12 @@
 <template>
   <FeatherButton 
-    text
+    primary
     data-test="add-device-btn" 
     @click="openModal"
   > 
     <template v-slot:icon>
       <FeatherIcon 
-        :icon="AddCircleAlt" 
+        :icon="Add" 
         aria-hidden="true" 
         focusable="false" 
       />
@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import AddCircleAlt from '@featherds/icon/action/AddCircleAlt'
+import Add from '@featherds/icon/action/Add'
 import { useDeviceMutations } from '@/store/Mutations/deviceMutations'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
