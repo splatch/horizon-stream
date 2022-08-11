@@ -1,5 +1,5 @@
 import MapNodesGrid from '@/components/Map/MapNodesGrid.vue'
-import setupWrapper from '../helpers/setupWrapper'
+import setupWrapper from 'tests/setupWrapper'
 
 let wrapper: any
 

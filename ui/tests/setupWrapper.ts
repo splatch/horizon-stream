@@ -2,6 +2,11 @@ import { mount, shallowMount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
 import { VILLUS_CLIENT, createClient } from 'villus'
 
+/**
+ * Mounting component with pinia/testing, villus and global options parameters, 
+ * @param mountingOption 
+ * @returns mounted component
+ */
 const wrapper = (mountingOption: Record<string, any>): any => {
   const { component, global = {}, type = 'mount' } = mountingOption
   const  { stubs = {}, plugins = [], provide = {} } = global

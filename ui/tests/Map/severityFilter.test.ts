@@ -1,7 +1,7 @@
 import SeverityFilter from '@/components/Map/SeverityFilter.vue'
 import { useMapStore } from '@/store/Views/mapStore'
-import { findByText } from 'tests/helpers/utils'
-import setupWrapper from '../helpers/setupWrapper'
+import { findByText } from 'tests/utils'
+import setupWrapper from 'tests/setupWrapper'
 
 let wrapper: any
 

@@ -1,6 +1,6 @@
 import GridTabs from '@/components/Map/GridTabs.vue'
 import router from '@/router'
-import setupWrapper from '../helpers/setupWrapper'
+import setupWrapper from 'tests/setupWrapper'
 
 let wrapper: any
 

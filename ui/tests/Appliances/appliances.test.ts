@@ -3,9 +3,9 @@ import NotificationsCtrl from '@/components/Appliances/NotificationsCtrl.vue'
 import DeviceTable from '@/components/Appliances/DeviceTable.vue'
 import MinionsTable from '@/components/Appliances/MinionsTable.vue'
 import AddDeviceCtrl from '@/components/Appliances/AddDeviceCtrl.vue'
-import setupWrapper from '../helpers/setupWrapper'
 import useKeycloak from '@/composables/useKeycloak'
 import { KeycloakInstance } from '@dsb-norge/vue-keycloak-js/dist/types'
+import setupWrapper from 'tests/setupWrapper'
 
 
 const wrapper = setupWrapper({
