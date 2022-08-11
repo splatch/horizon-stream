@@ -28,6 +28,7 @@
 
 package org.opennms.minion.heartbeat;
 
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Gauge;
 import org.opennms.horizon.db.dao.api.MinionDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
@@ -39,11 +40,13 @@ import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, MinionIdentityDTO> {
 
@@ -53,6 +56,10 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     private final SessionUtils sessionUtils;
     private final OnmsMetricsAdapter onmsMetricsAdapter;
     private final Map<String, Long> minionUpTime = new ConcurrentHashMap<>();
+    private final CollectorRegistry collectorRegistry = new CollectorRegistry();
+    private static final String[] labelNames = {"instance", "location"};
+    private final Gauge upTimeGauge = Gauge.build().name("minion_uptime").help("Total Uptime of Minion.")
+        .unit("sec").labelNames(labelNames).register(collectorRegistry);
 
     public HeartbeatConsumer(MessageConsumerManager messageConsumerManager, MinionDao minionDao,
                              SessionUtils sessionUtils, OnmsMetricsAdapter onmsMetricsAdapter) {
@@ -75,14 +82,14 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     public void handleMessage(MinionIdentityDTO minionHandle) {
         LOG.info("Received heartbeat for Minion with id: {} at location: {}",
             minionHandle.getId(), minionHandle.getLocation());
-        sessionUtils.withTransaction(() -> {
-            long heartBeatDelta = 0;
+        long heartBeatDelta = sessionUtils.withTransaction(() -> {
+            long currentHeartBeatDelta = 0;
             OnmsMinion minion = minionDao.findById(minionHandle.getId());
             if (minion == null) {
                 minion = new OnmsMinion();
                 minion.setId(minionHandle.getId());
             } else {
-                heartBeatDelta = minionHandle.getTimestamp().getTime() - minion.getLastUpdated().getTime();
+                currentHeartBeatDelta = minionHandle.getTimestamp().getTime() - minion.getLastUpdated().getTime();
             }
 
             minion.setLocation(minionHandle.getLocation());
@@ -105,21 +112,26 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
                 LOG.info("Ignoring stale timestamp from heartbeat: {}", minionHandle);
             }
             minionDao.saveOrUpdate(minion);
-            updateMetrics(heartBeatDelta, minionHandle.getId(), minionHandle.getId(), minionHandle.getLocation());
+            return currentHeartBeatDelta;
         });
+        // Negative value indicates stale update for heartbeat
+        if (heartBeatDelta >= 0) {
+            updateMetrics(heartBeatDelta, minionHandle.getId(),
+                new String[]{minionHandle.getId(), minionHandle.getLocation()});
+        }
     }
 
-    private void updateMetrics(long heartBeatDelta, String minionId, String... labels) {
-        Gauge upTimeGauge = Gauge.build().name("minion_uptime").help("Total Uptime of Minion.")
-            .unit("sec").labelNames("instance", "location").create();
+    private void updateMetrics(long heartBeatDelta, String minionId, String[] labelValues) {
         Long lastUpTimeInMsec = minionUpTime.get(minionId);
         long totalUpTimeInMsec = heartBeatDelta;
         if (lastUpTimeInMsec != null) {
             totalUpTimeInMsec = lastUpTimeInMsec + heartBeatDelta;
         }
         long totalUpTimeInSec = TimeUnit.MILLISECONDS.toSeconds(totalUpTimeInMsec);
-        upTimeGauge.labels(labels).set(totalUpTimeInSec);
-        onmsMetricsAdapter.push(upTimeGauge);
+        upTimeGauge.labels(labelValues).set(totalUpTimeInSec);
+        var groupingKey = IntStream.range(0, labelNames.length).boxed()
+            .collect(Collectors.toMap(i -> labelNames[i], i -> labelValues[i]));
+        onmsMetricsAdapter.pushRegistry(collectorRegistry, groupingKey);
         minionUpTime.put(minionId, totalUpTimeInMsec);
     }
 }

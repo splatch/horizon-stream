@@ -29,8 +29,9 @@
 package org.opennms.horizon.metrics.api;
 
 import io.prometheus.client.Collector;
+import io.prometheus.client.CollectorRegistry;
 
-import java.io.IOException;
+import java.util.Map;
 
 
 public interface OnmsMetricsAdapter {
@@ -38,8 +39,9 @@ public interface OnmsMetricsAdapter {
     /**
      * Push metrics to the adapter
      *
-     * @param collector - collector, a metric
+     * @param registry - collector registry with a set of metrics
+     * @param groupingKey - Map of grouping keys ( labels, values)
      */
-    void push(Collector collector);
+    void pushRegistry(CollectorRegistry registry, Map<String, String> groupingKey);
 
 }
