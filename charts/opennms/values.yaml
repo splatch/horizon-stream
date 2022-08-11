@@ -59,7 +59,7 @@ Keycloak:
 Grafana:
   Image: placeholder
 Prometheus:
-  Enabled: false
+  Enabled: true
   Server:
     ServiceName: prometheus
     Image: prom/prometheus
