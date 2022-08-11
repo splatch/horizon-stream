@@ -41,8 +41,8 @@
 
     <feature name="poc-horizon-core" version="${project.version}">
         <feature prerequisite="true">wrap</feature>
-        <bundle>mvn:org.opennms.horizon.core/identity/${opennms-horizon.version}</bundle>
-        <bundle>wrap:mvn:org.opennms.horizon.core/xml/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=org.opennms.horizon.core.lib;resolution:=optional,org.eclipse.persistence.*;resolution:=optional,org.springframework*;resolution:=optional,*</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.core/identity/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.core/xml/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=org.opennms.horizon.core.lib;resolution:=optional,org.eclipse.persistence.*;resolution:=optional,org.springframework*;resolution:=optional,*&amp;Karaf-Commands=none</bundle>
 
         <bundle dependency="true">mvn:commons-io/commons-io/${commons.io.version}</bundle>
         <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
@@ -51,7 +51,7 @@
     <feature name="horizon-core-lib" version="${opennms-horizon.version}">
         <feature prerequisite="true">wrap</feature>
 <!--        $overwrite=merge&amp;Import-Package=org.opennms.horizon.core.lib;resolution:=optional,*-->
-        <bundle>wrap:mvn:org.opennms.horizon.core/lib/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=*;resolution:=optional</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.core/lib/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=*;resolution:=optional&amp;Karaf-Commands=none</bundle>
     </feature>
 
     <feature name="horizon-ipc-api" version="${project.version}">
@@ -70,7 +70,7 @@
         <feature>guava</feature>
         <feature>poc-opentracing</feature>
 
-        <bundle>mvn:org.opennms.horizon.3rdparty/grpc/${opennms-horizon.version}</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.3rdparty/grpc/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf.version}</bundle>
     </feature>
 
@@ -85,6 +85,7 @@
     </feature>
 
     <feature name="poc-grpc-ipc-twin" description="Digital twin api with gRPC channel" version="${project.version}">
+        <feature prerequisite="true">wrap</feature>
         <feature>jackson</feature>
         <feature>poc-grpc-horizon</feature>
         <feature>poc-grpc-client</feature>
@@ -92,8 +93,8 @@
         <feature>horizon-core-lib</feature>
 
         <!-- shallow copy of horizon dependencies -->
-        <bundle>mvn:org.opennms.horizon.3rdparty/json-patch-osgi/${opennms-horizon.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.3rdparty/jackson-coreutils-osgi/${opennms-horizon.version}</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.3rdparty/json-patch-osgi/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.3rdparty/jackson-coreutils-osgi/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
         <bundle>mvn:com.github.fge/msg-simple/1.1</bundle>
         <bundle>mvn:com.github.fge/btf/1.2</bundle>
         <bundle>mvn:com.google.code.findbugs/jsr305/3.0.2</bundle>
@@ -166,8 +167,9 @@
     </feature>
 
     <feature name="poc-tracing-stub" version="${project.version}">
+        <feature prerequisite="true">wrap</feature>
         <feature>poc-opentracing</feature>
-        <bundle>mvn:org.opennms.horizon.core.tracing/api/${opennms-horizon.version}</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.core.tracing/api/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
 <!--        !!!!!!!-->
         <bundle>mvn:org.opennms.horizon.minion/tracing-stub/${project.version}</bundle>
     </feature>
@@ -316,9 +318,9 @@
 
         <bundle dependency="true">mvn:javax.validation/validation-api/2.0.1.Final</bundle>
         <bundle>wrap:mvn:org.json/json/20171018$Export-Package=org.json</bundle>
-        <bundle>mvn:org.opennms.horizon.snmp/api/${opennms-horizon.version}</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.snmp/api/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
 
-        <bundle>wrap:mvn:org.opennms.horizon.events/api/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=org.springframework*;resolution:=optional,*</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.events/api/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=org.springframework*;resolution:=optional,*&amp;Karaf-Commands=none</bundle>
     </feature>
 
 </features>
