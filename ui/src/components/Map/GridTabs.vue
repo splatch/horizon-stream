@@ -1,8 +1,8 @@
 <template>
   <FeatherTabContainer class="tabs">
     <template v-slot:tabs>
-      <FeatherTab ref="alarmTab" @click="goToAlarms" data-test="alarm-tab">Alarms({{ alarms.length }})</FeatherTab>
-      <FeatherTab ref="nodesTab" @click="goToNodes" data-test="nodes-tab">Nodes({{ nodes.length }})</FeatherTab>
+      <FeatherTab ref="alarmTab" @click="goToAlarms" data-test="alarm-tab">Alarms({{ alarms?.length }})</FeatherTab>
+      <FeatherTab ref="nodesTab" @click="goToNodes" data-test="nodes-tab">Nodes({{ nodes?.length }})</FeatherTab>
     </template>
   </FeatherTabContainer>
   <router-view />

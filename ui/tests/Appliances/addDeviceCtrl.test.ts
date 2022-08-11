@@ -44,20 +44,22 @@ test('The cancel btn should close the modal', async () => {
   expect(modalInput.exists()).toBeFalsy()
 })
 
-test('The save btn should enable if name, location name and monitoring are added', async () => {
+test('The save btn should enable if name, location, monitoring, ip are added', async () => {
   await wrapper.get('[data-test="add-device-btn"]').trigger('click')
   
   const nameInput = wrapper.get('[data-test="name-input"] .feather-input')
-  const locationNameInput = wrapper.get('[data-test="location-name-input"] .feather-input')
+  const locationInput = wrapper.get('[data-test="location-name-input"] .feather-input')
   const monitoringAreaInput = wrapper.get('[data-test="monitoring-area-input"] .feather-input')
+  const ipInput = wrapper.get('[data-test="ip-input"] .feather-input')
   const saveBtn = wrapper.get('[data-test="save-btn"]')
 
   // should be disabled
   expect(saveBtn.attributes('aria-disabled')).toBe('true')
   
   await nameInput.setValue('some name')
-  await locationNameInput.setValue('some location name')
+  await locationInput.setValue('some location name')
   await monitoringAreaInput.setValue('some monitoring area')
+  await ipInput.setValue('127.0.0.1')
   
   // should be enabled
   expect(saveBtn.attributes('aria-disabled')).toBeUndefined()
