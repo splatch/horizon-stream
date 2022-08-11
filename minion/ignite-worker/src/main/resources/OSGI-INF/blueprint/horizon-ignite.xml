@@ -1,0 +1,133 @@
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+  xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+  xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+  <cm:property-placeholder persistent-id="org.opennms.poc.ignite.worker" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="useKubernetes" value="false"/>
+      <cm:property name="kubernetes.service-name" value="poc-distributed-scheduling"/>
+      <cm:property name="workflowSchedulerThreadCount" value="20"/>
+      <cm:property name="routing.uri" value="seda:registration"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="identity" interface="org.opennms.horizon.core.identity.Identity"/>
+  <reference id="opennmsScheduler" interface="org.opennms.horizon.minion.scheduler.OpennmsScheduler"/>
+  <reference id="resultPublisher" interface="java.util.function.Consumer" filter="(message.publisher.topic=workflow-result)" />
+  <reference id="registrationService" interface="org.opennms.horizon.minion.registration.RegistrationService"/>
+
+  <bean id="workflowRepository" class="org.opennms.horizon.minion.ignite.worker.workflows.WorkflowRepository"/>
+
+  <bean id="igniteMetrics" class="org.opennms.horizon.minion.ignite.worker.ignite.IgniteMetricsAdapter" init-method="start" destroy-method="stop">
+    <argument ref="identity" />
+  </bean>
+  <service ref="igniteMetrics" interface="org.opennms.horizon.minion.metrics.MetricsProvider" />
+
+  <bean id="workerIgniteConfiguration" class="org.opennms.horizon.minion.ignite.worker.ignite.WorkerIgniteConfiguration">
+    <argument ref="igniteMetrics" />
+    <argument value="${useKubernetes}"/>
+    <argument value="${kubernetes.service-name}"/>
+  </bean>
+
+  <bean id="ignite" class="org.opennms.horizon.minion.ignite.worker.ignite.IgnitionFactory" factory-method="create" destroy-method="close">
+    <argument ref="workerIgniteConfiguration"/>
+  </bean>
+
+  <bean id="ignitePocRestServiceImpl" class="org.opennms.horizon.minion.ignite.worker.rest.IgniteWorkerRestControllerImpl" scope="singleton">
+    <argument ref="ignite"/>
+    <argument ref="workflowRepository"/>
+  </bean>
+
+  <service id="ignitePocRestService" ref="ignitePocRestServiceImpl" interface="org.opennms.horizon.minion.ignite.worker.rest.IgniteWorkerRestController">
+    <service-properties>
+      <entry key="osgi.jaxrs.resource" value="true"/>
+    </service-properties>
+  </service>
+
+<!--  ========= Detector whiteboard and plugins ==========-->
+
+  <bean id="resultProcessorThreadPoolExecutor" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+    <argument value="3"/>
+  </bean>
+
+  <bean id="workflowExecutionResultProcessor"
+        class="org.opennms.horizon.minion.ignite.worker.workflows.impl.WorkflowExecutionResultProcessorImpl"
+        init-method="init"
+  >
+    <argument ref="resultPublisher" />
+    <property name="executor" ref="resultProcessorThreadPoolExecutor"/>
+  </bean>
+
+  <bean id="listenerFactoryRegistry" class="org.opennms.horizon.minion.ignite.worker.ignite.registries.ListenerFactoryRegistryImpl">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+
+  <bean id="serviceConnectorFactoryRegistry" class="org.opennms.horizon.minion.ignite.worker.ignite.registries.ServiceConnectorFactoryRegistryImpl">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+
+  <!-- plugin configuration framework -->
+  <bean id="detectorRegistry" class="org.opennms.horizon.minion.ignite.worker.ignite.registries.DetectorRegistryImpl">
+    <argument ref="blueprintBundleContext" />
+    <argument ref="registrationService" />
+  </bean>
+  <bean id="monitorRegistry" class="org.opennms.horizon.minion.ignite.worker.ignite.registries.MonitorRegistryImpl">
+    <argument ref="blueprintBundleContext" />
+    <argument ref="registrationService" />
+  </bean>
+  <bean id="pluginConfigScanner" class="org.opennms.horizon.minion.plugin.config.PluginConfigScanner" />
+  <bean id="pluginConfigInjector" class="org.opennms.horizon.minion.plugin.config.PluginConfigInjector">
+    <argument ref="pluginConfigScanner"/>
+  </bean>
+<!--  <bean id="pluginDetector" class="PluginDetector">-->
+<!--    <argument ref="monitorRegistry" />-->
+<!--    <argument ref="detectorRegistry" />-->
+<!--    <argument ref="pluginConfigScanner" />-->
+<!--    <argument ref="pluginConfigInjector" />-->
+<!--  </bean>-->
+  <!-- /plugin configuration framework -->
+
+  <bean id="workflowExecutorLocalServiceFactory"
+        class="org.opennms.horizon.minion.ignite.worker.workflows.impl.WorkflowExecutorLocalServiceFactoryImpl">
+
+    <argument ref="opennmsScheduler"/>
+    <argument ref="workflowExecutionResultProcessor"/>
+    <argument ref="pluginConfigInjector"/>
+  </bean>
+
+<!--  Creating an instance here just to get the static fields set, but we don't really need to reference this instance -->
+  <bean id="osgiServiceHolder" class="org.opennms.horizon.minion.ignite.worker.ignite.registries.OsgiServiceHolder">
+    <argument ref="opennmsScheduler"/>
+    <argument ref="monitorRegistry" />
+    <argument ref="detectorRegistry" />
+    <argument ref="workflowExecutorLocalServiceFactory"/>
+    <argument ref="listenerFactoryRegistry"/>
+    <argument ref="serviceConnectorFactoryRegistry"/>
+  </bean>
+
+  <bean id="workflowLifecycleManager" class="org.opennms.horizon.minion.ignite.worker.workflows.impl.WorkflowLifecycleManagerImpl" destroy-method="close">
+    <property name="ignite" ref="ignite"/>
+  </bean>
+
+  <bean id="meteredWorkflowLifecycleManager" class="org.opennms.horizon.minion.ignite.worker.workflows.impl.MeteredWorkflowLifecycleManager">
+    <argument ref="identity" />
+    <argument ref="workflowLifecycleManager" />
+  </bean>
+
+  <bean id="workflowLifecycleAdapter" class="org.opennms.horizon.minion.ignite.worker.workflows.impl.TwinToWorkflowLifecycleManagerAdapter">
+    <argument ref="meteredWorkflowLifecycleManager" />
+  </bean>
+
+<!--  TODO: will we need this as an OSGi service anywhere now?-->
+<!--  <service id="detectorRegistry" ref="detectorRegistryImpl" interface="org.opennms.poc.ignite.worker.ignite.registries.DetectorRegistry"/>-->
+
+  <service ref="workflowLifecycleAdapter" interface="org.opennms.horizon.minion.ignite.grpc.whiteboard.api.MessageListener">
+    <service-properties>
+      <entry key="message.listener.topic" value="workflow" />
+    </service-properties>
+  </service>
+
+  <service ref="meteredWorkflowLifecycleManager" interface="com.codahale.metrics.MetricSet" />
+
+</blueprint>

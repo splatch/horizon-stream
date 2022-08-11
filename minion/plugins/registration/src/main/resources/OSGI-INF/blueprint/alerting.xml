@@ -1,0 +1,31 @@
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+  xmlns:camel="http://camel.apache.org/schema/blueprint"
+  xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+  xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+  <cm:property-placeholder persistent-id="org.opennms.horizon.minion.registration" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="routing.uri" value="seda:registration"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <camel:camelContext id="registrationRoutingContext" allowUseOriginalMessage="false">
+    <camel:contextScan/>
+    <camel:template id="registrationProducer" defaultEndpoint="{{routing.uri}}"/>
+  </camel:camelContext>
+
+  <reference id="messageDispatcherFactory" interface="org.opennms.horizon.ipc.sink.api.MessageDispatcherFactory" />
+
+  <bean id="registrationService" class = "org.opennms.horizon.minion.registration.RegistrationServiceImpl">
+    <argument ref="registrationProducer"/>
+  </bean>
+
+  <bean id="pluginRegistrationRouting" class="org.opennms.horizon.minion.registration.PluginRegistrationRouting">
+    <argument value="${routing.uri}"/>
+    <argument ref="messageDispatcherFactory"/>
+  </bean>
+
+  <service ref="registrationService" interface="org.opennms.horizon.minion.registration.RegistrationService"/>
+
+</blueprint>

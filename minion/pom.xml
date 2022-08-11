@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.opennms.horizon</groupId>
+    <groupId>org.opennms.horizon.minion</groupId>
     <artifactId>minion</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
@@ -12,13 +12,29 @@
     <inceptionYear>2022</inceptionYear>
 
     <modules>
-
+        <module>plugins</module>
+        <module>model</module>
+        <module>ipc</module>
+        <module>minion-grpc</module>
+        <module>minion-metrics</module>
+        <module>scheduler</module>
+        <module>ignite-worker</module>
+        <module>tracing-stub</module>
+        <module>minion-features</module>
+        <module>docker-assembly</module>
+        <module>assembly</module>
     </modules>
 
     <properties>
-<!--        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
-<!--        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>-->
-<!--        <dropwizard.metrics.version>3.1.2</dropwizard.metrics.version>-->
+        <skipUTs>false</skipUTs>
+        <skipITs>false</skipITs>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <java.version>11</java.version>
+
+        <!--        <dropwizard.metrics.version>3.1.2</dropwizard.metrics.version>-->
 <!--        <activemq.version>5.17.1</activemq.version>-->
 <!--        <aries.jax.rs.whiteboard.version>2.0.1</aries.jax.rs.whiteboard.version>-->
 <!--        <aries.jpa.api.version>2.7.3</aries.jpa.api.version>-->
@@ -92,10 +108,229 @@
 <!--        <spring.version>5.3.14_1</spring.version>-->
 <!--        <swagger.version>2.1.1</swagger.version>-->
 <!--        <testcontainers.version>1.16.3</testcontainers.version>-->
-<!--        <lombok.version>1.18.24</lombok.version>-->
 <!--        <mockito.version>4.5.1</mockito.version>-->
 <!--        <gson.version>2.8.6</gson.version>-->
+
+        <guava.version>31.0.1-jre</guava.version>
+        <karaf.version>4.3.6</karaf.version>
+        <lombok.version>1.18.22</lombok.version>
+        <lombok.binding.version>0.2.0</lombok.binding.version>
+        <ignite.version>2.13.0</ignite.version>
+        <jetty.version>9.4.43.v20210629</jetty.version>
+        <junit.version>4.13.2</junit.version>
+
+        <spring-boot.version>2.6.4</spring-boot.version>
+        <slf4j.version>1.7.33</slf4j.version>
+        <aries.jax.rs.whiteboard.version>2.0.1</aries.jax.rs.whiteboard.version>
+        <cron-utils.version>9.1.6</cron-utils.version>
+        <cxf.version>3.5.0</cxf.version>
+        <eos.version>1.2.0</eos.version>
+        <spring.version>5.3.17</spring.version>
+        <hibernate.version>5.4.32.Final</hibernate.version>
+        <opennms-horizon.version>0.1.0-SNAPSHOT</opennms-horizon.version>
+        <opennms.tracker.version>0.7</opennms.tracker.version>
+        <commons.io.version>2.11.0</commons.io.version>
+        <commons.lang.version>2.6</commons.lang.version>
+        <grpc.version>1.47.0</grpc.version>
+        <prometheus.version>0.16.0</prometheus.version>
+        <protobuf.version>3.21.2</protobuf.version>
+        <protoc.version>3.20.1</protoc.version>
+        <mockito.version>4.5.1</mockito.version>
+        <dropwizard-metrics.version>4.2.10</dropwizard-metrics.version>
+        <camel.version>3.15.0</camel.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.opennms.horizon</groupId>
+                <artifactId>horizon-bom</artifactId>
+                <version>${opennms-horizon.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient_bom</artifactId>
+                <version>${prometheus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.opennms.horizon.ipc.grpc</groupId>
+                <artifactId>server</artifactId>
+                <version>${opennms-horizon.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms.core.ipc.twin.grpc</groupId>
+                <artifactId>publisher</artifactId>
+                <version>${opennms-horizon.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms.horizon.core.tracing</groupId>
+                <artifactId>registry</artifactId>
+                <version>${opennms-horizon.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cronutils</groupId>
+                <artifactId>cron-utils</artifactId>
+                <version>${cron-utils.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.ignite</groupId>
+                <artifactId>ignite-core</artifactId>
+                <version>${ignite.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ignite</groupId>
+                <artifactId>ignite-kubernetes</artifactId>
+                <version>${ignite.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-servlet</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <optional>true</optional>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java-util</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-all</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-api</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-auth</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-context</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-core</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-grpclb</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-okhttp</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-protobuf</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-rls</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-services</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-stub</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-testing</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-xds</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${dropwizard-metrics.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <defaultGoal>install</defaultGoal>
@@ -212,8 +447,43 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.24.0</version>
+                <configuration>
+                    <ratchetFrom>origin/main</ratchetFrom>
+                    <java>
+                        <palantirJavaFormat>
+                            <version>2.10.0</version>
+                        </palantirJavaFormat>
+                        <licenseHeader>
+<!--                            //TODO: Where is this defined at?-->
+                            <file>${maven.multiModuleProjectDirectory}/spotless/header-java.txt</file>
+                        </licenseHeader>
+                    </java>
+                    <pom>
+                        <includes>
+                            <include>pom.xml</include>
+                        </includes>
+                        <sortPom />
+                        <licenseHeader>
+                            <file>${maven.multiModuleProjectDirectory}/spotless/header-xml.txt</file>
+                            <delimiter><![CDATA[<project]]></delimiter>
+                        </licenseHeader>
+                    </pom>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+    </dependencies>
 
     <repositories>
         <repository>
