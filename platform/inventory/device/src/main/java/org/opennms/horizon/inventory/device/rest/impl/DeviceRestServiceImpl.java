@@ -30,16 +30,19 @@ package org.opennms.horizon.inventory.device.rest.impl;
 
 import javax.ws.rs.core.Response;
 
+import com.google.common.base.Strings;
+import org.opennms.horizon.events.api.EventBuilder;
+import org.opennms.horizon.events.api.EventConstants;
+import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.inventory.device.rest.api.DeviceRestService;
 import org.opennms.horizon.inventory.device.service.DeviceService;
+import org.opennms.horizon.shared.dto.device.DeviceCreateDTO;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
 
 public class DeviceRestServiceImpl implements DeviceRestService {
   private DeviceService service;
 
-  public void setService(DeviceService service) {
-    this.service = service;
-  }
+  private EventForwarder eventForwarder;
 
   public Response getById(Integer id) {
       DeviceDTO device = service.getById(id);
@@ -54,11 +57,25 @@ public class DeviceRestServiceImpl implements DeviceRestService {
   }
 
   @Override
-  public Response createDevice(final DeviceDTO device) {
+  public Response createDevice(DeviceCreateDTO newDevice) {
     try {
-        return Response.ok(service.createDevice(device)).build();
+        if (Strings.isNullOrEmpty(newDevice.getLabel())) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "label can't be empty").build();
+        }
+        Integer nodeId = service.createDevice(newDevice);
+        eventForwarder.sendNow(new EventBuilder(EventConstants.NODE_ADDED_EVENT_UEI, "Device-Rest-Service")
+            .setNodeid(nodeId).getEvent());
+        return Response.ok(nodeId).build();
     } catch (Exception e){
       return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
     }
   }
+
+    public void setService(DeviceService service) {
+        this.service = service;
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        this.eventForwarder = eventForwarder;
+    }
 }

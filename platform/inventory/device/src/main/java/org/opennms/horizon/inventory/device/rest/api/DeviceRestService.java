@@ -38,7 +38,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.opennms.horizon.shared.dto.device.DeviceDTO;
+import org.opennms.horizon.shared.dto.device.DeviceCreateDTO;
 
 @Path("/devices")
 public interface DeviceRestService {
@@ -56,5 +56,5 @@ public interface DeviceRestService {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed("admin")
-  Response createDevice(final DeviceDTO device);
+  Response createDevice(DeviceCreateDTO deviceCreateDTO);
 }

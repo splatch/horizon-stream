@@ -114,17 +114,12 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             .unit("sec").labelNames("instance", "location").create();
         Long lastUpTimeInMsec = minionUpTime.get(minionId);
         long totalUpTimeInMsec = heartBeatDelta;
-        try {
-            if (lastUpTimeInMsec != null) {
-                totalUpTimeInMsec = lastUpTimeInMsec + heartBeatDelta;
-            }
-            long totalUpTimeInSec = TimeUnit.MILLISECONDS.toSeconds(totalUpTimeInMsec);
-            upTimeGauge.labels(labels).set(totalUpTimeInSec);
-            onmsMetricsAdapter.push(upTimeGauge);
-            minionUpTime.put(minionId, totalUpTimeInMsec);
-            LOG.debug("Updated uptime metrics for Minion with Id {}", minionId);
-        } catch (IOException e) {
-            LOG.error("Exception while pushing metrics for Minion with Id {}", minionId, e);
+        if (lastUpTimeInMsec != null) {
+            totalUpTimeInMsec = lastUpTimeInMsec + heartBeatDelta;
         }
+        long totalUpTimeInSec = TimeUnit.MILLISECONDS.toSeconds(totalUpTimeInMsec);
+        upTimeGauge.labels(labels).set(totalUpTimeInSec);
+        onmsMetricsAdapter.push(upTimeGauge);
+        minionUpTime.put(minionId, totalUpTimeInMsec);
     }
 }

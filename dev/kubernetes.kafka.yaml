@@ -425,13 +425,15 @@ spec:
             - name: ALLOW_PLAINTEXT_LISTENER
               value: "yes"
             - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
-              value: "CLIENT:PLAINTEXT"
+              value: "CLIENT:PLAINTEXT,LOCALCLIENT:PLAINTEXT"
             - name: KAFKA_CFG_LISTENERS
-              value: "CLIENT://:9092"
+              value: "CLIENT://:9092,LOCALCLIENT://:59092"
             - name: KAFKA_CFG_ADVERTISED_LISTENERS
-              value: "CLIENT://kafka:9092"
+              value: "CLIENT://kafka:9092,LOCALCLIENT://localhost:59092"
             - name: KAFKA_CFG_INTER_BROKER_LISTENER_NAME
               value: "CLIENT"
+            - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
+              value: "true"
             - name: KAFKA_CLIENT_USERS
               valueFrom:
                 secretKeyRef:
@@ -443,7 +445,12 @@ spec:
                   name: kafka-secret
                   key: password
           ports:
-            - containerPort: 9092
+            - name: client
+              protocol: TCP
+              containerPort: 9092
+            - name: local-client
+              protocol: TCP
+              containerPort: 59092
           volumeMounts:
             - mountPath: /bitnami/kafka
               name: kafka-volume
@@ -672,6 +679,8 @@ spec:
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
           ports:
             - containerPort: 8080
 ---
