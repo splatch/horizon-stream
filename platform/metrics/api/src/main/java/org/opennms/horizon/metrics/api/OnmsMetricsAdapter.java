@@ -40,6 +40,6 @@ public interface OnmsMetricsAdapter {
      *
      * @param collector - collector, a metric
      */
-    void push(Collector collector) throws IOException;
+    void push(Collector collector);
 
 }

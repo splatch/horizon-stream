@@ -54,11 +54,11 @@
 <script setup lang="ts">
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
-import { formatItemBgColor } from '@/helpers/formatting'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import { add, intervalToDuration, formatDuration } from 'date-fns'
 import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
 import { ComputedRef } from 'vue'
+import { formatItemBgColor } from './appliances.helpers'
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()

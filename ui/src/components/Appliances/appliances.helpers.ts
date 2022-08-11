@@ -8,9 +8,9 @@ export interface BGColors {
 }
 
 /**
- * 
+ * Change color background on metrics value
  * @param list 
- * @returns 
+ * @returns list of items with added metrics background color props
  */
 export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[]) => list.map(item => {
   const bg = {

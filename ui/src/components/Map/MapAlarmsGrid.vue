@@ -9,12 +9,13 @@
     text-prop="option"
     @update:modelValue="selectAlarmAck"
     label="Alarm Action"
+    data-test="select-ack"
   />
   <div id="wrap">
     <table class="tl1 tl2 tl3" summary="Alarms">
       <thead>
         <tr>
-          <th class="first-th">
+          <th class="first-th" data-test="col-check-all">
             <FeatherCheckbox v-model="all" label="All" />
           </th>
 
@@ -23,6 +24,7 @@
             property="id"
             :sort="sortStates.id"
             @sort-changed="sortChanged"
+            data-test="col-id"
           >ID</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -30,6 +32,7 @@
             property="severity"
             :sort="sortStates.severity"
             @sort-changed="sortChanged"
+            data-test="col-severity"
           >SEVERITY</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -37,6 +40,7 @@
             property="nodeLabel"
             :sort="sortStates.nodeLabel"
             @sort-changed="sortChanged"
+            data-test="col-node-label"
           >NODE LABEL</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -44,6 +48,7 @@
             property="uei"
             :sort="sortStates.uei"
             @sort-changed="sortChanged"
+            data-test="col-uei"
           >UEI</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -51,6 +56,7 @@
             property="count"
             :sort="sortStates.count"
             @sort-changed="sortChanged"
+            data-test="col-count"
           >COUNT</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -58,6 +64,7 @@
             property="lastEvent"
             :sort="sortStates.lastEventTime"
             @sort-changed="sortChanged"
+            data-test="col-last-event"
           >LAST EVENT</FeatherSortHeader>
 
           <FeatherSortHeader
@@ -65,10 +72,11 @@
             property="logMessage"
             :sort="sortStates.logMessage"
             @sort-changed="sortChanged"
+            data-test="col-log-msg"
           >LOG MESSAGE</FeatherSortHeader>
         </tr>
       </thead>
-      <tbody>
+      <tbody data-test="alarm-list">
         <tr v-for="alarm in alarms" :key="alarm.id">
           <td :class="alarm.severity" class="first-td">
             <FeatherCheckbox
@@ -89,6 +97,7 @@
     </table>
   </div>
 </template>
+
 <script setup lang="ts">
 import { useMapStore } from '@/store/Views/mapStore'
 import { Alarm, AlarmQueryParameters, FeatherSortObject } from '@/types/map'

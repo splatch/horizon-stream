@@ -1,4 +1,5 @@
-import { BGColors } from "@/helpers/formatting"
+
+import { BGColors } from "@/components/Appliances/appliances.helpers"
 import { DeviceDto } from "./graphql"
 
 interface ExtendedDeviceDTO extends DeviceDto {
