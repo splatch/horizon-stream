@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 import org.opennms.cloud.grpc.minion.CloudServiceGrpc.CloudServiceBlockingStub;
 import org.opennms.cloud.grpc.minion.CloudServiceGrpc.CloudServiceStub;
 import org.opennms.cloud.grpc.minion.CloudToMinionMessage;
-import org.opennms.cloud.grpc.minion.MinionHeader;
+import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.cloud.grpc.minion.MinionToCloudMessage;
 import org.opennms.cloud.grpc.minion.RpcRequestProto;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
@@ -114,7 +114,7 @@ public class StubGrpcClient implements GrpcClient {
   }
 
   public Session streamFromCloud(Consumer<CloudToMinionMessage> consumer) {
-    MinionHeader header = MinionHeader.newBuilder()
+    Identity header = Identity.newBuilder()
       .setLocation(minionLocation)
       .setSystemId(minionServerId)
       .build();

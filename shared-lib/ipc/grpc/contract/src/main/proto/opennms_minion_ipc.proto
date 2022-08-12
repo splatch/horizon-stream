@@ -46,11 +46,10 @@ service CloudService {
   // > ad hoc calls echo/heartbeat ?
   // OpenNMSIpc.RpcStreaming
   rpc CloudToMinionRPC (stream RpcResponseProto) returns (stream RpcRequestProto) {}
-//  rpc CloudToMinionRPC2 (stream RpcMinionStreamMessage) returns (stream RpcCloudStreamMessage) {}
   // Messages sent from Cloud to Minion (i.e. Twin Updates), called SinkStreaming in Horizon
   // 3. > incremental update of workflow v56 (delta of changes)
   // Twin.SinkStreaming
-  rpc CloudToMinionMessages (MinionHeader) returns (stream CloudToMinionMessage) {}
+  rpc CloudToMinionMessages (Identity) returns (stream CloudToMinionMessage) {}
 
   // RPCs triggered from Minion to Cloud (i.e. Twin Registration Request)
   // 1. < I am interested in twin objects of workflow
@@ -63,8 +62,7 @@ service CloudService {
   rpc MinionToCloudMessages (stream MinionToCloudMessage) returns (google.protobuf.Empty) {}
 }
 
-
-message MinionHeader {
+message Identity {
   string system_id = 1;
   string location = 2;
 }

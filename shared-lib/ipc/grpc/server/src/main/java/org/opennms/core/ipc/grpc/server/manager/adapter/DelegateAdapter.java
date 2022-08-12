@@ -4,7 +4,7 @@ import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import org.opennms.cloud.grpc.minion.CloudServiceGrpc.CloudServiceImplBase;
 import org.opennms.cloud.grpc.minion.CloudToMinionMessage;
-import org.opennms.cloud.grpc.minion.MinionHeader;
+import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.cloud.grpc.minion.MinionToCloudMessage;
 import org.opennms.cloud.grpc.minion.RpcRequestProto;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
@@ -23,7 +23,7 @@ public class DelegateAdapter extends CloudServiceImplBase {
     }
 
     @Override
-    public void cloudToMinionMessages(MinionHeader request, StreamObserver<CloudToMinionMessage> responseObserver) {
+    public void cloudToMinionMessages(Identity request, StreamObserver<CloudToMinionMessage> responseObserver) {
         delegate.cloudToMinionMessages(request, responseObserver);
     }
 
