@@ -61,6 +61,13 @@
             <classifier>features</classifier>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion.grpc</groupId>
+            <artifactId>features</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -118,11 +125,13 @@
                         <feature>scr</feature>
                         <feature>ignite-poc</feature>
                         <feature>poc-grpc</feature>
+                        <!--
                         <feature>icmp-plugins</feature>
                         <feature>snmp-plugins</feature>
                         <feature>web-listen-plugin</feature>
                         <feature>fake-connector-plugin</feature>
                         <feature>test-tcp-connector-plugin</feature>
+                        -->
                     </bootFeatures>
                     <libraries>
                     </libraries>

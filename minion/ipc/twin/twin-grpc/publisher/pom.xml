@@ -30,11 +30,6 @@
             <artifactId>server</artifactId>
             <version>${opennms-horizon.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.core</groupId>
-            <artifactId>lib</artifactId>
-            <version>${opennms-horizon.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>io.grpc</groupId>

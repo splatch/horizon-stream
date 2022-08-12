@@ -16,14 +16,24 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <cm:property-placeholder id="identityProperties" persistent-id="org.opennms.identity" update-strategy="reload"
+        placeholder-prefix="$[" placeholder-suffix="]">
+        <cm:default-properties>
+            <cm:property name="id" value="UNKNOWN"/>
+            <cm:property name="location" value="cloud"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="ipcIdentity" class="org.opennms.core.ipc.grpc.client.MinionIpcIdentity">
+        <argument value="$[id]" />
+        <argument value="$[location]" />
+    </bean>
+
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
-    <reference id="ipcIdentity" interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity"/>
-    <reference id="tracerWrapper" interface="org.opennms.core.tracing.api.TracerWrapper"/>
+    <service interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity" ref="ipcIdentity" />
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-    <bean id="tracer" factory-ref="tracerWrapper" factory-method="init">
-        <argument value="minion" />
-    </bean>
+    <bean id="tracer" class="io.opentracing.noop.NoopTracerFactory" factory-method="create"/>
 
     <bean id="minionClient" class="org.opennms.core.ipc.grpc.client.MinionGrpcClient" init-method="start" destroy-method="close">
         <argument ref="ipcIdentity"/>

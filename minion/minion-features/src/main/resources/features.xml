@@ -20,11 +20,10 @@
         <feature>aries-blueprint</feature>
         <feature version="${project.version}" dependency="true">plugin-registration</feature>
         <feature version="${project.version}">eos</feature>
-        <feature version="${project.version}">horizon-shared-ipc-api</feature>
         <feature version="${project.version}">ignite-poc-model</feature>
-        <feature version="${project.version}">poc-grpc</feature>
         <feature version="${project.version}">poc-cron</feature>
         <feature version="${project.version}">poc-metrics</feature>
+        <feature version="${project.version}">poc-grpc</feature>
 
         <bundle>mvn:org.opennms.horizon.minion/ignite-worker/${project.version}</bundle>
         <bundle>wrap:mvn:org.apache.ignite/ignite-kubernetes/${ignite.version}</bundle>
@@ -49,50 +48,10 @@
         <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
     </feature>
 
-    <feature name="horizon-core-lib" version="${opennms-horizon.version}">
-        <feature prerequisite="true">wrap</feature>
-<!--        $overwrite=merge&amp;Import-Package=org.opennms.horizon.core.lib;resolution:=optional,*-->
-        <bundle>wrap:mvn:org.opennms.horizon.core/lib/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=*;resolution:=optional&amp;Karaf-Commands=none</bundle>
-    </feature>
-
-    <feature name="horizon-shared-ipc-api" version="${project.version}">
-        <feature>horizon-core-lib</feature>
-        <bundle>mvn:org.opennms.horizon.shared.ipc/api/${opennms-horizon.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.shared/logging/${opennms-horizon.version}</bundle>
-    </feature>
-
-    <feature name="poc-grpc-horizon" description="Horizon gRPC apis" version="${project.version}">
-        <details>Import of Horizon gRPC apis.</details>
-        <feature prerequisite="true">wrap</feature>
-        <feature>shell</feature>
-        <feature>aries-blueprint</feature>
-        <feature>poc-horizon-core</feature>
-        <feature>rate-limited-logger</feature>
-        <feature>metrics</feature>
-        <feature>guava</feature>
-        <feature>poc-opentracing</feature>
-
-        <bundle>wrap:mvn:org.opennms.horizon.3rdparty/grpc/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf.version}</bundle>
-    </feature>
-
-    <feature name="poc-grpc-client" description="gRPC client" version="${project.version}">
-        <feature>poc-grpc-horizon</feature>
-        <feature>poc-tracing-stub</feature>
-        <feature>horizon-shared-ipc-api</feature>
-        <feature>poc-metrics</feature>
-
-        <bundle>mvn:org.opennms.horizon.shared.ipc.grpc/contract/${opennms-horizon.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.shared.ipc.grpc/client/${opennms-horizon.version}</bundle>
-    </feature>
-
     <feature name="poc-grpc-ipc-twin" description="Digital twin api with gRPC channel" version="${project.version}">
         <feature prerequisite="true">wrap</feature>
         <feature>jackson</feature>
-        <feature>poc-grpc-horizon</feature>
-        <feature>poc-grpc-client</feature>
-        <feature>poc-metrics</feature>
-        <feature>horizon-core-lib</feature>
+        <feature>grpc-minion</feature>
 
         <!-- shallow copy of horizon dependencies -->
         <bundle>wrap:mvn:org.opennms.horizon.3rdparty/json-patch-osgi/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
@@ -135,8 +94,8 @@
         <feature version="${project.version}">poc-grpc-ipc-twin</feature>
         <feature version="${project.version}">ignite-poc-model</feature>
         <feature version="${project.version}">poc-grpc-ipc-twin</feature>
-        <feature version="${project.version}">poc-grpc-client</feature>
         <feature version="${project.version}">poc-metrics</feature>
+        <feature version="${project.version}">grpc-minion</feature>
 
         <bundle>mvn:org.opennms.horizon.minion/module/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.minion/workflow-subscriber/${project.version}</bundle>
@@ -248,7 +207,7 @@
 
 <!--    // horizon stream bundles and features needed for SNMP-->
     <feature name="poc-horizon-snmp" version="${project.version}" description="Horizon :: SNMP">
-        <feature version="${project.version}">poc-grpc-horizon</feature>
+        <feature version="${project.version}">poc-grpc</feature>
         <feature version="${opennms-horizon.version}">horizon-events-api</feature>
 
         <bundle dependency="true">mvn:commons-io/commons-io/${commons.io.version}</bundle>

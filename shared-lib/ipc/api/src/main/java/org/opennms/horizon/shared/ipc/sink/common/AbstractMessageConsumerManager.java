@@ -28,13 +28,20 @@
 
 package org.opennms.horizon.shared.ipc.sink.common;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import org.opennms.horizon.shared.ipc.sink.api.MessageConsumer;
 import org.opennms.horizon.shared.ipc.sink.api.MessageConsumerManager;
 import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
@@ -44,10 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.Message;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public abstract class AbstractMessageConsumerManager implements MessageConsumerManager {
 
@@ -55,13 +58,12 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
 
     public static final String SINK_INITIAL_SLEEP_TIME = "org.opennms.core.ipc.sink.initialSleepTime";
 
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("consumer-starter-%d")
-            .build();
+    private final AtomicLong threadCounter = new AtomicLong();
+    private final ThreadFactory threadFactory = (runnable) -> new Thread(runnable, "consumer-starter-" + threadCounter.incrementAndGet());
 
     protected final ExecutorService startupExecutor = Executors.newCachedThreadPool(threadFactory);
 
-    private final Multimap<SinkModule<?, Message>, MessageConsumer<?, Message>> consumersByModule = LinkedListMultimap.create();
+    private final Map<SinkModule<?, Message>, Set<MessageConsumer<?, Message>>> consumersByModule = new LinkedHashMap<>();
 
     protected abstract void startConsumingForModule(SinkModule<?, Message> module) throws Exception;
 
@@ -111,9 +113,12 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
 
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.info("Registering consumer: {}", consumer);
-            final SinkModule<?, Message> module = (SinkModule<?, Message>)consumer.getModule();
+            final SinkModule<?, Message> module = (SinkModule<?, Message>) consumer.getModule();
             final int numConsumersBefore = consumersByModule.get(module).size();
-            consumersByModule.put(module, (MessageConsumer<?, Message>)consumer);
+            if (!consumersByModule.containsKey(module)) {
+                consumersByModule.put(module, new CopyOnWriteArraySet<>());
+            }
+            consumersByModule.get(module).add((MessageConsumer<?, Message>) consumer);
             if (numConsumersBefore < 1) {
                 waitForStartup.thenRunAsync(new Runnable() {
                     @Override
@@ -160,7 +165,9 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
 
     public synchronized void unregisterAllConsumers() throws Exception {
         // Copy the list of consumers before we iterate to avoid concurrent modification exceptions
-        final List<MessageConsumer<?, Message>> consumers = Lists.newArrayList(consumersByModule.values());
+        final List<MessageConsumer<?, Message>> consumers = consumersByModule.values().stream()
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
         for (MessageConsumer<?, Message> consumer : consumers) {
             unregisterConsumer(consumer);
         }
