@@ -274,7 +274,7 @@
     </feature>
 
     <feature name="metrics">
-        <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizard-metrics.version}</bundle>
+        <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizard.metrics.version}</bundle>
     </feature>
 
     <feature name="prometheus">
