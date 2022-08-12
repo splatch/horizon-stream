@@ -27,14 +27,14 @@
       <FeatherInput
         data-test="location-name-input"
         label="Location Name"
-        v-model="device.location.locationName"
+        v-model="device.location"
       />
       
       <!-- Monitoring area -->
       <FeatherInput
         data-test="monitoring-area-input"
         label="Monitoring Area"
-        v-model="device.location.monitoringArea"
+        v-model="device.monitoringArea"
       />
 
       <!-- Management IP -->
@@ -64,7 +64,7 @@
         type="number"
         data-test="port-latitude"
         label="Latitude (Optional)"
-        v-model="device.location.latitude"
+        v-model="device.latitude"
       />
       
       <!-- Longitude -->
@@ -72,7 +72,7 @@
         type="number"
         data-test="port-longitude"
         label="Longitude (Optional)"
-        v-model="device.location.longitude"
+        v-model="device.longitude"
       />
     </template>
 
@@ -80,7 +80,7 @@
       <FeatherButton 
         data-test="cancel-btn" 
         secondary 
-        @click="closeModal">
+        @click="cancel">
           Cancel
       </FeatherButton>
       
@@ -102,30 +102,35 @@ import { useDeviceMutations } from '@/store/Mutations/deviceMutations'
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
+import { DeviceCreateDTOInput } from '@/types/appliances'
 
 const { showSnackbar } = useSnackbar()
 const { openModal, closeModal, isVisible } = useModal()
 const deviceMutations = useDeviceMutations()
 const applianceQueries = useApplianceQueries()
 
-const defaultDevice = {
-  label: undefined,
-  managementIp: undefined,
-  snmpCommunityString: undefined,
-  port: undefined,
-  location: {
-    locationName: undefined, // required
-    latitude: undefined,
-    longitude: undefined,
-    monitoringArea: undefined //required
-  }
+const defaultDevice: DeviceCreateDTOInput = { 
+  label: '',
+  location: '',
+  latitude: null,
+  longitude: null,
+  monitoringArea: '',
+  managementIp: '',
+  port: null,
+  snmpCommunityString: ''
 }
-
-const device = reactive({...defaultDevice})
+const device: DeviceCreateDTOInput = reactive({ ...defaultDevice })
 
 const save = async () => {
-  await deviceMutations.addDevice({ device })
+  // payload of following number type fields require null as value (form field return empty string if value entered then erased)
+  Object.assign(device, {
+    port: !device.port?.length ? null : device.port,
+    latitude: !device.latitude?.length ? null : device.latitude,
+    longitude: !device.longitude?.length ? null : device.longitude
+  })
 
+  await deviceMutations.addDevice({ device })
+  
   if (!deviceMutations.error) {
     // clears device obj on successful save
     Object.assign(device, defaultDevice)
@@ -142,6 +147,13 @@ const save = async () => {
       applianceQueries.fetchDevicesForTable()
     }, 350)
   }
+}
+
+const cancel = () => {
+  // clears device obj
+  Object.assign(device, defaultDevice)
+
+  closeModal()
 }
 </script>
 
