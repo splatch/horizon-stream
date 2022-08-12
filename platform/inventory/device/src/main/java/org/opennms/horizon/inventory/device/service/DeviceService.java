@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.google.common.base.Strings;
+import org.opennms.horizon.db.dao.api.IpInterfaceDao;
 import org.opennms.horizon.db.dao.api.MonitoringLocationDao;
 import org.opennms.horizon.db.model.OnmsIpInterface;
 import org.opennms.horizon.db.model.OnmsMonitoringLocation;
@@ -44,13 +45,34 @@ public class DeviceService extends AbstractService<OnmsNode, DeviceDTO, Integer>
 
     private MonitoringLocationDao locationDao;
 
-    public void setLocationDao(MonitoringLocationDao locationDao) {
-        this.locationDao = locationDao;
-    }
+    private IpInterfaceDao ipInterfaceDao;
+
 
     public DeviceCollectionDTO searchDevices() {
         List<DeviceDTO> deviceDTOS = findAll();
+        deviceDTOS.forEach(this::setManagementIp);
         return new DeviceCollectionDTO(deviceDTOS);
+    }
+
+    public DeviceDTO getDevice(Integer id) {
+        DeviceDTO deviceDTO = getById(id);
+        setManagementIp(deviceDTO);
+        return deviceDTO;
+    }
+
+    private void setManagementIp(DeviceDTO deviceDTO) {
+
+        String managementIp = sessionUtils.withReadOnlyTransaction(() -> {
+            List<OnmsIpInterface> ipInterfaces = ipInterfaceDao.findInterfacesByNodeId(deviceDTO.getId());
+            if (!ipInterfaces.isEmpty()) {
+                OnmsIpInterface onmsIpInterface = ipInterfaces.get(0);
+                return onmsIpInterface.getIpAddress().getHostAddress();
+            }
+            return null;
+        });
+        if (managementIp != null) {
+            deviceDTO.setManagementIp(managementIp);
+        }
     }
 
     public Integer createDevice(DeviceCreateDTO newDevice) {
@@ -87,4 +109,11 @@ public class DeviceService extends AbstractService<OnmsNode, DeviceDTO, Integer>
         return createEntity(onmsNode);
     }
 
+    public void setLocationDao(MonitoringLocationDao locationDao) {
+        this.locationDao = locationDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        this.ipInterfaceDao = ipInterfaceDao;
+    }
 }
