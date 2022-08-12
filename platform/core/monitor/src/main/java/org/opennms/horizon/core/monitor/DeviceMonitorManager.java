@@ -80,7 +80,7 @@ public class DeviceMonitorManager implements EventListener {
     private final Gauge rttGauge = Gauge.build().name("icmp_round_trip_time").help("ICMP round trip time")
         .unit("msec").labelNames(labelNames).register(collectorRegistry);
     private final Gauge upTimeGauge = Gauge.build().name("snmp_uptime").help("SNMP Up Time")
-        .unit("sec").labelNames(labelNames).create();
+        .unit("sec").labelNames(labelNames).register(collectorRegistry);
     // Cache SNMP Uptime for each Interface.
     private final Map<String, Long> snmpUpTimeCache = new ConcurrentHashMap<>();
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(25, monitorThreadFactory);
@@ -134,11 +134,13 @@ public class DeviceMonitorManager implements EventListener {
                 .execute()
                 .whenComplete(((pingSummary, throwable) -> {
                     if (throwable != null) {
+                        LOG.info("ICMP is Down at IpAddress {}", inetAddress.getHostAddress());
                         LOG.error("Exception while pinging IpAddress {}", inetAddress.getHostAddress(), throwable);
                     } else if (pingSummary != null && pingSummary.getSequence(0) != null) {
                         // we are only pinging one IpAddress, use sequence 0
                         double icmpResponseTime = pingSummary.getSequence(0).getResponse().getRtt();
-                        LOG.info("ICMP Round trip time for IPAddress {} : {}", inetAddress.getHostAddress(), icmpResponseTime);
+                        LOG.info("ICMP Round trip time for IPAddress {} at location {} : {} msec",
+                            inetAddress.getHostAddress(), location, icmpResponseTime);
                         addIcmpMetric(icmpResponseTime, inetAddress.getHostAddress(), location);
                     }
                 }));
@@ -160,7 +162,8 @@ public class DeviceMonitorManager implements EventListener {
                 .withTimeToLive(60000L)
                 .execute().whenComplete(((snmpValue, throwable) -> {
                     if (throwable != null) {
-                        LOG.error("Exception while detecting Snmp service at IpAddress {}", inetAddress.getHostAddress(), throwable);
+                        LOG.info("SNMP is Down at IpAddress {}", inetAddress.getHostAddress());
+                        LOG.debug("Exception while detecting Snmp service at IpAddress {}", inetAddress.getHostAddress(), throwable);
                         addSnmpMetrics(inetAddress.getHostAddress(), false, location);
                     } else if (snmpValue != null && !snmpValue.isError()) {
                         LOG.info("SNMP is Up at IpAddress {}", inetAddress.getHostAddress());
@@ -183,17 +186,19 @@ public class DeviceMonitorManager implements EventListener {
     private void addSnmpMetrics(String ipAddress, boolean status, String location) {
         String[] labelValues = {ipAddress, location};
         if (status) {
-            Long prevUpTimeInMsec = snmpUpTimeCache.get(ipAddress);
+            Long firstUpTime = snmpUpTimeCache.get(ipAddress);
             long totalUpTimeInMsec = 0;
-            if (prevUpTimeInMsec != null && prevUpTimeInMsec.longValue() != INVALID_UP_TIME) {
-                totalUpTimeInMsec = System.currentTimeMillis() - prevUpTimeInMsec;
+            if (firstUpTime != null && firstUpTime.longValue() != INVALID_UP_TIME) {
+                totalUpTimeInMsec = System.currentTimeMillis() - firstUpTime;
+            } else {
+                snmpUpTimeCache.put(ipAddress, System.currentTimeMillis());
             }
-            snmpUpTimeCache.put(ipAddress, System.currentTimeMillis());
-
             long totalUpTimeInSec = TimeUnit.MILLISECONDS.toSeconds(totalUpTimeInMsec);
             upTimeGauge.labels(labelValues).set(totalUpTimeInSec);
+            LOG.info("Total upTime of SNMP for {} at location {} : {} sec",
+                ipAddress, location, totalUpTimeInSec);
         } else {
-            upTimeGauge.labels(labelValues).set(INVALID_UP_TIME);
+            upTimeGauge.labels(labelValues).set(0);
             snmpUpTimeCache.put(ipAddress, INVALID_UP_TIME);
         }
         var groupingKey = IntStream.range(0, labelNames.length).boxed()
