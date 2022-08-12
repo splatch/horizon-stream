@@ -7,17 +7,17 @@ import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricSet;
 import java.util.Collections;
 import java.util.Map;
-import org.opennms.horizon.core.identity.Identity;
 import org.opennms.horizon.minion.ignite.model.workflows.Workflows;
 import org.opennms.horizon.minion.ignite.worker.workflows.WorkflowLifecycleManager;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 
 public class MeteredWorkflowLifecycleManager implements WorkflowLifecycleManager, MetricSet {
 
-  private final Identity identity;
+  private final IpcIdentity identity;
   private final WorkflowLifecycleManager delegate;
   private final Counter counter = new Counter();
 
-  public MeteredWorkflowLifecycleManager(Identity identity, WorkflowLifecycleManager delegate) {
+  public MeteredWorkflowLifecycleManager(IpcIdentity identity, WorkflowLifecycleManager delegate) {
     this.identity = identity;
     this.delegate = delegate;
   }

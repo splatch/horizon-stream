@@ -21,8 +21,8 @@ import org.apache.ignite.spi.metric.ReadOnlyMetricManager;
 import org.apache.ignite.spi.metric.ReadOnlyMetricRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.opennms.horizon.core.identity.Identity;
 import org.opennms.horizon.minion.metrics.MetricsProvider;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +30,13 @@ public class IgniteMetricsAdapter implements MetricExporterSpi, MetricsProvider,
 
   private final Logger logger = LoggerFactory.getLogger(IgniteMetricsAdapter.class);
   private final MetricRegistry metrics = new MetricRegistry();
-  private final Identity identity;
+  private final IpcIdentity identity;
 
   private AtomicBoolean connected = new AtomicBoolean();
   private AtomicBoolean work = new AtomicBoolean();
   private ReadOnlyMetricManager registry;
 
-  public IgniteMetricsAdapter(Identity identity) {
+  public IgniteMetricsAdapter(IpcIdentity identity) {
     this.identity = identity;
   }
 

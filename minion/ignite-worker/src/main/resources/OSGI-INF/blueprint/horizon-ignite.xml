@@ -14,7 +14,7 @@
     </cm:default-properties>
   </cm:property-placeholder>
 
-  <reference id="identity" interface="org.opennms.horizon.core.identity.Identity"/>
+  <reference id="identity" interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity"/>
   <reference id="opennmsScheduler" interface="org.opennms.horizon.minion.scheduler.OpennmsScheduler"/>
   <reference id="resultPublisher" interface="java.util.function.Consumer" filter="(message.publisher.topic=workflow-result)" />
     

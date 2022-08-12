@@ -14,9 +14,7 @@
     <name>OpenNms Horizon :: Minion :: Ipc</name>
 
     <modules>
-        <module>ipc-api</module>
         <module>echo</module>
-        <module>grpc</module>
         <module>twin</module>
     </modules>
 

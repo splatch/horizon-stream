@@ -24,9 +24,9 @@
             <version>${opennms-horizon.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>ipc-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.opennms.horizon.shared.ipc</groupId>
+            <artifactId>api</artifactId>
+            <version>${opennms-horizon.version}</version>
         </dependency>
 
         <dependency>
