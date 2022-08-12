@@ -37,6 +37,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opennms.horizon.notifications.api.PagerDutyAPI;
 import org.opennms.horizon.notifications.api.PagerDutyAPIImpl;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,21 +47,15 @@ public class NotificationsServiceImplTest {
     NotificationServiceImpl notificationService;
 
     @Mock
-    PagerDutyAPIImpl pagerDutyAPI;
-
-    @Test
-    public void testGetPagerDutyKey() throws Exception {
-        Mockito.when(pagerDutyAPI.getAuthToken()).thenReturn("ABCDE");
-        String ret = notificationService.getPagerDutyKey();
-
-        assertEquals("ABCDE", ret);
-    }
+    PagerDutyAPI pagerDutyAPI;
 
     @Test
     public void testPostNotification() throws Exception {
-        Mockito.when(pagerDutyAPI.postNotification(any())).thenReturn("A");
-        String ret = notificationService.postNotification(null);
+        notificationService.postNotification(null);
+    }
 
-        assertEquals("A", ret);
+    @Test
+    public void testPostPagerDutyConfig() throws Exception {
+        notificationService.postPagerDutyConfig(null);
     }
 }

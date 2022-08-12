@@ -47,16 +47,10 @@ public class NotificationRestController {
     @Autowired
     private NotificationService notificationsService;
 
-    @GetMapping("/pagerDutyKey")
-    public ResponseEntity<String> getPagerDutyKey() throws Exception {
-        String key = notificationsService.getPagerDutyKey();
-        return new ResponseEntity<>(key, HttpStatus.OK);
-    }
-
     @PostMapping(consumes="application/json")
     public ResponseEntity<String> postNotification(@RequestBody NotificationDTO notification) throws Exception {
-        String key = notificationsService.postNotification(notification);
-        return new ResponseEntity<>(key, HttpStatus.OK);
+        notificationsService.postNotification(notification);
+        return new ResponseEntity<>("OK", HttpStatus.OK);
     }
 
     @PostMapping(value = "/config", consumes="application/json")

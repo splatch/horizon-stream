@@ -29,6 +29,7 @@
 package org.opennms.horizon.notifications.api;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Instant;
 
 import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
@@ -36,12 +37,17 @@ import org.opennms.horizon.notifications.api.dto.PagerDutyCustomDetailsDTO;
 import org.opennms.horizon.notifications.api.dto.PagerDutyEventDTO;
 import org.opennms.horizon.notifications.api.dto.PagerDutyPayloadDTO;
 import org.opennms.horizon.notifications.dto.NotificationDTO;
+import org.opennms.horizon.notifications.exceptions.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -49,39 +55,41 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class PagerDutyAPIImpl implements PagerDutyAPI {
+    private static final Logger LOG = LoggerFactory.getLogger(PagerDutyAPI.class);
 
     @Autowired
     PagerDutyDao pagerDutyDao;
 
+    @Autowired
+    RestTemplate restTemplate;
+
     @Override
-    public String postNotification(NotificationDTO notification) throws Exception {
-        String event = getEvent(notification);
-        RestTemplate restTemplate = new RestTemplate();
-
-        String baseUrl = "https://events.pagerduty.com/v2/enqueue";
-        URI uri = new URI(baseUrl);
-        String token = getAuthToken();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Token token="+token);
-        headers.set("Accept", "application/vnd.pagerduty+json;version=2");
-        headers.set("Content-Type", "application/json");
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(event, headers);
-
-        // TODO: Exception handling. Return something useful.
-        ResponseEntity<String> result;
+    public void postNotification(NotificationDTO notification) throws NotificationException {
         try {
-             result = restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
-        } catch (Exception e) {
-            throw e;
-        }
-        return "";
-    }
+            String event = getEvent(notification);
 
-    public String getAuthToken() {
-        PagerDutyConfigDTO config = pagerDutyDao.getConfig();
-        return config.getToken();
+            String baseUrl = "https://events.pagerduty.com/v2/enqueue";
+            URI uri = new URI(baseUrl);
+            String token = getAuthToken();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Token token="+token);
+            headers.set("Accept", "application/vnd.pagerduty+json;version=2");
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> requestEntity = new HttpEntity<>(event, headers);
+
+            restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        } catch (URISyntaxException e) {
+            LOG.error("Bad pager duty url");
+            throw new NotificationInternalException(e);
+        } catch (JsonProcessingException e) {
+            LOG.error("JSON error processing notification");
+            throw new NotificationBadDataException(e);
+        } catch (RestClientException e) {
+            LOG.error("Pager Duty API exception:" + e);
+            throw new NotificationAPIException(e);
+        }
     }
 
     @Override
@@ -89,12 +97,45 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
         pagerDutyDao.initConfig(config);
     }
 
-    private String getPagerDutyIntegrationKey() {
+    @Override
+    public void validateConfig(PagerDutyConfigDTO config) throws NotificationException {
+        callGetService(config);
+    }
+
+    private void callGetService(PagerDutyConfigDTO config) throws NotificationException {
+        try {
+            String baseUrl = "https://api.pagerduty.com/services?include%5B%5D=integrations";
+            URI uri = new URI(baseUrl);
+            String token = config.getToken();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Token token="+token);
+            headers.set("Accept", "application/vnd.pagerduty+json;version=2");
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+            restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
+        } catch (URISyntaxException e) {
+            LOG.error("Bad pager duty validation url");
+            throw new NotificationInternalException(e);
+        } catch (HttpClientErrorException e) {
+            LOG.info("Invalid pager duty token");
+            throw new NotificationBadDataException("Invalid pager duty token");
+        }
+    }
+
+    private String getPagerDutyIntegrationKey() throws NotificationConfigUninitializedException {
         PagerDutyConfigDTO config = pagerDutyDao.getConfig();
         return config.getIntegrationkey();
     }
 
-    private String getEvent(NotificationDTO notification) throws JsonProcessingException {
+    private String getAuthToken() throws NotificationConfigUninitializedException {
+        PagerDutyConfigDTO config = pagerDutyDao.getConfig();
+        return config.getToken();
+    }
+
+    private String getEvent(NotificationDTO notification) throws NotificationConfigUninitializedException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Instant now = Instant.now();
 
@@ -102,9 +143,9 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
         PagerDutyPayloadDTO payload = new PagerDutyPayloadDTO();
         PagerDutyCustomDetailsDTO customDetails = new PagerDutyCustomDetailsDTO();
 
-        customDetails.setLoad_avg("0.75");
-        customDetails.setFree_space("1%");
-        customDetails.setPing_time("1500ms");
+        customDetails.setLoadAvg("0.75");
+        customDetails.setFreeSpace("1%");
+        customDetails.setPingTime("1500ms");
 
         payload.setSummary(notification.getMessage());
         payload.setTimestamp(now.toString());

@@ -38,11 +38,11 @@ import lombok.Setter;
 public class PagerDutyCustomDetailsDTO {
     // TODO: Change to something useful to us. Currently first draft to prove can call into PagerDuty
     @JsonProperty("free space")
-    String free_space;
+    String freeSpace;
 
     @JsonProperty("ping time")
-    String ping_time;
+    String pingTime;
 
     @JsonProperty("load avg")
-    String load_avg;
+    String loadAvg;
 }

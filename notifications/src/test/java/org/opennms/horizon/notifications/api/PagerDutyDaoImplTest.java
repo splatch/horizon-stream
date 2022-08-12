@@ -28,8 +28,6 @@
 
 package org.opennms.horizon.notifications.api;
 
-import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -37,64 +35,77 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opennms.horizon.notifications.api.PagerDutyDao;
+import org.opennms.horizon.notifications.api.PagerDutyDaoImpl;
 import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.dto.NotificationDTO;
 import org.opennms.horizon.notifications.exceptions.NotificationBadDataException;
-import org.opennms.horizon.notifications.exceptions.NotificationInternalException;
+import org.opennms.horizon.notifications.exceptions.NotificationConfigUninitializedException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PagerDutyAPIImplTest {
+public class PagerDutyDaoImplTest {
     @InjectMocks
-    PagerDutyAPIImpl pagerDutyAPI;
+    PagerDutyDaoImpl pagerDutyDao;
 
     @Mock
-    RestTemplate restTemplate;
-
-    @Mock
-    PagerDutyDao pagerDutyDao;
-
-    @Test
-    public void postNotifications() throws Exception {
-        Mockito.when(pagerDutyDao.getConfig()).thenReturn(getConfigDTO());
-        NotificationDTO notificationDTO = getNotification();
-        pagerDutyAPI.postNotification(notificationDTO);
-    }
+    JdbcTemplate jdbcTemplate;
 
     @Test
     public void initConfig() throws Exception {
-        pagerDutyAPI.initConfig(getConfigDTO());
+        PagerDutyConfigDTO config = getConfigDTO();
+        pagerDutyDao.initConfig(config);
+
+        Mockito.verify(jdbcTemplate, times(2)).execute(anyString());
+        Mockito.verify(jdbcTemplate, times(1)).update(anyString(), anyString(), anyString());
     }
 
     @Test
-    public void validateConfig() throws Exception {
-        pagerDutyAPI.validateConfig(getConfigDTO());
+    public void getUninitialisedConfig() throws Exception {
+        try {
+            pagerDutyDao.getConfig();
+        } catch (NotificationConfigUninitializedException e) {
+            assertEquals("Pager duty config not initialized. Row count=0", e.getMessage());
+        }
     }
 
     @Test
-    public void validateConfigInvalidToken() throws Exception {
-        doThrow(HttpClientErrorException.class)
-            .when(restTemplate).exchange(ArgumentMatchers.any(URI.class),
-                ArgumentMatchers.any(HttpMethod.class),
-                ArgumentMatchers.any(HttpEntity.class),
-                ArgumentMatchers.any(Class.class));
+    public void getInitialisedConfig() throws Exception {
+        List<PagerDutyConfigDTO> configs = Arrays.asList(getConfigDTO());
+        Mockito.when(jdbcTemplate.query(any(String.class), any(RowMapper.class))).thenReturn(configs);
+        PagerDutyConfigDTO config = pagerDutyDao.getConfig();
+
+        assertEquals("token", config.getToken());
+        assertEquals("integration_key", config.getIntegrationkey());
+    }
+
+    @Test
+    public void getUnInitialisedConfigNoTable() {
+        doThrow(BadSqlGrammarException.class)
+            .when(jdbcTemplate).query(any(String.class), any(RowMapper.class));
 
         boolean exceptionCaught = false;
         try{
-            pagerDutyAPI.validateConfig(getConfigDTO());
-        } catch (NotificationBadDataException e) {
-            assertEquals("Invalid pager duty token", e.getMessage());
+            pagerDutyDao.getConfig();
+        } catch (NotificationConfigUninitializedException e) {
+            assertEquals("Pager duty config not initialized. Table does not exist.", e.getMessage());
             exceptionCaught = true;
         }
 
@@ -103,12 +114,5 @@ public class PagerDutyAPIImplTest {
 
     private PagerDutyConfigDTO getConfigDTO() {
         return new PagerDutyConfigDTO("token", "integration_key");
-    }
-
-    private NotificationDTO getNotification() {
-        NotificationDTO notificationDTO = new NotificationDTO();
-        notificationDTO.setMessage("Exciting message to go here");
-        notificationDTO.setDedupKey("srv01/mysql");
-        return notificationDTO;
     }
 }

@@ -30,11 +30,12 @@ package org.opennms.horizon.notifications.api;
 
 import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.dto.NotificationDTO;
+import org.opennms.horizon.notifications.exceptions.NotificationException;
 
 public interface PagerDutyAPI {
-    String postNotification(NotificationDTO notification) throws Exception;
+    void postNotification(NotificationDTO notification) throws NotificationException;
 
-    String getAuthToken() throws Exception;
+    void initConfig(PagerDutyConfigDTO config);
 
-    void initConfig(PagerDutyConfigDTO config) throws Exception;
+    void validateConfig(PagerDutyConfigDTO config) throws NotificationException;
 }

@@ -32,9 +32,8 @@ import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.dto.NotificationDTO;
 
 public interface NotificationService {
-    String getPagerDutyKey() throws Exception;
 
-    String postNotification(NotificationDTO notification) throws Exception;
+    void postNotification(NotificationDTO notification) throws Exception;
 
     void postPagerDutyConfig(PagerDutyConfigDTO config) throws Exception;
 }
