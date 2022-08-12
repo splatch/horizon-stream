@@ -23,19 +23,20 @@ fragment MinionTableParts on Query {
 fragment MetricParts on TimeSeriesQueryResult {
   data {
     result {
+      metric
       value
     }
   }
 }
 
 fragment MinionUptimeParts on Query {
-  minionUptime: metric(name: "minion_uptime_sec", labels: { location: "Default", instance: "minion-01" }) {
+  minionUptime: metric(name: "minion_uptime_sec") {
     ...MetricParts
   }
 }
 
 fragment MinionLatencyParts on Query {
-  minionLatency: metric(name: "minion_response_time_msec", labels: { location: "Default", instance: "minion-01" }) {
+  minionLatency: metric(name: "minion_response_time_msec") {
     ...MetricParts
   }
 }

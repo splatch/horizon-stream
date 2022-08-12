@@ -65,6 +65,8 @@ const applianceQueries = useApplianceQueries()
 const listMinionsWithBgColor: ComputedRef<ExtendedMinionDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableMinions))
 
 const getHumanReadableDuration = (uptimeInSeconds: number) => {
+  if (uptimeInSeconds < 60) return `${uptimeInSeconds} seconds`
+
   const duration = intervalToDuration({
     start: new Date(),
     end: add(new Date(), {seconds: uptimeInSeconds})

@@ -37,12 +37,23 @@ export const useApplianceQueries = defineStore('applianceQueries', {
 
     const addMetricsToMinions = (data: Ref<ListMinionsForTableQuery | null>)=> {
       const minions = data.value?.listMinions?.minions as ExtendedMinionDTO[] || []
-      const minionLatency = data.value?.minionLatency?.data?.result?.[0]?.value?.[1] || 0
-      const minionUptime = data.value?.minionUptime?.data?.result?.[0]?.value?.[1] || 0
+      const minionLatencies = data.value?.minionLatency?.data?.result || []
+      const minionUptimes = data.value?.minionUptime?.data?.result || []
 
-      if(minions[0]) {
-        minions[0].icmp_latency = minionLatency
-        minions[0].snmp_uptime = minionUptime
+      const latenciesMap: Record<string, number> = {}
+      const uptimesMap: Record<string, number> = {}
+
+      for (const latency of minionLatencies) {
+        latenciesMap[latency?.metric?.instance] = latency?.value?.[1] || 0
+      }
+
+      for (const uptime of minionUptimes) {
+        uptimesMap[uptime?.metric?.instance] = uptime?.value?.[1] || 0
+      }
+
+      for (const minion of minions) {
+        minion.icmp_latency = latenciesMap[minion.id as string]
+        minion.snmp_uptime = uptimesMap[minion.id as string]
       }
 
       return minions
