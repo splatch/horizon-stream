@@ -45,7 +45,7 @@ public class DeviceRestServiceImpl implements DeviceRestService {
   private EventForwarder eventForwarder;
 
   public Response getById(Integer id) {
-      DeviceDTO device = service.getById(id);
+      DeviceDTO device = service.getDevice(id);
       if(device == null) {
           return Response.noContent().build();
       }
