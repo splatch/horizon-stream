@@ -158,7 +158,7 @@
             </dependency>
 
             <dependency>
-                <groupId>org.opennms.horizon.ipc.grpc</groupId>
+                <groupId>org.opennms.horizon.shared.ipc</groupId>
                 <artifactId>server</artifactId>
                 <version>${opennms-horizon.version}</version>
             </dependency>

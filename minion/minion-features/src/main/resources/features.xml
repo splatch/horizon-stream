@@ -20,6 +20,7 @@
         <feature>aries-blueprint</feature>
         <feature version="${project.version}" dependency="true">plugin-registration</feature>
         <feature version="${project.version}">eos</feature>
+        <feature version="${project.version}">horizon-shared-ipc-api</feature>
         <feature version="${project.version}">ignite-poc-model</feature>
         <feature version="${project.version}">poc-grpc</feature>
         <feature version="${project.version}">poc-cron</feature>
@@ -54,9 +55,10 @@
         <bundle>wrap:mvn:org.opennms.horizon.core/lib/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=*;resolution:=optional</bundle>
     </feature>
 
-    <feature name="horizon-ipc-api" version="${project.version}">
+    <feature name="horizon-shared-ipc-api" version="${project.version}">
         <feature>horizon-core-lib</feature>
-        <bundle>mvn:org.opennms.horizon.minion/ipc-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared.ipc/api/${opennms-horizon.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/logging/${opennms-horizon.version}</bundle>
     </feature>
 
     <feature name="poc-grpc-horizon" description="Horizon gRPC apis" version="${project.version}">
@@ -77,11 +79,11 @@
     <feature name="poc-grpc-client" description="gRPC client" version="${project.version}">
         <feature>poc-grpc-horizon</feature>
         <feature>poc-tracing-stub</feature>
-        <feature>horizon-ipc-api</feature>
+        <feature>horizon-shared-ipc-api</feature>
         <feature>poc-metrics</feature>
 
-        <bundle>mvn:org.opennms.horizon.minion/contract/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.minion/client/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared.ipc.grpc/contract/${opennms-horizon.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared.ipc.grpc/client/${opennms-horizon.version}</bundle>
     </feature>
 
     <feature name="poc-grpc-ipc-twin" description="Digital twin api with gRPC channel" version="${project.version}">
@@ -310,6 +312,7 @@
     </feature>
 
     <!-- copy events api -->
+<!--    //TODO: Broken now as this references the core ipc api... needs refactoring into minion-->
     <feature name="horizon-events-api" version="${opennms-horizon.version}" description="Horizon :: Events :: API">
         <feature prerequisite="true">wrap</feature>
         <feature>poc-grpc-ipc-twin</feature>
