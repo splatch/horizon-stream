@@ -51,6 +51,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import java.util.concurrent.atomic.AtomicLong;
 import org.opennms.cloud.grpc.minion.CloudServiceGrpc;
 import org.opennms.cloud.grpc.minion.CloudServiceGrpc.CloudServiceStub;
 import org.opennms.cloud.grpc.minion.MinionToCloudMessage;
@@ -69,8 +70,6 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 
 import io.grpc.ConnectivityState;
@@ -112,12 +111,10 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private StreamObserver<RpcResponseProto> rpcStream;
     private StreamObserver<MinionToCloudMessage> sinkStream;
     private ConnectivityState currentChannelState;
-    private final ThreadFactory requestHandlerThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("rpc-request-handler-%d")
-            .build();
-    private final ThreadFactory blockingSinkMessageThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("blocking-sink-message-%d")
-            .build();
+
+    private final AtomicLong counter = new AtomicLong();
+    private final ThreadFactory requestHandlerThreadFactory = (runnable) -> new Thread(runnable, "rpc-request-handler-" + counter.incrementAndGet());
+    private final ThreadFactory blockingSinkMessageThreadFactory = (runnable) -> new Thread(runnable, "blocking-sink-message-" + counter.incrementAndGet());
     // Each request is handled in a new thread which unmarshals and executes the request.
     private final ExecutorService requestHandlerExecutor = Executors.newCachedThreadPool(requestHandlerThreadFactory);
     // Maintain the map of RPC modules and their ID.
@@ -396,7 +393,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
             return;
         }
         String moduleId = requestProto.getModuleId();
-        if (Strings.isNullOrEmpty(moduleId)) {
+        if (moduleId.isBlank()) {
             return;
         }
         LOG.debug("Received RPC request with RpcID:{} for module {}", requestProto.getRpcId(), requestProto.getModuleId());

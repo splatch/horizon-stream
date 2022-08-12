@@ -19,7 +19,7 @@
 
     <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
 
-    <reference id="minionIdentity" interface="org.opennms.horizon.core.identity.Identity"/>
+    <reference id="minionIdentity" interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity"/>
 
     <bean id="grpcTwinSubscriber" class="org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber"
           init-method="start" destroy-method="close">

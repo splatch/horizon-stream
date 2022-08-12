@@ -16,6 +16,7 @@
     <modules>
         <module>whiteboard</module>
         <module>workflow</module>
+        <module>features</module>
     </modules>
 
 </project>
