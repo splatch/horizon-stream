@@ -1184,7 +1184,7 @@ metadata:
   namespace: default
   name: role-endpoints
 rules:
-- apiGroups: ["", "*"]
+- apiGroups: [""]
   resources: ["endpoints"]
   verbs: ["get", "list"]
 ---
