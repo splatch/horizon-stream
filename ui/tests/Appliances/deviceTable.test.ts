@@ -9,8 +9,8 @@ describe('DeviceTable.vue', () => {
         {
           id: '1',
           name: 'device1',
-          icmp_latency: 'OK',
-          snmp_uptime: 'FAILED',
+          icmp_latency: 1,
+          snmp_uptime: 0,
           status: 'UP'
         }
       ]
@@ -66,22 +66,22 @@ describe('DeviceTable.vue', () => {
           {
             id: '1',
             name: 'device1',
-            icmp_latency: 'OK',
-            snmp_uptime: 'OK',
+            icmp_latency: 5,
+            snmp_uptime: 5,
             status: 'UP'
           },
           {
             id: '2',
             name: 'device2',
-            icmp_latency: 'FAILED',
-            snmp_uptime: 'FAILED',
+            icmp_latency: 1000,
+            snmp_uptime: 0,
             status: 'DOWN'
           },
           {
             id: '3',
             name: 'device3',
-            icmp_latency: 'UNKNOWN',
-            snmp_uptime: 'UNKNOWN',
+            icmp_latency: null,
+            snmp_uptime: null,
             status: 'DOWN'
           }
         ] 
@@ -95,7 +95,7 @@ describe('DeviceTable.vue', () => {
        */
       const formatValueBackground = (elems: any[]) => {
         return elems.map((elem: { classes: () => any; text: () => any }) => {
-          const val = ['OK', 'FAILED', 'UNKNOWN'].filter((val: string) => elem.text().indexOf(val) >= 0)[0]
+          const val = ['5', '1000', '0'].filter((val: any) => elem.text().indexOf(val) >= 0)[0]
           const css = elem.classes().filter((cl: string | string[]) => cl.indexOf('bg-') >= 0)[0]
           return [ val, css ]
         })
@@ -106,9 +106,9 @@ describe('DeviceTable.vue', () => {
 
         const latencies = formatValueBackground(wrapper.findAll('[data-test="col-latency"] > .value'))
         const expectedValueBackground = [
-          ['OK', 'bg-ok'],
-          ['FAILED', 'bg-failed'],
-          ['UNKNOWN', 'bg-unknown']
+          ['5', 'bg-ok'],
+          ['1000', 'bg-failed'],
+          [undefined, 'bg-unknown']
         ]
         expect(latencies).toStrictEqual(expectedValueBackground)
       })
@@ -118,9 +118,9 @@ describe('DeviceTable.vue', () => {
 
         const uptimes = formatValueBackground(wrapper.findAll('[data-test="col-uptime"] > .value'))
         const expectedValueBackground = [
-          ['OK', 'bg-ok'],
-          ['FAILED', 'bg-failed'],
-          ['UNKNOWN', 'bg-unknown']
+          ['5', 'bg-ok'],
+          ['0', 'bg-failed'],
+          [undefined, 'bg-unknown']
         ]
         expect(uptimes).toStrictEqual(expectedValueBackground)
       })
@@ -132,15 +132,15 @@ describe('DeviceTable.vue', () => {
           {
             id: '1',
             name: 'device1',
-            icmp_latency: 'OK',
-            snmp_uptime: 'OK',
+            icmp_latency: 1,
+            snmp_uptime: 1000,
             status: 'UP'
           },
           {
             id: '2',
             name: 'device2',
-            icmp_latency: 'FAILED',
-            snmp_uptime: 'FAILED',
+            icmp_latency: 2000,
+            snmp_uptime: 0,
             status: 'DOWN'
           }
         ] 

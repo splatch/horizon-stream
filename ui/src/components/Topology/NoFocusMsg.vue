@@ -37,7 +37,7 @@ import { useTopologyFocus } from './topology.composables'
 
 const topologyStore = useTopologyStore()
 const { useDefaultFocus } = useTopologyFocus()
-const defaultObjects = computed<Node[]>(() => topologyStore.defaultObjects)
+const defaultObjects = computed(() => topologyStore.defaultObjects)
 </script>
 
 <style

@@ -14,7 +14,7 @@
         </FeatherButton>
       </div>
       <div class="table-container">
-        <table class="tl1 tl2 tl3 tl4 tc5 data-table" summary="Minions" data-test="minions-table">
+        <table class="tl1 tl2 tc3 tc4 tc5 data-table" summary="Minions" data-test="minions-table">
           <thead>
             <tr>
               <th scope="col" data-test="col-date">Time</th>
@@ -25,11 +25,19 @@
             </tr>
           </thead>
           <TransitionGroup name="data-table" tag="tbody">
-            <tr v-for="(minion, index) in listMinionsWithBgColor" :key="minion.id" :data-index="index" data-test="minion-item">
+            <tr v-for="(minion, index) in listMinionsWithBgColor" :key="(minion.id as string)" :data-index="index" data-test="minion-item">
               <td>{{ minion.lastUpdated }}</td>
               <td>{{ minion.id }}</td>
-              <td>{{ minion.icmp_latency }}</td>
-              <td>{{ minion.snmp_uptime }}</td>
+              <td>
+                <div :class="minion.latencyBgColor">
+                  {{ minion.icmp_latency }}ms
+                </div>
+              </td>
+              <td>
+                <div :class="minion.latencyBgColor">
+                  {{ getHumanReadableDuration(minion.snmp_uptime) }}
+                </div>
+              </td>
               <td>
                 <div :class="minion.statusBgColor" data-test="minion-item-status">
                   {{ minion.status }}
@@ -47,11 +55,23 @@
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
+import { add, intervalToDuration, formatDuration } from 'date-fns'
+import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
+import { ComputedRef } from 'vue'
 import { formatItemBgColor } from './appliances.helpers'
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()
-const listMinionsWithBgColor = computed(() => formatItemBgColor(applianceQueries.tableMinions))
+const listMinionsWithBgColor: ComputedRef<ExtendedMinionDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableMinions))
+
+const getHumanReadableDuration = (uptimeInSeconds: number) => {
+  const duration = intervalToDuration({
+    start: new Date(),
+    end: add(new Date(), {seconds: uptimeInSeconds})
+  })
+
+  return formatDuration(duration, { format: ['days', 'hours', 'minutes']})
+}
 </script>
 
 <style lang="scss" scoped>

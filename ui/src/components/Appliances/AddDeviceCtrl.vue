@@ -26,7 +26,7 @@
       <!-- Location name -->
       <FeatherInput
         data-test="location-name-input"
-        label="Location Name"
+        label="Location"
         v-model="device.location"
       />
       
@@ -40,7 +40,7 @@
       <!-- Management IP -->
       <FeatherInput
         data-test="ip-input"
-        label="Management IP (Optional temp)"
+        label="Management IP"
         v-model="device.managementIp"
       />
 
@@ -84,11 +84,10 @@
           Cancel
       </FeatherButton>
       
-      <!-- TODO: Management IP should also be required, when available. -->
       <FeatherButton 
         data-test="save-btn" 
         primary
-        :disabled="!device.label" 
+        :disabled="!device.label || !device.location || !device.managementIp || !device.monitoringArea" 
         @click="save">
           Save
       </FeatherButton>
@@ -119,6 +118,7 @@ const defaultDevice: DeviceCreateDTOInput = {
   port: null,
   snmpCommunityString: ''
 }
+
 const device: DeviceCreateDTOInput = reactive({ ...defaultDevice })
 
 const save = async () => {
