@@ -29,6 +29,7 @@
 package org.opennms.horizon.core.monitor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Gauge;
 import org.opennms.horizon.db.dao.api.IpInterfaceDao;
 import org.opennms.horizon.db.dao.api.NodeDao;
@@ -55,13 +56,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class DeviceMonitorManager implements EventListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMonitorManager.class);
     private static final String SYS_OBJECTID_INSTANCE = ".1.3.6.1.2.1.1.2.0";
     private static final Long INVALID_UP_TIME = -1L;
-    private static final String DEFAULT_LOCATION = "Default";
     private final LocationAwarePingClient locationAwarePingClient;
     private final LocationAwareSnmpClient locationAwareSnmpClient;
     private final EventSubscriptionService eventSubscriptionService;
@@ -73,6 +75,12 @@ public class DeviceMonitorManager implements EventListener {
     private final ThreadFactory monitorThreadFactory = new ThreadFactoryBuilder()
         .setNameFormat("monitor-runner-%d")
         .build();
+    private final CollectorRegistry collectorRegistry = new CollectorRegistry();
+    private static final String[] labelNames = {"instance", "location"};
+    private final Gauge rttGauge = Gauge.build().name("icmp_round_trip_time").help("ICMP round trip time")
+        .unit("msec").labelNames(labelNames).register(collectorRegistry);
+    private final Gauge upTimeGauge = Gauge.build().name("snmp_uptime").help("SNMP Up Time")
+        .unit("sec").labelNames(labelNames).create();
     // Cache SNMP Uptime for each Interface.
     private final Map<String, Long> snmpUpTimeCache = new ConcurrentHashMap<>();
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(25, monitorThreadFactory);
@@ -108,19 +116,20 @@ public class DeviceMonitorManager implements EventListener {
     private void runMonitors(OnmsNode onmsNode) {
         try {
             List<OnmsIpInterface> ipInterfaces = sessionUtils.withReadOnlyTransaction(() -> ipInterfaceDao.findInterfacesByNodeId(onmsNode.getId()));
+            String location = sessionUtils.withReadOnlyTransaction(() -> onmsNode.getLocation().getLocationName());
             ipInterfaces.forEach(onmsIpInterface -> {
                 LOG.info("Polling ICMP/SNMP Monitor for IPAddress {}", onmsIpInterface.getIpAddress());
-                pollIcmp(onmsIpInterface.getIpAddress());
-                pollSnmp(onmsIpInterface.getIpAddress(), onmsNode.getSnmpCommunityString());
+                pollIcmp(onmsIpInterface.getIpAddress(), location);
+                pollSnmp(onmsIpInterface.getIpAddress(), onmsNode.getSnmpCommunityString(), location);
             });
         } catch (Exception e) {
             LOG.error("Exception while running monitors for device with Id : {}", onmsNode.getId(), e);
         }
     }
 
-    private void pollIcmp(InetAddress inetAddress) {
+    private void pollIcmp(InetAddress inetAddress, String location) {
         try {
-            locationAwarePingClient.ping(inetAddress).withLocation(DEFAULT_LOCATION)
+            locationAwarePingClient.ping(inetAddress).withLocation(location)
                 .withTimeout(60, TimeUnit.SECONDS)
                 .execute()
                 .whenComplete(((pingSummary, throwable) -> {
@@ -130,7 +139,7 @@ public class DeviceMonitorManager implements EventListener {
                         // we are only pinging one IpAddress, use sequence 0
                         double icmpResponseTime = pingSummary.getSequence(0).getResponse().getRtt();
                         LOG.info("ICMP Round trip time for IPAddress {} : {}", inetAddress.getHostAddress(), icmpResponseTime);
-                        addIcmpMetric(icmpResponseTime, inetAddress.getHostAddress());
+                        addIcmpMetric(icmpResponseTime, inetAddress.getHostAddress(), location);
                     }
                 }));
         } catch (Exception e) {
@@ -138,7 +147,7 @@ public class DeviceMonitorManager implements EventListener {
         }
     }
 
-    private void pollSnmp(InetAddress inetAddress, String snmpCommunityString) {
+    private void pollSnmp(InetAddress inetAddress, String snmpCommunityString, String location) {
         try {
             final SnmpAgentConfig agentConfig = new SnmpAgentConfig();
             agentConfig.setAddress(inetAddress);
@@ -146,16 +155,16 @@ public class DeviceMonitorManager implements EventListener {
             agentConfig.setTimeout(18000);
             agentConfig.setRetries(2);
             locationAwareSnmpClient.get(agentConfig, SnmpObjId.get(SYS_OBJECTID_INSTANCE))
-                .withLocation(DEFAULT_LOCATION)
+                .withLocation(location)
                 .withDescription("Device-Monitor")
                 .withTimeToLive(60000L)
                 .execute().whenComplete(((snmpValue, throwable) -> {
                     if (throwable != null) {
                         LOG.error("Exception while detecting Snmp service at IpAddress {}", inetAddress.getHostAddress(), throwable);
-                        addSnmpMetrics(inetAddress.getHostAddress(), false);
+                        addSnmpMetrics(inetAddress.getHostAddress(), false, location);
                     } else if (snmpValue != null && !snmpValue.isError()) {
                         LOG.info("SNMP is Up at IpAddress {}", inetAddress.getHostAddress());
-                        addSnmpMetrics(inetAddress.getHostAddress(), true);
+                        addSnmpMetrics(inetAddress.getHostAddress(), true, location);
                     }
                 }));
         } catch (Exception e) {
@@ -163,16 +172,16 @@ public class DeviceMonitorManager implements EventListener {
         }
     }
 
-    private void addIcmpMetric(double responseTime, String ipAddress) {
-        Gauge rttGauge = Gauge.build().name("icmp_round_trip_time").help("ICMP round trip time")
-            .unit("msec").labelNames("instance").create();
-        rttGauge.labels(ipAddress).set(responseTime);
-        metricsAdapter.push(rttGauge);
+    private void addIcmpMetric(double responseTime, String ipAddress, String location) {
+        String[] labelValues = {ipAddress, location};
+        var groupingKey = IntStream.range(0, labelNames.length).boxed()
+            .collect(Collectors.toMap(i -> labelNames[i], i -> labelValues[i]));
+        rttGauge.labels(labelValues).set(responseTime);
+        metricsAdapter.pushRegistry(collectorRegistry, groupingKey);
     }
 
-    private void addSnmpMetrics(String ipAddress, boolean status) {
-        Gauge upTimeGauge = Gauge.build().name("snmp_uptime").help("SNMP Up Time")
-            .unit("sec").labelNames("instance").create();
+    private void addSnmpMetrics(String ipAddress, boolean status, String location) {
+        String[] labelValues = {ipAddress, location};
         if (status) {
             Long prevUpTimeInMsec = snmpUpTimeCache.get(ipAddress);
             long totalUpTimeInMsec = 0;
@@ -182,12 +191,14 @@ public class DeviceMonitorManager implements EventListener {
             snmpUpTimeCache.put(ipAddress, System.currentTimeMillis());
 
             long totalUpTimeInSec = TimeUnit.MILLISECONDS.toSeconds(totalUpTimeInMsec);
-            upTimeGauge.labels(ipAddress).set(totalUpTimeInSec);
+            upTimeGauge.labels(labelValues).set(totalUpTimeInSec);
         } else {
-            upTimeGauge.labels(ipAddress).set(INVALID_UP_TIME);
+            upTimeGauge.labels(labelValues).set(INVALID_UP_TIME);
             snmpUpTimeCache.put(ipAddress, INVALID_UP_TIME);
         }
-        metricsAdapter.push(upTimeGauge);
+        var groupingKey = IntStream.range(0, labelNames.length).boxed()
+            .collect(Collectors.toMap(i -> labelNames[i], i -> labelValues[i]));
+        metricsAdapter.pushRegistry(collectorRegistry, groupingKey);
     }
 
     @Override
