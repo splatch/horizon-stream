@@ -36,6 +36,15 @@ spec:
                       - {{ .Values.NodeRestrictions.Value }}
       {{ end }}
       terminationGracePeriodSeconds: 120
+      volumes:
+        - name: keystore
+          configMap:
+            name: opennms-config
+            defaultMode: 420
+        - name: application
+          configMap:
+            name: opennms-config
+            defaultMode: 420
       containers:
         - name: horizon-stream-api
           image: {{ .Values.OpenNMS.API.Image }}
@@ -75,6 +84,13 @@ spec:
           {{/*          readinessProbe:*/}}
           {{/*          startupProbe:*/}}
           {{ end }}
+          volumeMounts:
+            - name: keystore
+              mountPath: /app/onms.keystore
+              subPath: onms.keystore
+            - name: application
+              mountPath: /app/resources/application.yml
+              subPath: application.yml
           resources:
             limits:
               cpu: "{{ .Values.OpenNMS.API.Resources.Limits.Cpu }}"

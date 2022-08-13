@@ -1,5 +1,5 @@
 Namespace: opennms-instance
-Host: localhost
+Host: onmshs
 TestDeploy: false
 OpenNMS:
   Core:
