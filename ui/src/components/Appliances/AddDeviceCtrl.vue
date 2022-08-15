@@ -22,21 +22,16 @@
         label="Name"
         v-model="device.label"
       />
-      
       <!-- Location name -->
-      <FeatherInput
+      <FeatherSelect
         data-test="location-name-input"
+        name="locationOptions"
+        v-model="locationOption"
+        :options="applianceQueries.locations"
+        text-prop="name"
+        @update:modelValue="selectLocation"
         label="Location"
-        v-model="device.location"
       />
-      
-      <!-- Monitoring area -->
-      <FeatherInput
-        data-test="monitoring-area-input"
-        label="Monitoring Area"
-        v-model="device.monitoringArea"
-      />
-
       <!-- Management IP -->
       <FeatherInput
         data-test="ip-input"
@@ -55,7 +50,7 @@
       <FeatherInput
         type="number"
         data-test="port-input"
-        label="Port (Optional)"
+        label="SNMP Port (Optional)"
         v-model="device.port"
       />
       
@@ -155,6 +150,20 @@ const cancel = () => {
 
   closeModal()
 }
+
+// stores the selected location option
+const locationOption = ref()
+// sets location val in the payload
+const selectLocation = () => {
+  if (locationOption.value?.name) {
+    device.location = locationOption.value.name
+  }
+}
+// sets default location when locations available
+watchEffect(() => { 
+  locationOption.value = applianceQueries.locations[0]
+  selectLocation()
+})
 </script>
 
 <style scoped lang="scss">
