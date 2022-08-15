@@ -20,6 +20,8 @@
         <module>dto-model</module>
         <module>logging</module>
         <module>ipc</module>
+        <module>task-set</module>
+        <module>task-set-service</module>
     </modules>
 
     <properties>
