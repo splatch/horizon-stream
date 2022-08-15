@@ -49,6 +49,7 @@ public class PlatformGateway {
     public static final String URL_PATH_EVENTS = "/events";
     public static final String URL_PATH_ALARMS = "/alarms";
     public static final String URL_PATH_DEVICES = "/devices";
+    public static final String URL_PATH_LOCATIONS = "/locations";
     public static final String URL_PATH_ALARMS_LIST = URL_PATH_ALARMS + "/list";
     public static final String URL_PATH_ALARMS_ACK = URL_PATH_ALARMS + "/%d/ack";
     public static final String URL_PATH_ALARMS_CLEAR = URL_PATH_ALARMS + "/%d/clear";

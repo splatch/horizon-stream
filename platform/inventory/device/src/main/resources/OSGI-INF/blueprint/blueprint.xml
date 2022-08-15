@@ -5,6 +5,7 @@
         ">
     <reference id="nodeDao" interface="org.opennms.horizon.db.dao.api.NodeDao" />
     <reference id="ipInterfaceDao" interface="org.opennms.horizon.db.dao.api.IpInterfaceDao" />
+    <reference id="monitoringLocationDao" interface="org.opennms.horizon.db.dao.api.MonitoringLocationDao" />
     <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils" />
     <reference id="locationDao" interface="org.opennms.horizon.db.dao.api.MonitoringLocationDao" />
     <reference id="eventForwarder" interface="org.opennms.horizon.events.api.EventForwarder" availability="optional"/>
@@ -35,4 +36,17 @@
             <entry key="osgi.jaxrs.resource" value="true"/>
         </service-properties>
     </service>
+
+    <bean id="locationRestService" class="org.opennms.horizon.inventory.device.rest.impl.LocationRestServiceImpl">
+        <argument ref="monitoringLocationDao"/>
+        <argument ref="locationMapper"/>
+        <argument ref="sessionUtils"/>
+    </bean>
+
+    <service ref="locationRestService" interface="org.opennms.horizon.inventory.device.rest.api.LocationRestService">
+        <service-properties>
+            <entry key="osgi.jaxrs.resource" value="true"/>
+        </service-properties>
+    </service>
+
 </blueprint>
