@@ -57,6 +57,5 @@ public interface DeviceRestService {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   @RolesAllowed("admin")
-  Response createDevice(final DeviceDTO device);
   Response createDevice(DeviceCreateDTO deviceCreateDTO);
 }
