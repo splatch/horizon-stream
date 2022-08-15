@@ -101,14 +101,14 @@ import { useDeviceMutations } from '@/store/Mutations/deviceMutations'
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
-import { DeviceCreateDTOInput } from '@/types/appliances'
+import { DeviceCreateDtoInput } from '@/types/graphql'
 
 const { showSnackbar } = useSnackbar()
 const { openModal, closeModal, isVisible } = useModal()
 const deviceMutations = useDeviceMutations()
 const applianceQueries = useApplianceQueries()
 
-const defaultDevice: DeviceCreateDTOInput = { 
+const defaultDevice: DeviceCreateDtoInput = { 
   label: '',
   location: '',
   latitude: null,
@@ -119,14 +119,14 @@ const defaultDevice: DeviceCreateDTOInput = {
   snmpCommunityString: ''
 }
 
-const device: DeviceCreateDTOInput = reactive({ ...defaultDevice })
+const device: DeviceCreateDtoInput = reactive({ ...defaultDevice })
 
 const save = async () => {
-  // payload of following number type fields require null as value (form field return empty string if value entered then erased)
+  // convert the field value to null if their value is an empty string (entered then erased the input field returns an empty string) - empty string as value in payload causes error when adding device.
   Object.assign(device, {
-    port: !device.port?.length ? null : device.port,
-    latitude: !device.latitude?.length ? null : device.latitude,
-    longitude: !device.longitude?.length ? null : device.longitude
+    port: device.port || null,
+    latitude: device.latitude || null,
+    longitude: device.longitude || null
   })
 
   await deviceMutations.addDevice({ device })
