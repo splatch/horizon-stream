@@ -12,7 +12,6 @@ fragment MinionTableParts on Query {
   listMinions {
     minions {
       id
-      label
       status
       location
       lastUpdated
@@ -25,6 +24,14 @@ fragment MetricParts on TimeSeriesQueryResult {
     result {
       metric
       value
+    }
+  }
+}
+
+fragment LocationParts on Query {
+  listLocations {
+    locations {
+      locationName
     }
   }
 }
@@ -56,4 +63,5 @@ query ListMinionsAndDevicesForTables {
   ...MinionTableParts
   ...MinionUptimeParts
   ...MinionLatencyParts
+  ...LocationParts
 }

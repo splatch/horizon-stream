@@ -230,15 +230,18 @@ export type EventParameterDtoInput = {
   value?: InputMaybe<Scalars['String']>;
 };
 
+export type LocationCollectionDto = {
+  __typename?: 'LocationCollectionDTO';
+  locations?: Maybe<Array<Maybe<LocationDto>>>;
+  offset?: Maybe<Scalars['Int']>;
+  totalCount?: Maybe<Scalars['Int']>;
+};
+
 export type LocationDto = {
   __typename?: 'LocationDTO';
-  geolocation?: Maybe<Scalars['String']>;
   latitude?: Maybe<Scalars['Float']>;
   locationName?: Maybe<Scalars['String']>;
   longitude?: Maybe<Scalars['Float']>;
-  monitoringArea?: Maybe<Scalars['String']>;
-  priority?: Maybe<Scalars['Int']>;
-  tags?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
 
 export type MemoDto = {
@@ -300,7 +303,9 @@ export type Query = {
   listAlarms?: Maybe<AlarmCollectionDto>;
   listDevices?: Maybe<DeviceCollectionDto>;
   listEvents?: Maybe<EventCollectionDto>;
+  listLocations?: Maybe<LocationCollectionDto>;
   listMinions?: Maybe<MinionCollectionDto>;
+  locationById?: Maybe<LocationDto>;
   metric?: Maybe<TimeSeriesQueryResult>;
   minionById?: Maybe<MinionDto>;
 };
@@ -309,6 +314,12 @@ export type Query = {
 /** Query root */
 export type QueryDeviceByIdArgs = {
   id?: InputMaybe<Scalars['Int']>;
+};
+
+
+/** Query root */
+export type QueryLocationByIdArgs = {
+  id?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -392,9 +403,11 @@ export type CreateEventMutation = { __typename?: 'Mutation', createEvent?: boole
 
 export type DeviceTablePartsFragment = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number, label?: string, createTime?: any }> } };
 
-export type MinionTablePartsFragment = { __typename?: 'Query', listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string, label?: string, status?: string, location?: string, lastUpdated?: any }> } };
+export type MinionTablePartsFragment = { __typename?: 'Query', listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string, status?: string, location?: string, lastUpdated?: any }> } };
 
 export type MetricPartsFragment = { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } };
+
+export type LocationPartsFragment = { __typename?: 'Query', listLocations?: { __typename?: 'LocationCollectionDTO', locations?: Array<{ __typename?: 'LocationDTO', locationName?: string }> } };
 
 export type MinionUptimePartsFragment = { __typename?: 'Query', minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } } };
 
@@ -408,12 +421,12 @@ export type ListDevicesForTableQuery = { __typename?: 'Query', listDevices?: { _
 export type ListMinionsForTableQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListMinionsForTableQuery = { __typename?: 'Query', listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string, label?: string, status?: string, location?: string, lastUpdated?: any }> }, minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } }, minionLatency?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } } };
+export type ListMinionsForTableQuery = { __typename?: 'Query', listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string, status?: string, location?: string, lastUpdated?: any }> }, minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } }, minionLatency?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } } };
 
 export type ListMinionsAndDevicesForTablesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListMinionsAndDevicesForTablesQuery = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number, label?: string, createTime?: any }> }, listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string, label?: string, status?: string, location?: string, lastUpdated?: any }> }, minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } }, minionLatency?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } } };
+export type ListMinionsAndDevicesForTablesQuery = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number, label?: string, createTime?: any }> }, listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string, status?: string, location?: string, lastUpdated?: any }> }, minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } }, minionLatency?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } }, listLocations?: { __typename?: 'LocationCollectionDTO', locations?: Array<{ __typename?: 'LocationDTO', locationName?: string }> } };
 
 export type ListDevicesForGeomapQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -421,7 +434,8 @@ export type ListDevicesForGeomapQueryVariables = Exact<{ [key: string]: never; }
 export type ListDevicesForGeomapQuery = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number, label?: string, foreignSource?: string, foreignId?: string, labelSource?: string, sysOid?: string, sysName?: string, sysDescription?: string, sysContact?: string, sysLocation?: string, location?: { __typename?: 'LocationDTO', latitude?: number, longitude?: number } }> } };
 
 export const DeviceTablePartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DeviceTableParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listDevices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"devices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"createTime"}}]}}]}}]}}]} as unknown as DocumentNode<DeviceTablePartsFragment, unknown>;
-export const MinionTablePartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MinionTableParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listMinions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"minions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdated"}}]}}]}}]}}]} as unknown as DocumentNode<MinionTablePartsFragment, unknown>;
+export const MinionTablePartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MinionTableParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listMinions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"minions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdated"}}]}}]}}]}}]} as unknown as DocumentNode<MinionTablePartsFragment, unknown>;
+export const LocationPartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"LocationParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listLocations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"locations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"locationName"}}]}}]}}]}}]} as unknown as DocumentNode<LocationPartsFragment, unknown>;
 export const MetricPartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MetricParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TimeSeriesQueryResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"result"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"metric"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]} as unknown as DocumentNode<MetricPartsFragment, unknown>;
 export const MinionUptimePartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MinionUptimeParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"minionUptime"},"name":{"kind":"Name","value":"metric"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"StringValue","value":"minion_uptime_sec","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MetricParts"}}]}}]}}]} as unknown as DocumentNode<MinionUptimePartsFragment, unknown>;
 export const MinionLatencyPartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MinionLatencyParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"minionLatency"},"name":{"kind":"Name","value":"metric"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"StringValue","value":"minion_response_time_msec","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MetricParts"}}]}}]}}]} as unknown as DocumentNode<MinionLatencyPartsFragment, unknown>;
@@ -431,5 +445,5 @@ export const AddDeviceDocument = {"kind":"Document","definitions":[{"kind":"Oper
 export const CreateEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"event"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"EventDTOInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"event"},"value":{"kind":"Variable","name":{"kind":"Name","value":"event"}}}]}]}}]} as unknown as DocumentNode<CreateEventMutation, CreateEventMutationVariables>;
 export const ListDevicesForTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListDevicesForTable"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DeviceTableParts"}}]}},...DeviceTablePartsFragmentDoc.definitions]} as unknown as DocumentNode<ListDevicesForTableQuery, ListDevicesForTableQueryVariables>;
 export const ListMinionsForTableDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListMinionsForTable"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"MinionTableParts"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MinionUptimeParts"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MinionLatencyParts"}}]}},...MinionTablePartsFragmentDoc.definitions,...MinionUptimePartsFragmentDoc.definitions,...MetricPartsFragmentDoc.definitions,...MinionLatencyPartsFragmentDoc.definitions]} as unknown as DocumentNode<ListMinionsForTableQuery, ListMinionsForTableQueryVariables>;
-export const ListMinionsAndDevicesForTablesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListMinionsAndDevicesForTables"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DeviceTableParts"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MinionTableParts"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MinionUptimeParts"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MinionLatencyParts"}}]}},...DeviceTablePartsFragmentDoc.definitions,...MinionTablePartsFragmentDoc.definitions,...MinionUptimePartsFragmentDoc.definitions,...MetricPartsFragmentDoc.definitions,...MinionLatencyPartsFragmentDoc.definitions]} as unknown as DocumentNode<ListMinionsAndDevicesForTablesQuery, ListMinionsAndDevicesForTablesQueryVariables>;
+export const ListMinionsAndDevicesForTablesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListMinionsAndDevicesForTables"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"DeviceTableParts"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MinionTableParts"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MinionUptimeParts"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"MinionLatencyParts"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"LocationParts"}}]}},...DeviceTablePartsFragmentDoc.definitions,...MinionTablePartsFragmentDoc.definitions,...MinionUptimePartsFragmentDoc.definitions,...MetricPartsFragmentDoc.definitions,...MinionLatencyPartsFragmentDoc.definitions,...LocationPartsFragmentDoc.definitions]} as unknown as DocumentNode<ListMinionsAndDevicesForTablesQuery, ListMinionsAndDevicesForTablesQueryVariables>;
 export const ListDevicesForGeomapDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListDevicesForGeomap"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listDevices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"devices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"foreignSource"}},{"kind":"Field","name":{"kind":"Name","value":"foreignId"}},{"kind":"Field","name":{"kind":"Name","value":"labelSource"}},{"kind":"Field","name":{"kind":"Name","value":"sysOid"}},{"kind":"Field","name":{"kind":"Name","value":"sysName"}},{"kind":"Field","name":{"kind":"Name","value":"sysDescription"}},{"kind":"Field","name":{"kind":"Name","value":"sysContact"}},{"kind":"Field","name":{"kind":"Name","value":"sysLocation"}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"latitude"}},{"kind":"Field","name":{"kind":"Name","value":"longitude"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ListDevicesForGeomapQuery, ListDevicesForGeomapQueryVariables>;
