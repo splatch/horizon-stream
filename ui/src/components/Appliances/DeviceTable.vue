@@ -1,7 +1,17 @@
 <template>
   <TableCard>
     <div class="header">
-      <div class="title">Devices</div>
+      <div class="title-container">
+        <FeatherButton
+          data-test="show-minions-btn"
+          icon="Show Minions" 
+          @click="appliancesStore.showMinionsTable"
+          v-if="!appliancesStore.minionsTableOpen"
+        >
+          <FeatherIcon :icon="ChevronRight" />
+        </FeatherButton>
+        <span class="title">Devices</span>
+      </div>
 
       <FeatherInput class="search" v-model="searchValue" label="Devices">
         <template v-slot:pre>
@@ -21,26 +31,26 @@
     </div>
     <div class="data-table">
       <TransitionGroup name="data-table" tag="div">
-        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="device.id" data-test="device-item">
+        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" data-test="device-item">
           <div class="name" data-test="col-device">
               <div class="name-cell">
                 <FeatherIcon :icon="Instances" class="icon"/>
                 <div class="text">
-                  <div class="name">{{ device.name }}</div>
-                  <div class="server">Server Added --/--/--</div>
+                  <div class="name">{{ device.label }}</div>
+                  <div class="server">{{ device.createTime }}</div>
                 </div>
               </div>
           </div>
           <div data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
-            <div class="value" :class="device.latencyClass">{{ device.icmp_latency }}</div>
+            <div class="value" :class="device.latencyBgColor">{{ device.icmp_latency }}</div>
           </div>
           <div data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
-            <div class="value" :class="device.uptimeClass">{{ device.snmp_uptime }}</div>
+            <div class="value" :class="device.uptimeBgColor">{{ device.snmp_uptime }}</div>
           </div>
           <div data-test="col-status">
-            <div class="value" :class="device.statusClass">{{ device.status }}</div>
+            <div class="value" :class="device.statusBgColor">{{ device.status }}</div>
           </div>
         </div>
       </TransitionGroup>
@@ -53,13 +63,19 @@ import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Sort from '@featherds/icon/action/Sort'
 import Search from '@featherds/icon/action/Search'
 import Instances from '@featherds/icon/hardware/Instances'
-import { useDeviceQueries } from '@/store/Queries/deviceQueries'
-import { formatItemBgColor } from '@/helpers/formatting'
+import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import { useApplianceQueries } from '@/store/Queries/applianceQueries'
+import { useAppliancesStore } from '@/store/Views/appliancesStore'
+import { ExtendedDeviceDTOWithBGColors } from '@/types/device'
+import { ComputedRef } from 'vue'
+import { formatItemBgColor } from './appliances.helpers'
 
-const deviceQueries = useDeviceQueries()
-const listDevicesWithBgColor = computed(() => formatItemBgColor(deviceQueries.listDevices))
+const appliancesStore = useAppliancesStore()
+const applianceQueries = useApplianceQueries()
 
-const searchValue = ''
+const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableDevices))
+
+const searchValue = ref('')
 </script>
 
 <style lang="scss" scoped>
@@ -70,9 +86,14 @@ const searchValue = ''
 .header {
   display: flex;
   justify-content: space-between;
-  .title {
-    @include headline3;
-    margin-left: 15px;
+
+  .title-container {
+    display: flex;
+    .title {
+      @include headline3;
+      margin-left: 15px;
+      margin-top: 2px;
+    }
   }
   
   .search {
@@ -139,6 +160,7 @@ const searchValue = ''
       display: inline-table;
       border-radius: 5px;
       padding: 3px;
+      text-align: center;
     }
   }
 }

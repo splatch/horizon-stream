@@ -1,49 +1,77 @@
 <template>
-  <TableCard>
-    <div class="header">
-      <div class="title">
-        Minions ({{ minionsQueries.listMinions.length }})
-      </div>
-      <div>
-        <FeatherButton icon="Close">
-          <FeatherIcon :icon="ChevronLeft"> </FeatherIcon>
+  <Transition name="fade">
+    <TableCard v-if="appliancesStore.minionsTableOpen">
+      <div class="header">
+        <div class="title">
+          Minions ({{ applianceQueries.tableMinions.length }})
+        </div>
+        <FeatherButton 
+          data-test="hide-minions-btn"
+          icon="Hide Minions" 
+          @click="appliancesStore.hideMinionsTable"
+        >
+          <FeatherIcon :icon="ChevronLeft" />
         </FeatherButton>
       </div>
-    </div>
-    <table class="tl1 tl2 tl3 tl4 tc5 data-table" summary="Minions" data-test="minions-table">
-      <thead>
-        <tr>
-          <th scope="col" data-test="col-date">Date</th>
-          <th scope="col" data-test="col-minion">Minion</th>
-          <th scope="col" data-test="col-latency">Latency</th>
-          <th scope="col" data-test="col-uptime">Uptime</th>
-          <th scope="col" data-test="col-status">Status</th>
-        </tr>
-      </thead>
-      <TransitionGroup name="data-table" tag="tbody">
-        <tr v-for="(minion, index) in listMinionsWithBgColor" :key="minion.id" :data-index="index" data-test="minion-item">
-          <td>{{ minion.lastUpdated }}</td>
-          <td>{{ minion.id }}</td>
-          <td>{{ minion.icmp_latency }}</td>
-          <td>{{ minion.snmp_uptime }}</td>
-          <td>
-            <div :class="minion.statusClass">
-              {{ minion.status }}
-            </div>
-          </td>
-        </tr>
-      </TransitionGroup>
-    </table>
-  </TableCard>
+      <div class="table-container">
+        <table class="tl1 tl2 tc3 tc4 tc5 data-table" summary="Minions" data-test="minions-table">
+          <thead>
+            <tr>
+              <th scope="col" data-test="col-date">Time</th>
+              <th scope="col" data-test="col-minion">Name</th>
+              <th scope="col" data-test="col-latency">Latency</th>
+              <th scope="col" data-test="col-uptime">Uptime</th>
+              <th scope="col" data-test="col-status">Status</th>
+            </tr>
+          </thead>
+          <TransitionGroup name="data-table" tag="tbody">
+            <tr v-for="(minion, index) in listMinionsWithBgColor" :key="(minion.id as string)" :data-index="index" data-test="minion-item">
+              <td>{{ minion.lastUpdated }}</td>
+              <td>{{ minion.id }}</td>
+              <td>
+                <div :class="minion.latencyBgColor">
+                  {{ minion.icmp_latency }}ms
+                </div>
+              </td>
+              <td>
+                <div :class="minion.latencyBgColor">
+                  {{ getHumanReadableDuration(minion.snmp_uptime) }}
+                </div>
+              </td>
+              <td>
+                <div :class="minion.statusBgColor" data-test="minion-item-status">
+                  {{ minion.status }}
+                </div>
+              </td>
+            </tr>
+          </TransitionGroup>
+        </table>
+      </div>
+    </TableCard>
+  </Transition>
 </template>
 
 <script setup lang="ts">
-import { useMinionsQueries } from '@/store/Queries/minionsQueries'
-import { formatItemBgColor } from '@/helpers/formatting'
-import ChevronLeft from "@featherds/icon/navigation/ChevronLeft";
+import { useApplianceQueries } from '@/store/Queries/applianceQueries'
+import { useAppliancesStore } from '@/store/Views/appliancesStore'
+import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
+import { add, intervalToDuration, formatDuration } from 'date-fns'
+import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
+import { ComputedRef } from 'vue'
+import { formatItemBgColor } from './appliances.helpers'
 
-const minionsQueries = useMinionsQueries()
-const listMinionsWithBgColor = computed(() => formatItemBgColor(minionsQueries.listMinions))
+const appliancesStore = useAppliancesStore()
+const applianceQueries = useApplianceQueries()
+const listMinionsWithBgColor: ComputedRef<ExtendedMinionDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableMinions))
+
+const getHumanReadableDuration = (uptimeInSeconds: number) => {
+  const duration = intervalToDuration({
+    start: new Date(),
+    end: add(new Date(), {seconds: uptimeInSeconds})
+  })
+
+  return formatDuration(duration, { format: ['days', 'hours', 'minutes']})
+}
 </script>
 
 <style lang="scss" scoped>
@@ -59,17 +87,37 @@ const listMinionsWithBgColor = computed(() => formatItemBgColor(minionsQueries.l
   }
 }
 
-table {
-  @include table-condensed();
-  overflow-x: scroll;
+.table-container {
   display: block;
+  overflow-x: auto;
 
-  td {
-    white-space: nowrap;
-    div {
-      border-radius: 5px;
-      padding: 0px 5px 0px 5px;
+  table {
+  @include table-condensed();
+
+    thead {
+      background: var($background);
+      text-transform: uppercase;
+    }
+
+    td {
+      white-space: nowrap;
+      div {
+        border-radius: 5px;
+        padding: 0px 5px 0px 5px;
+      }
     }
   }
+}
+
+// hide / show transition
+.fade-enter-active {
+  transition: all 0.2s;
+}
+.fade-leave-active {
+  transition: all 0.2s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -29,6 +29,7 @@
 package org.opennms.horizon.server.service;
 
 import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
+import org.opennms.horizon.shared.dto.device.DeviceCreateDTO;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +60,7 @@ public class DeviceService {
   }
 
   @GraphQLMutation
-  public Integer addDevice(DeviceDTO device, @GraphQLEnvironment ResolutionEnvironment env) {
+  public Integer addDevice(DeviceCreateDTO device, @GraphQLEnvironment ResolutionEnvironment env) {
     return gateway.post(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), device, Integer.class).getBody();
   }
 }

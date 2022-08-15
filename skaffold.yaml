@@ -20,7 +20,12 @@ build:
     jib: {}
     sync:
       auto: true
-  - image: opennms/horizon-stream-ui
+  - image: opennms/horizon-stream-notification
+    context: notifications
+    jib: {}
+    sync:
+      auto: true
+  - image: opennms/horizon-stream-ui-dev
     context: ui
     sync:
       infer:
@@ -50,7 +55,15 @@ portForward:
     resourceName: opennms-rest-server
     port: 9090 # HTTP
   - resourceType: deployment
-    resourceName: opennms-rest-server
+    resourceName: my-horizon-stream-notification
+    port: 8080 # HTTP
+    localPort: 38080
+  - resourceType: deployment
+    resourceName: my-horizon-stream-notification
+    port: 5005 # Debug
+    localPort: 5007
+  - resourceType: deployment
+    resourceName: my-horizon-stream-api
     port: 5005 # Debug
     localPort: 5006
   - resourceType: deployment
@@ -89,6 +102,22 @@ portForward:
     resourceName: postgres
     port: 5432 # Postgres
     localPort: 5432
+  - resourceType: deployment
+    resourceName: prometheus
+    port: 9090 # prometheus tcp
+    localPort: 59090
+  - resourceType: deployment
+    resourceName: prometheus-pushgateway
+    port: 9091 #prometheus-pushgateway tcp
+    localPort: 59091
+  - resourceType: deployment
+    resourceName: grafana
+    port: 3000 #grafana HTTP
+    localPort: 53000
+  - resourceType: deployment
+    resourceName: my-kafka
+    port: 59092 # kafka tcp local client port
+    localPort: 59092 # default port for kafka broker
 deploy:
   statusCheckDeadlineSeconds: 600
   helm:
