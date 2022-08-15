@@ -6,6 +6,9 @@ OpenNMS:
     Path: /core
     ServiceName: opennms-core
     Image: opennms/horizon-stream-core
+    HttpPort: 8181
+    SshPort: 8101
+    GrpcPort: 8990
     Resources:
       Limits:
         Cpu: 2
@@ -35,6 +38,19 @@ OpenNMS:
       Requests:
         Cpu: 1
         Memory: 1Gi
+  Minion:
+    ServiceName: opennms-minion
+    Image: opennms/minion:29.0.10
+    SshPort: 8201
+    SnmpPort: 1162
+    SyslogPort: 1514
+    Resources:
+      Limits:
+        Cpu: 2
+        Memory: 1Gi
+      Requests:
+        Cpu: 1
+        Memory: 512Mi
 Postgres:
   ServiceName: postgres
   Image: postgres
@@ -62,7 +78,23 @@ Prometheus:
   Enabled: true
   Server:
     ServiceName: prometheus
+    Port: 9090
     Image: prom/prometheus
+    Resources:
+      Limits:
+        Cpu: "1"
+        Memory: 512Mi
+      Requests:
+        Cpu: 100m
+        Memory: 100Mi
   PushGateway:
     ServiceName: prometheus-pushgateway
+    Port: 9091
     Image: prom/pushgateway
+    Resources:
+      Limits:
+        Cpu: "1"
+        Memory: 512Mi
+      Requests:
+        Cpu: 100m
+        Memory: 100Mi

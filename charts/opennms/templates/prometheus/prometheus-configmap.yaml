@@ -22,6 +22,6 @@ data:
         # Override the global default and scrape targets from this job every 5 seconds.
         scrape_interval: 5s
         static_configs:
-          - targets: ['{{ .Values.Prometheus.PushGateway.ServiceName }}:9091']
+          - targets: ['{{ .Values.Prometheus.PushGateway.ServiceName }}:{{ .Values.Prometheus.PushGateway.Port }}']
             labels:
               pushgateway_instance: metricfire

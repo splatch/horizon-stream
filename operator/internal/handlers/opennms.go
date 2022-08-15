@@ -34,14 +34,20 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 	var apiDeployment appsv1.Deployment
 	var uiDeployment appsv1.Deployment
 	var uiService corev1.Service
+	var minionCM corev1.ConfigMap
+	var minionSVC corev1.Service
+	var minionDeploy appsv1.Deployment
 
-	yaml.LoadYaml(filepath("opennms/opennms-configmap.yaml"), values, &configMap)
-	yaml.LoadYaml(filepath("opennms/opennms-core-service.yaml"), values, &coreService)
-	yaml.LoadYaml(filepath("opennms/opennms-core-deployment.yaml"), values, &coreDeployment)
-	yaml.LoadYaml(filepath("opennms/opennms-api-service.yaml"), values, &apiService)
-	yaml.LoadYaml(filepath("opennms/opennms-api-deployment.yaml"), values, &apiDeployment)
-	yaml.LoadYaml(filepath("opennms/opennms-ui-deployment.yaml"), values, &uiDeployment)
-	yaml.LoadYaml(filepath("opennms/opennms-ui-service.yaml"), values, &uiService)
+	yaml.LoadYaml(filepath("opennms/core/opennms-configmap.yaml"), values, &configMap)
+	yaml.LoadYaml(filepath("opennms/core/opennms-core-service.yaml"), values, &coreService)
+	yaml.LoadYaml(filepath("opennms/core/opennms-core-deployment.yaml"), values, &coreDeployment)
+	yaml.LoadYaml(filepath("opennms/api/opennms-api-service.yaml"), values, &apiService)
+	yaml.LoadYaml(filepath("opennms/api/opennms-api-deployment.yaml"), values, &apiDeployment)
+	yaml.LoadYaml(filepath("opennms/ui/opennms-ui-deployment.yaml"), values, &uiDeployment)
+	yaml.LoadYaml(filepath("opennms/ui/opennms-ui-service.yaml"), values, &uiService)
+	yaml.LoadYaml(filepath("opennms/minion/minion-configmap.yaml"), values, &minionCM)
+	yaml.LoadYaml(filepath("opennms/minion/minion-service.yaml"), values, &minionSVC)
+	yaml.LoadYaml(filepath("opennms/minion/minion-deployment.yaml"), values, &minionDeploy)
 
 	h.Config = []client.Object{
 		&configMap,
@@ -51,6 +57,9 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 		&apiDeployment,
 		&uiDeployment,
 		&uiService,
+		&minionCM,
+		&minionSVC,
+		&minionDeploy,
 	}
 
 	return h.Config

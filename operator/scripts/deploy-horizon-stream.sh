@@ -9,4 +9,6 @@ bash scripts/create-instance.sh
 
 bash scripts/add-local-ssl-cert.sh
 
+kubectl config set-context --current --namespace=local-instance
 
+kubectl get pods -w

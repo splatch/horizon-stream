@@ -40,9 +40,7 @@ spec:
         - name: {{ .Values.OpenNMS.Core.ServiceName }}
           image: {{ .Values.OpenNMS.Core.Image }}
           imagePullPolicy: Always
-          {{ if not .Values.TestDeploy }}
           args: [ "-f" ]
-          {{ end }}
           env:
             - name: JAVA_TOOL_OPTIONS
               # value: "-Djava.security.egd=file:/dev/./urandom"
@@ -73,6 +71,8 @@ spec:
                 secretKeyRef:
                   name: keycloak-credentials
                   key: adminPwd
+            - name: PROMETHEUS_PUSHGATEWAY_URL
+              value: "http://{{ .Values.Prometheus.PushGateway.ServiceName }}:{{ .Values.Prometheus.PushGateway.Port }}"
           volumeMounts:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.alarmd.camel.cfg"
@@ -80,11 +80,17 @@ spec:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.eventd.camel.cfg"
               subPath: "useKafka"
+            - name: config-volume
+              mountPath: "/opt/horizon-stream/etc/users.properties"
+              subPath: "karafUsers"
+              readOnly: true
           ports:
             - name: ssh
-              containerPort: 8101
+              containerPort: {{ .Values.OpenNMS.Core.SshPort }}
             - name: http
-              containerPort: 8181
+              containerPort: {{ .Values.OpenNMS.Core.HttpPort }}
+            - name: grpc
+              containerPort: {{ .Values.OpenNMS.Core.GrpcPort }}
           {{ if not .Values.TestDeploy }}
 {{/*    TODO  livenessProbe:*/}}
 {{/*          readinessProbe:*/}}
