@@ -16,6 +16,21 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opennms.horizon.shared.ipc</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.opennms.horizon.core</groupId>-->
+<!--            <artifactId>identity</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
+            <artifactId>contract</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>twin-common</artifactId>
             <version>${project.version}</version>

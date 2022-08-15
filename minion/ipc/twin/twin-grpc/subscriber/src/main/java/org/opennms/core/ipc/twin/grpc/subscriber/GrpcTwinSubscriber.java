@@ -30,18 +30,16 @@ package org.opennms.core.ipc.twin.grpc.subscriber;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.cloud.grpc.minion.CloudServiceGrpc;
 import org.opennms.cloud.grpc.minion.CloudToMinionMessage;
-import org.opennms.cloud.grpc.minion.MinionHeader;
+import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.cloud.grpc.minion.RpcRequestProto;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
 import org.opennms.cloud.grpc.minion.TwinRequestProto;
@@ -49,7 +47,7 @@ import org.opennms.cloud.grpc.minion.TwinResponseProto;
 import org.opennms.core.ipc.twin.common.AbstractTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequest;
 import org.opennms.core.ipc.twin.common.TwinUpdate;
-import org.opennms.horizon.core.identity.Identity;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,11 +72,11 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     private final ScheduledExecutorService twinRequestSenderExecutor = Executors.newScheduledThreadPool(TWIN_REQUEST_POOL_SIZE,
             twinRequestSenderThreadFactory);
 
-    public GrpcTwinSubscriber(Identity minionIdentity, ConfigurationAdmin configAdmin, int port) {
+    public GrpcTwinSubscriber(IpcIdentity minionIdentity, ConfigurationAdmin configAdmin, int port) {
         this(minionIdentity, GrpcIpcUtils.getPropertiesFromConfig(configAdmin, GrpcIpcUtils.GRPC_CLIENT_PID), port);
     }
 
-    public GrpcTwinSubscriber(Identity minionIdentity, Properties clientProperties, int port) {
+    public GrpcTwinSubscriber(IpcIdentity minionIdentity, Properties clientProperties, int port) {
         super(minionIdentity);
         this.clientProperties = clientProperties;
         this.port = port;
@@ -95,7 +93,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
     private synchronized void sendMinionHeader() {
         // Sink stream is unidirectional Response stream from OpenNMS <-> Minion.
         // gRPC Server needs at least one message to initialize the stream
-        MinionHeader minionHeader = MinionHeader.newBuilder().setLocation(getIdentity().getLocation())
+        Identity minionHeader = Identity.newBuilder().setLocation(getIdentity().getLocation())
                                                 .setSystemId(getIdentity().getId()).build();
         asyncStub.cloudToMinionMessages(minionHeader, new StreamObserver<>() {
             @Override

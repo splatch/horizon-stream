@@ -28,11 +28,11 @@
 
 package org.opennms.core.ipc.twin.common;
 
-import org.opennms.horizon.core.identity.Identity;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 
 public class LocalTwinSubscriberImpl extends AbstractTwinSubscriber implements LocalTwinSubscriber {
 
-    public LocalTwinSubscriberImpl(final Identity identity) {
+    public LocalTwinSubscriberImpl(final IpcIdentity identity) {
         super(identity);
     }
 

@@ -46,7 +46,6 @@
         <eos.version>1.2.0</eos.version>
         <opennms-horizon.version>0.1.0-SNAPSHOT</opennms-horizon.version>
         <prometheus.version>0.16.0</prometheus.version>
-        <protoc.version>3.20.1</protoc.version>
     </properties>
 
     <dependencyManagement>
@@ -312,7 +311,6 @@
                             <version>2.10.0</version>
                         </palantirJavaFormat>
                         <licenseHeader>
-<!--                            //TODO: Where is this defined at?-->
                             <file>${maven.multiModuleProjectDirectory}/spotless/header-java.txt</file>
                         </licenseHeader>
                     </java>
