@@ -87,7 +87,7 @@
       <FeatherButton 
         data-test="save-btn" 
         primary
-        :disabled="!device.label || !device.location || !device.managementIp || !device.monitoringArea" 
+        :disabled="!device.label" 
         @click="save">
           Save
       </FeatherButton>
@@ -101,25 +101,24 @@ import { useDeviceMutations } from '@/store/Mutations/deviceMutations'
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
-import { DeviceCreateDtoInput } from '@/types/graphql'
 
 const { showSnackbar } = useSnackbar()
 const { openModal, closeModal, isVisible } = useModal()
 const deviceMutations = useDeviceMutations()
 const applianceQueries = useApplianceQueries()
 
-const defaultDevice: DeviceCreateDtoInput = { 
+const defaultDevice = { 
   label: '',
   location: '',
-  latitude: null,
-  longitude: null,
+  latitude: undefined,
+  longitude: undefined,
   monitoringArea: '',
   managementIp: '',
-  port: null,
+  port: undefined,
   snmpCommunityString: ''
 }
 
-const device: DeviceCreateDtoInput = reactive({ ...defaultDevice })
+const device = reactive({ ...defaultDevice })
 
 const save = async () => {
   // convert the field value to null if their value is an empty string (entered then erased the input field returns an empty string) - empty string as value in payload causes error when adding device.
