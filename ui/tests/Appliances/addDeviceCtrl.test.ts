@@ -44,22 +44,16 @@ test('The cancel btn should close the modal', async () => {
   expect(modalInput.exists()).toBeFalsy()
 })
 
-test('The save btn should enable if name, location, monitoring, ip are added', async () => {
+test('The save btn should enable if name is entered', async () => {
   await wrapper.get('[data-test="add-device-btn"]').trigger('click')
   
   const nameInput = wrapper.get('[data-test="name-input"] .feather-input')
-  const locationInput = wrapper.get('[data-test="location-name-input"] .feather-input')
-  const monitoringAreaInput = wrapper.get('[data-test="monitoring-area-input"] .feather-input')
-  const ipInput = wrapper.get('[data-test="ip-input"] .feather-input')
   const saveBtn = wrapper.get('[data-test="save-btn"]')
 
   // should be disabled
   expect(saveBtn.attributes('aria-disabled')).toBe('true')
   
   await nameInput.setValue('some name')
-  await locationInput.setValue('some location name')
-  await monitoringAreaInput.setValue('some monitoring area')
-  await ipInput.setValue('127.0.0.1')
   
   // should be enabled
   expect(saveBtn.attributes('aria-disabled')).toBeUndefined()
@@ -70,17 +64,8 @@ test('The add device mutation is called', async () => {
   const addDevice = vi.spyOn(deviceMutations, 'addDevice')
 
   await wrapper.get('[data-test="add-device-btn"]').trigger('click')
-
-  const nameInput = wrapper.get('[data-test="name-input"] .feather-input')
-  const locationNameInput = wrapper.get('[data-test="location-name-input"] .feather-input')
-  const monitoringAreaInput = wrapper.get('[data-test="monitoring-area-input"] .feather-input')
-  
-  const saveBtn = wrapper.get('[data-test="save-btn"]')
-
-  await nameInput.setValue('some name')
-  await locationNameInput.setValue('some location name')
-  await monitoringAreaInput.setValue('some monitoring area')
-  await saveBtn.trigger('click')
+  await wrapper.get('[data-test="name-input"] .feather-input').setValue('some name')
+  await wrapper.get('[data-test="save-btn"]').trigger('click')
 
   // expect save device query to be called
   expect(addDevice).toHaveBeenCalledTimes(1)

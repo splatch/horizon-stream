@@ -80,14 +80,14 @@
       <FeatherButton 
         data-test="cancel-btn" 
         secondary 
-        @click="closeModal">
+        @click="cancel">
           Cancel
       </FeatherButton>
       
       <FeatherButton 
         data-test="save-btn" 
         primary
-        :disabled="!device.label || !device.location || !device.managementIp || !device.monitoringArea" 
+        :disabled="!device.label" 
         @click="save">
           Save
       </FeatherButton>
@@ -107,22 +107,29 @@ const { openModal, closeModal, isVisible } = useModal()
 const deviceMutations = useDeviceMutations()
 const applianceQueries = useApplianceQueries()
 
-const defaultDevice = {
-  label: undefined,
-  managementIp: undefined,
-  snmpCommunityString: undefined,
-  port: undefined,
+const defaultDevice = { 
+  label: '',
+  location: '',
   latitude: undefined,
   longitude: undefined,
-  monitoringArea: undefined,
-  location: undefined
+  monitoringArea: '',
+  managementIp: '',
+  port: undefined,
+  snmpCommunityString: ''
 }
 
-const device = reactive({...defaultDevice})
+const device = reactive({ ...defaultDevice })
 
 const save = async () => {
-  await deviceMutations.addDevice({ device })
+  // convert the field value to null if their value is an empty string (entered then erased the input field returns an empty string) - empty string as value in payload causes error when adding device.
+  Object.assign(device, {
+    port: device.port || null,
+    latitude: device.latitude || null,
+    longitude: device.longitude || null
+  })
 
+  await deviceMutations.addDevice({ device })
+  
   if (!deviceMutations.error) {
     // clears device obj on successful save
     Object.assign(device, defaultDevice)
@@ -139,6 +146,13 @@ const save = async () => {
       applianceQueries.fetchDevicesForTable()
     }, 350)
   }
+}
+
+const cancel = () => {
+  // clears device obj
+  Object.assign(device, defaultDevice)
+
+  closeModal()
 }
 </script>
 
