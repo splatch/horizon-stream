@@ -101,31 +101,32 @@ import { useDeviceMutations } from '@/store/Mutations/deviceMutations'
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
+import { DeviceCreateDtoInput } from '@/types/graphql'
 
 const { showSnackbar } = useSnackbar()
 const { openModal, closeModal, isVisible } = useModal()
 const deviceMutations = useDeviceMutations()
 const applianceQueries = useApplianceQueries()
 
-const defaultDevice = { 
-  label: '',
-  location: '',
+const defaultDevice: DeviceCreateDtoInput = { 
+  label: undefined,
+  location: undefined,
   latitude: undefined,
   longitude: undefined,
-  monitoringArea: '',
-  managementIp: '',
+  monitoringArea: undefined,
+  managementIp: undefined,
   port: undefined,
-  snmpCommunityString: ''
+  snmpCommunityString: undefined
 }
 
 const device = reactive({ ...defaultDevice })
 
 const save = async () => {
-  // convert the field value to null if their value is an empty string (entered then erased the input field returns an empty string) - empty string as value in payload causes error when adding device.
+  // convert the field value to undefined if their value is an empty string (entered then erased the input field returns an empty string) - empty string as value in payload causes error when adding device.
   Object.assign(device, {
-    port: device.port || null,
-    latitude: device.latitude || null,
-    longitude: device.longitude || null
+    port: device.port || undefined,
+    latitude: device.latitude || undefined,
+    longitude: device.longitude || undefined
   })
 
   await deviceMutations.addDevice({ device })

@@ -1,6 +1,6 @@
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
+export type Maybe<T> = T;
+export type InputMaybe<T> = T;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -366,7 +366,7 @@ export type TimeSeriesQueryResult = {
 export type AlarmsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AlarmsQuery = { __typename?: 'Query', listAlarms?: { __typename?: 'AlarmCollectionDTO', alarms?: Array<{ __typename?: 'AlarmDTO', id?: number | null, description?: string | null, severity?: string | null, lastEventTime?: any | null } | null> | null } | null };
+export type AlarmsQuery = { __typename?: 'Query', listAlarms?: { __typename?: 'AlarmCollectionDTO', alarms?: Array<{ __typename?: 'AlarmDTO', id?: number, description?: string, severity?: string, lastEventTime?: any }> } };
 
 export type ClearAlarmMutationVariables = Exact<{
   id: Scalars['Long'];
@@ -374,51 +374,51 @@ export type ClearAlarmMutationVariables = Exact<{
 }>;
 
 
-export type ClearAlarmMutation = { __typename?: 'Mutation', clearAlarm?: string | null };
+export type ClearAlarmMutation = { __typename?: 'Mutation', clearAlarm?: string };
 
 export type AddDeviceMutationVariables = Exact<{
   device: DeviceCreateDtoInput;
 }>;
 
 
-export type AddDeviceMutation = { __typename?: 'Mutation', addDevice?: number | null };
+export type AddDeviceMutation = { __typename?: 'Mutation', addDevice?: number };
 
 export type CreateEventMutationVariables = Exact<{
   event: EventDtoInput;
 }>;
 
 
-export type CreateEventMutation = { __typename?: 'Mutation', createEvent?: boolean | null };
+export type CreateEventMutation = { __typename?: 'Mutation', createEvent?: boolean };
 
-export type DeviceTablePartsFragment = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number | null, label?: string | null, createTime?: any | null } | null> | null } | null };
+export type DeviceTablePartsFragment = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number, label?: string, createTime?: any }> } };
 
-export type MinionTablePartsFragment = { __typename?: 'Query', listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string | null, label?: string | null, status?: string | null, location?: string | null, lastUpdated?: any | null } | null> | null } | null };
+export type MinionTablePartsFragment = { __typename?: 'Query', listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string, label?: string, status?: string, location?: string, lastUpdated?: any }> } };
 
-export type MetricPartsFragment = { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any | null, value?: Array<number | null> | null } | null> | null } | null };
+export type MetricPartsFragment = { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } };
 
-export type MinionUptimePartsFragment = { __typename?: 'Query', minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any | null, value?: Array<number | null> | null } | null> | null } | null } | null };
+export type MinionUptimePartsFragment = { __typename?: 'Query', minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } } };
 
-export type MinionLatencyPartsFragment = { __typename?: 'Query', minionLatency?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any | null, value?: Array<number | null> | null } | null> | null } | null } | null };
+export type MinionLatencyPartsFragment = { __typename?: 'Query', minionLatency?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } } };
 
 export type ListDevicesForTableQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListDevicesForTableQuery = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number | null, label?: string | null, createTime?: any | null } | null> | null } | null };
+export type ListDevicesForTableQuery = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number, label?: string, createTime?: any }> } };
 
 export type ListMinionsForTableQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListMinionsForTableQuery = { __typename?: 'Query', listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string | null, label?: string | null, status?: string | null, location?: string | null, lastUpdated?: any | null } | null> | null } | null, minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any | null, value?: Array<number | null> | null } | null> | null } | null } | null, minionLatency?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any | null, value?: Array<number | null> | null } | null> | null } | null } | null };
+export type ListMinionsForTableQuery = { __typename?: 'Query', listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string, label?: string, status?: string, location?: string, lastUpdated?: any }> }, minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } }, minionLatency?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } } };
 
 export type ListMinionsAndDevicesForTablesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListMinionsAndDevicesForTablesQuery = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number | null, label?: string | null, createTime?: any | null } | null> | null } | null, listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string | null, label?: string | null, status?: string | null, location?: string | null, lastUpdated?: any | null } | null> | null } | null, minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any | null, value?: Array<number | null> | null } | null> | null } | null } | null, minionLatency?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any | null, value?: Array<number | null> | null } | null> | null } | null } | null };
+export type ListMinionsAndDevicesForTablesQuery = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number, label?: string, createTime?: any }> }, listMinions?: { __typename?: 'MinionCollectionDTO', minions?: Array<{ __typename?: 'MinionDTO', id?: string, label?: string, status?: string, location?: string, lastUpdated?: any }> }, minionUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } }, minionLatency?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, value?: Array<number> }> } } };
 
 export type ListDevicesForGeomapQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListDevicesForGeomapQuery = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number | null, label?: string | null, foreignSource?: string | null, foreignId?: string | null, labelSource?: string | null, sysOid?: string | null, sysName?: string | null, sysDescription?: string | null, sysContact?: string | null, sysLocation?: string | null, location?: { __typename?: 'LocationDTO', latitude?: number | null, longitude?: number | null } | null } | null> | null } | null };
+export type ListDevicesForGeomapQuery = { __typename?: 'Query', listDevices?: { __typename?: 'DeviceCollectionDTO', devices?: Array<{ __typename?: 'DeviceDTO', id?: number, label?: string, foreignSource?: string, foreignId?: string, labelSource?: string, sysOid?: string, sysName?: string, sysDescription?: string, sysContact?: string, sysLocation?: string, location?: { __typename?: 'LocationDTO', latitude?: number, longitude?: number } }> } };
 
 export const DeviceTablePartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DeviceTableParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listDevices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"devices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"createTime"}}]}}]}}]}}]} as unknown as DocumentNode<DeviceTablePartsFragment, unknown>;
 export const MinionTablePartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MinionTableParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listMinions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"minions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdated"}}]}}]}}]}}]} as unknown as DocumentNode<MinionTablePartsFragment, unknown>;
