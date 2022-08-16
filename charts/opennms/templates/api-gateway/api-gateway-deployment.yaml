@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.ApiGateway.ServiceName }}
+  labels:
+    app: {{ .Values.ApiGateway.ServiceName }}
+  namespace: {{ .Values.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.ApiGateway.ServiceName }}
+  replicas: {{ .Values.ApiGateway.Replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.ApiGateway.ServiceName }}
+    spec:
+      volumes:
+        - name: nginx-conf-volume
+          configMap:
+            name: {{ .Values.ApiGateway.ServiceName }}-configmap
+      containers:
+        - name: {{ .Values.ApiGateway.ServiceName }}
+          image: {{ .Values.ApiGateway.Image }}
+          ports:
+            - containerPort: {{ .Values.ApiGateway.Port }}
+          env:
+            - name: API_SERVER_URL
+              value: "http://{{ .Values.OpenNMS.API.ServiceName }}:{{ .Values.OpenNMS.API.Port }}"
+            - name: KEYCLOAK_URL
+              value: "http://{{ .Values.Keycloak.ServiceName }}:{{ .Values.Keycloak.Port }}"
+            - name: KEYCLOAK_REALM
+              value: "{{ .Values.Keycloak.RealmName }}"
+          volumeMounts:
+            - name: nginx-conf-volume
+              mountPath: "/etc/nginx/templates/default.conf.template"
+              subPath: "default.conf.template"

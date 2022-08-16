@@ -38,7 +38,7 @@ data:
     # keycloak admin client properties
     horizon-stream:
       core:
-        url: http://localhost:8181
+        url: http://localhost:{{ .Values.OpenNMS.Core.HttpPort }}
 
     logging:
       file.path: /var/log/restServer

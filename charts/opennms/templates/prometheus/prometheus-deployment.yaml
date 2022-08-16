@@ -6,7 +6,7 @@ metadata:
     app: {{ .Values.Prometheus.Server.ServiceName }}
   namespace: {{ .Values.Namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.Prometheus.Server.Replicas }}
   selector:
     matchLabels:
       app: {{ .Values.Prometheus.Server.ServiceName }}

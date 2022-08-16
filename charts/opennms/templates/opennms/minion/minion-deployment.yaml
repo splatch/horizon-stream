@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels:
       run: {{ .Values.OpenNMS.Minion.ServiceName }}
-  replicas: 1
+  replicas: {{ .Values.OpenNMS.Minion.Replicas }}
   template:
     metadata:
       labels:
@@ -22,6 +22,7 @@ spec:
       containers:
         - name: minion
           image: {{ .Values.OpenNMS.Minion.Image }}
+          imagePullPolicy: {{ .Values.OpenNMS.Minion.ImagePullPolicy }}
           args: ["-f"]
           env:
             - name: KARAF_DEBUG

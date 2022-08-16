@@ -7,12 +7,15 @@ metadata:
   namespace: {{ .Values.Namespace }}
 spec:
   ports:
-    - port: 8101
+    - port: {{ .Values.OpenNMS.Core.SshPort }}
       protocol: TCP
       name: ssh
-    - port: 8181
+    - port: {{ .Values.OpenNMS.Core.HttpPort }}
       protocol: TCP
       name: http
+    - port: {{ .Values.OpenNMS.Core.GrpcPort }}
+      protocol: TCP
+      name: grpc
   selector:
     app: {{ .Values.OpenNMS.Core.ServiceName }}
   type: NodePort

@@ -15,52 +15,69 @@ limitations under the License.
 package handlers
 
 import (
-	"github.com/OpenNMS/opennms-operator/internal/model/values"
-	"github.com/OpenNMS/opennms-operator/internal/util/yaml"
-	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
+    "github.com/OpenNMS/opennms-operator/internal/model/values"
+    "github.com/OpenNMS/opennms-operator/internal/util/yaml"
+    appsv1 "k8s.io/api/apps/v1"
+    corev1 "k8s.io/api/core/v1"
+    "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type OpenNMSHandler struct {
-	ServiceHandlerObject
+    ServiceHandlerObject
 }
 
 func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Object {
-	var configMap corev1.ConfigMap
-	var coreService corev1.Service
-	var coreDeployment appsv1.Deployment
-	var apiService corev1.Service
-	var apiDeployment appsv1.Deployment
-	var uiDeployment appsv1.Deployment
-	var uiService corev1.Service
-	var minionCM corev1.ConfigMap
-	var minionSVC corev1.Service
-	var minionDeploy appsv1.Deployment
+    //core
+    var configMap corev1.ConfigMap
+    var coreService corev1.Service
+    var coreDeployment appsv1.Deployment
 
-	yaml.LoadYaml(filepath("opennms/core/opennms-configmap.yaml"), values, &configMap)
-	yaml.LoadYaml(filepath("opennms/core/opennms-core-service.yaml"), values, &coreService)
-	yaml.LoadYaml(filepath("opennms/core/opennms-core-deployment.yaml"), values, &coreDeployment)
-	yaml.LoadYaml(filepath("opennms/api/opennms-api-service.yaml"), values, &apiService)
-	yaml.LoadYaml(filepath("opennms/api/opennms-api-deployment.yaml"), values, &apiDeployment)
-	yaml.LoadYaml(filepath("opennms/ui/opennms-ui-deployment.yaml"), values, &uiDeployment)
-	yaml.LoadYaml(filepath("opennms/ui/opennms-ui-service.yaml"), values, &uiService)
-	yaml.LoadYaml(filepath("opennms/minion/minion-configmap.yaml"), values, &minionCM)
-	yaml.LoadYaml(filepath("opennms/minion/minion-service.yaml"), values, &minionSVC)
-	yaml.LoadYaml(filepath("opennms/minion/minion-deployment.yaml"), values, &minionDeploy)
+    yaml.LoadYaml(filepath("opennms/core/core-configmap.yaml"), values, &configMap)
+    yaml.LoadYaml(filepath("opennms/core/core-service.yaml"), values, &coreService)
+    yaml.LoadYaml(filepath("opennms/core/core-deployment.yaml"), values, &coreDeployment)
 
-	h.Config = []client.Object{
-		&configMap,
-		&coreService,
-		&coreDeployment,
-		&apiService,
-		&apiDeployment,
-		&uiDeployment,
-		&uiService,
-		&minionCM,
-		&minionSVC,
-		&minionDeploy,
-	}
+    //api
+    var apiService corev1.Service
+    var apiDeployment appsv1.Deployment
 
-	return h.Config
+    yaml.LoadYaml(filepath("opennms/api/api-service.yaml"), values, &apiService)
+    yaml.LoadYaml(filepath("opennms/api/api-deployment.yaml"), values, &apiDeployment)
+
+    //ui
+    var uiDeployment appsv1.Deployment
+    var uiService corev1.Service
+
+    yaml.LoadYaml(filepath("opennms/ui/ui-deployment.yaml"), values, &uiDeployment)
+    yaml.LoadYaml(filepath("opennms/ui/ui-service.yaml"), values, &uiService)
+
+    //minion
+    var minionCM corev1.ConfigMap
+    var minionSVC corev1.Service
+    var minionDeploy appsv1.Deployment
+
+    yaml.LoadYaml(filepath("opennms/minion/minion-configmap.yaml"), values, &minionCM)
+    yaml.LoadYaml(filepath("opennms/minion/minion-service.yaml"), values, &minionSVC)
+    yaml.LoadYaml(filepath("opennms/minion/minion-deployment.yaml"), values, &minionDeploy)
+
+    //notification
+    var noteDeployment appsv1.Deployment
+    var noteService corev1.Service
+
+    yaml.LoadYaml(filepath("opennms/notification/notification-deployment.yaml"), values, &noteDeployment)
+    yaml.LoadYaml(filepath("opennms/notification/notification-service.yaml"), values, &noteService)
+
+    h.Config = []client.Object{
+        &configMap,
+        &coreService,
+        &coreDeployment,
+        &apiService,
+        &apiDeployment,
+        &uiDeployment,
+        &uiService,
+        &minionCM,
+        &minionSVC,
+        &minionDeploy,
+    }
+
+    return h.Config
 }

@@ -6,6 +6,7 @@ OpenNMS:
     Path: /core
     ServiceName: opennms-core
     Image: opennms/horizon-stream-core
+    Replicas: 1
     HttpPort: 8181
     SshPort: 8101
     GrpcPort: 8990
@@ -20,6 +21,8 @@ OpenNMS:
     Path: /api
     ServiceName: opennms-rest-server
     Image: opennms/horizon-stream-rest-server
+    Replicas: 1
+    Port: 8118
     Resources:
       Limits:
         Cpu: 2
@@ -31,16 +34,19 @@ OpenNMS:
     Path: /
     ServiceName: opennms-ui
     Image: opennms/horizon-stream-ui
+    Replicas: 1
+    Port: 8117
     Resources:
       Limits:
-        Cpu: 2
-        Memory: 2Gi
-      Requests:
         Cpu: 1
-        Memory: 1Gi
+        Memory: 500Mi
+      Requests:
+        Cpu: 100m
+        Memory: 250Mi
   Minion:
     ServiceName: opennms-minion
     Image: opennms/minion:29.0.10
+    Replicas: 1
     SshPort: 8201
     SnmpPort: 1162
     SyslogPort: 1514
@@ -51,9 +57,22 @@ OpenNMS:
       Requests:
         Cpu: 1
         Memory: 512Mi
+  Notification: 
+    ServiceName: opennms-notifications
+    Image: opennms/horizon-stream-notification
+    Replicas: 1
+    Port: 8080
+    Resources:
+      Limits:
+        Cpu: 1
+        Memory: 500Mi
+      Requests:
+        Cpu: 100m
+        Memory: 250Mi
 Postgres:
   ServiceName: postgres
   Image: postgres
+  Replicas: 1
   AdminPassword: notset
   OpenNMSPassword: notset
   KeycloakPassword: notset
@@ -67,6 +86,7 @@ Keycloak:
   UserUsername: user001
   UserPassword: notset
   Image: opennms/horizon-stream-keycloak:test
+  RealmName: opennms
   UUID:
     RealmId: 00000000-0000-0000-0000-000000000000
     ClientId: 00000000-0000-0000-0000-000000000000
@@ -80,6 +100,7 @@ Prometheus:
     ServiceName: prometheus
     Port: 9090
     Image: prom/prometheus
+    Replicas: 1
     Resources:
       Limits:
         Cpu: "1"
@@ -91,6 +112,7 @@ Prometheus:
     ServiceName: prometheus-pushgateway
     Port: 9091
     Image: prom/pushgateway
+    Replicas: 1
     Resources:
       Limits:
         Cpu: "1"
@@ -98,3 +120,28 @@ Prometheus:
       Requests:
         Cpu: 100m
         Memory: 100Mi
+MailServer:
+  ServiceName: mail-server
+  Image: mailhog/mailhog:latest
+  Replicas: 1 
+  Port: 8025
+  SmtpPort: 1025
+  Resources:
+    Limits:
+      Cpu: 100m
+      Memory: 200Mi
+    Requests:
+      Cpu: 100m
+      Memory: 100Mi
+ApiGateway:
+  ServiceName: api-gateway
+  Image: nginx:1.21.6-alpine
+  Replicas: 1
+  Port: 80
+  Resources:
+    Limits:
+      Cpu: 100m
+      Memory: 200Mi
+    Requests:
+      Cpu: 100m
+      Memory: 100Mi

@@ -9,7 +9,7 @@ metadata:
   annotations:
     autoupdate: "true"
 spec:
-  replicas: 1
+  replicas: {{ .Values.OpenNMS.UI.Replicas }}
   selector:
     matchLabels:
       app: {{ .Values.OpenNMS.UI.ServiceName }}
@@ -39,8 +39,9 @@ spec:
       containers:
         - name: {{ .Values.OpenNMS.UI.ServiceName }}
           image: {{ .Values.OpenNMS.UI.Image }}
+          imagePullPolicy: {{ .Values.OpenNMS.UI.ImagePullPolicy }}
           ports:
-            - containerPort: 3000
+            - containerPort: {{ .Values.OpenNMS.UI.Port }}
           env:
             - name: DOMAIN_API
               value: "https://{{ .Values.Host }}{{ .Values.OpenNMS.API.Path }}"
