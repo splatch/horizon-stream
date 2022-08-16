@@ -18,25 +18,24 @@ import org.opennms.horizon.minion.ignite.model.workflows.PluginMetadata;
 @Slf4j
 public class PluginRegistrationRouting extends RouteBuilder {
 
-    private final String routeUri;
     public static final String ROUTE_ID =  "MINION_REGISTRATION";
+
+    private final String registrationUri;
     private final SyncDispatcher<PluginConfigMessage> dispatcher;
+    private final long aggregationDelay;
 
-
-    //TODO: make this configurable
-    private final long someDelay=10000;
-
-    public PluginRegistrationRouting(String uri, MessageDispatcherFactory messageDispatcherFactory) {
-        this.routeUri = uri;
+    public PluginRegistrationRouting(String uri, MessageDispatcherFactory messageDispatcherFactory, long aggregationDelay) {
+        this.registrationUri = uri;
         dispatcher = messageDispatcherFactory.createSyncDispatcher(new PluginConfigSinkModule());
+        this.aggregationDelay = aggregationDelay;
     }
 
     @Override
     public void configure() throws Exception {
-        from(routeUri).routeId(ROUTE_ID).
+        from(registrationUri).routeId(ROUTE_ID).
                 log(LoggingLevel.INFO, "Got a single plugin config message").
                 aggregate(new PluginConfigAggregationStrategy()).constant(true).
-                completionTimeout(someDelay).
+                completionTimeout(aggregationDelay).
                 process(exchange -> {
                     log.info("Got a plugin registration notice!");
 
