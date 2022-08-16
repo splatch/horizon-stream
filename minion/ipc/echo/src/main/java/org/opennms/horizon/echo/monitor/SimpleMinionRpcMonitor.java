@@ -33,9 +33,9 @@ import org.opennms.horizon.core.lib.InetAddressUtils;
 import org.opennms.horizon.echo.EchoRequest;
 import org.opennms.horizon.echo.EchoResponse;
 import org.opennms.horizon.echo.EchoRpcModule;
-import org.opennms.horizon.ipc.rpc.api.RpcClient;
-import org.opennms.horizon.ipc.rpc.api.RpcClientFactory;
-import org.opennms.horizon.ipc.rpc.api.RpcRequest;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcClient;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcClientFactory;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -18,9 +18,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>ipc-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.opennms.horizon.shared.ipc</groupId>
+            <artifactId>api</artifactId>
+            <version>${opennms-horizon.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -32,9 +32,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
+            <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
             <artifactId>contract</artifactId>
-            <version>${project.version}</version>
+            <version>${opennms-horizon.version}</version>
         </dependency>
     </dependencies>
 
@@ -58,7 +58,7 @@
                 <artifactId>protobuf-maven-plugin</artifactId>
                 <version>0.6.1</version>
                 <configuration>
-                    <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}</protocArtifact>
+                    <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
                     <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
                 </configuration>

@@ -1,10 +1,10 @@
 package org.opennms.horizon.minion.ignite.grpc.workflow;
 
-import org.opennms.horizon.ipc.sink.aggregation.IdentityAggregationPolicy;
-import org.opennms.horizon.ipc.sink.api.AggregationPolicy;
-import org.opennms.horizon.ipc.sink.api.AsyncPolicy;
-import org.opennms.horizon.ipc.sink.api.SinkModule;
 import org.opennms.horizon.minion.ignite.grpc.workflow.contract.WorkflowResults;
+import org.opennms.horizon.shared.ipc.sink.aggregation.IdentityAggregationPolicy;
+import org.opennms.horizon.shared.ipc.sink.api.AggregationPolicy;
+import org.opennms.horizon.shared.ipc.sink.api.AsyncPolicy;
+import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

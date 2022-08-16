@@ -7,17 +7,17 @@ import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import org.opennms.horizon.core.identity.Identity;
 import org.opennms.horizon.minion.ignite.model.workflows.Results;
 import org.opennms.horizon.minion.metrics.MetricsProvider;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 
 public class MeteredConsumer implements Consumer<Results>, MetricsProvider {
 
   private final MetricRegistry metrics = new MetricRegistry();
-  private final Identity identity;
+  private final IpcIdentity identity;
   private final Consumer<Results> delegate;
 
-  public MeteredConsumer(Identity identity, Consumer<Results> delegate) {
+  public MeteredConsumer(IpcIdentity identity, Consumer<Results> delegate) {
     this.identity = identity;
     this.delegate = delegate;
   }

@@ -9,13 +9,23 @@
       <cm:property name="kubernetes.service-name" value="poc-distributed-scheduling"/>
       <cm:property name="workflowSchedulerThreadCount" value="20"/>
       <cm:property name="routing.uri" value="seda:registration"/>
+        <cm:property name="id" value="TODO:envVarPropertyId"/>
+        <cm:property name="location" value="TODO:envVarPropertyId"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
-  <reference id="identity" interface="org.opennms.horizon.core.identity.Identity"/>
+  <reference id="identity" interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity"/>
   <reference id="opennmsScheduler" interface="org.opennms.horizon.minion.scheduler.OpennmsScheduler"/>
   <reference id="resultPublisher" interface="java.util.function.Consumer" filter="(message.publisher.topic=workflow-result)" />
+    
   <reference id="registrationService" interface="org.opennms.horizon.minion.registration.RegistrationService"/>
+    
+    <service interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity">
+        <bean class="org.opennms.horizon.minion.identity.MinionIdentity">
+            <argument value="${id}"/>
+            <argument value="${location}"/>
+        </bean>
+    </service>
 
   <bean id="workflowRepository" class="org.opennms.horizon.minion.ignite.worker.workflows.WorkflowRepository"/>
 
