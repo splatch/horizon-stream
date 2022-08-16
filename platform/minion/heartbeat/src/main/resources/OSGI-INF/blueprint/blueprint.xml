@@ -12,12 +12,14 @@
     <reference id="minionDao" interface="org.opennms.horizon.db.dao.api.MinionDao"/>
     <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils" />
     <reference id="metricsAdapter" interface="org.opennms.horizon.metrics.api.OnmsMetricsAdapter"/>
+    <reference id="eventForwarder" interface="org.opennms.horizon.events.api.EventForwarder" availability="optional"/>
 
     <bean id="heartbeatConsumer" class="org.opennms.minion.heartbeat.HeartbeatConsumer" init-method="init">
         <argument ref="messageConsumerManager"/>
         <argument ref="minionDao"/>
         <argument ref="sessionUtils"/>
         <argument ref="metricsAdapter"/>
+        <argument ref="eventForwarder"/>
     </bean>
 
 </blueprint>
