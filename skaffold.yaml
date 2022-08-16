@@ -54,7 +54,8 @@ build:
         ]
   - image: opennms/horizon-stream-minion-gateway
     context: minion-gateway
-    jib: {}
+    jib:
+      project: main
     sync:
       auto: true
   - image: opennms/horizon-stream-api
