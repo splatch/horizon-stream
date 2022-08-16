@@ -16,12 +16,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opennms.horizon.ipc.sink.api.MessageDispatcherFactory;
-import org.opennms.horizon.ipc.sink.api.SyncDispatcher;
 import org.opennms.horizon.minion.ignite.model.workflows.PluginMetadata;
 import org.opennms.horizon.minion.ignite.model.workflows.WorkflowType;
 import org.opennms.horizon.minion.plugin.api.FieldConfigMeta;
 import org.opennms.horizon.minion.registration.proto.PluginConfigMessage;
+import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.horizon.shared.ipc.sink.api.SyncDispatcher;
 
 public class PluginRegistrationRoutingTest extends CamelTestSupport {
 
