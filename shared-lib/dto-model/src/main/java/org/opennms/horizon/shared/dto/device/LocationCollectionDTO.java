@@ -28,14 +28,21 @@
 
 package org.opennms.horizon.shared.dto.device;
 
+import org.opennms.horizon.shared.dto.AbstractCollectionDTO;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.Collection;
+import java.util.List;
 
-@Getter
-@Setter
-public class LocationDTO {
-  private String locationName;
-  private Double latitude;
-  private Double longitude;
+public class LocationCollectionDTO extends AbstractCollectionDTO<LocationDTO> {
+
+    public LocationCollectionDTO() {
+    }
+
+    public LocationCollectionDTO(final Collection<? extends LocationDTO> devices) {
+        objects.addAll(devices);
+    }
+
+    public List<LocationDTO> getLocations() {
+        return objects;
+    }
 }

@@ -88,9 +88,12 @@ export const useApplianceQueries = defineStore('applianceQueries', {
       tableDevices.value = addMetricsToDevices(minionsAndDevices)
     })
 
+    const locations = computed(() => minionsAndDevices.value?.listLocations?.locations?.map((item, index) => ({ id: index, name: item.locationName })) || [])
+    
     return {
       tableDevices,
       tableMinions,
+      locations,
       fetchDevicesForTable,
       fetchMinionsForTable
     }

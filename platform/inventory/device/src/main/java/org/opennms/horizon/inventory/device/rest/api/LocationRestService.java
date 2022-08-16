@@ -26,16 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.shared.dto.device;
+package org.opennms.horizon.inventory.device.rest.api;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import lombok.Getter;
-import lombok.Setter;
+@Path("/locations")
+public interface LocationRestService {
 
-@Getter
-@Setter
-public class LocationDTO {
-  private String locationName;
-  private Double latitude;
-  private Double longitude;
+    @GET
+    @Path("/{location}")
+    @Produces(MediaType.APPLICATION_JSON)
+    Response getByLocation(@PathParam("location") String location);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    Response findAll();
 }
