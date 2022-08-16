@@ -32,6 +32,7 @@ import org.opennms.horizon.minion.plugin.api.annotations.HorizonConfig;
 
 @Slf4j
 @Ignore
+@Deprecated
 public class PluginDetectorTest {
     @Mock
     DetectorRegistry detectorRegistry;
