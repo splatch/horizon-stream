@@ -1,7 +1,8 @@
 import { useQuery } from 'villus'
 import { defineStore } from 'pinia'
-import { ListDevicesForTableDocument, ListMinionsForTableDocument, ListMinionsAndDevicesForTablesDocument, ListMinionsForTableQuery } from '@/types/graphql'
+import { ListDevicesForTableDocument, ListMinionsForTableDocument, ListMinionsAndDevicesForTablesDocument, ListMinionsForTableQuery, ListDevicesForTableQuery } from '@/types/graphql'
 import { ExtendedMinionDTO } from '@/types/minion'
+import { ExtendedDeviceDTO } from '@/types/device'
 import { Ref } from 'vue'
 
 export const useApplianceQueries = defineStore('applianceQueries', {
@@ -11,12 +12,36 @@ export const useApplianceQueries = defineStore('applianceQueries', {
     
     // fetch appliance devices table data
     const fetchDevicesForTable = async () => {
-      const { data: deviceData } = await useQuery({
+      const { data: devicesData } = await useQuery({
         cachePolicy: 'network-only',
         query: ListDevicesForTableDocument
       })
 
-      tableDevices.value = deviceData?.value?.listDevices?.devices || []
+      tableDevices.value = addMetricsToDevices(devicesData)
+    }
+
+    const addMetricsToDevices = (data: Ref<ListDevicesForTableQuery | null>)=> {
+      const devices = data.value?.listDevices?.devices as ExtendedDeviceDTO[] || []
+      const deviceLatencies = data.value?.deviceLatency?.data?.result || []
+      const deviceUptimes = data.value?.deviceUptime?.data?.result || []
+
+      const latenciesMap: Record<string, number> = {}
+      const uptimesMap: Record<string, number> = {}
+
+      for (const latency of deviceLatencies) {
+        latenciesMap[latency?.metric?.instance] = latency?.value?.[1] || 0
+      }
+      
+      for (const uptime of deviceUptimes) {
+        uptimesMap[uptime?.metric?.instance] = uptime?.value?.[1] || 0
+      }
+
+      for (const device of devices) {
+        device.icmp_latency = latenciesMap[device.managementIp as string]
+        device.snmp_uptime = uptimesMap[device.managementIp as string]
+      }
+      
+      return devices
     }
 
     // fetch appliance minions table data
@@ -28,12 +53,6 @@ export const useApplianceQueries = defineStore('applianceQueries', {
 
       tableMinions.value = addMetricsToMinions(minionsData)
     }
-
-
-    // minions AND devices table
-    const { data: minionsAndDevices } = useQuery({
-      query: ListMinionsAndDevicesForTablesDocument
-    })
 
     const addMetricsToMinions = (data: Ref<ListMinionsForTableQuery | null>)=> {
       const minions = data.value?.listMinions?.minions as ExtendedMinionDTO[] || []
@@ -59,9 +78,14 @@ export const useApplianceQueries = defineStore('applianceQueries', {
       return minions
     }
 
+    // minions AND devices table
+    const { data: minionsAndDevices } = useQuery({
+      query: ListMinionsAndDevicesForTablesDocument
+    })
+
     watchEffect(() => {
       tableMinions.value = addMetricsToMinions(minionsAndDevices)
-      tableDevices.value = minionsAndDevices.value?.listDevices?.devices || []
+      tableDevices.value = addMetricsToDevices(minionsAndDevices)
     })
 
     const locations = computed(() => minionsAndDevices.value?.listLocations?.locations?.map((item, index) => ({ id: index, name: item.locationName })) || [])

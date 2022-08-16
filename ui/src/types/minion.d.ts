@@ -1,6 +1,6 @@
 
-import { BGColors } from "@/components/Appliances/appliances.helpers"
-import { MinionDto } from "./graphql"
+import { BGColors } from '@/components/Appliances/appliances.helpers'
+import { MinionDto } from './graphql'
 
 interface ExtendedMinionDTO extends MinionDto {
   icmp_latency: number
