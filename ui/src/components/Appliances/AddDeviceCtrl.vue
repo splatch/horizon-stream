@@ -22,21 +22,16 @@
         label="Name"
         v-model="device.label"
       />
-      
       <!-- Location name -->
-      <FeatherInput
+      <FeatherSelect
         data-test="location-name-input"
+        name="locationOptions"
+        v-model="locationOption"
+        :options="applianceQueries.locations"
+        text-prop="name"
+        @update:modelValue="selectLocation"
         label="Location"
-        v-model="device.location"
       />
-      
-      <!-- Monitoring area -->
-      <FeatherInput
-        data-test="monitoring-area-input"
-        label="Monitoring Area"
-        v-model="device.monitoringArea"
-      />
-
       <!-- Management IP -->
       <FeatherInput
         data-test="ip-input"
@@ -55,7 +50,7 @@
       <FeatherInput
         type="number"
         data-test="port-input"
-        label="Port (Optional)"
+        label="SNMP Port (Optional)"
         v-model="device.port"
       />
       
@@ -80,14 +75,14 @@
       <FeatherButton 
         data-test="cancel-btn" 
         secondary 
-        @click="closeModal">
+        @click="cancel">
           Cancel
       </FeatherButton>
       
       <FeatherButton 
         data-test="save-btn" 
         primary
-        :disabled="!device.label || !device.location || !device.managementIp || !device.monitoringArea" 
+        :disabled="!device.label" 
         @click="save">
           Save
       </FeatherButton>
@@ -101,28 +96,36 @@ import { useDeviceMutations } from '@/store/Mutations/deviceMutations'
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
+import { DeviceCreateDtoInput } from '@/types/graphql'
 
 const { showSnackbar } = useSnackbar()
 const { openModal, closeModal, isVisible } = useModal()
 const deviceMutations = useDeviceMutations()
 const applianceQueries = useApplianceQueries()
 
-const defaultDevice = {
+const defaultDevice: DeviceCreateDtoInput = { 
   label: undefined,
-  managementIp: undefined,
-  snmpCommunityString: undefined,
-  port: undefined,
+  location: undefined,
   latitude: undefined,
   longitude: undefined,
   monitoringArea: undefined,
-  location: undefined
+  managementIp: undefined,
+  port: undefined,
+  snmpCommunityString: undefined
 }
 
-const device = reactive({...defaultDevice})
+const device = reactive({ ...defaultDevice })
 
 const save = async () => {
-  await deviceMutations.addDevice({ device })
+  // convert the field value to undefined if their value is an empty string (entered then erased the input field returns an empty string) - empty string as value in payload causes error when adding device.
+  Object.assign(device, {
+    port: device.port || undefined,
+    latitude: device.latitude || undefined,
+    longitude: device.longitude || undefined
+  })
 
+  await deviceMutations.addDevice({ device })
+  
   if (!deviceMutations.error) {
     // clears device obj on successful save
     Object.assign(device, defaultDevice)
@@ -140,6 +143,27 @@ const save = async () => {
     }, 350)
   }
 }
+
+const cancel = () => {
+  // clears device obj
+  Object.assign(device, defaultDevice)
+
+  closeModal()
+}
+
+// stores the selected location option
+const locationOption = ref()
+// sets location val in the payload
+const selectLocation = () => {
+  if (locationOption.value?.name) {
+    device.location = locationOption.value.name
+  }
+}
+// sets default location when locations available
+watchEffect(() => { 
+  locationOption.value = applianceQueries.locations[0]
+  selectLocation()
+})
 </script>
 
 <style scoped lang="scss">

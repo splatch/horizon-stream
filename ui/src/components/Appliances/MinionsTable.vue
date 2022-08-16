@@ -55,23 +55,15 @@
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import { add, intervalToDuration, formatDuration } from 'date-fns'
 import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
 import { ComputedRef } from 'vue'
-import { formatItemBgColor } from './appliances.helpers'
+import { formatItemBgColor, getHumanReadableDuration } from './appliances.helpers'
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()
+
 const listMinionsWithBgColor: ComputedRef<ExtendedMinionDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableMinions))
 
-const getHumanReadableDuration = (uptimeInSeconds: number) => {
-  const duration = intervalToDuration({
-    start: new Date(),
-    end: add(new Date(), {seconds: uptimeInSeconds})
-  })
-
-  return formatDuration(duration, { format: ['days', 'hours', 'minutes']})
-}
 </script>
 
 <style lang="scss" scoped>

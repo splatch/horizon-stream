@@ -9,4 +9,5 @@ generates:
       - "typed-document-node"
     config: 
       dedupeFragments: true
+      maybeValue: T
 

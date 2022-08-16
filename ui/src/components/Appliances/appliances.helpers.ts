@@ -1,5 +1,6 @@
-import { ExtendedDeviceDTO } from "@/types/device"
-import { ExtendedMinionDTO } from "@/types/minion"
+import { ExtendedDeviceDTO } from '@/types/device'
+import { ExtendedMinionDTO } from '@/types/minion'
+import { add, intervalToDuration, formatDuration } from 'date-fns'
 
 export interface BGColors {
   statusBgColor: string
@@ -38,3 +39,14 @@ export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[
     uptimeBgColor
   }
 })
+
+export const getHumanReadableDuration = (uptimeInSeconds: number) => {
+  if (uptimeInSeconds < 60) return `${uptimeInSeconds} ${uptimeInSeconds <= 0 ? '' : 'seconds'}`
+
+  const duration = intervalToDuration({
+    start: new Date(),
+    end: add(new Date(), {seconds: uptimeInSeconds})
+  })
+
+  return formatDuration(duration, { format: ['days', 'hours', 'minutes']})
+}
