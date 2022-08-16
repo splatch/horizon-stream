@@ -4,6 +4,7 @@ fragment DeviceTableParts on Query {
       id
       label
       createTime
+      managementIp
     }
   }
 }
@@ -48,8 +49,22 @@ fragment MinionLatencyParts on Query {
   }
 }
 
+fragment DeviceUptimeParts on Query {
+  deviceUptime: metric(name: "snmp_uptime_sec") {
+    ...MetricParts
+  }
+}
+
+fragment DeviceLatencyParts on Query {
+  deviceLatency: metric(name: "icmp_round_trip_time_msec") {
+    ...MetricParts
+  }
+}
+
 query ListDevicesForTable {
   ...DeviceTableParts
+  ...DeviceUptimeParts
+  ...DeviceLatencyParts
 }
 
 query ListMinionsForTable {
@@ -60,6 +75,8 @@ query ListMinionsForTable {
 
 query ListMinionsAndDevicesForTables {
   ...DeviceTableParts
+  ...DeviceUptimeParts
+  ...DeviceLatencyParts
   ...MinionTableParts
   ...MinionUptimeParts
   ...MinionLatencyParts

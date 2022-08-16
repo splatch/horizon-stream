@@ -1,10 +1,10 @@
 
-import { BGColors } from "@/components/Appliances/appliances.helpers"
-import { DeviceDto } from "./graphql"
+import { BGColors } from '@/components/Appliances/appliances.helpers'
+import { DeviceDto } from './graphql'
 
 interface ExtendedDeviceDTO extends DeviceDto {
-  icmp_latency: string
-  snmp_uptime: string
+  icmp_latency: number
+  snmp_uptime: number
   status: string
 }
 
