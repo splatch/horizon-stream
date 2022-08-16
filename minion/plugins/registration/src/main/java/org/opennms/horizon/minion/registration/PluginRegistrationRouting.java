@@ -7,13 +7,13 @@ import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.processor.aggregate.AbstractListAggregationStrategy;
-import org.opennms.horizon.ipc.sink.api.MessageDispatcherFactory;
-import org.opennms.horizon.ipc.sink.api.SyncDispatcher;
 import org.opennms.horizon.minion.registration.proto.FieldConfigMeta;
 import org.opennms.horizon.minion.registration.proto.FieldConfigMeta.Builder;
 import org.opennms.horizon.minion.registration.proto.PluginConfigMessage;
 import org.opennms.horizon.minion.registration.proto.PluginConfigMessage.PluginConfigMeta;
 import org.opennms.horizon.minion.ignite.model.workflows.PluginMetadata;
+import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.horizon.shared.ipc.sink.api.SyncDispatcher;
 
 @Slf4j
 public class PluginRegistrationRouting extends RouteBuilder {

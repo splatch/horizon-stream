@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 import org.opennms.cloud.grpc.minion.TwinRequestProto;
 import org.opennms.cloud.grpc.minion.TwinResponseProto;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
-import org.opennms.horizon.core.identity.Identity;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractTwinSubscriber.class);
     protected static final String TAG_TWIN_RPC_REQUEST = "TwinRpcRequest";
 
-    private final Identity identity;
+    private final IpcIdentity identity;
 
     private final Map<String, Subscription> subscriptions = new ConcurrentHashMap<>();
 
@@ -72,7 +72,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
                     .setNameFormat("abstract-twin-subscriber-%d")
                     .build());
 
-    protected AbstractTwinSubscriber(final Identity identity) {
+    protected AbstractTwinSubscriber(final IpcIdentity identity) {
         this.identity = Objects.requireNonNull(identity);
     }
 
@@ -149,7 +149,7 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         this.subscriptions.clear();
     }
 
-    public Identity getIdentity() {
+    public IpcIdentity getIdentity() {
         return this.identity;
     }
 

@@ -38,7 +38,7 @@ import javax.xml.bind.JAXBException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
-import org.opennms.horizon.ipc.rpc.api.RpcModule;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcModule;
 
 public class EchoRpcModule implements RpcModule<EchoRequest, EchoResponse> {
 

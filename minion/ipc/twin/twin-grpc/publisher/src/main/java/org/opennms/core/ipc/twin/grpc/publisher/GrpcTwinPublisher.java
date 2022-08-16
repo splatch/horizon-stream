@@ -39,7 +39,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.function.BiConsumer;
 import org.opennms.cloud.grpc.minion.CloudToMinionMessage;
-import org.opennms.cloud.grpc.minion.MinionHeader;
 import org.opennms.cloud.grpc.minion.RpcRequestProto;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
 import org.opennms.cloud.grpc.minion.TwinResponseProto;
@@ -49,6 +48,7 @@ import org.opennms.core.ipc.twin.common.AbstractTwinPublisher;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.TwinRequest;
 import org.opennms.core.ipc.twin.common.TwinUpdate;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,21 +168,21 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
     }
 
     // BiConsumer<MinionHeader, StreamObserver<CloudToMinionMessage>>
-    public BiConsumer<MinionHeader, StreamObserver<CloudToMinionMessage>> getStreamObserver() {
+    public BiConsumer<IpcIdentity, StreamObserver<CloudToMinionMessage>> getStreamObserver() {
         return new BiConsumer<>() {
             @Override
-            public void accept(MinionHeader minionHeader, StreamObserver<CloudToMinionMessage> responseObserver) {
-                if (sinkStreamsBySystemId.containsKey(minionHeader.getSystemId())) {
-                    StreamObserver<TwinResponseProto> sinkStream = sinkStreamsBySystemId.remove(minionHeader.getSystemId());
+            public void accept(IpcIdentity minionHeader, StreamObserver<CloudToMinionMessage> responseObserver) {
+                if (sinkStreamsBySystemId.containsKey(minionHeader.getId())) {
+                    StreamObserver<TwinResponseProto> sinkStream = sinkStreamsBySystemId.remove(minionHeader.getId());
                     sinkStreamsByLocation.remove(minionHeader.getLocation(), sinkStream);
                 }
                 AdapterObserver delegate = new AdapterObserver(responseObserver);
                 delegate.setCompletionCallback(() -> {
                     sinkStreamsByLocation.remove(minionHeader.getLocation(), delegate);
-                    sinkStreamsBySystemId.remove(minionHeader.getSystemId());
+                    sinkStreamsBySystemId.remove(minionHeader.getId());
                 });
                 sinkStreamsByLocation.put(minionHeader.getLocation(), delegate);
-                sinkStreamsBySystemId.put(minionHeader.getSystemId(), delegate);
+                sinkStreamsBySystemId.put(minionHeader.getId(), delegate);
 
                 forEachSession(((sessionKey, twinTracker) -> {
                     if (sessionKey.location == null || sessionKey.location.equals(minionHeader.getLocation())) {

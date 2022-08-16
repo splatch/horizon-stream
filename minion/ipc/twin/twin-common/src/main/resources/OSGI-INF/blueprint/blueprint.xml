@@ -33,7 +33,7 @@
 
     <!--<service ref="grpcTwinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber"/>-->
 <!--    <reference id="tracerRegistry" interface="org.opennms.core.tracing.api.TracerRegistry" />-->
-    <reference id="identity" interface="org.opennms.horizon.core.identity.Identity"/>
+    <reference id="identity" interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity"/>
 
     <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl">
         <argument ref="identity"/>

@@ -15,19 +15,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
+            <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
             <artifactId>contract</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opennms.horizon.core</groupId>
-            <artifactId>identity</artifactId>
-            <version>${opennms-horizon.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.core</groupId>
-            <artifactId>lib</artifactId>
             <version>${opennms-horizon.version}</version>
         </dependency>
 
@@ -36,6 +25,11 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.opennms.horizon.shared.ipc</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>twin-api</artifactId>

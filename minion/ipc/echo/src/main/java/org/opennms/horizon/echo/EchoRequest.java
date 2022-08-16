@@ -29,7 +29,6 @@
 package org.opennms.horizon.echo;
 
 import io.opentracing.Span;
-import org.opennms.horizon.ipc.rpc.api.RpcRequest;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,6 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcRequest;
 
 @XmlRootElement(name="echo-request")
 @XmlAccessorType(XmlAccessType.NONE)
