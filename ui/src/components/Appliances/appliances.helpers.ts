@@ -30,14 +30,23 @@ export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[
 })
 
 export const getHumanReadableDuration = (uptimeInSeconds: number) => {
-  if (uptimeInSeconds < 60) return `${uptimeInSeconds} ${uptimeInSeconds <= 0 ? '' : 'seconds'}`
+  // uptimeInSeconds = undefined
+  console.log(uptimeInSeconds)
+  let durationDisplay = '--' // undefined
 
-  const duration = intervalToDuration({
-    start: new Date(),
-    end: add(new Date(), {seconds: uptimeInSeconds})
-  })
+  if(uptimeInSeconds >= 0) {
+    if (uptimeInSeconds < 60) durationDisplay = `${uptimeInSeconds} ${uptimeInSeconds <= 0 ? '' : 'seconds'}` // 0-59secs
+    else {
+      const duration = intervalToDuration({
+        start: new Date(),
+        end: add(new Date(), {seconds: uptimeInSeconds})
+      })
+  
+      durationDisplay = formatDuration(duration, { format: ['days', 'hours', 'minutes']}) // +1min
+    }
+  }
 
-  return formatDuration(duration, { format: ['days', 'hours', 'minutes']})
+  return durationDisplay
 }
 
 export const formatLatencyDisplay = (latency: number) => {
