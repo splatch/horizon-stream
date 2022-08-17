@@ -17,8 +17,8 @@
     <modules>
         <module>plugins-api</module>
         <module>registration</module>
-        <module>minion-icmp</module>
-        <module>minion-snmp</module>
+        <module>icmp-plugin</module>
+        <module>snmp-plugin</module>
         <module>WEB-LISTEN</module>
     </modules>
 
