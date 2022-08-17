@@ -34,7 +34,7 @@ import io.opentracing.Span;
 import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.horizon.db.model.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 import org.opennms.netmgt.provision.persistence.dto.PluginConfigDTO;

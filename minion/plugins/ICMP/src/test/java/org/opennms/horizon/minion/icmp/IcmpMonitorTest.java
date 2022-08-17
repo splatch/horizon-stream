@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.best.BestMatchPingerFactory;
 import org.opennms.horizon.minion.plugin.api.MonitoredService;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;

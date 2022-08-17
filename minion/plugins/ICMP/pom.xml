@@ -23,8 +23,7 @@
         <dependency>
             <groupId>org.opennms.horizon.icmp</groupId>
             <artifactId>api</artifactId>
-<!--            //TODO: fix this with a  property-->
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

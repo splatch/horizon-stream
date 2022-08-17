@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;

@@ -26,16 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.core.lib;
+package org.opennms.horizion.shared.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.opennms.horizon.core.lib.InetAddressUtils.str;
+import static org.opennms.horizon.shared.utils.InetAddressUtils.str;
 
 import java.math.BigInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 
 public class InetAddressUtilsTest {
 
@@ -64,14 +65,14 @@ public class InetAddressUtilsTest {
 
         try {
             InetAddressUtils.macAddressStringToBytes("ff800ff0010");
-            fail("Parsed MAC address value that was too short");
+            Assert.fail("Parsed MAC address value that was too short");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         try {
             InetAddressUtils.macAddressStringToBytes("ff800ff001000");
-            fail("Parsed MAC address value that was too long");
+            Assert.fail("Parsed MAC address value that was too long");
         } catch (IllegalArgumentException e) {
             // Expected
         }

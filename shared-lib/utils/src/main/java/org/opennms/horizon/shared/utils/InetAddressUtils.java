@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.core.lib;
+package org.opennms.horizon.shared.utils;
 
 import java.math.BigInteger;
 import java.net.Inet4Address;
@@ -46,11 +46,10 @@ import java.util.regex.Pattern;
 
 import javax.management.remote.JMXServiceURL;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public abstract class InetAddressUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(InetAddressUtils.class);
     private static final Comparator<InetAddress> IFACE_COMPARATOR = new Comparator<InetAddress>() {
         @Override
         public int compare(final InetAddress o1, final InetAddress o2) {
@@ -123,7 +122,7 @@ public abstract class InetAddressUtils {
         try {
             return InetAddress.getLocalHost();
         } catch (final UnknownHostException e) {
-            LOG.warn("getLocalHostAddress: Could not lookup the host address for the local host machine, address set to '127.0.0.1'.", e);
+            log.warn("getLocalHostAddress: Could not lookup the host address for the local host machine, address set to '127.0.0.1'.", e);
             return addr("127.0.0.1");
         }
     }
@@ -155,7 +154,7 @@ public abstract class InetAddressUtils {
                 return Optional.of(loopbackAddresses.get(0));
             }
         } catch (final Exception e) {
-            LOG.warn("getLocalLoopbackAddress: an exception occurred while attempting to determine the local loopback address.",e);
+            log.warn("getLocalLoopbackAddress: an exception occurred while attempting to determine the local loopback address.",e);
         }
         return Optional.empty();
     }
@@ -163,7 +162,7 @@ public abstract class InetAddressUtils {
     public static String getLocalHostName() {
         final InetAddress localHostAddress = getLocalHostAddress();
         if (localHostAddress == null) {
-            LOG.warn("getLocalHostName: Could not lookup the host name for the local host machine, name set to 'localhost'.");
+            log.warn("getLocalHostName: Could not lookup the host name for the local host machine, name set to 'localhost'.");
             return "localhost";
         }
         return localHostAddress.getHostName();
@@ -497,7 +496,7 @@ public abstract class InetAddressUtils {
             }
             return sb.toString();
         } else {
-            LOG.debug("don't know how to handle {}", addr);
+            log.debug("don't know how to handle {}", addr);
             return null;
         }
     }

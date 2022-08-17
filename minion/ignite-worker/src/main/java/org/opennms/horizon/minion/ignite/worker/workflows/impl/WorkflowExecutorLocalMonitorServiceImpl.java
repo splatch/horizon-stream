@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.opennms.horizon.core.lib.IPAddress;
 import org.opennms.horizon.minion.ignite.model.workflows.Workflow;
 import org.opennms.horizon.minion.ignite.worker.ignite.registries.OsgiServiceHolder;
 import org.opennms.horizon.minion.ignite.worker.workflows.WorkflowExecutionResultProcessor;
@@ -19,6 +18,7 @@ import org.opennms.horizon.minion.plugin.api.ServiceMonitorManager;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;
 import org.opennms.horizon.minion.plugin.config.PluginConfigInjector;
 import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
+import org.opennms.horizon.shared.utils.IPAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

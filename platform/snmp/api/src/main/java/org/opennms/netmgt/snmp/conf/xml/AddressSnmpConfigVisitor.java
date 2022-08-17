@@ -51,10 +51,10 @@ import static org.opennms.netmgt.snmp.SnmpConfiguration.versionToString;
 import java.net.InetAddress;
 import java.util.List;
 
-import org.opennms.horizon.core.lib.ByteArrayComparator;
 import org.opennms.horizon.core.lib.IPLike;
-import org.opennms.horizon.core.lib.InetAddressUtils;
 import org.opennms.horizon.core.lib.LocationUtils;
+import org.opennms.horizon.shared.utils.ByteArrayComparator;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,9 +16,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.horizon.core</groupId>
-            <artifactId>lib</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>utils</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

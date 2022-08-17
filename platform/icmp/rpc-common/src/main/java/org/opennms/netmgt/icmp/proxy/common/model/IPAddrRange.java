@@ -38,9 +38,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.StringJoiner;
 
-import org.opennms.horizon.core.lib.ByteArrayComparator;
-import org.opennms.horizon.core.lib.IPAddress;
-import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.shared.utils.ByteArrayComparator;
+import org.opennms.horizon.shared.utils.IPAddress;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

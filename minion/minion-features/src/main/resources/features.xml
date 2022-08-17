@@ -165,6 +165,7 @@
         <feature version="${project.version}">guava</feature>
         <bundle>mvn:org.apache.commons/commons-jexl/2.1.1</bundle>
         <bundle>mvn:org.opennms.horizon.core/lib/${opennms-horizon.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/utils/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.minion/plugins-api/${project.version}</bundle>
     </feature>
 

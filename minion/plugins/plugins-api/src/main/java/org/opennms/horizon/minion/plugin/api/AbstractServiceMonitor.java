@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Supplier;
-import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 
 public abstract class AbstractServiceMonitor implements ServiceMonitor {
 

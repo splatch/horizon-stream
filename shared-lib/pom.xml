@@ -20,6 +20,7 @@
         <module>dto-model</module>
         <module>logging</module>
         <module>ipc</module>
+        <module>utils</module>
     </modules>
 
     <properties>

@@ -33,7 +33,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.horizon.ipc.rpc.api.RpcClient;
 import org.opennms.horizon.ipc.rpc.api.RpcRequest;
 import org.opennms.netmgt.icmp.PingConstants;

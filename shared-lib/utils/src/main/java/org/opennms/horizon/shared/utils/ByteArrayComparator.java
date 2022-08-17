@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.core.lib;
+package org.opennms.horizon.shared.utils;
 
 import java.util.Comparator;
 

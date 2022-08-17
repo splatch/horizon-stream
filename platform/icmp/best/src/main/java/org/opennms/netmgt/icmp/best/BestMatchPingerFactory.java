@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.icmp.best;
 
-import static org.opennms.horizon.core.lib.InetAddressUtils.addr;
+import static org.opennms.horizon.shared.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
 import java.util.Arrays;
 
-import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.netmgt.icmp.AbstractPingerFactory;
 import org.opennms.netmgt.icmp.NullPinger;
 import org.opennms.netmgt.icmp.Pinger;

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.snmp;
 
-import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.horizon.core.lib.StringUtils;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;

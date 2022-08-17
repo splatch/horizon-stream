@@ -34,7 +34,7 @@ import java.net.InetAddress;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.icmp6.ICMPv6Socket;
