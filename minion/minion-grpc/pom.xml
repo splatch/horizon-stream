@@ -14,8 +14,6 @@
 
     <name>OpenNms Horizon :: Minion :: gRPC</name>
     <modules>
-        <module>whiteboard</module>
-        <module>workflow</module>
         <module>features</module>
     </modules>
 

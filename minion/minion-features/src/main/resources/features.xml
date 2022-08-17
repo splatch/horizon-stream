@@ -23,7 +23,7 @@
         <feature version="${project.version}">ignite-poc-model</feature>
         <feature version="${project.version}">poc-cron</feature>
         <feature version="${project.version}">poc-metrics</feature>
-        <feature version="${project.version}">poc-grpc</feature>
+        <feature version="${project.version}">ipc-minion</feature>
 
         <bundle>mvn:org.opennms.horizon.minion/ignite-worker/${project.version}</bundle>
         <bundle>wrap:mvn:org.apache.ignite/ignite-kubernetes/${ignite.version}</bundle>
@@ -48,64 +48,9 @@
         <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
     </feature>
 
-    <feature name="poc-grpc-ipc-twin" description="Digital twin api with gRPC channel" version="${project.version}">
-        <feature prerequisite="true">wrap</feature>
-        <feature>jackson</feature>
-        <feature>grpc-minion</feature>
-
-        <!-- shallow copy of horizon dependencies -->
-        <bundle>wrap:mvn:org.opennms.horizon.3rdparty/json-patch-osgi/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
-        <bundle>wrap:mvn:org.opennms.horizon.3rdparty/jackson-coreutils-osgi/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
-        <bundle>mvn:com.github.fge/msg-simple/1.1</bundle>
-        <bundle>mvn:com.github.fge/btf/1.2</bundle>
-        <bundle>mvn:com.google.code.findbugs/jsr305/3.0.2</bundle>
-
-        <bundle>mvn:org.opennms.horizon.minion/twin-api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.minion/twin-common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.minion/subscriber/${project.version}</bundle>
-    </feature>
-
     <feature name="ignite-poc-model" description="POC Model" version="${project.version}">
         <feature version="${project.version}">plugins-api</feature>
         <bundle>mvn:org.opennms.horizon.minion/model/${project.version}</bundle>
-    </feature>
-
-    <feature name="poc-twin-api" version="${project.version}">
-        <feature>guava</feature>
-        <bundle>mvn:org.opennms.horizon.minion/twin-api/${project.version}</bundle>
-    </feature>
-
-    <feature name="poc-grpc-messaging-api" description="Messaging API" version="${project.version}">
-        <bundle>mvn:org.opennms.horizon.minion/whiteboard-api/${project.version}</bundle>
-    </feature>
-
-    <feature name="poc-grpc-messaging-core" version="${project.version}">
-        <feature version="${project.version}">poc-grpc-messaging-api</feature>
-        <feature version="${project.version}">poc-grpc-ipc-twin</feature>
-        <feature version="${project.version}">ignite-poc-model</feature>
-        <feature version="${project.version}">eos</feature>
-        <feature version="${project.version}">poc-twin-api</feature>
-
-        <bundle>mvn:org.opennms.horizon.minion/whiteboard-core/${project.version}</bundle>
-    </feature>
-
-    <feature name="poc-grpc-workflow" version="${project.version}">
-        <feature version="${project.version}">poc-grpc-messaging-api</feature>
-        <feature version="${project.version}">poc-grpc-ipc-twin</feature>
-        <feature version="${project.version}">ignite-poc-model</feature>
-        <feature version="${project.version}">poc-grpc-ipc-twin</feature>
-        <feature version="${project.version}">poc-metrics</feature>
-        <feature version="${project.version}">grpc-minion</feature>
-
-        <bundle>mvn:org.opennms.horizon.minion/module/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.minion/workflow-subscriber/${project.version}</bundle>
-    </feature>
-
-    <feature name="poc-grpc" description="gRPC communication layer" version="${project.version}">
-        <details>All-in-one feature to activate gRPC functionality.</details>
-        <feature version="${project.version}">poc-grpc-ipc-twin</feature>
-        <feature version="${project.version}">poc-grpc-workflow</feature>
-        <feature version="${project.version}">poc-grpc-messaging-core</feature>
     </feature>
 
     <feature name="ignite" version="${project.version}">

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<features name="minion-ipc-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.6.0">
+
+    <feature name="ipc-jackson-internal" version="${project.version}">
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
+    </feature>
+
+    <feature name="ipc-json-coreutils-internal" version="${project.version}">
+        <feature prerequisite="true">wrap</feature>
+        <feature>ipc-jackson-internal</feature>
+
+        <bundle>mvn:com.github.java-json-tools/msg-simple/${fgeMsgSimple.version}</bundle>
+        <bundle>mvn:com.github.java-json-tools/btf/${fgeBtf.version}</bundle>
+
+        <bundle>wrap:mvn:com.github.java-json-tools/jackson-coreutils/${jacksonCoreUtils.version}$overwrite=merge&amp;Import-Package=!javax.annotation,*</bundle>
+    </feature>
+
+    <feature name="ipc-json-patch-internal" version="${project.version}">
+        <feature prerequisite="true">wrap</feature>
+        <feature>ipc-json-coreutils-internal</feature>
+
+        <bundle>wrap:mvn:com.github.java-json-tools/json-patch/${jsonPatch.version}$overwrite=merge&amp;Import-Package=!javax.annotation,*</bundle>
+    </feature>
+
+    <feature name="ipc-whiteboard-internal" version="${project.version}">
+        <bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.4</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/18.0</bundle>
+        <bundle dependency="true">mvn:com.savoirtech.eos/eos-core/${eos.version}</bundle>
+    </feature>
+
+    <feature name="ipc-minion" version="${project.version}">
+        <feature>grpc-minion</feature>
+        <feature>ipc-jackson-internal</feature>
+        <feature>ipc-json-patch-internal</feature>
+        <feature>ipc-whiteboard-internal</feature>
+
+        <bundle>mvn:org.opennms.horizon.minion.ipc/twin-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.minion.ipc/twin-common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.minion.ipc/twin-core/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.minion.ipc/twin-whiteboard/${project.version}</bundle>
+    </feature>
+
+</features>

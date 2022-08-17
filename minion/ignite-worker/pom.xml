@@ -33,8 +33,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>workflow-subscriber</artifactId>
+            <groupId>org.opennms.horizon.minion.ipc</groupId>
+            <artifactId>twin-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -67,6 +67,11 @@
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>plugins-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion</groupId>
+            <artifactId>minion-metrics</artifactId>
             <version>${project.version}</version>
         </dependency>
 
