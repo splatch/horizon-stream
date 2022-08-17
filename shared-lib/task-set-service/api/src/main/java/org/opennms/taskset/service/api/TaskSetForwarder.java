@@ -1,12 +1,6 @@
 package org.opennms.taskset.service.api;
 
-import org.opennms.taskset.model.TaskSet;
-
-public interface TaskSetService {
-    String TASK_SET_TOPIC = "task-set.publish";
-
-    void publishTaskSet(String location, TaskSet taskSet);
-
+public interface TaskSetForwarder {
     /**
      * Add a listener for task set updates.
      *

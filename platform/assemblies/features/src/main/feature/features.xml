@@ -170,6 +170,9 @@
         <feature>horizon-db</feature>
         <feature>horizon-icmp</feature>
         <feature>horizon-snmp</feature>
+        <feature>horizon-shared-lang</feature>
+        <feature>horizon-shared-task-set-service</feature>
+        <feature>ignite</feature>
         <bundle>mvn:org.opennms.horizon.core/monitor/${project.version}</bundle>
     </feature>
 
@@ -281,6 +284,22 @@
         <!-- https://issues.opennms.org/browse/NMS-13111 -->
         <!--<bundle>mvn:org.opennms.horizon.provision/detector-smb/${project.version}</bundle>-->
     </feature>
+
+    <!--                -->
+    <!-- HORIZON SHARED -->
+    <!--                -->
+    <feature name="horizon-shared-lang" version="${project.version}">
+        <bundle>mvn:org.opennms.horizon.shared/lang/${project.version}</bundle>
+    </feature>
+
+    <feature name="horizon-shared-task-set-service" version="${project.version}">
+        <bundle>mvn:org.opennms.horizon.shared/task-set/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/task-set-service-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/task-set-service-core/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/task-set-ignite-client/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/task-set-ignite-service/${project.version}</bundle>
+    </feature>
+
 
     <!--                               -->
     <!-- CONFIGURATION VARIABLE SCOPES -->
@@ -440,6 +459,21 @@
         <bundle>mvn:eu.agno3.jcifs/jcifs-ng/${jcifsVersion}</bundle>
     </feature>
 
+
+    <!--        -->
+    <!-- IGNITE -->
+    <!--        -->
+    <feature name="ignite" version="${project.version}">
+        <feature version="${project.version}">ignite-core</feature>
+
+        <bundle>wrap:mvn:org.apache.ignite/ignite-kubernetes/${ignite.version}</bundle>
+    </feature>
+
+    <feature name="ignite-core" version="${project.version}">
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax-cache-api/1.0.0_1</bundle>
+        <bundle dependency="true">wrap:mvn:org.apache.ignite/ignite-osgi/${ignite.version}</bundle>
+        <bundle>wrap:mvn:org.apache.ignite/ignite-core/${ignite.version}$DynamicImport-Package=*</bundle>
+    </feature>
 
 
     <!--             -->

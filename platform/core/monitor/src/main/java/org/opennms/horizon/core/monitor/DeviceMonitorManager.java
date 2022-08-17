@@ -29,7 +29,8 @@
 package org.opennms.horizon.core.monitor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import io.prometheus.client.Gauge;
+import org.opennms.horizon.core.monitor.taskset.LocationBasedTaskSetManager;
+import org.opennms.horizon.core.monitor.taskset.TaskSetManager;
 import org.opennms.horizon.db.dao.api.IpInterfaceDao;
 import org.opennms.horizon.db.dao.api.NodeDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
@@ -39,155 +40,117 @@ import org.opennms.horizon.events.api.EventConstants;
 import org.opennms.horizon.events.api.EventListener;
 import org.opennms.horizon.events.api.EventSubscriptionService;
 import org.opennms.horizon.events.model.IEvent;
-import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
-import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
+import org.opennms.taskset.model.TaskSet;
+import org.opennms.taskset.model.TaskType;
+import org.opennms.taskset.service.api.TaskSetPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Optional;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * TBD888: Rework still needed for task-set definitions, and general completeness
+ *
+ *  1. list of nodes is only read once, in the init() method; it needs to be updated continually
+ *  2. if there are other sources of task definitions, the management of task definitions needs to be extracted into
+ *     its own source
+ *  3. parameters for each task
+ */
 public class DeviceMonitorManager implements EventListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMonitorManager.class);
     private static final String SYS_OBJECTID_INSTANCE = ".1.3.6.1.2.1.1.2.0";
     private static final Long INVALID_UP_TIME = -1L;
     private static final String DEFAULT_LOCATION = "Default";
-    private final LocationAwarePingClient locationAwarePingClient;
-    private final LocationAwareSnmpClient locationAwareSnmpClient;
     private final EventSubscriptionService eventSubscriptionService;
     private final NodeDao nodeDao;
     private final IpInterfaceDao ipInterfaceDao;
     private final SessionUtils sessionUtils;
-    private final OnmsMetricsAdapter metricsAdapter;
     private final List<OnmsNode> nodeCache = new ArrayList<>();
     private final ThreadFactory monitorThreadFactory = new ThreadFactoryBuilder()
         .setNameFormat("monitor-runner-%d")
         .build();
-    // Cache SNMP Uptime for each Interface.
-    private final Map<String, Long> snmpUpTimeCache = new ConcurrentHashMap<>();
+
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(25, monitorThreadFactory);
 
+    private final LocationBasedTaskSetManager locationBasedTaskSetManager = new LocationBasedTaskSetManager();
+    private final TaskSetPublisher taskSetIgniteClient;
 
     public DeviceMonitorManager(EventSubscriptionService eventSubscriptionService,
                                 NodeDao nodeDao,
                                 IpInterfaceDao ipInterfaceDao,
                                 SessionUtils sessionUtils,
-                                LocationAwarePingClient locationAwarePingClient,
-                                LocationAwareSnmpClient locationAwareSnmpClient,
-                                OnmsMetricsAdapter metricsAdapter) {
+                                TaskSetPublisher taskSetIgniteClient) {
         this.eventSubscriptionService = eventSubscriptionService;
         this.nodeDao = nodeDao;
         this.ipInterfaceDao = ipInterfaceDao;
         this.sessionUtils = sessionUtils;
-        this.locationAwarePingClient = locationAwarePingClient;
-        this.locationAwareSnmpClient = locationAwareSnmpClient;
-        this.metricsAdapter = metricsAdapter;
+        this.taskSetIgniteClient = taskSetIgniteClient;
     }
 
+    // TODO: don't use a static snapshot of nodes at init-time; need to update as new nodes are discovered.
     public void init() {
         eventSubscriptionService.addEventListener(this);
         // Add all nodes currently present in the inventory to cache.
         sessionUtils.withReadOnlyTransaction(() -> nodeCache.addAll(nodeDao.findAll()));
         nodeCache.forEach(onmsNode -> {
             LOG.info("Starting device monitoring for device with ID {}", onmsNode.getId());
+
             scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(onmsNode), 5, 120, TimeUnit.SECONDS);
         });
     }
 
 
     private void runMonitors(OnmsNode onmsNode) {
+        String locationName = DEFAULT_LOCATION;
+
         try {
             List<OnmsIpInterface> ipInterfaces = sessionUtils.withReadOnlyTransaction(() -> ipInterfaceDao.findInterfacesByNodeId(onmsNode.getId()));
             ipInterfaces.forEach(onmsIpInterface -> {
                 LOG.info("Polling ICMP/SNMP Monitor for IPAddress {}", onmsIpInterface.getIpAddress());
-                pollIcmp(onmsIpInterface.getIpAddress());
-                pollSnmp(onmsIpInterface.getIpAddress(), onmsNode.getSnmpCommunityString());
+
+                TaskSetManager taskSetManager = locationBasedTaskSetManager.getManagerForLocation(locationName);
+
+                addPollIcmpTask(taskSetManager, onmsIpInterface.getIpAddress());
+                addPollSnmpTask(taskSetManager, onmsIpInterface.getIpAddress(), onmsNode.getSnmpCommunityString());
             });
         } catch (Exception e) {
             LOG.error("Exception while running monitors for device with Id : {}", onmsNode.getId(), e);
         }
+
+        TaskSet updatedTaskSet = locationBasedTaskSetManager.getManagerForLocation(locationName).getTaskSet();
+
+        // TODO: reduce log level to debug
+        LOG.info("Publishing task set for location: location={}; num-task={}",
+            locationName,
+            Optional.ofNullable(updatedTaskSet.getTaskDefinitionList()).map(Collection::size).orElse(0));
+
+        taskSetIgniteClient.publishTaskSet(locationName, updatedTaskSet);
     }
 
-    private void pollIcmp(InetAddress inetAddress) {
-        try {
-            locationAwarePingClient.ping(inetAddress).withLocation(DEFAULT_LOCATION)
-                .withTimeout(60, TimeUnit.SECONDS)
-                .execute()
-                .whenComplete(((pingSummary, throwable) -> {
-                    if (throwable != null) {
-                        LOG.error("Exception while pinging IpAddress {}", inetAddress.getHostAddress(), throwable);
-                    } else if (pingSummary != null && pingSummary.getSequence(0) != null) {
-                        // we are only pinging one IpAddress, use sequence 0
-                        double icmpResponseTime = pingSummary.getSequence(0).getResponse().getRtt();
-                        LOG.info("ICMP Round trip time for IPAddress {} : {}", inetAddress.getHostAddress(), icmpResponseTime);
-                        addIcmpMetric(icmpResponseTime, inetAddress.getHostAddress());
-                    }
-                }));
-        } catch (Exception e) {
-            LOG.error("Exception while executing ping for {}", inetAddress, e);
-        }
+    private void addPollIcmpTask(TaskSetManager taskSetManager, InetAddress inetAddress) {
+        Map<String, String> parameters = makeParametersMap("host", inetAddress.getHostAddress(), "timeout", "60000");
+        taskSetManager.addIpTask(inetAddress, "icmp-monitor", TaskType.MONITOR, "ICMPMonitor", "120", parameters);
     }
 
-    private void pollSnmp(InetAddress inetAddress, String snmpCommunityString) {
-        try {
-            final SnmpAgentConfig agentConfig = new SnmpAgentConfig();
-            agentConfig.setAddress(inetAddress);
-            agentConfig.setReadCommunity(snmpCommunityString);
-            agentConfig.setTimeout(18000);
-            agentConfig.setRetries(2);
-            locationAwareSnmpClient.get(agentConfig, SnmpObjId.get(SYS_OBJECTID_INSTANCE))
-                .withLocation(DEFAULT_LOCATION)
-                .withDescription("Device-Monitor")
-                .withTimeToLive(60000L)
-                .execute().whenComplete(((snmpValue, throwable) -> {
-                    if (throwable != null) {
-                        LOG.error("Exception while detecting Snmp service at IpAddress {}", inetAddress.getHostAddress(), throwable);
-                        addSnmpMetrics(inetAddress.getHostAddress(), false);
-                    } else if (snmpValue != null && !snmpValue.isError()) {
-                        LOG.info("SNMP is Up at IpAddress {}", inetAddress.getHostAddress());
-                        addSnmpMetrics(inetAddress.getHostAddress(), true);
-                    }
-                }));
-        } catch (Exception e) {
-            LOG.error("Exception while detecting SNMP service on IpAddress {}", inetAddress);
-        }
-    }
+    private void addPollSnmpTask(TaskSetManager taskSetManager, InetAddress inetAddress, String snmpCommunityString) {
+        Map<String, String> parameters =
+            makeParametersMap(
+                "iod", SYS_OBJECTID_INSTANCE,
+                "timeout", "18000",
+                "retries", "2"
+            );
 
-    private void addIcmpMetric(double responseTime, String ipAddress) {
-        Gauge rttGauge = Gauge.build().name("icmp_round_trip_time").help("ICMP round trip time")
-            .unit("msec").labelNames("instance").create();
-        rttGauge.labels(ipAddress).set(responseTime);
-        metricsAdapter.push(rttGauge);
-    }
-
-    private void addSnmpMetrics(String ipAddress, boolean status) {
-        Gauge upTimeGauge = Gauge.build().name("snmp_uptime").help("SNMP Up Time")
-            .unit("sec").labelNames("instance").create();
-        if (status) {
-            Long prevUpTimeInMsec = snmpUpTimeCache.get(ipAddress);
-            long totalUpTimeInMsec = 0;
-            if (prevUpTimeInMsec != null && prevUpTimeInMsec.longValue() != INVALID_UP_TIME) {
-                totalUpTimeInMsec = System.currentTimeMillis() - prevUpTimeInMsec;
-            }
-            snmpUpTimeCache.put(ipAddress, System.currentTimeMillis());
-
-            long totalUpTimeInSec = TimeUnit.MILLISECONDS.toSeconds(totalUpTimeInMsec);
-            upTimeGauge.labels(ipAddress).set(totalUpTimeInSec);
-        } else {
-            upTimeGauge.labels(ipAddress).set(INVALID_UP_TIME);
-            snmpUpTimeCache.put(ipAddress, INVALID_UP_TIME);
-        }
-        metricsAdapter.push(upTimeGauge);
+        taskSetManager.addIpTask(inetAddress, "snmp-monitor", TaskType.MONITOR, "SNMPMonitor", "120", parameters);
     }
 
     @Override
@@ -211,4 +174,30 @@ public class DeviceMonitorManager implements EventListener {
         scheduledThreadPoolExecutor.shutdown();
     }
 
+//========================================
+// Internals
+//----------------------------------------
+
+    /**
+     * Given any number of pairs of strings, one key and one value, create a map with contents key=value.
+     *
+     * @param keyValues alternating key and value strings.
+     * @return a map with the key=value contents for the given keys and values.
+     */
+    private Map<String, String> makeParametersMap(String... keyValues) {
+        Map<String, String> result = new HashMap<>();
+
+        int cur = 0;
+        while ( cur < ( keyValues.length - 1 ) ) {
+            result.put(keyValues[cur], keyValues[cur + 1]);
+            cur++;
+        }
+
+        // Probably not a normal use-case, but accept it
+        if (cur < keyValues.length) {
+            result.put(keyValues[cur], null);
+        }
+
+        return result;
+    }
 }

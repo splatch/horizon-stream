@@ -1,9 +1,21 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
     xsi:schemaLocation="
 		http://www.osgi.org/xmlns/blueprint/v1.0.0 
 		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
 ">
+
+    <cm:property-placeholder persistent-id="org.opennms.core.monitor"
+                             update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="ignite.useKubernetes" value="true"/>
+            <cm:property name="ignite.kubernetesServiceName" value="horizon-stream-ignite-core"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
 
     <reference id="rpcClientFactory" interface="org.opennms.horizon.ipc.rpc.api.RpcClientFactory"/>
     <reference id="minionManager" interface="org.opennms.core.ipc.grpc.server.manager.MinionManager"/>
@@ -14,6 +26,7 @@
     <reference id="ipInterfaceDao" interface="org.opennms.horizon.db.dao.api.IpInterfaceDao" />
     <reference id="locationAwarePingClient" interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"/>
     <reference id="locationAwareSnmpClient" interface="org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient"/>
+    <reference id="igniteTaskSetClientFactory" interface="org.opennms.taskset.service.igniteclient.TaskSetIgnitePublisherFactory"/>
 
     <bean id="minionRpcMonitorManager" class="org.opennms.horizon.core.monitor.MinionRpcMonitorManager" init-method="init">
         <property name="rpcClientFactory" ref="rpcClientFactory"/>
@@ -31,14 +44,25 @@
         <property name="listener" ref="minionRpcMonitorMinionManagerListener"/>
     </bean>
 
+    <bean id="workerIgniteConfiguration" class="org.opennms.horizon.core.ignite.WorkerIgniteConfiguration">
+        <property name="useKubernetes" value="${ignite.useKubernetes}"/>
+        <property name="kubernetesServiceName" value="${ignite.kubernetesServiceName}"/>
+    </bean>
+
+    <bean id="ignite" class="org.opennms.horizon.core.ignite.IgnitionFactory" factory-method="create" destroy-method="close">
+        <argument ref="workerIgniteConfiguration"/>
+    </bean>
+
+    <bean id="taskSetIgniteClient" factory-ref="igniteTaskSetClientFactory" factory-method="create">
+        <argument ref="ignite"/>
+    </bean>
+
     <bean id="deviceMonitorManager" class="org.opennms.horizon.core.monitor.DeviceMonitorManager"
           init-method="init" destroy-method="shutdown">
         <argument ref="eventSubscriptionService"/>
         <argument ref="nodeDao"/>
         <argument ref="ipInterfaceDao"/>
         <argument ref="sessionUtils"/>
-        <argument ref="locationAwarePingClient"/>
-        <argument ref="locationAwareSnmpClient"/>
-        <argument ref="metricsAdapter"/>
+        <argument ref="taskSetIgniteClient"/>
     </bean>
 </blueprint>

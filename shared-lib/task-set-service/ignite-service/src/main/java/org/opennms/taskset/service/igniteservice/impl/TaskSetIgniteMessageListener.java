@@ -1,22 +1,22 @@
 package org.opennms.taskset.service.igniteservice.impl;
 
 import org.apache.ignite.Ignite;
-import org.opennms.taskset.service.api.TaskSetService;
+import org.opennms.taskset.service.api.TaskSetPublisher;
 import org.opennms.taskset.service.model.LocatedTaskSet;
 
-public class IgniteTaskSetService {
+public class TaskSetIgniteMessageListener {
     private final Ignite ignite;
-    private final TaskSetService taskSetService;
+    private final TaskSetPublisher taskSetPublisher;
 
     private boolean shutdownInd = false;
 
-    public IgniteTaskSetService(Ignite ignite, TaskSetService taskSetService) {
+    public TaskSetIgniteMessageListener(Ignite ignite, TaskSetPublisher taskSetPublisher) {
         this.ignite = ignite;
-        this.taskSetService = taskSetService;
+        this.taskSetPublisher = taskSetPublisher;
     }
 
     public void start() {
-        ignite.message().localListen(TaskSetService.TASK_SET_TOPIC, this::handleTaskSetMessage);
+        ignite.message().localListen(TaskSetPublisher.TASK_SET_TOPIC, this::handleTaskSetMessage);
     }
 
     public void shutdown() {
@@ -35,7 +35,7 @@ public class IgniteTaskSetService {
         if (payload instanceof LocatedTaskSet) {
             LocatedTaskSet locatedTaskSet = (LocatedTaskSet) payload;
 
-            taskSetService.publishTaskSet(locatedTaskSet.getLocation(), locatedTaskSet.getTaskSet());
+            taskSetPublisher.publishTaskSet(locatedTaskSet.getLocation(), locatedTaskSet.getTaskSet());
         }
 
         return true;

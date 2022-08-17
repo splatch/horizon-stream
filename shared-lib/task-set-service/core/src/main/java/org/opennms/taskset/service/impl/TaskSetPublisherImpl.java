@@ -1,20 +1,29 @@
 package org.opennms.taskset.service.impl;
 
 import org.opennms.taskset.model.TaskSet;
+import org.opennms.taskset.service.api.TaskSetForwarder;
 import org.opennms.taskset.service.api.TaskSetListener;
-import org.opennms.taskset.service.api.TaskSetService;
+import org.opennms.taskset.service.api.TaskSetPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * Process task set updates, publishing them to downstream minions and storing the latest version to provide to minions
  *  on request.
  */
-public class TaskSetServiceImpl implements TaskSetService {
+public class TaskSetPublisherImpl implements TaskSetPublisher, TaskSetForwarder {
+
+    private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(TaskSetPublisherImpl.class);
+
+    private Logger log = DEFAULT_LOGGER;
 
     private Map<String, TaskSet> taskSetByLocation = new HashMap<>();
     private Map<String, Set<TaskSetListener>> taskSetListeners = new HashMap<>();
@@ -32,6 +41,11 @@ public class TaskSetServiceImpl implements TaskSetService {
             taskSetByLocation.put(location, taskSet);
             listeners = taskSetListeners.get(location);
         }
+
+        // TODO: reduce log level to debug
+        log.info("Received task set for location: location={}; num-task={}",
+            location,
+            Optional.ofNullable(taskSet.getTaskDefinitionList()).map(Collection::size).orElse(0));
 
         // Publish to downstream listeners
         if (listeners != null) {

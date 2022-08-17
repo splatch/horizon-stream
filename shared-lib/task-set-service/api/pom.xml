@@ -9,6 +9,7 @@
     </parent>
 
     <artifactId>task-set-service-api</artifactId>
+    <packaging>bundle</packaging>
 
     <name>OpenNMS Horizon :: Shared :: Task Set Service :: API</name>
     <description>
@@ -28,6 +29,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

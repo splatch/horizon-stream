@@ -18,6 +18,7 @@
 
     <modules>
         <module>dto-model</module>
+        <module>lang</module>
         <module>logging</module>
         <module>ipc</module>
         <module>task-set</module>
@@ -35,8 +36,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>5.1.4</version>
-                <extensions>true</extensions>
             </plugin>
         </plugins>
     </build>
