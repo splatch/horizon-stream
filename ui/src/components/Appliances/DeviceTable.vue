@@ -160,7 +160,7 @@ const searchValue = ref('')
     .value {
       display: inline-table;
       border-radius: 5px;
-      padding: 3px;
+      padding: 5px 10px;
       text-align: center;
       white-space: nowrap;
     }
