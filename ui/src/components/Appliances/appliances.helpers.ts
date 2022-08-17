@@ -28,7 +28,8 @@ export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[
   let uptimeBgColor = bg.unknown
   if(uptime >= 0) uptimeBgColor = uptime === 0 ? bg.failed : bg.ok
 
-  const statusBgColor = status === 'DOWN' ? bg.failed : bg.ok
+  let statusBgColor = bg.unknown
+  if(status) statusBgColor = status === 'DOWN' ? bg.failed : bg.ok
 
   return {
     ...item,
@@ -47,4 +48,12 @@ export const getHumanReadableDuration = (uptimeInSeconds: number) => {
   })
 
   return formatDuration(duration, { format: ['days', 'hours', 'minutes']})
+}
+
+export const formatLatencyDisplay = (latency: number) => {
+  let displayLatency = '--'
+
+  if(latency >= 0) displayLatency = `${latency}ms`
+
+  return displayLatency
 }

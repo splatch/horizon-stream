@@ -69,20 +69,12 @@ import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import { ExtendedDeviceDTOWithBGColors } from '@/types/device'
 import { ComputedRef } from 'vue'
-import { formatItemBgColor, getHumanReadableDuration } from './appliances.helpers'
+import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './appliances.helpers'
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()
 
 const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableDevices))
-
-const formatLatencyDisplay = (latency: number) => {
-  let displayLatency = '--'
-
-  if(latency >= 0) displayLatency = `${latency}ms`
-
-  return displayLatency
-}
 
 const searchValue = ref('')
 </script>
