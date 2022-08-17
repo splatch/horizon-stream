@@ -43,13 +43,14 @@
           </div>
           <div data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
-            <div class="value" :class="device.latencyBgColor">{{ device.icmp_latency }}ms</div>
+            <div class="value" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
           </div>
           <div data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
             <div class="value" :class="device.uptimeBgColor">{{ getHumanReadableDuration(device.snmp_uptime) }}</div>
           </div>
           <div data-test="col-status">
+            <pre class="title">Status</pre>
             <div class="value" :class="device.statusBgColor">{{ device.status }}</div>
           </div>
         </div>
@@ -74,6 +75,14 @@ const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()
 
 const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableDevices))
+
+const formatLatencyDisplay = (latency: number) => {
+  let displayLatency = '--'
+
+  if(latency >= 0) displayLatency = `${latency}ms`
+
+  return displayLatency
+}
 
 const searchValue = ref('')
 </script>
