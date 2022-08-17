@@ -42,7 +42,6 @@ import org.opennms.cloud.grpc.minion.CloudToMinionMessage;
 import org.opennms.cloud.grpc.minion.RpcRequestProto;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
 import org.opennms.cloud.grpc.minion.TwinResponseProto;
-import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.slf4j.Logger;

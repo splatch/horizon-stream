@@ -18,5 +18,17 @@ public class StubCloudToMinionMessageProcessor implements BiConsumer<Identity, S
         log.info("Have Message to send to Minion: system-id={}, location={}",
             minionHeader.getSystemId(),
             minionHeader.getLocation());
+
+        /* sample payload
+        TwinResponseProto twin = TwinResponseProto.newBuilder()
+            .setSystemId("UNKNOWN").setLocation("cloud")
+            .setIsPatchObject(false).setConsumerKey("workflows")
+            .setTwinObject(ByteString.copyFromUtf8("{}"))
+            .build();
+
+        Builder builder = CloudToMinionMessage.newBuilder()
+            .setTwinResponse(twin);
+        cloudToMinionMessageStreamObserver.onNext(builder.build());
+        */
     }
 }
