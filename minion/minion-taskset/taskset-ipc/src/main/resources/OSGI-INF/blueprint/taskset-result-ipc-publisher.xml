@@ -27,10 +27,10 @@
   <service ref="resultConsumer">
     <interfaces>
       <value>java.util.function.Consumer</value>
-      <value>org.opennms.horizon.minion.metrics.MetricsProvider</value>
+      <value>org.opennms.horizon.minion.observability.metrics.MetricsProvider</value>
     </interfaces>
     <service-properties>
-      <entry key="message.publisher.topic" value="workflow-result" />
+      <entry key="message.publisher.topic" value="taskset-results" />
     </service-properties>
   </service>
 

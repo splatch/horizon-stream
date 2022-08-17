@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<features name="minion-taskset-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.6.0">
+
+    <feature name="taskset-minion" version="${project.version}">
+        <feature>ipc-minion</feature>
+        <feature>observability-minion</feature>
+
+        <bundle>mvn:org.opennms.horizon.minion.taskset/taskset-ipc/${project.version}</bundle>
+    </feature>
+
+</features>

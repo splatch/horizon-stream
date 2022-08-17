@@ -24,76 +24,25 @@
             <artifactId>ignite-worker</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>model</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>workflow-publisher</artifactId>
+            <artifactId>ICMP</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>module</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>workflow-subscriber</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.shared.ipc</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>SNMP</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>WEB-LISTEN</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>whiteboard-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>whiteboard-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.shared.ipc</groupId>
-            <artifactId>api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
-            <artifactId>client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
-            <artifactId>contract</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>twin-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>twin-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>subscriber</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -111,43 +60,20 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.opennms.horizon.minion</groupId>-->
-<!--            <artifactId>tracing</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
         <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>minion-metrics</artifactId>
+            <groupId>org.opennms.horizon.minion.taskset</groupId>
+            <artifactId>features</artifactId>
             <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
-
-            <dependency>
-                <groupId>org.opennms.horizon.minion.icmp</groupId>
-                <artifactId>best</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opennms.horizon.minion.icmp</groupId>
-                <artifactId>rpc-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opennms.horizon.minion.icmp</groupId>
-                <artifactId>rpc-module-impl</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opennms.horizon.minion.icmp</groupId>
-                <artifactId>icmp-rpc-impl</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opennms.horizon.minion.icmp</groupId>
-                <artifactId>shell</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion.observability</groupId>
+            <artifactId>features</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -209,6 +135,8 @@
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.horizon.minion.grpc/features/${project.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.horizon.minion.ipc/features/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.horizon.minion.taskset/features/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.horizon.minion.observability/features/${project.version}/xml/features</descriptor>
                                 <descriptor>file:${project.build.outputDirectory}/features.xml</descriptor>
                             </descriptors>
                             <javase>11</javase>
