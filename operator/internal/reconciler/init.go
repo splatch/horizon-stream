@@ -38,6 +38,7 @@ func (r *OpenNMSReconciler) InitServiceHandlers() {
 		&handlers.OpenNMSHandler{},
 		&handlers.ElasticsearchHandler{},
 		&handlers.PrometheusHandler{},
+		&handlers.MailServerHandler{},
 		&handlers.IngressHandler{}, // MUST BE LAST
 	}
 }

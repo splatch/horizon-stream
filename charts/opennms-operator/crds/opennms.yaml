@@ -111,6 +111,9 @@ spec:
                 testDeploy:
                   description: Deploy the instance in a nonoperative testing mode
                   type: boolean
+                deployOnly:
+                  description: Only deploy the instance, do not run recurring updates on it
+                  type: boolean
             status:
               description: OpenNMSStatus defines the observed state of OpenNMS
               type: object

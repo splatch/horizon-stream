@@ -6,7 +6,7 @@ metadata:
     app: {{ .Values.Prometheus.PushGateway.ServiceName }}
   namespace: {{ .Values.Namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.Prometheus.PushGateway.Replicas }}
   selector:
     matchLabels:
       app: {{ .Values.Prometheus.PushGateway.ServiceName }}

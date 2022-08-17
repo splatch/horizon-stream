@@ -17,7 +17,7 @@ spec:
               service:
                 name: {{ .Values.OpenNMS.UI.ServiceName }}
                 port:
-                  number: 3000
+                  number: {{ .Values.OpenNMS.UI.Port }}
           - path: {{ .Values.Keycloak.Path }}
             pathType: Prefix
             backend:
@@ -31,21 +31,21 @@ spec:
               service:
                 name: {{ .Values.OpenNMS.Core.ServiceName }}
                 port:
-                  number: 8101
+                  number: {{ .Values.OpenNMS.Core.SshPort }}
           - path: {{ .Values.OpenNMS.Core.Path }}
             pathType: Prefix
             backend:
               service:
                 name: {{ .Values.OpenNMS.Core.ServiceName }}
                 port:
-                  number: 8181
+                  number: {{ .Values.OpenNMS.Core.HttpPort }}
           - path: {{ .Values.OpenNMS.API.Path }}
             pathType: Prefix
             backend:
               service:
                 name: {{ .Values.OpenNMS.API.ServiceName }}
                 port:
-                  number: 9090
+                  number: {{ .Values.OpenNMS.API.Port }}
   tls:
     - hosts:
         -  {{.Values.Host }}
