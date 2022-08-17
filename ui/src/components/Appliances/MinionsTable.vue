@@ -30,7 +30,7 @@
               <td>{{ minion.id }}</td>
               <td>
                 <div :class="minion.latencyBgColor">
-                  {{ minion.icmp_latency }}ms
+                  {{ formatLatencyDisplay(minion.icmp_latency) }}
                 </div>
               </td>
               <td>
@@ -57,7 +57,7 @@ import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
 import { ComputedRef } from 'vue'
-import { formatItemBgColor, getHumanReadableDuration } from './appliances.helpers'
+import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './appliances.helpers'
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()

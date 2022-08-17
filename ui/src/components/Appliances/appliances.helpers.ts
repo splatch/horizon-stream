@@ -14,29 +14,28 @@ export interface BGColors {
  * @returns list of items with added metrics background color props
  */
 export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[]) => list.map(item => {
+  const {icmp_latency: latency, snmp_uptime: uptime, status} = item
   const bg = {
     ok: 'bg-ok',
     failed: 'bg-failed',
     unknown: 'bg-unknown'
   }
 
-  let statusBgColor = bg.ok
-  if(item?.status === 'DOWN') statusBgColor = bg.failed
-  else if(item?.status === 'UNKNOWN') statusBgColor = bg.unknown
+  // in ms
+  let latencyBgColor = bg.unknown
+  if(latency >= 0) latencyBgColor = latency > 100 ? bg.failed : bg.ok
 
-  let latencyBgColor = bg.ok
-  if(item?.icmp_latency > 100) latencyBgColor = bg.failed
-  else if(item?.icmp_latency === null) latencyBgColor = bg.unknown
+  let uptimeBgColor = bg.unknown
+  if(uptime >= 0) uptimeBgColor = uptime === 0 ? bg.failed : bg.ok
 
-  let uptimeBgColor = bg.ok
-  if(item?.snmp_uptime === 0) uptimeBgColor = bg.failed
-  else if(item?.snmp_uptime === null) uptimeBgColor = bg.unknown
+  let statusBgColor = bg.unknown
+  if(status) statusBgColor = status === 'DOWN' ? bg.failed : bg.ok
 
   return {
     ...item,
-    statusBgColor,
     latencyBgColor,
-    uptimeBgColor
+    uptimeBgColor,
+    statusBgColor
   }
 })
 
@@ -49,4 +48,12 @@ export const getHumanReadableDuration = (uptimeInSeconds: number) => {
   })
 
   return formatDuration(duration, { format: ['days', 'hours', 'minutes']})
+}
+
+export const formatLatencyDisplay = (latency: number) => {
+  let displayLatency = '--'
+
+  if(latency >= 0) displayLatency = `${latency}ms`
+
+  return displayLatency
 }
