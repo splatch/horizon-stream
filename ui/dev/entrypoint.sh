@@ -10,4 +10,4 @@ VITE_KEYCLOAK_REALM=opennms
 VITE_KEYCLOAK_CLIENT_ID=horizon-stream
 " > .env.development
 
-yarn run dev --host
+yarn run dev # --https

@@ -3,7 +3,7 @@
 
 echo __________________Installing OLM___________________
 echo
-operator-sdk olm install
+operator-sdk olm install --version v0.21.2
 
 echo
 echo _______________Building Docker Image_______________
