@@ -32,7 +32,6 @@ type Values struct {
 	Keycloak         KeycloakValues         `yaml:"Keycloak"`
 	Kafka            KafkaValues            `yaml:"Kafka"`
 	MailServer       MailServerValues       `yaml:"MailServer"`
-	ApiGateway       ApiGatewayValues       `yaml:"ApiGateway"`
 	NodeRestrictions NodeRestrictionsValues `yaml:"NodeRestrictions"`
 	Operator         OperatorValues         `yaml:"Operator"`
 }

@@ -8,8 +8,8 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ .Values.ApiGateway.ServiceName }}
-  replicas: {{ .Values.ApiGateway.Replicas }}
+      app: {{ .Values.MailServer.ServiceName }}
+  replicas: {{ .Values.MailServer.Replicas }}
   template:
     metadata:
       labels:

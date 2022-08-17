@@ -20,7 +20,7 @@ type ServiceValues struct {
 	ServiceName        string         `yaml:"ServiceName"`
 	Image              string         `yaml:"Image"`
 	ImagePullPolicy    string         `yaml:"ImagePullPolicy" default:"Always"`
-	Replicas           int            `yaml:"Replicas"`
+	Replicas           int            `yaml:"Replicas" default:"1"`
 	VolumeSize         string         `yaml:"VolumeSize"`
 	InitContainerImage string         `yaml:"InitContainerImage"`
 	Resources          ResourceValues `yaml:"Resources"`
