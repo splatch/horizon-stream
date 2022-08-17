@@ -67,6 +67,9 @@ public class DeviceMonitorManager implements EventListener {
     private static final Long INVALID_UP_TIME = -1L;
     private static final long DEVICE_INITIAL_DELAY = 5; // 5 sec
     private static final long DEVICE_INTERVAL = 30; // 30 sec
+    private static final long DEVICE_TTL = 20; //20 sec
+    private static final int SNMP_TIMEOUT_DEFAULT = 18000; // 18 sec
+    private static final int SNMP_RETRIES_DEFAULT = 1;
     private final LocationAwarePingClient locationAwarePingClient;
     private final LocationAwareSnmpClient locationAwareSnmpClient;
     private final EventSubscriptionService eventSubscriptionService;
@@ -133,7 +136,7 @@ public class DeviceMonitorManager implements EventListener {
     private void pollIcmp(InetAddress inetAddress, String location) {
         try {
             locationAwarePingClient.ping(inetAddress).withLocation(location)
-                .withTimeout(60, TimeUnit.SECONDS)
+                .withTimeout(DEVICE_TTL, TimeUnit.SECONDS)
                 .execute()
                 .whenComplete(((pingSummary, throwable) -> {
                     if (throwable != null) {
@@ -163,12 +166,12 @@ public class DeviceMonitorManager implements EventListener {
             if(!Strings.isNullOrEmpty(snmpCommunityString)) {
                 agentConfig.setReadCommunity(snmpCommunityString);
             }
-            agentConfig.setTimeout(18000);
-            agentConfig.setRetries(2);
+            agentConfig.setTimeout(SNMP_TIMEOUT_DEFAULT);
+            agentConfig.setRetries(SNMP_RETRIES_DEFAULT);
             locationAwareSnmpClient.get(agentConfig, SnmpObjId.get(SYS_OBJECTID_INSTANCE))
                 .withLocation(location)
                 .withDescription("Device-Monitor")
-                .withTimeToLive(60000L)
+                .withTimeToLive(DEVICE_TTL)
                 .execute().whenComplete(((snmpValue, throwable) -> {
                     if (throwable != null) {
                         LOG.info("SNMP is Down at IpAddress {}", inetAddress.getHostAddress());
