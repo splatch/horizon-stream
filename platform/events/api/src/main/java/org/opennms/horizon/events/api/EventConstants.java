@@ -37,8 +37,8 @@ import java.util.Date;
 
 import org.opennms.horizon.core.lib.Base64;
 import org.opennms.horizon.events.xml.Value;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
+//import org.opennms.horizon.minion.snmp.SnmpObjId;
+//import org.opennms.horizon.minion.snmp.SnmpValue;
 
 /**
  * This class holds all OpenNMS events related constants - the UEIs, parm
@@ -1063,7 +1063,7 @@ public abstract class EventConstants {
     public static final String XML_ENCODING_MAC_ADDRESS = "macAddress";
 
     /** Constant <code>OID_SNMP_IFINDEX</code> */
-    public static final SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
+//    public static final SnmpObjId OID_SNMP_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.1");
 
     /**
      * An utility method to parse a string into a 'Date' instance. Note that the
@@ -1154,8 +1154,8 @@ public abstract class EventConstants {
                 result = (String) value;
             else if (value instanceof Number)
                 result = value.toString();
-            else if (value instanceof SnmpValue)
-                result = ((SnmpValue)value).toString();
+//            else if (value instanceof SnmpValue)
+//                result = ((SnmpValue)value).toString();
         } else if (XML_ENCODING_BASE64.equals(encoding)) {
             if (value instanceof String)
                 result = new String(Base64.encodeBase64(((String) value).getBytes()));
@@ -1169,21 +1169,21 @@ public abstract class EventConstants {
 
                 result = new String(Base64.encodeBase64(ibuf));
             }
-            else if (value instanceof SnmpValue) {
-                SnmpValue snmpValue = (SnmpValue)value;
-                result = new String(Base64.encodeBase64(snmpValue.getBytes()));
-            }
+//            else if (value instanceof SnmpValue) {
+//                SnmpValue snmpValue = (SnmpValue)value;
+//                result = new String(Base64.encodeBase64(snmpValue.getBytes()));
+//            }
         } else if (XML_ENCODING_MAC_ADDRESS.equals(encoding)) {
-            if (value instanceof SnmpValue) {
-                SnmpValue snmpValue = (SnmpValue)value;
-                final StringBuilder macAddress = new StringBuilder();
-                byte[] bytes = snmpValue.getBytes();
-                for (int i = 0; i < bytes.length; i++) {
-                    if (i > 0) macAddress.append(":");
-                    macAddress.append(String.format("%02X", bytes[i]));
-                }
-                result = macAddress.toString();
-            }
+//            if (value instanceof SnmpValue) {
+//                SnmpValue snmpValue = (SnmpValue)value;
+//                final StringBuilder macAddress = new StringBuilder();
+//                byte[] bytes = snmpValue.getBytes();
+//                for (int i = 0; i < bytes.length; i++) {
+//                    if (i > 0) macAddress.append(":");
+//                    macAddress.append(String.format("%02X", bytes[i]));
+//                }
+//                result = macAddress.toString();
+//            }
         }
         
         if (result == null)

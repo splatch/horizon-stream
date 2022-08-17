@@ -29,12 +29,8 @@
 package org.opennms.horizon.minion.snmp;
 
 import java.util.ArrayList;
-import org.opennms.netmgt.snmp.conf.xml.Definition;
-import org.opennms.netmgt.snmp.conf.xml.Range;
-//import org.opennms.core.network.IPAddressRange;
-//import org.opennms.core.network.IPAddressRangeSet;
-//import org.opennms.netmgt.config.snmp.Definition;
-//import org.opennms.netmgt.config.snmp.Range;
+import org.opennms.horizon.minion.snmp.conf.xml.Definition;
+import org.opennms.horizon.minion.snmp.conf.xml.Range;
 
 /**
  * This is a wrapper class for the Definition class from the config package.  Has the logic for 

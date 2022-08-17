@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ICMP</artifactId>
+    <artifactId>icmp-plugin</artifactId>
 
     <packaging>bundle</packaging>
     <name>OpenNms Horizon :: Minion :: Plugins :: ICMP</name>
@@ -29,6 +29,10 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
 
 <!--        //TODO: need to remove these-->

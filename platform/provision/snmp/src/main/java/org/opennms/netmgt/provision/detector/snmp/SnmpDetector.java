@@ -32,11 +32,11 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.core.support.AgentBasedSyncAbstractDetector;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
+import org.opennms.horizon.minion.snmp.SnmpInstId;
+import org.opennms.horizon.minion.snmp.SnmpObjId;
+import org.opennms.horizon.minion.snmp.SnmpUtils;
+import org.opennms.horizon.minion.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +52,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.opennms.netmgt.snmp.SnmpAgentConfig.AGENT_CONFIG_PREFIX;
-import static org.opennms.netmgt.snmp.SnmpAgentConfig.PROFILE_LABEL_FOR_DEFAULT_CONFIG;
+import static org.opennms.horizon.minion.snmp.SnmpAgentConfig.AGENT_CONFIG_PREFIX;
+import static org.opennms.horizon.minion.snmp.SnmpAgentConfig.PROFILE_LABEL_FOR_DEFAULT_CONFIG;
 
 /**
  * <p>SnmpDetector class.</p>

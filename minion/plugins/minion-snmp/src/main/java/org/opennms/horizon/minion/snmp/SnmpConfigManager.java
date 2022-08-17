@@ -32,10 +32,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import org.opennms.netmgt.snmp.conf.xml.Definition;
-import org.opennms.netmgt.snmp.conf.xml.SnmpConfig;
-//import org.opennms.netmgt.config.snmp.Definition;
-//import org.opennms.netmgt.config.snmp.SnmpConfig;
+import org.opennms.horizon.minion.snmp.conf.xml.Definition;
+import org.opennms.horizon.minion.snmp.conf.xml.SnmpConfig;
 
 /**
  * This class handles merging a new Definition into the current running SNMP

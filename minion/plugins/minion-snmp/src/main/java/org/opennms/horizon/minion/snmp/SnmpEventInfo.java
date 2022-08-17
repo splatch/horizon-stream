@@ -51,9 +51,9 @@ import org.opennms.horizon.events.model.IEvent;
 import org.opennms.horizon.events.model.IParm;
 import org.opennms.horizon.events.model.IValue;
 import org.opennms.horizon.events.xml.Event;
+import org.opennms.horizon.minion.snmp.conf.xml.Definition;
+import org.opennms.horizon.minion.snmp.conf.xml.Range;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
-import org.opennms.netmgt.snmp.conf.xml.Definition;
-import org.opennms.netmgt.snmp.conf.xml.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

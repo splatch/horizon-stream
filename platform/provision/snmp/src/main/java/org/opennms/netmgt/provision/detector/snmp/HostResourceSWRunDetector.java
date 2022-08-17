@@ -30,11 +30,11 @@ package org.opennms.netmgt.provision.detector.snmp;
 
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.horizon.core.lib.StringUtils;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
+import org.opennms.horizon.minion.snmp.SnmpInstId;
+import org.opennms.horizon.minion.snmp.SnmpObjId;
+import org.opennms.horizon.minion.snmp.SnmpUtils;
+import org.opennms.horizon.minion.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

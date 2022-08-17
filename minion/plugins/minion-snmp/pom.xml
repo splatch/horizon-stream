@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>SNMP</artifactId>
+    <artifactId>snmp-plugin</artifactId>
 
     <name>OpenNms Horizon :: Minion :: Plugins :: SNMP</name>
     <packaging>bundle</packaging>
@@ -32,13 +32,13 @@
         </dependency>
 
 
-<!--        //TODO: Need to remove these-->
         <dependency>
-            <groupId>org.opennms.horizon.snmp</groupId>
-            <artifactId>api</artifactId>
+            <groupId>org.opennms.horizon.minion</groupId>
+            <artifactId>snmp-api</artifactId>
             <version>${opennms-horizon.version}</version>
         </dependency>
 
+<!--        TODO:: remove-->
         <dependency>
             <groupId>org.opennms.horizon.events</groupId>
             <artifactId>api</artifactId>
