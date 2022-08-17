@@ -16,8 +16,8 @@
 
   <reference id="identity" interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity"/>
   <reference id="opennmsScheduler" interface="org.opennms.horizon.minion.scheduler.OpennmsScheduler"/>
-  <reference id="resultPublisher" interface="java.util.function.Consumer" filter="(message.publisher.topic=workflow-result)" />
-    
+  <reference id="resultPublisher" interface="java.util.function.Consumer" filter="(message.publisher.topic=taskset-results)" />
+
   <reference id="registrationService" interface="org.opennms.horizon.minion.registration.RegistrationService"/>
     
     <service interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity">
@@ -32,7 +32,7 @@
   <bean id="igniteMetrics" class="org.opennms.horizon.minion.ignite.worker.ignite.IgniteMetricsAdapter" init-method="start" destroy-method="stop">
     <argument ref="identity" />
   </bean>
-  <service ref="igniteMetrics" interface="org.opennms.horizon.minion.metrics.MetricsProvider" />
+  <service ref="igniteMetrics" interface="org.opennms.horizon.minion.observability.metrics.MetricsProvider" />
 
   <bean id="workerIgniteConfiguration" class="org.opennms.horizon.minion.ignite.worker.ignite.WorkerIgniteConfiguration">
     <argument ref="igniteMetrics" />

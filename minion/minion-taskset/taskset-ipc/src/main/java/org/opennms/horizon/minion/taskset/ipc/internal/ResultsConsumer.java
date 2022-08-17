@@ -8,14 +8,12 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import org.opennms.horizon.grpc.tasksets.contract.TaskSetResults;
 import org.opennms.horizon.grpc.tasksets.contract.TaskSetResults.Builder;
-import org.opennms.horizon.minion.ignite.model.workflows.Result;
-import org.opennms.horizon.minion.ignite.model.workflows.Results;
 import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.horizon.shared.ipc.sink.api.SyncDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ResultsConsumer implements Consumer<Results> {
+public class ResultsConsumer implements Consumer<TaskSetResults> {
 
   private final Logger logger = LoggerFactory.getLogger(ResultsConsumer.class);
   private final SyncDispatcher<TaskSetResults> dispatcher;
@@ -25,13 +23,13 @@ public class ResultsConsumer implements Consumer<Results> {
   }
 
   @Override
-  public void accept(Results results) {
+  public void accept(TaskSetResults results) {
     Builder taskSetResultsBuilder = TaskSetResults.newBuilder();
-    for (Result result : results.getResults()) {
+    for (TaskSetResults.TaskResult result : results.getResultsList()) {
       TaskSetResults.TaskResult.Builder resultBuilder = taskSetResultsBuilder.addResultsBuilder();
 
       if (result.getParameters() != null) {
-        for (Map.Entry<String, Object> entry : result.getParameters().entrySet()) {
+        for (Map.Entry<String, Any> entry : result.getParameters().entrySet()) {
           Object value = entry.getValue();
           Value.Builder valueBuilder = Value.newBuilder();
           if (value instanceof Number) {

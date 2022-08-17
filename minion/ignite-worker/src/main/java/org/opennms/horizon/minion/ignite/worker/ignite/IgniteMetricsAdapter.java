@@ -21,7 +21,7 @@ import org.apache.ignite.spi.metric.ReadOnlyMetricManager;
 import org.apache.ignite.spi.metric.ReadOnlyMetricRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.opennms.horizon.minion.metrics.MetricsProvider;
+import org.opennms.horizon.minion.observability.metrics.MetricsProvider;
 import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

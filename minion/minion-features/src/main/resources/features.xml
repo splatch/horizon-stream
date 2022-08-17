@@ -22,8 +22,9 @@
         <feature version="${project.version}">eos</feature>
         <feature version="${project.version}">ignite-poc-model</feature>
         <feature version="${project.version}">poc-cron</feature>
-        <feature version="${project.version}">poc-metrics</feature>
+        <feature version="${project.version}">observability-minion</feature>
         <feature version="${project.version}">ipc-minion</feature>
+        <feature version="${project.version}">taskset-minion</feature>
 
         <bundle>mvn:org.opennms.horizon.minion/ignite-worker/${project.version}</bundle>
         <bundle>wrap:mvn:org.apache.ignite/ignite-kubernetes/${ignite.version}</bundle>
@@ -70,14 +71,6 @@
         <bundle>mvn:org.apache.commons/commons-jexl/2.1.1</bundle>
         <bundle>mvn:org.opennms.horizon.core/lib/${opennms-horizon.version}</bundle>
         <bundle>mvn:org.opennms.horizon.minion/plugins-api/${project.version}</bundle>
-    </feature>
-
-    <feature name="poc-tracing-stub" version="${project.version}">
-        <feature prerequisite="true">wrap</feature>
-        <feature>poc-opentracing</feature>
-        <bundle>wrap:mvn:org.opennms.horizon.core.tracing/api/${opennms-horizon.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
-<!--        !!!!!!!-->
-        <bundle>mvn:org.opennms.horizon.minion/tracing-stub/${project.version}</bundle>
     </feature>
 
     <feature name="rest-utils" version="${project.version}">
@@ -137,19 +130,6 @@
 <!--        <bundle>mvn:org.opennms.horizon.minion.plugins/TEST-TCP-CONNECTOR/${project.version}</bundle>-->
 <!--    </feature>-->
 
-    <feature name="eclipse-stuff" version="${project.version}">
-        <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.moxy/2.5.1</bundle>
-        <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.core/2.5.1</bundle>
-        <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.asm/2.5.1</bundle>
-        <bundle>mvn:org.eclipse.persistence/org.eclipse.persistence.antlr/2.5.1</bundle>
-    </feature>
-
-    <feature name="poc-opentracing" version="${project.version}">
-        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-api/0.31.0</bundle>
-        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-noop/0.31.0</bundle>
-        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-util/0.31.0</bundle>
-    </feature>
-
 <!--    // horizon stream bundles and features needed for SNMP-->
     <feature name="poc-horizon-snmp" version="${project.version}" description="Horizon :: SNMP">
         <feature version="${project.version}">poc-grpc</feature>
@@ -168,33 +148,6 @@
     <feature name="poc-cron" version="${project.version}">
         <bundle>mvn:com.cronutils/cron-utils/${cron-utils.version}</bundle>
         <bundle>mvn:org.opennms.horizon.minion/scheduler/${project.version}</bundle>
-    </feature>
-
-    <feature name="poc-metrics" version="${project.version}">
-        <feature>http</feature>
-        <feature>metrics</feature>
-        <feature>prometheus</feature>
-        <feature>prometheus-dropwizard</feature>
-        <feature>eos</feature>
-        <bundle>mvn:org.opennms.horizon.minion/minion-metrics/${project.version}</bundle>
-    </feature>
-
-    <feature name="metrics">
-        <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizard.metrics.version}</bundle>
-    </feature>
-
-    <feature name="prometheus">
-        <bundle>mvn:io.prometheus/simpleclient/${prometheus.version}</bundle>
-        <bundle>mvn:io.prometheus/simpleclient_common/${prometheus.version}</bundle>
-    </feature>
-
-    <feature name="prometheus-dropwizard">
-        <feature>metrics</feature>
-        <feature>prometheus</feature>
-        <bundle>mvn:io.prometheus/simpleclient_dropwizard/${prometheus.version}</bundle>
-        <bundle>mvn:io.prometheus/simpleclient_tracer_common/${prometheus.version}</bundle>
-        <bundle>mvn:io.prometheus/simpleclient_tracer_otel/${prometheus.version}</bundle>
-        <bundle>mvn:io.prometheus/simpleclient_tracer_otel_agent/${prometheus.version}</bundle>
     </feature>
 
     <feature name="rate-limited-logger" version="2.0.2" description="Rate Limited Logger">

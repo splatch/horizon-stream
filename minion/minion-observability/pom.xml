@@ -9,13 +9,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>taskset</artifactId>
+    <artifactId>observability</artifactId>
     <packaging>pom</packaging>
 
-    <name>OpenNms Horizon :: Minion :: TaskSet</name>
+    <name>OpenNms Horizon :: Minion :: Observability</name>
 
     <modules>
-        <module>taskset-ipc</module>
+        <module>observability-metrics</module>
+        <module>observability-tracing</module>
         <module>features</module>
     </modules>
 

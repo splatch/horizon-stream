@@ -50,12 +50,6 @@
 
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>ignite-worker</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>minion-features</artifactId>
             <type>xml</type>
             <classifier>features</classifier>
@@ -63,6 +57,27 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion.grpc</groupId>
+            <artifactId>features</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion.ipc</groupId>
+            <artifactId>features</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion.taskset</groupId>
+            <artifactId>features</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion.observability</groupId>
             <artifactId>features</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
@@ -124,7 +139,6 @@
                         <feature>system</feature>
                         <feature>scr</feature>
                         <feature>ignite-poc</feature>
-                        <feature>poc-grpc</feature>
                         <!--
                         <feature>icmp-plugins</feature>
                         <feature>snmp-plugins</feature>
