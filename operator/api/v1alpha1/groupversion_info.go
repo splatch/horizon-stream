@@ -12,7 +12,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package v1alpha1 contains API Schema definitions for the opennms v1alpha1 API group
+// Package v2alpha1 contains API Schema definitions for the opennms v2alpha1 API group
 package v1alpha1
 
 import (

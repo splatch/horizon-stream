@@ -43,8 +43,16 @@ Postgres:
   VolumeSize: 10Gi
 Keycloak:
   Path: /auth
-  ServiceName: keycloak
-  Password: notset
+  ServiceName: onms-keycloak
+  AdminUsername: keycloak-admin
+  AdminPassword: notset
+  UserUseranme: user001
+  UserPassword: notset
+  Image: opennms/horizon-stream-keycloak:latest
+  UUID:
+    ClientId: 00000000-0000-0000-0000-000000000000
+    BaseUserId: 00000000-0000-0000-0000-000000000000
+    AdminUserId: 00000000-0000-0000-0000-000000000000
 Grafana:
   Image: placeholder
 Ingress:
