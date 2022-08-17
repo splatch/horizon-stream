@@ -14,7 +14,7 @@
     <artifactId>api</artifactId>
     <packaging>bundle</packaging>
 
-    <name>Ignite POC :: IPC :: API</name>
+    <name>OpenNMS Horizon :: Shared Library :: IPC :: API</name>
     <description>Shallow copy of IPC api.</description>
 
     <dependencies>

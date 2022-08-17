@@ -1,10 +1,10 @@
 package org.opennms.horizon.minion.ignite.worker.workflows.impl;
 
-import org.opennms.horizon.minion.ignite.grpc.whiteboard.api.MessageListener;
 import org.opennms.horizon.minion.ignite.model.workflows.Workflows;
 import org.opennms.horizon.minion.ignite.worker.workflows.WorkflowLifecycleManager;
+import org.opennms.horizon.minion.ipc.twin.api.TwinListener;
 
-public class TwinToWorkflowLifecycleManagerAdapter implements MessageListener<Workflows> {
+public class TwinToWorkflowLifecycleManagerAdapter implements TwinListener<Workflows> {
 
   private final WorkflowLifecycleManager workflowLifecycleManager;
 
