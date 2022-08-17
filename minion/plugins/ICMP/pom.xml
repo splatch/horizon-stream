@@ -21,22 +21,26 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
+
+<!--        //TODO: need to remove these-->
         <dependency>
             <groupId>org.opennms.horizon.icmp</groupId>
             <artifactId>best</artifactId>
             <version>${opennms-horizon.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.icmp</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>

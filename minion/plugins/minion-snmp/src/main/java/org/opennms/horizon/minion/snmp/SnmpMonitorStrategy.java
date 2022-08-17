@@ -34,8 +34,6 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.regex.Pattern;
 //import org.opennms.netmgt.config.SnmpPeerFactory;
-//import org.opennms.netmgt.poller.MonitoredService;
-//import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 //import org.opennms.netmgt.snmp.SnmpAgentConfig;
 //import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;

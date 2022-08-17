@@ -16,11 +16,23 @@
 
     <dependencies>
         <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.concurrent-locks</groupId>
+            <artifactId>concurrent-locks</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>plugins-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
+
+<!--        //TODO: Need to remove these-->
         <dependency>
             <groupId>org.opennms.horizon.snmp</groupId>
             <artifactId>api</artifactId>
@@ -28,21 +40,9 @@
         </dependency>
 
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.opennms.horizon.events</groupId>
             <artifactId>api</artifactId>
             <version>${opennms-horizon.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.googlecode.concurrent-locks</groupId>
-            <artifactId>concurrent-locks</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
