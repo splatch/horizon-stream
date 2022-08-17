@@ -6,7 +6,8 @@
 
   <cm:property-placeholder persistent-id="org.opennms.horizon.minion.registration" update-strategy="reload">
     <cm:default-properties>
-      <cm:property name="routing.uri" value="seda:registration"/>
+        <cm:property name="registration.uri" value="seda:registration"/>
+        <cm:property name="aggregation.delay" value="10000"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -22,8 +23,9 @@
   </bean>
 
   <bean id="pluginRegistrationRouting" class="org.opennms.horizon.minion.registration.PluginRegistrationRouting">
-    <argument value="${routing.uri}"/>
-    <argument ref="messageDispatcherFactory"/>
+      <argument value="${registration.uri}"/>
+      <argument ref="messageDispatcherFactory"/>
+      <argument value="${aggregation.delay}"/>
   </bean>
 
   <service ref="registrationService" interface="org.opennms.horizon.minion.registration.RegistrationService"/>
