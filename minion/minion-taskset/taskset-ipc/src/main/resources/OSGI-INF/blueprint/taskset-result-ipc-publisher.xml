@@ -20,7 +20,7 @@
 
   <service ref="subscriber" interface="org.opennms.horizon.minion.ipc.twin.api.TwinListener">
     <service-properties>
-      <entry key="message.listener.topic" value="workflow" />
+      <entry key="message.listener.topic" value="task-set" />
     </service-properties>
   </service>
 

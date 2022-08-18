@@ -16,6 +16,7 @@
 
     <modules>
         <module>taskset-ipc</module>
+        <module>taskset-worker</module>
         <module>features</module>
     </modules>
 

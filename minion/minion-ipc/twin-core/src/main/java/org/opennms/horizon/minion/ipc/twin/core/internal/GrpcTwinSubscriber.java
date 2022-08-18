@@ -104,6 +104,7 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
             @Override
             public void onError(Throwable t) {
                 LOG.warn("Error while processing stream", t);
+                responseHandler.onCompleted();
             }
 
             @Override
