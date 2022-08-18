@@ -21,33 +21,30 @@ export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[
     unknown: 'bg-unknown'
   }
 
-  // in ms
-  let latencyBgColor = bg.unknown
-  if(latency >= 0) latencyBgColor = latency > 100 ? bg.failed : bg.ok
-
-  let uptimeBgColor = bg.unknown
-  if(uptime >= 0) uptimeBgColor = uptime === 0 ? bg.failed : bg.ok
-
-  let statusBgColor = bg.unknown
-  if(status) statusBgColor = status === 'DOWN' ? bg.failed : bg.ok
-
   return {
     ...item,
-    latencyBgColor,
-    uptimeBgColor,
-    statusBgColor
+    latencyBgColor: latency >= 0 ? bg.ok : bg.failed,
+    uptimeBgColor: uptime >= 0 ? bg.ok : bg.failed,
+    statusBgColor: status === 'UP' ? bg.ok : bg.failed
   }
 })
 
 export const getHumanReadableDuration = (uptimeInSeconds: number) => {
-  if (uptimeInSeconds < 60) return `${uptimeInSeconds} ${uptimeInSeconds <= 0 ? '' : 'seconds'}`
+  let durationDisplay = '--' // undefined
 
-  const duration = intervalToDuration({
-    start: new Date(),
-    end: add(new Date(), {seconds: uptimeInSeconds})
-  })
+  if(uptimeInSeconds >= 0) {
+    if (uptimeInSeconds < 60) durationDisplay = `${uptimeInSeconds} ${uptimeInSeconds <= 0 ? '' : 'seconds'}` // 0-59secs
+    else {
+      const duration = intervalToDuration({
+        start: new Date(),
+        end: add(new Date(), {seconds: uptimeInSeconds})
+      })
+  
+      durationDisplay = formatDuration(duration, { format: ['days', 'hours', 'minutes']}) // +1min
+    }
+  }
 
-  return formatDuration(duration, { format: ['days', 'hours', 'minutes']})
+  return durationDisplay
 }
 
 export const formatLatencyDisplay = (latency: number) => {

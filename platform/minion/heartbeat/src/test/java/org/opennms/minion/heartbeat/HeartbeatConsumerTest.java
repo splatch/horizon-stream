@@ -37,6 +37,7 @@ import org.opennms.horizon.core.identity.IdentityImpl;
 import org.opennms.horizon.db.dao.api.MinionDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsMinion;
+import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.ipc.sink.api.MessageConsumerManager;
 import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 
@@ -59,8 +60,10 @@ public class HeartbeatConsumerTest {
         SessionUtils sessionUtils = new MockSessionUtils();
         MessageConsumerManager messageConsumerManager = mock(MessageConsumerManager.class);
         MockMetricsAdapter onmsMetricsAdapter = new MockMetricsAdapter();
+        EventForwarder eventForwarder = mock(EventForwarder.class);
 
-        HeartbeatConsumer heartbeatConsumer = new HeartbeatConsumer(messageConsumerManager, minionDao, sessionUtils, onmsMetricsAdapter);
+        HeartbeatConsumer heartbeatConsumer = new HeartbeatConsumer(messageConsumerManager, minionDao,
+            sessionUtils, onmsMetricsAdapter, eventForwarder);
 
         // Case 1 : No Minion exists in DB yet
         String minionId = "minion-01";

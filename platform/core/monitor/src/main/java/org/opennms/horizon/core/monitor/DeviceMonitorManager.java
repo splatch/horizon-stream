@@ -79,7 +79,7 @@ public class DeviceMonitorManager implements EventListener {
     private final OnmsMetricsAdapter metricsAdapter;
     private final List<OnmsNode> nodeCache = new ArrayList<>();
     private final ThreadFactory monitorThreadFactory = new ThreadFactoryBuilder()
-        .setNameFormat("monitor-runner-%d")
+        .setNameFormat("device-monitor-runner-%d")
         .build();
     private final CollectorRegistry collectorRegistry = new CollectorRegistry();
     private static final String[] labelNames = {"instance", "location"};
