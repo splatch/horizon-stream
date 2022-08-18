@@ -39,8 +39,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.horizon.minion.snmp.SnmpObjId;
-import org.opennms.horizon.minion.snmp.SnmpObjIdXmlAdapter;
+import org.opennms.horizon.shared.snmp.SnmpObjId;
+import org.opennms.horizon.shared.snmp.SnmpObjIdXmlAdapter;
 
 @XmlRootElement(name="snmp-walk-request")
 @XmlAccessorType(XmlAccessType.NONE)

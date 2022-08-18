@@ -31,9 +31,9 @@ package org.opennms.horizon.minion.snmp.snmp4j;
 import java.math.BigInteger;
 import java.net.InetAddress;
 
-import org.opennms.horizon.minion.snmp.SnmpObjId;
-import org.opennms.horizon.minion.snmp.SnmpValue;
-import org.opennms.horizon.minion.snmp.SnmpValueFactory;
+import org.opennms.horizon.shared.snmp.SnmpObjId;
+import org.opennms.horizon.shared.snmp.SnmpValue;
+import org.opennms.horizon.shared.snmp.SnmpValueFactory;
 import org.snmp4j.smi.Counter32;
 import org.snmp4j.smi.Counter64;
 import org.snmp4j.smi.Gauge32;

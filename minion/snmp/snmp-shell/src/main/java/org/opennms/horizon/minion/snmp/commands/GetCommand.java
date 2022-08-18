@@ -40,9 +40,9 @@ import java.util.stream.Collectors;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
-import org.opennms.horizon.minion.snmp.SnmpObjId;
-import org.opennms.horizon.minion.snmp.SnmpValue;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.SnmpObjId;
+import org.opennms.horizon.shared.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

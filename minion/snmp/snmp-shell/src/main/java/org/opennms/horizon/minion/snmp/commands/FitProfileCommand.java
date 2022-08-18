@@ -45,9 +45,9 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.horizon.events.api.EventBuilder;
 import org.opennms.horizon.events.api.EventConstants;
 import org.opennms.horizon.events.api.EventForwarder;
-import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
-import org.opennms.horizon.minion.snmp.SnmpProfileMapper;
-import org.opennms.horizon.minion.snmp.conf.SnmpAgentConfigFactory;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.SnmpProfileMapper;
+import org.opennms.horizon.shared.snmp.conf.SnmpAgentConfigFactory;
 
 import com.google.common.base.Strings;
 

@@ -32,7 +32,7 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.horizon.minion.snmp.SnmpStrategy;
+import org.opennms.horizon.shared.snmp.SnmpStrategy;
 import org.snmp4j.smi.OctetString;
 
 

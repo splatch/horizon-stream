@@ -36,7 +36,7 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.horizon.minion.snmp.conf.SnmpAgentConfigFactory;
+import org.opennms.horizon.shared.snmp.conf.SnmpAgentConfigFactory;
 
 import com.google.common.base.Strings;
 

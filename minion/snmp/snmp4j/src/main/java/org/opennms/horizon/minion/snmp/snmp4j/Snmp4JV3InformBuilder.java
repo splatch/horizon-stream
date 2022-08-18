@@ -28,9 +28,9 @@
 
 package org.opennms.horizon.minion.snmp.snmp4j;
 
-import org.opennms.horizon.minion.snmp.SnmpConfiguration;
-import org.opennms.horizon.minion.snmp.SnmpV3TrapBuilder;
-import org.opennms.horizon.minion.snmp.SnmpValue;
+import org.opennms.horizon.shared.snmp.SnmpConfiguration;
+import org.opennms.horizon.shared.snmp.SnmpV3TrapBuilder;
+import org.opennms.horizon.shared.snmp.SnmpValue;
 import org.snmp4j.ScopedPDU;
 
 public class Snmp4JV3InformBuilder extends Snmp4JV2TrapBuilder implements SnmpV3TrapBuilder {

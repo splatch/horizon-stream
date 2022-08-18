@@ -28,10 +28,10 @@
 
 package org.opennms.horizon.minion.snmp.snmp4j;
 
-import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
-import org.opennms.horizon.minion.snmp.SnmpObjId;
-import org.opennms.horizon.minion.snmp.SnmpTrapBuilder;
-import org.opennms.horizon.minion.snmp.SnmpValue;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.SnmpObjId;
+import org.opennms.horizon.shared.snmp.SnmpTrapBuilder;
+import org.opennms.horizon.shared.snmp.SnmpValue;
 import org.snmp4j.PDU;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.Variable;

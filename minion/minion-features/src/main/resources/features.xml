@@ -256,7 +256,7 @@
         <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
 <!--        <bundle dependency="true">wrap:mvn:org.snmp4j/snmp4j/${snmp4j.version}</bundle>-->
 
-        <bundle>mvn:org.opennms.horizon.snmp/api/${opennms-horizon.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/snmp-api/${opennms-horizon.version}</bundle>
 <!--        <bundle>mvn:org.opennms.horizon.snmp/rpc-impl/${project.version}</bundle>-->
 <!--        <bundle>mvn:org.opennms.horizon.snmp/snmp4j/${project.version}</bundle>-->
 <!--        <bundle>mvn:org.opennms.horizon.snmp/shell/${project.version}</bundle>-->

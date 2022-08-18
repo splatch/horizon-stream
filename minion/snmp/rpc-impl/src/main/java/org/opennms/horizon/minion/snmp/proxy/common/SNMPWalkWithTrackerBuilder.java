@@ -32,9 +32,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.opennms.horizon.minion.snmp.CollectionTracker;
-import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
-import org.opennms.horizon.minion.snmp.proxy.WalkResponse;
+import org.opennms.horizon.shared.snmp.CollectionTracker;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.proxy.WalkResponse;
 
 public class SNMPWalkWithTrackerBuilder extends AbstractSNMPRequestBuilder<CollectionTracker> {
 

@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.horizon.minion.snmp.SnmpResult;
+import org.opennms.horizon.shared.snmp.SnmpResult;
 
 @XmlRootElement(name="response")
 @XmlAccessorType(XmlAccessType.NONE)

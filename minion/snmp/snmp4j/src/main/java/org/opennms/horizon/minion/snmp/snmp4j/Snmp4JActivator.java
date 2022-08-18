@@ -31,8 +31,8 @@ package org.opennms.horizon.minion.snmp.snmp4j;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import org.opennms.horizon.minion.snmp.SnmpStrategy;
-import org.opennms.horizon.minion.snmp.SnmpUtils;
+import org.opennms.horizon.shared.snmp.SnmpStrategy;
+import org.opennms.horizon.shared.snmp.SnmpUtils;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

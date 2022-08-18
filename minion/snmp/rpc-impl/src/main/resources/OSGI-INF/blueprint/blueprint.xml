@@ -13,7 +13,7 @@
 
     <reference id="rpcClientFactory" interface="org.opennms.horizon.ipc.rpc.api.RpcClientFactory" />
 
-    <service interface="org.opennms.horizon.minion.snmp.proxy.LocationAwareSnmpClient" >
+    <service interface="org.opennms.horizon.shared.snmp.proxy.LocationAwareSnmpClient" >
         <bean class="org.opennms.horizon.minion.snmp.proxy.common.LocationAwareSnmpClientRpcImpl">
             <argument ref="rpcClientFactory" />
         </bean>

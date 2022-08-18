@@ -30,13 +30,13 @@ package org.opennms.horizon.minion.snmp.snmp4j;
 
 import java.net.InetAddress;
 
-import org.opennms.horizon.minion.snmp.SnmpException;
-import org.opennms.horizon.minion.snmp.SnmpObjId;
-import org.opennms.horizon.minion.snmp.SnmpValue;
-import org.opennms.horizon.minion.snmp.SnmpVarBindDTO;
-import org.opennms.horizon.minion.snmp.TrapIdentity;
-import org.opennms.horizon.minion.snmp.TrapInformation;
-import org.opennms.horizon.minion.snmp.TrapNotificationListener;
+import org.opennms.horizon.shared.snmp.SnmpException;
+import org.opennms.horizon.shared.snmp.SnmpObjId;
+import org.opennms.horizon.shared.snmp.SnmpValue;
+import org.opennms.horizon.shared.snmp.SnmpVarBindDTO;
+import org.opennms.horizon.shared.snmp.TrapIdentity;
+import org.opennms.horizon.shared.snmp.TrapInformation;
+import org.opennms.horizon.shared.snmp.TrapNotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponder;

@@ -31,10 +31,10 @@ package org.opennms.horizon.minion.snmp.proxy.common;
 import java.util.Collections;
 import java.util.List;
 
-import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
-import org.opennms.horizon.minion.snmp.SnmpObjId;
-import org.opennms.horizon.minion.snmp.SnmpResult;
-import org.opennms.horizon.minion.snmp.SnmpValue;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.SnmpObjId;
+import org.opennms.horizon.shared.snmp.SnmpResult;
+import org.opennms.horizon.shared.snmp.SnmpValue;
 
 public class SNMPSingleGetBuilder extends AbstractSNMPRequestBuilder<SnmpValue> {
 

@@ -21,6 +21,7 @@
         <module>logging</module>
         <module>ipc</module>
         <module>utils</module>
+        <module>snmp-api</module>
     </modules>
 
     <properties>

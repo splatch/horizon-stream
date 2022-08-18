@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.MessageDispatcher;
 import org.snmp4j.MessageDispatcherImpl;

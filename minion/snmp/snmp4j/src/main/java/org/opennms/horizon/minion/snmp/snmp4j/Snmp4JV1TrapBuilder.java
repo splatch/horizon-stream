@@ -30,8 +30,8 @@ package org.opennms.horizon.minion.snmp.snmp4j;
 
 import java.net.InetAddress;
 
-import org.opennms.horizon.minion.snmp.SnmpObjId;
-import org.opennms.horizon.minion.snmp.SnmpV1TrapBuilder;
+import org.opennms.horizon.shared.snmp.SnmpObjId;
+import org.opennms.horizon.shared.snmp.SnmpV1TrapBuilder;
 import org.snmp4j.PDUv1;
 import org.snmp4j.smi.IpAddress;
 import org.snmp4j.smi.OID;

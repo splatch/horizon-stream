@@ -14,7 +14,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>snmp-api</module>
     <module>rpc-impl</module>
     <module>snmp-shell</module>
     <module>snmp4j</module>

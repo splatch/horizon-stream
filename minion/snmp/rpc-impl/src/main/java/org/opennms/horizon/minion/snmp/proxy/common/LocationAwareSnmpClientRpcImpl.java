@@ -35,13 +35,13 @@ import java.util.stream.Collectors;
 
 import org.opennms.horizon.ipc.rpc.api.RpcClient;
 import org.opennms.horizon.ipc.rpc.api.RpcClientFactory;
-import org.opennms.horizon.minion.snmp.CollectionTracker;
-import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
-import org.opennms.horizon.minion.snmp.SnmpObjId;
-import org.opennms.horizon.minion.snmp.SnmpResult;
-import org.opennms.horizon.minion.snmp.SnmpValue;
-import org.opennms.horizon.minion.snmp.proxy.LocationAwareSnmpClient;
-import org.opennms.horizon.minion.snmp.proxy.SNMPRequestBuilder;
+import org.opennms.horizon.shared.snmp.CollectionTracker;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.SnmpObjId;
+import org.opennms.horizon.shared.snmp.SnmpResult;
+import org.opennms.horizon.shared.snmp.SnmpValue;
+import org.opennms.horizon.shared.snmp.proxy.LocationAwareSnmpClient;
+import org.opennms.horizon.shared.snmp.proxy.SNMPRequestBuilder;
 
 /**
  * Location-aware SNMP client that builds a {@link SnmpRequestDTO} and delegates

@@ -35,8 +35,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.horizon.ipc.rpc.api.RpcRequest;
-import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
-import org.opennms.horizon.minion.snmp.proxy.SNMPRequestBuilder;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.proxy.SNMPRequestBuilder;
 
 public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilder<T> {
 

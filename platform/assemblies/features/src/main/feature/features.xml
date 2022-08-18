@@ -207,12 +207,8 @@
         <bundle dependency="true">mvn:commons-io/commons-io/${commons.io.version}</bundle>
         <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
         <bundle dependency="true">wrap:mvn:org.snmp4j/snmp4j/${snmp4j.version}</bundle>
-
-<!--        <bundle>mvn:org.opennms.horizon.snmp/api/${project.version}</bundle>-->
-<!--        <bundle>mvn:org.opennms.horizon.snmp/rpc-impl/${project.version}</bundle>-->
-<!--        <bundle>mvn:org.opennms.horizon.snmp/snmp4j/${project.version}</bundle>-->
-<!--        <bundle>mvn:org.opennms.horizon.snmp/shell/${project.version}</bundle>-->
-        <bundle>mvn:org.opennms.horizon.minion/snmp-api/${project.version}</bundle>
+        
+        <bundle>mvn:org.opennms.horizon.shared/snmp-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.minion/rpc-impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.minion/snmp4j/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.minion/shell/${project.version}</bundle>
@@ -281,9 +277,7 @@
         <bundle>mvn:com.helger/dhcp4java/${dhcp4java.version}</bundle>
         <bundle>mvn:org.opennms.horizon/dhcpd/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.provision/detector-dhcp/${project.version}</bundle>
-
-<!--        TODO: fix this dep-->
-        <bundle>mvn:org.opennms.horizon.minion/snmp-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/snmp-api/${project.version}</bundle>
 
         <!-- TODO: which JCIFS dependency should be used?  The classic pom uses a shaded jar, but the feature has the un-shaded jar + bouncycastle? -->
         <!-- https://issues.opennms.org/browse/NMS-13111 -->

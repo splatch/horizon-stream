@@ -34,8 +34,8 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
-import org.opennms.horizon.minion.snmp.conf.SnmpAgentConfigFactory;
-import org.opennms.horizon.minion.snmp.proxy.LocationAwareSnmpClient;
+import org.opennms.horizon.shared.snmp.conf.SnmpAgentConfigFactory;
+import org.opennms.horizon.shared.snmp.proxy.LocationAwareSnmpClient;
 
 public class SnmpRequestCommand implements Action {
 
