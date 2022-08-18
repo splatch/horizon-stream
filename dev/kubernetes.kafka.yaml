@@ -228,15 +228,22 @@ spec:
         - name: hs-grafana-ds
           configMap:
             name: grafana-datasource-config
+        - name: grafana-ini
+          configMap:
+            name: grafana-config-map
       containers:
         - name: grafana
-          image: grafana/grafana
+          image: opennms/grafana-dev
+          imagePullPolicy: Never
           ports:
             - containerPort: 3000
           volumeMounts:
             - name: hs-grafana-ds
               mountPath: "/etc/grafana/provisioning/datasources/default.yml"
               subPath: "default.yml"
+            - name: grafana-ini
+              mountPath: "/etc/grafana/grafana.ini"
+              subPath: "grafana.ini"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -471,9 +478,9 @@ spec:
     spec:
       volumes:
         - name: postgres-volume
-        - name: postgres-initial-script
+        - name: postgres-grafana-init-script
           configMap:
-            name: postgres-initial-sql
+            name: postgres-grafana-initial-sql
         - name: postgres-keycloak-initial-script
           configMap:
             name: postgres-keycloak-initial-sql
@@ -498,9 +505,9 @@ spec:
           volumeMounts:
             - mountPath: "/var/lib/postgresql/data"
               name: postgres-volume
-            - mountPath: "/docker-entrypoint-initdb.d/postgres.initial.script.sql"
-              name: postgres-initial-script
-              subPath: "postgres.initial.script.sql"
+            - mountPath: "/docker-entrypoint-initdb.d/postgres.grafana.init.sql"
+              name: postgres-grafana-init-script
+              subPath: "postgres.grafana.init.sql"
             - mountPath: "/docker-entrypoint-initdb.d/postgres.keycloak.initial.script.sql"
               name: postgres-keycloak-initial-script
               subPath: "postgres.keycloak.initial.script.sql"
@@ -798,22 +805,40 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-initial-sql
-data:
-  postgres.initial.script.sql: |
-    CREATE USER opennms with password 'opennms';
-    CREATE DATABASE horizon_stream;
-    GRANT ALL ON DATABASE horizon_stream TO opennms;
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: postgres-keycloak-initial-sql
 data:
   postgres.keycloak.initial.script.sql: |
     CREATE USER keycloak with password 'passw0rd';
     CREATE DATABASE keycloak;
     GRANT ALL ON DATABASE keycloak TO keycloak;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-grafana-initial-sql
+data:
+  postgres.grafana.init.sql: |
+    CREATE USER grafana with password 'passw0rd';
+    CREATE DATABASE grafana;
+    GRANT ALL ON DATABASE grafana TO grafana;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config-map
+data:
+  grafana.ini: |
+    [database]
+    # You can configure the database connection by specifying type, host, name, user and password
+    # as separate properties or as on string using the url properties.
+
+    # Either "mysql", "postgres" or "sqlite3", it's your choice
+    type = postgres
+    host = postgres:5432
+    name = grafana
+    user = grafana
+    # If the password contains # or ; you have to wrap it with triple quotes. Ex """#password;"""
+    password = passw0rd
 ---
 apiVersion: v1
 kind: ConfigMap
