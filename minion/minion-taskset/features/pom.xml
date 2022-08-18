@@ -21,6 +21,11 @@
             <artifactId>taskset-ipc</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion.taskset</groupId>
+            <artifactId>taskset-worker</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.opennms.horizon.minion.ipc</groupId>

@@ -177,7 +177,6 @@
     </feature>
 
     <feature name="rest-utils" version="${project.version}">
-
         <feature>cxf</feature>
         <feature>cxf-jaxrs</feature>
         <feature>cxf-sse</feature>
