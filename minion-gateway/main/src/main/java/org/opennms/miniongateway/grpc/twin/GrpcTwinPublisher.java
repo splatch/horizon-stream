@@ -169,6 +169,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
                 if (sinkStreamsBySystemId.containsKey(minionHeader.getId())) {
                     StreamObserver<TwinResponseProto> sinkStream = sinkStreamsBySystemId.remove(minionHeader.getId());
                     sinkStreamsByLocation.remove(minionHeader.getLocation(), sinkStream);
+                    sinkStream.onCompleted(); // force termination of session.
                 }
                 AdapterObserver delegate = new AdapterObserver(responseObserver);
                 delegate.setCompletionCallback(() -> {
@@ -218,7 +219,7 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
                             }
                         }, twinRpcExecutor);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOG.error("Could not handle twin rpc request", e);
                     }
                 }
             }
