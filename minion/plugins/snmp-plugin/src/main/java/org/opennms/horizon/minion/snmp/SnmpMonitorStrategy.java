@@ -33,13 +33,10 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.regex.Pattern;
-//import org.opennms.netmgt.config.SnmpPeerFactory;
-//import org.opennms.netmgt.snmp.SnmpAgentConfig;
-//import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.horizon.minion.plugin.api.AbstractServiceMonitor;
 import org.opennms.horizon.minion.plugin.api.MonitoredService;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

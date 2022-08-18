@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.detector.snmp;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 
-import org.opennms.horizon.minion.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

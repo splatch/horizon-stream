@@ -16,7 +16,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>api</module>
     <module>best</module>
     <module>jni</module>
     <module>jni6</module>

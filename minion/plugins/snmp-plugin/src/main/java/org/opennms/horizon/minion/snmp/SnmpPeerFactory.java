@@ -28,8 +28,9 @@
 
 package org.opennms.horizon.minion.snmp;
 
-import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_LEVEL;
-import static org.opennms.netmgt.snmp.SnmpConfiguration.DEFAULT_SECURITY_NAME;
+
+import static org.opennms.horizon.shared.snmp.SnmpConfiguration.DEFAULT_SECURITY_LEVEL;
+import static org.opennms.horizon.shared.snmp.SnmpConfiguration.DEFAULT_SECURITY_NAME;
 
 import com.googlecode.concurentlocks.ReadWriteUpdateLock;
 import com.googlecode.concurentlocks.ReentrantReadWriteUpdateLock;
@@ -52,12 +53,14 @@ import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.horizon.core.lib.LocationUtils;
-import org.opennms.horizon.minion.snmp.conf.SnmpAgentConfigFactory;
-import org.opennms.horizon.minion.snmp.conf.xml.AddressSnmpConfigVisitor;
-import org.opennms.horizon.minion.snmp.conf.xml.Definition;
-import org.opennms.horizon.minion.snmp.conf.xml.Range;
-import org.opennms.horizon.minion.snmp.conf.xml.SnmpConfig;
-import org.opennms.horizon.minion.snmp.conf.xml.SnmpProfile;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.SnmpConfiguration;
+import org.opennms.horizon.shared.snmp.conf.SnmpAgentConfigFactory;
+import org.opennms.horizon.shared.snmp.conf.xml.AddressSnmpConfigVisitor;
+import org.opennms.horizon.shared.snmp.conf.xml.Definition;
+import org.opennms.horizon.shared.snmp.conf.xml.Range;
+import org.opennms.horizon.shared.snmp.conf.xml.SnmpConfig;
+import org.opennms.horizon.shared.snmp.conf.xml.SnmpProfile;
 import org.opennms.horizon.shared.utils.ByteArrayComparator;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.slf4j.Logger;

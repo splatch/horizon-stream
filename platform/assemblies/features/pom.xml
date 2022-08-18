@@ -89,7 +89,7 @@
                                 <feature>horizon-provision</feature>
                                 <feature>horizon-minion-heartbeat</feature>
                                 <feature>horizon-minion-rest</feature>
-                                <feature>horizon-snmp</feature>
+<!--                                <feature>horizon-snmp</feature>-->
                                 <feature>horizon-tracing</feature>
                                 <feature>jackson</feature>
                                 <feature>java-native-access</feature>
@@ -103,7 +103,7 @@
                                 <feature>camel-kafka</feature>
                                 <feature>camel-activemq</feature>
                                 <feature>horizon-metrics-prometheus</feature>
-                                <feature>horizon-core-monitor</feature>
+<!--                                <feature>horizon-core-monitor</feature>-->
                             </features>
                         </configuration>
                     </execution>
@@ -283,17 +283,17 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.snmp</groupId>
+            <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>rpc-impl</artifactId>
-            <version>${project.version}</version>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.snmp</groupId>
+            <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>snmp4j</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.snmp</groupId>
+            <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>shell</artifactId>
             <version>${project.version}</version>
         </dependency>

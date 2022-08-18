@@ -98,7 +98,7 @@
 
         <bundle dependency="true">mvn:javax.validation/validation-api/${javax.validation.version}</bundle>
         <bundle>wrap:mvn:org.json/json/${json.version}$Export-Package=org.json</bundle>
-        <bundle>mvn:org.opennms.horizon.snmp/api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/snmp-api/${project.version}</bundle>
 
         <bundle>mvn:org.opennms.horizon.events/api/${project.version}</bundle>
     </feature>
@@ -148,7 +148,7 @@
         <bundle>mvn:org.opennms/jicmp-api/${jicmp.version}</bundle>
         <bundle>mvn:org.opennms/jicmp6-api/${jicmp.version}</bundle>
 
-        <bundle>mvn:org.opennms.horizon.icmp/api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/icmp-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.icmp/best/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.icmp/jna/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.icmp/jni/${project.version}</bundle>
@@ -165,14 +165,17 @@
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/publisher/${project.version}</bundle>
     </feature>
 
-    <feature name="horizon-core-monitor" version="${project.version}">
-        <feature>horizon-metrics-prometheus</feature>
-        <feature>horizon-events-api</feature>
-        <feature>horizon-db</feature>
-        <feature>horizon-icmp</feature>
-        <feature>horizon-snmp</feature>
-        <bundle>mvn:org.opennms.horizon.core/monitor/${project.version}</bundle>
-    </feature>
+<!--    // ignored for now until we get core/minion refactoring figured out-->
+<!--    <feature name="horizon-core-monitor" version="${project.version}">-->
+<!--        <feature>horizon-snmp</feature>-->
+
+<!--        <feature>horizon-metrics-prometheus</feature>-->
+<!--        <feature>horizon-events-api</feature>-->
+<!--        <feature>horizon-db</feature>-->
+<!--        <feature>horizon-icmp</feature>-->
+
+<!--        <bundle>mvn:org.opennms.horizon.core/monitor/${project.version}</bundle>-->
+<!--    </feature>-->
 
     <feature name="horizon-ipc-api" version="${project.version}">
         <feature>guava</feature>
@@ -186,19 +189,20 @@
         <bundle>mvn:org.opennms.horizon.ipc/shell/${project.version}</bundle>
     </feature>
 
-    <feature name="horizon-tracing" version="${project.version}" description="Horizon :: Tracing">
-        <feature>horizon-core</feature>
+    <!--    // ignored for now until we get core/minion refactoring figured out-->
+<!--    <feature name="horizon-tracing" version="${project.version}" description="Horizon :: Tracing">-->
+<!--        <feature>horizon-core</feature>-->
 
-        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-api/${opentracing.version}</bundle>
-        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-noop/${opentracing.version}</bundle>
-        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-util/${opentracing.version}</bundle>
+<!--        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-api/${opentracing.version}</bundle>-->
+<!--        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-noop/${opentracing.version}</bundle>-->
+<!--        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-util/${opentracing.version}</bundle>-->
 
-        <bundle>mvn:org.opennms.horizon.3rdparty/jaeger/${project.version}</bundle>
+<!--        <bundle>mvn:org.opennms.horizon.3rdparty/jaeger/${project.version}</bundle>-->
 
-        <bundle>mvn:org.opennms.horizon.core.tracing/api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.core.tracing/jaeger/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.core.tracing/registry/${project.version}</bundle>
-    </feature>
+<!--        <bundle>mvn:org.opennms.horizon.core.tracing/api/${project.version}</bundle>-->
+<!--        <bundle>mvn:org.opennms.horizon.core.tracing/jaeger/${project.version}</bundle>-->
+<!--        <bundle>mvn:org.opennms.horizon.core.tracing/registry/${project.version}</bundle>-->
+<!--    </feature>-->
 
     <feature name="horizon-snmp" version="${project.version}" description="Horizon :: SNMP">
         <feature>horizon-grpc</feature>
@@ -334,7 +338,7 @@
         <bundle>mvn:org.opennms/jicmp-api/${jicmp.version}</bundle>
         <bundle>mvn:org.opennms/jicmp6-api/${jicmp.version}</bundle>
 
-        <bundle>mvn:org.opennms.horizon.icmp/api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared/icmp-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.icmp/best/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.icmp/jna/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.icmp/jni/${project.version}</bundle>

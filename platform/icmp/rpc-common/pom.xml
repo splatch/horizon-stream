@@ -28,8 +28,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.opennms.horizon.icmp</groupId>
-      <artifactId>api</artifactId>
+      <groupId>org.opennms.horizon.shared</groupId>
+      <artifactId>icmp-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -29,8 +29,8 @@
 package org.opennms.horizon.minion.snmp;
 
 import java.util.ArrayList;
-import org.opennms.horizon.minion.snmp.conf.xml.Definition;
-import org.opennms.horizon.minion.snmp.conf.xml.Range;
+import org.opennms.horizon.shared.snmp.conf.xml.Definition;
+import org.opennms.horizon.shared.snmp.conf.xml.Range;
 
 /**
  * This is a wrapper class for the Definition class from the config package.  Has the logic for 
