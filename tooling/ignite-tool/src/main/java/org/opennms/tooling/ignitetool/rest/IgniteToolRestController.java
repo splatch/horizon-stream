@@ -1,6 +1,7 @@
 package org.opennms.tooling.ignitetool.rest;
 
 import org.apache.ignite.Ignite;
+import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.services.ServiceDescriptor;
 import org.opennms.taskset.model.TaskSet;
 import org.opennms.taskset.service.api.TaskSetPublisher;
@@ -26,7 +27,10 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+@SuppressWarnings("rawtypes")
 @RestController
 @RequestMapping("/ignite")
 public class IgniteToolRestController {
@@ -77,9 +81,39 @@ public class IgniteToolRestController {
         ignite.message().send(TaskSetPublisher.TASK_SET_TOPIC, locatedTaskSet);
     }
 
+    @GetMapping(path = "/topology/{version}")
+    public Map getTopology(@PathVariable("version") String version) {
+        long versionNumber = parseTopologyVersion(version);
+
+        Collection<ClusterNode> topology = ignite.cluster().topology(versionNumber);
+
+        Map result = new TreeMap();
+        result.put("topologyVersion", versionNumber);
+        result.put("detail", topology);
+        result.put("summary", summarizeTopology(topology));
+
+        return result;
+    }
+
 //========================================
 // Internals
 //----------------------------------------
+
+    private long parseTopologyVersion(String versionString) {
+        long versionNumber;
+        if (
+                (versionString == null) ||
+                (versionString.isEmpty()) ||
+                (versionString.equalsIgnoreCase("latest")) ||
+                (versionString.equals("-"))
+        ) {
+            versionNumber = ignite.cluster().topologyVersion();
+        } else {
+            versionNumber = Long.parseLong(versionString);
+        }
+
+        return versionNumber;
+    }
 
     private String formatElapsedTime(long firstTimestamp, long secondTimestamp) {
         long diffNano = secondTimestamp - firstTimestamp;
@@ -135,5 +169,24 @@ public class IgniteToolRestController {
 
     private void igniteMessageLogger(String topic, Object content) {
         log.info("MESSAGE RECEIVED: topic={}; content={}", topic, content);
+    }
+
+    private Map summarizeTopology(Collection<ClusterNode> nodes) {
+        Map result = new TreeMap();
+
+        result.put("node-count", nodes.size());
+
+        Map summaryPerNode = new TreeMap();
+        nodes.forEach(node -> {
+            Map oneNodeSummary = new TreeMap();
+            oneNodeSummary.put("addresses", node.addresses());
+            oneNodeSummary.put("hostnames", node.hostNames());
+
+            summaryPerNode.put(node.id(), oneNodeSummary);
+        });
+
+        result.put("nodes", summaryPerNode);
+
+        return result;
     }
 }

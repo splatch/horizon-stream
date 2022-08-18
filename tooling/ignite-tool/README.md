@@ -12,3 +12,5 @@ access to statistics, functionality, and more.
     $ cd tools
     $ ./publish-task-set
     $ ./publish-task-set example-task-set.002.json
+    $ curl -s http://localhost:8008/ignite/topology/latest
+    $ curl -s http://localhost:8008/ignite/topology/1
