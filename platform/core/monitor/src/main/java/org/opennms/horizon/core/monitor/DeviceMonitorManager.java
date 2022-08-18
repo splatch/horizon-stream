@@ -171,7 +171,7 @@ public class DeviceMonitorManager implements EventListener {
             locationAwareSnmpClient.get(agentConfig, SnmpObjId.get(SYS_OBJECTID_INSTANCE))
                 .withLocation(location)
                 .withDescription("Device-Monitor")
-                .withTimeToLive(DEVICE_TTL)
+                .withTimeToLive(DEVICE_TTL * 1000)
                 .execute().whenComplete(((snmpValue, throwable) -> {
                     if (throwable != null) {
                         LOG.info("SNMP is Down at IpAddress {}", inetAddress.getHostAddress());
