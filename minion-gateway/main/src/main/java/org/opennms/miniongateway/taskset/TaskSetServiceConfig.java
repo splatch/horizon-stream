@@ -1,6 +1,7 @@
 package org.opennms.miniongateway.taskset;
 
 import org.apache.ignite.Ignite;
+import org.opennms.taskset.service.api.TaskSetForwarder;
 import org.opennms.taskset.service.api.TaskSetPublisher;
 import org.opennms.taskset.service.igniteservice.impl.TaskSetIgniteMessageListener;
 import org.opennms.taskset.service.impl.TaskSetPublisherImpl;
@@ -11,13 +12,20 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TaskSetServiceConfig {
 
-    @Bean
-    public TaskSetPublisher taskSetService() {
-        return new TaskSetPublisherImpl();
+    private TaskSetPublisherImpl taskSetService = new TaskSetPublisherImpl();
+
+    @Bean("publisher")
+    public TaskSetPublisher taskSetPublisher() {
+        return taskSetService;
+    }
+
+    @Bean("forwarder")
+    public TaskSetForwarder taskSetForwarder() {
+        return taskSetService;
     }
 
     @Bean(initMethod = "start", destroyMethod = "shutdown")
-    public TaskSetIgniteMessageListener igniteTaskSetService(@Autowired Ignite ignite, @Autowired TaskSetPublisher taskSetPublisher) {
-        return new TaskSetIgniteMessageListener(ignite, taskSetPublisher);
+    public TaskSetIgniteMessageListener igniteTaskSetService(@Autowired Ignite ignite) {
+        return new TaskSetIgniteMessageListener(ignite, taskSetService);
     }
 }

@@ -57,7 +57,7 @@ public class IgniteConfig {
         TcpDiscoverySpi tcpDiscoverySpi = new TcpDiscoverySpi();
 
         // Using defaults for now (multicast group 228.1.2.4, port 47400)
-        TcpDiscoveryMulticastIpFinder ipFinder = new TcpDiscoveryMulticastIpFinder();
+        TcpDiscoveryMulticastIpFinder ipFinder = new TcpDiscoveryMulticastIpFinder().setMulticastPort(47401);
         tcpDiscoverySpi.setIpFinder(ipFinder);
 
         igniteConfiguration.setDiscoverySpi(tcpDiscoverySpi);

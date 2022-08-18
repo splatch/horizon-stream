@@ -21,6 +21,10 @@ import org.opennms.core.ipc.grpc.server.manager.rpcstreaming.MinionRpcStreamConn
 import org.opennms.core.ipc.grpc.server.manager.rpcstreaming.impl.MinionRpcStreamConnectionManagerImpl;
 import org.opennms.miniongateway.grpc.server.stub.StubCloudToMinionMessageProcessor;
 import org.opennms.miniongateway.grpc.server.stub.StubMinionToCloudProcessor;
+import org.opennms.miniongateway.grpc.twin.GrpcTwinPublisher;
+import org.opennms.taskset.service.api.TaskSetForwarder;
+import org.opennms.taskset.service.api.TaskSetListener;
+import org.opennms.taskset.service.api.TaskSetPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -76,8 +80,11 @@ public class GrpcServerConfig {
     }
 
     @Bean("cloudToMinionMessageProcessor")
-    public StubCloudToMinionMessageProcessor stubCloudToMinionMessageProcessor() {
-        return new StubCloudToMinionMessageProcessor();
+    public StubCloudToMinionMessageProcessor stubCloudToMinionMessageProcessor(
+        @Qualifier("publisher") TaskSetPublisher publisher,
+        @Qualifier("forwarder") TaskSetForwarder forwarder,
+        GrpcTwinPublisher grpcTwinPublisher) {
+        return new StubCloudToMinionMessageProcessor(publisher, forwarder, grpcTwinPublisher);
     }
 
     @Bean
