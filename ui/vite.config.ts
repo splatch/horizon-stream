@@ -27,9 +27,6 @@ export default defineConfig({
       resolvers: [featherResolver]
     })
   ],
-  define: {
-    'process.env': process.env
-  },
   test: {
     globals: true,
     environment: 'happy-dom'
