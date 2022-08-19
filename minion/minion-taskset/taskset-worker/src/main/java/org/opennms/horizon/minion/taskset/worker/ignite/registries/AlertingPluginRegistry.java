@@ -29,7 +29,7 @@ public class AlertingPluginRegistry<K, S> extends KeyedWhiteboard<K, S>  {
         if (serviceId != null) {
             List<FieldConfigMeta> fieldConfigMetaList = scanner.getConfigs(service.getClass());
             log.info("Performing scan on service {}", service.getClass());
-            PluginMetadata pluginMetadata = new PluginMetadata(serviceId.toString(), WorkflowType.DETECTOR, fieldConfigMetaList);
+            PluginMetadata pluginMetadata = new PluginMetadata(serviceId.toString(), WorkflowType.DETECTOR/*, fieldConfigMetaList*/);
             registrationService.notifyOfPluginRegistration(pluginMetadata);
         }
 

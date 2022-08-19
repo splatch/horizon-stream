@@ -63,6 +63,9 @@
                                 <descriptor>mvn:org.opennms.horizon.minion.grpc/features/${project.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.horizon.minion.ipc/features/${project.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.horizon.minion.observability/features/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.aries.jax.rs/org.apache.aries.jax.rs.features/${aries.jax.rs.whiteboard.version}/xml</descriptor>
+                                <descriptor>mvn:org.apache.cxf.karaf/apache-cxf/${cxf.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.camel.karaf/apache-camel/${camel.version}/xml/features</descriptor>
                                 <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
                             </descriptors>
                             <javase>11</javase>

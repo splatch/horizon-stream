@@ -27,13 +27,13 @@ public class PluginDetector {
          Map<String, ServiceDetectorManager> detectorPlugins = detectorRegistry.getServices();
 
          detectorPlugins.forEach((name, plugin) -> {
-             detectedPlugins.add(new PluginMetadata(name, WorkflowType.DETECTOR, pluginConfigScanner.getConfigs(plugin.getClass())));
+             detectedPlugins.add(new PluginMetadata(name, WorkflowType.DETECTOR/*, pluginConfigScanner.getConfigs(plugin.getClass())*/));
          });
 
          Map<String, ServiceMonitorManager> monitorPlugins = monitorRegistry.getServices();
 
          monitorPlugins.forEach((name, plugin) -> {
-              detectedPlugins.add(new PluginMetadata(name, WorkflowType.CONNECTOR, pluginConfigScanner.getConfigs(plugin.getClass())));
+              detectedPlugins.add(new PluginMetadata(name, WorkflowType.CONNECTOR/*, pluginConfigScanner.getConfigs(plugin.getClass())*/));
          });
          
          return detectedPlugins;

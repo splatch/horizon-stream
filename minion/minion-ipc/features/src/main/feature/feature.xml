@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <features name="minion-ipc-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.6.0">
 
+    <feature name="ipc-guava-internal">
+        <bundle>mvn:com.google.guava/guava/${guava.version}</bundle>
+        <bundle dependency="true">mvn:com.google.guava/failureaccess/1.0.1</bundle>
+    </feature>
+
     <feature name="ipc-jackson-internal" version="${project.version}">
         <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
@@ -30,11 +35,21 @@
         <bundle dependency="true">mvn:com.savoirtech.eos/eos-core/${eos.version}</bundle>
     </feature>
 
+    <feature name="ipc-api" version="${project.version}">
+        <feature>observability-minion</feature>
+        <feature>ipc-guava-internal</feature>
+        <feature>protobuf</feature>
+        <feature>grpc-ratelimitter</feature>
+        <bundle>mvn:org.opennms.horizon.shared/logging/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared.ipc/api/${project.version}</bundle>
+    </feature>
+
     <feature name="ipc-minion" version="${project.version}">
         <feature>grpc-minion</feature>
         <feature>ipc-jackson-internal</feature>
         <feature>ipc-json-patch-internal</feature>
         <feature>ipc-whiteboard-internal</feature>
+        <feature>ipc-api</feature>
 
         <bundle>mvn:org.opennms.horizon.minion.ipc/twin-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.minion.ipc/twin-common/${project.version}</bundle>

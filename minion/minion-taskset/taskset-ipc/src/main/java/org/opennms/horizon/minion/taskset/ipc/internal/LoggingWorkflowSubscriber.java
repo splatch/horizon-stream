@@ -1,7 +1,7 @@
 package org.opennms.horizon.minion.taskset.ipc.internal;
 
-import org.opennms.horizon.grpc.tasksets.contract.TaskSet;
 import org.opennms.horizon.minion.ipc.twin.api.TwinListener;
+import org.opennms.taskset.model.TaskSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

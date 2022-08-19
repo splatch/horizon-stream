@@ -25,7 +25,6 @@
         <module>minion-grpc</module>
         <module>minion-observability</module>
         <module>minion-taskset</module>
-        <module>scheduler</module>
         <module>minion-features</module>
         <module>docker-assembly</module>
         <module>assembly</module>

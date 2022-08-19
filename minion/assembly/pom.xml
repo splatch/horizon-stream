@@ -138,7 +138,7 @@
                         <feature>service</feature>
                         <feature>system</feature>
                         <feature>scr</feature>
-                        <feature>ignite-poc</feature>
+                        <feature>taskset-minion</feature>
                         <!--
                         <feature>icmp-plugins</feature>
                         <feature>snmp-plugins</feature>
