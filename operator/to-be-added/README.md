@@ -1,12 +1,23 @@
 Add this to the Wiki.
 
-Requirements:
+# Requirements
+
+Make sure the following are installed:
 * Kind
 * Kubectl
 * Operator-sdk (https://sdk.operatorframework.io/docs/installation/)
 * Helm3
 * Docker
 
+IMPORTANT: Run from repo root dir.
+```
+sudo vi /etc/hosts
+```
+
+Add with the following to /etc/hosts:
+```
+127.0.0.1 onmshs
+```
 
 # Init
 
