@@ -20,6 +20,8 @@
         <module>plugins</module>
         <module>model</module>
         <module>ipc</module>
+        <module>icmp</module>
+        <module>snmp</module>
         <module>minion-grpc</module>
         <module>minion-metrics</module>
         <module>scheduler</module>

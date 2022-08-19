@@ -34,10 +34,8 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-
-<!--        //TODO: need to remove these-->
         <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
+            <groupId>org.opennms.horizon.minion.icmp</groupId>
             <artifactId>best</artifactId>
             <version>${opennms-horizon.version}</version>
         </dependency>

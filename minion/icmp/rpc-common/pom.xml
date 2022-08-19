@@ -3,28 +3,15 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.opennms.horizon.icmp</groupId>
-    <artifactId>icmp</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
-  </parent>
+    <parent>
+        <groupId>org.opennms.horizon.minion.icmp</groupId>
+        <artifactId>icmp</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
 
   <artifactId>rpc-common</artifactId>
-  <name>OpenNMS Horizon :: ICMP :: RPC Common</name>
+  <name>OpenNMS Horizon :: Minion :: ICMP :: RPC Common</name>
   <packaging>bundle</packaging>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.opennms.horizon</groupId>
-        <artifactId>horizon-bom</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <dependency>

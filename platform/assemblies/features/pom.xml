@@ -83,7 +83,7 @@
                                 <feature>horizon-events-api</feature>
                                 <feature>horizon-events</feature>
                                 <feature>horizon-grpc</feature>
-                                <feature>horizon-icmp</feature>
+<!--                                <feature>horizon-icmp</feature>-->
                                 <feature>horizon-inventory</feature>
                                 <feature>horizon-ipc-api</feature>
                                 <feature>horizon-provision</feature>
@@ -204,31 +204,6 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.events</groupId>
-            <artifactId>shell</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>best</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>rpc-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>rpc-module-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>icmp-rpc-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
             <artifactId>shell</artifactId>
             <version>${project.version}</version>
         </dependency>

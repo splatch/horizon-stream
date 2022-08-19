@@ -4,28 +4,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.opennms.horizon.icmp</groupId>
+    <groupId>org.opennms.horizon.minion.icmp</groupId>
     <artifactId>icmp</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>shell</artifactId>
-  <name>OpenNMS Horizon :: ICMP :: Shell</name>
+  <name>OpenNMS Horizon :: Minion :: ICMP :: Shell</name>
   <description>Karaf shell commands for ICMP requests and diagnostics</description>
   <packaging>bundle</packaging>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.opennms.horizon</groupId>
-        <artifactId>horizon-bom</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <dependency>
