@@ -1,17 +1,14 @@
 package org.opennms.horizon.minion.registration;
 
-import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.processor.aggregate.AbstractListAggregationStrategy;
-import org.opennms.horizon.minion.registration.proto.FieldConfigMeta;
-import org.opennms.horizon.minion.registration.proto.FieldConfigMeta.Builder;
+import org.opennms.horizon.minion.ignite.model.workflows.PluginMetadata;
 import org.opennms.horizon.minion.registration.proto.PluginConfigMessage;
 import org.opennms.horizon.minion.registration.proto.PluginConfigMessage.PluginConfigMeta;
-import org.opennms.horizon.minion.ignite.model.workflows.PluginMetadata;
 import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.horizon.shared.ipc.sink.api.SyncDispatcher;
 
@@ -56,6 +53,8 @@ public class PluginRegistrationRouting extends RouteBuilder {
                                 setPluginName(pluginMetadata.getPluginName()).
                                 setPluginType(pluginMetadata.getPluginType().toString());
                             // iterate over each field in the plugin config
+                            /*
+                            // TODO get schema in place
                             pluginMetadata.getFieldConfigs().forEach(fieldConfig -> {
                                     Builder fieldConfigMetaBuilder = FieldConfigMeta.newBuilder().
                                         setJavaType(fieldConfig.getJavaType()).
@@ -72,6 +71,7 @@ public class PluginRegistrationRouting extends RouteBuilder {
                                     pluginConfigMetaBuilder.addConfigs(fieldConfigMetaBuilder.build());
                                 }
                             );
+                            */
                             messageBuilder.addPluginconfigs(pluginConfigMetaBuilder.build());
                         });
                         dispatcher.send(messageBuilder.build());

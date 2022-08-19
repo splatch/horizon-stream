@@ -44,6 +44,13 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion.observability</groupId>
+            <artifactId>features</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -64,6 +71,7 @@
                                 <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.horizon.minion.grpc/features/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.horizon.minion.observability/features/${project.version}/xml/features</descriptor>
                                 <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
                             </descriptors>
                             <javase>11</javase>

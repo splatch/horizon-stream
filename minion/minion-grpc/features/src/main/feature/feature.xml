@@ -28,7 +28,7 @@
         <bundle>wrap:mvn:org.opennms.horizon.3rdparty/grpc/${project.version}$overwrite=merge&amp;Karaf-Commands=_none</bundle>
     </feature>
 
-    <feature name="internal-grpc-ratelimitter" version="2.0.2">
+    <feature name="grpc-ratelimitter" version="2.0.2">
         <feature prerequisite="true">wrap</feature>
         <bundle>wrap:mvn:com.swrve/rate-limited-logger/2.0.2</bundle>
     </feature>
@@ -41,7 +41,7 @@
         <feature>internal-grpc-guava</feature>
         <feature>protobuf</feature>
         <feature>grpc</feature>
-        <feature>internal-grpc-ratelimitter</feature>
+        <feature>grpc-ratelimitter</feature>
 
         <bundle>mvn:org.opennms.horizon.shared/logging/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.shared.ipc/api/${project.version}</bundle>
