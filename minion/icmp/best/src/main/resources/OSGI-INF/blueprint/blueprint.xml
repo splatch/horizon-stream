@@ -5,7 +5,7 @@
                 http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
         ">
 
-    <bean id="pingerFactory" class="org.opennms.netmgt.icmp.best.BestMatchPingerFactory"/>
+    <bean id="pingerFactory" class="org.opennms.minion.icmp.best.BestMatchPingerFactory"/>
     <service interface="org.opennms.netmgt.icmp.PingerFactory" ref="pingerFactory" ranking="1000"/>
 
     <bean id="bestMatchPinger" factory-ref="pingerFactory" factory-method="getInstance"/>

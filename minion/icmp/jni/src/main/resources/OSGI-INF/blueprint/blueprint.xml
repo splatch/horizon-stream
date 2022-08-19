@@ -5,7 +5,7 @@
                 http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
         ">
 
-    <bean id="jniPinger" class="org.opennms.netmgt.icmp.jni.JniPinger"/>
+    <bean id="jniPinger" class="org.opennms.minion.icmp.jni.JniPinger"/>
 
     <service interface="org.opennms.netmgt.icmp.Pinger" ref="jniPinger" ranking="100">
         <service-properties>
@@ -15,7 +15,7 @@
         </service-properties>
     </service>
 
-    <bean id="pingerFactory" class="org.opennms.netmgt.icmp.jni.JniPingerFactory"/>
+    <bean id="pingerFactory" class="org.opennms.minion.icmp.jni.JniPingerFactory"/>
     <service interface="org.opennms.netmgt.icmp.PingerFactory" ref="pingerFactory" ranking="100"/>
 
 </blueprint>

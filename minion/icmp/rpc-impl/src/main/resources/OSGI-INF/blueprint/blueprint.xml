@@ -6,11 +6,11 @@
 ">
 
     <reference id="rpcClientFactory" interface="org.opennms.horizon.ipc.rpc.api.RpcClientFactory" />
-    <reference id="pingProxyRpcModule" interface="org.opennms.netmgt.icmp.proxy.common.PingProxyRpcModule"/>
-    <reference id="pingSweepRpcModule" interface="org.opennms.netmgt.icmp.proxy.common.PingSweepRpcModule"/>
+    <reference id="pingProxyRpcModule" interface="org.opennms.horizon.minion.icmp.proxy.common.PingProxyRpcModule"/>
+    <reference id="pingSweepRpcModule" interface="org.opennms.horizon.minion.icmp.proxy.common.PingSweepRpcModule"/>
 
     <service interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient">
-        <bean class="org.opennms.netmgt.icmp.proxy.impl.LocationAwarePingClientImpl">
+        <bean class="org.opennms.horizon.minion.icmp.proxy.impl.LocationAwarePingClientImpl">
             <argument ref="rpcClientFactory" />
             <argument ref="pingProxyRpcModule" />
             <argument ref="pingSweepRpcModule" />
