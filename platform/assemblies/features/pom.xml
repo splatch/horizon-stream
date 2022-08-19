@@ -87,8 +87,8 @@
                                 <feature>horizon-inventory</feature>
                                 <feature>horizon-ipc-api</feature>
                                 <feature>horizon-provision</feature>
-                                <feature>horizon-minion-heartbeat</feature>
-                                <feature>horizon-minion-rest</feature>
+                                <!--<feature>horizon-minion-heartbeat</feature>-->
+                                <!--<feature>horizon-minion-rest</feature>-->
 <!--                                <feature>horizon-snmp</feature>-->
                                 <feature>horizon-tracing</feature>
                                 <feature>jackson</feature>
@@ -282,21 +282,21 @@
             <artifactId>subscriber</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>rpc-impl</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>snmp4j</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>shell</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>org.opennms.horizon.minion</groupId>-->
+        <!--    <artifactId>rpc-impl</artifactId>-->
+        <!--    <version>0.1.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--    <groupId>org.opennms.horizon.minion</groupId>-->
+        <!--    <artifactId>snmp4j</artifactId>-->
+        <!--    <version>${project.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--    <groupId>org.opennms.horizon.minion</groupId>-->
+        <!--    <artifactId>shell</artifactId>-->
+        <!--    <version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.opennms.horizon.core.tracing</groupId>
             <artifactId>jaeger</artifactId>
@@ -392,16 +392,16 @@
             <artifactId>service</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>org.opennms.horizon.minion.rest</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>heartbeat</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>org.opennms.horizon.minion</groupId>-->
+        <!--    <artifactId>org.opennms.horizon.minion.rest</artifactId>-->
+        <!--    <version>${project.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--    <groupId>org.opennms.horizon.minion</groupId>-->
+        <!--    <artifactId>heartbeat</artifactId>-->
+        <!--    <version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>dto-model</artifactId>
