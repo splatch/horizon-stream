@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
  *
  * @param <T>
  */
+@Deprecated // may be replaced by ipc api or even a camel seda queue
 public class AsyncProcessingQueueImpl<T> implements AsyncProcessingQueue<T> {
 
     public static final int DEFAULT_MAX_QUEUE_SIZE = 1_000_000;

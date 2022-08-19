@@ -18,25 +18,24 @@ import org.opennms.horizon.shared.ipc.sink.api.SyncDispatcher;
 @Slf4j
 public class PluginRegistrationRouting extends RouteBuilder {
 
-    private final String routeUri;
     public static final String ROUTE_ID =  "MINION_REGISTRATION";
+
+    private final String registrationUri;
     private final SyncDispatcher<PluginConfigMessage> dispatcher;
+    private final long aggregationDelay;
 
-
-    //TODO: make this configurable
-    private final long someDelay=10000;
-
-    public PluginRegistrationRouting(String uri, MessageDispatcherFactory messageDispatcherFactory) {
-        this.routeUri = uri;
+    public PluginRegistrationRouting(String uri, MessageDispatcherFactory messageDispatcherFactory, long aggregationDelay) {
+        this.registrationUri = uri;
         dispatcher = messageDispatcherFactory.createSyncDispatcher(new PluginConfigSinkModule());
+        this.aggregationDelay = aggregationDelay;
     }
 
     @Override
     public void configure() throws Exception {
-        from(routeUri).routeId(ROUTE_ID).
+        from(registrationUri).routeId(ROUTE_ID).
                 log(LoggingLevel.INFO, "Got a single plugin config message").
                 aggregate(new PluginConfigAggregationStrategy()).constant(true).
-                completionTimeout(someDelay).
+                completionTimeout(aggregationDelay).
                 process(exchange -> {
                     log.info("Got a plugin registration notice!");
 
@@ -45,34 +44,38 @@ public class PluginRegistrationRouting extends RouteBuilder {
                     log.info("Got {} configs", pluginMetadataList.size());
                     log.info("PluginMetadata {}", pluginMetadataList);
 
-                    // now get the builder for the protobuf message and construct it from the PluginMetadata
+                    if (pluginMetadataList.size() > 0) {
 
-                    PluginConfigMessage.Builder messageBuilder = PluginConfigMessage.newBuilder();
+                        // now get the builder for the protobuf message and construct it from the PluginMetadata
 
-                    //  iterate over each of the plugins that sent a config
-                    pluginMetadataList.forEach(pluginMetadata -> {
-                        PluginConfigMeta.Builder pluginConfigMetaBuilder = PluginConfigMeta.newBuilder().
+                        PluginConfigMessage.Builder messageBuilder = PluginConfigMessage.newBuilder();
+
+                        //  iterate over each of the plugins that sent a config
+                        pluginMetadataList.forEach(pluginMetadata -> {
+                            PluginConfigMeta.Builder pluginConfigMetaBuilder = PluginConfigMeta.newBuilder().
                                 setPluginName(pluginMetadata.getPluginName()).
                                 setPluginType(pluginMetadata.getPluginType().toString());
-                        // iterate over each field in the plugin config
-                        pluginMetadata.getFieldConfigs().forEach(fieldConfig -> {
-                            Builder fieldConfigMetaBuilder = FieldConfigMeta.newBuilder().
-                                    setJavaType(fieldConfig.getJavaType()).
-                                    setIsEnum(fieldConfig.isEnum()).
-                                    setCustom(fieldConfig.isCustom()).
-                                    setDisplayName(fieldConfig.getDisplayName()).
-                                    setDeclaredFieldName(fieldConfig.getDeclaredFieldName());
+                            // iterate over each field in the plugin config
+                            pluginMetadata.getFieldConfigs().forEach(fieldConfig -> {
+                                    Builder fieldConfigMetaBuilder = FieldConfigMeta.newBuilder().
+                                        setJavaType(fieldConfig.getJavaType()).
+                                        setIsEnum(fieldConfig.isEnum()).
+                                        setCustom(fieldConfig.isCustom()).
+                                        setDisplayName(fieldConfig.getDisplayName()).
+                                        setDeclaredFieldName(fieldConfig.getDeclaredFieldName());
 
-                                if (fieldConfig.getEnumConstants() != null) {
-                                    fieldConfigMetaBuilder.addAllEnumValues((Iterable<String>) Arrays.stream(fieldConfig.getEnumConstants()).iterator());
+                                    if (fieldConfig.getEnumConstants() != null) {
+                                        fieldConfigMetaBuilder.addAllEnumValues(
+                                            (Iterable<String>) Arrays.stream(fieldConfig.getEnumConstants()).iterator());
+                                    }
+
+                                    pluginConfigMetaBuilder.addConfigs(fieldConfigMetaBuilder.build());
                                 }
-                                
-                                pluginConfigMetaBuilder.addConfigs(fieldConfigMetaBuilder.build());
-                            }
-                        );
-                        messageBuilder.addPluginconfigs(pluginConfigMetaBuilder.build());
-                    });
-                    dispatcher.send(messageBuilder.build());
+                            );
+                            messageBuilder.addPluginconfigs(pluginConfigMetaBuilder.build());
+                        });
+                        dispatcher.send(messageBuilder.build());
+                    }
                 });
 
         //TODO: we may need dead letter handling here if comms to horizon haven't spun up yet.

@@ -1,6 +1,22 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: horizon-stream-ignite-core
+spec:
+  type: ClusterIP
+  ports:
+    - port: 47100
+      protocol: TCP
+      name: ignite1
+    - port: 47500
+      protocol: TCP
+      name: ignite2
+  selector:
+    ignite-cluster: core
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: horizon-stream-core
   labels:
     run: my-horizon-stream-core
@@ -597,6 +613,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-horizon-stream-core
+  labels:
+    ignite-cluster: core
 spec:
   selector:
     matchLabels:
@@ -606,6 +624,7 @@ spec:
     metadata:
       labels:
         run: my-horizon-stream-core
+        ignite-cluster: core
     spec:
       volumes:
         - name: config-volume
@@ -652,6 +671,8 @@ spec:
             - containerPort: 8101
             - containerPort: 8181
             - containerPort: 8990
+            - containerPort: 47100
+            - containerPort: 47500
           volumeMounts:
             - name: config-volume
               mountPath: "/opt/horizon-stream/etc/org.opennms.horizon.alarmd.camel.cfg"
@@ -783,6 +804,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-minion-gateway
+  labels:
+    ignite-cluster: core
 spec:
   selector:
     matchLabels:
@@ -792,6 +815,7 @@ spec:
     metadata:
       labels:
         run: my-minion-gateway
+        ignite-cluster: core
     spec:
       containers:
         - name: horizon-stream-minion-gateway
@@ -802,6 +826,8 @@ spec:
               value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
           ports:
             - containerPort: 8080
+            - containerPort: 47100
+            - containerPort: 47500
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -874,9 +900,9 @@ spec:
             - containerPort: 3000
           env:
             - name: DOMAIN_API
-              value: "http://localhost:48080"
+              value: "http://localhost:14080"
             - name: DOMAIN_KEYCLOAK
-              value: "http://localhost:28080"
+              value: "http://localhost:26080"
           command: ["/app/dev/entrypoint.sh"]
           args: ["$(DOMAIN_KEYCLOAK)","$(DOMAIN_API)"]
 ---
@@ -1095,7 +1121,7 @@ spec:
     rememberMe: true
     resetPasswordAllowed: true
     attributes:
-      frontendUrl: "http://localhost:28080"
+      frontendUrl: "http://localhost:26080"
     clients:
       - id: b67dfe9a-36c2-42bc-bd23-b380023d4238
         clientId: horizon-stream

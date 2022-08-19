@@ -18,11 +18,14 @@
 
     <modules>
         <module>dto-model</module>
+        <module>lang</module>
         <module>logging</module>
         <module>ipc</module>
         <module>utils</module>
         <module>snmp-api</module>
         <module>icmp-api</module>
+        <module>task-set</module>
+        <module>task-set-service</module>
     </modules>
 
     <properties>
@@ -36,8 +39,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>5.1.4</version>
-                <extensions>true</extensions>
             </plugin>
         </plugins>
     </build>

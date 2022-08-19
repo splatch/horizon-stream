@@ -11,8 +11,8 @@ public class DetectorRegistryImpl extends AlertingPluginRegistry<String, Service
 
     public static final String PLUGIN_IDENTIFIER = "detector.name";
 
-    public DetectorRegistryImpl(BundleContext bundleContext, RegistrationService alertingService) {
-        super(bundleContext, ServiceDetectorManager.class, PLUGIN_IDENTIFIER, alertingService);
+    public DetectorRegistryImpl(BundleContext bundleContext, RegistrationService registrationService) {
+        super(bundleContext, ServiceDetectorManager.class, PLUGIN_IDENTIFIER, registrationService);
     }
 
     @Override

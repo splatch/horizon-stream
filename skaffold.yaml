@@ -36,6 +36,7 @@ build:
     context: platform
     custom:
       buildCommand: ./skaffold-build.sh
+#      buildCommand: mvn nosuchthing
       dependencies:
         paths: ["."]
         ignore: [
