@@ -22,7 +22,7 @@ OpenNMS:
     ServiceName: opennms-rest-server
     Image: opennms/horizon-stream-rest-server
     Replicas: 1
-    Port: 8118
+    Port: 9090
     Resources:
       Limits:
         Cpu: 2

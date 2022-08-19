@@ -10,11 +10,11 @@ spec:
   core:
     image: opennms/horizon-stream-core
     cpu: "0"
-    mem: 100Mi
+    mem: "0"
   api:
     image: opennms/horizon-stream-rest-server
     cpu: "0"
-    mem: 100Mi
+    mem: 500Mi
   ui:
     image: opennms/horizon-stream-ui
     cpu: "0"

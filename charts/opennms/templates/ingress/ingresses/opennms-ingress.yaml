@@ -25,20 +25,20 @@ spec:
                 name: {{ .Values.Keycloak.ServiceName }}
                 port:
                   number: {{ .Values.Keycloak.Port }}
-          - path: /karaf
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Values.OpenNMS.Core.ServiceName }}
-                port:
-                  number: {{ .Values.OpenNMS.Core.SshPort }}
-          - path: {{ .Values.OpenNMS.Core.Path }}
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Values.OpenNMS.Core.ServiceName }}
-                port:
-                  number: {{ .Values.OpenNMS.Core.HttpPort }}
+          #- path: /karaf
+          #  pathType: Prefix
+          #  backend:
+          #    service:
+          #      name: {{ .Values.OpenNMS.Core.ServiceName }}
+          #      port:
+          #        number: {{ .Values.OpenNMS.Core.SshPort }}
+          #- path: {{ .Values.OpenNMS.Core.Path }}
+          #  pathType: Prefix
+          #  backend:
+          #    service:
+          #      name: {{ .Values.OpenNMS.Core.ServiceName }}
+          #      port:
+          #        number: {{ .Values.OpenNMS.Core.HttpPort }}
           - path: {{ .Values.OpenNMS.API.Path }}
             pathType: Prefix
             backend:

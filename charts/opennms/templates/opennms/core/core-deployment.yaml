@@ -50,12 +50,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: postgres
-                  key: opennmsUser
+                  key: adminUser
             - name: PGSQL_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres
-                  key: opennmsPwd
+                  key: adminPwd
             - name: KAFKA_BROKER_HOST
               value: "{{ .Values.Kafka.URL }}"
             - name: KAFKA_BROKER_PORT
@@ -65,12 +65,15 @@ spec:
             - name: KEYCLOAK_BASE_URL
               value: "http://{{ .Values.Keycloak.ServiceName }}:{{ .Values.Keycloak.Port }}"
             - name: KEYCLOAK_ADMIN_USERNAME
-              value: "{{ .Values.Keycloak.AdminUsername }}"
+              valueFrom:
+                secretKeyRef:
+                  name: onms-keycloak-initial-admin
+                  key: username
             - name: KEYCLOAK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: keycloak-credentials
-                  key: adminPwd
+                  name: onms-keycloak-initial-admin
+                  key: password
             - name: PROMETHEUS_PUSHGATEWAY_URL
               value: "http://{{ .Values.Prometheus.PushGateway.ServiceName }}:{{ .Values.Prometheus.PushGateway.Port }}"
           volumeMounts:

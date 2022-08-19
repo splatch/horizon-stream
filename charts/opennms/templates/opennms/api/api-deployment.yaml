@@ -35,9 +35,25 @@ spec:
                     values:
                       - {{ .Values.NodeRestrictions.Value }}
       {{ end }}
+      volumes:
+        - name: rest-server-application
+          configMap:
+            name: rest-server.application
+            defaultMode: 420
+        - name: rest-server-keystore
+          configMap:
+            name: rest-server.keystore
+            defaultMode: 420
       terminationGracePeriodSeconds: 120
       containers:
         - name: {{ .Values.OpenNMS.API.ServiceName }}
+          volumeMounts:
+            - name: rest-server-keystore
+              mountPath: /app/onms.keystore
+              subPath: onms.keystore
+            - name: rest-server-application
+              mountPath: /app/resources/application.yml
+              subPath: application.yml 
           image: {{ .Values.OpenNMS.API.Image }}
           imagePullPolicy: {{ .Values.OpenNMS.API.ImagePullPolicy }}
           env:
@@ -49,6 +65,8 @@ spec:
               value: "http://{{ .Values.OpenNMS.Core.ServiceName }}:{{ .Values.OpenNMS.Core.HttpPort }}"
             - name: TSDB_URL
               value: "http://{{ .Values.Prometheus.Server.ServiceName }}:{{ .Values.Prometheus.Server.Port }}/api/v1/query"
+            - name: SERVER_SERVLET_CONTEXT_PATH
+              value: /api
           ports:
             - containerPort: {{ .Values.OpenNMS.API.Port }}
           {{ if not .Values.TestDeploy }}
