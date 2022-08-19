@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-horizon-stream-ui
+spec:
+  selector:
+    matchLabels:
+      run: my-horizon-stream-ui
+  template:
+    metadata:
+      labels:
+        run: my-horizon-stream-ui
+    spec:
+      containers:
+        - name: my-horizon-stream-ui
+          image: opennms/horizon-stream-ui
+          ports:
+            - containerPort: 80
