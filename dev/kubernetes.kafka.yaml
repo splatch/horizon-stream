@@ -900,9 +900,9 @@ spec:
             - containerPort: 3000
           env:
             - name: DOMAIN_API
-              value: "http://localhost:48080"
+              value: "http://localhost:14080"
             - name: DOMAIN_KEYCLOAK
-              value: "http://localhost:28080"
+              value: "http://localhost:26080"
           command: ["/app/dev/entrypoint.sh"]
           args: ["$(DOMAIN_KEYCLOAK)","$(DOMAIN_API)"]
 ---
@@ -1121,7 +1121,7 @@ spec:
     rememberMe: true
     resetPasswordAllowed: true
     attributes:
-      frontendUrl: "http://localhost:28080"
+      frontendUrl: "http://localhost:26080"
     clients:
       - id: b67dfe9a-36c2-42bc-bd23-b380023d4238
         clientId: horizon-stream
