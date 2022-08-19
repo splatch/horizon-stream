@@ -1,5 +1,13 @@
 Add this to the Wiki.
 
+Requirements:
+* Kind
+* Kubectl
+* Operator-sdk (https://sdk.operatorframework.io/docs/installation/)
+* Helm3
+* Docker
+
+
 # Init
 
 Run the following from repo root dir:
