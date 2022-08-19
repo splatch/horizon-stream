@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.Inet6Address;
 
-import org.opennms.horizon.core.lib.Logging;
+import org.opennms.horizon.shared.logging.Logging;
 import org.opennms.protocols.icmp6.ICMPv6EchoReply;
 import org.opennms.protocols.icmp6.ICMPv6Packet;
 import org.opennms.protocols.icmp6.ICMPv6Packet.Type;

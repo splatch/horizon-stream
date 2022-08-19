@@ -29,8 +29,7 @@
 package org.opennms.minion.icmp.jni6;
 
 import java.net.Inet6Address;
-
-import org.opennms.horizon.core.lib.InetAddressComparator;
+import org.opennms.horizon.shared.utils.InetAddressComparator;
 
 /**
  * <p>JniPingRequestId class.</p>

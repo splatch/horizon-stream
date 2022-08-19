@@ -17,7 +17,7 @@
         <dependency>
             <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
             <artifactId>contract</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

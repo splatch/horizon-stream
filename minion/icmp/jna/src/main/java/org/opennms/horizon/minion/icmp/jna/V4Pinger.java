@@ -32,13 +32,13 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import org.opennms.horizon.core.lib.Logging;
 import org.opennms.horizon.minion.jicmp.ip.ICMPEchoPacket;
 import org.opennms.horizon.minion.jicmp.ip.ICMPPacket;
 import org.opennms.horizon.minion.jicmp.ip.ICMPPacket.Type;
 import org.opennms.horizon.minion.jicmp.ip.IPPacket;
 import org.opennms.horizon.minion.jicmp.jna.NativeDatagramPacket;
 import org.opennms.horizon.minion.jicmp.jna.NativeDatagramSocket;
+import org.opennms.horizon.shared.logging.Logging;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

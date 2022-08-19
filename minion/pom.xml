@@ -46,7 +46,6 @@
         <jetty.version>9.4.43.v20210629</jetty.version>
         <cron-utils.version>9.1.6</cron-utils.version>
         <eos.version>1.2.0</eos.version>
-        <opennms-horizon.version>0.1.0-SNAPSHOT</opennms-horizon.version>
         <prometheus.version>0.16.0</prometheus.version>
     </properties>
 
@@ -63,13 +62,13 @@
             <dependency>
                 <groupId>org.opennms.horizon.shared.ipc</groupId>
                 <artifactId>server</artifactId>
-                <version>${opennms-horizon.version}</version>
+                <version>${project.version}</version>
             </dependency>
 <!--            TODO MMF: Core dependency !!!-->
             <dependency>
                 <groupId>org.opennms.core.ipc.twin.grpc</groupId>
                 <artifactId>publisher</artifactId>
-                <version>${opennms-horizon.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.cronutils</groupId>

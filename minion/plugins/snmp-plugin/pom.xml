@@ -35,14 +35,14 @@
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>snmp-api</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!--            TODO MMF: Core dependency !!!-->
         <dependency>
             <groupId>org.opennms.horizon.events</groupId>
             <artifactId>api</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

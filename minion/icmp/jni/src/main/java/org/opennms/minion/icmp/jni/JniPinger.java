@@ -38,7 +38,7 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.opennms.horizon.core.lib.Logging;
+import org.opennms.horizon.shared.logging.Logging;
 import org.opennms.netmgt.icmp.LogPrefixPreservingPingResponseCallback;
 import org.opennms.netmgt.icmp.ParallelPingResponseCallback;
 import org.opennms.netmgt.icmp.PingResponseCallback;

@@ -29,8 +29,7 @@
 package org.opennms.horizon.minion.icmp.jna;
 
 import java.net.InetAddress;
-
-import org.opennms.horizon.core.lib.InetAddressComparator;
+import org.opennms.horizon.shared.utils.InetAddressComparator;
 
 /**
  * <p>JnaPingRequestId class.</p>

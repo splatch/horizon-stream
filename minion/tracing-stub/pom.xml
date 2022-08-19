@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.opennms.horizon.core.tracing</groupId>
             <artifactId>api</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.opentracing</groupId>

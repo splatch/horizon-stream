@@ -31,7 +31,7 @@ package org.opennms.minion.icmp.jni;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
-import org.opennms.horizon.core.lib.Logging;
+import org.opennms.horizon.shared.logging.Logging;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;

@@ -19,12 +19,11 @@
       <artifactId>jni</artifactId>
       <version>${project.version}</version>
     </dependency>
-      <!--            TODO MMF: Core dependency !!!-->
-    <dependency>
-      <groupId>org.opennms.horizon.core</groupId>
-      <artifactId>lib</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+      <dependency>
+          <groupId>org.opennms.horizon.shared</groupId>
+          <artifactId>logging</artifactId>
+          <version>${project.version}</version>
+      </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>jicmp6-api</artifactId>
