@@ -39,15 +39,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.xml.ValidateUsing;
-
 /**
  * Top-level element for the snmp-config.xml configuration file.
  */
 
 @XmlRootElement(name="snmp-config")
 @XmlAccessorType(XmlAccessType.NONE)
-@ValidateUsing("snmp-config.xsd")
 public class SnmpConfig extends Configuration implements Serializable {
     private static final long serialVersionUID = -5963402509661530467L;
 

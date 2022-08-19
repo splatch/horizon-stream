@@ -18,12 +18,10 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-<!--      //TODO: remove this dep-->
     <dependency>
-      <groupId>org.opennms.horizon.core</groupId>
-      <artifactId>xml</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+   </dependency>
 
     <dependency>
       <groupId>org.opennms.horizon.shared</groupId>

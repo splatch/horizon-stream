@@ -35,11 +35,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.xml.ValidateUsing;
-
 @XmlRootElement(name="profile")
 @XmlAccessorType(XmlAccessType.NONE)
-@ValidateUsing("snmp-config.xsd")
 public class SnmpProfile extends Configuration {
 
     private static final long serialVersionUID = 6047134979704016780L;

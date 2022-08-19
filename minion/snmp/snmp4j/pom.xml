@@ -14,11 +14,11 @@
   <packaging>bundle</packaging>
 
   <dependencies>
-      <dependency>
-          <groupId>org.opennms.horizon.shared</groupId>
-          <artifactId>logging</artifactId>
-          <version>${project.version}</version>
-      </dependency>
+   <dependency>
+      <groupId>org.opennms.horizon.shared</groupId>
+      <artifactId>logging</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.opennms.horizon.shared</groupId>
       <artifactId>snmp-api</artifactId>

@@ -50,9 +50,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.opennms.horizon.core.lib.Logging;
-import org.opennms.horizon.core.lib.SystemInfoUtils;
-import org.opennms.horizon.core.lib.SystemProperties;
+import org.opennms.horizon.shared.logging.Logging;
 import org.opennms.horizon.shared.snmp.CollectionTracker;
 import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
 import org.opennms.horizon.shared.snmp.SnmpAgentTimeoutException;
@@ -69,6 +67,7 @@ import org.opennms.horizon.shared.snmp.SnmpValue;
 import org.opennms.horizon.shared.snmp.SnmpValueFactory;
 import org.opennms.horizon.shared.snmp.SnmpWalker;
 import org.opennms.horizon.shared.snmp.TrapNotificationListener;
+import org.opennms.horizon.shared.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.CommandResponder;
@@ -128,8 +127,8 @@ public class Snmp4JStrategy implements SnmpStrategy {
     private static ScheduledExecutorService s_sessionStatsExecutor;
     private static ConcurrentHashMap<Snmp, SessionInfo> s_sessions;
     private static boolean s_trackSessions = Boolean.getBoolean("org.opennms.core.snmp.trackSessions");
-    private static long s_trackSummaryDelay = SystemProperties.getLong("org.opennms.core.snmp.trackSummaryDelay", 60);
-    private static long s_trackSummaryLimit = SystemProperties.getLong("org.opennms.core.snmp.trackSummaryLimit", 10);
+    private static long s_trackSummaryDelay = Optional.ofNullable(System.getProperty("org.opennms.core.snmp.trackSummaryDelay")).map(Long::valueOf).orElse(60L);
+    private static long s_trackSummaryLimit = Optional.ofNullable(System.getProperty("org.opennms.core.snmp.trackSummaryLimit")).map(Long::valueOf).orElse(10L);
 
     /**
      * Initialize for v3 communications

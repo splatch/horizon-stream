@@ -38,11 +38,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.core.xml.ValidateUsing;
-
 @XmlRootElement(name="profiles")
 @XmlAccessorType(XmlAccessType.NONE)
-@ValidateUsing("snmp-config.xsd")
 public class SnmpProfiles {
 
     @XmlElement(name="profile")
