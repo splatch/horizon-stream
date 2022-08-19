@@ -65,6 +65,7 @@
                 <artifactId>server</artifactId>
                 <version>${opennms-horizon.version}</version>
             </dependency>
+<!--            TODO MMF: Core dependency !!!-->
             <dependency>
                 <groupId>org.opennms.core.ipc.twin.grpc</groupId>
                 <artifactId>publisher</artifactId>

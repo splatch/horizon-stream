@@ -38,7 +38,7 @@
             <version>${opennms-horizon.version}</version>
         </dependency>
 
-<!--        TODO:: remove-->
+        <!--            TODO MMF: Core dependency !!!-->
         <dependency>
             <groupId>org.opennms.horizon.events</groupId>
             <artifactId>api</artifactId>

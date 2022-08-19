@@ -19,7 +19,7 @@
       <artifactId>snmp-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-<!--      //TODO MMF: remove - coord with lucasz-->
+      <!--            TODO MMF: Core dependency !!!-->
     <dependency>
       <groupId>org.opennms.horizon.ipc</groupId>
       <artifactId>api</artifactId>

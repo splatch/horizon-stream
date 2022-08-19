@@ -26,7 +26,7 @@
 <!--  </dependencyManagement>-->
 
   <dependencies>
-<!--      //TODO MMF: remove-->
+      <!--            TODO MMF: Core dependency !!!-->
     <dependency>
       <groupId>org.opennms.horizon.core</groupId>
       <artifactId>lib</artifactId>
