@@ -10,7 +10,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>rpc-impl</artifactId>
+  <artifactId>icmp-rpc-impl</artifactId>
   <name>OpenNMS Horizon :: ICMP :: RPC Implementation</name>
   <packaging>bundle</packaging>
 

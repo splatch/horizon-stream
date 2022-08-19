@@ -224,7 +224,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>rpc-impl</artifactId>
+            <artifactId>icmp-rpc-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
