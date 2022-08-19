@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
             <artifactId>client</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>

@@ -21,12 +21,12 @@
         <dependency>
             <groupId>org.opennms.horizon.core</groupId>
             <artifactId>xml</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.shared.ipc</groupId>
             <artifactId>api</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

@@ -20,9 +20,7 @@
         <module>dhcpd</module>
         <module>db</module>
         <module>events</module>
-        <module>icmp</module>
         <module>ipc</module>
-        <module>snmp</module>
         <module>provision</module>
         
         <module>assemblies</module>

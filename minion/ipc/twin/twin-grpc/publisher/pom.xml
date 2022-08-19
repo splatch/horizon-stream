@@ -17,7 +17,7 @@
         <dependency>
             <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
             <artifactId>contract</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
@@ -28,12 +28,12 @@
         <dependency>
             <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
             <artifactId>server</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.core</groupId>
             <artifactId>lib</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

@@ -30,7 +30,7 @@ package org.opennms.horizon.echo.monitor;
 
 import com.google.common.base.Strings;
 import io.prometheus.client.Gauge;
-import org.opennms.horizon.core.lib.InetAddressUtils;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.horizon.echo.EchoRequest;
 import org.opennms.horizon.echo.EchoResponse;
 import org.opennms.horizon.echo.EchoRpcModule;
@@ -41,7 +41,6 @@ import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;
 

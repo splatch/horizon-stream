@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>minion-features</artifactId>
+    <packaging>pom</packaging>
 
     <name>OpenNms Horizon :: Minion :: Features</name>
 
@@ -47,16 +48,6 @@
         <dependency>
             <groupId>org.opennms.horizon.shared.ipc</groupId>
             <artifactId>api</artifactId>
-            <version>${opennms-horizon.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>ICMP</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>SNMP</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -75,22 +66,20 @@
             <artifactId>whiteboard-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-<!--        Duplicate?-->
-<!--        <dependency>-->
-<!--            <groupId>org.opennms.horizon.minion</groupId>-->
-<!--            <artifactId>ipc-api</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.opennms.horizon.shared.ipc</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
             <artifactId>client</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
             <artifactId>contract</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
@@ -118,6 +107,32 @@
             <artifactId>minion-metrics</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+            <dependency>
+                <groupId>org.opennms.horizon.minion.icmp</groupId>
+                <artifactId>best</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms.horizon.minion.icmp</groupId>
+                <artifactId>rpc-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms.horizon.minion.icmp</groupId>
+                <artifactId>rpc-module-impl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms.horizon.minion.icmp</groupId>
+                <artifactId>icmp-rpc-impl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opennms.horizon.minion.icmp</groupId>
+                <artifactId>shell</artifactId>
+                <version>${project.version}</version>
+            </dependency>
     </dependencies>
 
     <build>
@@ -128,6 +143,17 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
