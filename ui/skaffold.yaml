@@ -5,7 +5,7 @@ metadata:
   name: horizon-stream-ui
 build:
   artifacts:
-  - image: opennms/horizon-stream-ui
+  - image: opennms/horizon-stream-ui-dev
     sync:
       manual: # Inferred file sync is limited for multi-stage builds, use manual sync.
         - src: 'src/*'

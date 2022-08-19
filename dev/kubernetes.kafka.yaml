@@ -754,12 +754,10 @@ spec:
           ports:
             - containerPort: 3000
           env:
-            - name: DOMAIN_API
+            - name: VITE_BASE_URL
               value: "http://localhost:48080"
-            - name: DOMAIN_KEYCLOAK
+            - name: VITE_KEYCLOAK_URL
               value: "http://localhost:28080"
-          command: ["/app/dev/entrypoint.sh"]
-          args: ["$(DOMAIN_KEYCLOAK)","$(DOMAIN_API)"]
 ---
 apiVersion: v1
 kind: ConfigMap
