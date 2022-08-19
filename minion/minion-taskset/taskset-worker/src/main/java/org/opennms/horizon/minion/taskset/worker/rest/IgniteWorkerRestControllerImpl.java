@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.services.ServiceDescriptor;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskRepository;
+import org.opennms.horizon.minion.taskset.worker.TaskRepository;
 
 @AllArgsConstructor
 @Slf4j

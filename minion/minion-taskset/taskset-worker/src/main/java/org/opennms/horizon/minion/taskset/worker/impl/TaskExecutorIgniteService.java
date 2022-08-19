@@ -1,13 +1,12 @@
-package org.opennms.horizon.minion.ignite.worker.workflows.impl;
+package org.opennms.horizon.minion.taskset.worker.impl;
 
 import org.apache.ignite.IgniteLogger;
 import org.apache.ignite.resources.LoggerResource;
 import org.apache.ignite.services.Service;
 import org.opennms.horizon.minion.taskset.worker.ignite.registries.OsgiServiceHolder;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutorLocalService;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutorLocalServiceFactory;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalService;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalServiceFactory;
 import org.opennms.taskset.model.TaskDefinition;
-import org.opennms.taskset.model.TaskSet;
 
 /**
  * Ignite version of the service to execute workflows.  Uses the "local" version of the service,

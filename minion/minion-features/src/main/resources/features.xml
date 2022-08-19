@@ -26,7 +26,6 @@
         <feature version="${project.version}">poc-cron</feature>
         <feature version="${project.version}">poc-metrics</feature>
 
-        <bundle>mvn:org.opennms.horizon.minion/ignite-worker/${project.version}</bundle>
         <bundle>wrap:mvn:org.apache.ignite/ignite-kubernetes/${ignite.version}</bundle>
     </feature>
 
@@ -86,6 +85,12 @@
         <bundle>mvn:org.opennms.horizon.shared.ipc.grpc/client/${project.version}</bundle>
     </feature>
 
+    <feature name="poc-opentracing" version="${project.version}">
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-api/${opentracing.version}</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-noop/${opentracing.version}</bundle>
+        <bundle dependency="true">wrap:mvn:io.opentracing/opentracing-util/${opentracing.version}</bundle>
+    </feature>
+
     <feature name="poc-grpc-ipc-twin" description="Digital twin api with gRPC channel" version="${project.version}">
         <feature prerequisite="true">wrap</feature>
         <feature>jackson</feature>
@@ -100,10 +105,6 @@
         <bundle>mvn:com.github.fge/msg-simple/1.1</bundle>
         <bundle>mvn:com.github.fge/btf/1.2</bundle>
         <bundle>mvn:com.google.code.findbugs/jsr305/3.0.2</bundle>
-
-        <bundle>mvn:org.opennms.horizon.minion/twin-api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.minion/twin-common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.minion/subscriber/${project.version}</bundle>
     </feature>
 
     <feature name="ignite-poc-model" description="POC Model" version="${project.version}">
@@ -113,11 +114,10 @@
 
     <feature name="poc-twin-api" version="${project.version}">
         <feature>guava</feature>
-        <bundle>mvn:org.opennms.horizon.minion/twin-api/${project.version}</bundle>
     </feature>
 
     <feature name="poc-grpc-messaging-api" description="Messaging API" version="${project.version}">
-        <bundle>mvn:org.opennms.horizon.minion/whiteboard-api/${project.version}</bundle>
+
     </feature>
 
     <feature name="poc-grpc-messaging-core" version="${project.version}">
@@ -126,8 +126,6 @@
         <feature version="${project.version}">ignite-poc-model</feature>
         <feature version="${project.version}">eos</feature>
         <feature version="${project.version}">poc-twin-api</feature>
-
-        <bundle>mvn:org.opennms.horizon.minion/whiteboard-core/${project.version}</bundle>
     </feature>
 
     <feature name="poc-grpc-workflow" version="${project.version}">
@@ -137,9 +135,6 @@
         <feature version="${project.version}">poc-grpc-ipc-twin</feature>
         <feature version="${project.version}">poc-grpc-client</feature>
         <feature version="${project.version}">poc-metrics</feature>
-
-        <bundle>mvn:org.opennms.horizon.minion/module/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.minion/workflow-subscriber/${project.version}</bundle>
     </feature>
 
     <feature name="poc-grpc" description="gRPC communication layer" version="${project.version}">
@@ -172,8 +167,6 @@
         <feature prerequisite="true">wrap</feature>
         <feature>poc-opentracing</feature>
         <bundle>wrap:mvn:org.opennms.horizon.core.tracing/api/${project.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
-<!--        !!!!!!!-->
-        <bundle>mvn:org.opennms.horizon.minion/tracing-stub/${project.version}</bundle>
     </feature>
 
     <feature name="rest-utils" version="${project.version}">
@@ -251,7 +244,6 @@
 
     <feature name="poc-cron" version="${project.version}">
         <bundle>mvn:com.cronutils/cron-utils/${cron-utils.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.minion/scheduler/${project.version}</bundle>
     </feature>
 
     <feature name="poc-metrics" version="${project.version}">
@@ -260,7 +252,6 @@
         <feature>prometheus</feature>
         <feature>prometheus-dropwizard</feature>
         <feature>eos</feature>
-        <bundle>mvn:org.opennms.horizon.minion/minion-metrics/${project.version}</bundle>
     </feature>
 
     <feature name="metrics">

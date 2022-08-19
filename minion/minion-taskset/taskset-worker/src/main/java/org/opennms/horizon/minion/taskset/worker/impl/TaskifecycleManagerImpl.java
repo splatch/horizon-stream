@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.workflows.impl;
+package org.opennms.horizon.minion.taskset.worker.impl;
 
 import com.google.common.collect.Sets;
 import java.util.Collection;
@@ -12,7 +12,7 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.services.Service;
 import org.apache.ignite.services.ServiceConfiguration;
 import org.apache.ignite.services.ServiceDescriptor;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskLifecycleManager;
+import org.opennms.horizon.minion.taskset.worker.TaskLifecycleManager;
 import org.opennms.taskset.model.TaskDefinition;
 import org.opennms.taskset.model.TaskSet;
 import org.opennms.taskset.model.TaskType;

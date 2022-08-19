@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.workflows.impl;
+package org.opennms.horizon.minion.taskset.worker.impl;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
@@ -7,7 +7,7 @@ import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricSet;
 import java.util.Collections;
 import java.util.Map;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskLifecycleManager;
+import org.opennms.horizon.minion.taskset.worker.TaskLifecycleManager;
 import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.taskset.model.TaskSet;
 

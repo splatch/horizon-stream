@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.workflows.impl;
+package org.opennms.horizon.minion.taskset.worker.impl;
 
 import java.net.InetAddress;
 import org.opennms.horizon.minion.plugin.api.MonitoredService;

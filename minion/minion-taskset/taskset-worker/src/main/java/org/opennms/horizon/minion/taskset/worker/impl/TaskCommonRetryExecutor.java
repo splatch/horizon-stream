@@ -1,9 +1,9 @@
-package org.opennms.horizon.minion.ignite.worker.workflows.impl;
+package org.opennms.horizon.minion.taskset.worker.impl;
 
 import java.util.concurrent.TimeUnit;
-import org.opennms.horizon.minion.ignite.worker.workflows.RetriableExecutor;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutionResultProcessor;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutorLocalService;
+import org.opennms.horizon.minion.taskset.worker.RetriableExecutor;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalService;
 import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 import org.opennms.taskset.model.TaskDefinition;
 import org.slf4j.Logger;

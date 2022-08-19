@@ -1,9 +1,9 @@
-package org.opennms.horizon.minion.ignite.worker.workflows.impl;
+package org.opennms.horizon.minion.taskset.worker.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.opennms.horizon.minion.ignite.worker.workflows.RetriableExecutor;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutionResultProcessor;
+import org.opennms.horizon.minion.taskset.worker.RetriableExecutor;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
 import org.opennms.horizon.minion.taskset.worker.ignite.registries.OsgiServiceHolder;
 import org.opennms.horizon.minion.plugin.api.ServiceConnector;
 import org.opennms.horizon.minion.plugin.api.ServiceConnectorFactory;

@@ -2,7 +2,7 @@ package org.opennms.horizon.minion.taskset.worker.ignite.registries;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutorLocalServiceFactory;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalServiceFactory;
 import org.opennms.horizon.minion.plugin.api.ServiceDetectorManager;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorManager;
 import org.opennms.horizon.minion.scheduler.OpennmsScheduler;

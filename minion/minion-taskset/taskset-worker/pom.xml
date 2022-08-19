@@ -16,12 +16,6 @@
     <packaging>bundle</packaging>
     <description>Minion Ignite Worker</description>
 
-    <properties>
-        <skipTests>false</skipTests>
-        <skipUTs>${skipTests}</skipUTs>
-        <skipITs>${skipTests}</skipITs>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
@@ -34,8 +28,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>scheduler</artifactId>
+            <groupId>org.opennms.horizon.minion.taskset</groupId>
+            <artifactId>taskset-scheduler</artifactId>
             <version>${project.version}</version>
         </dependency>
 

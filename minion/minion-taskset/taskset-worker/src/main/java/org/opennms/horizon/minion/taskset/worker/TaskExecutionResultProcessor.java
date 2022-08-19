@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.workflows;
+package org.opennms.horizon.minion.taskset.worker;
 
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;
 

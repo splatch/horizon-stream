@@ -1,8 +1,8 @@
-package org.opennms.horizon.minion.ignite.worker.workflows.impl;
+package org.opennms.horizon.minion.taskset.worker.impl;
 
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutionResultProcessor;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutorLocalService;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutorLocalServiceFactory;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalService;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalServiceFactory;
 import org.opennms.horizon.minion.taskset.plugin.config.PluginConfigInjector;
 import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 import org.opennms.taskset.model.TaskDefinition;

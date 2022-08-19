@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.workflows.impl;
+package org.opennms.horizon.minion.taskset.worker.impl;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -8,16 +8,16 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.opennms.horizon.core.lib.IPAddress;
 import org.opennms.horizon.minion.taskset.worker.ignite.registries.OsgiServiceHolder;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutionResultProcessor;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutorLocalService;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalService;
 import org.opennms.horizon.minion.plugin.api.MonitoredService;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitor;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorManager;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;
 import org.opennms.horizon.minion.taskset.plugin.config.PluginConfigInjector;
 import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
+import org.opennms.horizon.shared.utils.IPAddress;
 import org.opennms.taskset.model.TaskDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

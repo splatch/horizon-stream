@@ -17,7 +17,7 @@
 
   <reference id="registrationService" interface="org.opennms.horizon.minion.registration.RegistrationService"/>
 
-  <bean id="workflowRepository" class="org.opennms.horizon.minion.ignite.worker.workflows.TaskRepository"/>
+  <bean id="workflowRepository" class="org.opennms.horizon.minion.taskset.worker.TaskRepository"/>
 
   <bean id="igniteMetrics" class="org.opennms.horizon.minion.taskset.worker.ignite.IgniteMetricsAdapter" init-method="start" destroy-method="stop">
     <argument ref="identity" />
@@ -52,7 +52,7 @@
   </bean>
 
   <bean id="workflowExecutionResultProcessor"
-        class="org.opennms.horizon.minion.ignite.worker.workflows.impl.TaskExecutionResultProcessorImpl"
+        class="org.opennms.horizon.minion.taskset.worker.impl.TaskExecutionResultProcessorImpl"
         init-method="init"
   >
     <argument ref="resultPublisher" />
@@ -89,7 +89,7 @@
   <!-- /plugin configuration framework -->
 
   <bean id="workflowExecutorLocalServiceFactory"
-        class="org.opennms.horizon.minion.ignite.worker.workflows.impl.TaskExecutorLocalServiceFactoryImpl">
+        class="org.opennms.horizon.minion.taskset.worker.impl.TaskExecutorLocalServiceFactoryImpl">
 
     <argument ref="opennmsScheduler"/>
     <argument ref="workflowExecutionResultProcessor"/>
@@ -106,16 +106,16 @@
     <argument ref="serviceConnectorFactoryRegistry"/>
   </bean>
 
-  <bean id="workflowLifecycleManager" class="org.opennms.horizon.minion.ignite.worker.workflows.impl.TaskifecycleManagerImpl" destroy-method="close">
+  <bean id="workflowLifecycleManager" class="org.opennms.horizon.minion.taskset.worker.impl.TaskifecycleManagerImpl" destroy-method="close">
     <property name="ignite" ref="ignite"/>
   </bean>
 
-  <bean id="meteredWorkflowLifecycleManager" class="org.opennms.horizon.minion.ignite.worker.workflows.impl.MeteredWorkflowLifecycleManager">
+  <bean id="meteredWorkflowLifecycleManager" class="org.opennms.horizon.minion.taskset.worker.impl.MeteredWorkflowLifecycleManager">
     <argument ref="identity" />
     <argument ref="workflowLifecycleManager" />
   </bean>
 
-  <bean id="workflowLifecycleAdapter" class="org.opennms.horizon.minion.ignite.worker.workflows.impl.TwinToWorkflowLifecycleManagerAdapter">
+  <bean id="workflowLifecycleAdapter" class="org.opennms.horizon.minion.taskset.worker.impl.TwinToWorkflowLifecycleManagerAdapter">
     <argument ref="meteredWorkflowLifecycleManager" />
   </bean>
 

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <features name="minion-taskset-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.6.0">
 
+    <feature name="taskset-horizon-utils-internal" version="${project.version}">
+        <bundle>mvn:org.opennms.horizon.shared/utils/${project.version}</bundle>
+    </feature>
+
     <feature name="taskset-guava-internal">
         <bundle>mvn:com.google.guava/guava/${guava.version}</bundle>
         <bundle dependency="true">mvn:com.google.guava/failureaccess/1.0.1</bundle>
@@ -12,11 +16,12 @@
 
     <feature name="taskset-horizon-core-lib-internal" version="${project.version}">
         <feature prerequisite="true">wrap</feature>
-        <bundle>wrap:mvn:org.opennms.horizon.core/lib/${opennms-horizon.version}$overwrite=merge&amp;Import-Package=*;resolution:=optional</bundle>
+        <bundle>wrap:mvn:org.opennms.horizon.core/lib/${project.version}$overwrite=merge&amp;Import-Package=*;resolution:=optional</bundle>
     </feature>
 
     <feature name="taskset-plugins-api" version="${project.version}">
         <feature>taskset-horizon-core-lib-internal</feature>
+        <feature>taskset-horizon-utils-internal</feature>
         <bundle>mvn:org.opennms.horizon.minion/plugins-api/${project.version}</bundle>
     </feature>
 
@@ -29,7 +34,7 @@
         <bundle>mvn:org.opennms.horizon.minion/registration/${project.version}</bundle>
     </feature>
 
-    <feature name="eos" description="Savoirtech EOS Whiteboard" version="${project.version}">
+    <feature name="taskset-eos-internal" description="Savoirtech EOS Whiteboard" version="${project.version}">
         <bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.4</bundle>
         <bundle dependency="true">mvn:com.google.guava/guava/18.0</bundle>
         <bundle dependency="true">mvn:com.savoirtech.eos/eos-core/${eos.version}</bundle>
@@ -66,10 +71,10 @@
         <feature>aries-blueprint</feature>
         <feature>camel-core</feature>
         <feature>cxf-jackson</feature>
-        <feature>eos</feature>
         <feature>ipc-minion</feature>
         <feature>observability-minion</feature>
         <feature>taskset-model</feature>
+        <feature>taskset-eos-internal</feature>
         <feature>taskset-worker-plugin-registration-internal</feature>
         <feature>taskset-scheduler-internal</feature>
         <feature>taskset-guava-internal</feature>

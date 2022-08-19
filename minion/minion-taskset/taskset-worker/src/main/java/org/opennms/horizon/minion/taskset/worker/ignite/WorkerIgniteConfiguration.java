@@ -18,7 +18,7 @@ import org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKuber
 import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
 import org.apache.ignite.spi.metric.MetricExporterSpi;
 import org.opennms.horizon.minion.taskset.worker.ignite.classloader.CompoundClassLoader;
-import org.opennms.horizon.minion.ignite.worker.workflows.impl.TaskifecycleManagerImpl;
+import org.opennms.horizon.minion.taskset.worker.impl.TaskifecycleManagerImpl;
 
 @Data
 @AllArgsConstructor

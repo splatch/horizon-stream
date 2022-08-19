@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.workflows.impl;
+package org.opennms.horizon.minion.taskset.worker.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +10,7 @@ import lombok.Setter;
 import org.opennms.horizon.minion.ignite.model.workflows.Result;
 import org.opennms.horizon.minion.ignite.model.workflows.Results;
 import org.opennms.horizon.minion.ignite.worker.queue.impl.AsyncProcessingQueueImpl;
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskExecutionResultProcessor;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

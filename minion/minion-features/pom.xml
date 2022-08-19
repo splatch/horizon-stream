@@ -21,25 +21,10 @@
     <dependencies>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>ignite-worker</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>model</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>ICMP</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>SNMP</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>WEB-LISTEN</artifactId>

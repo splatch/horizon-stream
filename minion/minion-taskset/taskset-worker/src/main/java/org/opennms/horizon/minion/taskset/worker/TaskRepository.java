@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.workflows;
+package org.opennms.horizon.minion.taskset.worker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.FileNotFoundException;

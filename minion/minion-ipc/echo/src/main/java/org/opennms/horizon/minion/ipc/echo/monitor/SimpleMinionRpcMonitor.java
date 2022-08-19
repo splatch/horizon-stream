@@ -29,10 +29,9 @@
 package org.opennms.horizon.minion.ipc.echo.monitor;
 
 import com.google.common.base.Strings;
-import org.opennms.horizon.core.lib.InetAddressUtils;
-import org.opennms.horizon.echo.EchoRequest;
-import org.opennms.horizon.echo.EchoResponse;
-import org.opennms.horizon.echo.EchoRpcModule;
+import org.opennms.horizon.minion.ipc.echo.EchoRequest;
+import org.opennms.horizon.minion.ipc.echo.EchoResponse;
+import org.opennms.horizon.minion.ipc.echo.EchoRpcModule;
 import org.opennms.horizon.shared.ipc.rpc.api.RpcClient;
 import org.opennms.horizon.shared.ipc.rpc.api.RpcClientFactory;
 import org.opennms.horizon.shared.ipc.rpc.api.RpcRequest;

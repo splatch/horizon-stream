@@ -1,6 +1,6 @@
-package org.opennms.horizon.minion.ignite.worker.workflows.impl;
+package org.opennms.horizon.minion.taskset.worker.impl;
 
-import org.opennms.horizon.minion.ignite.worker.workflows.TaskLifecycleManager;
+import org.opennms.horizon.minion.taskset.worker.TaskLifecycleManager;
 import org.opennms.horizon.minion.ipc.twin.api.TwinListener;
 import org.opennms.taskset.model.TaskSet;
 
