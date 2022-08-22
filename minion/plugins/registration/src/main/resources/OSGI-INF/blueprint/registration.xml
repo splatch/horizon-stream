@@ -18,16 +18,16 @@
 
   <reference id="messageDispatcherFactory" interface="org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory" />
 
-  <bean id="registrationService" class = "org.opennms.horizon.minion.registration.RegistrationServiceImpl">
+  <bean id="registrationService" class = "org.opennms.horizon.minion.plugin.registration.RegistrationServiceImpl">
     <argument ref="registrationProducer"/>
   </bean>
 
-  <bean id="pluginRegistrationRouting" class="org.opennms.horizon.minion.registration.PluginRegistrationRouting">
+  <bean id="pluginRegistrationRouting" class="org.opennms.horizon.minion.plugin.registration.PluginRegistrationRouting">
       <argument value="${registration.uri}"/>
       <argument ref="messageDispatcherFactory"/>
       <argument value="${aggregation.delay}"/>
   </bean>
 
-  <service ref="registrationService" interface="org.opennms.horizon.minion.registration.RegistrationService"/>
+  <service ref="registrationService" interface="org.opennms.horizon.minion.plugin.api.RegistrationService"/>
 
 </blueprint>

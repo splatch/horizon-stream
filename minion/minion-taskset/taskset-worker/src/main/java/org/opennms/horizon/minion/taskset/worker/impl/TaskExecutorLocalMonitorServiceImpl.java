@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.opennms.horizon.minion.plugin.api.config.ConfigInjector;
 import org.opennms.horizon.minion.taskset.worker.ignite.registries.OsgiServiceHolder;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalService;
@@ -15,7 +16,6 @@ import org.opennms.horizon.minion.plugin.api.MonitoredService;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitor;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorManager;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;
-import org.opennms.horizon.minion.taskset.plugin.config.PluginConfigInjector;
 import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 import org.opennms.horizon.shared.utils.IPAddress;
 import org.opennms.taskset.model.TaskDefinition;
@@ -36,13 +36,13 @@ public class TaskExecutorLocalMonitorServiceImpl implements TaskExecutorLocalSer
     private TaskDefinition taskDefinition;
     private OpennmsScheduler scheduler;
     private TaskExecutionResultProcessor resultProcessor;
-    private final PluginConfigInjector pluginConfigInjector;
+    private final ConfigInjector pluginConfigInjector;
     private ServiceMonitor monitor=null;
 
     private AtomicBoolean active = new AtomicBoolean(false);
 
     public TaskExecutorLocalMonitorServiceImpl(OpennmsScheduler scheduler, TaskDefinition taskDefinition,
-        TaskExecutionResultProcessor resultProcessor, PluginConfigInjector pluginConfigInjector) {
+        TaskExecutionResultProcessor resultProcessor, ConfigInjector pluginConfigInjector) {
         this.taskDefinition = taskDefinition;
         this.scheduler = scheduler;
         this.resultProcessor = resultProcessor;
@@ -129,7 +129,7 @@ public class TaskExecutorLocalMonitorServiceImpl implements TaskExecutorLocalSer
                 CompletableFuture<ServiceMonitorResponse> future = monitor.poll(monitoredService, castMap);
                 future.whenComplete(this::handleExecutionComplete);
             } else {
-                log.info("Skipping service monitor execution; monitor not found: monitor=" + taskDefinition.getType());
+                log.info("Skipping service monitor execution; monitor not found: monitor=" + taskDefinition.getPluginName());
             }
         } catch (Exception exc) {
             // TODO: throttle - we can get very large numbers of these in a short time

@@ -2,6 +2,10 @@ package org.opennms.horizon.minion.taskset.worker.ignite.registries;
 
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.opennms.horizon.minion.plugin.api.registries.DetectorRegistry;
+import org.opennms.horizon.minion.plugin.api.registries.ListenerFactoryRegistry;
+import org.opennms.horizon.minion.plugin.api.registries.MonitorRegistry;
+import org.opennms.horizon.minion.plugin.api.registries.ServiceConnectorFactoryRegistry;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalServiceFactory;
 import org.opennms.horizon.minion.plugin.api.ServiceDetectorManager;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorManager;
@@ -12,7 +16,7 @@ public class OsgiServiceHolder {
     private static DetectorRegistry detectorRegistry;
     private static MonitorRegistry monitorRegistry;
     private static ListenerFactoryRegistry listenerFactoryRegistry;
-    private static ServiceConnectorFactoryRegistryImpl serviceConnectorFactoryRegistry;
+    private static ServiceConnectorFactoryRegistry serviceConnectorFactoryRegistry;
     private static OpennmsScheduler opennmsScheduler;
     private static TaskExecutorLocalServiceFactory workflowExecutorLocalServiceFactory;
 
@@ -22,7 +26,7 @@ public class OsgiServiceHolder {
             DetectorRegistry detectorRegistry,
             TaskExecutorLocalServiceFactory workflowExecutorLocalServiceFactory,
             ListenerFactoryRegistry listenerFactoryRegistry,
-            ServiceConnectorFactoryRegistryImpl serviceConnectorFactoryRegistry) {
+            ServiceConnectorFactoryRegistry serviceConnectorFactoryRegistry) {
 
         log.info("Creating an instance of the StaticDetectorRegistry for initialization. Don't do this twice!");
         OsgiServiceHolder.detectorRegistry = detectorRegistry;
@@ -62,7 +66,7 @@ public class OsgiServiceHolder {
         return listenerFactoryRegistry;
     }
 
-    public static ServiceConnectorFactoryRegistryImpl getServiceConnectorFactoryRegistry() {
+    public static ServiceConnectorFactoryRegistry getServiceConnectorFactoryRegistry() {
         return serviceConnectorFactoryRegistry;
     }
 }

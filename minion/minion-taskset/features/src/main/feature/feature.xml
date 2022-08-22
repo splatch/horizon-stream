@@ -20,6 +20,10 @@
     </feature>
 
     <feature name="taskset-plugins-api" version="${project.version}">
+        <feature>aries-blueprint</feature>
+        <feature>taskset-model</feature>
+        <feature>taskset-eos-internal</feature>
+        <feature>taskset-gson-internal</feature>
         <feature>taskset-horizon-core-lib-internal</feature>
         <feature>taskset-horizon-utils-internal</feature>
         <bundle>mvn:org.opennms.horizon.minion/plugins-api/${project.version}</bundle>
@@ -52,7 +56,6 @@
         <feature>aries-jax-rs-whiteboard</feature>
         <feature>aries-jax-rs-whiteboard-jackson</feature>
         <bundle>mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
-
     </feature>
 
     <feature name="taskset-model" version="${project.version}">

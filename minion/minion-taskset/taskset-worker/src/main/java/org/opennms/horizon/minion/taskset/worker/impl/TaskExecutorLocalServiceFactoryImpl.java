@@ -1,9 +1,9 @@
 package org.opennms.horizon.minion.taskset.worker.impl;
 
+import org.opennms.horizon.minion.plugin.api.config.ConfigInjector;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalService;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalServiceFactory;
-import org.opennms.horizon.minion.taskset.plugin.config.PluginConfigInjector;
 import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 import org.opennms.taskset.model.TaskDefinition;
 import org.slf4j.Logger;
@@ -15,9 +15,9 @@ public class TaskExecutorLocalServiceFactoryImpl implements TaskExecutorLocalSer
 
     private Logger log = DEFAULT_LOGGER;
 
-    private OpennmsScheduler scheduler;
-    private final PluginConfigInjector pluginConfigInjector;
-    private TaskExecutionResultProcessor resultProcessor;
+    private final OpennmsScheduler scheduler;
+    private final ConfigInjector pluginConfigInjector;
+    private final TaskExecutionResultProcessor resultProcessor;
 
 //========================================
 // Constructor
@@ -26,7 +26,7 @@ public class TaskExecutorLocalServiceFactoryImpl implements TaskExecutorLocalSer
     public TaskExecutorLocalServiceFactoryImpl(
         OpennmsScheduler scheduler,
         TaskExecutionResultProcessor resultProcessor,
-            PluginConfigInjector pluginConfigInjector) {
+        ConfigInjector pluginConfigInjector) {
 
         this.scheduler = scheduler;
         this.resultProcessor = resultProcessor;

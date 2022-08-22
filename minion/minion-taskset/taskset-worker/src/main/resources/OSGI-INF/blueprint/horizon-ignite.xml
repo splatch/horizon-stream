@@ -15,7 +15,7 @@
   <reference id="opennmsScheduler" interface="org.opennms.horizon.minion.scheduler.OpennmsScheduler"/>
   <reference id="resultPublisher" interface="java.util.function.Consumer" filter="(message.publisher.topic=taskset-results)" />
 
-  <reference id="registrationService" interface="org.opennms.horizon.minion.registration.RegistrationService"/>
+  <reference id="registrationService" interface="org.opennms.horizon.minion.plugin.api.RegistrationService"/>
 
   <bean id="workflowRepository" class="org.opennms.horizon.minion.taskset.worker.TaskRepository"/>
 
@@ -59,38 +59,14 @@
     <property name="executor" ref="resultProcessorThreadPoolExecutor"/>
   </bean>
 
-  <bean id="listenerFactoryRegistry" class="org.opennms.horizon.minion.taskset.worker.ignite.registries.ListenerFactoryRegistryImpl">
-    <argument ref="blueprintBundleContext"/>
-  </bean>
-
-  <bean id="serviceConnectorFactoryRegistry" class="org.opennms.horizon.minion.taskset.worker.ignite.registries.ServiceConnectorFactoryRegistryImpl">
-    <argument ref="blueprintBundleContext"/>
-  </bean>
-
   <!-- plugin configuration framework -->
-  <bean id="detectorRegistry" class="org.opennms.horizon.minion.taskset.worker.ignite.registries.DetectorRegistryImpl">
-    <argument ref="blueprintBundleContext" />
-    <argument ref="registrationService" />
-  </bean>
-  <bean id="monitorRegistry" class="org.opennms.horizon.minion.taskset.worker.ignite.registries.MonitorRegistryImpl">
-    <argument ref="blueprintBundleContext" />
-    <argument ref="registrationService" />
-  </bean>
-  <bean id="pluginConfigScanner" class="org.opennms.horizon.minion.taskset.plugin.config.PluginConfigScanner" />
-  <bean id="pluginConfigInjector" class="org.opennms.horizon.minion.taskset.plugin.config.PluginConfigInjector">
-    <argument ref="pluginConfigScanner"/>
-  </bean>
-<!--  <bean id="pluginDetector" class="PluginDetector">-->
-<!--    <argument ref="monitorRegistry" />-->
-<!--    <argument ref="detectorRegistry" />-->
-<!--    <argument ref="pluginConfigScanner" />-->
-<!--    <argument ref="pluginConfigInjector" />-->
-<!--  </bean>-->
-  <!-- /plugin configuration framework -->
+  <reference id="listenerFactoryRegistry" interface="org.opennms.horizon.minion.plugin.api.registries.ListenerFactoryRegistry" />
+  <reference id="serviceConnectorFactoryRegistry" interface="org.opennms.horizon.minion.plugin.api.registries.ServiceConnectorFactoryRegistry" />
+  <reference id="detectorRegistry" interface="org.opennms.horizon.minion.plugin.api.registries.DetectorRegistry" />
+  <reference id="monitorRegistry" interface="org.opennms.horizon.minion.plugin.api.registries.MonitorRegistry" />
+  <reference id="pluginConfigInjector" interface="org.opennms.horizon.minion.plugin.api.config.ConfigInjector" />
 
-  <bean id="workflowExecutorLocalServiceFactory"
-        class="org.opennms.horizon.minion.taskset.worker.impl.TaskExecutorLocalServiceFactoryImpl">
-
+  <bean id="workflowExecutorLocalServiceFactory" class="org.opennms.horizon.minion.taskset.worker.impl.TaskExecutorLocalServiceFactoryImpl">
     <argument ref="opennmsScheduler"/>
     <argument ref="workflowExecutionResultProcessor"/>
     <argument ref="pluginConfigInjector"/>

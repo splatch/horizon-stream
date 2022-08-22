@@ -18,7 +18,6 @@
 
     <modules>
         <module>plugins</module>
-        <module>model</module>
         <module>icmp</module>
         <module>snmp</module>
         <module>minion-ipc</module>
