@@ -45,12 +45,12 @@ import org.apache.commons.lang.builder.ToStringStyle;
 //import org.opennms.netmgt.events.api.model.IValue;
 //import org.opennms.netmgt.model.events.EventBuilder;
 //import org.opennms.netmgt.xml.event.Event;
-import org.opennms.horizon.events.api.EventBuilder;
-import org.opennms.horizon.events.api.EventConstants;
-import org.opennms.horizon.events.model.IEvent;
-import org.opennms.horizon.events.model.IParm;
-import org.opennms.horizon.events.model.IValue;
-import org.opennms.horizon.events.xml.Event;
+//import org.opennms.horizon.events.api.EventBuilder;
+//import org.opennms.horizon.events.api.EventConstants;
+//import org.opennms.horizon.events.model.IEvent;
+//import org.opennms.horizon.events.model.IParm;
+//import org.opennms.horizon.events.model.IValue;
+//import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.shared.snmp.conf.xml.Definition;
 import org.opennms.horizon.shared.snmp.conf.xml.Range;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
@@ -114,81 +114,81 @@ public class SnmpEventInfo {
      * @param event a {@link org.opennms.netmgt.events.api.model.IEvent} object.
      */
 	@SuppressWarnings("deprecation")
-	public SnmpEventInfo(IEvent event) {
-    	 String parmName = null;
-         IValue parmValue = null;
-         String parmContent = null;
-         
-         if (!event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
-             throw new IllegalArgumentException("Event is not an a \"configure SNMP\" event: "+event.toString());
-         }
-         	
-         for (IParm parm : event.getParmCollection()) {
-            parmName = parm.getParmName();
-            parmValue = parm.getValue();
-            if (parmValue == null) continue;
-            parmContent = parmValue.getContent();
-            
-            try {
-                if (parmName.equals(EventConstants.PARM_FIRST_IP_ADDRESS)) {
-                    setFirstIPAddress(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
-                    setLastIPAddress(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_LOCATION)) {
-                    setLocation(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)
-                        || parmName.equals(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING)) {
-                    setReadCommunityString(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING)) {
-                	setWriteCommunityString(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_RETRY_COUNT)) {
-                    setRetryCount(computeIntValue(parmContent));
-                } else if (parmName.equals(EventConstants.PARM_TIMEOUT)) {
-                    setTimeout(computeIntValue(parmContent));
-                } else if (parmName.equals(EventConstants.PARM_VERSION)) {
-                    setVersion(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_MAX_REPETITIONS)) {
-                	setMaxRepetitions(computeIntValue(parmContent));
-                } else if (parmName.equals(EventConstants.PARM_SNMP_MAX_REQUEST_SIZE)) {
-                	setMaxRequestSize(computeIntValue(parmContent));
-                } else if (parmName.equals(EventConstants.PARM_SNMP_MAX_VARS_PER_PDU)) {
-                	setMaxVarsPerPdu(computeIntValue(parmContent));
-                } else if (parmName.equals(EventConstants.PARM_PORT)) {
-                    setPort(computeIntValue(parmContent));
-                } else if (parmName.equals(EventConstants.PARM_SNMP_AUTH_PASSPHRASE)) {
-                	setAuthPassPhrase(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_AUTH_PROTOCOL)) {
-                	setAuthProtocol(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_SECURITY_LEVEL)) {
-                	setSecurityLevel(computeIntValue(parmContent));
-                } else if (parmName.equals(EventConstants.PARM_SNMP_SECURITY_NAME)) {
-                	setSecurityName(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_ENGINE_ID)) {
-                	setEngineId(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_ENTERPRISE_ID)) {
-                	setEnterpriseId(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_CONTEXT_ENGINE_ID)) {
-                	setContextEngineId(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_CONTEXT_NAME)) {
-                	setContextName(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_PRIVACY_PASSPHRASE)) {
-                	setPrivPassPhrase(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_PRIVACY_PROTOCOL)) {
-                	setPrivProtocol(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_SNMP_PROXY_HOST)) {
-                	setProxyHost(parmContent);
-                } else if (parmName.equals(EventConstants.PARM_TTL)) {
-                    setTTL(computeLongValue(parmContent));
-                }
-            } catch (UnknownHostException e) {
-                LOG.error("SnmpEventInfo constructor", e);
-                throw new IllegalArgumentException("SnmpEventInfo constructor. "+e.getLocalizedMessage());
-            } catch (IllegalArgumentException e) {
-            	LOG.error("SnmpEventInfo constructor", e);
-                throw e;
-            }
-        }
-	}
+//	public SnmpEventInfo(IEvent event) {
+//    	 String parmName = null;
+//         IValue parmValue = null;
+//         String parmContent = null;
+//
+//         if (!event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
+//             throw new IllegalArgumentException("Event is not an a \"configure SNMP\" event: "+event.toString());
+//         }
+//
+//         for (IParm parm : event.getParmCollection()) {
+//            parmName = parm.getParmName();
+//            parmValue = parm.getValue();
+//            if (parmValue == null) continue;
+//            parmContent = parmValue.getContent();
+//
+//            try {
+//                if (parmName.equals(EventConstants.PARM_FIRST_IP_ADDRESS)) {
+//                    setFirstIPAddress(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
+//                    setLastIPAddress(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_LOCATION)) {
+//                    setLocation(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)
+//                        || parmName.equals(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING)) {
+//                    setReadCommunityString(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING)) {
+//                	setWriteCommunityString(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_RETRY_COUNT)) {
+//                    setRetryCount(computeIntValue(parmContent));
+//                } else if (parmName.equals(EventConstants.PARM_TIMEOUT)) {
+//                    setTimeout(computeIntValue(parmContent));
+//                } else if (parmName.equals(EventConstants.PARM_VERSION)) {
+//                    setVersion(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_MAX_REPETITIONS)) {
+//                	setMaxRepetitions(computeIntValue(parmContent));
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_MAX_REQUEST_SIZE)) {
+//                	setMaxRequestSize(computeIntValue(parmContent));
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_MAX_VARS_PER_PDU)) {
+//                	setMaxVarsPerPdu(computeIntValue(parmContent));
+//                } else if (parmName.equals(EventConstants.PARM_PORT)) {
+//                    setPort(computeIntValue(parmContent));
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_AUTH_PASSPHRASE)) {
+//                	setAuthPassPhrase(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_AUTH_PROTOCOL)) {
+//                	setAuthProtocol(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_SECURITY_LEVEL)) {
+//                	setSecurityLevel(computeIntValue(parmContent));
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_SECURITY_NAME)) {
+//                	setSecurityName(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_ENGINE_ID)) {
+//                	setEngineId(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_ENTERPRISE_ID)) {
+//                	setEnterpriseId(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_CONTEXT_ENGINE_ID)) {
+//                	setContextEngineId(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_CONTEXT_NAME)) {
+//                	setContextName(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_PRIVACY_PASSPHRASE)) {
+//                	setPrivPassPhrase(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_PRIVACY_PROTOCOL)) {
+//                	setPrivProtocol(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_SNMP_PROXY_HOST)) {
+//                	setProxyHost(parmContent);
+//                } else if (parmName.equals(EventConstants.PARM_TTL)) {
+//                    setTTL(computeLongValue(parmContent));
+//                }
+//            } catch (UnknownHostException e) {
+//                LOG.error("SnmpEventInfo constructor", e);
+//                throw new IllegalArgumentException("SnmpEventInfo constructor. "+e.getLocalizedMessage());
+//            } catch (IllegalArgumentException e) {
+//            	LOG.error("SnmpEventInfo constructor", e);
+//                throw e;
+//            }
+//        }
+//	}
 
 	/**
      * Returns the read community string if there is any, otherwise null is returned.
@@ -521,39 +521,39 @@ public class SnmpEventInfo {
      * @param source The source to set in the Event. Must not be null.
      * @return The event which represents <code>this</code>.
      */
-    public Event createEvent(final String source) {
-		EventBuilder bldr = new EventBuilder(EventConstants.CONFIGURE_SNMP_EVENT_UEI, source);
-	    bldr.setInterface(InetAddressUtils.addr(getFirstIPAddress()));
-	    bldr.setService("SNMP");
-
-	    bldr.addParam(EventConstants.PARM_FIRST_IP_ADDRESS, getFirstIPAddress());
-	    bldr.addParam(EventConstants.PARM_LAST_IP_ADDRESS, getLastIPAddress());
-	    
-	    if (!StringUtils.isEmpty(getAuthPassphrase())) bldr.addParam(EventConstants.PARM_SNMP_AUTH_PASSPHRASE, getAuthPassphrase());
-	    if (!StringUtils.isEmpty(getAuthProtocol())) bldr.addParam(EventConstants.PARM_SNMP_AUTH_PROTOCOL, getAuthProtocol());
-	    if (!StringUtils.isEmpty(getContextEngineId())) bldr.addParam(EventConstants.PARM_SNMP_CONTEXT_ENGINE_ID, getContextEngineId());
-	    if (!StringUtils.isEmpty(getContextName())) bldr.addParam(EventConstants.PARM_SNMP_CONTEXT_NAME, getContextName());
-	    if (!StringUtils.isEmpty(getEngineId())) bldr.addParam(EventConstants.PARM_SNMP_ENGINE_ID, getEngineId());
-	    if (!StringUtils.isEmpty(getEnterpriseId())) bldr.addParam(EventConstants.PARM_SNMP_ENTERPRISE_ID, getEnterpriseId());
-	    if (getMaxRepetitions() != 0) bldr.addParam(EventConstants.PARM_SNMP_MAX_REPETITIONS, Integer.toString(getMaxRepetitions()));
-	    if (getMaxRequestSize() != 0) bldr.addParam(EventConstants.PARM_SNMP_MAX_REQUEST_SIZE, Integer.toString(getMaxRequestSize()));
-	    if (getMaxVarsPerPdu() != 0) bldr.addParam(EventConstants.PARM_SNMP_MAX_VARS_PER_PDU, Integer.toString(getMaxVarsPerPdu()));
-	    if (getPort() != 0) bldr.addParam(EventConstants.PARM_PORT, Integer.toString(getPort()));
-	    if (!StringUtils.isEmpty(getPrivPassPhrase())) bldr.addParam(EventConstants.PARM_SNMP_PRIVACY_PASSPHRASE, getPrivPassPhrase());
-	    if (!StringUtils.isEmpty(getPrivProtocol())) bldr.addParam(EventConstants.PARM_SNMP_PRIVACY_PROTOCOL, getPrivProtocol());
-	    if (!StringUtils.isEmpty(getProxyHost())) bldr.addParam(EventConstants.PARM_SNMP_PROXY_HOST, getProxyHost());
-	    if (!StringUtils.isEmpty(getReadCommunityString())) bldr.addParam(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING, getReadCommunityString());
-	    if (!StringUtils.isEmpty(getSecurityName())) bldr.addParam(EventConstants.PARM_SNMP_SECURITY_NAME,getSecurityName());
-	    if (getRetryCount() != 0) bldr.addParam(EventConstants.PARM_RETRY_COUNT, Integer.toString(getRetryCount()));
-	    if (getSecurityLevel() > 0) bldr.addParam(EventConstants.PARM_SNMP_SECURITY_LEVEL, Integer.toString(getSecurityLevel()));
-	    if (getTimeout() != 0) bldr.addParam(EventConstants.PARM_TIMEOUT, Integer.toString(getTimeout()));
-	    if (!StringUtils.isEmpty(getVersion())) bldr.addParam(EventConstants.PARM_VERSION, getVersion());
-	    if (!StringUtils.isEmpty(getWriteCommunityString())) bldr.addParam(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING, getWriteCommunityString());
-	    if (!StringUtils.isEmpty(getLocation())) bldr.addParam(EventConstants.PARM_SNMP_LOCATION, getLocation());
-        if (getTTL() != null) bldr.addParam(EventConstants.PARM_TTL, getTTL());
-	    
-	    return bldr.getEvent();
-    }
+//    public Event createEvent(final String source) {
+//		EventBuilder bldr = new EventBuilder(EventConstants.CONFIGURE_SNMP_EVENT_UEI, source);
+//	    bldr.setInterface(InetAddressUtils.addr(getFirstIPAddress()));
+//	    bldr.setService("SNMP");
+//
+//	    bldr.addParam(EventConstants.PARM_FIRST_IP_ADDRESS, getFirstIPAddress());
+//	    bldr.addParam(EventConstants.PARM_LAST_IP_ADDRESS, getLastIPAddress());
+//
+//	    if (!StringUtils.isEmpty(getAuthPassphrase())) bldr.addParam(EventConstants.PARM_SNMP_AUTH_PASSPHRASE, getAuthPassphrase());
+//	    if (!StringUtils.isEmpty(getAuthProtocol())) bldr.addParam(EventConstants.PARM_SNMP_AUTH_PROTOCOL, getAuthProtocol());
+//	    if (!StringUtils.isEmpty(getContextEngineId())) bldr.addParam(EventConstants.PARM_SNMP_CONTEXT_ENGINE_ID, getContextEngineId());
+//	    if (!StringUtils.isEmpty(getContextName())) bldr.addParam(EventConstants.PARM_SNMP_CONTEXT_NAME, getContextName());
+//	    if (!StringUtils.isEmpty(getEngineId())) bldr.addParam(EventConstants.PARM_SNMP_ENGINE_ID, getEngineId());
+//	    if (!StringUtils.isEmpty(getEnterpriseId())) bldr.addParam(EventConstants.PARM_SNMP_ENTERPRISE_ID, getEnterpriseId());
+//	    if (getMaxRepetitions() != 0) bldr.addParam(EventConstants.PARM_SNMP_MAX_REPETITIONS, Integer.toString(getMaxRepetitions()));
+//	    if (getMaxRequestSize() != 0) bldr.addParam(EventConstants.PARM_SNMP_MAX_REQUEST_SIZE, Integer.toString(getMaxRequestSize()));
+//	    if (getMaxVarsPerPdu() != 0) bldr.addParam(EventConstants.PARM_SNMP_MAX_VARS_PER_PDU, Integer.toString(getMaxVarsPerPdu()));
+//	    if (getPort() != 0) bldr.addParam(EventConstants.PARM_PORT, Integer.toString(getPort()));
+//	    if (!StringUtils.isEmpty(getPrivPassPhrase())) bldr.addParam(EventConstants.PARM_SNMP_PRIVACY_PASSPHRASE, getPrivPassPhrase());
+//	    if (!StringUtils.isEmpty(getPrivProtocol())) bldr.addParam(EventConstants.PARM_SNMP_PRIVACY_PROTOCOL, getPrivProtocol());
+//	    if (!StringUtils.isEmpty(getProxyHost())) bldr.addParam(EventConstants.PARM_SNMP_PROXY_HOST, getProxyHost());
+//	    if (!StringUtils.isEmpty(getReadCommunityString())) bldr.addParam(EventConstants.PARM_SNMP_READ_COMMUNITY_STRING, getReadCommunityString());
+//	    if (!StringUtils.isEmpty(getSecurityName())) bldr.addParam(EventConstants.PARM_SNMP_SECURITY_NAME,getSecurityName());
+//	    if (getRetryCount() != 0) bldr.addParam(EventConstants.PARM_RETRY_COUNT, Integer.toString(getRetryCount()));
+//	    if (getSecurityLevel() > 0) bldr.addParam(EventConstants.PARM_SNMP_SECURITY_LEVEL, Integer.toString(getSecurityLevel()));
+//	    if (getTimeout() != 0) bldr.addParam(EventConstants.PARM_TIMEOUT, Integer.toString(getTimeout()));
+//	    if (!StringUtils.isEmpty(getVersion())) bldr.addParam(EventConstants.PARM_VERSION, getVersion());
+//	    if (!StringUtils.isEmpty(getWriteCommunityString())) bldr.addParam(EventConstants.PARM_SNMP_WRITE_COMMUNITY_STRING, getWriteCommunityString());
+//	    if (!StringUtils.isEmpty(getLocation())) bldr.addParam(EventConstants.PARM_SNMP_LOCATION, getLocation());
+//        if (getTTL() != null) bldr.addParam(EventConstants.PARM_TTL, getTTL());
+//
+//	    return bldr.getEvent();
+//    }
     
     /**
      * Creates an SNMP config definition representing the data in this class.

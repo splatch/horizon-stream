@@ -15,7 +15,6 @@
 
   <modules>
     <module>rpc-impl</module>
-    <module>snmp-shell</module>
     <module>snmp4j</module>
   </modules>
 
