@@ -34,3 +34,5 @@ spec:
       value: "true"
     - name: proxy
       value: passthrough
+    - name: http-enabled
+      value: 'true
