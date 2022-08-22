@@ -62,18 +62,11 @@
                 <artifactId>server</artifactId>
                 <version>${project.version}</version>
             </dependency>
-<!--            TODO MMF: Core dependency !!!-->
-            <dependency>
-                <groupId>org.opennms.core.ipc.twin.grpc</groupId>
-                <artifactId>publisher</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.cronutils</groupId>
                 <artifactId>cron-utils</artifactId>
                 <version>${cron-utils.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.ignite</groupId>
                 <artifactId>ignite-core</artifactId>
