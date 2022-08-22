@@ -32,22 +32,23 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.horizon.minion.icmp.proxy.common.PingProxyRpcModule;
 import org.opennms.netmgt.icmp.PingerFactory;
-import org.opennms.horizon.ipc.rpc.api.AbstractXmlRpcModule;
+//import org.opennms.horizon.ipc.rpc.api.AbstractXmlRpcModule;
 import org.opennms.horizon.minion.icmp.proxy.common.PingRequestDTO;
 import org.opennms.horizon.minion.icmp.proxy.common.PingResponseDTO;
 import org.opennms.horizon.minion.icmp.proxy.common.PingResultTracker;
 
-public class PingProxyRpcModuleImpl extends AbstractXmlRpcModule<PingRequestDTO, PingResponseDTO> implements PingProxyRpcModule {
+public class PingProxyRpcModuleImpl { //extends AbstractXmlRpcModule<PingRequestDTO, PingResponseDTO> implements PingProxyRpcModule {
 
     public static final String RPC_MODULE_ID = "PING";
 
     private PingerFactory pingerFactory;
 
     public PingProxyRpcModuleImpl() {
-        super(PingRequestDTO.class, PingResponseDTO.class);
+        throw new UnsupportedOperationException();
+//        super(PingRequestDTO.class, PingResponseDTO.class);
     }
 
-    @Override
+//    @Override
     public CompletableFuture<PingResponseDTO> execute(PingRequestDTO request) {
         final PingResultTracker tracker = new PingResultTracker();
         try {
@@ -64,7 +65,7 @@ public class PingProxyRpcModuleImpl extends AbstractXmlRpcModule<PingRequestDTO,
         return tracker;
     }
 
-    @Override
+//    @Override
     public String getId() {
         return RPC_MODULE_ID;
     }
@@ -73,7 +74,7 @@ public class PingProxyRpcModuleImpl extends AbstractXmlRpcModule<PingRequestDTO,
         this.pingerFactory = pingerFactory;
     }
 
-    @Override
+//    @Override
     public PingResponseDTO createResponseWithException(Throwable ex) {
         return new PingResponseDTO(ex);
     }

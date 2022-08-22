@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import org.opennms.horizon.ipc.rpc.api.RpcClient;
-import org.opennms.horizon.ipc.rpc.api.RpcClientFactory;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcClient;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcClientFactory;
 import org.opennms.horizon.shared.snmp.CollectionTracker;
 import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
 import org.opennms.horizon.shared.snmp.SnmpObjId;
@@ -54,7 +54,8 @@ public class LocationAwareSnmpClientRpcImpl implements LocationAwareSnmpClient {
     private RpcClient<SnmpRequestDTO, SnmpMultiResponseDTO> delegate;
 
     public LocationAwareSnmpClientRpcImpl(RpcClientFactory rpcClientFactory) {
-        delegate = rpcClientFactory.getClient(SnmpProxyRpcModule.INSTANCE);
+//        delegate = rpcClientFactory.getClient(SnmpProxyRpcModule.INSTANCE);
+        throw new UnsupportedOperationException();
     }
 
     @Override

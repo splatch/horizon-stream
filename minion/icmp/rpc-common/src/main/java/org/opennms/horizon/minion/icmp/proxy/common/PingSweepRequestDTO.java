@@ -38,37 +38,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+//import javax.xml.bind.annotation.XmlAccessType;
+//import javax.xml.bind.annotation.XmlAccessorType;
+//import javax.xml.bind.annotation.XmlAttribute;
+//import javax.xml.bind.annotation.XmlElement;
+//import javax.xml.bind.annotation.XmlRootElement;
 
+//import org.opennms.horizon.shared.utils.InetAddressUtils;
+//import org.opennms.horizon.ipc.rpc.api.RpcRequest;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcRequest;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
-import org.opennms.horizon.ipc.rpc.api.RpcRequest;
 import org.opennms.netmgt.icmp.PingConstants;
 
 import io.opentracing.Span;
 
-@XmlRootElement(name = "ping-sweep-request")
-@XmlAccessorType(XmlAccessType.FIELD)
+//@XmlRootElement(name = "ping-sweep-request")
+//@XmlAccessorTypeorType(XmlAccessType.FIELD)
 public class PingSweepRequestDTO implements RpcRequest {
 
     private static final BigDecimal FUDGE_FACTOR = BigDecimal.valueOf(1.5);
 
-    @XmlElement(name = "ip-range")
+//    @XmlElement(name = "ip-range")
     private List<IPRangeDTO> ipRanges = new ArrayList<>();
 
-    @XmlAttribute(name = "location")
+//    @XmlAttribute(name = "location")
     private String location;
 
-    @XmlAttribute(name="system-id")
+//    @XmlAttribute(name="system-id")
     private String systemId;
 
-    @XmlAttribute(name = "packet-size")
+//    @XmlAttribute(name = "packet-size")
     private Integer packetSize;
 
-    @XmlAttribute(name = "packets-per-second")
+//    @XmlAttribute(name = "packets-per-second")
     private Double packetsPerSecond;
 
     private Map<String, String> tracingInfo = new HashMap<>();

@@ -31,7 +31,7 @@ package org.opennms.horizon.minion.icmp.proxy.impl.strategy;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import org.opennms.horizon.ipc.rpc.api.RpcClient;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcClient;
 import org.opennms.netmgt.icmp.proxy.PingResponse;
 import org.opennms.netmgt.icmp.proxy.PingSummary;
 import org.opennms.horizon.minion.icmp.proxy.common.PingRequestDTO;

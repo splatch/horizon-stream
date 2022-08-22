@@ -42,8 +42,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.opennms.horizon.core.lib.IteratorUtils;
-import org.opennms.horizon.ipc.rpc.api.AbstractXmlRpcModule;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
 import org.opennms.netmgt.icmp.Pinger;
@@ -55,16 +53,14 @@ import org.opennms.horizon.minion.icmp.proxy.common.PingSweepResultDTO;
 import org.opennms.horizon.minion.icmp.proxy.common.PingSweepRpcModule;
 import org.opennms.horizon.minion.icmp.proxy.common.model.IPPollAddress;
 import org.opennms.horizon.minion.icmp.proxy.common.model.IPPollRange;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-@Component
-public class PingSweepRpcModuleImpl extends AbstractXmlRpcModule<PingSweepRequestDTO, PingSweepResponseDTO> implements PingSweepRpcModule {
+//@Component
+public class PingSweepRpcModuleImpl { //extends AbstractXmlRpcModule<PingSweepRequestDTO, PingSweepResponseDTO> implements PingSweepRpcModule {
 
     public static final String RPC_MODULE_ID = "PING-SWEEP";
 
@@ -74,14 +70,15 @@ public class PingSweepRpcModuleImpl extends AbstractXmlRpcModule<PingSweepReques
 
     private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
 
-    @Autowired
+//    @Autowired
     private PingerFactory pingerFactory;
 
     public PingSweepRpcModuleImpl() {
-        super(PingSweepRequestDTO.class, PingSweepResponseDTO.class);
+        throw new UnsupportedOperationException();
+//        super(PingSweepRequestDTO.class, PingSweepResponseDTO.class);
     }
 
-    @Override
+//    @Override
     public CompletableFuture<PingSweepResponseDTO> execute(PingSweepRequestDTO request) {
         final Pinger pinger = pingerFactory.getInstance();
         final PingSweepResultTracker tracker = new PingSweepResultTracker();
@@ -176,12 +173,12 @@ public class PingSweepRpcModuleImpl extends AbstractXmlRpcModule<PingSweepReques
 
     }
 
-    @Override
+//    @Override
     public PingSweepResponseDTO createResponseWithException(Throwable ex) {
         return new PingSweepResponseDTO(ex);
     }
 
-    @Override
+//    @Override
     public String getId() {
         return RPC_MODULE_ID;
     }
@@ -195,7 +192,8 @@ public class PingSweepRpcModuleImpl extends AbstractXmlRpcModule<PingSweepReques
         for(final IPPollRange range : ranges) {
             iters.add(range.iterator());
         }
-        return IteratorUtils.concatIterators(iters);
+//        return IteratorUtils.concatIterators(iters);
+        throw new UnsupportedOperationException();
     }
 
 }

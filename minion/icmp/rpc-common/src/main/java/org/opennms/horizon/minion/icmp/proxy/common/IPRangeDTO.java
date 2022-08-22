@@ -32,30 +32,30 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+//import javax.xml.bind.annotation.XmlAccessType;
+//import javax.xml.bind.annotation.XmlAccessorType;
+//import javax.xml.bind.annotation.XmlAttribute;
+//import javax.xml.bind.annotation.XmlRootElement;
+//import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.core.xml.InetAddressXmlAdapter;
+//import org.opennms.core.xml.InetAddressXmlAdapter;
 
-@XmlRootElement(name = "ip-range")
-@XmlAccessorType(XmlAccessType.FIELD)
+//@XmlRootElement(name = "ip-range")
+//@XmlAccessorType(XmlAccessType.FIELD)
 public class IPRangeDTO {
 
-    @XmlAttribute(name = "begin")
-    @XmlJavaTypeAdapter(value = InetAddressXmlAdapter.class)
+//    @XmlAttribute(name = "begin")
+//    @XmlJavaTypeAdapter(value = InetAddressXmlAdapter.class)
     private InetAddress begin;
 
-    @XmlAttribute(name = "end")
-    @XmlJavaTypeAdapter(value = InetAddressXmlAdapter.class)
+//    @XmlAttribute(name = "end")
+//    @XmlJavaTypeAdapter(value = InetAddressXmlAdapter.class)
     private InetAddress end;
 
-    @XmlAttribute(name = "retries")
+//    @XmlAttribute(name = "retries")
     private int retries;
 
-    @XmlAttribute(name = "timeout")
+//    @XmlAttribute(name = "timeout")
     private long timeout;
 
     public IPRangeDTO() {
