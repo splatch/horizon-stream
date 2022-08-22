@@ -20,6 +20,7 @@
         <module>dto-model</module>
         <module>lang</module>
         <module>logging</module>
+        <module>ignite-remote-async</module>
         <module>ipc</module>
         <module>task-set</module>
         <module>task-set-service</module>

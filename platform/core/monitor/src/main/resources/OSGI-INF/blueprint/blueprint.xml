@@ -27,6 +27,7 @@
     <reference id="locationAwarePingClient" interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"/>
     <reference id="locationAwareSnmpClient" interface="org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient"/>
     <reference id="igniteTaskSetClientFactory" interface="org.opennms.taskset.service.igniteclient.TaskSetIgnitePublisherFactory"/>
+    <reference id="ignite" interface="org.apache.ignite.Ignite"/>
 
     <bean id="minionRpcMonitorManager" class="org.opennms.horizon.core.monitor.MinionRpcMonitorManager" init-method="init">
         <property name="rpcClientFactory" ref="rpcClientFactory"/>
@@ -42,15 +43,6 @@
 
         <property name="minionManager" ref="minionManager"/>
         <property name="listener" ref="minionRpcMonitorMinionManagerListener"/>
-    </bean>
-
-    <bean id="workerIgniteConfiguration" class="org.opennms.horizon.core.ignite.WorkerIgniteConfiguration">
-        <property name="useKubernetes" value="${ignite.useKubernetes}"/>
-        <property name="kubernetesServiceName" value="${ignite.kubernetesServiceName}"/>
-    </bean>
-
-    <bean id="ignite" class="org.opennms.horizon.core.ignite.IgnitionFactory" factory-method="create" destroy-method="close">
-        <argument ref="workerIgniteConfiguration"/>
     </bean>
 
     <bean id="taskSetIgniteClient" factory-ref="igniteTaskSetClientFactory" factory-method="create">

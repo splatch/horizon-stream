@@ -21,6 +21,7 @@
         <module>db</module>
         <module>events</module>
         <module>icmp</module>
+        <module>ignite</module>
         <module>ipc</module>
         <module>snmp</module>
         <module>provision</module>

@@ -29,6 +29,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opennms.horizon</groupId>
+            <artifactId>minion-gateway-ignite-detector-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon</groupId>
+            <artifactId>minion-gateway-ignite-detector-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
             <artifactId>server</artifactId>
             <version>${project.version}</version>
@@ -59,6 +69,10 @@
         <dependency>
             <groupId>org.apache.ignite</groupId>
             <artifactId>ignite-kubernetes</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ignite</groupId>
+            <artifactId>ignite-spring</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

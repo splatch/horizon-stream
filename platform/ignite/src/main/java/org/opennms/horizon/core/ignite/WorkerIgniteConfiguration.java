@@ -17,7 +17,6 @@ import org.opennms.horizon.shared.lang.CompoundClassLoader;
 
 import java.util.Arrays;
 
-// TBD888: not in the "MONITOR" bundle
 public class WorkerIgniteConfiguration {
 
     private boolean useKubernetes;

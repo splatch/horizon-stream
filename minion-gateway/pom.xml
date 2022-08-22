@@ -29,6 +29,7 @@
     </properties>
 
     <modules>
+        <module>ignite-detector</module>
         <module>main</module>
     </modules>
 
