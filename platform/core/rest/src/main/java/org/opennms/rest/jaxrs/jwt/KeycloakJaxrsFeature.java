@@ -156,8 +156,8 @@ public class KeycloakJaxrsFeature implements ContainerRequestFilter {
         log.info("Keycloak JWKS URL: " + keycloakDeployment.getJwksUrl());
         log.info("Keycloak Realm: " + keycloakDeployment.getRealm());
         log.info("Keycloak Client ID: " + keycloakDeployment.getResourceName());
-        log.info("a: " + keycloakDeployment.getAccountUrl());
         log.info("a: " + keycloakDeployment.getAuthServerBaseUrl());
+        log.info("a: " + keycloakDeployment.getAccountUrl());
         log.info("a: " + keycloakDeployment.getRealmInfoUrl());
         log.info("a: " + keycloakDeployment.getRegisterNodeUrl());
         log.info("a: " + keycloakDeployment.getTokenUrl());

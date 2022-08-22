@@ -35,25 +35,9 @@ spec:
                     values:
                       - {{ .Values.NodeRestrictions.Value }}
       {{ end }}
-      volumes:
-        - name: rest-server-application
-          configMap:
-            name: rest-server.application
-            defaultMode: 420
-        - name: rest-server-keystore
-          configMap:
-            name: rest-server.keystore
-            defaultMode: 420
       terminationGracePeriodSeconds: 120
       containers:
         - name: {{ .Values.OpenNMS.API.ServiceName }}
-          volumeMounts:
-            - name: rest-server-keystore
-              mountPath: /app/onms.keystore
-              subPath: onms.keystore
-            - name: rest-server-application
-              mountPath: /app/resources/application.yml
-              subPath: application.yml 
           image: {{ .Values.OpenNMS.API.Image }}
           imagePullPolicy: {{ .Values.OpenNMS.API.ImagePullPolicy }}
           env:
