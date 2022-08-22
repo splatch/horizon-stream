@@ -33,13 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-//import javax.xml.bind.annotation.XmlAccessType;
-//import javax.xml.bind.annotation.XmlAccessorType;
-//import javax.xml.bind.annotation.XmlAttribute;
-//import javax.xml.bind.annotation.XmlElement;
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 //import org.opennms.core.xml.InetAddressXmlAdapter;
 //import org.opennms.horizon.ipc.rpc.api.RpcRequest;
 import org.opennms.horizon.shared.ipc.rpc.api.RpcRequest;
@@ -47,27 +40,12 @@ import org.opennms.netmgt.icmp.proxy.PingRequest;
 
 import io.opentracing.Span;
 
-//@XmlRootElement(name="ping-request")
-//@XmlAccessorType(XmlAccessType.FIELD)
 public class PingRequestDTO implements RpcRequest {
-
-//    @XmlElement(name="address")
-//    @XmlJavaTypeAdapter(value= InetAddressXmlAdapter.class)
     private InetAddress inetAddress;
-
-//    @XmlAttribute(name="location")
     private String location;
-
-//    @XmlAttributeutebutettribute(name="system-id")
     private String systemId;
-
-//    @XmlAttributettributelAttribute(name="retries")
     private int retries;
-
-//    @XmlAttributettributelAttributettribute(name="timeout")
     private long timeout;
-
-//    @XmlElementent(name="packet-size")
     private int packetSize;
 
     private Map<String, String> tracingInfo = new HashMap<>();
