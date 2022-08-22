@@ -5,7 +5,7 @@ const isDark = useDark({
   valueLight: 'open-light'
 })
 
-const toggleDark= useToggle(isDark)
+const toggleDark = useToggle(isDark)
 
 const useTheme = () => {
   let onThemeChangeCallback: () => void

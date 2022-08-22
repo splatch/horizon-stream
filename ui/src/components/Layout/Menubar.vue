@@ -15,6 +15,7 @@
         :icon="LightDarkMode"
         class="pointer menu-icon"
         @click="toggleDark()"
+        data-test="toggle-dark"
       />
 
       <FeatherIcon
