@@ -34,9 +34,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.horizon.minion.icmp.proxy.impl.strategy.SinglePingExecutionStrategy;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcClient;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcRequest;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
-import org.opennms.horizon.ipc.rpc.api.RpcClient;
-import org.opennms.horizon.ipc.rpc.api.RpcRequest;
 import org.opennms.netmgt.icmp.PingConstants;
 import org.opennms.netmgt.icmp.proxy.PingRequestBuilder;
 import org.opennms.netmgt.icmp.proxy.PingSummary;

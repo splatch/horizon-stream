@@ -5,7 +5,7 @@
         https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
     ">
 
-    <service interface="org.opennms.core.tracing.api.TracerWrapper">
+    <service interface="io.opentracing.Tracer">
         <bean class="org.opennms.horizon.minion.observability.tracing.internal.NoopTracingWrapper" />
     </service>
 

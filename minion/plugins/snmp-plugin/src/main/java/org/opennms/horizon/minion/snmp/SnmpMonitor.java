@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
-import org.opennms.horizon.core.lib.timeout.TimeoutTracker;
+//import org.opennms.horizon.core.lib.timeout.TimeoutTracker;
 import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
 import org.opennms.horizon.shared.snmp.SnmpObjId;
 import org.opennms.horizon.shared.snmp.SnmpUtils;
@@ -138,9 +138,10 @@ public class SnmpMonitor extends SnmpMonitorStrategy {
         //
         try {
 
-            TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(), agentConfig.getTimeout());
-            tracker.reset();
-            tracker.startAttempt();
+//            TODO: Removing to decouple from horizon core
+//            TimeoutTracker tracker = new TimeoutTracker(parameters, agentConfig.getRetries(), agentConfig.getTimeout());
+//            tracker.reset();
+//            tracker.startAttempt();
 
             SnmpObjId snmpObjectId = SnmpObjId.get(oid);
 

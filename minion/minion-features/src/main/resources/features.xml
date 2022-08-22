@@ -166,7 +166,7 @@
     <feature name="poc-tracing-stub" version="${project.version}">
         <feature prerequisite="true">wrap</feature>
         <feature>poc-opentracing</feature>
-        <bundle>wrap:mvn:org.opennms.horizon.core.tracing/api/${project.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
+<!--        <bundle>wrap:mvn:org.opennms.horizon.core.tracing/api/${project.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>-->
     </feature>
 
     <feature name="rest-utils" version="${project.version}">

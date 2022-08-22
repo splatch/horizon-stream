@@ -37,9 +37,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.opennms.horizon.ipc.rpc.api.RemoteExecutionException;
-import org.opennms.horizon.ipc.rpc.api.RpcResponse;
+import org.opennms.horizon.shared.ipc.rpc.api.RemoteExecutionException;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcResponse;
 
 @XmlRootElement(name="snmp-response")
 @XmlAccessorType(XmlAccessType.NONE)

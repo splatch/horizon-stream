@@ -49,10 +49,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import org.apache.commons.io.IOUtils;
-import org.opennms.core.spring.FileReloadCallback;
-import org.opennms.core.spring.FileReloadContainer;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.horizon.core.lib.LocationUtils;
+//import org.opennms.core.spring.FileReloadCallback;
+//import org.opennms.core.spring.FileReloadContainer;
+//import org.opennms.core.xml.JaxbUtils;
+//import org.opennms.horizon.core.lib.LocationUtils;
 import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
 import org.opennms.horizon.shared.snmp.SnmpConfiguration;
 import org.opennms.horizon.shared.snmp.conf.SnmpAgentConfigFactory;
@@ -63,6 +63,7 @@ import org.opennms.horizon.shared.snmp.conf.xml.SnmpConfig;
 import org.opennms.horizon.shared.snmp.conf.xml.SnmpProfile;
 import org.opennms.horizon.shared.utils.ByteArrayComparator;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
+import org.opennms.horizon.shared.utils.LocationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,9 +109,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      */
     private SnmpConfig m_config;
 
-    private FileReloadContainer<SnmpConfig> m_container;
-
-    private FileReloadCallback<SnmpConfig> m_callback;
+//    private FileReloadContainer<SnmpConfig> m_container;
+//
+//    private FileReloadCallback<SnmpConfig> m_callback;
 
     /**
      * <p>Constructor for SnmpPeerFactory.</p>
@@ -120,7 +121,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
     public SnmpPeerFactory(final File resource) {
         LOG.debug("creating new instance for resource {}: {}", resource, this);
 
-        final SnmpConfig config = JaxbUtils.unmarshal(SnmpConfig.class, resource);
+//        final SnmpConfig config = JaxbUtils.unmarshal(SnmpConfig.class, resource);
 
 //      Disable reload behavior
 //        try {
@@ -139,7 +140,8 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 //        }
 
         // if we fall through to here, then the file was null, or something else went wrong store the config directly
-        m_config = config;
+//        m_config = config;
+        throw new UnsupportedOperationException();
     }
 
     protected Lock getReadLock() {
@@ -234,9 +236,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
                 fileWriter.write(marshalledConfig);
                 fileWriter.flush();
                 fileWriter.close();
-                if (m_container != null) {
-                    m_container.reload();
-                }
+//                if (m_container != null) {
+//                    m_container.reload();
+//                }
             }
         } finally {
             IOUtils.closeQuietly(fileWriter);
@@ -403,16 +405,17 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
      * @return a {@link SnmpConfig} object.
      */
     public SnmpConfig getSnmpConfig() {
-        getReadLock().lock();
-        try {
-            if (m_container == null) {
-                return m_config;
-            } else {
-                return m_container.getObject();
-            }
-        } finally {
-            getReadLock().unlock();
-        }
+        throw new UnsupportedOperationException();
+//        getReadLock().lock();
+//        try {
+//            if (m_container == null) {
+//                return m_config;
+//            } else {
+//                return m_container.getObject();
+//            }
+//        } finally {
+//            getReadLock().unlock();
+//        }
     }
 
     /**
@@ -577,11 +580,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         StringWriter writer = null;
         try {
             writer = new StringWriter();
-            JaxbUtils.marshal(getSnmpConfig(), writer);
+//            JaxbUtils.marshal(getSnmpConfig(), writer);
             marshalledConfig = writer.toString();
         } finally {
             IOUtils.closeQuietly(writer);
         }
-        return marshalledConfig;
+        throw new UnsupportedOperationException();
+//        return marshalledConfig;
     }
 }

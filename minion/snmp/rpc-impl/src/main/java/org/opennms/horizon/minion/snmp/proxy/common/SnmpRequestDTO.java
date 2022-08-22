@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.opennms.horizon.ipc.rpc.api.RpcRequest;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcRequest;
 import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
 
 import io.opentracing.Span;

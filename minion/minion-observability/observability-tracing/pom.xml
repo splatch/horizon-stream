@@ -17,12 +17,6 @@
     <description>Drop in replacement for horizon / openapi tracing</description>
 
     <dependencies>
-        <!--            TODO MMF: Core dependency !!!-->
-        <dependency>
-            <groupId>org.opennms.horizon.core.tracing</groupId>
-            <artifactId>api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>io.opentracing</groupId>
             <artifactId>opentracing-noop</artifactId>

@@ -30,8 +30,8 @@ package org.opennms.horizon.minion.icmp.proxy.impl;
 
 import java.net.InetAddress;
 
-import org.opennms.horizon.ipc.rpc.api.RpcClient;
-import org.opennms.horizon.ipc.rpc.api.RpcClientFactory;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcClient;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcClientFactory;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.icmp.proxy.PingRequestBuilder;
 import org.opennms.netmgt.icmp.proxy.PingSweepRequestBuilder;

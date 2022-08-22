@@ -37,12 +37,9 @@
             <artifactId>snmp-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!--            TODO MMF: Core dependency !!!-->
         <dependency>
-            <groupId>org.opennms.horizon.events</groupId>
-            <artifactId>api</artifactId>
-            <version>${project.version}</version>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
     </dependencies>
 

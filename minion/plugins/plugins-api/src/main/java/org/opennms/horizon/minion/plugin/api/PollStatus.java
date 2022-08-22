@@ -33,22 +33,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
-//import javax.persistence.Column;
-//import javax.persistence.Embeddable;
-//import javax.persistence.Transient;
-//import javax.xml.bind.annotation.XmlAccessType;
-//import javax.xml.bind.annotation.XmlAccessorType;
-//import javax.xml.bind.annotation.XmlAttribute;
-//import javax.xml.bind.annotation.XmlElement;
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * Represents the status of a node, interface or services
  */
-//@Embeddable
-//@XmlRootElement(name="poll-status")
-//@XmlAccessorType(XmlAccessType.NONE)
+
 public class PollStatus implements Serializable {
     private static final long serialVersionUID = 3L;
 

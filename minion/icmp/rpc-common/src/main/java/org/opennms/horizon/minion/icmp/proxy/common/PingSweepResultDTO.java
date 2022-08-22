@@ -31,23 +31,12 @@ package org.opennms.horizon.minion.icmp.proxy.common;
 import java.net.InetAddress;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+//import org.opennms.core.xml.InetAddressXmlAdapter;
 
-import org.opennms.core.xml.InetAddressXmlAdapter;
-
-@XmlRootElement(name = "pinger-result")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class PingSweepResultDTO {
 
-    @XmlElement(name = "address")
-    @XmlJavaTypeAdapter(value = InetAddressXmlAdapter.class)
     private InetAddress address;
 
-    @XmlElement(name = "rtt")
     private double rtt;
 
     public InetAddress getAddress() {

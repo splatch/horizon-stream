@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.opennms.horizon.ipc.rpc.api.RpcClient;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcClient;
 import org.opennms.netmgt.icmp.proxy.PingRequestBuilder;
 import org.opennms.netmgt.icmp.proxy.PingSequence;
 import org.opennms.netmgt.icmp.proxy.PingSummary;

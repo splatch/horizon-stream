@@ -33,8 +33,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.horizon.shared.ipc.rpc.api.RpcRequest;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
-import org.opennms.horizon.ipc.rpc.api.RpcRequest;
 import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
 import org.opennms.horizon.shared.snmp.proxy.SNMPRequestBuilder;
 

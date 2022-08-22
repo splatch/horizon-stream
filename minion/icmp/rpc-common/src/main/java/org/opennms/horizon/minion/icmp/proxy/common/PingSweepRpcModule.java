@@ -28,7 +28,7 @@
 
 package org.opennms.horizon.minion.icmp.proxy.common;
 
-import org.opennms.horizon.ipc.rpc.api.RpcModule;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcModule;
 
 public interface PingSweepRpcModule extends RpcModule<PingSweepRequestDTO, PingSweepResponseDTO> {
 }

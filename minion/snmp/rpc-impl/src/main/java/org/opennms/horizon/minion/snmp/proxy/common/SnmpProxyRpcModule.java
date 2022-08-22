@@ -39,7 +39,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
-import org.opennms.horizon.ipc.rpc.api.AbstractXmlRpcModule;
 import org.opennms.horizon.shared.snmp.AggregateTracker;
 import org.opennms.horizon.shared.snmp.Collectable;
 import org.opennms.horizon.shared.snmp.CollectionTracker;
@@ -61,7 +60,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author jwhite
  */
-public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, SnmpMultiResponseDTO> {
+public class SnmpProxyRpcModule { //extends AbstractXmlRpcModule<SnmpRequestDTO, SnmpMultiResponseDTO> {
 
     private static final transient Logger LOG = LoggerFactory.getLogger(SnmpProxyRpcModule.class);
 
@@ -77,10 +76,11 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
     });
 
     public SnmpProxyRpcModule() {
-        super(SnmpRequestDTO.class, SnmpMultiResponseDTO.class);
+//        super(SnmpRequestDTO.class, SnmpMultiResponseDTO.class);
+        throw new UnsupportedOperationException();
     }
 
-    @Override
+//    @Override
     public CompletableFuture<SnmpMultiResponseDTO> execute(SnmpRequestDTO request) {
         CompletableFuture<SnmpMultiResponseDTO> combinedFuture = CompletableFuture
                 .completedFuture(new SnmpMultiResponseDTO());
@@ -199,12 +199,12 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
         });
     }
 
-    @Override
+//    @Override
     public SnmpMultiResponseDTO createResponseWithException(Throwable ex) {
         return new SnmpMultiResponseDTO(ex);
     }
 
-    @Override
+//    @Override
     public String getId() {
         return RPC_MODULE_ID;
     }

@@ -29,24 +29,13 @@
 package org.opennms.horizon.minion.icmp.proxy.common;
 
 import java.util.Objects;
+import org.opennms.horizon.shared.ipc.rpc.api.RemoteExecutionException;
+import org.opennms.horizon.shared.ipc.rpc.api.RpcResponse;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.opennms.horizon.ipc.rpc.api.RemoteExecutionException;
-import org.opennms.horizon.ipc.rpc.api.RpcResponse;
-
-@XmlRootElement(name="ping-response")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class PingResponseDTO implements RpcResponse {
 
-    @XmlAttribute(name="error")
     private String error;
 
-    @XmlElement(name="rtt") // milliseconds
     private double rtt;
 
     public PingResponseDTO() { }

@@ -24,9 +24,8 @@
       <artifactId>icmp-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-      <!--            TODO MMF: Core dependency !!!-->
     <dependency>
-      <groupId>org.opennms.horizon.ipc</groupId>
+      <groupId>org.opennms.horizon.shared.ipc</groupId>
       <artifactId>api</artifactId>
       <version>${project.version}</version>
     </dependency>
