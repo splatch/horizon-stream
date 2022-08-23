@@ -30,16 +30,11 @@ package org.opennms.horizon.minion.ipc.echo;
 
 import org.opennms.horizon.shared.ipc.rpc.api.RpcClient;
 import org.opennms.horizon.shared.ipc.rpc.api.RpcClientFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
 
-@Component
-public class EchoClient implements RpcClient<EchoRequest, EchoResponse>, InitializingBean {
+public class EchoClient implements RpcClient<EchoRequest, EchoResponse> {
 
-    @Autowired
     private RpcClientFactory m_rpcProxy;
 
     private RpcClient<EchoRequest, EchoResponse> m_delegate;
@@ -49,7 +44,7 @@ public class EchoClient implements RpcClient<EchoRequest, EchoResponse>, Initial
         return m_delegate.execute(request);
     }
 
-    @Override
+    // Use this as an "init" method from blueprint
     public void afterPropertiesSet() throws Exception {
         m_delegate = m_rpcProxy.getClient(new EchoRpcModule());
     }

@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>model</artifactId>
+            <artifactId>plugins-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

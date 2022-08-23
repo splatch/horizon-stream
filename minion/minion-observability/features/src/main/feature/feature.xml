@@ -35,7 +35,6 @@
         <feature prerequisite="true">wrap</feature>
         <feature>aries-blueprint</feature>
         <feature>observability-opentracing-internal</feature>
-        <bundle>wrap:mvn:org.opennms.horizon.core.tracing/api/${project.version}$overwrite=merge&amp;Import-Package=org.opennms.core.xml;resolution:=optional&amp;Karaf-Commands=none</bundle>
         <bundle>mvn:org.opennms.horizon.minion.observability/observability-tracing/${project.version}</bundle>
     </feature>
 

@@ -18,11 +18,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.horizon.core</groupId>
-            <artifactId>xml</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>utils</artifactId>
             <version>${project.version}</version>

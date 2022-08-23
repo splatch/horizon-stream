@@ -14,17 +14,11 @@
         <bundle>mvn:com.google.code.gson/gson/${gson.version}</bundle>
     </feature>
 
-    <feature name="taskset-horizon-core-lib-internal" version="${project.version}">
-        <feature prerequisite="true">wrap</feature>
-        <bundle>wrap:mvn:org.opennms.horizon.core/lib/${project.version}$overwrite=merge&amp;Import-Package=*;resolution:=optional</bundle>
-    </feature>
-
     <feature name="taskset-plugins-api" version="${project.version}">
         <feature>aries-blueprint</feature>
         <feature>taskset-model</feature>
         <feature>taskset-eos-internal</feature>
         <feature>taskset-gson-internal</feature>
-        <feature>taskset-horizon-core-lib-internal</feature>
         <feature>taskset-horizon-utils-internal</feature>
         <bundle>mvn:org.opennms.horizon.minion/plugins-api/${project.version}</bundle>
     </feature>
@@ -60,7 +54,6 @@
 
     <feature name="taskset-model" version="${project.version}">
         <bundle>mvn:org.opennms.horizon.shared/task-set/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.minion/model/${project.version}</bundle>
     </feature>
 
     <feature name="taskset-scheduler-internal" version="${project.version}">

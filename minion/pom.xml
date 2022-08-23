@@ -17,6 +17,7 @@
     <inceptionYear>2022</inceptionYear>
 
     <modules>
+        <module>minion-3rdParty</module>
         <module>plugins</module>
         <module>icmp</module>
         <module>snmp</module>
