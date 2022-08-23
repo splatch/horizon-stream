@@ -32,12 +32,12 @@
     <argument ref="workerIgniteConfiguration"/>
   </bean>
 
-  <bean id="ignitePocRestServiceImpl" class="org.opennms.horizon.minion.ignite.worker.rest.IgniteWorkerRestControllerImpl" scope="singleton">
+  <bean id="ignitePocRestServiceImpl" class="org.opennms.horizon.minion.taskset.worker.rest.IgniteWorkerRestControllerImpl" scope="singleton">
     <argument ref="ignite"/>
     <argument ref="workflowRepository"/>
   </bean>
 
-  <service id="ignitePocRestService" ref="ignitePocRestServiceImpl" interface="org.opennms.horizon.minion.ignite.worker.rest.IgniteWorkerRestController">
+  <service id="ignitePocRestService" ref="ignitePocRestServiceImpl" interface="org.opennms.horizon.minion.taskset.worker.rest.IgniteWorkerRestController">
     <service-properties>
       <entry key="osgi.jaxrs.resource" value="true"/>
     </service-properties>

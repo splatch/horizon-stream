@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.rest;
+package org.opennms.horizon.minion.taskset.worker.rest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

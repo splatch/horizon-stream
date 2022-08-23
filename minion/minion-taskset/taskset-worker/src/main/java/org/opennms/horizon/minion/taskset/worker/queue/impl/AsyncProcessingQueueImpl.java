@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.queue.impl;
+package org.opennms.horizon.minion.taskset.worker.queue.impl;
 
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.RejectedExecutionException;
@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import lombok.Setter;
-import org.opennms.horizon.minion.ignite.worker.queue.AsyncProcessingQueue;
+import org.opennms.horizon.minion.taskset.worker.queue.AsyncProcessingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

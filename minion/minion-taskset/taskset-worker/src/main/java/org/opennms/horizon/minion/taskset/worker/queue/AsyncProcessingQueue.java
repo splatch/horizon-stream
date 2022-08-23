@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.queue;
+package org.opennms.horizon.minion.taskset.worker.queue;
 
 import java.util.function.Consumer;
 

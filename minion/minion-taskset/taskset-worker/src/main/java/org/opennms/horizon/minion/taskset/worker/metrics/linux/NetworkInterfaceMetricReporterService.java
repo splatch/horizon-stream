@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.ignite.worker.metrics.linux;
+package org.opennms.horizon.minion.taskset.worker.metrics.linux;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

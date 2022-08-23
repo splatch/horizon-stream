@@ -1,4 +1,4 @@
-package org.opennms.horizon.minion.identity;
+package org.opennms.horizon.minion.taskset.identity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

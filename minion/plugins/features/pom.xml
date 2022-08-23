@@ -21,6 +21,11 @@
             <artifactId>plugins-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion</groupId>
+            <artifactId>registration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.opennms.horizon.minion.ipc</groupId>
