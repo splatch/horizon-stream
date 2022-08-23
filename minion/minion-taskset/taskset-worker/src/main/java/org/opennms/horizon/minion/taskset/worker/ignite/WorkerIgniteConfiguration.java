@@ -42,7 +42,7 @@ public class WorkerIgniteConfiguration {
 
         configureDataStorage(igniteConfiguration);
         configureCache(igniteConfiguration, "workflows");
-        configureCache(igniteConfiguration, TaskLifecycleManagerImpl.WORKFLOW_SERVICE_CACHE_NAME);
+        configureCache(igniteConfiguration, TaskLifecycleManagerImpl.TASK_SERVICE_CACHE_NAME);
 
         configureClassLoader(igniteConfiguration);
         igniteConfiguration.setMetricExporterSpi(metricExporterSpi);

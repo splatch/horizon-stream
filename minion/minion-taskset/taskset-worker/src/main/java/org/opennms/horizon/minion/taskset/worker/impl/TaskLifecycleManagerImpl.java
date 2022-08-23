@@ -21,8 +21,8 @@ import org.slf4j.LoggerFactory;
 
 public class TaskLifecycleManagerImpl implements TaskLifecycleManager {
 
-    public static final String SERVICE_NAME_PREFIX = "workflow:";
-    public static final String WORKFLOW_SERVICE_CACHE_NAME = "minion.workflow-service";
+    public static final String SERVICE_NAME_PREFIX = "task:";
+    public static final String TASK_SERVICE_CACHE_NAME = "minion.task-service";
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(TaskLifecycleManagerImpl.class);
 
@@ -38,7 +38,7 @@ public class TaskLifecycleManagerImpl implements TaskLifecycleManager {
 
     @Override
     public int deploy(TaskSet taskSet) {
-
+        log.info("About to deploy task set {}", taskSet);
         // Take the snapshot of currently running services.
         Collection<ServiceDescriptor> serviceDescriptorList = ignite.services().serviceDescriptors();
 
@@ -52,7 +52,9 @@ public class TaskLifecycleManagerImpl implements TaskLifecycleManager {
         List<ServiceConfiguration> serviceConfigurationList = prepareOnePerClusterServiceConfigurations(taskSet);
 
         // Deploy
-        ignite.services().deployAllAsync(serviceConfigurationList);
+        ignite.services().deployAllAsync(serviceConfigurationList).listen(in -> {
+          log.info("Deployed all task definitions from task set {}", taskSet);
+        });
 
         // Find the set of services that are no longer needed
         Collection<String> canceledServices =
@@ -60,7 +62,7 @@ public class TaskLifecycleManagerImpl implements TaskLifecycleManager {
         ignite.services().cancelAllAsync(canceledServices);
 
         // Log the update summary
-        log.info("Completed workflow update: deploy-count={}; cancel-count={}",
+        log.info("Completed task set update: deploy-count={}; cancel-count={}",
             serviceConfigurationList.size() + singletonIds.size(),
             canceledServices.size());
         return canceledServices.size();
@@ -143,7 +145,7 @@ public class TaskLifecycleManagerImpl implements TaskLifecycleManager {
         serviceConfiguration.setName(serviceName);
         serviceConfiguration.setService(service);
         serviceConfiguration.setAffinityKey(taskDefinition.getId());
-        serviceConfiguration.setCacheName(WORKFLOW_SERVICE_CACHE_NAME);
+        serviceConfiguration.setCacheName(TASK_SERVICE_CACHE_NAME);
         serviceConfiguration.setTotalCount(1);
 
         return serviceConfiguration;
