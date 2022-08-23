@@ -91,12 +91,14 @@ import { useTopologyStore } from '@/store/Views/topologyStore'
 import { useMapStore } from '@/store/Views/mapStore'
 import { useGeomapQueries } from '@/store/Queries/geomapQueries'
 import { DeviceDto } from '@/types/graphql'
+import useTheme from '@/composables/useTheme'
 
 const markerCluster = ref()
 const computedEdges = ref<number[][][]>()
 const mapStore = useMapStore()
 const topologyStore = useTopologyStore()
 const geomapQueries = useGeomapQueries()
+const { onThemeChange, isDark } = useTheme()
 const map = ref()
 const route = useRoute()
 const leafletReady = ref<boolean>(false)
@@ -113,6 +115,20 @@ const bounds = computed(() => {
   return geomapQueries.devicesForGeomap.map((node) => coordinatedMap.get(node?.id))
 })
 const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap)
+
+// on light / dark mode change, switch the map layer
+onThemeChange(() => {
+  // set all layers false
+  for (const tileOptions of tileProviders.value) {
+    tileOptions.visible = false
+  }
+
+  if (isDark.value) {
+    defaultDarkTileLayer.value.visible = true // defauly dark
+  } else {
+    defaultLightTileLayer.value.visible = true // default light
+  }
+})
 
 const getHighestSeverity = (severitites: string[]) => {
   let highestSeverity = 'NORMAL'
@@ -270,22 +286,26 @@ const invalidateSizeFn = () => {
 }
 
 /*****Tile Layer*****/
-const tileProviders = [
-  {
+const defaultLightTileLayer = ref({
     name: 'OpenStreetMap',
-    visible: true,
+    visible: !isDark.value && true,
     attribution:
       '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-  },
-  {
-    name: 'OpenTopoMap',
-    visible: false,
-    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+})
+
+const defaultDarkTileLayer = ref({
+    name: 'AlidadeSmoothDark',
+    visible: isDark.value && true,
+    url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
     attribution:
-      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-  }
-]
+      '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+})
+
+const tileProviders = ref([
+  defaultLightTileLayer.value,
+  defaultDarkTileLayer.value
+])
 
 defineExpose({ invalidateSizeFn, setBoundingBox, flyToNode })
 </script>
