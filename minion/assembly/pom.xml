@@ -55,32 +55,11 @@
             <classifier>features</classifier>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>org.opennms.horizon.minion.grpc</groupId>
-            <artifactId>features</artifactId>
-            <version>${project.version}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion.ipc</groupId>
-            <artifactId>features</artifactId>
-            <version>${project.version}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion.taskset</groupId>
-            <artifactId>features</artifactId>
-            <version>${project.version}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion.observability</groupId>
-            <artifactId>features</artifactId>
-            <version>${project.version}</version>
-            <classifier>features</classifier>
+            <groupId>org.apache.aries.jax.rs</groupId>
+            <artifactId>org.apache.aries.jax.rs.features</artifactId>
+            <version>${aries.jax.rs.whiteboard.version}</version>
             <type>xml</type>
         </dependency>
     </dependencies>
@@ -138,7 +117,7 @@
                         <feature>service</feature>
                         <feature>system</feature>
                         <feature>scr</feature>
-                        <feature>taskset-minion</feature>
+                        <feature>minion-ng</feature>
                         <!--
                         <feature>icmp-plugins</feature>
                         <feature>snmp-plugins</feature>

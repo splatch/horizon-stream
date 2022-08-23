@@ -13,7 +13,7 @@
 
   <bean id="icmpDetectorManager" class="org.opennms.horizon.minion.icmp.IcmpDetectorManager"/>
 
-  <service ref="icmpDetectorManager" interface="ServiceDetectorManager">
+  <service ref="icmpDetectorManager" interface="org.opennms.horizon.minion.plugin.api.ServiceDetectorManager">
     <service-properties>
       <entry key="detector.name" value="ICMPDetector"/>
     </service-properties>
@@ -23,7 +23,7 @@
     <argument ref="pingerFactory"/>
   </bean>
 
-  <service ref="icmpMonitorManager" interface="ServiceMonitorManager">
+  <service ref="icmpMonitorManager" interface="org.opennms.horizon.minion.plugin.api.ServiceMonitorManager">
     <service-properties>
       <entry key="monitor.name" value="ICMPMonitor"/>
     </service-properties>
