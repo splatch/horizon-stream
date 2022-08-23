@@ -244,6 +244,10 @@ spec:
             - name: grafana-ini
               mountPath: "/etc/grafana/grafana.ini"
               subPath: "grafana.ini"
+      initContainers:
+        - name: grafana-init-container
+          image: busybox
+          command: ["sh", "-c", "until nslookup postgres; do echo 'waiting for db'; sleep 1; done"]
 ---
 apiVersion: apps/v1
 kind: Deployment

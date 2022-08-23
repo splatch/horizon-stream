@@ -129,11 +129,9 @@ portForward:
     port: 59092 # kafka tcp local client port
     localPort: 59092 # default port for kafka broker
 deploy:
-  statusCheckDeadlineSeconds: 6000 #somehow the grafana.ini with database config has issue and will kill the skaffold we need to run "skaffold dev --status-check=false"
   kubectl:
     manifests:
       - dev/kubernetes.kafka.yaml
-
 ---
 
 apiVersion: skaffold/v2beta28
