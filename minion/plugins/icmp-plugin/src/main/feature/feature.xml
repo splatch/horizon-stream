@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<features name="minion-plugin-icmp-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.6.0">
+
+    <feature name="icmp-plugin" version="${project.version}">
+        <feature>plugins-api</feature>
+        <bundle>mvn:org.opennms.horizon.minion/icmp-plugin/${project.version}</bundle>
+    </feature>
+
+    <feature name="icmp-plugin-minion" version="${project.version}">
+        <feature>icmp-plugin</feature>
+    </feature>
+
+</features>

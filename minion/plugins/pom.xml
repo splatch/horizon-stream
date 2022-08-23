@@ -15,6 +15,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>features</module>
         <module>plugins-api</module>
         <module>registration</module>
         <module>icmp-plugin</module>
