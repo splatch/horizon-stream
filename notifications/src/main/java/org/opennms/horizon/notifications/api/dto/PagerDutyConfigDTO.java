@@ -26,14 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.api.dto;
 
-import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.dto.NotificationDTO;
+import lombok.Getter;
+import lombok.Setter;
 
-public interface NotificationService {
+@Getter
+@Setter
+public class PagerDutyConfigDTO {
+    public PagerDutyConfigDTO() {
+    }
+    public PagerDutyConfigDTO(String token, String integrationkey) {
+        this.token = token;
+        this.integrationkey = integrationkey;
+    }
 
-    void postNotification(NotificationDTO notification) throws Exception;
-
-    void postPagerDutyConfig(PagerDutyConfigDTO config) throws Exception;
+    String token;
+    String integrationkey;
 }
