@@ -33,6 +33,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Getter
 @Setter
 public class PagerDutyPayloadDTO {
@@ -44,5 +46,7 @@ public class PagerDutyPayloadDTO {
     String group;
     @JsonProperty("class")
     String clazz;
-    PagerDutyCustomDetailsDTO custom_details;
+
+    @JsonProperty("custom_details")
+    Map<String, Object> customDetails;
 }

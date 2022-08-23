@@ -26,14 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.dto;
+package org.opennms.horizon.notifications.api.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+public enum PagerDutySeverity {
+    CRITICAL("critical"),
+    ERROR("error"),
+    WARNING("warning"),
+    INFO("info");
 
-@Getter
-@Setter
-public class NotificationDTO {
-    public String message;
-    public String dedupKey;
+    private final String name;
+
+    private PagerDutySeverity(String name) {
+        this.name = name;
+    }
+
+    public boolean equalsName(String otherName) {
+        // (otherName == null) check is not needed because name.equals(null) returns false
+        return name.equals(otherName);
+    }
+
+    public String toString() {
+        return this.name;
+    }
+
+    public static PagerDutySeverity fromAlarmSeverity(AlarmSeverity alarmSeverity) {
+        switch (alarmSeverity) {
+            case INDETERMINATE:
+            case NORMAL:
+            case CLEARED:
+                return INFO;
+            case WARNING:
+                return WARNING;
+            case MINOR:
+            case MAJOR:
+                return ERROR;
+            case CRITICAL:
+                return CRITICAL;
+        }
+        return CRITICAL;
+    }
 }

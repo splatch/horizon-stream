@@ -30,26 +30,16 @@ package org.opennms.horizon.notifications.api;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opennms.horizon.notifications.api.PagerDutyDao;
-import org.opennms.horizon.notifications.api.PagerDutyDaoImpl;
 import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.dto.NotificationDTO;
-import org.opennms.horizon.notifications.exceptions.NotificationBadDataException;
 import org.opennms.horizon.notifications.exceptions.NotificationConfigUninitializedException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
