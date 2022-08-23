@@ -10,10 +10,12 @@ import org.opennms.horizon.grpc.tasksets.contract.TaskSetResults;
 import org.opennms.horizon.grpc.tasksets.contract.TaskSetResults.Builder;
 import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.horizon.shared.ipc.sink.api.SyncDispatcher;
+import org.opennms.taskset.model.Result;
+import org.opennms.taskset.model.Results;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ResultsConsumer implements Consumer<TaskSetResults> {
+public class ResultsConsumer implements Consumer<Results> {
 
   private final Logger logger = LoggerFactory.getLogger(ResultsConsumer.class);
   private final SyncDispatcher<TaskSetResults> dispatcher;
@@ -23,13 +25,13 @@ public class ResultsConsumer implements Consumer<TaskSetResults> {
   }
 
   @Override
-  public void accept(TaskSetResults results) {
+  public void accept(Results results) {
     Builder taskSetResultsBuilder = TaskSetResults.newBuilder();
-    for (TaskSetResults.TaskResult result : results.getResultsList()) {
+    for (Result result : results.getResults()) {
       TaskSetResults.TaskResult.Builder resultBuilder = taskSetResultsBuilder.addResultsBuilder();
 
       if (result.getParameters() != null) {
-        for (Map.Entry<String, Any> entry : result.getParameters().entrySet()) {
+        for (Map.Entry<String, Object> entry : result.getParameters().entrySet()) {
           Object value = entry.getValue();
           Value.Builder valueBuilder = Value.newBuilder();
           if (value instanceof Number) {

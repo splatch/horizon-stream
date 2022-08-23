@@ -25,8 +25,11 @@ public class PluginConfigInjector implements ConfigInjector {
                 try {
                     Field f = clazz.getDeclaredField(config.getDeclaredFieldName());
                     String valueToInject = parameters.get(config.getDeclaredFieldName());
+                    if (valueToInject == null) {
+                        return;
+                    }
 
-                    if (valueToInject!= null && config.getJavaType().equals(f.getType().getName())) {
+                    if (config.getJavaType().equals(f.getType().getName())) {
                         Object convertedValueToInject;
                         if (config.isEnum()) {
                             f.set(target, Enum.valueOf((Class<Enum>) f.getType(), valueToInject));

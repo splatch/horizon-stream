@@ -82,7 +82,7 @@
     <argument ref="serviceConnectorFactoryRegistry"/>
   </bean>
 
-  <bean id="workflowLifecycleManager" class="org.opennms.horizon.minion.taskset.worker.impl.TaskifecycleManagerImpl" destroy-method="close">
+  <bean id="workflowLifecycleManager" class="org.opennms.horizon.minion.taskset.worker.impl.TaskLifecycleManagerImpl" destroy-method="close">
     <property name="ignite" ref="ignite"/>
   </bean>
 

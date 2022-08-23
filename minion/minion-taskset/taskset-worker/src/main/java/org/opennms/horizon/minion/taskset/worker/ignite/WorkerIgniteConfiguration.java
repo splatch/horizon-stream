@@ -18,7 +18,7 @@ import org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKuber
 import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
 import org.apache.ignite.spi.metric.MetricExporterSpi;
 import org.opennms.horizon.minion.taskset.worker.ignite.classloader.CompoundClassLoader;
-import org.opennms.horizon.minion.taskset.worker.impl.TaskifecycleManagerImpl;
+import org.opennms.horizon.minion.taskset.worker.impl.TaskLifecycleManagerImpl;
 
 @Data
 @AllArgsConstructor
@@ -42,7 +42,7 @@ public class WorkerIgniteConfiguration {
 
         configureDataStorage(igniteConfiguration);
         configureCache(igniteConfiguration, "workflows");
-        configureCache(igniteConfiguration, TaskifecycleManagerImpl.WORKFLOW_SERVICE_CACHE_NAME);
+        configureCache(igniteConfiguration, TaskLifecycleManagerImpl.WORKFLOW_SERVICE_CACHE_NAME);
 
         configureClassLoader(igniteConfiguration);
         igniteConfiguration.setMetricExporterSpi(metricExporterSpi);

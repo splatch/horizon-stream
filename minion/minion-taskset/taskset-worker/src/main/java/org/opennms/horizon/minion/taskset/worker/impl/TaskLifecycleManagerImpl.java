@@ -19,12 +19,12 @@ import org.opennms.taskset.model.TaskType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TaskifecycleManagerImpl implements TaskLifecycleManager {
+public class TaskLifecycleManagerImpl implements TaskLifecycleManager {
 
     public static final String SERVICE_NAME_PREFIX = "workflow:";
     public static final String WORKFLOW_SERVICE_CACHE_NAME = "minion.workflow-service";
 
-    private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(TaskifecycleManagerImpl.class);
+    private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(TaskLifecycleManagerImpl.class);
 
     private Logger log = DEFAULT_LOGGER;
 
