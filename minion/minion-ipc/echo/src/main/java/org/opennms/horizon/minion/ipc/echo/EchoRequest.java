@@ -30,39 +30,19 @@ package org.opennms.horizon.minion.ipc.echo;
 
 import io.opentracing.Span;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import org.opennms.horizon.shared.ipc.rpc.api.RpcRequest;
 
-@XmlRootElement(name="echo-request")
-@XmlAccessorType(XmlAccessType.NONE)
 public class EchoRequest implements RpcRequest {
 
-    @XmlAttribute(name="id")
     private Long id;
-
-    @XmlAttribute(name="message")
     private String message;
-
-    @XmlElement(name="body", required=false)
     private String body;
-
-    @XmlAttribute(name="location")
     private String location;
-
-    @XmlAttribute(name="system-id")
     private String systemId;
-
-    @XmlAttribute(name="delay")
     private Long delay;
-
-    @XmlAttribute(name="throw")
     private boolean shouldThrow;
 
     private Long timeToLiveMs;

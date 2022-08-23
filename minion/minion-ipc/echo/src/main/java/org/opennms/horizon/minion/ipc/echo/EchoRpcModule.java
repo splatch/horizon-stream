@@ -32,8 +32,6 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import java.io.StringReader;
 import java.io.StringWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,14 +45,16 @@ public class EchoRpcModule implements RpcModule<EchoRequest, EchoResponse> {
     public static final String RPC_MODULE_ID = "Echo";
 
     private static final Supplier<Timer> TIMER_SUPPLIER = Suppliers.memoize(() -> new Timer("EchoRpcModule"));
-    private final JAXBContext context;
 
     public EchoRpcModule() {
-        try {
-            context = JAXBContext.newInstance(EchoRequest.class, EchoResponse.class);
-        } catch (JAXBException e) {
-            throw new RuntimeException("Failed to initialize EchoRpcModule", e);
-        }
+//        TODO: re-implement this
+        throw  new UnsupportedOperationException();
+
+//        try {
+//            context = JAXBContext.newInstance(EchoRequest.class, EchoResponse.class);
+//        } catch (JAXBException e) {
+//            throw new RuntimeException("Failed to initialize EchoRpcModule", e);
+//        }
     }
 
     public void beforeRun() { }
@@ -119,25 +119,29 @@ public class EchoRpcModule implements RpcModule<EchoRequest, EchoResponse> {
     }
 
     private <T> T unmarshal(Class<T> type, String payload) {
-        try {
-            Object unmarshal = context.createUnmarshaller().unmarshal(new StringReader(payload));
-            if (type.isInstance(unmarshal)) {
-                return type.cast(unmarshal);
-            }
-            throw new IllegalArgumentException("Unexpected value " + unmarshal.getClass().getName() + "  received");
-        } catch (JAXBException e) {
-            throw new RuntimeException("Could not ");
-        }
+//        TODO: re-implmplement
+        throw new UnsupportedOperationException();
+//        try {
+//            Object unmarshal = context.createUnmarshaller().unmarshal(new StringReader(payload));
+//            if (type.isInstance(unmarshal)) {
+//                return type.cast(unmarshal);
+//            }
+//            throw new IllegalArgumentException("Unexpected value " + unmarshal.getClass().getName() + "  received");
+//        } catch (JAXBException e) {
+//            throw new RuntimeException("Could not ");
+//        }
     }
 
     private <T> String marshal(T payload) {
-        try {
-            StringWriter writer = new StringWriter();
-            context.createMarshaller().marshal(payload, writer);
-            return writer.toString();
-        } catch (JAXBException e) {
-            throw new RuntimeException("Could not serialize " + payload.getClass().getName());
-        }
+        //        TODO: re-implmplement
+        throw new UnsupportedOperationException();
+//        try {
+//            StringWriter writer = new StringWriter();
+//            context.createMarshaller().marshal(payload, writer);
+//            return writer.toString();
+//        } catch (JAXBException e) {
+//            throw new RuntimeException("Could not serialize " + payload.getClass().getName());
+//        }
     }
 
 }
