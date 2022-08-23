@@ -26,12 +26,10 @@ const goToAlarms = () => router.push(`/map${route.query.nodeid ? '?nodeid=' + ro
 
 const goToNodes = () => router.push('/map/nodes')
 
-onActivated(() => {
-  if (router.currentRoute.value.name === 'MapAlarms') {
-    alarmTab.value.tab.click()
-  } else {
-    nodesTab.value.tab.click()
-  }
+onMounted(async () => {
+  const tabRef = router.currentRoute.value.name === 'MapAlarms' ? alarmTab : nodesTab
+  await tabRef.value.tab.click()
+  tabRef.value.tab.classList.remove('focus')
 })
 </script>
 
