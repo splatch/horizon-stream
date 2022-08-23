@@ -11,6 +11,7 @@
     </cm:default-properties>
   </cm:property-placeholder>
 
+  <!--
   <camel:camelContext id="registrationRoutingContext" allowUseOriginalMessage="false">
     <camel:contextScan/>
     <camel:template id="registrationProducer" defaultEndpoint="{{registration.uri}}"/>
@@ -18,7 +19,7 @@
 
   <reference id="messageDispatcherFactory" interface="org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory" />
 
-  <bean id="registrationService" class = "org.opennms.horizon.minion.plugin.registration.RegistrationServiceImpl">
+  <bean id="registrationService" class="org.opennms.horizon.minion.plugin.registration.RegistrationServiceImpl">
     <argument ref="registrationProducer"/>
   </bean>
 
@@ -27,7 +28,9 @@
       <argument ref="messageDispatcherFactory"/>
       <argument value="${aggregation.delay}"/>
   </bean>
+  -->
 
+  <bean id="registrationService" class="org.opennms.horizon.minion.plugin.api.DummyRegistrationService" />
   <service ref="registrationService" interface="org.opennms.horizon.minion.plugin.api.RegistrationService"/>
 
 </blueprint>
