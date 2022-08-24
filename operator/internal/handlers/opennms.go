@@ -15,69 +15,72 @@ limitations under the License.
 package handlers
 
 import (
-    "github.com/OpenNMS/opennms-operator/internal/model/values"
-    "github.com/OpenNMS/opennms-operator/internal/util/yaml"
-    appsv1 "k8s.io/api/apps/v1"
-    corev1 "k8s.io/api/core/v1"
-    "sigs.k8s.io/controller-runtime/pkg/client"
+	"github.com/OpenNMS/opennms-operator/internal/model/values"
+	"github.com/OpenNMS/opennms-operator/internal/util/yaml"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type OpenNMSHandler struct {
-    ServiceHandlerObject
+	ServiceHandlerObject
 }
 
 func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Object {
-    //core
-    var configMap corev1.ConfigMap
-    var coreService corev1.Service
-    var coreDeployment appsv1.Deployment
+	//core
+	var certSecret corev1.Secret
+	var configMap corev1.ConfigMap
+	var coreService corev1.Service
+	var coreDeployment appsv1.Deployment
 
-    yaml.LoadYaml(filepath("opennms/core/core-configmap.yaml"), values, &configMap)
-    yaml.LoadYaml(filepath("opennms/core/core-service.yaml"), values, &coreService)
-    yaml.LoadYaml(filepath("opennms/core/core-deployment.yaml"), values, &coreDeployment)
+	yaml.LoadYaml(filepath("opennms/core/cert-secret.yaml"), values, &certSecret)
+	yaml.LoadYaml(filepath("opennms/core/core-configmap.yaml"), values, &configMap)
+	yaml.LoadYaml(filepath("opennms/core/core-service.yaml"), values, &coreService)
+	yaml.LoadYaml(filepath("opennms/core/core-deployment.yaml"), values, &coreDeployment)
 
-    //api
-    var apiService corev1.Service
-    var apiDeployment appsv1.Deployment
+	//api
+	var apiService corev1.Service
+	var apiDeployment appsv1.Deployment
 
-    yaml.LoadYaml(filepath("opennms/api/api-service.yaml"), values, &apiService)
-    yaml.LoadYaml(filepath("opennms/api/api-deployment.yaml"), values, &apiDeployment)
+	yaml.LoadYaml(filepath("opennms/api/api-service.yaml"), values, &apiService)
+	yaml.LoadYaml(filepath("opennms/api/api-deployment.yaml"), values, &apiDeployment)
 
-    //ui
-    var uiDeployment appsv1.Deployment
-    var uiService corev1.Service
+	//ui
+	var uiDeployment appsv1.Deployment
+	var uiService corev1.Service
 
-    yaml.LoadYaml(filepath("opennms/ui/ui-deployment.yaml"), values, &uiDeployment)
-    yaml.LoadYaml(filepath("opennms/ui/ui-service.yaml"), values, &uiService)
+	yaml.LoadYaml(filepath("opennms/ui/ui-deployment.yaml"), values, &uiDeployment)
+	yaml.LoadYaml(filepath("opennms/ui/ui-service.yaml"), values, &uiService)
 
-    //minion
-    var minionCM corev1.ConfigMap
-    var minionSVC corev1.Service
-    var minionDeploy appsv1.Deployment
+	//minion
+	var minionCM corev1.ConfigMap
+	var minionSVC corev1.Service
+	var minionDeploy appsv1.Deployment
 
-    yaml.LoadYaml(filepath("opennms/minion/minion-configmap.yaml"), values, &minionCM)
-    yaml.LoadYaml(filepath("opennms/minion/minion-service.yaml"), values, &minionSVC)
-    yaml.LoadYaml(filepath("opennms/minion/minion-deployment.yaml"), values, &minionDeploy)
+	yaml.LoadYaml(filepath("opennms/minion/minion-configmap.yaml"), values, &minionCM)
+	yaml.LoadYaml(filepath("opennms/minion/minion-service.yaml"), values, &minionSVC)
+	yaml.LoadYaml(filepath("opennms/minion/minion-deployment.yaml"), values, &minionDeploy)
 
-    //notification
-    var noteDeployment appsv1.Deployment
-    var noteService corev1.Service
+	//notification
+	var noteDeployment appsv1.Deployment
+	var noteService corev1.Service
 
-    yaml.LoadYaml(filepath("opennms/notification/notification-deployment.yaml"), values, &noteDeployment)
-    yaml.LoadYaml(filepath("opennms/notification/notification-service.yaml"), values, &noteService)
+	yaml.LoadYaml(filepath("opennms/notification/notification-deployment.yaml"), values, &noteDeployment)
+	yaml.LoadYaml(filepath("opennms/notification/notification-service.yaml"), values, &noteService)
 
-    h.Config = []client.Object{
-        &configMap,
-        &coreService,
-        &coreDeployment,
-        &apiService,
-        &apiDeployment,
-        &uiDeployment,
-        &uiService,
-        &minionCM,
-        &minionSVC,
-        &minionDeploy,
-    }
+	h.Config = []client.Object{
+		&certSecret,
+		&configMap,
+		&coreService,
+		&coreDeployment,
+		&apiService,
+		&apiDeployment,
+		&uiDeployment,
+		&uiService,
+		&minionCM,
+		&minionSVC,
+		&minionDeploy,
+	}
 
-    return h.Config
+	return h.Config
 }

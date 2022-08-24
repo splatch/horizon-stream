@@ -92,7 +92,7 @@ spec:
             - name: config-volume
               mountPath: /opt/horizon-stream/etc/org.opennms.core.rest.cfg 
               subPath: restCfg
-            - name: truststore #todo remove
+            - name: config-volume #todo remove
               mountPath: /opt/horizon-stream/truststore.jks
               subPath: truststore.jks
           ports:
