@@ -12,7 +12,7 @@ build:
       # shared-lib builds only a jar, not an image.
       # Skaffold requires that artifacts produce images. This is a workaround that builds a dummy image.
       buildCommand: |
-        mvn install &&
+        mvn clean install &&
         echo 'FROM scratch' | docker build -t $IMAGE -
       dependencies:
         paths: ["."]
