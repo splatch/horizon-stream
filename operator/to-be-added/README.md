@@ -120,27 +120,6 @@ PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderExce
 
 I think that the struststore was allowing onmshs, but then was blocking something else.
 
-
-# IntelliJ
-
-```
-Select Open (the root horizon stream dir repo).
-File > New > Module from existing sources
-Import > Maven > platform/ (can do same for rest-server)
-
-In deployment/opennms-core, add this to the JAVA_TOOLS_OPTION: -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y
-And add this to ports:
-            - name: debug
-              containerPort: 5005
-              protocol: TCP
-
-Then, port forward to 5005. It needs to be 5005 on my laptop for some reason.
-
-Menu, select Run, select 'Edit configuration', then '+', and select 'Remote JVM debug', change port to port forward laptop port. Click Apply.
-
-Menu, select Run, debug.
-```
-
 Try this to get different DNS accessible from within cluster:
 ```
     - name: hostname-strict-backchannel
