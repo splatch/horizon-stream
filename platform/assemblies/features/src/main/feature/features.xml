@@ -166,17 +166,15 @@
 <!--        <bundle>mvn:org.opennms.core.ipc.twin.grpc/publisher/${project.version}</bundle>-->
 <!--    </feature>-->
 
-<!--    // ignored for now until we get core/minion refactoring figured out-->
-<!--    <feature name="horizon-core-monitor" version="${project.version}">-->
-<!--        <feature>horizon-snmp</feature>-->
+    <feature name="horizon-core-monitor" version="${project.version}">
+        <feature>horizon-metrics-prometheus</feature>
+        <feature>horizon-events</feature>
+        <feature>horizon-ignite</feature>
+        <feature>horizon-db</feature>
+        <feature>horizon-shared-task-set-publisher</feature>
 
-<!--        <feature>horizon-metrics-prometheus</feature>-->
-<!--        <feature>horizon-events-api</feature>-->
-<!--        <feature>horizon-db</feature>-->
-<!--        <feature>horizon-icmp</feature>-->
-
-<!--        <bundle>mvn:org.opennms.horizon.core/monitor/${project.version}</bundle>-->
-<!--    </feature>-->
+        <bundle>mvn:org.opennms.horizon.core/monitor/${project.version}</bundle>
+    </feature>
 
     <feature name="horizon-ipc-api" version="${project.version}">
         <feature>guava</feature>
@@ -296,12 +294,24 @@
         <bundle>mvn:org.opennms.horizon.shared/lang/${project.version}</bundle>
     </feature>
 
+    <feature name="horizon-shared-task-set-publisher" version="${project.version}">
+        <feature version="${project.version}">horizon-shared-task-set-publisher-common</feature>
+
+        <bundle>mvn:org.opennms.horizon.shared/task-set-ignite-client/${project.version}</bundle>
+    </feature>
+
     <feature name="horizon-shared-task-set-service" version="${project.version}">
+        <feature version="${project.version}">horizon-shared-task-set-publisher-common</feature>
+
+        <bundle>mvn:org.opennms.horizon.shared/task-set-ignite-service/${project.version}</bundle>
+    </feature>
+
+    <feature name="horizon-shared-task-set-publisher-common" version="${project.version}">
+        <feature version="${project.version}">3rdparty-ignite</feature>
+
         <bundle>mvn:org.opennms.horizon.shared/task-set/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.shared/task-set-service-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.shared/task-set-service-core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.shared/task-set-ignite-client/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.shared/task-set-ignite-service/${project.version}</bundle>
     </feature>
 
 
@@ -467,7 +477,14 @@
     <!--        -->
     <!-- IGNITE -->
     <!--        -->
-    <feature name="ignite" version="${project.version}">
+    <feature name="horizon-ignite" version="${project.version}">
+        <feature version="${project.version}">3rdparty-ignite</feature>
+        <feature version="${project.version}">horizon-shared-lang</feature>
+
+        <bundle>mvn:org.opennms.horizon/ignite/${project.version}</bundle>
+    </feature>
+
+    <feature name="3rdparty-ignite" version="${project.version}">
         <feature version="${project.version}">ignite-core</feature>
 
         <bundle>wrap:mvn:org.apache.ignite/ignite-kubernetes/${ignite.version}</bundle>

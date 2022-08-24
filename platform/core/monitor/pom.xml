@@ -30,11 +30,11 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>org.opennms.horizon.ipc</groupId>
-            <artifactId>echo</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>org.opennms.horizon.ipc</groupId>-->
+        <!--    <artifactId>echo</artifactId>-->
+        <!--    <version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.opennms.horizon.ipc.grpc</groupId>
             <artifactId>server</artifactId>

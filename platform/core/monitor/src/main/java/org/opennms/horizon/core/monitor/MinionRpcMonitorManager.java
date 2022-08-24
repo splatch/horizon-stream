@@ -8,15 +8,15 @@ import org.opennms.horizon.db.dao.api.MinionDao;
 import org.opennms.horizon.db.dao.api.MonitoringLocationDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsMinion;
-import org.opennms.horizon.echo.EchoRequest;
-import org.opennms.horizon.echo.EchoResponse;
-import org.opennms.horizon.echo.EchoRpcModule;
+// import org.opennms.horizon.echo.EchoRequest;
+// import org.opennms.horizon.echo.EchoResponse;
+// import org.opennms.horizon.echo.EchoRpcModule;
 import org.opennms.horizon.events.api.EventConstants;
 import org.opennms.horizon.events.api.EventListener;
 import org.opennms.horizon.events.api.EventSubscriptionService;
 import org.opennms.horizon.events.model.IEvent;
 import org.opennms.horizon.events.model.IParm;
-import org.opennms.horizon.ipc.rpc.api.RpcClient;
+// import org.opennms.horizon.ipc.rpc.api.RpcClient;
 import org.opennms.horizon.ipc.rpc.api.RpcClientFactory;
 import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 import org.slf4j.Logger;
@@ -108,34 +108,34 @@ public class MinionRpcMonitorManager implements EventListener {
 
 
     private void runMinionMonitor(String location, String minionId) {
-        LOG.info("Minion RPC Monitor: executing check for minion: id={}; location={}", minionId, location);
-        // Create the client
-        RpcClient<EchoRequest, EchoResponse> client = rpcClientFactory.getClient(EchoRpcModule.INSTANCE);
-
-        // Build the request
-        EchoRequest request = new EchoRequest();
-        request.setId(System.nanoTime() / 1000000L);
-        request.setMessage(Strings.repeat("*", DEFAULT_MESSAGE_SIZE));
-        request.setLocation(location);
-        request.setSystemId(minionId);
-        request.setTimeToLiveMs(null);
-
-        try {
-            EchoResponse response = client.execute(request).get();
-            long responseTime = (System.nanoTime() / 1000000) - response.getId();
-            LOG.info("ECHO RESPONSE: node-id={}; node-location={}; duration={}ms", minionId, location, responseTime);
-            updateMetrics(responseTime, new String[]{minionId, location});
-        } catch (InterruptedException | ExecutionException t) {
-            LOG.warn("ECHO REQUEST failed", t);
-            LOG.error("Minion RPC Monitor: check for minion failed: id={}", minionId);
-        }
+        // LOG.info("Minion RPC Monitor: executing check for minion: id={}; location={}", minionId, location);
+        // // Create the client
+        // RpcClient<EchoRequest, EchoResponse> client = rpcClientFactory.getClient(EchoRpcModule.INSTANCE);
+        //
+        // // Build the request
+        // EchoRequest request = new EchoRequest();
+        // request.setId(System.nanoTime() / 1000000L);
+        // request.setMessage(Strings.repeat("*", DEFAULT_MESSAGE_SIZE));
+        // request.setLocation(location);
+        // request.setSystemId(minionId);
+        // request.setTimeToLiveMs(null);
+        //
+        // try {
+        //     EchoResponse response = client.execute(request).get();
+        //     long responseTime = (System.nanoTime() / 1000000) - response.getId();
+        //     LOG.info("ECHO RESPONSE: node-id={}; node-location={}; duration={}ms", minionId, location, responseTime);
+        //     updateMetrics(responseTime, new String[]{minionId, location});
+        // } catch (InterruptedException | ExecutionException t) {
+        //     LOG.warn("ECHO REQUEST failed", t);
+        //     LOG.error("Minion RPC Monitor: check for minion failed: id={}", minionId);
+        // }
     }
 
-    private void updateMetrics(long responseTime, String[] labelValues) {
-        responseTimeGauge.labels(labelValues).set(responseTime);
-        var groupingKey = IntStream.range(0, LABEL_NAMES.length).boxed()
-            .collect(Collectors.toMap(i -> LABEL_NAMES[i], i -> labelValues[i]));
-        metricsAdapter.pushMetrics(collectorRegistry, groupingKey);
-    }
+    // private void updateMetrics(long responseTime, String[] labelValues) {
+    //     responseTimeGauge.labels(labelValues).set(responseTime);
+    //     var groupingKey = IntStream.range(0, LABEL_NAMES.length).boxed()
+    //         .collect(Collectors.toMap(i -> LABEL_NAMES[i], i -> labelValues[i]));
+    //     metricsAdapter.pushMetrics(collectorRegistry, groupingKey);
+    // }
 
 }

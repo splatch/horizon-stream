@@ -17,26 +17,27 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <reference id="rpcClientFactory" interface="org.opennms.horizon.ipc.rpc.api.RpcClientFactory"/>
-    <reference id="minionManager" interface="org.opennms.core.ipc.grpc.server.manager.MinionManager"/>
+    <!--<reference id="rpcClientFactory" interface="org.opennms.horizon.ipc.rpc.api.RpcClientFactory"/>-->
+    <!--<reference id="minionManager" interface="org.opennms.core.ipc.grpc.server.manager.MinionManager"/>-->
     <reference id="metricsAdapter" interface="org.opennms.horizon.metrics.api.OnmsMetricsAdapter"/>
     <reference id="eventSubscriptionService" interface="org.opennms.horizon.events.api.EventSubscriptionService" availability="mandatory"/>
     <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils" />
     <reference id="nodeDao" interface="org.opennms.horizon.db.dao.api.NodeDao" />
     <reference id="ipInterfaceDao" interface="org.opennms.horizon.db.dao.api.IpInterfaceDao" />
     <reference id="minionDao" interface="org.opennms.horizon.db.dao.api.MinionDao"/>
-    <reference id="locationAwarePingClient" interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"/>
+    <!--<reference id="locationAwarePingClient" interface="org.opennms.netmgt.icmp.proxy.LocationAwarePingClient"/>-->
     <reference id="igniteTaskSetClientFactory" interface="org.opennms.taskset.service.igniteclient.TaskSetIgnitePublisherFactory"/>
-    <reference id="locationAwareSnmpClient" interface="org.opennms.horizon.shared.snmp.proxy.LocationAwareSnmpClient"/>
+    <!--<reference id="locationAwareSnmpClient" interface="org.opennms.horizon.shared.snmp.proxy.LocationAwareSnmpClient"/>-->
 
-    <bean id="minionRpcMonitorManager" class="org.opennms.horizon.core.monitor.MinionRpcMonitorManager"
-          init-method="init" destroy-method="shutdown">
-        <argument ref="rpcClientFactory"/>
-        <argument ref="metricsAdapter"/>
-        <argument ref="sessionUtils"/>
-        <argument ref="minionDao"/>
-        <argument ref="eventSubscriptionService"/>
-    </bean>
+    <!-- TODO: how much in core? how much in gateway? -->
+    <!--<bean id="minionRpcMonitorManager" class="org.opennms.horizon.core.monitor.MinionRpcMonitorManager"-->
+    <!--      init-method="init" destroy-method="shutdown">-->
+    <!--    <argument ref="rpcClientFactory"/>-->
+    <!--    <argument ref="metricsAdapter"/>-->
+    <!--    <argument ref="sessionUtils"/>-->
+    <!--    <argument ref="minionDao"/>-->
+    <!--    <argument ref="eventSubscriptionService"/>-->
+    <!--</bean>-->
 
     <bean id="workerIgniteConfiguration" class="org.opennms.horizon.core.ignite.WorkerIgniteConfiguration">
         <property name="useKubernetes" value="${ignite.useKubernetes}"/>

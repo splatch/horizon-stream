@@ -20,6 +20,7 @@
         <module>dhcpd</module>
         <module>db</module>
         <module>events</module>
+        <module>ignite</module>
         <module>ipc</module>
         <module>provision</module>
         
