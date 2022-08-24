@@ -258,7 +258,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
 
     @Override
     public void addRealm(String realm, Consumer<RealmRepresentation> realmCustomizer) throws IOException, URISyntaxException, KeycloakBaseException {
-        URL fullUrl = this.formatUrl("/admin/realms");
+        URL fullUrl = this.formatUrl("admin/realms");
 
         RealmRepresentation realmRepresentation = new RealmRepresentation();
         realmRepresentation.setRealm(realm);
@@ -274,7 +274,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
     @Override
     public void addUser(String realm, String username, Consumer<UserRepresentation> userCustomizer) throws IOException, URISyntaxException, KeycloakBaseException {
         String encodedRealm = surprisinglyHardToFindUtils.encodeUrlPathSegment(realm);
-        URL fullUrl = this.formatUrl("/admin/realms/" + encodedRealm + "/users");
+        URL fullUrl = this.formatUrl("admin/realms/" + encodedRealm + "/users");
 
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setUsername(username);
@@ -316,7 +316,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
     @Override
     public void createRole(String realm, String roleName) throws IOException, URISyntaxException, KeycloakBaseException {
         String encodedRealm = surprisinglyHardToFindUtils.encodeUrlPathSegment(realm);
-        URL fullUrl = this.formatUrl("/admin/realms/" + encodedRealm + "/roles");
+        URL fullUrl = this.formatUrl("admin/realms/" + encodedRealm + "/roles");
 
         RoleRepresentation roleRepresentation = new RoleRepresentation();
         roleRepresentation.setName(roleName);
@@ -328,7 +328,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
     public void assignUserRole(String realm, String userId, String roleName, String roleId) throws IOException, URISyntaxException, KeycloakBaseException {
         String encodedRealm = surprisinglyHardToFindUtils.encodeUrlPathSegment(realm);
         String encodedUserId = surprisinglyHardToFindUtils.encodeUrlPathSegment(userId);
-        URL fullUrl = this.formatUrl("/admin/realms/" + encodedRealm + "/users/" + encodedUserId + "/role-mappings/realm");
+        URL fullUrl = this.formatUrl("admin/realms/" + encodedRealm + "/users/" + encodedUserId + "/role-mappings/realm");
 
         List<RoleRepresentation> roles = new LinkedList<>();
 
@@ -344,7 +344,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
     @Override
     public void logout() throws IOException, URISyntaxException, KeycloakOperationException {
         String encodedRealm = surprisinglyHardToFindUtils.encodeUrlPathSegment(adminRealm);
-        URL fullUrl = formatUrl("/realms/" + encodedRealm + "/protocol/openid-connect/logout");
+        URL fullUrl = formatUrl("realms/" + encodedRealm + "/protocol/openid-connect/logout");
 
         HttpGet httpGet = new HttpGet();
         httpGet.setURI(fullUrl.toURI());
@@ -391,7 +391,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
             // Format the URL
             //
             String encodedRealm = surprisinglyHardToFindUtils.encodeUrlPathSegment(adminRealm);
-            String path = "/realms/" + encodedRealm + "/protocol/openid-connect/token";
+            String path = "realms/" + encodedRealm + "/protocol/openid-connect/token";
             URL fullUrl = this.formatUrl(path);
 
             HttpEntity httpEntity = prepareRefreshRequestEntity(initialRefreshToken);

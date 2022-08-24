@@ -124,15 +124,9 @@ public class KeycloakJaxrsFeature implements ContainerRequestFilter {
         try {
             AdapterConfig adapterConfig = configureKeycloak();
 
-	    log.info("AAAAB");
-            
-	    keycloakDeployment = new KeycloakDeployment();
+	        keycloakDeployment = new KeycloakDeployment();
             keycloakDeployment.setAuthServerBaseUrl(adapterConfig);
             keycloakDeployment.setRealm(keycloakRealm);
-	    
-	    log.info("AAAAB.A.1");
-            log.info("Keycloak JWKS URL: " + keycloakDeployment.getJwksUrl());
-            log.info("a: " + keycloakDeployment.getRealmInfoUrl());
 
             // Create the HTTP Client that the Keycloak library will use to call out for Public Key lookup
             HttpClient httpClient = HttpClientBuilder.create().build();
