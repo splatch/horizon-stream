@@ -172,7 +172,7 @@ public class DeviceMonitorManager implements EventListener {
             Long nodeId = event.getNodeid();
             if (nodeId != null) {
                 OnmsNode node = sessionUtils.withReadOnlyTransaction(() -> nodeDao.get(nodeId.intValue()));
-                scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(node), DEVICE_INITIAL_DELAY, DEVICE_INTERVAL, TimeUnit.SECONDS);
+                scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(node), 5, 120, TimeUnit.SECONDS);
             }
         }
     }
