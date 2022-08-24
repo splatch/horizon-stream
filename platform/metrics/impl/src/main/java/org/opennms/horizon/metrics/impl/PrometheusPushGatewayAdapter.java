@@ -50,7 +50,7 @@ public class PrometheusPushGatewayAdapter implements OnmsMetricsAdapter {
 
 
     @Override
-    public void pushRegistry(CollectorRegistry registry, Map<String, String> groupingKey) {
+    public void pushMetrics(CollectorRegistry registry, Map<String, String> groupingKey) {
         try {
             pushGateway.pushAdd(registry, DEFAULT_JOB_PUSHGATEWAY);
         } catch (IOException e) {

@@ -45,7 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -152,7 +151,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         upTimeGauge.labels(labelValues).set(totalUpTimeInSec);
         var groupingKey = IntStream.range(0, labelNames.length).boxed()
             .collect(Collectors.toMap(i -> labelNames[i], i -> labelValues[i]));
-        onmsMetricsAdapter.pushRegistry(collectorRegistry, groupingKey);
+        onmsMetricsAdapter.pushMetrics(collectorRegistry, groupingKey);
         minionUpTime.put(minionId, totalUpTimeInMsec);
     }
 }

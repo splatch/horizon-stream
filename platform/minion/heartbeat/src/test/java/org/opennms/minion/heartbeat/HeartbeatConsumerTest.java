@@ -202,7 +202,7 @@ public class HeartbeatConsumerTest {
         private CollectorRegistry collectorRegistry;
 
         @Override
-        public void pushRegistry(CollectorRegistry registry, Map<String, String> groupingKey) {
+        public void pushMetrics(CollectorRegistry registry, Map<String, String> groupingKey) {
             collectorRegistry = registry;
         }
 
