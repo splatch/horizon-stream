@@ -104,10 +104,10 @@ const resize = debounce(() => {
 const flyToNode = (node: string) => leafletComponent.value.flyToNode(node)
 const setBoundingBox = (nodeLabels: string[]) => leafletComponent.value.setBoundingBox(nodeLabels)
 
-onMounted(async () => {
+onMounted(() => {
   startSpinner()
-  mapStore.fetchNodes
-  mapStore.fetchAlarms
+  mapStore.fetchNodes()
+  mapStore.fetchAlarms()
   stopSpinner()
   resize()
   nodesReady.value = true

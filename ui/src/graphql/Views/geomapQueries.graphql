@@ -1,20 +1,30 @@
-query ListDevicesForGeomap {
+fragment DeviceTableParts on Query {
   listDevices {
     devices {
+      foreignId
+      foreignSource
       id
       label
-      foreignSource
-      foreignId
       labelSource
-      sysOid
-      sysName
-      sysDescription
       sysContact
+      sysDescription
       sysLocation
-      location {
-        latitude
-        longitude
-      }
+      sysName
+      sysOid
     }
   }
+}
+
+fragment LocationParts on Query {
+  listLocations {
+    locations {
+      latitude
+      longitude
+    }
+  }
+}
+
+query ListDevicesForGeomap {
+  ...DeviceTableParts,
+  ...LocationParts
 }

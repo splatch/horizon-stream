@@ -101,7 +101,7 @@
         </tr>
       </thead>
       <tbody class="node-list-grid" data-test="node-list">
-        <tr v-for="device in geomapQueries.devicesForGeomap" :key="(device?.id as number)" @dblclick="doubleClickHandler(device as Partial<DeviceDto>)" :device="device?.id">
+        <tr v-for="device in devices" :key="(device?.id as number)" @dblclick="doubleClickHandler(device as Partial<DeviceDto>)" :device="device?.id">
           <td class="first-td" :class="nodeLabelAlarmServerityMap[device?.label as string]">{{ device?.id }}</td>
           <td>{{ device?.foreignSource }}</td>
           <td>{{ device?.foreignId }}</td>
@@ -119,39 +119,18 @@
 </template>
 <script setup lang="ts">
 import { useMapStore } from '@/store/Views/mapStore'
-import { useGeomapQueries } from '@/store/Queries/geomapQueries'
 import { Coordinates, FeatherSortObject } from '@/types/map'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { DeviceDto } from '@/types/graphql'
 
 const mapStore = useMapStore()
-const geomapQueries = useGeomapQueries()
+const devices = computed(() => mapStore.nodesWithCoordinates)
 const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap)
-
-/**
- * Add `selected` css class in order to highlight the selected devuce(s)
- * @param deviceId number | undefined
- */
-const setSelectedDevice = (deviceId = 0) => {
-  const selector = document.querySelector('[class="node-list-grid"]')
-
-  if(selector) {
-    selector.querySelectorAll('[device]').forEach(elem => elem.classList.add('selected'))
-  
-    if(deviceId) {
-      selector.querySelectorAll('[device]').forEach(elem => elem.classList.remove('selected'))
-      
-      selector.querySelector(`[device="${deviceId}"]`)?.classList.add('selected')
-    }
-  }
-}
 
 const doubleClickHandler = (device: Partial<DeviceDto>) => {
   if (device.location?.latitude && device.location.longitude) {
     const coordinate: Coordinates = { latitude: device?.location?.latitude, longitude: device?.location?.longitude }
     mapStore.mapCenter = coordinate
-
-    setSelectedDevice(device?.id)
   }
 }
 
@@ -187,8 +166,6 @@ onMounted(() => {
       let translate = 'translate(0,' + this.scrollTop + 'px)'
       thead.style.transform = translate
     })
-
-    setSelectedDevice()
   }
 })
 </script>

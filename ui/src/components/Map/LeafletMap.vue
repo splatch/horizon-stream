@@ -11,6 +11,19 @@
       @moveend="onMoveEnd"
       @zoom="invalidateSizeFn"
     >
+    <!-- <LMap
+      ref="map"
+      :center="center"
+      :max-zoom="19"
+      :min-zoom="2"
+      :zoomAnimation="true"
+      @ready="onLeafletReady"
+      @zoom="invalidateSizeFn"
+      @moveend="onMoveEnd"
+      @zoomend="onMapChange"
+      @bounds="boundsUpdated"
+      @center="centerUpdated"
+    > -->
       <template v-if="leafletReady">
         <LControlLayers />
         <LTileLayer
@@ -28,7 +41,7 @@
           :options="{ showCoverageOnHover: false, chunkedLoading: true, iconCreateFunction }"
         >
           <LMarker
-            v-for="device of geomapQueries.devicesForGeomap"
+            v-for="device of mapStore.nodesWithCoordinates"
             :key="device?.label"
             :lat-lng="[device?.location?.latitude, device?.location?.longitude]"
             :name="device?.label"
@@ -89,14 +102,12 @@ import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
 import { useTopologyStore } from '@/store/Views/topologyStore'
 import { useMapStore } from '@/store/Views/mapStore'
-import { useGeomapQueries } from '@/store/Queries/geomapQueries'
 import { DeviceDto } from '@/types/graphql'
 
 const markerCluster = ref()
 const computedEdges = ref<number[][][]>()
 const mapStore = useMapStore()
 const topologyStore = useTopologyStore()
-const geomapQueries = useGeomapQueries()
 const map = ref()
 const route = useRoute()
 const leafletReady = ref<boolean>(false)
@@ -110,7 +121,7 @@ const nodeClusterCoords = ref<Record<string, number[]>>({})
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => (mapStore.mapCenter as any)[k] ))
 const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value
-  return geomapQueries.devicesForGeomap.map((node) => coordinatedMap.get(node?.id))
+  return mapStore.nodesWithCoordinates.map((node) => coordinatedMap.get(node?.id))
 })
 const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap)
 
@@ -206,7 +217,7 @@ const computeEdges = () => {
 
 const getNodeCoordinateMap = computed(() => {
   const map = new Map()
-  geomapQueries.devicesForGeomap.forEach((device) => {
+  mapStore.nodesWithCoordinates.forEach((device) => {
     if (device) {
       map.set(device.id, [device.location?.latitude, device.location?.longitude])
       map.set(device.label, [device.location?.latitude, device.location?.longitude])
@@ -244,6 +255,7 @@ const onLeafletReady = async () => {
 const onMoveEnd = () => {
   zoom.value = leafletObject.value.getZoom()
   mapStore.mapBounds = leafletObject.value.getBounds()
+  mapStore.filterNodesInBounds()
 }
 
 const flyToNode = (nodeLabelOrId: string) => {
