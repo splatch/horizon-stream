@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class TaskSetResultsSinkModule implements SinkModule<TaskSetResults, TaskSetResults> {
 
-  public static final String MODULE_ID = "workflows";
+  public static final String MODULE_ID = "task-set-result";
   private final Logger logger = LoggerFactory.getLogger(TaskSetResultsSinkModule.class);
 
   @Override

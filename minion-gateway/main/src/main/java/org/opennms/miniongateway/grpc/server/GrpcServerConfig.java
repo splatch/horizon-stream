@@ -21,6 +21,7 @@ import org.opennms.core.ipc.grpc.server.manager.rpcstreaming.MinionRpcStreamConn
 import org.opennms.core.ipc.grpc.server.manager.rpcstreaming.impl.MinionRpcStreamConnectionManagerImpl;
 import org.opennms.miniongateway.grpc.server.stub.StubCloudToMinionMessageProcessor;
 import org.opennms.miniongateway.grpc.server.stub.StubMinionToCloudProcessor;
+import org.opennms.miniongateway.grpc.server.stub.TaskResultsConsumer;
 import org.opennms.miniongateway.grpc.twin.GrpcTwinPublisher;
 import org.opennms.taskset.service.api.TaskSetForwarder;
 import org.opennms.taskset.service.api.TaskSetListener;
@@ -111,6 +112,7 @@ public class GrpcServerConfig {
         server.setMinionRpcStreamConnectionManager(minionRpcStreamConnectionManager);
         server.setIncomingRpcHandler(minionToCloudRPCProcessor);
         server.setOutgoingMessageHandler(cloudToMinionMessageProcessor);
+        server.registerConsumer(new TaskResultsConsumer());
 
         server.start();
         return server;

@@ -29,12 +29,16 @@
 package org.opennms.horizon.shared.ipc.sink.common;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -63,7 +67,7 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
 
     protected final ExecutorService startupExecutor = Executors.newCachedThreadPool(threadFactory);
 
-    private final Map<SinkModule<?, Message>, Set<MessageConsumer<?, Message>>> consumersByModule = new LinkedHashMap<>();
+    private final Map<SinkModule<?, Message>, Set<MessageConsumer<?, Message>>> consumersByModule = new ConcurrentHashMap<>();
 
     protected abstract void startConsumingForModule(SinkModule<?, Message> module) throws Exception;
 
@@ -114,7 +118,7 @@ public abstract class AbstractMessageConsumerManager implements MessageConsumerM
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
             LOG.info("Registering consumer: {}", consumer);
             final SinkModule<?, Message> module = (SinkModule<?, Message>) consumer.getModule();
-            final int numConsumersBefore = consumersByModule.get(module).size();
+            final int numConsumersBefore = consumersByModule.computeIfAbsent(module, (key) -> Collections.synchronizedSet(new HashSet<>())).size();
             if (!consumersByModule.containsKey(module)) {
                 consumersByModule.put(module, new CopyOnWriteArraySet<>());
             }
