@@ -79,10 +79,10 @@ Postgres:
   VolumeSize: 10Gi
 Keycloak:
   Path: /auth
-  Port: 9090
+  Port: 8080
   Replicas: 1
   ServiceName: onms-keycloak
-  AdminUsername: keycloak-admin
+  AdminUsername: admin
   AdminPassword: notset
   UserUsername: user001
   UserPassword: notset

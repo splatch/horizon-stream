@@ -43,7 +43,9 @@ spec:
           args: [ "-f" ]
           env:
             - name: JAVA_TOOL_OPTIONS
-              # value: "-Djava.security.egd=file:/dev/./urandom"
+              #value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"
+            - name: EXTRA_JAVA_OPTS
+              value: "-Djavax.net.ssl.trustStore=/opt/horizon-stream/truststore.jks -Djavax.net.ssl.trustStorePassword=password123"
             - name: PGSQL_SERVICE_NAME
               value: {{ .Values.Postgres.ServiceName }}
             - name: PGSQL_ADMIN_USERNAME
@@ -63,16 +65,16 @@ spec:
             - name: ACTIVEMQ_BROKER_URL #todo is this still needed?
               value: "tcp://localhost:61616"
             - name: KEYCLOAK_BASE_URL
-              value: "http://{{ .Values.Keycloak.ServiceName }}:{{ .Values.Keycloak.Port }}"
+              value: "http://{{ .Values.Keycloak.ServiceName }}:{{ .Values.Keycloak.Port }}{{ .Values.Keycloak.Path }}"
             - name: KEYCLOAK_ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: onms-keycloak-initial-admin
+                  name: {{ .Values.Keycloak.ServiceName }}-initial-admin
                   key: username
             - name: KEYCLOAK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: onms-keycloak-initial-admin
+                  name: {{ .Values.Keycloak.ServiceName }}-initial-admin
                   key: password
             - name: PROMETHEUS_PUSHGATEWAY_URL
               value: "http://{{ .Values.Prometheus.PushGateway.ServiceName }}:{{ .Values.Prometheus.PushGateway.Port }}"
@@ -87,6 +89,12 @@ spec:
               mountPath: "/opt/horizon-stream/etc/users.properties"
               subPath: "karafUsers"
               readOnly: true
+            - name: config-volume
+              mountPath: /opt/horizon-stream/etc/org.opennms.core.rest.cfg 
+              subPath: restCfg
+            - name: truststore #todo remove
+              mountPath: /opt/horizon-stream/truststore.jks
+              subPath: truststore.jks
           ports:
             - name: ssh
               containerPort: {{ .Values.OpenNMS.Core.SshPort }}
@@ -110,5 +118,9 @@ spec:
         - name: config-volume
           configMap:
             name: opennms-config
+        - name: truststore #todo remove
+          configMap:
+            name: core.truststore
+            defaultMode: 420
 
 

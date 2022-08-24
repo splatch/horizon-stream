@@ -64,6 +64,40 @@ spec:
                     image:
                       description: Docker Image tag for the service
                       type: string
+                minion:
+                  description: Defines cpu,mem and disk size for the Minion
+                  type: object
+                  properties:
+                    cpu:
+                      type: string
+                    disk:
+                      type: string
+                    mem:
+                      type: string
+                    image:
+                      description: Docker Image tag for the service
+                      type: string
+                notification:
+                  description: Defines cpu,mem and disk size for the Notification service
+                  type: object
+                  properties:
+                    cpu:
+                      type: string
+                    disk:
+                      type: string
+                    mem:
+                      type: string
+                    image:
+                      description: Docker Image tag for the service
+                      type: string
+                credentials:
+                  description: Set the default credentials for the instance
+                  type: object
+                  properties:
+                    adminPassword:
+                      type: string
+                    userPassword:
+                      type: string
                 postgres:
                   description: Resource definitions for Postgres
                   type: object
