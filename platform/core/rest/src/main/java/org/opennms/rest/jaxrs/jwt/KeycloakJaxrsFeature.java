@@ -124,14 +124,20 @@ public class KeycloakJaxrsFeature implements ContainerRequestFilter {
         try {
             AdapterConfig adapterConfig = configureKeycloak();
 
-            keycloakDeployment = new KeycloakDeployment();
+	    log.info("AAAAB");
+            
+	    keycloakDeployment = new KeycloakDeployment();
             keycloakDeployment.setAuthServerBaseUrl(adapterConfig);
             keycloakDeployment.setRealm(keycloakRealm);
+	    
+	    log.info("AAAAB.A.1");
+            log.info("Keycloak JWKS URL: " + keycloakDeployment.getJwksUrl());
+            log.info("a: " + keycloakDeployment.getRealmInfoUrl());
 
             // Create the HTTP Client that the Keycloak library will use to call out for Public Key lookup
             HttpClient httpClient = HttpClientBuilder.create().build();
             keycloakDeployment.setClient(httpClient);
-
+            
             //
             // Configure the Public Key Locator for Keycloak signature validation
             //
@@ -140,50 +146,19 @@ public class KeycloakJaxrsFeature implements ContainerRequestFilter {
             } else {
                 configureKeycloakServerPublicKeyLookup();
             }
-        } catch (Exception exc) {
+        
+	} catch (Exception exc) {
             throw new RuntimeException("Failed to initialize the JWT Public Key Signature Verification", exc);
         }
     }
 
     @Override
     public void filter(ContainerRequestContext containerRequestContext) throws IOException {
-	log.info("AAAAJ");
         if (keycloakDeployment == null) {
             throw new RuntimeException("Not Initialized - make sure the init() method is called at startup");
-	}
-	
-	System.out.println(keycloakDeployment);  
-        log.info("Keycloak JWKS URL: " + keycloakDeployment.getJwksUrl());
-        log.info("Keycloak Realm: " + keycloakDeployment.getRealm());
-        log.info("Keycloak Client ID: " + keycloakDeployment.getResourceName());
-        log.info("a: " + keycloakDeployment.getAuthServerBaseUrl());
-        log.info("a: " + keycloakDeployment.getAccountUrl());
-        log.info("a: " + keycloakDeployment.getRealmInfoUrl());
-        log.info("a: " + keycloakDeployment.getRegisterNodeUrl());
-        log.info("a: " + keycloakDeployment.getTokenUrl());
-	System.out.println(keycloakDeployment.toString());  
-
-        // Output:
-        //05:19:09.936 INFO  [qtp1802048326-492] Keycloak JWKS URL: https://onmshs/auth/realms/opennms/protocol/openid-connect/certs
-        //05:19:09.937 INFO  [qtp1802048326-492] Keycloak Realm: opennms
-        //05:19:09.937 INFO  [qtp1802048326-492] Keycloak Client ID: null
-        //05:19:09.938 INFO  [qtp1802048326-492] a: https://onmshs/auth/realms/opennms/account
-        //05:19:09.938 INFO  [qtp1802048326-492] a: http://onms-keycloak-http:8080/auth
-        //05:19:09.939 INFO  [qtp1802048326-492] a: https://onmshs/auth/realms/opennms
-        //05:19:09.939 INFO  [qtp1802048326-492] a: http://onms-keycloak-http:8080/auth/realms/opennms/clients-managements/register-node
-        //05:19:09.940 INFO  [qtp1802048326-492] a: https://onmshs/auth/realms/opennms/protocol/openid-connect/token
-
-	System.out.println(containerRequestContext.getUriInfo().getPath());  
-	System.out.println(containerRequestContext.getUriInfo().getAbsolutePath().getHost());  
-	System.out.println(containerRequestContext.getUriInfo().getBaseUri().getHost());  
-	System.out.println(containerRequestContext.getUriInfo().getRequestUri().getHost());  
-	System.out.println(containerRequestContext.getUriInfo().getAbsolutePath().getPath());  
-	System.out.println(containerRequestContext.getUriInfo().getBaseUri().getPath());  
-	System.out.println(containerRequestContext.getUriInfo().getRequestUri().getPath());  
-	System.out.println(containerRequestContext.toString());  
+	    }
 
         String authHeader = containerRequestContext.getHeaders().getFirst("Authorization");
-	log.info(authHeader);
 
         if (authHeader != null) {
             if (authHeader.startsWith(BEARER_TOKEN_SCHEME)) {
@@ -230,10 +205,6 @@ public class KeycloakJaxrsFeature implements ContainerRequestFilter {
      */
     private AdapterConfig configureKeycloak() {
         AdapterConfig adapterConfig = new AdapterConfig();
-     
-        log.info("AAAAA");
-        log.info(keycloakServerUrl);
-        log.info(adapterConfig.getProxyUrl());
 
         adapterConfig.setAllowAnyHostname(true);
         adapterConfig.setAuthServerUrl(keycloakServerUrl);
@@ -242,19 +213,11 @@ public class KeycloakJaxrsFeature implements ContainerRequestFilter {
         adapterConfig.setPrincipalAttribute("preferred_username");
         adapterConfig.setSslRequired(Boolean.toString(keycloakRequireSsl));
 
-        log.info(adapterConfig.getProxyUrl());
-        log.info(adapterConfig.getTokenCookiePath());
-        log.info(adapterConfig.getAuthServerUrl());
-        log.info(adapterConfig.getRealm());
-        log.info(adapterConfig.getRealmKey());
-        log.info(adapterConfig.getSslRequired());
-
         return adapterConfig;
     }
 
     private void configureKeycloakServerPublicKeyLookup() {
         JWKPublicKeyLocator jwkPublicKeyLocator = new JWKPublicKeyLocator();
-        
 
         keycloakDeployment.setPublicKeyLocator(jwkPublicKeyLocator);
         keycloakDeployment.setPublicKeyCacheTtl(3600);
@@ -263,10 +226,8 @@ public class KeycloakJaxrsFeature implements ContainerRequestFilter {
     private void configureStaticPublicKeyFile () {
         PublicKey publicKey = loadPemPublicKeyFile(tokenSignaturePublicKeyPath);
         
-
         PublicKeyLocator publicKeyLocator = new HardcodedPublicKeyLocator(publicKey);
         keycloakDeployment.setPublicKeyLocator(publicKeyLocator);
-
     }
 
     private PublicKey loadPemPublicKeyFile(String path) {
@@ -297,7 +258,6 @@ public class KeycloakJaxrsFeature implements ContainerRequestFilter {
 
     private AccessToken validateAndParseKeycloakToken(ContainerRequestContext containerRequestContext, String tokenString) {
         try {
-	    log.info("AAAAE");
             //
             // Copied from withDefaultChecks, removing the always-fails RealmUrlCheck(null).  Did not replace it with
             //  one that may pass because configuring the "Issuer URL" can be a challenge, and the value of this check
@@ -309,9 +269,6 @@ public class KeycloakJaxrsFeature implements ContainerRequestFilter {
             //
             //     AccessToken result = AdapterTokenVerifier.verifyToken(tokenString, keycloakDeployment);
             //
-
-	    System.out.println(containerRequestContext);  
-	    System.out.println(containerRequestContext.toString());  
 
             // Create the verifier using the Keycloak library.
             TokenVerifier<AccessToken> verifier =

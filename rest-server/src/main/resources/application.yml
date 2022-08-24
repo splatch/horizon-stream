@@ -1,12 +1,5 @@
 server:
   port: 9090
-  ssl:
-    enabled: true
-    key-alias: onms
-    key-store: "/app/onms.keystore"
-    key-store-type: jks
-    key-store-password: opennmspw
-    key-password: opennmspw
 
 spring:
   cache:

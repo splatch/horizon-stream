@@ -1,36 +1,36 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: nginx-custom
+  name: onmshs
   namespace: local-instance
 spec:
   selector:
-    app: nginx
+    app: onmshs
   ports:
   - protocol: TCP
     port: 443
     targetPort: 443
-    name: nginx
+    name: onmshs
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: onmshs
   namespace: local-instance
   labels:
-    app: nginx
+    app: onmshs
 spec:
   selector:
     matchLabels:
-      app: nginx
+      app: onmshs
   replicas: 1
   template:
     metadata:
       labels:
-        app: nginx
+        app: onmshs
     spec:
       containers:
-        - name: nginx
+        - name: onmshs
           image: nginx:alpine
           ports:
           - containerPort: 443
@@ -106,7 +106,8 @@ data:
         location / {
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "Upgrade";
-          proxy_pass http://opennms-ui:3000/;
+          #proxy_pass http://onms-keycloak:8080/;
+          proxy_pass https://google.com/;
           proxy_set_header Host $host;
           proxy_http_version 1.1;
         }

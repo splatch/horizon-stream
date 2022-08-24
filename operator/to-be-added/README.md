@@ -1,137 +1,38 @@
 Add this to the Wiki.
 
-# Requirements
-
-Make sure the following are installed:
-* Kind
-* Kubectl
-* Operator-sdk (https://sdk.operatorframework.io/docs/installation/)
-* Helm3
-* Docker
-
-ISSUE.solution:
-* We had SSL between the ingress and backend because of keycloak, remove all this, we now have http for backend of keycloak. There is a lot to remove for this.
-
-IMPORTANT: Run from repo root dir.
-```
-sudo vi /etc/hosts
-```
-
-Add with the following to /etc/hosts:
-```
-127.0.0.1 onmshs
-```
-
-# Init
-
-Run the following from repo root dir:
-```
-cd operator/
-bash ./scripts/deploy-horizon-stream.sh
-```
-
 Now add the changes from the following sections.
 
-# UI
-
-Run the following from the root dir of repo:
+KeycloakRealmImport, set password from CRD else generate random one:
 ```
-cd ui/
-docker build -t opennms/horizon-stream-ui:local -f ./dev/Dockerfile .
-kind load docker-image opennms/horizon-stream-ui:local
-```
-
-Update the deployment with this image and change the image pull policy to Never.
-
-Create the keys and deploy internal-reverse-proxy.yaml:
-```
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx-custom.key -out nginx-custom.crt -subj "/CN=nginx-custom/O=nginx-custom"
-kubectl -n local-instance create secret tls test-nginx-custom-tls --key="nginx-custom.key" --cert="nginx-custom.crt"
-
-kubectl apply -f ../operator/to-be-added/internal-reverse-proxy.yaml
-# This contains a reverse proxy to take the HTTPS backend coming in through the
-# UI and accepts SSL and then passes the user onto the opennms-ui service on
-# http. I could not figure out how to get vite and yarn to work with SSL.
+        credentials:
+          - type: password
+            value: YX3n$7j@Dek$QrO1W6ax
+        email: admin@test.opennms.org
 ```
 
-Update the opennms-ingress that has the '/' path to point to 'name: nginx-custom' and 'port.number: 443':
-```
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: nginx-custom
-                port:
-                  number: 443
-```
-
-# Shared-lib
-
-Run the following from the root dir of repo:
-```
-cd shared-lib/
-mvn clean install
-```
-
-Required for platform and rest-server.
-
-# Rest-server
-
-Run the following from the root dir of repo:
-```
-cd ../rest-server/
-mvn clean install jib:dockerBuild -Dimage=opennms/horizon-stream-rest-server:local
-kind load docker-image opennms/horizon-stream-rest-server:local
-```
-
-Update the deployment with this image and change the image pull policy to Never.
-
-For the keystore for the rest-server, create the keys as follows:
-```
-cd operator/to-be-added
-
-# For in the cluster, the CN needs to be the service in front of the pod. # It is what the ingress will be forwarding to.
-keytool -genkey -alias onms -keyalg RSA -keystore tmp/onms.keystore \
-          -validity 3650 -storetype JKS \
-          -dname "CN=opennms-rest-server, OU=Spring, O=Pivotal, L=Holualoa, ST=HI, C=US" \
-          -keypass opennmspw -storepass opennmspw
-
-kubectl -n local-instance create configmap rest-server.keystore \
-  --from-file=onms.keystore
-
-kubectl -n local-instance create configmap rest-server.application \
-  --from-file=../../rest-server/src/main/resources/application.yml
-```
-
-The volume mounts have already been added to the rest-server deployment configs in the helm charts for the operator.
+For secret: onms-keycloak-initial-admin
+* Create a secret with a CRD created one else generate random.
 
 # Core
 
-Run the following from the root dir of repo:
-```
-cd ../platform/
-mvn -Prun-it -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 clean install -DskipTests
-docker tag opennms-horizon-application-it-image:latest opennms/horizon-stream-core:local
-kind load docker-image opennms/horizon-stream-core:local
-```
-
-Update the deployment with this image and change the image pull policy to Never.
-
-Thange the URL in the following to the https://onms-keycloak:8443:
-```
-platform/docker-it/pom.xml:252:                  <alias>keycloak-host</alias>
-platform/docker-it/src/test/resources/karaf/etc/org.opennms.core.rest.cfg:1:keycloak.base-url=http://keycloak-host:8080
-core/rest/src/main/resources/OSGI-INF/blueprint/blueprint.xml:28:            <cm:property name="keycloak.base-url" value="$[env:KEYCLOAK_BASE_URL]"/>
-```
+Document the onmshs service for Jeff service name change to match keycloak dns.
 
 One of the above, 'env:KEYCLOAK_BASE_URL' is in the core deployment. Add the other below. Changed that to 'http://onms-keycloak-http:8080/auth' in the deployment.
 * The above is the new service for keycloak with http, need to update everywhere.
+* This does not update the org.opennms.core.rest.cfg file on the pod image.
 
 ISSUE: When I try to rebuild the container with the updated org.opennms.core.rest.cfg, it fails, it seems to be expecting the http://keycloak-host. Below I am trying to overwrite it in the pod.
 
 Run the following, need to update this file with credentials and proper URL:
 ```
 cd operator/to-be-added/
+
+# We can deploy the onms-keycloak-initial-admin secret with the same name and
+# our own password and username, and keycloak will not over write it.
+kubectl -n local-instance get secret onms-keycloak-initial-admin -o jsonpath='{.data.password}' | base64 --decode
+
+# Take the password and change the one in the this file:
+vi org.opennms.core.rest.cfg
 
 kubectl -n local-instance create configmap core.cfg \
   --from-file=org.opennms.core.rest.cfg
@@ -159,39 +60,107 @@ javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.pro
 
 ```
 
-Fixed, this fixes a lot, including HTTPS moving to HTTP between ingress and servers. In the keycloak CRD, add the following:
-```
-  serverConfiguration:
-    - name: http-enabled
-      value: 'true
-```
+If works, then get all ingress backend traffic back to http.
 
-Test, once the above has been added: 
+Apply this, this acts as the domain within the cluster. But, the cert is unsecure:
 ```
 kubectl apply -f keycloak-http-service-test.yaml
 ```
 
-If works, then get all ingress backend traffic back to http.
-
-New error in the opennms-core logs, I cannot figure out where opennms-core is getting that 'onmshs:443 [onmshs/127.0.0.1]' below:
+Do this:
 ```
-02:21:41.926 ERROR [qtp826475652-459] Error when sending request to retrieve realm keys
-org.keycloak.adapters.HttpClientAdapterException: IO error
-	at org.keycloak.adapters.HttpAdapterUtils.sendJsonHttpRequest(HttpAdapterUtils.java:57)
-	at org.keycloak.adapters.rotation.JWKPublicKeyLocator.sendRequest(JWKPublicKeyLocator.java:100)
-	at org.keycloak.adapters.rotation.JWKPublicKeyLocator.getPublicKey(JWKPublicKeyLocator.java:63)
-...
-Caused by: org.apache.http.conn.HttpHostConnectException: Connect to onmshs:443 [onmshs/127.0.0.1] failed: Connection refused (Connection refused)
-	at org.apache.http.impl.conn.DefaultHttpClientConnectionOperator.connect(DefaultHttpClientConnectionOperator.java:156)
-	at org.apache.http.impl.conn.PoolingHttpClientConnectionManager.connect(PoolingHttpClientConnectionManager.java:376)
-...
-Caused by: java.net.ConnectException: Connection refused (Connection refused)
-	at java.base/java.net.PlainSocketImpl.socketConnect(Native Method)
-	at java.base/java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:399)
-...
-02:21:41.943 ERROR [qtp826475652-459] Didn't find publicKey for kid: 2hsCFCFNFfTe8ZYxxLgzqdWPz-Y4AwCBDqFFEZMtf3o
-02:21:41.943 INFO  [qtp826475652-459] JWT authentication failure
-org.keycloak.common.VerificationException: Didn't find publicKey for specified kid
-...
+env:
+            - name: EXTRA_JAVA_OPTS
+	      value: "-Djavax.net.ssl.trustStore=/opt/horizon-stream/truststore.jks"
+
 ```
 
+Generate truststore.jks with the cert used by the ingress for onmshs:
+```
+$ keytool -import -alias onmshs -file onmshs.crt -keystore truststore.jks -storepass password123
+$ kubectl -n local-instance create configmap core.truststore --from-file=truststore.jks
+```
+
+Have users manually create the trust store and add this. Just have users use onmshs domain and provide a cert and truststore.jks with infinite expiration date, just for now. WARNING info, add this.
+
+In skaffold, this is not an issue, I am not sure how this works.
+
+Add this to core deployment:
+```
+
+spec.template.spec.volumes:
+        - name: truststore
+          configMap:
+            name: core.truststore
+            defaultMode: 420
+
+spec.template.spec.containers:
+          env:
+            - name: EXTRA_JAVA_OPTS
+              value: "-Djavax.net.ssl.trustStore=/opt/horizon-stream/truststore.jks -Djavax.net.ssl.trustStorePassword=password123"
+	      value: "-Dsun.security.ssl.allowUnsafeRenegotiation=true" # Tried this one
+          volumeMounts:
+            - name: truststore
+              mountPath: /opt/horizon-stream/truststore.jks
+              subPath: truststore.jks
+
+# -Djavax.net.debug=ssl,handshake -Djavax.net.ssl.keyStoreType=PKCS12 -Djavax.net.ssl.keyStore=our-client-certs -Djavax.net.ssl.trustStoreType=jks -Djavax.net.ssl.trustStore=their-server-certs
+# value: "-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Djavax.net.ssl.trustStore=/opt/horizon-stream/truststore.jks -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=JKS"
+
+
+# Maven build: mvn clean compile -U -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true 
+
+# See most recent download of logs.
+```
+
+Doing the above produced a bunch of errors that seemed to be related, relation was indicated by this:
+```
+PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested
+```
+
+I think that the struststore was allowing onmshs, but then was blocking something else.
+
+
+# IntelliJ
+
+```
+Select Open (the root horizon stream dir repo).
+File > New > Module from existing sources
+Import > Maven > platform/ (can do same for rest-server)
+
+In deployment/opennms-core, add this to the JAVA_TOOLS_OPTION: -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y
+And add this to ports:
+            - name: debug
+              containerPort: 5005
+              protocol: TCP
+
+Then, port forward to 5005. It needs to be 5005 on my laptop for some reason.
+
+Menu, select Run, select 'Edit configuration', then '+', and select 'Remote JVM debug', change port to port forward laptop port. Click Apply.
+
+Menu, select Run, debug.
+```
+
+Try this to get different DNS accessible from within cluster:
+```
+    - name: hostname-strict-backchannel
+      value: 'false'
+```
+
+We are overwriting the default trust store. Ideally, we want to remove the onmshs service and have a separate backend url from the frontend url.
+```
+# Add these to access the maven repository, once I added the truststore, it produced an error: -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true 
+# ISSUE: Error: 
+#   Error resolving artifact org.apache.karaf.features:specs:xml:features:4.3.6: [Could not transfer artifact org.apache.karaf.features:specs:xml:features:4.3.6 from/to central (https://repo1.maven.org/maven2/): transfer failed for https://repo1.maven.org/maven2/org/apache/karaf/features/specs/4.3.6/specs-4.3.6-features.xml]
+#   java.io.IOException: Error resolving artifact org.apache.karaf.features:specs:xml:features:4.3.6: [Could not transfer artifact org.apache.karaf.features:specs:xml:features:4.3.6 from/to central (https://repo1.maven.org/maven2/): transfer failed for https://repo1.maven.org/maven2/org/apache/karaf/features/specs/4.3.6/specs-4.3.6-features.xml] 
+# ...
+#   Caused by: javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+```
+
+onmshs to work, we need to add the following, ignore the first value that is for debug.
+```
+            - name: JAVA_TOOL_OPTIONS
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=n"
+            - name: EXTRA_JAVA_OPTS
+              value: "-Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Djavax.net.ssl.trustStore=/opt/horizon-stream/truststore.jks -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=JKS"
+```

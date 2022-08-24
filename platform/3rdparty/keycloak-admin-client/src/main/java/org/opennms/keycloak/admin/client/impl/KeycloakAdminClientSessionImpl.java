@@ -203,7 +203,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
     public UserRepresentation getUserByUsername(String realm, String username) throws IOException, URISyntaxException, KeycloakAuthenticationException {
         String encodedRealm = surprisinglyHardToFindUtils.encodeUrlPathSegment(realm);
         String encodedUsername = URLEncoder.encode(username, StandardCharsets.UTF_8);
-        String path = "/admin/realms/" + encodedRealm + "/users/?username=" + encodedUsername;
+        String path = "admin/realms/" + encodedRealm + "/users/?username=" + encodedUsername;
         URL fullUrl = this.formatUrl(path);
 
         HttpResponse httpResponse = sendJsonGetWithAuth(fullUrl);
@@ -232,7 +232,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
     public UserRepresentation getUserById(String realm, String userId) throws IOException, URISyntaxException, KeycloakAuthenticationException {
         String encodedRealm = surprisinglyHardToFindUtils.encodeUrlPathSegment(realm);
         String encodedUserId = surprisinglyHardToFindUtils.encodeUrlPathSegment(userId);
-        String path = "/admin/realms/" + encodedRealm + "/users/" + encodedUserId;
+        String path = "admin/realms/" + encodedRealm + "/users/" + encodedUserId;
         URL fullUrl = this.formatUrl(path);
 
         HttpResponse httpResponse = sendJsonGetWithAuth(fullUrl);
@@ -246,7 +246,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
     public MappingsRepresentation getUserRoleMappings(String realm, String userId) throws IOException, URISyntaxException, KeycloakBaseException {
         String encodedRealm = surprisinglyHardToFindUtils.encodeUrlPathSegment(realm);
         String encodedUserId = surprisinglyHardToFindUtils.encodeUrlPathSegment(userId);
-        String path = "/admin/realms/" + encodedRealm + "/users/" + encodedUserId + "/role-mappings";
+        String path = "admin/realms/" + encodedRealm + "/users/" + encodedUserId + "/role-mappings";
         URL fullUrl = this.formatUrl(path);
 
         HttpResponse httpResponse = sendJsonGetWithAuth(fullUrl);
@@ -291,7 +291,7 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
     public RoleRepresentation getRoleByName(String realm, String roleName) throws IOException, URISyntaxException, KeycloakBaseException {
         String encodedRealm = surprisinglyHardToFindUtils.encodeUrlPathSegment(realm);
         String encodedRoleName = URLEncoder.encode(roleName, StandardCharsets.UTF_8);
-        String path = "/admin/realms/" + encodedRealm + "/roles?search=" + encodedRoleName;
+        String path = "admin/realms/" + encodedRealm + "/roles?search=" + encodedRoleName;
         URL fullUrl = this.formatUrl(path);
 
         HttpResponse httpResponse = sendJsonGetWithAuth(fullUrl);
@@ -403,9 +403,16 @@ public class KeycloakAdminClientSessionImpl implements KeycloakAdminClientSessio
 
             // NOTE: this is the token refresh, so directly execute it.  The retry utility does not apply here because it
             //  retries by calling this method.
-            HttpResponse httpResponse = httpClient.execute(tokenPostRequest);
-
-            AccessTokenResponse accessTokenResponse = keycloakResponseUtil.parseAccessTokenResponse(httpResponse);
+            HttpResponse httpResponse = null;
+            AccessTokenResponse accessTokenResponse = null;
+            try {
+                httpResponse = httpClient.execute(tokenPostRequest);
+                accessTokenResponse = keycloakResponseUtil.parseAccessTokenResponse(httpResponse);
+            } finally {
+                if (httpResponse != null) {
+                    EntityUtils.consumeQuietly(httpResponse.getEntity());  //make sure the connection is closed
+                }
+            }
 
             //
             // Update the tokens
