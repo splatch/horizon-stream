@@ -28,10 +28,15 @@
 
 package org.opennms.minion.heartbeat;
 
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Gauge;
 import org.opennms.horizon.db.dao.api.MinionDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsMinion;
+import org.opennms.horizon.db.model.OnmsMonitoringSystem;
+import org.opennms.horizon.events.api.EventBuilder;
+import org.opennms.horizon.events.api.EventConstants;
+import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.ipc.sink.api.MessageConsumer;
 import org.opennms.horizon.ipc.sink.api.MessageConsumerManager;
 import org.opennms.horizon.ipc.sink.api.SinkModule;
@@ -39,11 +44,14 @@ import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, MinionIdentityDTO> {
 
@@ -52,14 +60,21 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     private final MinionDao minionDao;
     private final SessionUtils sessionUtils;
     private final OnmsMetricsAdapter onmsMetricsAdapter;
+    private final EventForwarder eventForwarder;
     private final Map<String, Long> minionUpTime = new ConcurrentHashMap<>();
+    private final CollectorRegistry collectorRegistry = new CollectorRegistry();
+    private static final String[] labelNames = {"instance", "location"};
+    private final Gauge upTimeGauge = Gauge.build().name("minion_uptime").help("Total Uptime of Minion.")
+        .unit("sec").labelNames(labelNames).register(collectorRegistry);
 
     public HeartbeatConsumer(MessageConsumerManager messageConsumerManager, MinionDao minionDao,
-                             SessionUtils sessionUtils, OnmsMetricsAdapter onmsMetricsAdapter) {
+                             SessionUtils sessionUtils, OnmsMetricsAdapter onmsMetricsAdapter,
+                             EventForwarder eventForwarder) {
         this.messageConsumerManager = messageConsumerManager;
         this.minionDao = minionDao;
         this.sessionUtils = sessionUtils;
         this.onmsMetricsAdapter = onmsMetricsAdapter;
+        this.eventForwarder = eventForwarder;
     }
 
     public void init() throws Exception {
@@ -75,51 +90,68 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     public void handleMessage(MinionIdentityDTO minionHandle) {
         LOG.info("Received heartbeat for Minion with id: {} at location: {}",
             minionHandle.getId(), minionHandle.getLocation());
-        sessionUtils.withTransaction(() -> {
-            long heartBeatDelta = 0;
-            OnmsMinion minion = minionDao.findById(minionHandle.getId());
-            if (minion == null) {
-                minion = new OnmsMinion();
-                minion.setId(minionHandle.getId());
-            } else {
-                heartBeatDelta = minionHandle.getTimestamp().getTime() - minion.getLastUpdated().getTime();
-            }
-
+        OnmsMinion minion = sessionUtils.withReadOnlyTransaction(() -> minionDao.findById(minionHandle.getId()));
+        long heartBeatDelta = 0;
+        boolean newMinionDiscovered = false;
+        if (minion == null) {
+            minion = new OnmsMinion();
+            minion.setId(minionHandle.getId());
             minion.setLocation(minionHandle.getLocation());
+            newMinionDiscovered = true;
+        } else {
+            heartBeatDelta = minionHandle.getTimestamp().getTime() - minion.getLastUpdated().getTime();
+        }
+        if (minionHandle.getTimestamp() == null) {
+            // The heartbeat does not contain a timestamp - use the current time
+            minion.setLastUpdated(new Date());
+            LOG.info("Received heartbeat without a timestamp: {}", minionHandle);
+        } else if (minion.getLastUpdated() == null) {
+            // The heartbeat does contain a timestamp, and we don't have
+            // one set yet, so use whatever we've been given
+            minion.setLastUpdated(minionHandle.getTimestamp());
+        } else if (minionHandle.getTimestamp().after(minion.getLastUpdated())) {
+            // The timestamp in the heartbeat is more recent than the one we
+            // have stored, so update it
+            minion.setLastUpdated(minionHandle.getTimestamp());
+        } else {
+            // The timestamp in the heartbeat is earlier than the
+            // timestamp we have stored, so ignore it
+            LOG.info("Ignoring stale timestamp from heartbeat: {}", minionHandle);
+        }
+        final var updatedMinion = minion;
+        sessionUtils.withTransaction(() -> minionDao.saveOrUpdate(updatedMinion));
 
-            if (minionHandle.getTimestamp() == null) {
-                // The heartbeat does not contain a timestamp - use the current time
-                minion.setLastUpdated(new Date());
-                LOG.info("Received heartbeat without a timestamp: {}", minionHandle);
-            } else if (minion.getLastUpdated() == null) {
-                // The heartbeat does contain a timestamp, and we don't have
-                // one set yet, so use whatever we've been given
-                minion.setLastUpdated(minionHandle.getTimestamp());
-            } else if (minionHandle.getTimestamp().after(minion.getLastUpdated())) {
-                // The timestamp in the heartbeat is more recent than the one we
-                // have stored, so update it
-                minion.setLastUpdated(minionHandle.getTimestamp());
-            } else {
-                // The timestamp in the heartbeat is earlier than the
-                // timestamp we have stored, so ignore it
-                LOG.info("Ignoring stale timestamp from heartbeat: {}", minionHandle);
-            }
-            minionDao.saveOrUpdate(minion);
-            updateMetrics(heartBeatDelta, minionHandle.getId(), minionHandle.getId(), minionHandle.getLocation());
-        });
+        if (newMinionDiscovered) {
+            sendMinionAddedEvent(minionHandle);
+        }
+
+        // Negative value indicates stale update for heartbeat
+        if (heartBeatDelta >= 0) {
+            updateMetrics(heartBeatDelta, minionHandle.getId(),
+                new String[]{minionHandle.getId(), minionHandle.getLocation()});
+        }
     }
 
-    private void updateMetrics(long heartBeatDelta, String minionId, String... labels) {
-        Gauge upTimeGauge = Gauge.build().name("minion_uptime").help("Total Uptime of Minion.")
-            .unit("sec").labelNames("instance", "location").create();
+    private void sendMinionAddedEvent(MinionIdentityDTO minionHandle) {
+        final EventBuilder eventBuilder = new EventBuilder(EventConstants.MONITORING_SYSTEM_ADDED_UEI,
+            "Horizon.Minion.Heartbeat");
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_TYPE, OnmsMonitoringSystem.TYPE_MINION);
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_ID, minionHandle.getId());
+        eventBuilder.addParam(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION, minionHandle.getLocation());
+        eventForwarder.sendNowSync(eventBuilder.getEvent());
+    }
+
+    private void updateMetrics(long heartBeatDelta, String minionId, String[] labelValues) {
         Long lastUpTimeInMsec = minionUpTime.get(minionId);
         long totalUpTimeInMsec = heartBeatDelta;
         if (lastUpTimeInMsec != null) {
             totalUpTimeInMsec = lastUpTimeInMsec + heartBeatDelta;
         }
         long totalUpTimeInSec = TimeUnit.MILLISECONDS.toSeconds(totalUpTimeInMsec);
-        upTimeGauge.labels(labels).set(totalUpTimeInSec);
-        onmsMetricsAdapter.push(upTimeGauge);
+        upTimeGauge.labels(labelValues).set(totalUpTimeInSec);
+        var groupingKey = IntStream.range(0, labelNames.length).boxed()
+            .collect(Collectors.toMap(i -> labelNames[i], i -> labelValues[i]));
+        onmsMetricsAdapter.pushMetrics(collectorRegistry, groupingKey);
         minionUpTime.put(minionId, totalUpTimeInMsec);
     }
 }

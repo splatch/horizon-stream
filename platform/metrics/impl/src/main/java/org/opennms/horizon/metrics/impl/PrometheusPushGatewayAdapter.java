@@ -29,12 +29,14 @@
 package org.opennms.horizon.metrics.impl;
 
 import io.prometheus.client.Collector;
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.PushGateway;
 import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class PrometheusPushGatewayAdapter implements OnmsMetricsAdapter {
 
@@ -48,12 +50,11 @@ public class PrometheusPushGatewayAdapter implements OnmsMetricsAdapter {
 
 
     @Override
-    public void push(Collector collector) {
-
+    public void pushMetrics(CollectorRegistry registry, Map<String, String> groupingKey) {
         try {
-            pushGateway.pushAdd(collector, DEFAULT_JOB_PUSHGATEWAY);
+            pushGateway.pushAdd(registry, DEFAULT_JOB_PUSHGATEWAY);
         } catch (IOException e) {
-            LOG.error("Exception while pushing metrics for metrics : {}", collector, e);
+            LOG.error("Exception while pushing metrics for : {}", registry, e);
         }
     }
 }

@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.core.monitor;
 
+import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.horizon.core.monitor.taskset.LocationBasedTaskSetManager;
 import org.opennms.horizon.core.monitor.taskset.TaskSetManager;
@@ -60,6 +61,8 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * TBD888: Rework still needed for task-set definitions, and general completeness
@@ -81,7 +84,7 @@ public class DeviceMonitorManager implements EventListener {
     private final SessionUtils sessionUtils;
     private final List<OnmsNode> nodeCache = new ArrayList<>();
     private final ThreadFactory monitorThreadFactory = new ThreadFactoryBuilder()
-        .setNameFormat("monitor-runner-%d")
+        .setNameFormat("device-monitor-runner-%d")
         .build();
 
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(25, monitorThreadFactory);
@@ -119,6 +122,7 @@ public class DeviceMonitorManager implements EventListener {
 
         try {
             List<OnmsIpInterface> ipInterfaces = sessionUtils.withReadOnlyTransaction(() -> ipInterfaceDao.findInterfacesByNodeId(onmsNode.getId()));
+            String location = sessionUtils.withReadOnlyTransaction(() -> onmsNode.getLocation().getLocationName());
             ipInterfaces.forEach(onmsIpInterface -> {
                 LOG.info("Polling ICMP/SNMP Monitor for IPAddress {}", onmsIpInterface.getIpAddress());
 
@@ -168,7 +172,7 @@ public class DeviceMonitorManager implements EventListener {
             Long nodeId = event.getNodeid();
             if (nodeId != null) {
                 OnmsNode node = sessionUtils.withReadOnlyTransaction(() -> nodeDao.get(nodeId.intValue()));
-                scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(node), 0, 120, TimeUnit.SECONDS);
+                scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(node), DEVICE_INITIAL_DELAY, DEVICE_INTERVAL, TimeUnit.SECONDS);
             }
         }
     }

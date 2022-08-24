@@ -60,7 +60,7 @@ const trigger = async () => {
 
 const clear = async () => {
   startSpinner()
-  const promises = alarmsQueries.alarms.map((alarm: AlarmDto) => 
+  const promises = alarmsQueries.alarms.map((alarm) => 
     alarmMutations.clearAlarm({ id: alarm?.id, ackDTO: { user: 'admin' } as AlarmAckDtoInput }))
 
   await Promise.all(promises)

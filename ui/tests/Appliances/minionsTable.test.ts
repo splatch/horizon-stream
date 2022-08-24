@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import MinionsTable from '@/components/Appliances/MinionsTable.vue'
-import minionsQueriesStore from '../store/minionsQueries'
+import applianceQueriesStore from '../store/applianceQueries'
 
 describe('MinionsTable.vue', () => {
   describe('Required columns', () => {
@@ -10,8 +10,8 @@ describe('MinionsTable.vue', () => {
           id: '1',
           date: 'date1',
           label: 'minion1',
-          icmp_latency: 'OK',
-          snmp_uptime: 'OK',
+          icmp_latency: 5,
+          snmp_uptime: 5,
           status: 'UP',
           location: 'default'
         }, 
@@ -19,13 +19,13 @@ describe('MinionsTable.vue', () => {
           id: '2',
           date: 'date2',
           label: 'minion2',
-          icmp_latency: 'OK',
-          snmp_uptime: 'OK',
+          icmp_latency: 5,
+          snmp_uptime: 5,
           status: 'DOWN',
           location: 'default'
         }
       ] 
-      minionsQueriesStore(computed(() => minionsItems))
+      applianceQueriesStore(undefined, computed(() => minionsItems))
     })
 
     const requiredColumns = [
@@ -46,7 +46,7 @@ describe('MinionsTable.vue', () => {
     
   describe('Minions list', () => {
     it('should have an empty table when there\'s no minion', () =>{
-      minionsQueriesStore(computed(() => []))
+      applianceQueriesStore(undefined, computed(() => []))
       const wrapper = mount(MinionsTable)
         
       const minionItem = wrapper.find('[data-test="minion-item"]')
@@ -59,8 +59,8 @@ describe('MinionsTable.vue', () => {
           id: '1',
           date: 'date1',
           label: 'minion1',
-          icmp_latency: 'OK',
-          snmp_uptime: 'OK',
+          icmp_latency: 5,
+          snmp_uptime: 5,
           status: 'UP',
           location: 'default'
         }, 
@@ -68,13 +68,13 @@ describe('MinionsTable.vue', () => {
           id: '2',
           date: 'date2',
           label: 'minion2',
-          icmp_latency: 'OK',
-          snmp_uptime: 'OK',
+          icmp_latency: 5,
+          snmp_uptime: 5,
           status: 'DOWN',
           location: 'default'
         }
       ] 
-      minionsQueriesStore(computed(() => minionsItems))
+      applianceQueriesStore(undefined, computed(() => minionsItems))
       const wrapper = mount(MinionsTable)
       
       const minionItem = wrapper.find('[data-test="minion-item"]')
@@ -90,8 +90,8 @@ describe('MinionsTable.vue', () => {
             id: '1',
             date: 'date1',
             label: 'minion1',
-            icmp_latency: 'OK',
-            snmp_uptime: 'OK',
+            icmp_latency: 5,
+            snmp_uptime: 5,
             status: 'UP',
             location: 'default'
           }, 
@@ -99,8 +99,8 @@ describe('MinionsTable.vue', () => {
             id: '2',
             date: 'date2',
             label: 'minion2',
-            icmp_latency: 'FAILED',
-            snmp_uptime: 'FAILED',
+            icmp_latency: 2000,
+            snmp_uptime: 0,
             status: 'DOWN',
             location: 'default'
           }, 
@@ -108,13 +108,13 @@ describe('MinionsTable.vue', () => {
             id: '3',
             date: 'date3',
             label: 'minion3',
-            icmp_latency: 'UNKNOWN',
-            snmp_uptime: 'UNKNOWN',
+            icmp_latency: undefined,
+            snmp_uptime: undefined,
             status: 'DOWN',
             location: 'default'
           }
         ] 
-        minionsQueriesStore(computed(() => minionsItems))
+        applianceQueriesStore(undefined, computed(() => minionsItems))
       })
   
       /**
@@ -162,8 +162,8 @@ describe('MinionsTable.vue', () => {
             id: '1',
             date: 'date1',
             label: 'minion1',
-            icmp_latency: 'OK',
-            snmp_uptime: 'OK',
+            icmp_latency: 5,
+            snmp_uptime: 5,
             status: 'UP',
             location: 'default'
           }, 
@@ -171,13 +171,13 @@ describe('MinionsTable.vue', () => {
             id: '2',
             date: 'date2',
             label: 'minion2',
-            icmp_latency: 'FAILED',
-            snmp_uptime: 'FAILED',
+            icmp_latency: 300,
+            snmp_uptime: 0,
             status: 'DOWN',
             location: 'default'
           }
         ] 
-        minionsQueriesStore(computed(() => minionsItems)) 
+        applianceQueriesStore(undefined, computed(() => minionsItems)) 
       })
   
       /**
