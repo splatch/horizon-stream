@@ -4,25 +4,33 @@ kind: Config
 metadata:
   name: horizon-stream-ui
 build:
+  local:
+    useBuildkit: true
   artifacts:
-  - image: opennms/horizon-stream-ui-dev
+  - image: opennms/horizon-stream-ui
     sync:
       manual: # Inferred file sync is limited for multi-stage builds, use manual sync.
         - src: 'src/*'
           dest: .
         - src: 'public/*'
           dest: .
-        - src: '**/*.ts'
+        - src: 'tests/*'
+          dest: .
+        - src: 'index.html'
+          dest: .
+        - src: '*.ts'
           dest: .
     docker:
       dockerfile: Dockerfile
-      target: dev-server
-  local:
-    useBuildkit: true
+      target: development
+      buildArgs:
+        VITE_BASE_URL: "http://localhost:48080"
+        VITE_KEYCLOAK_URL: "http://localhost:28080"
 portForward:
   - resourceType: deployment
     resourceName: my-horizon-stream-ui
-    port: 3000 # Vite dev server
+    port: 80 # nginx HTTP
+    localPort: 3000
 profiles:
   - name: prod
     build:
@@ -33,14 +41,3 @@ profiles:
           buildArgs:
             VITE_BASE_URL: "http://localhost:48080"
             VITE_KEYCLOAK_URL: "http://localhost:28080"
-    deploy:
-      kubectl:
-        manifests:
-          # NOTE: Make sure the 'prod-deployments' module in the main `skaffold.yaml` also deploys this.
-          # Otherwise, the 'dev' Deployment will override this when running `skaffold dev -p prod`.
-          - k8s/ui-prod.yaml
-    portForward:
-      - resourceType: deployment
-        resourceName: my-horizon-stream-ui
-        port: 80 # nginx HTTP
-        localPort: 3000

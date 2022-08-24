@@ -750,14 +750,9 @@ spec:
     spec:
       containers:
         - name: horizon-stream-ui
-          image: opennms/horizon-stream-ui-dev
+          image: opennms/horizon-stream-ui
           ports:
-            - containerPort: 3000
-          env:
-            - name: VITE_BASE_URL
-              value: "http://localhost:48080"
-            - name: VITE_KEYCLOAK_URL
-              value: "http://localhost:28080"
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: ConfigMap
