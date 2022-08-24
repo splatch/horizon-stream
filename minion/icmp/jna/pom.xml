@@ -10,7 +10,7 @@
     </parent>
 
   <artifactId>jna</artifactId>
-  <name>OpenNMS Horizon :: ICMP :: JNA</name>
+  <name>OpenNMS Horizon :: Minion :: ICMP :: JNA</name>
   <packaging>bundle</packaging>
 
   <dependencies>

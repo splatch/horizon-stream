@@ -14,10 +14,10 @@
         <bundle>mvn:com.google.code.gson/gson/${gson.version}</bundle>
     </feature>
 
-    <feature name="plugins-horizon-core-lib-internal" version="${project.version}">
-        <feature prerequisite="true">wrap</feature>
-        <bundle>wrap:mvn:org.opennms.horizon.core/lib/${project.version}$overwrite=merge&amp;Import-Package=*;resolution:=optional</bundle>
-    </feature>
+<!--    <feature name="plugins-horizon-core-lib-internal" version="${project.version}">-->
+<!--        <feature prerequisite="true">wrap</feature>-->
+<!--        <bundle>wrap:mvn:org.opennms.horizon.core/lib/${project.version}$overwrite=merge&amp;Import-Package=*;resolution:=optional</bundle>-->
+<!--    </feature>-->
 
     <feature name="plugins-eos-internal" description="Savoirtech EOS Whiteboard" version="${project.version}">
         <bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.4</bundle>
@@ -43,7 +43,7 @@
         <feature>plugins-model</feature>
         <feature>plugins-eos-internal</feature>
         <feature>plugins-gson-internal</feature>
-        <feature>plugins-horizon-core-lib-internal</feature>
+<!--        <feature>plugins-horizon-core-lib-internal</feature>-->
         <feature>plugins-horizon-utils-internal</feature>
         <bundle>mvn:org.opennms.horizon.minion/plugins-api/${project.version}</bundle>
     </feature>
