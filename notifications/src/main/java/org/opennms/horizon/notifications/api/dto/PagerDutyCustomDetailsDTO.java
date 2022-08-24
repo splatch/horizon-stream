@@ -26,14 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.api.dto;
 
-import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.dto.NotificationDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public interface NotificationService {
+import lombok.Getter;
+import lombok.Setter;
 
-    void postNotification(NotificationDTO notification) throws Exception;
+@Getter
+@Setter
+public class PagerDutyCustomDetailsDTO {
+    // TODO: Change to something useful to us. Currently first draft to prove can call into PagerDuty
+    @JsonProperty("free space")
+    String freeSpace;
 
-    void postPagerDutyConfig(PagerDutyConfigDTO config) throws Exception;
+    @JsonProperty("ping time")
+    String pingTime;
+
+    @JsonProperty("load avg")
+    String loadAvg;
 }

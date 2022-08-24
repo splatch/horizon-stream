@@ -26,14 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.config;
 
-import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.dto.NotificationDTO;
+import javax.sql.DataSource;
 
-public interface NotificationService {
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
-    void postNotification(NotificationDTO notification) throws Exception;
+@Configuration
+public class JpaConfig {
+    @Bean
+    public DataSource getDataSource()
+    {
+        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.url("jdbc:postgresql://postgres:5432/notification");
+        dataSourceBuilder.username("notification");
+        dataSourceBuilder.password("passw0rd");
+        return dataSourceBuilder.build();
+    }
 
-    void postPagerDutyConfig(PagerDutyConfigDTO config) throws Exception;
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
+    }
 }
