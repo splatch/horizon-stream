@@ -135,7 +135,7 @@ public class MinionRpcMonitorManager implements EventListener {
         responseTimeGauge.labels(labelValues).set(responseTime);
         var groupingKey = IntStream.range(0, LABEL_NAMES.length).boxed()
             .collect(Collectors.toMap(i -> LABEL_NAMES[i], i -> labelValues[i]));
-        metricsAdapter.pushRegistry(collectorRegistry, groupingKey);
+        metricsAdapter.pushMetrics(collectorRegistry, groupingKey);
     }
 
 }
