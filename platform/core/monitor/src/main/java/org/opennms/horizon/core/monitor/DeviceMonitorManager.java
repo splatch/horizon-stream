@@ -147,7 +147,7 @@ public class DeviceMonitorManager implements EventListener {
 
     private void addPollIcmpTask(TaskSetManager taskSetManager, InetAddress inetAddress) {
         Map<String, String> parameters = makeParametersMap("host", inetAddress.getHostAddress(), "timeout", "60000");
-        taskSetManager.addIpTask(inetAddress, "icmp-monitor", TaskType.MONITOR, "ICMPMonitor", "120", parameters);
+        taskSetManager.addIpTask(inetAddress, "icmp-monitor", TaskType.MONITOR, "ICMPMonitor", "5000", parameters);
     }
 
     private void addPollSnmpTask(TaskSetManager taskSetManager, InetAddress inetAddress, String snmpCommunityString) {
@@ -158,7 +158,7 @@ public class DeviceMonitorManager implements EventListener {
                 "retries", "2"
             );
 
-        taskSetManager.addIpTask(inetAddress, "snmp-monitor", TaskType.MONITOR, "SNMPMonitor", "120", parameters);
+        taskSetManager.addIpTask(inetAddress, "snmp-monitor", TaskType.MONITOR, "SNMPMonitor", "5000", parameters);
     }
 
     @Override
