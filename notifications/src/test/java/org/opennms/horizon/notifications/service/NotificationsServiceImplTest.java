@@ -29,11 +29,16 @@
 package org.opennms.horizon.notifications.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opennms.horizon.notifications.api.PagerDutyAPI;
+import org.opennms.horizon.notifications.api.PagerDutyAPIImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationsServiceImplTest {
@@ -41,10 +46,16 @@ public class NotificationsServiceImplTest {
     @InjectMocks
     NotificationServiceImpl notificationService;
 
-    @Test
-    public void testGetPagerDutyKey() throws Exception {
-        String ret = notificationService.getPagerDutyKey();
+    @Mock
+    PagerDutyAPI pagerDutyAPI;
 
-        assertEquals("ABC", ret);
+    @Test
+    public void testPostNotification() throws Exception {
+        notificationService.postNotification(null);
+    }
+
+    @Test
+    public void testPostPagerDutyConfig() throws Exception {
+        notificationService.postPagerDutyConfig(null);
     }
 }

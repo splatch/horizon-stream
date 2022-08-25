@@ -76,6 +76,7 @@ Postgres:
   AdminPassword: notset
   OpenNMSPassword: notset
   KeycloakPassword: notset
+  NotificationPassword: notset
   VolumeSize: 10Gi
 Keycloak:
   Path: /auth

@@ -26,14 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.api;
 
 import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.dto.NotificationDTO;
+import org.opennms.horizon.notifications.exceptions.NotificationException;
 
-public interface NotificationService {
+public interface PagerDutyAPI {
+    void postNotification(NotificationDTO notification) throws NotificationException;
 
-    void postNotification(NotificationDTO notification) throws Exception;
+    void initConfig(PagerDutyConfigDTO config);
 
-    void postPagerDutyConfig(PagerDutyConfigDTO config) throws Exception;
+    void validateConfig(PagerDutyConfigDTO config) throws NotificationException;
 }

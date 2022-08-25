@@ -477,6 +477,9 @@ spec:
         - name: postgres-keycloak-initial-script
           configMap:
             name: postgres-keycloak-initial-sql
+        - name: postgres-notification-initial-script
+          configMap:
+            name: postgres-notification-initial-sql
       containers:
         - name: postgres
           image: postgres:13.3-alpine
@@ -504,6 +507,9 @@ spec:
             - mountPath: "/docker-entrypoint-initdb.d/postgres.keycloak.initial.script.sql"
               name: postgres-keycloak-initial-script
               subPath: "postgres.keycloak.initial.script.sql"
+            - mountPath: "/docker-entrypoint-initdb.d/postgres.notification.initial.script.sql"
+              name: postgres-notification-initial-script
+              subPath: "postgres.notification.initial.script.sql"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -814,6 +820,16 @@ data:
     CREATE USER keycloak with password 'passw0rd';
     CREATE DATABASE keycloak;
     GRANT ALL ON DATABASE keycloak TO keycloak;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-notification-initial-sql
+data:
+  postgres.notification.initial.script.sql: |
+    CREATE USER notification with password 'passw0rd';
+    CREATE DATABASE notification;
+    GRANT ALL ON DATABASE notification TO notification;
 ---
 apiVersion: v1
 kind: ConfigMap

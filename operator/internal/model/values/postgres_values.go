@@ -19,4 +19,4 @@ type PostgresValues struct {
 	AdminPassword    string `yaml:"AdminPassword"`
 	OpenNMSPassword  string `yaml:"OpenNMSPassword"`
 	KeycloakPassword string `yaml:"KeycloakPassword"`
-}
+	NotificationPassword string `yaml:"NotificationPassword"`
