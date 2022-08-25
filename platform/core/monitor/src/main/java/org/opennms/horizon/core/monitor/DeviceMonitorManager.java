@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.core.monitor;
 
+import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Gauge;
@@ -64,6 +65,11 @@ public class DeviceMonitorManager implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMonitorManager.class);
     private static final String SYS_OBJECTID_INSTANCE = ".1.3.6.1.2.1.1.2.0";
     private static final Long INVALID_UP_TIME = -1L;
+    private static final long DEVICE_INITIAL_DELAY = 5; // 5 sec
+    private static final long DEVICE_INTERVAL = 30; // 30 sec
+    private static final long DEVICE_TTL = 20; //20 sec
+    private static final int SNMP_TIMEOUT_DEFAULT = 18000; // 18 sec
+    private static final int SNMP_RETRIES_DEFAULT = 1;
     private final LocationAwarePingClient locationAwarePingClient;
     private final LocationAwareSnmpClient locationAwareSnmpClient;
     private final EventSubscriptionService eventSubscriptionService;
@@ -73,7 +79,7 @@ public class DeviceMonitorManager implements EventListener {
     private final OnmsMetricsAdapter metricsAdapter;
     private final List<OnmsNode> nodeCache = new ArrayList<>();
     private final ThreadFactory monitorThreadFactory = new ThreadFactoryBuilder()
-        .setNameFormat("monitor-runner-%d")
+        .setNameFormat("device-monitor-runner-%d")
         .build();
     private final CollectorRegistry collectorRegistry = new CollectorRegistry();
     private static final String[] labelNames = {"instance", "location"};
@@ -108,7 +114,7 @@ public class DeviceMonitorManager implements EventListener {
         sessionUtils.withReadOnlyTransaction(() -> nodeCache.addAll(nodeDao.findAll()));
         nodeCache.forEach(onmsNode -> {
             LOG.info("Starting device monitoring for device with ID {}", onmsNode.getId());
-            scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(onmsNode), 5, 120, TimeUnit.SECONDS);
+            scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(onmsNode), DEVICE_INITIAL_DELAY, DEVICE_INTERVAL, TimeUnit.SECONDS);
         });
     }
 
@@ -130,7 +136,7 @@ public class DeviceMonitorManager implements EventListener {
     private void pollIcmp(InetAddress inetAddress, String location) {
         try {
             locationAwarePingClient.ping(inetAddress).withLocation(location)
-                .withTimeout(60, TimeUnit.SECONDS)
+                .withTimeout(DEVICE_TTL, TimeUnit.SECONDS)
                 .execute()
                 .whenComplete(((pingSummary, throwable) -> {
                     if (throwable != null) {
@@ -139,9 +145,13 @@ public class DeviceMonitorManager implements EventListener {
                     } else if (pingSummary != null && pingSummary.getSequence(0) != null) {
                         // we are only pinging one IpAddress, use sequence 0
                         double icmpResponseTime = pingSummary.getSequence(0).getResponse().getRtt();
-                        LOG.info("ICMP Round trip time for IPAddress {} at location {} : {} msec",
-                            inetAddress.getHostAddress(), location, icmpResponseTime);
-                        addIcmpMetric(icmpResponseTime, inetAddress.getHostAddress(), location);
+                        if (icmpResponseTime != Double.POSITIVE_INFINITY) {
+                            LOG.info("ICMP Round trip time for IPAddress {} at location {} : {} msec",
+                                inetAddress.getHostAddress(), location, icmpResponseTime);
+                            updateIcmpMetric(icmpResponseTime, inetAddress.getHostAddress(), location);
+                        } else {
+                            LOG.info("ICMP is Down at IpAddress {}", inetAddress.getHostAddress());
+                        }
                     }
                 }));
         } catch (Exception e) {
@@ -153,21 +163,23 @@ public class DeviceMonitorManager implements EventListener {
         try {
             final SnmpAgentConfig agentConfig = new SnmpAgentConfig();
             agentConfig.setAddress(inetAddress);
-            agentConfig.setReadCommunity(snmpCommunityString);
-            agentConfig.setTimeout(18000);
-            agentConfig.setRetries(2);
+            if(!Strings.isNullOrEmpty(snmpCommunityString)) {
+                agentConfig.setReadCommunity(snmpCommunityString);
+            }
+            agentConfig.setTimeout(SNMP_TIMEOUT_DEFAULT);
+            agentConfig.setRetries(SNMP_RETRIES_DEFAULT);
             locationAwareSnmpClient.get(agentConfig, SnmpObjId.get(SYS_OBJECTID_INSTANCE))
                 .withLocation(location)
                 .withDescription("Device-Monitor")
-                .withTimeToLive(60000L)
+                .withTimeToLive(DEVICE_TTL * 1000)
                 .execute().whenComplete(((snmpValue, throwable) -> {
                     if (throwable != null) {
                         LOG.info("SNMP is Down at IpAddress {}", inetAddress.getHostAddress());
                         LOG.debug("Exception while detecting Snmp service at IpAddress {}", inetAddress.getHostAddress(), throwable);
-                        addSnmpMetrics(inetAddress.getHostAddress(), false, location);
+                        updateSnmpMetrics(inetAddress.getHostAddress(), false, location);
                     } else if (snmpValue != null && !snmpValue.isError()) {
                         LOG.info("SNMP is Up at IpAddress {}", inetAddress.getHostAddress());
-                        addSnmpMetrics(inetAddress.getHostAddress(), true, location);
+                        updateSnmpMetrics(inetAddress.getHostAddress(), true, location);
                     }
                 }));
         } catch (Exception e) {
@@ -175,15 +187,15 @@ public class DeviceMonitorManager implements EventListener {
         }
     }
 
-    private void addIcmpMetric(double responseTime, String ipAddress, String location) {
+    private void updateIcmpMetric(double responseTime, String ipAddress, String location) {
         String[] labelValues = {ipAddress, location};
         var groupingKey = IntStream.range(0, labelNames.length).boxed()
             .collect(Collectors.toMap(i -> labelNames[i], i -> labelValues[i]));
         rttGauge.labels(labelValues).set(responseTime);
-        metricsAdapter.pushRegistry(collectorRegistry, groupingKey);
+        metricsAdapter.pushMetrics(collectorRegistry, groupingKey);
     }
 
-    private void addSnmpMetrics(String ipAddress, boolean status, String location) {
+    private void updateSnmpMetrics(String ipAddress, boolean status, String location) {
         String[] labelValues = {ipAddress, location};
         if (status) {
             Long firstUpTime = snmpUpTimeCache.get(ipAddress);
@@ -198,12 +210,11 @@ public class DeviceMonitorManager implements EventListener {
             LOG.info("Total upTime of SNMP for {} at location {} : {} sec",
                 ipAddress, location, totalUpTimeInSec);
         } else {
-            upTimeGauge.labels(labelValues).set(0);
             snmpUpTimeCache.put(ipAddress, INVALID_UP_TIME);
         }
         var groupingKey = IntStream.range(0, labelNames.length).boxed()
             .collect(Collectors.toMap(i -> labelNames[i], i -> labelValues[i]));
-        metricsAdapter.pushRegistry(collectorRegistry, groupingKey);
+        metricsAdapter.pushMetrics(collectorRegistry, groupingKey);
     }
 
     @Override
@@ -217,7 +228,7 @@ public class DeviceMonitorManager implements EventListener {
             Long nodeId = event.getNodeid();
             if (nodeId != null) {
                 OnmsNode node = sessionUtils.withReadOnlyTransaction(() -> nodeDao.get(nodeId.intValue()));
-                scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(node), 0, 120, TimeUnit.SECONDS);
+                scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(node), DEVICE_INITIAL_DELAY, DEVICE_INTERVAL, TimeUnit.SECONDS);
             }
         }
     }

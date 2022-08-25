@@ -26,14 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.api.dto;
 
-import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.dto.NotificationDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public interface NotificationService {
+import lombok.Getter;
+import lombok.Setter;
 
-    void postNotification(NotificationDTO notification) throws Exception;
-
-    void postPagerDutyConfig(PagerDutyConfigDTO config) throws Exception;
+@Getter
+@Setter
+public class PagerDutyPayloadDTO {
+    String summary;
+    String timestamp;
+    String severity;
+    String source;
+    String component;
+    String group;
+    @JsonProperty("class")
+    String clazz;
+    PagerDutyCustomDetailsDTO custom_details;
 }
