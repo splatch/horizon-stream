@@ -18,7 +18,10 @@ declare module '@vue/runtime-core' {
     FeatherAppBar: typeof import('@featherds/app-bar')['FeatherAppBar']
     FeatherAppBarLink: typeof import('@featherds/app-bar')['FeatherAppBarLink']
     FeatherAppLayout: typeof import('@featherds/app-layout')['FeatherAppLayout']
+    FeatherAutocomplete: typeof import('@featherds/autocomplete')['FeatherAutocomplete']
     FeatherButton: typeof import('@featherds/button')['FeatherButton']
+    FeatherCheckbox: typeof import('@featherds/checkbox')['FeatherCheckbox']
+    FeatherCheckboxGroup: typeof import('@featherds/checkbox')['FeatherCheckboxGroup']
     FeatherDialog: typeof import('@featherds/dialog')['FeatherDialog']
     FeatherIcon: typeof import('@featherds/icon')['FeatherIcon']
     FeatherInput: typeof import('@featherds/input')['FeatherInput']
@@ -35,6 +38,7 @@ declare module '@vue/runtime-core' {
     MarkerCluster: typeof import('./src/components/Map/MarkerCluster.vue')['default']
     Menubar: typeof import('./src/components/Layout/Menubar.vue')['default']
     MinionsTable: typeof import('./src/components/Appliances/MinionsTable.vue')['default']
+    MinionsTableWidget: typeof import('./src/components/Widgets/MinionsTableWidget.vue')['default']
     NavigationRail: typeof import('./src/components/Layout/NavigationRail.vue')['default']
     NetworkGraph: typeof import('./src/components/Topology/NetworkGraph.vue')['default']
     NoFocusMsg: typeof import('./src/components/Topology/NoFocusMsg.vue')['default']
@@ -52,5 +56,7 @@ declare module '@vue/runtime-core' {
     TopologyRightDrawer: typeof import('./src/components/Topology/TopologyRightDrawer.vue')['default']
     TopologySearch: typeof import('./src/components/Topology/TopologySearch.vue')['default']
     ViewSelect: typeof import('./src/components/Topology/ViewSelect.vue')['default']
+    Widget: typeof import('./src/components/Widgets/Widget.vue')['default']
+    Widgetbar: typeof import('./src/components/Layout/Widgetbar.vue')['default']
   }
 }
