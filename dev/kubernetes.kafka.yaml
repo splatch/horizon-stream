@@ -735,6 +735,8 @@ spec:
               value: "horizon-stream-minion"
             - name: JAVA_TOOL_OPTIONS # Presence of this var lets `skaffold debug` see that this is a jvm container
               value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+            - name: LOCATION
+              value: "Default"
           ports:
             - containerPort: 8181
             - containerPort: 8101
@@ -744,7 +746,7 @@ spec:
               subPath: "grpc-config"
             - name: config-volume
               mountPath: "/opt/karaf/etc/org.opennms.identity.cfg"
-              subPath: "opennms-identity"
+              subPath: "opennms-minion-identity"
             - name: users-volume
               mountPath: "/opt/horizon-stream/etc/users.properties"
               subPath: "data"
@@ -1216,9 +1218,9 @@ data:
   grpc-config: |
     host=minion-gateway
     max.message.size=104857600
-  opennms-identity: |
-    identity.id=${env:HOSTNAME:-UNKNOWN}
-    identity.location=${env:LOCATION:-cloud}
+  opennms-minion-identity: |
+    id=${env:HOSTNAME:-UNKNOWN}
+    location=${env:LOCATION:-Default}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role

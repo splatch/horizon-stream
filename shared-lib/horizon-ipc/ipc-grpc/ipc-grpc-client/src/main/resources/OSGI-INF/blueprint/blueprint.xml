@@ -20,7 +20,7 @@
         placeholder-prefix="$[" placeholder-suffix="]">
         <cm:default-properties>
             <cm:property name="id" value="UNKNOWN"/>
-            <cm:property name="location" value="cloud"/>
+            <cm:property name="location" value="Default"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
