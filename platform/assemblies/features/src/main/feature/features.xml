@@ -82,6 +82,8 @@
         <bundle>mvn:org.opennms.horizon.db/schema-liquibase/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.db/model/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.shared/dto-model/${horizon.shared.lib.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.db/kv-store-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.db/postgres-kvstore/${project.version}</bundle>
 
         <bundle dependency="true">mvn:commons-lang/commons-lang/${commons.lang.version}</bundle>
 

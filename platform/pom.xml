@@ -30,6 +30,7 @@
         <module>inventory</module>
         <module>minion</module>
         <module>metrics</module>
+        <module>cm</module>
     </modules>
 
     <properties>
