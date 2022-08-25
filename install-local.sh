@@ -17,7 +17,7 @@ operator-sdk olm install --version v0.21.2
 echo
 echo ___________Installing Helm Dependencies____________
 echo
-bash scripts/install-helm-deps-local.sh
+helm upgrade -i operator-deps-local ./charts/opennms-operator-dependencies -f ./operator/values.yaml
 if [ $? -ne 0 ]; then exit; fi
 
 echo
