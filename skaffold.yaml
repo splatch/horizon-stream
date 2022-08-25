@@ -7,6 +7,8 @@ requires:
   - configs: ["keycloak-operator"]
   - configs: ["horizon-stream-ui"]
     path: ui/skaffold.yaml
+profiles:
+  - name: prod
 build:
   artifacts:
   - image: opennms/horizon-stream-core
