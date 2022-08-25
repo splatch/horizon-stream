@@ -39,7 +39,7 @@ export const useApplianceQueries = defineStore('applianceQueries', {
       for (const device of devices) {
         device.icmp_latency = latenciesMap[device.managementIp as string]
         device.snmp_uptime = uptimesMap[device.managementIp as string]
-        device.status = !device.icmp_latency || !device.snmp_uptime ? 'DOWN' : 'UP'
+        device.status = (device.icmp_latency >= 0 && device.snmp_uptime >= 0) ? 'UP' : 'DOWN'
       }
       
       return devices

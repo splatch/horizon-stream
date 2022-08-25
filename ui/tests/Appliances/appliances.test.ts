@@ -7,11 +7,9 @@ import useKeycloak from '@/composables/useKeycloak'
 import { KeycloakInstance } from '@dsb-norge/vue-keycloak-js/dist/types'
 import setupWrapper from 'tests/setupWrapper'
 
-
 const wrapper = setupWrapper({
   component: Appliances
 })
-
 
 it('should have a header',  async () => {
   const { setKeycloak } = useKeycloak()

@@ -37,11 +37,11 @@ import java.util.Map;
 public interface OnmsMetricsAdapter {
 
     /**
-     * Push metrics to the adapter
+     * Pushes all the metrics in the registry to adapter
      *
      * @param registry - collector registry with a set of metrics
      * @param groupingKey - Map of grouping keys ( labels, values)
      */
-    void pushRegistry(CollectorRegistry registry, Map<String, String> groupingKey);
+    void pushMetrics(CollectorRegistry registry, Map<String, String> groupingKey);
 
 }
