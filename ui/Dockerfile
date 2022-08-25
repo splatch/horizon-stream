@@ -23,7 +23,7 @@ COPY --link . ./
 FROM sources as development
 
 EXPOSE 80
-ENTRYPOINT ["yarn", "run", "dev", "--host"]
+ENTRYPOINT ["yarn", "run", "dev"]
 CMD ["--port", "80"]
 
 # Builds the app for production
