@@ -31,25 +31,31 @@ type KeycloakHandler struct {
 func (h *KeycloakHandler) ProvideConfig(values values.TemplateValues) []client.Object {
 	var opGroup olmv1.OperatorGroup
 	var opSub olmv1alpha1.Subscription
+	var initialAdminSecret corev1.Secret
 	var credSecret corev1.Secret
 	var keycloak unstructured.Unstructured
 	var realmImport unstructured.Unstructured
 	var service corev1.Service
+	var internalService corev1.Service
 
+	yaml.LoadYaml(filepath("keycloak/keycloak-initial-cred-secret.yaml"), values, &initialAdminSecret)
 	yaml.LoadYaml(filepath("keycloak/keycloak-operator-group.yaml"), values, &opGroup)
 	yaml.LoadYaml(filepath("keycloak/keycloak-operator-sub.yaml"), values, &opSub)
 	yaml.LoadYaml(filepath("keycloak/keycloak-cred-secret.yaml"), values, &credSecret)
 	yaml.LoadYaml(filepath("keycloak/keycloak.yaml"), values, &keycloak)
 	yaml.LoadYaml(filepath("keycloak/keycloak-realmimport.yaml"), values, &realmImport)
 	yaml.LoadYaml(filepath("keycloak/keycloak-service.yaml"), values, &service)
+	yaml.LoadYaml(filepath("keycloak/keycloak-internal-service.yaml"), values, &internalService)
 
 	h.Config = []client.Object{
+		&initialAdminSecret,
 		&opGroup,
 		&opSub,
 		&credSecret,
 		&keycloak,
 		&realmImport,
 		&service,
+		&internalService,
 	}
 
 	return h.Config

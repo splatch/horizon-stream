@@ -21,3 +21,6 @@ spec:
     mem: 100Mi
   postgres:
     image: postgres:13.3-alpine
+  credentials:
+    adminPassword: admin
+    userPassword: passw0rd

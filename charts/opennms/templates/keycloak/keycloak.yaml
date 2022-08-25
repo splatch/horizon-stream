@@ -31,7 +31,7 @@ spec:
     - name: hostname-strict
       value: "false"
     - name: hostname-strict-backchannel
-      value: "true"
+      value: "false"
     - name: proxy
       value: passthrough
     - name: http-enabled
