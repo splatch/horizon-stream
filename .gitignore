@@ -30,10 +30,12 @@ dependency-reduced-pom.xml
 
 # Editors
 .idea
+idea
 .settings
 .classpath
 .project
 java/bin/
 *.swp
 *.iml
+idea/
 

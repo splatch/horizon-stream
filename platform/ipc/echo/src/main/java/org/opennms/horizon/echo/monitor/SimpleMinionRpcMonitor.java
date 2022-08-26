@@ -174,6 +174,6 @@ public class SimpleMinionRpcMonitor {
         responseTimeGauge.labels(labelValues).set(responseTime);
         var groupingKey = IntStream.range(0, labelNames.length).boxed()
             .collect(Collectors.toMap(i -> labelNames[i], i -> labelValues[i]));
-        metricsAdapter.pushRegistry(collectorRegistry, groupingKey);
+        metricsAdapter.pushMetrics(collectorRegistry, groupingKey);
     }
 }

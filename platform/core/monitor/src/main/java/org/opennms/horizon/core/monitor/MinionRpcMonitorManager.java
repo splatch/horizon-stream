@@ -108,7 +108,7 @@ public class MinionRpcMonitorManager implements EventListener {
 
 
     private void runMinionMonitor(String location, String minionId) {
-        LOG.info("Minion RPC Monitor: executing check for minion: id={}; location={}", minionId, location);
+        LOG.info("test Minion RPC Monitor: executing check for minion: id={}; location={}", minionId, location);
         // Create the client
         RpcClient<EchoRequest, EchoResponse> client = rpcClientFactory.getClient(EchoRpcModule.INSTANCE);
 
@@ -135,7 +135,7 @@ public class MinionRpcMonitorManager implements EventListener {
         responseTimeGauge.labels(labelValues).set(responseTime);
         var groupingKey = IntStream.range(0, LABEL_NAMES.length).boxed()
             .collect(Collectors.toMap(i -> LABEL_NAMES[i], i -> labelValues[i]));
-        metricsAdapter.pushRegistry(collectorRegistry, groupingKey);
+        metricsAdapter.pushMetrics(collectorRegistry, groupingKey);
     }
 
 }

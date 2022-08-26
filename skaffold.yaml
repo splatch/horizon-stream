@@ -1,15 +1,20 @@
+# nonk8s
 apiVersion: skaffold/v2beta28
 kind: Config
 metadata:
   name: horizon-stream
 requires:
   - configs: ["keycloak-operator"]
+  - configs: ["horizon-stream-ui"]
+    path: ui/skaffold.yaml
+profiles:
+  - name: prod
 build:
   artifacts:
   - image: opennms/horizon-stream-core
     context: platform
     custom:
-      buildCommand: "mvn install -Pbuild-docker-images-enabled -DskipTests -Ddocker.image=${IMAGE} -Ddocker.skipPush=${!PUSH_IMAGE}"
+      buildCommand: "mvn install -Pbuild-docker-images-enabled -DskipTests -Ddocker.image=$IMAGE -Ddocker.skipPush=!$PUSH_IMAGE"
       dependencies:
         paths: ["."]
         ignore: [
@@ -35,16 +40,6 @@ build:
     hooks:
       before:
         - command: [ "mvn", "install", "-f", "shared-lib" ]
-  - image: opennms/horizon-stream-ui-dev
-    context: ui
-    sync:
-      infer:
-        - "**/*.ts"
-        - "**/*.tsx"
-        - "**/*.css"
-        - "**/*.vue"
-    docker:
-      dockerfile: dev/Dockerfile
   - image: opennms/horizon-stream-keycloak-dev
     context: keycloak-ui
     sync:
@@ -54,9 +49,6 @@ build:
       dockerfile: Dockerfile
 
 portForward:
-  - resourceType: deployment
-    resourceName: my-horizon-stream-ui
-    port: 3000 # Vite dev server
   - resourceType: deployment
     resourceName: my-horizon-stream-api
     port: 9090 # HTTP
