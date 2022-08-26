@@ -47,6 +47,10 @@ build:
         - "themes/**"
     docker:
       dockerfile: Dockerfile
+  - image: opennms/grafana-dev
+    context: grafana
+    docker: 
+      dockerfile: Dockerfile
 
 portForward:
   - resourceType: deployment
@@ -120,7 +124,6 @@ deploy:
   kubectl:
     manifests:
       - dev/kubernetes.kafka.yaml
-
 ---
 
 apiVersion: skaffold/v2beta28
