@@ -255,8 +255,8 @@ spec:
               subPath: "opennms-entities.json"
       initContainers:
         - name: grafana-init-container
-          image: busybox
-          command: ["sh", "-c", "until nslookup postgres; do echo 'waiting for db'; sleep 1; done"]
+          image: boky/alpine-bootstrap
+          command: ["wait-for-service", "-v", "postgres://grafana@postgres:5432"]
 ---
 apiVersion: apps/v1
 kind: Deployment
