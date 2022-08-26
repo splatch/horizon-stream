@@ -12,9 +12,11 @@ import org.opennms.core.ipc.grpc.server.OpennmsGrpcServer;
 import org.opennms.core.ipc.grpc.server.manager.LocationIndependentRpcClientFactory;
 import org.opennms.core.ipc.grpc.server.manager.MinionManager;
 import org.opennms.core.ipc.grpc.server.manager.RpcConnectionTracker;
+import org.opennms.core.ipc.grpc.server.manager.RpcRequestTimeoutManager;
 import org.opennms.core.ipc.grpc.server.manager.RpcRequestTracker;
 import org.opennms.core.ipc.grpc.server.manager.impl.MinionManagerImpl;
 import org.opennms.core.ipc.grpc.server.manager.impl.RpcConnectionTrackerImpl;
+import org.opennms.core.ipc.grpc.server.manager.impl.RpcRequestTimeoutManagerImpl;
 import org.opennms.core.ipc.grpc.server.manager.impl.RpcRequestTrackerImpl;
 import org.opennms.core.ipc.grpc.server.manager.rpc.LocationIndependentRpcClientFactoryImpl;
 import org.opennms.core.ipc.grpc.server.manager.rpcstreaming.MinionRpcStreamConnectionManager;
@@ -88,6 +90,15 @@ public class GrpcServerConfig {
         return new StubCloudToMinionMessageProcessor(publisher, forwarder, grpcTwinPublisher);
     }
 
+    @Bean(initMethod = "start", destroyMethod = "shutdown")
+    public RpcRequestTimeoutManager timeoutManager() {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "grpc-timeout"));
+        RpcRequestTimeoutManagerImpl timeoutManager = new RpcRequestTimeoutManagerImpl();
+        timeoutManager.setRpcTimeoutExecutor(executor);
+        timeoutManager.setResponseHandlerExecutor(executor);
+        return timeoutManager;
+    }
+
     @Bean
     public OpennmsGrpcServer opennmsServer(
         @Autowired GrpcIpcServer serverBuilder,
@@ -96,6 +107,7 @@ public class GrpcServerConfig {
         @Autowired RpcRequestTracker rpcRequestTracker,
         @Autowired LocationIndependentRpcClientFactory locationIndependentRpcClientFactory,
         @Autowired MinionRpcStreamConnectionManager minionRpcStreamConnectionManager,
+        @Autowired RpcRequestTimeoutManager rpcRequestTimeoutManager,
         @Autowired @Qualifier("minionToCloudRPCProcessor") BiConsumer<RpcRequestProto, StreamObserver<RpcResponseProto>> minionToCloudRPCProcessor,
         @Autowired @Qualifier("cloudToMinionMessageProcessor") BiConsumer<Identity, StreamObserver<CloudToMinionMessage>> cloudToMinionMessageProcessor
     ) throws Exception {
@@ -112,6 +124,7 @@ public class GrpcServerConfig {
         server.setMinionRpcStreamConnectionManager(minionRpcStreamConnectionManager);
         server.setIncomingRpcHandler(minionToCloudRPCProcessor);
         server.setOutgoingMessageHandler(cloudToMinionMessageProcessor);
+        server.setRpcRequestTimeoutManager(rpcRequestTimeoutManager);
         server.registerConsumer(new TaskResultsConsumer());
 
         server.start();
