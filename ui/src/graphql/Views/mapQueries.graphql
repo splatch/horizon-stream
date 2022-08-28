@@ -1,4 +1,4 @@
-fragment DeviceTableParts on Query {
+fragment DeviceTablePartsForMap on Query {
   listDevices {
     devices {
       foreignId
@@ -6,6 +6,10 @@ fragment DeviceTableParts on Query {
       id
       label
       labelSource
+      location {
+        latitude
+        longitude
+      }
       sysContact
       sysDescription
       sysLocation
@@ -15,7 +19,7 @@ fragment DeviceTableParts on Query {
   }
 }
 
-fragment LocationParts on Query {
+fragment LocationPartsForMap on Query {
   listLocations {
     locations {
       latitude
@@ -24,7 +28,7 @@ fragment LocationParts on Query {
   }
 }
 
-query ListDevicesForGeomap {
-  ...DeviceTableParts,
-  ...LocationParts
+query ListDevicesForMap {
+  ...DeviceTablePartsForMap,
+  ...LocationPartsForMap
 }

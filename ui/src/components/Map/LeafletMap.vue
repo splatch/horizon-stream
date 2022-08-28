@@ -11,19 +11,6 @@
       @moveend="onMoveEnd"
       @zoom="invalidateSizeFn"
     >
-    <!-- <LMap
-      ref="map"
-      :center="center"
-      :max-zoom="19"
-      :min-zoom="2"
-      :zoomAnimation="true"
-      @ready="onLeafletReady"
-      @zoom="invalidateSizeFn"
-      @moveend="onMoveEnd"
-      @zoomend="onMapChange"
-      @bounds="boundsUpdated"
-      @center="centerUpdated"
-    > -->
       <template v-if="leafletReady">
         <LControlLayers />
         <LTileLayer
@@ -41,7 +28,7 @@
           :options="{ showCoverageOnHover: false, chunkedLoading: true, iconCreateFunction }"
         >
           <LMarker
-            v-for="device of mapStore.nodesWithCoordinates"
+            v-for="device of devices"
             :key="device?.label"
             :lat-lng="[device?.location?.latitude, device?.location?.longitude]"
             :name="device?.label"
@@ -96,7 +83,6 @@ import WarninglIcon from '@/assets/Warning-icon.png'
 import MinorIcon from '@/assets/Minor-icon.png'
 import MajorIcon from '@/assets/Major-icon.png'
 import CriticalIcon from '@/assets/Critical-icon.png'
-// @ts-ignore
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
 import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
@@ -109,7 +95,6 @@ const markerCluster = ref()
 const computedEdges = ref<number[][][]>()
 const mapStore = useMapStore()
 const topologyStore = useTopologyStore()
-const geomapQueries = useGeomapQueries()
 const { onThemeChange, isDark } = useTheme()
 const map = ref()
 const route = useRoute()
@@ -121,6 +106,7 @@ const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
 const nodeClusterCoords = ref<Record<string, number[]>>({})
 
+const devices = computed(() => mapStore.nodesWithCoordinates)
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => (mapStore.mapCenter as any)[k] ))
 const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value

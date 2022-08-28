@@ -5,8 +5,7 @@ import { LatLngBounds } from 'leaflet'
 import { SORT } from '@featherds/table'
 import { numericSeverityLevel } from '@/components/Map/utils'
 import { useQuery } from 'villus'
-import { ListDevicesForGeomapDocument } from '@/types/graphql'
-
+import { ListDevicesForMapDocument } from '@/types/graphql'
 
 export interface State {
   fetchedNodes: Node[]
@@ -20,57 +19,6 @@ export interface State {
   nodeSortObject: FeatherSortObject
   alarmSortObject: FeatherSortObject
 }
-
-const mock = [
-  {
-    'id': 1,
-    'label': 'Ottawa',
-    'foreignSource': 'Foreign Source',
-    'foreignId': 'ID',
-    'labelSource': 'Label Source',
-    'sysOid': 'SysO ID',
-    'sysName': 'Sys Name',
-    'sysDescription': 'Sys Description',
-    'sysContact': 'Sys Contact',
-    'sysLocation': 'Sys Location',
-    'location': {
-      'latitude': 45.41767120361328,
-      'longitude': -75.6946105957031
-    }
-  },
-  {
-    'id': 2,
-    'label': 'California',
-    'foreignSource': 'Foreign Source',
-    'foreignId': 'ID',
-    'labelSource': 'Label Source',
-    'sysOid': 'SysO ID',
-    'sysName': 'Sys Name',
-    'sysDescription': 'Sys Description',
-    'sysContact': 'Sys Contact',
-    'sysLocation': 'Sys Location',
-    'location': {
-      'latitude': 36.53391143881437,
-      'longitude': -119.7084971887121
-    }
-  },
-  {
-    'id': 3,
-    'label': 'France',
-    'foreignSource': 'Foreign Source',
-    'foreignId': 'ID',
-    'labelSource': 'Label Source',
-    'sysOid': 'SysO ID',
-    'sysName': 'Sys Name',
-    'sysDescription': 'Sys Description',
-    'sysContact': 'Sys Contact',
-    'sysLocation': 'Sys Location',
-    'location': {
-      'latitude': 46.691974355366646,
-      'longitude': 2.3779300253682836
-    }
-  }
-]
 
 export const useMapStore = defineStore('mapStore', {
   state: () => 
@@ -89,7 +37,7 @@ export const useMapStore = defineStore('mapStore', {
   actions: {
     async fetchNodes() {
       const { data: devices } = await useQuery({
-        query: ListDevicesForGeomapDocument
+        query: ListDevicesForMapDocument
       })
 
       this.fetchedNodes = this.nodesWithCoordinates = devices?.value?.listDevices?.devices || []
