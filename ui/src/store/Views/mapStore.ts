@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia'
+import { useQuery } from 'villus'
 import { FeatherSortObject } from '@/types'
-import { Node, Alarm, Coordinates, QueryParameters, AlarmModificationQueryVariable } from '@/types/map'
+import { Coordinates, QueryParameters, AlarmModificationQueryVariable } from '@/types/map'
+import { DeviceDto, AlarmDto, ListDevicesForMapDocument } from '@/types/graphql'
 import { LatLngBounds } from 'leaflet'
 import { SORT } from '@featherds/table'
 import { numericSeverityLevel } from '@/components/Map/utils'
-import { useQuery } from 'villus'
-import { ListDevicesForMapDocument } from '@/types/graphql'
 
 export interface State {
-  fetchedNodes: Node[]
-  nodesWithCoordinates: Node[]
-  alarms: Alarm[]
+  fetchedNodes: DeviceDto[]
+  nodesWithCoordinates: DeviceDto[]
+  alarms: AlarmDto[]
   interestedNodesID: string[]
   mapCenter: Coordinates
   mapBounds: LatLngBounds | undefined
