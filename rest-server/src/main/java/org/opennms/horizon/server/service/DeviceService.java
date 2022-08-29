@@ -31,6 +31,9 @@ package org.opennms.horizon.server.service;
 import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
 import org.opennms.horizon.shared.dto.device.DeviceCreateDTO;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -44,17 +47,22 @@ import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 @Service
 public class DeviceService {
   private final PlatformGateway gateway;
+  private final CacheManager cacheManager;
 
-  public DeviceService(PlatformGateway gateway) {
+  public DeviceService(PlatformGateway gateway, CacheManager cacheManager) {
     this.gateway = gateway;
+    this.cacheManager = cacheManager;
   }
 
   @GraphQLQuery
   public DeviceCollectionDTO listDevices(@GraphQLEnvironment ResolutionEnvironment env) {
-    return gateway.get(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), DeviceCollectionDTO.class).getBody();
+    DeviceCollectionDTO deviceCollectionDTO = gateway.get(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), DeviceCollectionDTO.class).getBody();
+    updateCache(deviceCollectionDTO);
+    return deviceCollectionDTO;
   }
 
   @GraphQLQuery
+  @Cacheable(value = "devices", key = "#id")
   public DeviceDTO getDeviceById(@GraphQLArgument(name = "id") Integer id, @GraphQLEnvironment ResolutionEnvironment env) {
     return gateway.get(PlatformGateway.URL_PATH_DEVICES + "/" + id, gateway.getAuthHeader(env), DeviceDTO.class).getBody();
   }
@@ -63,5 +71,11 @@ public class DeviceService {
   public Integer addDevice(DeviceCreateDTO device, @GraphQLEnvironment ResolutionEnvironment env) {
     return gateway.post(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), device, Integer.class).getBody();
   }
+
+  private void updateCache(DeviceCollectionDTO deviceCollectionDTO) {
+      Cache devices = cacheManager.getCache("devices");
+      deviceCollectionDTO.getDevices().forEach(d -> devices.put(d.getId(), d));
+  }
+
 }
 

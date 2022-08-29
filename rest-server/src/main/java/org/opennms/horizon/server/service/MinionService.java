@@ -35,26 +35,38 @@ import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import org.opennms.horizon.shared.dto.minion.MinionCollectionDTO;
 import org.opennms.horizon.shared.dto.minion.MinionDTO;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 
 @GraphQLApi
 @Service
 public class MinionService {
-
+    private static String MINION_COLLECTION_CACHE= "minion-collections";
     private final PlatformGateway gateway;
+    private final CacheManager cacheManager;
 
-    public MinionService(PlatformGateway gateway) {
+    public MinionService(PlatformGateway gateway, CacheManager cacheManager) {
         this.gateway = gateway;
+        this.cacheManager = cacheManager;
     }
 
     @GraphQLQuery
-    public MinionCollectionDTO listMinions(@GraphQLEnvironment ResolutionEnvironment env) {
-        return gateway.get(String.format(PlatformGateway.URL_PATH_MINIONS), gateway.getAuthHeader(env), MinionCollectionDTO.class).getBody();
+    public MinionCollectionDTO listMinions(@GraphQLEnvironment ResolutionEnvironment env) {//TODO: add pagination and use current page as collection cache key
+        MinionCollectionDTO minionCollectionDTO = gateway.get(String.format(PlatformGateway.URL_PATH_MINIONS), gateway.getAuthHeader(env), MinionCollectionDTO.class).getBody();
+        updateCache(minionCollectionDTO);
+        return minionCollectionDTO;
     }
 
     @GraphQLQuery
+    @Cacheable(value = "minions", key = "#id")
     public MinionDTO getMinionById(@GraphQLArgument(name = "id") String id, @GraphQLEnvironment ResolutionEnvironment env) {
         return gateway.get(String.format(PlatformGateway.URL_PATH_MINIONS_ID, id), gateway.getAuthHeader(env), MinionDTO.class).getBody();
+    }
+    private void updateCache(MinionCollectionDTO collectionDTO) {
+        Cache minionsCache = cacheManager.getCache("minions");
+        collectionDTO.getMinions().forEach(m->minionsCache.put(m.getId(), m));
     }
 }
