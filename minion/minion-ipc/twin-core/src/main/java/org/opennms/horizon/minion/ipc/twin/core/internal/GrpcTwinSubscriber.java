@@ -177,6 +177,8 @@ public class GrpcTwinSubscriber extends AbstractTwinSubscriber {
 
         String rpcId = UUID.randomUUID().toString();
         RpcRequestProto rpcRequestProto = RpcRequestProto.newBuilder()
+            .setSystemId(getIdentity().getId())
+            .setLocation(getIdentity().getLocation())
             .setPayload(Any.pack(twinRequestProto))
             .setModuleId("twin")
             .setRpcId(rpcId)
