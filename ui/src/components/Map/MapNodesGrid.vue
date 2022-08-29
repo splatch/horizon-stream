@@ -102,7 +102,7 @@
       </thead>
       <tbody class="node-list-grid" data-test="node-list">
         <tr v-for="device in devices" :key="(device?.id as number)" @dblclick="doubleClickHandler(device as Partial<DeviceDto>)" :device="device?.id">
-          <td class="first-td" :class="nodeLabelAlarmServerityMap[device?.label as string]">{{ device?.id }}</td>
+          <td :class="nodeLabelAlarmServerityMap[device?.label as string]">{{ device?.id }}</td>
           <td>{{ device?.foreignSource }}</td>
           <td>{{ device?.foreignId }}</td>
           <td>{{ device?.label }}</td>
@@ -131,6 +131,13 @@ const doubleClickHandler = (device: Partial<DeviceDto>) => {
   if (device.location?.latitude && device.location.longitude) {
     const coordinate: LocationDto = { latitude: device?.location?.latitude, longitude: device?.location?.longitude }
     mapStore.mapCenter = coordinate
+
+    // to highlighting the selected row
+    const rows = document.querySelectorAll('.node-list-grid > tr')
+    rows.forEach(row => {
+      if(row.getAttribute('device') === device.id?.toString()) row.classList.add('selected')
+      else row.classList.remove('selected')
+    })
   }
 }
 
@@ -193,7 +200,7 @@ thead {
   background: var($surface);
   white-space: nowrap;
 }
-.selected > .first-td {
+.selected > td:first-child {
   padding-left: 12px;
   border-left: 4px solid var($success);
 }
