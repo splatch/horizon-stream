@@ -13,6 +13,7 @@
     <feature name="minion-ng">
         <feature>taskset-minion</feature>
         <feature>icmp-plugins</feature>
+        <feature>icmp-rpc</feature>
     </feature>
 
 </features>
