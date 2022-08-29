@@ -81,7 +81,7 @@
           <td :class="alarm.severity" class="first-td">
             <FeatherCheckbox
               @update:modelValue="selectCheckbox(alarm)"
-              :modelValue="all || alarmCheckboxes[alarm.id]"
+              :modelValue="all || alarmCheckboxes[alarm.id as number]"
               label="Alarm"
             />
           </td>

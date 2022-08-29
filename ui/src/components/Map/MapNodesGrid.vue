@@ -180,6 +180,8 @@ onMounted(() => {
 table {
   @include table;
   @include table-condensed;
+  @include row-select;
+  @include row-hover;
   background: var($surface);
   color: var($primary-text-on-surface);
   padding-top: 4px;
