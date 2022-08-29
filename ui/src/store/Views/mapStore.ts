@@ -3,7 +3,7 @@ import { useQuery } from 'villus'
 import { FeatherSortObject } from '@/types'
 import { QueryParameters, AlarmModificationQueryVariable } from '@/types/map'
 import { DeviceDto, AlarmDto, ListDevicesForMapDocument, LocationDto } from '@/types/graphql'
-import { LatLngBounds, Map } from 'leaflet'
+import { LatLngBounds, LatLngBoundsExpression,LatLngLiteral } from 'leaflet'
 import { SORT } from '@featherds/table'
 import { numericSeverityLevel } from '@/components/Map/utils'
 
@@ -41,56 +41,6 @@ export const useMapStore = defineStore('mapStore', {
       })
 
       this.fetchedDevices = this.devicesWithCoordinates = devices?.value?.listDevices?.devices || []
-      this.fetchedDevices = this.devicesWithCoordinates = [
-        {
-          'id': 1,
-          'label': 'Ottawa',
-          'foreignSource': 'Foreign Source',
-          'foreignId': 'ID',
-          'labelSource': 'Label Source',
-          'sysOid': 'SysO ID',
-          'sysName': 'Sys Name',
-          'sysDescription': 'Sys Description',
-          'sysContact': 'Sys Contact',
-          'sysLocation': 'Sys Location',
-          'location': {
-            'latitude': 45.41767120361328,
-            'longitude': -75.6946105957031
-          }
-        },
-        {
-          'id': 2,
-          'label': 'California',
-          'foreignSource': 'Foreign Source',
-          'foreignId': 'ID',
-          'labelSource': 'Label Source',
-          'sysOid': 'SysO ID',
-          'sysName': 'Sys Name',
-          'sysDescription': 'Sys Description',
-          'sysContact': 'Sys Contact',
-          'sysLocation': 'Sys Location',
-          'location': {
-            'latitude': 36.53391143881437,
-            'longitude': -119.7084971887121
-          }
-        },
-        {
-          'id': 3,
-          'label': 'France',
-          'foreignSource': 'Foreign Source',
-          'foreignId': 'ID',
-          'labelSource': 'Label Source',
-          'sysOid': 'SysO ID',
-          'sysName': 'Sys Name',
-          'sysDescription': 'Sys Description',
-          'sysContact': 'Sys Contact',
-          'sysLocation': 'Sys Location',
-          'location': {
-            'latitude': 46.691974355366646,
-            'longitude': 2.3779300253682836
-          }
-        }
-      ]
     },
     fetchAlarms (queryParameters?: QueryParameters) {
       const defaultParams = queryParameters || { limit: 5000, offset: 0 }
@@ -110,7 +60,7 @@ export const useMapStore = defineStore('mapStore', {
     },
     filterNodesInBounds() {
       this.devicesWithCoordinates = this.fetchedDevices.filter((device: DeviceDto) => {
-        const location = {
+        const location: LatLngLiteral = {
           lat: device.location?.latitude || -9999999.99,
           lng: device.location?.longitude || -9999999.99
         }
@@ -120,7 +70,7 @@ export const useMapStore = defineStore('mapStore', {
   },
   getters: {
     getNodeAlarmSeverityMap(state: State): Record<string, string | undefined>{
-      const map: { [x: string ]: string | undefined} = {}
+      const map: { [x: string]: string | undefined } = {}
     
       state.alarms.forEach((alarm: AlarmDto) => {
         if(alarm.nodeLabel && numericSeverityLevel(alarm.severity) > numericSeverityLevel(map[alarm.nodeLabel])) {
