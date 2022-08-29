@@ -106,7 +106,7 @@ const resize = debounce(() => {
 
 onMounted(() => {
   startSpinner()
-  mapStore.fetchNodes()
+  mapStore.fetchDevices()
   mapStore.fetchAlarms()
   stopSpinner()
   resize()

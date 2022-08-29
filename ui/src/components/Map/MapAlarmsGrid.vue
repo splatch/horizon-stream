@@ -131,7 +131,9 @@ const disableAckSelect = computed(() => {
 })
 
 const selectCheckbox = (alarm: AlarmDto) => {
-  alarmCheckboxes.value[alarm.id] = !alarmCheckboxes.value[alarm.id]
+  if(alarm.id) {
+    alarmCheckboxes.value[alarm.id] = !alarmCheckboxes.value[alarm.id]
+  }
 }
 
 const selectAlarmAck = async () => {
@@ -159,13 +161,14 @@ const selectAlarmAck = async () => {
       break
   }
 
-  const selectedAlarms = alarms.value.filter((alarm) => all.value || alarmCheckboxes.value[alarm.id])
+  const selectedAlarms = alarms.value.filter((alarm: AlarmDto) => all.value || alarm.id && alarmCheckboxes.value[alarm.id])
 
   let numFail = 0
   const respCollection: any = []
   selectedAlarms.forEach((alarm: AlarmDto) => {
     const resp = mapStore.modifyAlarm({
-      pathVariable: alarm.id, queryParameters: alarmQueryParameters
+      // pathVariable: alarm?.id, queryParameters: alarmQueryParameters
+      pathVariable: '', queryParameters: {}
     })
     respCollection.push(resp)
   })

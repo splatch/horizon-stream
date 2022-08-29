@@ -124,7 +124,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { DeviceDto, LocationDto } from '@/types/graphql'
 
 const mapStore = useMapStore()
-const devices = computed(() => mapStore.nodesWithCoordinates)
+const devices = computed(() => mapStore.devicesWithCoordinates)
 const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap)
 
 const doubleClickHandler = (device: Partial<DeviceDto>) => {
@@ -154,7 +154,7 @@ const sortChanged = (sortObj: FeatherSortObject) => {
     sortStates[key] = SORT.NONE
   }
   sortStates[`${sortObj.property}`] = sortObj.value
-  mapStore.nodeSortObject = sortObj
+  mapStore.deviceSortObject = sortObj
 }
 
 onMounted(() => {
