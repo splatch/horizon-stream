@@ -35,6 +35,9 @@ import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import org.opennms.horizon.shared.dto.device.LocationCollectionDTO;
 import org.opennms.horizon.shared.dto.device.LocationDTO;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @GraphQLApi
@@ -42,18 +45,28 @@ import org.springframework.stereotype.Service;
 public class LocationService {
 
     private final PlatformGateway gateway;
+    private final CacheManager cacheManager;
 
-    public LocationService(PlatformGateway gateway) {
+    public LocationService(PlatformGateway gateway, CacheManager cacheManager) {
         this.gateway = gateway;
+        this.cacheManager = cacheManager;
     }
 
     @GraphQLQuery
     public LocationCollectionDTO listLocations(@GraphQLEnvironment ResolutionEnvironment env) {
-        return gateway.get(PlatformGateway.URL_PATH_LOCATIONS, gateway.getAuthHeader(env), LocationCollectionDTO.class).getBody();
+        LocationCollectionDTO locationCollectionDTO = gateway.get(PlatformGateway.URL_PATH_LOCATIONS, gateway.getAuthHeader(env), LocationCollectionDTO.class).getBody();
+        updateCache(locationCollectionDTO);
+        return locationCollectionDTO;
     }
 
     @GraphQLQuery
+    @Cacheable(value = "locations", key = "#id")
     public LocationDTO getLocationById(@GraphQLArgument(name = "id") String id, @GraphQLEnvironment ResolutionEnvironment env) {
         return gateway.get(PlatformGateway.URL_PATH_LOCATIONS + "/" + id, gateway.getAuthHeader(env), LocationDTO.class).getBody();
+    }
+
+    private void updateCache(LocationCollectionDTO collectionDTO) {
+        Cache locationsCache = cacheManager.getCache("locations");
+        collectionDTO.getLocations().forEach(l-> locationsCache.put(l.getLocationName(), l));
     }
 }
