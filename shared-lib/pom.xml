@@ -24,10 +24,7 @@
         <module>horizon-common-utils</module>
         <module>snmp-api</module>
         <module>icmp-api</module>
-        <module>lang</module>
-        <module>logging</module>
         <module>ignite-remote-async</module>
-        <module>ipc</module>
         <module>task-set</module>
         <module>task-set-service</module>
     </modules>
