@@ -9,6 +9,12 @@
         <feature version="${project.version}">snmp-api</feature>
     </feature>
 
+    <feature name="snmp-rpc" description="OpenNMS SNMP IPC/RPC" version="${project.version}">
+        <feature version="${project.version}">ipc-api</feature>
+        <feature version="${project.version}">snmp-api</feature>
+        <bundle>mvn:org.opennms.horizon.minion/snmp-ipc/${project.version}</bundle>
+    </feature>
+
     <feature name="snmp-plugins" description="OpenNMS SNMP Plugins" version="${project.version}">
         <feature version="${project.version}">plugins-api</feature>
         <feature version="${project.version}">snmp-minion</feature>
