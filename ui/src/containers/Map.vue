@@ -77,12 +77,12 @@ import { useMapStore } from '@/store/Views/mapStore'
 
 const layoutStore = useLayoutStore()
 const mapStore = useMapStore()
-// const topologyStore = useTopologyStore()
 const { startSpinner, stopSpinner } = useSpinner()
 const split = ref()
 const nodesReady = ref(false)
 const leafletComponent = ref()
 
+// const topologyStore = useTopologyStore()
 // const isTopologyView = computed<boolean>(() => topologyStore.isTopologyView)
 
 const minimizeBottomPane = () => {

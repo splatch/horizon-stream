@@ -101,7 +101,8 @@
 <script setup lang="ts">
 import { useMapStore } from '@/store/Views/mapStore'
 import { AlarmDto } from '@/types/graphql'
-import { AlarmQueryParameters, FeatherSortObject } from '@/types/map'
+import { FeatherSortObject } from '@/types'
+import { AlarmQueryParameters } from '@/types/map'
 import { FeatherSelect } from '@featherds/select'
 import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherSortHeader, SORT } from '@featherds/table'

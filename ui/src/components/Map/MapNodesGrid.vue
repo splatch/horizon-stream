@@ -119,9 +119,9 @@
 </template>
 <script setup lang="ts">
 import { useMapStore } from '@/store/Views/mapStore'
-import { Coordinates, FeatherSortObject } from '@/types/map'
+import { FeatherSortObject } from '@/types'
 import { FeatherSortHeader, SORT } from '@featherds/table'
-import { DeviceDto } from '@/types/graphql'
+import { DeviceDto, LocationDto } from '@/types/graphql'
 
 const mapStore = useMapStore()
 const devices = computed(() => mapStore.nodesWithCoordinates)
@@ -129,7 +129,7 @@ const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityM
 
 const doubleClickHandler = (device: Partial<DeviceDto>) => {
   if (device.location?.latitude && device.location.longitude) {
-    const coordinate: Coordinates = { latitude: device?.location?.latitude, longitude: device?.location?.longitude }
+    const coordinate: LocationDto = { latitude: device?.location?.latitude, longitude: device?.location?.longitude }
     mapStore.mapCenter = coordinate
   }
 }

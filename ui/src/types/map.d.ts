@@ -6,11 +6,6 @@ export interface Category {
   name: string
 }
 
-export interface Coordinates {
-  latitude: number | string
-  longitude: number | string
-}
-
 export interface QueryParameters {
   limit?: number
   offset?: number
@@ -32,9 +27,4 @@ export interface AlarmQueryParameters {
 export interface AlarmModificationQueryVariable {
   pathVariable: string
   queryParameters: AlarmQueryParameters
-}
-
-export interface FeatherSortObject {
-  property: string
-  value: SORT | any
 }
