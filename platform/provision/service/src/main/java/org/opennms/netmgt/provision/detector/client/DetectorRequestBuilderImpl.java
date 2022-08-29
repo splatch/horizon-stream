@@ -35,6 +35,9 @@ import java.util.Map;
 
 import org.opennms.netmgt.provision.DetectorRequestExecutor;
 import org.opennms.netmgt.provision.DetectorRequestExecutorBuilder;
+import java.util.concurrent.CompletableFuture;
+import org.opennms.horizon.ipc.rpc.api.RpcRequest;
+import org.opennms.netmgt.provision.DetectRequest;
 import org.opennms.netmgt.provision.PreDetectCallback;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.slf4j.Logger;

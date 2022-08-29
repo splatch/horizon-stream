@@ -17,9 +17,10 @@
     <modules>
         <module>plugins-api</module>
         <module>registration</module>
-        <module>ICMP</module>
-        <module>SNMP</module>
+        <module>icmp-plugin</module>
+        <module>snmp-plugin</module>
         <module>WEB-LISTEN</module>
+        <module>features</module>
     </modules>
 
 </project>

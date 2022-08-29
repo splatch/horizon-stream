@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.core.monitor;
 
+import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.horizon.core.monitor.taskset.LocationBasedTaskSetManager;
 import org.opennms.horizon.core.monitor.taskset.TaskSetManager;
@@ -40,6 +41,10 @@ import org.opennms.horizon.events.api.EventConstants;
 import org.opennms.horizon.events.api.EventListener;
 import org.opennms.horizon.events.api.EventSubscriptionService;
 import org.opennms.horizon.events.model.IEvent;
+import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.snmp.SnmpObjId;
+import org.opennms.horizon.shared.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.taskset.model.TaskSet;
 import org.opennms.taskset.model.TaskType;
 import org.opennms.taskset.service.api.TaskSetPublisher;
@@ -56,6 +61,8 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * TBD888: Rework still needed for task-set definitions, and general completeness
@@ -77,7 +84,7 @@ public class DeviceMonitorManager implements EventListener {
     private final SessionUtils sessionUtils;
     private final List<OnmsNode> nodeCache = new ArrayList<>();
     private final ThreadFactory monitorThreadFactory = new ThreadFactoryBuilder()
-        .setNameFormat("monitor-runner-%d")
+        .setNameFormat("device-monitor-runner-%d")
         .build();
 
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(25, monitorThreadFactory);
@@ -115,6 +122,7 @@ public class DeviceMonitorManager implements EventListener {
 
         try {
             List<OnmsIpInterface> ipInterfaces = sessionUtils.withReadOnlyTransaction(() -> ipInterfaceDao.findInterfacesByNodeId(onmsNode.getId()));
+            String location = sessionUtils.withReadOnlyTransaction(() -> onmsNode.getLocation().getLocationName());
             ipInterfaces.forEach(onmsIpInterface -> {
                 LOG.info("Polling ICMP/SNMP Monitor for IPAddress {}", onmsIpInterface.getIpAddress());
 
@@ -139,7 +147,7 @@ public class DeviceMonitorManager implements EventListener {
 
     private void addPollIcmpTask(TaskSetManager taskSetManager, InetAddress inetAddress) {
         Map<String, String> parameters = makeParametersMap("host", inetAddress.getHostAddress(), "timeout", "60000");
-        taskSetManager.addIpTask(inetAddress, "icmp-monitor", TaskType.MONITOR, "ICMPMonitor", "120", parameters);
+        taskSetManager.addIpTask(inetAddress, "icmp-monitor", TaskType.MONITOR, "ICMPMonitor", "5000", parameters);
     }
 
     private void addPollSnmpTask(TaskSetManager taskSetManager, InetAddress inetAddress, String snmpCommunityString) {
@@ -150,7 +158,7 @@ public class DeviceMonitorManager implements EventListener {
                 "retries", "2"
             );
 
-        taskSetManager.addIpTask(inetAddress, "snmp-monitor", TaskType.MONITOR, "SNMPMonitor", "120", parameters);
+        taskSetManager.addIpTask(inetAddress, "snmp-monitor", TaskType.MONITOR, "SNMPMonitor", "5000", parameters);
     }
 
     @Override
@@ -164,7 +172,7 @@ public class DeviceMonitorManager implements EventListener {
             Long nodeId = event.getNodeid();
             if (nodeId != null) {
                 OnmsNode node = sessionUtils.withReadOnlyTransaction(() -> nodeDao.get(nodeId.intValue()));
-                scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(node), 0, 120, TimeUnit.SECONDS);
+                scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMonitors(node), 5, 120, TimeUnit.SECONDS);
             }
         }
     }

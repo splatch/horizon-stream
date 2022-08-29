@@ -16,7 +16,7 @@
 
     <properties>
         <skip-docker-image-build>false</skip-docker-image-build>
-        <docker.image.tag>local</docker.image.tag>
+        <docker.image>opennms/horizon-stream-minion:local</docker.image>
         <docker.image.skipPush>false</docker.image.skipPush>
     </properties>
 
@@ -71,7 +71,7 @@
                     <showLogs>true</showLogs>
                     <images>
                         <image>
-                            <name>opennms/horizon-stream-minion:local</name>
+                            <name>${docker.image}</name>
                             <build>
                                 <dockerFileDir>app</dockerFileDir>
                                 <filter>@</filter>
@@ -90,9 +90,6 @@
                                         </inline>
                                     </assembly>
                                 </assemblies>
-                                <tags>
-                                    <tag>${docker.image.tag}</tag>
-                                </tags>
                                 <skipPush>${docker.image.skipPush}</skipPush> <!-- only applies to the push goal - not the build goal -->
                             </build>
                         </image>

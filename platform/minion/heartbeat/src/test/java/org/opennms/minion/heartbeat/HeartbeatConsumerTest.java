@@ -37,18 +37,17 @@ import org.opennms.horizon.core.identity.IdentityImpl;
 import org.opennms.horizon.db.dao.api.MinionDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsMinion;
+import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.ipc.sink.api.MessageConsumerManager;
 import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static org.mockito.Mockito.mock;
@@ -61,10 +60,12 @@ public class HeartbeatConsumerTest {
         SessionUtils sessionUtils = new MockSessionUtils();
         MessageConsumerManager messageConsumerManager = mock(MessageConsumerManager.class);
         MockMetricsAdapter onmsMetricsAdapter = new MockMetricsAdapter();
+        EventForwarder eventForwarder = mock(EventForwarder.class);
 
-        HeartbeatConsumer heartbeatConsumer = new HeartbeatConsumer(messageConsumerManager, minionDao, sessionUtils, onmsMetricsAdapter);
+        HeartbeatConsumer heartbeatConsumer = new HeartbeatConsumer(messageConsumerManager, minionDao,
+            sessionUtils, onmsMetricsAdapter, eventForwarder);
 
-        // No Minion exists in DB yet
+        // Case 1 : No Minion exists in DB yet
         String minionId = "minion-01";
         String location = "minion";
         MinionIdentityDTO minionIdentityDTO = new MinionIdentityDTO(new IdentityImpl(minionId, "minion", "MINION"));
@@ -78,8 +79,12 @@ public class HeartbeatConsumerTest {
         Assert.assertEquals(minion.getLastUpdated(), currentDate);
         String[] labelNames = {"instance", "location"};
         String[] labelValues = {minionId, location};
-        Assert.assertEquals(0, getGauge(onmsMetricsAdapter.getCollectorRegistry(), "minion_up_time", "sec", labelNames, labelValues), 100);
-        // Now that minion exists, send an update with latest timestamp that is 30 secs after currentTime.
+        Double upTime = onmsMetricsAdapter.getCollectorRegistry()
+            .getSampleValue("minion_uptime_sec", labelNames, labelValues);
+        Assert.assertEquals(0, upTime, .001);
+
+
+        // Case 2: Now that minion exists, send an update with latest timestamp that is 30 secs after currentTime.
         int heartBeatDelta = 30;
         Instant afterTime = currentTime.plusSeconds(heartBeatDelta);
         minionIdentityDTO.setTimestamp(Date.from(afterTime));
@@ -88,8 +93,11 @@ public class HeartbeatConsumerTest {
         minion = minionDao.findById(minionId);
         // Minion last updated should match what's passed on with the message.
         Assert.assertEquals(minion.getLastUpdated(), Date.from(afterTime));
+        Double updatedUpTime = onmsMetricsAdapter.getCollectorRegistry()
+            .getSampleValue("minion_uptime_sec", labelNames, labelValues);
+        Assert.assertEquals(heartBeatDelta, updatedUpTime, .001);
 
-        // send an update with obsolete timestamp that is 30 secs before than currentTime
+        // Case 3: send an update with obsolete timestamp that is 30 secs before than currentTime
         Instant beforeTime = currentTime.minusSeconds(30);
         minionIdentityDTO.setTimestamp(Date.from(beforeTime));
         // Send an update to Heartbeat Consumer
@@ -97,18 +105,12 @@ public class HeartbeatConsumerTest {
         minion = minionDao.findById(minionId);
         // Minion last updated shouldn't match what's passed on with the message.
         Assert.assertNotEquals(minion.getLastUpdated(), Date.from(beforeTime));
-        Assert.assertEquals(heartBeatDelta, getGauge(onmsMetricsAdapter.getCollectorRegistry(), "minion_up_time", "sec", labelNames, labelValues), 100);
+        // No update on upTime as we send an outdated entry
+        Double upTimeAfterOutDatedHeartbeat = onmsMetricsAdapter.getCollectorRegistry()
+            .getSampleValue("minion_uptime_sec", labelNames, labelValues);
+        Assert.assertEquals(heartBeatDelta, upTimeAfterOutDatedHeartbeat, .001);
     }
 
-    public static double getGauge(CollectorRegistry collectorRegistry,
-                                  String name,
-                                  String unit,
-                                  String[] labelNames,
-                                  String[] labelValues) {
-        Gauge gauge = Gauge.build().name(name).help("Gauge value")
-            .unit(unit).labelNames(labelNames).register(collectorRegistry);
-        return gauge.labels(labelValues).get();
-    }
 
     public static class MockSessionUtils implements SessionUtils {
 
@@ -197,12 +199,11 @@ public class HeartbeatConsumerTest {
 
     public static class MockMetricsAdapter implements OnmsMetricsAdapter {
 
-        CollectorRegistry collectorRegistry;
+        private CollectorRegistry collectorRegistry;
 
         @Override
-        public void push(Collector collector) {
-            collectorRegistry = new CollectorRegistry();
-            collectorRegistry.register(collector);
+        public void pushMetrics(CollectorRegistry registry, Map<String, String> groupingKey) {
+            collectorRegistry = registry;
         }
 
         public CollectorRegistry getCollectorRegistry() {

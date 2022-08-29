@@ -83,13 +83,13 @@
                                 <feature>horizon-events-api</feature>
                                 <feature>horizon-events</feature>
                                 <feature>horizon-grpc</feature>
-                                <feature>horizon-icmp</feature>
+<!--                                <feature>horizon-icmp</feature>-->
                                 <feature>horizon-inventory</feature>
                                 <feature>horizon-ipc-api</feature>
                                 <feature>horizon-provision</feature>
-                                <feature>horizon-minion-heartbeat</feature>
-                                <feature>horizon-minion-rest</feature>
-                                <feature>horizon-snmp</feature>
+                                <!--<feature>horizon-minion-heartbeat</feature>-->
+                                <!--<feature>horizon-minion-rest</feature>-->
+<!--                                <feature>horizon-snmp</feature>-->
                                 <feature>horizon-tracing</feature>
                                 <feature>jackson</feature>
                                 <feature>java-native-access</feature>
@@ -103,6 +103,7 @@
                                 <feature>camel-kafka</feature>
                                 <feature>camel-activemq</feature>
                                 <feature>horizon-metrics-prometheus</feature>
+                                <feature>horizon-ignite</feature>
                                 <feature>horizon-core-monitor</feature>
                             </features>
                         </configuration>
@@ -208,31 +209,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>best</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>rpc-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>rpc-module-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>rpc-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.icmp</groupId>
-            <artifactId>shell</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.horizon.ipc</groupId>
             <artifactId>echo</artifactId>
             <version>${project.version}</version>
@@ -280,21 +256,6 @@
         <dependency>
             <groupId>org.opennms.core.ipc.twin.grpc</groupId>
             <artifactId>subscriber</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.snmp</groupId>
-            <artifactId>rpc-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.snmp</groupId>
-            <artifactId>snmp4j</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.snmp</groupId>
-            <artifactId>shell</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -392,16 +353,16 @@
             <artifactId>service</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>org.opennms.horizon.minion.rest</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>heartbeat</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>org.opennms.horizon.minion</groupId>-->
+        <!--    <artifactId>org.opennms.horizon.minion.rest</artifactId>-->
+        <!--    <version>${project.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+        <!--    <groupId>org.opennms.horizon.minion</groupId>-->
+        <!--    <artifactId>heartbeat</artifactId>-->
+        <!--    <version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>dto-model</artifactId>

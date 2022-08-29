@@ -50,16 +50,17 @@
 
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>ignite-worker</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>minion-features</artifactId>
             <type>xml</type>
             <classifier>features</classifier>
             <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.aries.jax.rs</groupId>
+            <artifactId>org.apache.aries.jax.rs.features</artifactId>
+            <version>${aries.jax.rs.whiteboard.version}</version>
+            <type>xml</type>
         </dependency>
     </dependencies>
 
@@ -116,13 +117,14 @@
                         <feature>service</feature>
                         <feature>system</feature>
                         <feature>scr</feature>
-                        <feature>ignite-poc</feature>
-                        <feature>poc-grpc</feature>
+                        <feature>minion-ng</feature>
+                        <!--
                         <feature>icmp-plugins</feature>
                         <feature>snmp-plugins</feature>
                         <feature>web-listen-plugin</feature>
                         <feature>fake-connector-plugin</feature>
                         <feature>test-tcp-connector-plugin</feature>
+                        -->
                     </bootFeatures>
                     <libraries>
                     </libraries>

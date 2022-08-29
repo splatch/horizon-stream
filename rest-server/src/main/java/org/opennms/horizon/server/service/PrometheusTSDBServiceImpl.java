@@ -52,33 +52,35 @@ public class PrometheusTSDBServiceImpl implements TSDBService {
     @Value("${tsdb.url}")
     private String tsdbURL;
     private static final String QUERY_TEMPLATE = "query=%s{%s}";
+    private static final String QUERY_TEMPLATE_WITHOUT_LABELS = "query=%s";
     private static final String LABEL_INSTANCE = "instance";
     private final RestTemplate restTemplate = new RestTemplate();
 
     @GraphQLQuery
     @Override
     public TimeSeriesQueryResult getMetric(String name, Map<String, String> labels) {
-        if(!labels.containsKey(LABEL_INSTANCE)) {
-            log.warn("Metric query {} without instance label", name);
-        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         String urlEncodedQuery = generatePayloadString(name, labels);
-        ResponseEntity<TimeSeriesQueryResult> response = restTemplate.exchange(tsdbURL, HttpMethod.POST, new HttpEntity<>(urlEncodedQuery,headers), TimeSeriesQueryResult.class);
+        ResponseEntity<TimeSeriesQueryResult> response = restTemplate.exchange(tsdbURL, HttpMethod.POST,
+            new HttpEntity<>(urlEncodedQuery, headers), TimeSeriesQueryResult.class);
         return response.getBody();
     }
 
     private String generatePayloadString(String name, Map<String, String> labels) {
         StringBuilder filterStr = new StringBuilder();
-        if(labels != null && labels.size()> 0 ){
+        if (labels != null && labels.size() > 0) {
             String filterTmp = "%s=\"%s\"";
-            for (Map.Entry<String, String> entry: labels.entrySet()) {
-                if(filterStr.length()>0) {
+            for (Map.Entry<String, String> entry : labels.entrySet()) {
+                if (filterStr.length() > 0) {
                     filterStr.append(",");
                 }
                 filterStr.append(String.format(filterTmp, entry.getKey(), entry.getValue()));
             }
+        } else {
+            return String.format(QUERY_TEMPLATE_WITHOUT_LABELS, name);
         }
         return String.format(QUERY_TEMPLATE, name, filterStr);
     }

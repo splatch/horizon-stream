@@ -31,7 +31,7 @@
     </div>
     <div class="data-table">
       <TransitionGroup name="data-table" tag="div">
-        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="device.id" data-test="device-item">
+        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" data-test="device-item">
           <div class="name" data-test="col-device">
               <div class="name-cell">
                 <FeatherIcon :icon="Instances" class="icon"/>
@@ -43,13 +43,14 @@
           </div>
           <div data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
-            <div class="value" :class="device.latencyBgColor">{{ device.icmp_latency }}</div>
+            <div class="value" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
           </div>
           <div data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
-            <div class="value" :class="device.uptimeBgColor">{{ device.snmp_uptime }}</div>
+            <div class="value" :class="device.uptimeBgColor">{{ getHumanReadableDuration(device.snmp_uptime) }}</div>
           </div>
           <div data-test="col-status">
+            <pre class="title">Status</pre>
             <div class="value" :class="device.statusBgColor">{{ device.status }}</div>
           </div>
         </div>
@@ -64,29 +65,16 @@ import Sort from '@featherds/icon/action/Sort'
 import Search from '@featherds/icon/action/Search'
 import Instances from '@featherds/icon/hardware/Instances'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
-import { useDeviceQueries } from '@/store/Queries/deviceQueries'
-import { formatItemBgColor } from '@/helpers/formatting'
+import { useApplianceQueries } from '@/store/Queries/applianceQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
-import { DeviceDto } from '@/types/graphql'
+import { ExtendedDeviceDTOWithBGColors } from '@/types/device'
+import { ComputedRef } from 'vue'
+import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './appliances.helpers'
 
-interface ExtendedDeviceDTO extends DeviceDto {
-  id: number // override as required
-
-  // TODO: These fields not yet on the BE
-  status: string
-  icmp_latency: string
-  snmp_uptime: string
-
-  // Color fields
-  uptimeBgColor: string
-  latencyBgColor: string
-  statusBgColor: string
-}
-
-const deviceQueries = useDeviceQueries()
 const appliancesStore = useAppliancesStore()
+const applianceQueries = useApplianceQueries()
 
-const listDevicesWithBgColor = computed<ExtendedDeviceDTO[]>(() => formatItemBgColor(deviceQueries.listDevices))
+const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableDevices))
 
 const searchValue = ref('')
 </script>
@@ -172,8 +160,9 @@ const searchValue = ref('')
     .value {
       display: inline-table;
       border-radius: 5px;
-      padding: 3px;
+      padding: 3px 10px;
       text-align: center;
+      white-space: nowrap;
     }
   }
 }

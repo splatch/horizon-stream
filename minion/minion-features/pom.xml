@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>minion-features</artifactId>
+    <packaging>pom</packaging>
 
     <name>OpenNms Horizon :: Minion :: Features</name>
 
@@ -20,103 +21,51 @@
     <dependencies>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>ignite-worker</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>workflow-publisher</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>module</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>workflow-subscriber</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.shared.ipc</groupId>
-            <artifactId>api</artifactId>
-            <version>${opennms-horizon.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>ICMP</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>SNMP</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>WEB-LISTEN</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>whiteboard-api</artifactId>
+            <artifactId>grpc-features</artifactId>
             <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>whiteboard-core</artifactId>
+            <artifactId>ipc-features</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-<!--        Duplicate?-->
-<!--        <dependency>-->
-<!--            <groupId>org.opennms.horizon.minion</groupId>-->
-<!--            <artifactId>ipc-api</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-        <dependency>
-            <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
-            <artifactId>client</artifactId>
-            <version>${opennms-horizon.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.shared.ipc.grpc</groupId>
-            <artifactId>contract</artifactId>
-            <version>${opennms-horizon.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>twin-api</artifactId>
+            <artifactId>plugin-features</artifactId>
             <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>twin-common</artifactId>
+            <artifactId>taskset-features</artifactId>
             <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>subscriber</artifactId>
+            <artifactId>observability-features</artifactId>
             <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.opennms.horizon.minion</groupId>-->
-<!--            <artifactId>tracing</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>minion-metrics</artifactId>
+            <artifactId>icmp-plugin</artifactId>
             <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
         </dependency>
     </dependencies>
 
@@ -128,6 +77,17 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -166,6 +126,9 @@
                             <descriptors>
                                 <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.cxf.karaf/apache-cxf/${cxf.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.camel.karaf/apache-camel/${camel.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.aries.jax.rs/org.apache.aries.jax.rs.features/${aries.jax.rs.whiteboard.version}/xml</descriptor>
                                 <descriptor>file:${project.build.outputDirectory}/features.xml</descriptor>
                             </descriptors>
                             <javase>11</javase>
@@ -173,9 +136,7 @@
                                 <feature>framework</feature>
                             </framework>
                             <features>
-                                <feature>ignite*</feature>
-<!--                                <feature>poc-grpc*</feature>-->
-<!--                                <feature>*-plugins</feature>-->
+                                <feature>minion-ng*</feature>
                             </features>
                         </configuration>
                     </execution>

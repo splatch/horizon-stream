@@ -529,6 +529,9 @@ spec:
         - name: postgres-keycloak-initial-script
           configMap:
             name: postgres-keycloak-initial-sql
+        - name: postgres-notification-initial-script
+          configMap:
+            name: postgres-notification-initial-sql
       containers:
         - name: postgres
           image: postgres:13.3-alpine
@@ -556,6 +559,9 @@ spec:
             - mountPath: "/docker-entrypoint-initdb.d/postgres.keycloak.initial.script.sql"
               name: postgres-keycloak-initial-script
               subPath: "postgres.keycloak.initial.script.sql"
+            - mountPath: "/docker-entrypoint-initdb.d/postgres.notification.initial.script.sql"
+              name: postgres-notification-initial-script
+              subPath: "postgres.notification.initial.script.sql"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -729,6 +735,8 @@ spec:
               value: "horizon-stream-minion"
             - name: JAVA_TOOL_OPTIONS # Presence of this var lets `skaffold debug` see that this is a jvm container
               value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+            - name: LOCATION
+              value: "Default"
           ports:
             - containerPort: 8181
             - containerPort: 8101
@@ -738,7 +746,7 @@ spec:
               subPath: "grpc-config"
             - name: config-volume
               mountPath: "/opt/karaf/etc/org.opennms.identity.cfg"
-              subPath: "opennms-identity"
+              subPath: "opennms-minion-identity"
             - name: users-volume
               mountPath: "/opt/horizon-stream/etc/users.properties"
               subPath: "data"
@@ -963,6 +971,16 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: postgres-notification-initial-sql
+data:
+  postgres.notification.initial.script.sql: |
+    CREATE USER notification with password 'passw0rd';
+    CREATE DATABASE notification;
+    GRANT ALL ON DATABASE notification TO notification;
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: minion-config-map
 data:
   minion-config.yaml: |
@@ -1106,7 +1124,7 @@ stringData:
 apiVersion: k8s.keycloak.org/v2alpha1
 kind: KeycloakRealmImport
 metadata:
-  name: opennms
+  name: keycloak-realm-import-opennms
   labels:
     app: sso
 spec:
@@ -1200,9 +1218,9 @@ data:
   grpc-config: |
     host=minion-gateway
     max.message.size=104857600
-  opennms-identity: |
-    identity.id=${env:HOSTNAME:-UNKNOWN}
-    identity.location=${env:LOCATION:-cloud}
+  opennms-minion-identity: |
+    id=${env:HOSTNAME:-UNKNOWN}
+    location=${env:LOCATION:-Default}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
