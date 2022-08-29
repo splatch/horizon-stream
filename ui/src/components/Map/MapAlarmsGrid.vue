@@ -167,8 +167,8 @@ const selectAlarmAck = async () => {
   const respCollection: any = []
   selectedAlarms.forEach((alarm: AlarmDto) => {
     const resp = mapStore.modifyAlarm({
-      // pathVariable: alarm?.id, queryParameters: alarmQueryParameters
-      pathVariable: '', queryParameters: {}
+      pathVariable: (alarm?.id as number).toString(), 
+      queryParameters: alarmQueryParameters
     })
     respCollection.push(resp)
   })

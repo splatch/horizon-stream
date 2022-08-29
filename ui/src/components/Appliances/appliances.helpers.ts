@@ -30,7 +30,7 @@ export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[
 })
 
 export const getHumanReadableDuration = (uptimeInSeconds: number) => {
-  let durationDisplay = '--' // undefined 
+  let durationDisplay = '--'
 
   if(uptimeInSeconds >= 0) {
     if (uptimeInSeconds < 60) durationDisplay = `${uptimeInSeconds} ${uptimeInSeconds <= 0 ? '' : 'seconds'}` // 0-59secs
