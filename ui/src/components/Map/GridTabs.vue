@@ -24,6 +24,23 @@ const goToAlarms = () => router.push(`/map${route.query.nodeid ? '?nodeid=' + ro
 
 const goToNodes = () => router.push('/map/nodes')
 
+/**
+ * onActivated hook was used in classic bc of MarkerCluster package bug occurred when remounting the map.
+ * It could happen when we add more functionality to the map.
+ * 
+ * <router-view v-slot="{ Component }">
+        <keep-alive include="MapKeepAlive">
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
+*/
+/* onActivated(() => {
+  if (router.currentRoute.value.name === 'MapAlarms') {
+    alarmTab.value.tab.click()
+  } else {
+    nodesTab.value.tab.click()
+  }
+}) */
 onMounted(async () => {
   const tabRef = router.currentRoute.value.name === 'MapAlarms' ? alarmTab : nodesTab
   await tabRef.value.tab.click()
