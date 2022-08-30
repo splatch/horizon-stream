@@ -18,7 +18,7 @@
   <modules>
     <module>dao-api</module>
     <module>dao-impl</module>
-    <module>kv-store-api</module>
+    <module>kvstore-api</module>
     <module>postgres-kvstore</module>
     <module>repository-api</module>
     <module>repository-impl</module>
