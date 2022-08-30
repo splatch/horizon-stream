@@ -80,7 +80,7 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
 
             HttpEntity<String> requestEntity = new HttpEntity<>(event, headers);
 
-            LOG.info("Posting alarm:"+alarm.getId()+" to Pager Duty");
+            LOG.info("Posting alarm {} to PagerDuty", alarm.getId());
             restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
         } catch (URISyntaxException e) {
             LOG.error("Bad pager duty url");
