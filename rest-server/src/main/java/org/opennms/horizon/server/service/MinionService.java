@@ -54,7 +54,7 @@ public class MinionService {
     }
 
     @GraphQLQuery
-    public MinionCollectionDTO listMinions(@GraphQLEnvironment ResolutionEnvironment env) {//TODO: add pagination and use current page as collection cache key
+    public MinionCollectionDTO listMinions(@GraphQLEnvironment ResolutionEnvironment env) {//TODO: add search TDO object with pagination as cache key
         MinionCollectionDTO minionCollectionDTO = gateway.get(String.format(PlatformGateway.URL_PATH_MINIONS), gateway.getAuthHeader(env), MinionCollectionDTO.class).getBody();
         updateCache(minionCollectionDTO);
         return minionCollectionDTO;
