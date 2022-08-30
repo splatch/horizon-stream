@@ -1,9 +1,8 @@
 import { defineStore } from 'pinia'
 import { useQuery } from 'villus'
 import { FeatherSortObject } from '@/types'
-import { QueryParameters, AlarmModificationQueryVariable } from '@/types/map'
 import { DeviceDto, AlarmDto, ListDevicesForMapDocument, LocationDto } from '@/types/graphql'
-import { LatLngBounds, LatLngBoundsExpression,LatLngLiteral } from 'leaflet'
+import { LatLngBounds, LatLngLiteral } from 'leaflet'
 import { SORT } from '@featherds/table'
 import { numericSeverityLevel } from '@/components/Map/utils'
 
@@ -44,10 +43,8 @@ export const useMapStore = defineStore('mapStore', {
       this.devicesWithCoordinates = this.fetchedDevices.filter(device => device.location?.latitude && device.location?.longitude)
 
     },
-    async fetchAlarms (queryParameters?: QueryParameters) {
-      const defaultParams = queryParameters || { limit: 5000, offset: 0 }
-      // todo: add graphQL query
-      const resp = [] as AlarmDto[]
+    async fetchAlarms() {
+      const resp: AlarmDto[] = []
     
       if (resp) {
         this.alarms = resp

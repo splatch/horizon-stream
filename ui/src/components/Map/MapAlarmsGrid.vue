@@ -108,7 +108,7 @@ import { FeatherCheckbox } from '@featherds/checkbox'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 
 const mapStore = useMapStore()
-const alarms = computed<AlarmDto[]>(() => mapStore.fetchAlarms())
+const alarms = computed<AlarmDto[]>(() => mapStore.alarms)
 const alarmOptions = [
   { id: 1, option: 'Not Selected' },
   { id: 2, option: 'Acknowledge' },
