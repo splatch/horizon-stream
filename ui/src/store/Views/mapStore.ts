@@ -39,10 +39,12 @@ export const useMapStore = defineStore('mapStore', {
       const { data: devices } = await useQuery({
         query: ListDevicesForMapDocument
       })
+      
+      this.fetchedDevices = devices?.value?.listDevices?.devices || []
+      this.devicesWithCoordinates = this.fetchedDevices.filter(device => device.location?.latitude && device.location?.longitude)
 
-      this.fetchedDevices = this.devicesWithCoordinates = devices?.value?.listDevices?.devices || []
     },
-    fetchAlarms (queryParameters?: QueryParameters) {
+    async fetchAlarms (queryParameters?: QueryParameters) {
       const defaultParams = queryParameters || { limit: 5000, offset: 0 }
       // todo: add graphQL query
       const resp = [] as AlarmDto[]
