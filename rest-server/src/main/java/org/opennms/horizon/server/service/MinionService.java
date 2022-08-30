@@ -44,7 +44,6 @@ import org.springframework.stereotype.Service;
 @GraphQLApi
 @Service
 public class MinionService {
-    private static String MINION_COLLECTION_CACHE= "minion-collections";
     private final PlatformGateway gateway;
     private final CacheManager cacheManager;
 
@@ -55,9 +54,11 @@ public class MinionService {
 
     @GraphQLQuery
     public MinionCollectionDTO listMinions(@GraphQLEnvironment ResolutionEnvironment env) {//TODO: add search TDO object with pagination as cache key
-        MinionCollectionDTO minionCollectionDTO = gateway.get(String.format(PlatformGateway.URL_PATH_MINIONS), gateway.getAuthHeader(env), MinionCollectionDTO.class).getBody();
+        MinionCollectionDTO minionCollectionDTO = gateway.get(PlatformGateway.URL_PATH_MINIONS, gateway.getAuthHeader(env), MinionCollectionDTO.class).getBody();
         updateCache(minionCollectionDTO);
         return minionCollectionDTO;
+
+
     }
 
     @GraphQLQuery
