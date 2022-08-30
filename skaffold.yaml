@@ -34,12 +34,6 @@ requires:
   - configs: ["keycloak-operator"]
 build:
   artifacts:
-  - image: opennms/horizon-stream-minion-gateway
-    context: minion-gateway
-    jib:
-      project: main
-    sync:
-      auto: true
   - image: opennms/horizon-stream-core
     context: platform
     custom:
