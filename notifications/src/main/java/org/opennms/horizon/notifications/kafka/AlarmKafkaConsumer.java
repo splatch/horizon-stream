@@ -24,7 +24,7 @@ public class AlarmKafkaConsumer {
         try {
             notificationService.postNotification(alarm);
         } catch (NotificationException e) {
-            LOG.error("Exception sending alarm to pager duty.", e);
+            LOG.error("Exception sending alarm to PagerDuty.", e);
         }
     }
 }

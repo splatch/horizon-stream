@@ -72,7 +72,7 @@ public class PagerDutyDaoImplTest {
         try {
             pagerDutyDao.getConfig();
         } catch (NotificationConfigUninitializedException e) {
-            assertEquals("Pager duty config not initialized. Row count=0", e.getMessage());
+            assertEquals("PagerDuty config not initialized. Row count=0", e.getMessage());
         }
     }
 
@@ -95,7 +95,7 @@ public class PagerDutyDaoImplTest {
         try{
             pagerDutyDao.getConfig();
         } catch (NotificationConfigUninitializedException e) {
-            assertEquals("Pager duty config not initialized. Table does not exist.", e.getMessage());
+            assertEquals("PagerDuty config not initialized. Table does not exist.", e.getMessage());
             exceptionCaught = true;
         }
 

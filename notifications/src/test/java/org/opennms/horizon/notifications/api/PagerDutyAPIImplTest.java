@@ -90,7 +90,7 @@ public class PagerDutyAPIImplTest {
         try{
             pagerDutyAPI.validateConfig(getConfigDTO());
         } catch (NotificationBadDataException e) {
-            assertEquals("Invalid pager duty token", e.getMessage());
+            assertEquals("Invalid PagerDuty token", e.getMessage());
             exceptionCaught = true;
         }
 

@@ -49,23 +49,23 @@ public enum AlarmSeverity implements Serializable {
     MAJOR(6, "Major", "orange"),
     CRITICAL(7, "Critical", "red");
 
-    private static final Map<Integer, AlarmSeverity> m_idMap;
+    private static final Map<Integer, AlarmSeverity> idMap;
 
-    private int m_id;
-    private String m_label;
-    private String m_color;
+    private int id;
+    private String label;
+    private String color;
 
     static {
-        m_idMap = new HashMap<Integer, AlarmSeverity>(values().length);
-        for (final AlarmSeverity severity : values()) {
-            m_idMap.put(severity.getId(), severity);
+        idMap = new HashMap<Integer, AlarmSeverity>(values().length);
+        for (AlarmSeverity severity : values()) {
+            idMap.put(severity.getId(), severity);
         }
     }
 
-    private AlarmSeverity(final int id, final String label, final String color) {
-        m_id = id;
-        m_label = label;
-        m_color = color;
+    private AlarmSeverity(int id, String label, String color) {
+        this.id = id;
+        this.label = label;
+        this.color = color;
     }
 
     /**
@@ -74,7 +74,7 @@ public enum AlarmSeverity implements Serializable {
      * @return a int.
      */
     public int getId() {
-        return m_id;
+        return id;
     }
 
     /**
@@ -83,7 +83,7 @@ public enum AlarmSeverity implements Serializable {
      * @return a {@link String} object.
      */
     public String getLabel() {
-        return m_label;
+        return label;
     }
 
     /**
@@ -92,7 +92,7 @@ public enum AlarmSeverity implements Serializable {
      * @return a {@link String} object.
      */
     public String getColor() {
-        return m_color;
+        return color;
     }
 
     /**
@@ -101,7 +101,7 @@ public enum AlarmSeverity implements Serializable {
      * @param other a {@link AlarmSeverity} object.
      * @return a boolean.
      */
-    public boolean isLessThan(final AlarmSeverity other) {
+    public boolean isLessThan(AlarmSeverity other) {
         return compareTo(other) < 0;
     }
 
@@ -111,7 +111,7 @@ public enum AlarmSeverity implements Serializable {
      * @param other a {@link AlarmSeverity} object.
      * @return a boolean.
      */
-    public boolean isLessThanOrEqual(final AlarmSeverity other) {
+    public boolean isLessThanOrEqual(AlarmSeverity other) {
         return compareTo(other) <= 0;
     }
 
@@ -121,7 +121,7 @@ public enum AlarmSeverity implements Serializable {
      * @param other a {@link AlarmSeverity} object.
      * @return a boolean.
      */
-    public boolean isGreaterThan(final AlarmSeverity other) {
+    public boolean isGreaterThan(AlarmSeverity other) {
         return compareTo(other) > 0;
     }
 
@@ -131,7 +131,7 @@ public enum AlarmSeverity implements Serializable {
      * @param other a {@link AlarmSeverity} object.
      * @return a boolean.
      */
-    public boolean isGreaterThanOrEqual(final AlarmSeverity other) {
+    public boolean isGreaterThanOrEqual(AlarmSeverity other) {
         return compareTo(other) >= 0;
     }
 
@@ -141,9 +141,9 @@ public enum AlarmSeverity implements Serializable {
      * @param id a int.
      * @return a {@link AlarmSeverity} object.
      */
-    public static AlarmSeverity get(final int id) {
-        if (m_idMap.containsKey(id)) {
-            return m_idMap.get(id);
+    public static AlarmSeverity get(int id) {
+        if (idMap.containsKey(id)) {
+            return idMap.get(id);
         } else {
             throw new IllegalArgumentException("Cannot create Severity from unknown ID " + id);
         }
@@ -155,10 +155,10 @@ public enum AlarmSeverity implements Serializable {
      * @param label a {@link String} object.
      * @return a {@link AlarmSeverity} object.
      */
-    public static AlarmSeverity get(final String label) {
-        for (final Integer key : m_idMap.keySet()) {
-            if (m_idMap.get(key).getLabel().equalsIgnoreCase(label)) {
-                return m_idMap.get(key);
+    public static AlarmSeverity get(String label) {
+        for (final Integer key : idMap.keySet()) {
+            if (idMap.get(key).getLabel().equalsIgnoreCase(label)) {
+                return idMap.get(key);
             }
         }
         return AlarmSeverity.INDETERMINATE;
@@ -170,7 +170,7 @@ public enum AlarmSeverity implements Serializable {
      * @param sev a {@link AlarmSeverity} object.
      * @return a {@link AlarmSeverity} object.
      */
-    public static AlarmSeverity escalate(final AlarmSeverity sev) {
+    public static AlarmSeverity escalate(AlarmSeverity sev) {
         if (sev.isLessThan(AlarmSeverity.CRITICAL)) {
             return AlarmSeverity.get(sev.getId()+1);
         } else {
