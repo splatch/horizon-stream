@@ -7,7 +7,8 @@ const addWidget = (
   props: {[x: string] : string} = {}, 
   styles?: { height: string }
   ) => {
-    
+  
+  // async import a component from a given path
   const component = defineAsyncComponent(() => import( /* @vite-ignore */ widget))
   const div = document.createElement('div')
   div.id = widget
@@ -16,10 +17,10 @@ const addWidget = (
     div.style.height = styles.height
   }
 
-  const vNode = createVNode(component, props)
-  vNode.appContext = appContext
-  render(vNode, div)
-  element.appendChild(div)
+  const vNode = createVNode(component, props) // create a vue specific node for that component
+  vNode.appContext = appContext // set that node's component context (needed for Pinia)
+  render(vNode, div) // renders the component inside the created container div
+  element.appendChild(div) // appends the div to th dom
 }
 
 const removeWidget = (widget: HTMLElement | string) => {
@@ -31,7 +32,7 @@ const removeWidget = (widget: HTMLElement | string) => {
     div = widget
   }
 
-  render(null, div)
+  render(null, div) // unmounts
   div.remove()
 }
 

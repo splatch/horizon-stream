@@ -297,7 +297,7 @@ const defaultLightTileLayer = ref({
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 })
 
-// TODO: Find new dark mode layer is this one hass issues on prod
+// TODO: Find new dark mode layer as this one has issues on prod
 
 // const defaultDarkTileLayer = ref({
 //     name: 'AlidadeSmoothDark',
