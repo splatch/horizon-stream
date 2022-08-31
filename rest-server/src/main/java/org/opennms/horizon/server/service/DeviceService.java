@@ -31,7 +31,6 @@ package org.opennms.horizon.server.service;
 import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
 import org.opennms.horizon.shared.dto.device.DeviceCreateDTO;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -42,6 +41,7 @@ import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
+import reactor.core.publisher.Mono;
 
 @GraphQLApi
 @Service
@@ -55,27 +55,20 @@ public class DeviceService {
   }
 
   @GraphQLQuery
-  public DeviceCollectionDTO listDevices(@GraphQLEnvironment ResolutionEnvironment env) {
-    DeviceCollectionDTO deviceCollectionDTO = gateway.get(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), DeviceCollectionDTO.class).getBody();
-    updateCache(deviceCollectionDTO);
-    return deviceCollectionDTO;
+  public Mono<DeviceCollectionDTO> listDevices(@GraphQLEnvironment ResolutionEnvironment env) {
+    Mono<DeviceCollectionDTO> result = gateway.get(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), DeviceCollectionDTO.class);
+    return result;
   }
 
   @GraphQLQuery
   @Cacheable(value = "devices", key = "#id")
-  public DeviceDTO getDeviceById(@GraphQLArgument(name = "id") Integer id, @GraphQLEnvironment ResolutionEnvironment env) {
-    return gateway.get(PlatformGateway.URL_PATH_DEVICES + "/" + id, gateway.getAuthHeader(env), DeviceDTO.class).getBody();
+  public Mono<DeviceDTO> getDeviceById(@GraphQLArgument(name = "id") Integer id, @GraphQLEnvironment ResolutionEnvironment env) {
+    return gateway.get(PlatformGateway.URL_PATH_DEVICES + "/" + id, gateway.getAuthHeader(env), DeviceDTO.class);
   }
 
   @GraphQLMutation
-  public Integer addDevice(DeviceCreateDTO device, @GraphQLEnvironment ResolutionEnvironment env) {
-    return gateway.post(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), device, Integer.class).getBody();
+  public Mono<Integer> addDevice(DeviceCreateDTO device, @GraphQLEnvironment ResolutionEnvironment env) {
+    return gateway.post(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), device, Integer.class);
   }
-
-  private void updateCache(DeviceCollectionDTO deviceCollectionDTO) {
-      Cache devices = cacheManager.getCache("devices");
-      deviceCollectionDTO.getDevices().forEach(d -> devices.put(d.getId(), d));
-  }
-
 }
 

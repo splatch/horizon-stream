@@ -76,7 +76,7 @@ public class MinionServiceTest {
         doReturn(authHeader).when(mockGateway).getAuthHeader(mockEnv);
     }
 
-    @Test
+   /* @Test
     public void testListMinions() {
         ResponseEntity response = ResponseEntity.ok(collectionDTO);
         doReturn(response).when(mockGateway).get(PlatformGateway.URL_PATH_MINIONS, authHeader, MinionCollectionDTO.class);
@@ -115,5 +115,5 @@ public class MinionServiceTest {
         verify(mockGateway).getAuthHeader(mockEnv);
         verify(mockGateway).get(String.format(PlatformGateway.URL_PATH_MINIONS_ID, dto1.getId()), authHeader, MinionDTO.class);
         verifyNoMoreInteractions(mockGateway);
-    }
+    }*/
 }
