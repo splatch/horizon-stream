@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { ComponentInternalInstance } from 'vue';
+import { AppContext } from 'vue';
 import { addWidget, removeWidget} from '../Widgets/utils'
 
 const route = useRoute()
@@ -36,7 +36,7 @@ const minions = ref(false)
 const devices = ref(false)
 const map = ref(false)
 const widgetContainer = () => document.getElementById('widget-flex-container') as HTMLDivElement
-const instance = getCurrentInstance() as ComponentInternalInstance
+const instance = getCurrentInstance()?.appContext as AppContext
 
 const widgets = {
   deviceWidget: '../Widgets/DeviceWidget.vue',

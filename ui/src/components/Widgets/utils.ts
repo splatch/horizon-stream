@@ -1,7 +1,7 @@
-import { ComponentInternalInstance, createVNode, render } from "vue"
+import { AppContext, createVNode, render } from "vue"
 
 const addWidget = (
-  instance: ComponentInternalInstance,
+  appContext: AppContext,
   widget: string,
   element: HTMLElement,
   props: {[x: string] : string} = {}, 
@@ -17,7 +17,7 @@ const addWidget = (
   }
 
   const vNode = createVNode(component, props)
-  vNode.appContext = instance?.appContext
+  vNode.appContext = appContext
   render(vNode, div)
   element.appendChild(div)
 }
