@@ -122,7 +122,7 @@ a {
 }
 </style>
 
-<style sscoped lang="scss">
+<style scoped lang="scss">
   .fade-enter-active {
     transition: all 0.5s;
   }
