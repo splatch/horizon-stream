@@ -1,5 +1,7 @@
 package org.opennms.horizon.notifications.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum PagerDutyEventAction {
     RESOLVE("resolve"),
     ACKNOWLEDGE("acknowledge"),
@@ -10,6 +12,7 @@ public enum PagerDutyEventAction {
         this.val = val;
     }
 
+    @JsonValue()
     public String getVal() {
         return val;
     }

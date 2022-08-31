@@ -29,7 +29,6 @@
 package org.opennms.horizon.notifications.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,7 +44,6 @@ public class PagerDutyEventDTO {
     String dedupKey;
 
     @JsonProperty("event_action")
-    @JsonSerialize(using = PagerDutyEventActionSerializer.class)
     PagerDutyEventAction eventAction;
 
     String client;

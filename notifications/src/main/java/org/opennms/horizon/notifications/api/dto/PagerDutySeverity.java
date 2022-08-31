@@ -28,6 +28,8 @@
 
 package org.opennms.horizon.notifications.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum PagerDutySeverity {
     CRITICAL("critical"),
     ERROR("error"),
@@ -45,6 +47,7 @@ public enum PagerDutySeverity {
         return name.equals(otherName);
     }
 
+    @JsonValue()
     public String toString() {
         return this.name;
     }
