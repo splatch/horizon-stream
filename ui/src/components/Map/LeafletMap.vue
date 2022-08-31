@@ -94,7 +94,7 @@ import { DeviceDto } from '@/types/graphql'
 import useTheme from '@/composables/useTheme'
 import { WidgetProps } from '@/types'
 
-defineProps<{widgetProps: WidgetProps | undefined}>()
+defineProps<{widgetProps?: WidgetProps}>()
 
 const markerCluster = ref()
 const computedEdges = ref<number[][][]>()

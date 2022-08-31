@@ -61,7 +61,7 @@ import { ComputedRef } from 'vue'
 import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './appliances.helpers'
 import { WidgetProps } from '@/types'
 
-defineProps<{widgetProps: WidgetProps | undefined}>()
+defineProps<{widgetProps?: WidgetProps}>()
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()
