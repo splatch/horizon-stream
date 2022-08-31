@@ -15,7 +15,9 @@
         <Snackbar />
         <router-view />
       </div>
-      <Widgetbar v-if="store.widgetBarOpen" />
+      <transition name="fade">
+        <Widgetbar v-if="store.widgetBarOpen" />
+      </transition>
     </div>
 
   </FeatherAppLayout>
@@ -63,7 +65,7 @@ body {
   position: relative;
   width: 100%;
   margin-left: v-bind(contentMargin);
-  margin-right: 15px;
+  margin-right: 12px;
   transition: margin-left 0.28s ease-in-out v-bind(ease);
   max-width: calc(100% - v-bind(maxWidth));
 
@@ -118,4 +120,14 @@ a {
     color: rgb(10, 12, 27);
   }
 }
+</style>
+
+<style sscoped lang="scss">
+  .fade-enter-active {
+    transition: all 0.5s;
+  }
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
 </style>

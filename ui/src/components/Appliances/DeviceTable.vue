@@ -6,14 +6,18 @@
           data-test="show-minions-btn"
           icon="Show Minions" 
           @click="appliancesStore.showMinionsTable"
-          v-if="!appliancesStore.minionsTableOpen"
+          v-if="!appliancesStore.minionsTableOpen && !widgetProps?.isWidget"
         >
           <FeatherIcon :icon="ChevronRight" />
         </FeatherButton>
         <span class="title">Devices</span>
       </div>
 
-      <FeatherInput class="search" v-model="searchValue" label="Devices">
+      <FeatherInput
+        v-if="!widgetProps?.isWidget"
+        class="search" 
+        v-model="searchValue" 
+        label="Devices">
         <template v-slot:pre>
           <FeatherIcon :icon="Search" />
         </template>
@@ -70,6 +74,9 @@ import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import { ExtendedDeviceDTOWithBGColors } from '@/types/device'
 import { ComputedRef } from 'vue'
 import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './appliances.helpers'
+import { WidgetProps } from '@/types'
+
+defineProps<{widgetProps: WidgetProps | undefined}>()
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()
