@@ -148,7 +148,7 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
         payload.setSummary(alarm.getLogMessage().trim());
         payload.setTimestamp(now.toString());
         AlarmSeverity alarmSeverity = AlarmSeverity.get(alarm.getSeverity());
-        payload.setSeverity(PagerDutySeverity.fromAlarmSeverity(alarmSeverity).toString());
+        payload.setSeverity(PagerDutySeverity.fromAlarmSeverity(alarmSeverity));
 
         if (alarm.getNodeLabel() != null) {
             payload.setSource(alarm.getNodeLabel());
@@ -168,11 +168,11 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
         event.setDedupKey(alarm.getReductionKey());
 
         if (AlarmSeverity.CLEARED.equals(alarmSeverity) || AlarmType.RESOLUTION.equals(alarm.getType())) {
-            event.setEventAction(PagerDutyEventAction.RESOLVE.getVal());
+            event.setEventAction(PagerDutyEventAction.RESOLVE);
         } else if (alarm.getAckUser() != null && alarm.getAckUser().length() > 0) {
-            event.setEventAction(PagerDutyEventAction.ACKNOWLEDGE.getVal());
+            event.setEventAction(PagerDutyEventAction.ACKNOWLEDGE);
         } else {
-            event.setEventAction(PagerDutyEventAction.TRIGGER.getVal());
+            event.setEventAction(PagerDutyEventAction.TRIGGER);
         }
 
         //TODO: Add in alarm id into url

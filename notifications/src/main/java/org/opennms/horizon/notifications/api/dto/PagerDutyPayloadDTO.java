@@ -30,6 +30,7 @@ package org.opennms.horizon.notifications.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,10 +41,14 @@ import java.util.Map;
 public class PagerDutyPayloadDTO {
     String summary;
     String timestamp;
-    String severity;
+
+    @JsonSerialize(using = PagerDutySeveritySerializer.class)
+    PagerDutySeverity severity;
+
     String source;
     String component;
     String group;
+
     @JsonProperty("class")
     String clazz;
 
