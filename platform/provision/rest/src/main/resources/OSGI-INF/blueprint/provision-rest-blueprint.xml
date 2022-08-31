@@ -56,5 +56,5 @@
 
 <!--    Temp For testing only....-->
 
-    <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient"/>
+    <reference id="locationAwareDetectorClient" interface="org.opennms.netmgt.provision.LocationAwareDetectorClient" filter="(type=ignite)"/>
 </blueprint>
