@@ -31,6 +31,7 @@ package org.opennms.horizon.server.service;
 import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
 import org.opennms.horizon.shared.dto.device.DeviceCreateDTO;
 import org.opennms.horizon.shared.dto.device.DeviceDTO;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @GraphQLApi
 @Service
@@ -57,6 +59,7 @@ public class DeviceService {
   @GraphQLQuery
   public Mono<DeviceCollectionDTO> listDevices(@GraphQLEnvironment ResolutionEnvironment env) {
     Mono<DeviceCollectionDTO> result = gateway.get(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), DeviceCollectionDTO.class);
+    result.subscribeOn(Schedulers.boundedElastic()).subscribe(coll -> updateCache(coll));
     return result;
   }
 
@@ -70,5 +73,11 @@ public class DeviceService {
   public Mono<Integer> addDevice(DeviceCreateDTO device, @GraphQLEnvironment ResolutionEnvironment env) {
     return gateway.post(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), device, Integer.class);
   }
+
+  private void updateCache(DeviceCollectionDTO deviceCollectionDTO) {
+      Cache devices = cacheManager.getCache("devices");
+      deviceCollectionDTO.getDevices().forEach(d -> devices.put(d.getId(), Mono.just(d)));
+  }
+
 }
 

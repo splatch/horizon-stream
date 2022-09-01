@@ -30,6 +30,7 @@ package org.opennms.horizon.server.service;
 
 import org.opennms.horizon.shared.dto.minion.MinionCollectionDTO;
 import org.opennms.horizon.shared.dto.minion.MinionDTO;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,7 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 
 @GraphQLApi
@@ -56,6 +58,7 @@ public class MinionService {
     @GraphQLQuery
     public Mono<MinionCollectionDTO> listMinions(@GraphQLEnvironment ResolutionEnvironment env) {//TODO: add search TDO object with pagination as cache key
         Mono<MinionCollectionDTO> result = gateway.get(PlatformGateway.URL_PATH_MINIONS, gateway.getAuthHeader(env), MinionCollectionDTO.class);
+        result.subscribeOn(Schedulers.boundedElastic()).subscribe(coll -> updateCache(coll));
         return result;
 
 
@@ -65,5 +68,9 @@ public class MinionService {
     @Cacheable(value = "minions", key = "#id")
     public Mono<MinionDTO> getMinionById(@GraphQLArgument(name = "id") String id, @GraphQLEnvironment ResolutionEnvironment env) {
         return gateway.get(String.format(PlatformGateway.URL_PATH_MINIONS_ID, id), gateway.getAuthHeader(env), MinionDTO.class);
+    }
+    private void updateCache(MinionCollectionDTO collectionDTO) {
+        Cache minionsCache = cacheManager.getCache("minions");
+        collectionDTO.getMinions().forEach(m->minionsCache.put(m.getId(), Mono.just(m)));
     }
 }

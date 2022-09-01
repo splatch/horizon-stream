@@ -38,9 +38,11 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.opennms.horizon.shared.dto.minion.MinionCollectionDTO;
-import org.opennms.horizon.shared.dto.minion.MinionDTO;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
+import org.opennms.horizon.shared.dto.device.DeviceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -50,62 +52,62 @@ import io.leangen.graphql.execution.ResolutionEnvironment;
 import reactor.core.publisher.Mono;
 
 @SpringBootTest
-public class MinionServiceTest {
+@TestMethodOrder(MethodOrderer.MethodName.class)
+public class DeviceServiceTest {
     @MockBean
     private PlatformGateway mockGateway;
     @MockBean
     private ResolutionEnvironment mockEnv;
     @Autowired
-    private MinionService minionService;
+    private DeviceService deviceService;
     @Autowired
     private CacheManager cacheManager;
-    private MinionCollectionDTO collectionDTO;
-    private MinionDTO dto1;
-    private MinionDTO dto2;
+    private DeviceDTO device1;
+    private DeviceDTO device2;
+    private DeviceCollectionDTO collectionDTO;
     private String authHeader = "Authorization: abdcd";
 
     @BeforeEach
     public void setup() {
-        dto1 = new MinionDTO();
-        dto1.setId("test-minion-1");
-        dto2 = new MinionDTO();
-        dto2.setId("test-minion-2");
-        collectionDTO = new MinionCollectionDTO(Arrays.asList(dto1, dto2));
+        device1 = new DeviceDTO();
+        device1.setId(1);
+        device2 = new DeviceDTO();
+        device2.setId(2);
+        collectionDTO = new DeviceCollectionDTO(Arrays.asList(device1, device2));
         doReturn(authHeader).when(mockGateway).getAuthHeader(mockEnv);
-        cacheManager.getCache("minions").clear();
+        cacheManager.getCache("devices").clear();
     }
 
-   @Test
-    public void testListMinions() {
-        doReturn(Mono.just(collectionDTO)).when(mockGateway).get(PlatformGateway.URL_PATH_MINIONS, authHeader, MinionCollectionDTO.class);
-        minionService.listMinions(mockEnv).subscribe(result -> assertEquals(collectionDTO, result));
-        minionService.listMinions(mockEnv).subscribe(result -> assertEquals(collectionDTO, result));
+    @Test
+    public void testListDevices() {
+        doReturn(Mono.just(collectionDTO)).when(mockGateway).get(PlatformGateway.URL_PATH_DEVICES, authHeader, DeviceCollectionDTO.class);
+        deviceService.listDevices(mockEnv).subscribe(r -> assertEquals(collectionDTO, r));
+        deviceService.listDevices(mockEnv).subscribe(r -> assertEquals(collectionDTO, r));
         verify(mockGateway, times(2)).getAuthHeader(mockEnv);
-        //now cache for list minions
-        verify(mockGateway, times(2)).get(PlatformGateway.URL_PATH_MINIONS, authHeader, MinionCollectionDTO.class);
+        verify(mockGateway, times(2)).get(PlatformGateway.URL_PATH_DEVICES, authHeader, DeviceCollectionDTO.class);
         verifyNoMoreInteractions(mockGateway);
     }
 
     @Test
-    public void testGetByIDAfterList() {
-        doReturn(Mono.just(collectionDTO)).when(mockGateway).get(PlatformGateway.URL_PATH_MINIONS, authHeader, MinionCollectionDTO.class);
-        minionService.listMinions(mockEnv).doOnSuccess(result -> {
+    public void testGetByIDAfterList() throws InterruptedException {
+        doReturn(Mono.just(collectionDTO)).when(mockGateway).get(PlatformGateway.URL_PATH_DEVICES, authHeader, DeviceCollectionDTO.class);
+        deviceService.listDevices(mockEnv).doOnSuccess(result -> {
             assertEquals(collectionDTO, result);
-            minionService.getMinionById(dto1.getId(), mockEnv).subscribe(m -> assertEquals(dto1, m)); // from the cache
-            minionService.getMinionById(dto2.getId(), mockEnv).subscribe(m -> assertEquals(dto2, m));
+            deviceService.getDeviceById(device1.getId(), mockEnv).subscribe(device -> assertEquals(device1, device));
+            deviceService.getDeviceById(device2.getId(), mockEnv).subscribe(device -> assertEquals(device2, device));
         });
         verify(mockGateway).getAuthHeader(mockEnv);
-        verify(mockGateway).get(PlatformGateway.URL_PATH_MINIONS, authHeader, MinionCollectionDTO.class);
+        verify(mockGateway).get(PlatformGateway.URL_PATH_DEVICES, authHeader, DeviceCollectionDTO.class);
         verifyNoMoreInteractions(mockGateway);
     }
 
     @Test
-    public void testGetByID() {
-        doReturn(Mono.just(dto1)).when(mockGateway).get(String.format(PlatformGateway.URL_PATH_MINIONS_ID, dto1.getId()), authHeader, MinionDTO.class);
-        minionService.getMinionById(dto1.getId(), mockEnv).subscribe(result -> assertEquals(dto1, result));
-        minionService.getMinionById(dto1.getId(), mockEnv).subscribe(result -> assertEquals(dto1, result)); //got dto from the cache
+    public void testGetByIDTwice() {
+        doReturn(Mono.just(device1)).when(mockGateway).get(PlatformGateway.URL_PATH_DEVICES + "/" + device1.getId(), authHeader, DeviceDTO.class);
+        deviceService.getDeviceById(device1.getId(), mockEnv).subscribe(result -> assertEquals(device1, result));
+        deviceService.getDeviceById(device1.getId(), mockEnv).subscribe(result -> assertEquals(device1, result));
         verify(mockGateway).getAuthHeader(mockEnv);
-        verify(mockGateway).get(String.format(PlatformGateway.URL_PATH_MINIONS_ID, dto1.getId()), authHeader, MinionDTO.class);
+        verify(mockGateway).get(PlatformGateway.URL_PATH_DEVICES + "/" + device1.getId(), authHeader, DeviceDTO.class);
         verifyNoMoreInteractions(mockGateway);
     }
 }

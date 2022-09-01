@@ -39,8 +39,8 @@ import java.util.Arrays;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opennms.horizon.shared.dto.minion.MinionCollectionDTO;
-import org.opennms.horizon.shared.dto.minion.MinionDTO;
+import org.opennms.horizon.shared.dto.device.LocationCollectionDTO;
+import org.opennms.horizon.shared.dto.device.LocationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -50,62 +50,60 @@ import io.leangen.graphql.execution.ResolutionEnvironment;
 import reactor.core.publisher.Mono;
 
 @SpringBootTest
-public class MinionServiceTest {
+public class LocationServiceTest {
     @MockBean
     private PlatformGateway mockGateway;
     @MockBean
     private ResolutionEnvironment mockEnv;
     @Autowired
-    private MinionService minionService;
+    LocationService locationService;
     @Autowired
-    private CacheManager cacheManager;
-    private MinionCollectionDTO collectionDTO;
-    private MinionDTO dto1;
-    private MinionDTO dto2;
+    CacheManager cacheManager;
+    private LocationCollectionDTO collectionDTO;
+    private LocationDTO location1, location2;
     private String authHeader = "Authorization: abdcd";
 
     @BeforeEach
-    public void setup() {
-        dto1 = new MinionDTO();
-        dto1.setId("test-minion-1");
-        dto2 = new MinionDTO();
-        dto2.setId("test-minion-2");
-        collectionDTO = new MinionCollectionDTO(Arrays.asList(dto1, dto2));
+    public void setUp() {
+        location1 = new LocationDTO();
+        location1.setLocationName("test-location1");
+        location2 = new LocationDTO();
+        location2.setLocationName("test-location2");
+        collectionDTO = new LocationCollectionDTO(Arrays.asList(location1, location2));
         doReturn(authHeader).when(mockGateway).getAuthHeader(mockEnv);
-        cacheManager.getCache("minions").clear();
+        cacheManager.getCache("locations").clear();
     }
 
-   @Test
-    public void testListMinions() {
-        doReturn(Mono.just(collectionDTO)).when(mockGateway).get(PlatformGateway.URL_PATH_MINIONS, authHeader, MinionCollectionDTO.class);
-        minionService.listMinions(mockEnv).subscribe(result -> assertEquals(collectionDTO, result));
-        minionService.listMinions(mockEnv).subscribe(result -> assertEquals(collectionDTO, result));
+    @Test
+    public void testListLocations() {
+        doReturn(Mono.just(collectionDTO)).when(mockGateway).get(PlatformGateway.URL_PATH_LOCATIONS, authHeader, LocationCollectionDTO.class);
+        locationService.listLocations(mockEnv).subscribe(r -> assertEquals(collectionDTO, r));
+        locationService.listLocations(mockEnv).subscribe(r -> assertEquals(collectionDTO, r));
         verify(mockGateway, times(2)).getAuthHeader(mockEnv);
-        //now cache for list minions
-        verify(mockGateway, times(2)).get(PlatformGateway.URL_PATH_MINIONS, authHeader, MinionCollectionDTO.class);
+        verify(mockGateway, times(2)).get(PlatformGateway.URL_PATH_LOCATIONS, authHeader, LocationCollectionDTO.class);
         verifyNoMoreInteractions(mockGateway);
     }
 
     @Test
     public void testGetByIDAfterList() {
-        doReturn(Mono.just(collectionDTO)).when(mockGateway).get(PlatformGateway.URL_PATH_MINIONS, authHeader, MinionCollectionDTO.class);
-        minionService.listMinions(mockEnv).doOnSuccess(result -> {
-            assertEquals(collectionDTO, result);
-            minionService.getMinionById(dto1.getId(), mockEnv).subscribe(m -> assertEquals(dto1, m)); // from the cache
-            minionService.getMinionById(dto2.getId(), mockEnv).subscribe(m -> assertEquals(dto2, m));
+        doReturn(Mono.just(collectionDTO)).when(mockGateway).get(PlatformGateway.URL_PATH_LOCATIONS, authHeader, LocationCollectionDTO.class);
+        locationService.listLocations(mockEnv).doOnSuccess (list -> {
+            assertEquals(collectionDTO, list);
+            locationService.getLocationById(location1.getLocationName(), mockEnv).subscribe(l -> assertEquals(location1, l));
+            locationService.getLocationById(location2.getLocationName(), mockEnv).subscribe(l -> assertEquals(location2, l));
         });
         verify(mockGateway).getAuthHeader(mockEnv);
-        verify(mockGateway).get(PlatformGateway.URL_PATH_MINIONS, authHeader, MinionCollectionDTO.class);
+        verify(mockGateway).get(PlatformGateway.URL_PATH_LOCATIONS, authHeader, LocationCollectionDTO.class);
         verifyNoMoreInteractions(mockGateway);
     }
 
     @Test
     public void testGetByID() {
-        doReturn(Mono.just(dto1)).when(mockGateway).get(String.format(PlatformGateway.URL_PATH_MINIONS_ID, dto1.getId()), authHeader, MinionDTO.class);
-        minionService.getMinionById(dto1.getId(), mockEnv).subscribe(result -> assertEquals(dto1, result));
-        minionService.getMinionById(dto1.getId(), mockEnv).subscribe(result -> assertEquals(dto1, result)); //got dto from the cache
+        doReturn(Mono.just(location1)).when(mockGateway).get(PlatformGateway.URL_PATH_LOCATIONS + "/" + location1.getLocationName(), authHeader, LocationDTO.class);
+        locationService.getLocationById(location1.getLocationName(), mockEnv).subscribe(location -> assertEquals(location1, location));
+        locationService.getLocationById(location1.getLocationName(), mockEnv).subscribe(location -> assertEquals(location1, location));
         verify(mockGateway).getAuthHeader(mockEnv);
-        verify(mockGateway).get(String.format(PlatformGateway.URL_PATH_MINIONS_ID, dto1.getId()), authHeader, MinionDTO.class);
+        verify(mockGateway).get(PlatformGateway.URL_PATH_LOCATIONS + "/" + location1.getLocationName(), authHeader, LocationDTO.class);
         verifyNoMoreInteractions(mockGateway);
     }
 }
