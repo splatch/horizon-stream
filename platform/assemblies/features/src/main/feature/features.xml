@@ -499,4 +499,14 @@
         <bundle>mvn:org.opennms.horizon.config/rest/${project.version}</bundle>
     </feature>
 
+
+    <feature name="horizon-core-traps" version="${project.version}">
+        <feature>horizon-db</feature>
+        <feature>horizon-ipc-api</feature>
+        <feature>horizon-snmp</feature>
+        <bundle>wrap:mvn:org.json/json/${json.version}$Export-Package=org.json</bundle>
+        <bundle>mvn:org.opennms.horizon.config/api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.config/service/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon/traps/${project.version}</bundle>
+    </feature>
 </features>
