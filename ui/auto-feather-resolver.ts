@@ -1,7 +1,8 @@
 const mismatchedDirNames: Record<string, string> = {
   spinner: 'progress',
   'rail-item': 'navigation-rail',
-  'app-bar-link': 'app-bar'
+  'app-bar-link': 'app-bar',
+  'checkbox-group': 'checkbox'
 }
 
 const getDirectory = (partialComponentName: string): string => {

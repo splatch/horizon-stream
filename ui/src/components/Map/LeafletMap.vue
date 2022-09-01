@@ -1,6 +1,6 @@
 <template>
   <div class="geo-map">
-    <SeverityFilter />
+    <SeverityFilter v-if="!widgetProps?.isWidget" />
     <LMap
       ref="map"
       :center="center"
@@ -92,6 +92,9 @@ import { useMapStore } from '@/store/Views/mapStore'
 import { useGeomapQueries } from '@/store/Queries/geomapQueries'
 import { DeviceDto } from '@/types/graphql'
 import useTheme from '@/composables/useTheme'
+import { WidgetProps } from '@/types'
+
+defineProps<{widgetProps?: WidgetProps}>()
 
 const markerCluster = ref()
 const computedEdges = ref<number[][][]>()
@@ -119,15 +122,15 @@ const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityM
 // on light / dark mode change, switch the map layer
 onThemeChange(() => {
   // set all layers false
-  for (const tileOptions of tileProviders.value) {
-    tileOptions.visible = false
-  }
+  // for (const tileOptions of tileProviders.value) {
+  //   tileOptions.visible = false
+  // }
 
-  if (isDark.value) {
-    defaultDarkTileLayer.value.visible = true // defauly dark
-  } else {
-    defaultLightTileLayer.value.visible = true // default light
-  }
+  // if (isDark.value) {
+  //   defaultDarkTileLayer.value.visible = true // defauly dark
+  // } else {
+  //   defaultLightTileLayer.value.visible = true // default light
+  // }
 })
 
 const getHighestSeverity = (severitites: string[]) => {
@@ -288,23 +291,25 @@ const invalidateSizeFn = () => {
 /*****Tile Layer*****/
 const defaultLightTileLayer = ref({
     name: 'OpenStreetMap',
-    visible: !isDark.value && true,
+    visible: true,
     attribution:
       '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 })
 
-const defaultDarkTileLayer = ref({
-    name: 'AlidadeSmoothDark',
-    visible: isDark.value && true,
-    url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
-    attribution:
-      '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-})
+// TODO: Find new dark mode layer as this one has issues on prod
+
+// const defaultDarkTileLayer = ref({
+//     name: 'AlidadeSmoothDark',
+//     visible: isDark.value && true,
+//     url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
+//     attribution:
+//       '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+// })
 
 const tileProviders = ref([
   defaultLightTileLayer.value,
-  defaultDarkTileLayer.value
+  // defaultDarkTileLayer.value
 ])
 
 defineExpose({ invalidateSizeFn, setBoundingBox, flyToNode })
