@@ -6,21 +6,29 @@
         v-if="route.path !== '/'" 
         v-model="minions" 
         @update:modelValue="triggerMinions">
-          Minions Widget
+          Minions
       </FeatherCheckbox>
 
       <FeatherCheckbox 
         v-if="route.path !== '/'" 
         v-model="devices" 
         @update:modelValue="triggerDevices">
-          Devices Widget
+          Devices
       </FeatherCheckbox>
 
       <FeatherCheckbox 
         v-if="!route.path.includes('/map')" 
         v-model="map" 
         @update:modelValue="triggerMap">
-          Map Widget
+          Geomap
+      </FeatherCheckbox>
+
+      <!-- TODO: Add to device status page, when available -->
+      <FeatherCheckbox
+        v-if="false"
+        v-model="tags" 
+        @update:modelValue="triggerTags">
+          Tags
       </FeatherCheckbox>
     </FeatherCheckboxGroup>
   </div>
@@ -29,19 +37,21 @@
 
 <script setup lang="ts">
 import { AppContext } from 'vue';
-import { addWidget, removeWidget} from '../Widgets/utils'
+import { addWidget, removeWidget } from '../Widgets/utils'
 
 const route = useRoute()
 const minions = ref(false)
 const devices = ref(false)
 const map = ref(false)
+const tags = ref(false)
 const widgetContainer = () => document.getElementById('widget-flex-container') as HTMLDivElement
 const instance = getCurrentInstance()?.appContext as AppContext
 
 const widgets = {
   deviceWidget: '../Widgets/DeviceWidget.vue',
   minionWidget: '../Widgets/MinionWidget.vue',
-  mapWidget: '../Widgets/MapWidget.vue'
+  mapWidget: '../Widgets/MapWidget.vue',
+  tagWidget: '../Widgets/TagWidget.vue'
 }
 
 const triggerMinions = (val: boolean | undefined) => {
@@ -57,6 +67,11 @@ const triggerDevices = (val: boolean | undefined) => {
 const triggerMap = (val: boolean | undefined) => {
   if (val) addWidget(instance, widgets.mapWidget, widgetContainer(), {}, { height: '400px' })
   else removeWidget(widgets.mapWidget)
+}
+
+const triggerTags = (val: boolean | undefined) => {
+  if (val) addWidget(instance, widgets.tagWidget, widgetContainer())
+  else removeWidget(widgets.tagWidget)
 }
 </script>
 
