@@ -115,7 +115,7 @@ const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value
   return mapStore.devicesWithCoordinates.map((node: DeviceDto) => coordinatedMap.get(node?.id))
 })
-const nodeLabelAlarmServerityMap = computed(() => mapStore.getDeviceAlarmSeverityMap)
+const nodeLabelAlarmServerityMap = computed(() => mapStore.getDeviceAlarmSeverityMap())
 
 // on light / dark mode change, switch the map layer
 onThemeChange(() => {

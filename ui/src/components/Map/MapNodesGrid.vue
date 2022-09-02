@@ -125,7 +125,7 @@ import { DeviceDto, LocationDto } from '@/types/graphql'
 
 const mapStore = useMapStore()
 const nodes = computed(() => mapStore.devicesInbounds)
-const nodeLabelAlarmServerityMap = computed(() => mapStore.getDeviceAlarmSeverityMap)
+const nodeLabelAlarmServerityMap = computed(() => mapStore.getDeviceAlarmSeverityMap())
 
 const doubleClickHandler = (node: Partial<DeviceDto>) => {
   if (node.location?.latitude && node.location.longitude) {

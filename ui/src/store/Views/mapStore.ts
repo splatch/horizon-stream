@@ -40,7 +40,7 @@ export const useMapStore = defineStore('mapStore', () => {
       }
       
     })
-
+    
     return map
   }
 
