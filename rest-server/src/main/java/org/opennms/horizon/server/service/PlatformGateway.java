@@ -60,7 +60,6 @@ public class PlatformGateway {
             .baseUrl(baseUrl)
             .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
             .build();
-
     }
 
     public String getAuthHeader(ResolutionEnvironment env) {
@@ -72,27 +71,25 @@ public class PlatformGateway {
     }
 
     public <T> Mono<T> post(String path, String authToken, Object data, Class<T> returnType) {
-        return requestWithBody(path, HttpMethod.POST, authToken, data, returnType);
+        return executeRequest(path, HttpMethod.POST, authToken, data, returnType);
     }
 
     public <T> Mono<T> get(String path, String authToken, Class<T> returnType) {
-        return webclient.get()
-            .uri(path)
-            .header(HttpHeaders.AUTHORIZATION, authToken)
-            .retrieve()
-            .bodyToMono(returnType);
+        return executeRequest(path, HttpMethod.GET, authToken, null, returnType);
     }
 
     public <T> Mono<T> put(String path, String authToken, Object data, Class<T> returnType) {
-        return requestWithBody(path, HttpMethod.PUT, authToken, data, returnType);
+        return executeRequest(path, HttpMethod.PUT, authToken, data, returnType);
     }
 
-    private <T> Mono <T> requestWithBody(String path, HttpMethod method, String token, Object data, Class<T> type) {
-        return webclient.method(method)
+    private <T> Mono <T> executeRequest(String path, HttpMethod method, String token, Object data, Class<T> type) {
+        WebClient.RequestBodySpec request = webclient
+            .method(method)
             .uri(path)
-            .header(HttpHeaders.AUTHORIZATION, token)
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(data)
-            .retrieve().bodyToMono(type);
+            .header(HttpHeaders.AUTHORIZATION, token);
+        if(data !=null) {
+            request.contentType(MediaType.APPLICATION_JSON).bodyValue(data);
+        }
+        return request.retrieve().bodyToMono(type);
     }
 }
