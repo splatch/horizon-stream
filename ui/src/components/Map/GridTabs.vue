@@ -15,7 +15,7 @@ import { AlarmDto } from '@/types/graphql'
 const mapStore = useMapStore()
 const router = useRouter()
 const route = useRoute()
-const nodes = computed(() => mapStore.devicesWithCoordinates)
+const nodes = computed(() => mapStore.devicesInbounds)
 const alarms = computed<AlarmDto[]>(() => mapStore.alarms)
 const alarmTab = ref()
 const nodesTab = ref()

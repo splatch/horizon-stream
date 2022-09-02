@@ -101,17 +101,17 @@
         </tr>
       </thead>
       <tbody class="node-list-grid" data-test="node-list">
-        <tr v-for="device in devices" :key="(device?.id as number)" @dblclick="doubleClickHandler(device as Partial<DeviceDto>)" :device="device?.id">
-          <td :class="nodeLabelAlarmServerityMap[device?.label as string]">{{ device?.id }}</td>
-          <td>{{ device?.foreignSource }}</td>
-          <td>{{ device?.foreignId }}</td>
-          <td>{{ device?.label }}</td>
-          <td>{{ device?.labelSource }}</td>
-          <td>{{ device?.sysOid }}</td>
-          <td>{{ device?.sysName }}</td>
-          <td>{{ device?.sysDescription }}</td>
-          <td>{{ device?.sysContact }}</td>
-          <td>{{ device?.sysLocation }}</td>
+        <tr v-for="node in nodes" :key="(node?.id as number)" @dblclick="doubleClickHandler(node as Partial<DeviceDto>)" :node="node?.id">
+          <td :class="nodeLabelAlarmServerityMap[node?.label as string]">{{ node?.id }}</td>
+          <td>{{ node?.foreignSource }}</td>
+          <td>{{ node?.foreignId }}</td>
+          <td>{{ node?.label }}</td>
+          <td>{{ node?.labelSource }}</td>
+          <td>{{ node?.sysOid }}</td>
+          <td>{{ node?.sysName }}</td>
+          <td>{{ node?.sysDescription }}</td>
+          <td>{{ node?.sysContact }}</td>
+          <td>{{ node?.sysLocation }}</td>
         </tr>
       </tbody>
     </table>
@@ -124,18 +124,18 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import { DeviceDto, LocationDto } from '@/types/graphql'
 
 const mapStore = useMapStore()
-const devices = computed(() => mapStore.devicesWithCoordinates)
-const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap)
+const nodes = computed(() => mapStore.devicesInbounds)
+const nodeLabelAlarmServerityMap = computed(() => mapStore.getDeviceAlarmSeverityMap)
 
-const doubleClickHandler = (device: Partial<DeviceDto>) => {
-  if (device.location?.latitude && device.location.longitude) {
-    const coordinate: LocationDto = { latitude: device?.location?.latitude, longitude: device?.location?.longitude }
+const doubleClickHandler = (node: Partial<DeviceDto>) => {
+  if (node.location?.latitude && node.location.longitude) {
+    const coordinate: LocationDto = { latitude: node?.location?.latitude, longitude: node?.location?.longitude }
     mapStore.mapCenter = coordinate
 
     // to highlighting the selected row
     const rows = document.querySelectorAll('.node-list-grid > tr')
     rows.forEach(row => {
-      if(row.getAttribute('device') === device.id?.toString()) row.classList.add('selected')
+      if(row.getAttribute('node') === node.id?.toString()) row.classList.add('selected')
       else row.classList.remove('selected')
     })
   }

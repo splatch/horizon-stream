@@ -65,7 +65,6 @@ import GridTabs from '@/components/Map/GridTabs.vue'
 import { debounce } from 'lodash'
 import useSpinner from '@/composables/useSpinner'
 import { useLayoutStore } from '@/store/Views/layoutStore'
-import { useMapStore } from '@/store/Views/mapStore'
 // import { ViewType, DisplayType } from '@/components/Topology/topology.constants'
 // import Topology from './Topology.vue'
 // import TopologyLeftDrawer from '@/components/Topology/TopologyLeftDrawer.vue'
@@ -76,7 +75,6 @@ import { useMapStore } from '@/store/Views/mapStore'
 // import { useTopologyStore } from '@/store/Views/topologyStore'
 
 const layoutStore = useLayoutStore()
-const mapStore = useMapStore()
 const { startSpinner, stopSpinner } = useSpinner()
 const split = ref()
 const nodesReady = ref(false)
@@ -104,10 +102,8 @@ const resize = debounce(() => {
 // const flyToNode = (node: string) => leafletComponent.value.flyToNode(node)
 // const setBoundingBox = (nodeLabels: string[]) => leafletComponent.value.setBoundingBox(nodeLabels)
 
-onMounted(async () => {
+onMounted(() => {
   startSpinner()
-  await mapStore.fetchDevices()
-  mapStore.fetchAlarms()
   stopSpinner()
   resize()
   nodesReady.value = true

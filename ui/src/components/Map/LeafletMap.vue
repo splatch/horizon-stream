@@ -28,26 +28,26 @@
           :options="{ showCoverageOnHover: false, chunkedLoading: true, iconCreateFunction }"
         >
           <LMarker
-            v-for="device of devices"
-            :key="device?.label"
-            :lat-lng="[device?.location?.latitude, device?.location?.longitude]"
-            :name="device?.label"
-            :options="{ id: device?.id }"
+            v-for="node of nodes"
+            :key="node?.label"
+            :lat-lng="[node?.location?.latitude, node?.location?.longitude]"
+            :name="node?.label"
+            :options="{ id: node?.id }"
           >
             <LPopup>
               Node:
               <router-link
-                :to="`/node/${device?.id}`"
+                :to="`/node/${node?.id}`"
                 target="_blank"
-                >{{ device?.label }}</router-link
+                >{{ node?.label }}</router-link
               >
               <br />
-              Severity: {{ nodeLabelAlarmServerityMap[device?.label as string] || 'NORMAL' }}
+              Severity: {{ nodeLabelAlarmServerityMap[node?.label as string] || 'NORMAL' }}
               <br />
-              <!-- Category: {{ device?.categories?.length ? device?.categories[0].name : 'N/A' }} -->
+              <!-- Category: {{ node?.categories?.length ? node?.categories[0].name : 'N/A' }} -->
             </LPopup>
             <LIcon
-              :icon-url="setIcon(device as Partial<DeviceDto>)"
+              :icon-url="setIcon(node as Partial<DeviceDto>)"
               :icon-size="iconSize"
             />
           </LMarker>
@@ -87,6 +87,7 @@ import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
 import { useTopologyStore } from '@/store/Views/topologyStore'
 import { useMapStore } from '@/store/Views/mapStore'
+import { useMapQueries } from '@/store/Queries/mapQueries'
 import { DeviceDto } from '@/types/graphql'
 import useTheme from '@/composables/useTheme'
 
@@ -108,13 +109,13 @@ const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
 const nodeClusterCoords = ref<Record<string, number[]>>({})
 
-const devices = computed(() => mapStore.devicesWithCoordinates)
+const nodes = computed(() => mapStore.devicesWithCoordinates)
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => (mapStore.mapCenter as any)[k] ))
 const bounds = computed(() => {
   const coordinatedMap = getNodeCoordinateMap.value
   return mapStore.devicesWithCoordinates.map((node: DeviceDto) => coordinatedMap.get(node?.id))
 })
-const nodeLabelAlarmServerityMap = computed(() => mapStore.getNodeAlarmSeverityMap)
+const nodeLabelAlarmServerityMap = computed(() => mapStore.getDeviceAlarmSeverityMap)
 
 // on light / dark mode change, switch the map layer
 onThemeChange(() => {
@@ -222,12 +223,12 @@ const computeEdges = () => {
 
 const getNodeCoordinateMap = computed(() => {
   const map = new Map()
-  mapStore.devicesWithCoordinates.forEach((device) => {
-    if (device) {
-      map.set(device.id, [device.location?.latitude, device.location?.longitude])
-      map.set(device.label, [device.location?.latitude, device.location?.longitude])
-    }
+
+  mapStore.devicesWithCoordinates.forEach((device: any) => {
+    map.set(device.id, [device.location.latitude, device.location.longitude])
+    map.set(device.label, [device.location.latitude, device.location.longitude])
   })
+  
   return map
 })
 
@@ -260,7 +261,6 @@ const onLeafletReady = async () => {
 const onMoveEnd = () => {
   zoom.value = leafletObject.value.getZoom()
   mapStore.mapBounds = leafletObject.value.getBounds()
-  mapStore.filterNodesInBounds()
 }
 
 const flyToNode = (nodeLabelOrId: string) => {
