@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
-import { useQuery } from 'villus'
 import { FeatherSortObject } from '@/types'
-import { DeviceDto, AlarmDto, ListDevicesForMapDocument, LocationDto } from '@/types/graphql'
-import { LatLngBounds, LatLngLiteral } from 'leaflet'
+import { DeviceDto, AlarmDto, LocationDto } from '@/types/graphql'
+import { LatLngLiteral } from 'leaflet'
 import { SORT } from '@featherds/table'
 import { numericSeverityLevel } from '@/components/Map/utils'
 import { useMapQueries } from '@/store/Queries/mapQueries'
@@ -29,7 +28,27 @@ export const useMapStore = defineStore('mapStore', () => {
     alarmSortObject: FeatherSortObject = { property: 'id', value: SORT.DESCENDING }
   
   const fetchAlarms = () => []
-  const getDeviceAlarmSeverityMap = () => []
+
+  const getDeviceAlarmSeverityMap = (): Record<string, string> => {
+    const map: { [x: string]: string } = {}
+
+    alarms.forEach((alarm: AlarmDto) => {
+      if(alarm.nodeLabel) {
+        if (numericSeverityLevel(alarm.severity) > numericSeverityLevel(map[alarm.nodeLabel])) {
+          map[alarm.nodeLabel] = alarm.severity?.toUpperCase() || ''
+        }
+      }
+      
+    })
+
+    return map
+  }
+
+  const modifyAlarm = async (alarmQueryVariable: AlarmModificationQueryVariable) => {
+    // todo: add graphQL query
+    const resp = {}
+    return resp
+  }
 
   return {
     devicesWithCoordinates,
@@ -43,6 +62,7 @@ export const useMapStore = defineStore('mapStore', () => {
     deviceSortObject,
     alarmSortObject,
     fetchAlarms,
-    getDeviceAlarmSeverityMap
+    getDeviceAlarmSeverityMap,
+    modifyAlarm
   }
 })
