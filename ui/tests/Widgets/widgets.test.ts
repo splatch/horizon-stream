@@ -13,7 +13,8 @@ const wrapper = setup({
 const widgets = [
   ['Minion', '../Appliances/MinionsTable.vue'],
   ['Device', '../Appliances/DeviceTable.vue'],
-  ['Map', '../Map/LeafletMap.vue']
+  ['Map', '../Map/LeafletMap.vue'],
+  ['Tag', '../Tags/Tags.vue']
 ]
 
 test.each(widgets)('Mounts and unmounts the "%s" widget properly', (_, widget) => {
