@@ -26,16 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.api;
+package org.opennms.horizon.notifications.kafka;
 
-import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opennms.horizon.notifications.exceptions.NotificationException;
+import org.opennms.horizon.notifications.exceptions.NotificationInternalException;
+import org.opennms.horizon.notifications.service.NotificationService;
 import org.opennms.horizon.shared.dto.event.AlarmDTO;
 
-public interface PagerDutyAPI {
-    void postNotification(AlarmDTO alarm) throws NotificationException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 
-    void initConfig(PagerDutyConfigDTO config);
+@RunWith(MockitoJUnitRunner.class)
+public class AlarmKafkaConsumerUnitTest {
+    @InjectMocks
+    AlarmKafkaConsumer alarmKafkaConsumer;
 
-    void validateConfig(PagerDutyConfigDTO config) throws NotificationException;
+    @Mock
+    NotificationService notificationService;
+
+    @Test
+    public void testConsume() {
+        AlarmDTO alarmDTO = new AlarmDTO();
+        alarmKafkaConsumer.consume(alarmDTO);
+    }
+
+    @Test
+    public void testConsumeSwallowsNotificationException() throws NotificationException {
+        doThrow(NotificationInternalException.class)
+            .when(notificationService).postNotification(any());
+
+        AlarmDTO alarmDTO = new AlarmDTO();
+        alarmKafkaConsumer.consume(alarmDTO);
+    }
 }

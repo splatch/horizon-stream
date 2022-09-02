@@ -28,21 +28,34 @@
 
 package org.opennms.horizon.notifications.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+public enum AlarmType {
+    PROBLEM(1),
+    RESOLUTION(2),
+    PROBLEM_WITHOUT_RESOLUTION(3);
 
-import lombok.Getter;
-import lombok.Setter;
+    private final int id;
 
-@Getter
-@Setter
-public class PagerDutyCustomDetailsDTO {
-    // TODO: Change to something useful to us. Currently first draft to prove can call into PagerDuty
-    @JsonProperty("free space")
-    String freeSpace;
+    private AlarmType(int id) {
+        this.id = id;
+    }
 
-    @JsonProperty("ping time")
-    String pingTime;
+    public static AlarmType fromId(Integer id) {
+        if (id != null) {
+            AlarmType[] var1 = values();
+            int var2 = var1.length;
 
-    @JsonProperty("load avg")
-    String loadAvg;
+            for(int var3 = 0; var3 < var2; ++var3) {
+                AlarmType type = var1[var3];
+                if (type.id == id) {
+                    return type;
+                }
+            }
+        }
+
+        return PROBLEM;
+    }
+
+    public int getId() {
+        return this.id;
+    }
 }
