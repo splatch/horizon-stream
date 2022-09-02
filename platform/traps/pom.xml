@@ -66,6 +66,11 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.twin</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Test -->
         <dependency>

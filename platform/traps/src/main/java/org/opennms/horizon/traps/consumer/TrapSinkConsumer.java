@@ -29,12 +29,15 @@
 package org.opennms.horizon.traps.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.horizon.config.service.api.ConfigConstants;
 import org.opennms.horizon.config.service.api.ConfigService;
 import org.opennms.horizon.core.lib.InetAddressUtils;
 import org.opennms.horizon.core.lib.Logging;
 import org.opennms.horizon.db.dao.api.DistPollerDao;
 import org.opennms.horizon.db.dao.api.InterfaceToNodeCache;
+import org.opennms.horizon.db.dao.api.SessionUtils;
+import org.opennms.horizon.db.model.OnmsDistPoller;
 import org.opennms.horizon.events.api.EventBuilder;
 import org.opennms.horizon.events.api.EventConfDao;
 import org.opennms.horizon.events.api.EventConstants;
@@ -47,12 +50,14 @@ import org.opennms.horizon.events.xml.Log;
 import org.opennms.horizon.ipc.sink.api.MessageConsumer;
 import org.opennms.horizon.ipc.sink.api.MessageConsumerManager;
 import org.opennms.horizon.ipc.sink.api.SinkModule;
+import org.opennms.horizon.traps.config.TrapdConfig;
 import org.opennms.horizon.traps.config.TrapdConfigBean;
 import org.opennms.horizon.traps.dto.TrapDTO;
 import org.opennms.horizon.traps.dto.TrapInformationWrapper;
 import org.opennms.horizon.traps.dto.TrapLogDTO;
 import org.opennms.horizon.traps.utils.EventCreator;
 import org.opennms.horizon.traps.utils.TrapdInstrumentation;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,11 +94,18 @@ public class TrapSinkConsumer implements MessageConsumer<TrapInformationWrapper,
 
     private EventCreator eventCreator;
 
+    private TwinPublisher twinPublisher;
+
+    private TwinPublisher.Session<TrapListenerConfig> twinSession;
+
+    private SessionUtils sessionUtils;
+
     public void init() throws Exception {
-        messageConsumerManager.registerConsumer(this);
         eventCreator = new EventCreator(interfaceToNodeCache, eventConfDao);
         // Register initial config for traps
         initializeConfig();
+        publishTrapConfig();
+        messageConsumerManager.registerConsumer(this);
     }
 
     void initializeConfig() throws IOException {
@@ -103,11 +115,31 @@ public class TrapSinkConsumer implements MessageConsumer<TrapInformationWrapper,
         // Validate and store config.
         config = objectMapper.readValue(url, TrapdConfigBean.class);
         configService.addConfig(ConfigConstants.TRAPD_CONFIG, objectMapper.writeValueAsString(config));
+        // Register Twin Publisher
+        try {
+            twinSession = twinPublisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, null);
+        } catch (IOException e) {
+            LOG.error("Failed to register twin for trap listener config", e);
+            throw new RuntimeException(e);
+        }
+    }
+     // TODO: Update config through callback from config service
+    private void publishTrapConfig() {
+        // Publish existing config.
+        try {
+            twinSession.publish(from(config));
+            LOG.info("Published Trap config with Twin Publisher");
+        } catch (IOException e) {
+            LOG.error("Failed to publish trap listener config", e);
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
     public SinkModule<TrapInformationWrapper, TrapLogDTO> getModule() {
-        return new TrapSinkModule(config, distPollerDao.whoami());
+        OnmsDistPoller distPoller = sessionUtils.withReadOnlyTransaction(() -> distPollerDao.whoami());
+        return new TrapSinkModule(config, distPoller);
     }
 
     @Override
@@ -225,4 +257,20 @@ public class TrapSinkConsumer implements MessageConsumer<TrapInformationWrapper,
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         this.distPollerDao = distPollerDao;
     }
+
+    public void setTwinPublisher(TwinPublisher twinPublisher) {
+        this.twinPublisher = twinPublisher;
+    }
+
+
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
+    }
+
+    public static TrapListenerConfig from(final TrapdConfig config) {
+        final TrapListenerConfig result = new TrapListenerConfig();
+        result.setSnmpV3Users(config.getSnmpV3Users());
+        return result;
+    }
+
 }
