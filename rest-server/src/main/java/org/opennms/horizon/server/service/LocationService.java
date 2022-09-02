@@ -30,9 +30,6 @@ package org.opennms.horizon.server.service;
 
 import org.opennms.horizon.shared.dto.device.LocationCollectionDTO;
 import org.opennms.horizon.shared.dto.device.LocationDTO;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -41,35 +38,23 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 @GraphQLApi
 @Service
 public class LocationService {
-
     private final PlatformGateway gateway;
-    private final CacheManager cacheManager;
 
-    public LocationService(PlatformGateway gateway, CacheManager cacheManager) {
+    public LocationService(PlatformGateway gateway) {
         this.gateway = gateway;
-        this.cacheManager = cacheManager;
     }
 
     @GraphQLQuery
     public Mono<LocationCollectionDTO> listLocations(@GraphQLEnvironment ResolutionEnvironment env) {
-        Mono<LocationCollectionDTO> result = gateway.get(PlatformGateway.URL_PATH_LOCATIONS, gateway.getAuthHeader(env), LocationCollectionDTO.class);
-        result.subscribeOn(Schedulers.boundedElastic()).subscribe(coll -> updateCache(coll));
-        return result;
+        return gateway.get(PlatformGateway.URL_PATH_LOCATIONS, gateway.getAuthHeader(env), LocationCollectionDTO.class);
     }
 
     @GraphQLQuery
-    @Cacheable(value = "locations", key = "#id")
     public Mono<LocationDTO> getLocationById(@GraphQLArgument(name = "id") String id, @GraphQLEnvironment ResolutionEnvironment env) {
         return gateway.get(PlatformGateway.URL_PATH_LOCATIONS + "/" + id, gateway.getAuthHeader(env), LocationDTO.class);
-    }
-
-    private void updateCache(LocationCollectionDTO collectionDTO) {
-        Cache locationsCache = cacheManager.getCache("locations");
-        collectionDTO.getLocations().forEach(l-> locationsCache.put(l.getLocationName(), Mono.just(l)));
     }
 }
