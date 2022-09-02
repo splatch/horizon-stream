@@ -1,4 +1,4 @@
-fragment DeviceTablePartsForMap on Query {
+query DeviceForMap {
   listDevices {
     devices {
       foreignId
@@ -17,18 +17,4 @@ fragment DeviceTablePartsForMap on Query {
       sysOid
     }
   }
-}
-
-fragment LocationPartsForMap on Query {
-  listLocations {
-    locations {
-      latitude
-      longitude
-    }
-  }
-}
-
-query ListDevicesForMap {
-  ...DeviceTablePartsForMap,
-  ...LocationPartsForMap
 }

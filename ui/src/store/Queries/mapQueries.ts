@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import { useQuery } from 'villus'
-import { ListDevicesForMapDocument } from '@/types/graphql'
+import { DeviceForMapDocument } from '@/types/graphql'
 
 export const useMapQueries = defineStore('mapQueries', () => {
   const fetchedDevices = ref()
   const { data } = useQuery({
-    query: ListDevicesForMapDocument
+    query: DeviceForMapDocument
   })
 
   watchEffect(() => {
