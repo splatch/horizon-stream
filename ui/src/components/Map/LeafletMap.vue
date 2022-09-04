@@ -1,5 +1,5 @@
 <template>
-  <div class="geo-map">
+  <div v-if="nodesReady" class="geo-map">
     <SeverityFilter />
     <LMap
       ref="map"
@@ -87,16 +87,14 @@ import { numericSeverityLevel } from './utils'
 import SeverityFilter from './SeverityFilter.vue'
 import { useTopologyStore } from '@/store/Views/topologyStore'
 import { useMapStore } from '@/store/Views/mapStore'
-import { useMapQueries } from '@/store/Queries/mapQueries'
+import useSpinner from '@/composables/useSpinner'
 import { DeviceDto } from '@/types/graphql'
 import useTheme from '@/composables/useTheme'
-
 // @ts-ignore
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
 
 const markerCluster = ref()
 const computedEdges = ref<number[][][]>()
-const mapStore = useMapStore()
 const topologyStore = useTopologyStore()
 const { onThemeChange, isDark } = useTheme()
 const map = ref()
@@ -108,7 +106,10 @@ const iconWidth = 25
 const iconHeight = 42
 const iconSize = [iconWidth, iconHeight]
 const nodeClusterCoords = ref<Record<string, number[]>>({})
-
+    
+const { startSpinner, stopSpinner } = useSpinner()
+const mapStore = useMapStore()
+const nodesReady = ref()
 const nodes = computed(() => mapStore.devicesWithCoordinates)
 const center = computed<number[]>(() => ['latitude', 'longitude'].map(k => (mapStore.mapCenter as any)[k] ))
 const bounds = computed(() => {
@@ -307,6 +308,13 @@ const tileProviders = ref([
   defaultLightTileLayer.value,
   defaultDarkTileLayer.value
 ])
+
+onMounted(() => {
+  nodesReady.value = computed(() => {
+    mapStore.devicesAreFetched ? stopSpinner() : startSpinner()
+    return mapStore.devicesAreFetched
+  })
+})
 
 defineExpose({ invalidateSizeFn, setBoundingBox, flyToNode })
 </script>

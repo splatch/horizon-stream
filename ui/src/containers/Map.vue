@@ -32,7 +32,6 @@
           </TopologyLeftDrawer> -->
           <!-- <Topology v-if="isTopologyView" /> -->
           <LeafletMap
-            v-if="nodesReady"
             ref="leafletComponent"
           />
         </pane>
@@ -63,7 +62,6 @@ import 'splitpanes/dist/splitpanes.css'
 import LeafletMap from '../components/Map/LeafletMap.vue'
 import GridTabs from '@/components/Map/GridTabs.vue'
 import { debounce } from 'lodash'
-import useSpinner from '@/composables/useSpinner'
 import { useLayoutStore } from '@/store/Views/layoutStore'
 // import { ViewType, DisplayType } from '@/components/Topology/topology.constants'
 // import Topology from './Topology.vue'
@@ -75,9 +73,7 @@ import { useLayoutStore } from '@/store/Views/layoutStore'
 // import { useTopologyStore } from '@/store/Views/topologyStore'
 
 const layoutStore = useLayoutStore()
-const { startSpinner, stopSpinner } = useSpinner()
 const split = ref()
-const nodesReady = ref(false)
 const leafletComponent = ref()
 
 // const topologyStore = useTopologyStore()
@@ -103,10 +99,7 @@ const resize = debounce(() => {
 // const setBoundingBox = (nodeLabels: string[]) => leafletComponent.value.setBoundingBox(nodeLabels)
 
 onMounted(() => {
-  startSpinner()
-  stopSpinner()
   resize()
-  nodesReady.value = true
   // topologyStore.getVerticesAndEdges()
 })
 
