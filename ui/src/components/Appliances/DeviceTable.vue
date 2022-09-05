@@ -43,11 +43,11 @@
           </div>
           <div data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
-            <div class="value" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
+            <div :data-metric="device.icmp_latency" class="value" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
           </div>
           <div data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
-            <div class="value" :class="device.uptimeBgColor">{{ getHumanReadableDuration(device.snmp_uptime) }}</div>
+            <div :data-metric="device.snmp_uptime" class="value" :class="device.uptimeBgColor">{{ getHumanReadableDuration(device.snmp_uptime) }}</div>
           </div>
           <div data-test="col-status">
             <pre class="title">Status</pre>
