@@ -124,15 +124,15 @@ const nodeLabelAlarmServerityMap = computed(() => mapStore.getDeviceAlarmSeverit
 // on light / dark mode change, switch the map layer
 onThemeChange(() => {
   // set all layers false
-  for (const tileOptions of tileProviders.value) {
-    tileOptions.visible = false
-  }
+  // for (const tileOptions of tileProviders.value) {
+  //   tileOptions.visible = false
+  // }
 
-  if (isDark.value) {
-    // defaultDarkTileLayer.value.visible = true // defauly dark
-  } else {
-    defaultLightTileLayer.value.visible = true // default light
-  }
+  // if (isDark.value) {
+  //   defaultDarkTileLayer.value.visible = true // defauly dark
+  // } else {
+  //   defaultLightTileLayer.value.visible = true // default light
+  // }
 })
 
 const getHighestSeverity = (severitites: string[]) => {
@@ -294,8 +294,7 @@ const invalidateSizeFn = () => {
 const defaultLightTileLayer = ref({
   name: 'OpenStreetMap',
   visible: true,
-  attribution:
-      '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+  attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
   url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 })
 

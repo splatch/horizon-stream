@@ -60,11 +60,11 @@ public class PagerDutyDaoImpl implements PagerDutyDao{
                     )
             );
         } catch (BadSqlGrammarException e) {
-            throw new NotificationConfigUninitializedException("Pager duty config not initialized. Table does not exist.", e);
+            throw new NotificationConfigUninitializedException("PagerDuty config not initialized. Table does not exist.", e);
         }
 
         if (configList.size() != 1) {
-            throw new NotificationConfigUninitializedException("Pager duty config not initialized. Row count=" + configList.size());
+            throw new NotificationConfigUninitializedException("PagerDuty config not initialized. Row count=" + configList.size());
         }
 
         return configList.get(0);

@@ -10,11 +10,11 @@ build:
   - image: opennms/horizon-stream-ui
     sync:
       manual: # Inferred file sync is limited for multi-stage builds, use manual sync.
-        - src: 'src/*'
+        - src: 'src/**'
           dest: .
-        - src: 'public/*'
+        - src: 'public/**'
           dest: .
-        - src: 'tests/*'
+        - src: 'tests/**'
           dest: .
         - src: 'index.html'
           dest: .

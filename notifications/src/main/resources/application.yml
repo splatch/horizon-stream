@@ -18,3 +18,7 @@ horizon:
       topic: org.opennms.horizon.notifications.alarms
       concurrency: 1
 
+  pagerduty:
+    client: OpenNMS
+    clientURL: http://opennms.com
+
