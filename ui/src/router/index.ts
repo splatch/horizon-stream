@@ -32,6 +32,11 @@ const router = createRouter({
       ]
     },
     {
+      path: '/node/:id',
+      name: 'Node',
+      component: () => import('@/containers/Node.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }

@@ -35,7 +35,7 @@
     </div>
     <div class="data-table">
       <TransitionGroup name="data-table" tag="div">
-        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" data-test="device-item">
+        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" @click="gotoNode(device.id as number)" data-test="device-item">
           <div class="name" data-test="col-device">
               <div class="name-cell">
                 <FeatherIcon :icon="Instances" class="icon"/>
@@ -80,10 +80,13 @@ defineProps<{widgetProps?: WidgetProps}>()
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()
+const router = useRouter()
 
 const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableDevices))
 
 const searchValue = ref('')
+
+const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
 </script>
 
 <style lang="scss" scoped>
