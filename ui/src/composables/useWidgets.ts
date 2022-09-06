@@ -54,28 +54,7 @@ const useWidgets = () => {
     displayedWidgets.value = displayedWidgets.value.filter((x) => x !== widget) // rm from displayed widgets list
   }
 
-  const setAvailableWidgets = (...routeWidgets: Widget[]) => {
-    const paths = []
-    for (const widget of routeWidgets) {
-      switch(widget) {
-        case Widgets.DEVICES:
-          paths.push(Widgets.DEVICES)
-          break
-        case Widgets.MINIONS:
-          paths.push(Widgets.MINIONS)
-          break
-        case Widgets.GEOMAP:
-          paths.push(Widgets.GEOMAP)
-          break
-        case Widgets.TAGS:
-          paths.push(Widgets.TAGS)
-        default:
-          break
-      }
-    }
-
-    widgets.value = paths
-  }
+  const setAvailableWidgets = (...routeWidgets: Widget[]) => widgets.value = routeWidgets
 
   return { setAvailableWidgets, widgets, displayedWidgets, addWidget, removeWidget }
 }
