@@ -1,6 +1,6 @@
 <template>
   <div v-if="nodesReady" class="geo-map">
-    <SeverityFilter />
+    <SeverityFilter v-if="!widgetProps?.isWidget" />
     <LMap
       ref="map"
       :center="center"
@@ -92,6 +92,9 @@ import { DeviceDto } from '@/types/graphql'
 import useTheme from '@/composables/useTheme'
 // @ts-ignore
 import { Map as LeafletMap, divIcon, MarkerCluster as Cluster } from 'leaflet'
+import { WidgetProps } from '@/types'
+
+defineProps<{widgetProps?: WidgetProps}>()
 
 const markerCluster = ref()
 const computedEdges = ref<number[][][]>()
@@ -126,7 +129,7 @@ onThemeChange(() => {
   }
 
   if (isDark.value) {
-    defaultDarkTileLayer.value.visible = true // defauly dark
+    // defaultDarkTileLayer.value.visible = true // defauly dark
   } else {
     defaultLightTileLayer.value.visible = true // default light
   }
@@ -290,23 +293,24 @@ const invalidateSizeFn = () => {
 /*****Tile Layer*****/
 const defaultLightTileLayer = ref({
   name: 'OpenStreetMap',
-  visible: !isDark.value && true,
+  visible: true,
   attribution:
       '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
   url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 })
 
-const defaultDarkTileLayer = ref({
-  name: 'AlidadeSmoothDark',
-  visible: isDark.value && true,
-  url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
-  attribution:
-      '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-})
+// TODO: Find new dark mode layer as this one has issues on prod
+// const defaultDarkTileLayer = ref({
+//     name: 'AlidadeSmoothDark',
+//     visible: isDark.value && true,
+//     url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
+//     attribution:
+//       '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+// })
 
 const tileProviders = ref([
-  defaultLightTileLayer.value,
-  defaultDarkTileLayer.value
+  defaultLightTileLayer.value
+  // defaultDarkTileLayer.value
 ])
 
 onMounted(() => {
