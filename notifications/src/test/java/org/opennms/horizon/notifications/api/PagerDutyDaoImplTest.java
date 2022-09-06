@@ -63,7 +63,6 @@ public class PagerDutyDaoImplTest {
         PagerDutyConfigDTO config = getConfigDTO();
         pagerDutyDao.initConfig(config);
 
-        Mockito.verify(jdbcTemplate, times(2)).execute(anyString());
         Mockito.verify(jdbcTemplate, times(1)).update(anyString(), anyString(), anyString());
     }
 

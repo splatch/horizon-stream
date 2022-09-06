@@ -20,8 +20,10 @@ public class OpenNMSDatabasePrehook implements PreHook {
 
     private boolean enabled = true;
     private DataSource adminDatasource;
+    private DataSource notificationDatasource;
     private Properties opennmsDatasourceProperties;
     private Properties opennmsAdminDatasourceProperties;
+    private Properties opennmsNotificationDatasourceProperties;
 
     private ClassLoader liquibaseResourceClassLoader = getClass().getClassLoader();
     private boolean validateDatabaseVersion = true;
@@ -46,6 +48,14 @@ public class OpenNMSDatabasePrehook implements PreHook {
         this.adminDatasource = adminDatasource;
     }
 
+    public DataSource getNotificationDatasource() {
+        return notificationDatasource;
+    }
+
+    public void setNotificationDatasource(DataSource notificationDatasource) {
+        this.notificationDatasource = notificationDatasource;
+    }
+
     public Properties getOpennmsDatasourceProperties() {
         return opennmsDatasourceProperties;
     }
@@ -60,6 +70,14 @@ public class OpenNMSDatabasePrehook implements PreHook {
 
     public void setOpennmsAdminDatasourceProperties(Properties opennmsAdminDatasourceProperties) {
         this.opennmsAdminDatasourceProperties = opennmsAdminDatasourceProperties;
+    }
+
+    public Properties getOpennmsNotificationDatasourceProperties() {
+        return opennmsNotificationDatasourceProperties;
+    }
+
+    public void setOpennmsNotificationDatasourceProperties(Properties opennmsNotificationDatasourceProperties) {
+        this.opennmsNotificationDatasourceProperties = opennmsNotificationDatasourceProperties;
     }
 
     public ClassLoader getLiquibaseResourceClassLoader() {
@@ -122,8 +140,13 @@ public class OpenNMSDatabasePrehook implements PreHook {
         migratorAdminInitialize.setDatabasePassword(opennmsDatasourceProperties.getProperty("password"));
         migratorAdminInitialize.setValidateDatabaseVersion(validateDatabaseVersion);
 
+        migratorAdminInitialize.setNotificationDataSource(notificationDatasource);
+        migratorAdminInitialize.setNotificationDatabaseName(opennmsNotificationDatasourceProperties.getProperty("databaseName"));
+        migratorAdminInitialize.setNotificationUser(opennmsNotificationDatasourceProperties.getProperty("user"));
+        migratorAdminInitialize.setNotificationPassword(opennmsNotificationDatasourceProperties.getProperty("password"));
+
         migratorAdminInitialize.initializeDatabase(true, false);
-    }
+     }
 
     /**
      * Migrate the database.  Primarily executes Liquibase, but also includes some additional admin.
@@ -152,5 +175,12 @@ public class OpenNMSDatabasePrehook implements PreHook {
         this.log.info("STARTING MIGRATOR");
 
         migrator.setupDatabase(true, false, false, true, false);
+
+        migrator.setNotificationDataSource(notificationDatasource);
+        migrator.setNotificationDatabaseName(opennmsNotificationDatasourceProperties.getProperty("databaseName"));
+        migrator.setNotificationSchemaName(opennmsNotificationDatasourceProperties.getProperty("schema"));
+        migrator.setNotificationUser(opennmsNotificationDatasourceProperties.getProperty("user"));
+        migrator.setNotificationPassword(opennmsNotificationDatasourceProperties.getProperty("password"));
+        migrator.setupNotificationDatabase(true);
     }
 }

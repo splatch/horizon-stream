@@ -41,4 +41,5 @@ public interface MigratorResourceProvider {
      * @throws Exception on error locating or accessing the changelog file.
      */
     Collection<String> getLiquibaseChangelogs(boolean required) throws Exception;
+    Collection<String> getNotificationLiquibaseChangelogs(boolean required) throws Exception;
 }

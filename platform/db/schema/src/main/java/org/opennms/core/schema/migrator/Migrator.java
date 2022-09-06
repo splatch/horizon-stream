@@ -80,6 +80,11 @@ public class Migrator {
     private String m_databasePassword;
     private String m_adminUser;
     private String m_adminPassword;
+    private DataSource notificationDataSource;
+    private String notificationDatabaseName;
+    private String notificationUser;
+    private String notificationPassword;
+    private String notificationSchemaName;
 
 //========================================
 // Constructors
@@ -93,6 +98,26 @@ public class Migrator {
 //========================================
 // Getters and Setters
 //========================================
+
+    public void setNotificationDataSource(DataSource notificationDataSource) {
+        this.notificationDataSource = notificationDataSource;
+    }
+
+    public void setNotificationDatabaseName(String notificationDatabaseName) {
+        this.notificationDatabaseName = notificationDatabaseName;
+    }
+
+    public void setNotificationUser(String notificationUser) {
+        this.notificationUser = notificationUser;
+    }
+
+    public void setNotificationPassword(String notificationPassword) {
+        this.notificationPassword = notificationPassword;
+    }
+
+    public void setNotificationSchemaName(String notificationSchemaName) {
+        this.notificationSchemaName = notificationSchemaName;
+    }
 
     /**
      * <p>getDataSource</p>
@@ -227,6 +252,17 @@ public class Migrator {
 // Interface
 //========================================
 
+    public void setupNotificationDatabase(boolean updateDatabase) throws Exception {
+        if (updateDatabase) {
+            databaseSetOwner(notificationDataSource, notificationUser);
+            Collection<String> changelogs = this.m_resourceProvider.getNotificationLiquibaseChangelogs(true);
+
+            for (String changelogUri : changelogs) {
+                log.info("- Running migration for notification changelog: {}", changelogUri);
+                this.migrate(changelogUri, notificationDataSource, notificationSchemaName, true);
+            }
+        }
+    }
 
     public void setupDatabase(boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, boolean timescaleDB) throws MigrationException, Exception, IOException {
         if (updateDatabase) {
@@ -237,13 +273,13 @@ public class Migrator {
         this.checkTime();
 
         if (updateDatabase) {
-            databaseSetOwner();
+            databaseSetOwner(m_adminDataSource, getDatabaseUser());
 
             Collection<String> changelogs = this.m_resourceProvider.getLiquibaseChangelogs(true);
 
             for (String changelogUri : changelogs) {
                 log.info("- Running migration for changelog: {}", changelogUri);
-                this.migrate(changelogUri);
+                this.migrate(changelogUri, this.m_dataSource, this.m_schemaName, false);
             }
         }
 
@@ -265,20 +301,20 @@ public class Migrator {
      * @param changelogUri
      * @throws MigrationException if any.
      */
-    public void migrate(String changelogUri) throws MigrationException {
+    public void migrate(String changelogUri, DataSource dataSource, String schemaName, boolean notification) throws MigrationException {
         Connection connection = null;
 
         try {
             String contexts = getLiquibaseContexts();
 
-            Map<String, String> changeLogParameters = this.getChangeLogParameters();
+            Map<String, String> changeLogParameters = this.getChangeLogParameters(notification);
 
             this.m_liquibaseExecutor
                     .update(
                             changelogUri,
                             contexts,
-                            this.m_dataSource,
-                            this.m_schemaName,
+                            dataSource,
+                            schemaName,
                             changeLogParameters
                     );
 
@@ -432,13 +468,13 @@ public class Migrator {
      *
      * @throws SQLException if any.
      */
-    private void databaseSetOwner() throws MigrationException {
+    private void databaseSetOwner(DataSource dataSource, String user) throws MigrationException {
         PreparedStatement st = null;
         ResultSet rs = null;
         Connection c = null;
 
         try {
-            c = m_adminDataSource.getConnection();
+            c = dataSource.getConnection();
 
             final String[] tableTypes = {"TABLE"};
             rs = c.getMetaData().getTables(null, "public", "%", tableTypes);
@@ -461,7 +497,7 @@ public class Migrator {
 //            }
 
             for (final String objName : objects) {
-                st = c.prepareStatement("ALTER TABLE \"" + objName + "\" OWNER TO \"" + getDatabaseUser() + "\"");
+                st = c.prepareStatement("ALTER TABLE \"" + objName + "\" OWNER TO \"" + user + "\"");
                 st.execute();
             }
 
@@ -670,11 +706,15 @@ public class Migrator {
         }
     }
 
-    private Map<String, String> getChangeLogParameters() {
+    private Map<String, String> getChangeLogParameters(boolean notification) {
         final Map<String,String> parameters = new HashMap<>();
         parameters.put("install.database.admin.user", getAdminUser());
         parameters.put("install.database.admin.password", getAdminPassword());
-        parameters.put("install.database.user", getDatabaseUser());
+        if (notification) {
+            parameters.put("install.database.user", notificationUser);
+        } else {
+            parameters.put("install.database.user", getDatabaseUser());
+        }
         return parameters;
     }
 

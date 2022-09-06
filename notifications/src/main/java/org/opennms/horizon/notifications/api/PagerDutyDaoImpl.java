@@ -72,11 +72,6 @@ public class PagerDutyDaoImpl implements PagerDutyDao{
 
     @Override
     public void initConfig(PagerDutyConfigDTO config) {
-        jdbcTemplate.execute("DROP TABLE IF EXISTS pager_duty_config");
-        jdbcTemplate.execute("CREATE TABLE pager_duty_config(" +
-            "token VARCHAR(255), integrationkey VARCHAR(255))");
-
-        // TODO: Think about encryption.
-        jdbcTemplate.update("INSERT INTO pager_duty_config(token, integrationkey) VALUES(?,?)", config.getToken(), config.getIntegrationkey());
+        jdbcTemplate.update("UPDATE pager_duty_config SET token=?, integrationkey=?", config.getToken(), config.getIntegrationkey());
     }
 }

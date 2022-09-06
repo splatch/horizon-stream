@@ -527,9 +527,6 @@ spec:
             - mountPath: "/docker-entrypoint-initdb.d/postgres.keycloak.initial.script.sql"
               name: postgres-keycloak-initial-script
               subPath: "postgres.keycloak.initial.script.sql"
-            - mountPath: "/docker-entrypoint-initdb.d/postgres.notification.initial.script.sql"
-              name: postgres-notification-initial-script
-              subPath: "postgres.notification.initial.script.sql"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -1105,16 +1102,6 @@ data:
     CREATE USER grafana with password 'passw0rd';
     CREATE DATABASE grafana;
     GRANT ALL ON DATABASE grafana TO grafana;
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: postgres-notification-initial-sql
-data:
-  postgres.notification.initial.script.sql: |
-    CREATE USER notification with password 'passw0rd';
-    CREATE DATABASE notification;
-    GRANT ALL ON DATABASE notification TO notification;
 ---
 apiVersion: v1
 kind: ConfigMap
