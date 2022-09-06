@@ -32,6 +32,12 @@ const router = createRouter({
       ]
     },
     {
+      path: '/node/:id',
+      name: 'Node',
+      props: route => ({ label: route.query.label }),
+      component: () => import('@/components/Appliances/Device.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
