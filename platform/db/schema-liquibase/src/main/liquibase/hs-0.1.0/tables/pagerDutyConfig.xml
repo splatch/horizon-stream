@@ -27,10 +27,4 @@
 		</createTable>
 	</changeSet>
 
-    <changeSet author="jhutc" id="pager_duty_config_insert">
-        <sql>
-            INSERT INTO pager_duty_config (token, integrationkey) VALUES ('x', 'y');
-        </sql>
-    </changeSet>
-
 </databaseChangeLog>

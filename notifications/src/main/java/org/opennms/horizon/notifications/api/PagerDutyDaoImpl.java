@@ -71,7 +71,18 @@ public class PagerDutyDaoImpl implements PagerDutyDao{
     }
 
     @Override
-    public void initConfig(PagerDutyConfigDTO config) {
-        jdbcTemplate.update("UPDATE pager_duty_config SET token=?, integrationkey=?", config.getToken(), config.getIntegrationkey());
+    public void saveConfig(PagerDutyConfigDTO config) {
+        int count = getRowCount();
+
+        if (count == 0) {
+            jdbcTemplate.update("INSERT INTO pager_duty_config(token, integrationkey) VALUES(?,?)", config.getToken(), config.getIntegrationkey());
+        } else {
+            jdbcTemplate.update("UPDATE pager_duty_config SET token=?, integrationkey=?", config.getToken(), config.getIntegrationkey());
+        }
+    }
+
+    private int getRowCount() {
+        String sql = "SELECT count(*) FROM pager_duty_config";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 }
