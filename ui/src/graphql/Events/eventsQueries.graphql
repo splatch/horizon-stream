@@ -1,0 +1,53 @@
+fragment ListEventsPart on Query {
+  listEvents {
+    events {
+      id
+      label
+      nodeId
+      nodeLabel
+      severity
+      time
+    }
+  }
+}
+
+fragment ListDevicesPart on Query {
+  listDevices {
+    devices {
+      foreignSource
+      managementIp
+      id
+      label
+      createTime
+      location {
+        locationName
+        latitude
+        longitude
+      }
+    }
+  }
+}
+
+fragment MetricPart on TimeSeriesQueryResult {
+  data {
+    result {
+      metric
+      value
+    }
+  }
+}
+
+fragment ListMetricPart on Query {
+  deviceUptime: metric(name: "snmp_uptime_sec") {
+    ...MetricPart
+  }
+  deviceLatency: metric(name: "icmp_round_trip_time_msec") {
+    ...MetricPart
+  }
+}
+
+query ListDeviceStatus {
+  ...ListDevicesPart
+  ...ListMetricPart
+  ...ListEventsPart
+}
