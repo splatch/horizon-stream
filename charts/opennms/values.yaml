@@ -60,6 +60,7 @@ OpenNMS:
   Notification: 
     ServiceName: opennms-notifications
     Image: opennms/horizon-stream-notification
+    ImagePullPolicy: IfNotPresent
     Replicas: 1
     Port: 8080
     Resources:
