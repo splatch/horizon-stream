@@ -30,7 +30,6 @@ package org.opennms.horizon.server.service;
 
 import org.opennms.horizon.shared.dto.minion.MinionCollectionDTO;
 import org.opennms.horizon.shared.dto.minion.MinionDTO;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -46,7 +45,7 @@ import reactor.core.publisher.Mono;
 public class MinionService {
     private final PlatformGateway gateway;
 
-    public MinionService(PlatformGateway gateway, CacheManager cacheManager) {
+    public MinionService(PlatformGateway gateway) {
         this.gateway = gateway;
     }
 
