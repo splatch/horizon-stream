@@ -81,15 +81,12 @@ defineProps<{widgetProps?: WidgetProps}>()
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useApplianceQueries()
 const router = useRouter()
-// const route = useRoute()
 
 const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableDevices))
 
 const searchValue = ref('')
 
 const gotoNode = (nodeId: number, nodeLabel: string) => {
-  console.log(nodeId)
-  // router.push(`/map/nodes/${nodeId}`)
   const query = nodeLabel ? `?label=${nodeLabel}` : ''
   router.push(`/node/${nodeId}${query}`)
 }
