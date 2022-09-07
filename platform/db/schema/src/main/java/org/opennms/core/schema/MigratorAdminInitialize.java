@@ -73,11 +73,6 @@ public class MigratorAdminInitialize {
     private String m_databaseUser;
     private String m_databasePassword;
 
-    private DataSource notificationDataSource;
-    private String notificationDatabaseName;
-    private String notificationUser;
-    private String notificationPassword;
-
 //========================================
 // Constructors
 //========================================
@@ -89,38 +84,6 @@ public class MigratorAdminInitialize {
 //========================================
 // Getters and Setters
 //========================================
-
-    public void setNotificationDataSource(DataSource notificationDataSource) {
-        this.notificationDataSource = notificationDataSource;
-    }
-
-    public void setNotificationDatabaseName(String notificationDatabaseName) {
-        this.notificationDatabaseName = notificationDatabaseName;
-    }
-
-    public void setNotificationUser(String notificationUser) {
-        this.notificationUser = notificationUser;
-    }
-
-    public void setNotificationPassword(String notificationPassword) {
-        this.notificationPassword = notificationPassword;
-    }
-
-    public DataSource getNotificationDataSource() {
-        return notificationDataSource;
-    }
-
-    public String getNotificationDatabaseName() {
-        return notificationDatabaseName;
-    }
-
-    public String getNotificationUser() {
-        return notificationUser;
-    }
-
-    public String getNotificationPassword() {
-        return notificationPassword;
-    }
 
     /**
      * <p>getAdminDataSource</p>
@@ -383,17 +346,17 @@ public class MigratorAdminInitialize {
      * @return a boolean.
      * @throws MigrationException if any.
      */
-    private boolean databaseUserExists(String user) throws MigrationException {
+    private boolean databaseUserExists() throws MigrationException {
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            rs = st.executeQuery("SELECT usename FROM pg_user WHERE usename = '" + user + "'");
+            rs = st.executeQuery("SELECT usename FROM pg_user WHERE usename = '" + getUserForONMSDB() + "'");
             if (rs.next()) {
                 final String datname = rs.getString("usename");
-                if (datname != null && datname.equalsIgnoreCase(user)) {
+                if (datname != null && datname.equalsIgnoreCase(getUserForONMSDB())) {
                     return true;
                 } else {
                     return false;
@@ -413,15 +376,7 @@ public class MigratorAdminInitialize {
      * @throws MigrationException if any.
      */
     private void createUser() throws MigrationException {
-        String mainUser = getUserForONMSDB(m_databaseUser);
-        String mainPassword = m_databasePassword;
-        String secondUser = getUserForONMSDB(notificationUser);
-        String secondPassword = notificationPassword;
-
-        boolean createMain = !databaseUserExists(mainUser);
-        boolean createSecond = !databaseUserExists(secondUser);
-
-        if (!m_createUser || !(createMain || createSecond)) {
+        if (!m_createUser || databaseUserExists()) {
             return;
         }
 
@@ -432,12 +387,7 @@ public class MigratorAdminInitialize {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            if (createMain) {
-                st.execute("CREATE USER " + mainUser + " WITH PASSWORD '" + mainPassword + "'");
-            }
-            if (createSecond) {
-                st.execute("CREATE USER " + secondUser + " WITH PASSWORD '" + secondPassword + "'");
-            }
+            st.execute("CREATE USER " + getUserForONMSDB() + " WITH PASSWORD '" + getDatabasePassword() + "'");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS user", e);
         } finally {
@@ -445,7 +395,8 @@ public class MigratorAdminInitialize {
         }
     }
 
-    private String getUserForONMSDB(String user) {
+    private String getUserForONMSDB() {
+        String user = getDatabaseUser();
         user = user.indexOf("@")>0? user.substring(0, user.indexOf("@")):user;
         return user;
     }
@@ -456,6 +407,10 @@ public class MigratorAdminInitialize {
      * @return a boolean.
      * @throws MigrationException if any.
      */
+    private boolean databaseExists() throws MigrationException {
+        return databaseExists(getDatabaseName());
+    }
+
     private boolean databaseExists(String databaseName) throws MigrationException {
         Statement st = null;
         ResultSet rs = null;
@@ -519,24 +474,12 @@ public class MigratorAdminInitialize {
      * @throws MigrationException if any.
      */
     private void createDatabase() throws MigrationException {
-        String mainDatabaseName = getDatabaseName();
-        String mainUser = getUserForONMSDB(m_databaseUser);
-        String secondDatabaseName = notificationDatabaseName;
-        String secondUser = getUserForONMSDB(notificationUser);
-
-        boolean createMain = !databaseExists(mainDatabaseName);
-        boolean createSecond = !databaseExists(secondDatabaseName);
-
-        if (!m_createDatabase || !(createMain || createSecond)) {
+        if (!m_createDatabase || databaseExists()) {
             return;
         }
-
         LOG.info("creating OpenNMS database, if necessary");
-        if (!databaseUserExists(mainUser)) {
-            throw new MigrationException(String.format("database will not be created: unable to grant access (user %s does not exist)", mainUser));
-        }
-        if (!databaseUserExists(secondUser)) {
-            throw new MigrationException(String.format("database will not be created: unable to grant access (user %s does not exist)", secondUser));
+        if (!databaseUserExists()) {
+            throw new MigrationException(String.format("database will not be created: unable to grant access (user %s does not exist)", getDatabaseUser()));
         }
 
         Statement st = null;
@@ -545,14 +488,8 @@ public class MigratorAdminInitialize {
         try {
             c = m_adminDataSource.getConnection();
             st = c.createStatement();
-            if (createMain) {
-                st.execute("CREATE DATABASE \"" + mainDatabaseName + "\" WITH ENCODING='UNICODE'");
-                st.execute("GRANT ALL ON DATABASE \"" + mainDatabaseName + "\" TO \"" + mainUser + "\"");
-            }
-            if (createSecond) {
-                st.execute("CREATE DATABASE \"" + secondDatabaseName + "\" WITH ENCODING='UNICODE'");
-                st.execute("GRANT ALL ON DATABASE \"" + secondDatabaseName + "\" TO \"" + secondUser + "\"");
-            }
+            st.execute("CREATE DATABASE \"" + getDatabaseName() + "\" WITH ENCODING='UNICODE'");
+            st.execute("GRANT ALL ON DATABASE \"" + getDatabaseName() + "\" TO \"" + getUserForONMSDB() + "\"");
         } catch (final SQLException e) {
             throw new MigrationException("an error occurred creating the OpenNMS database: " + e, e);
         } finally {

@@ -39,7 +39,6 @@ import java.util.List;
 
 public class ClassLoaderBasedMigratorResourceProvider implements MigratorResourceProvider {
     public static final String LIQUIBASE_CHANGELOG_FILENAME = "changelog.xml";
-    public static final String NOTIFICATION_LIQUIBASE_CHANGELOG_FILENAME = "notificationchangelog.xml";
 
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(ClassLoaderBasedMigratorResourceProvider.class);
 
@@ -67,24 +66,15 @@ public class ClassLoaderBasedMigratorResourceProvider implements MigratorResourc
 
     @Override
     public Collection<String> getLiquibaseChangelogs(boolean required) throws Exception {
-        return getLiquibaseChangelogs(required, LIQUIBASE_CHANGELOG_FILENAME);
-    }
-
-    @Override
-    public Collection<String> getNotificationLiquibaseChangelogs(boolean required) throws Exception {
-        return getLiquibaseChangelogs(required, NOTIFICATION_LIQUIBASE_CHANGELOG_FILENAME);
-    }
-
-    public Collection<String> getLiquibaseChangelogs(boolean required, String filename) throws Exception {
         List<String> located = new LinkedList<>();
 
-        URL url = this.m_classLoader.getResource(filename);
+        URL url = this.m_classLoader.getResource(LIQUIBASE_CHANGELOG_FILENAME);
         if (url != null) {
             located.add(url.toString());
         }
 
         if (( required ) && ( located.isEmpty() )) {
-            throw new MigrationException("Could not find the '" + filename + "' file.");
+            throw new MigrationException("Could not find the '" + LIQUIBASE_CHANGELOG_FILENAME + "' file.");
         }
 
         return located;

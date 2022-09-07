@@ -56,11 +56,6 @@
             <cm:property name="datasource.adminUsername" value="$[env:PGSQL_ADMIN_USERNAME]" />
             <cm:property name="datasource.adminPassword" value="$[env:PGSQL_ADMIN_PASSWORD]" />
 
-            <cm:property name="datasource.notificationUrl" value="jdbc:postgresql://$[env:PGSQL_SERVICE_NAME]:5432/notification" />
-            <cm:property name="datasource.notificationDatabaseName" value="notification" />
-            <cm:property name="datasource.notificationUsername" value="notification" />
-            <cm:property name="datasource.notificationPassword" value="passw0rd" />
-
             <cm:property name="datasource.url" value="jdbc:postgresql://$[env:PGSQL_SERVICE_NAME]:5432/opennms" />
             <cm:property name="datasource.username" value="opennms" />
             <cm:property name="datasource.password" value="" />
@@ -97,25 +92,6 @@
         </argument>
     </bean>
 
-    <!--                                                                      -->
-    <!-- NOTIFICATION datasource - for creating the notification database     -->
-    <!--                                                                      -->
-
-    <!-- No connection pool needed for the Notification datasource - it's use is very limited -->
-    <bean id="notificationDatasource" factory-ref="dataSourceFactory" factory-method="createDataSource">
-        <argument>
-            <props>
-                <prop key="databaseName" value="${datasource.notificationDatabaseName}" />
-
-                <prop key="user" value="${datasource.notificationUsername}" />
-                <prop key="password" value="${datasource.notificationPassword}" />
-                <prop key="url" value="${datasource.notificationUrl}" />
-
-                <!--<prop key="osgi.jdbc.driver.class" value="${datasource.driverClass}"/>-->
-            </props>
-        </argument>
-    </bean>
-
     <!-- RAW datasource - accessible before DB setup + Liquibase executes -->
     <bean id="earlyDatasource" factory-ref="dataSourceFactory" factory-method="createDataSource">
         <argument>
@@ -135,7 +111,6 @@
     <bean id="openNmsDatabasePreHook" class="org.opennms.core.schema.OpenNMSDatabasePrehook">
         <property name="enabled" value="${datasource.initialize}"/>
         <property name="adminDatasource" ref="adminDatasource"/>
-        <property name="notificationDatasource" ref="notificationDatasource"/>
 
         <property name="opennmsAdminDatasourceProperties">
             <props>
@@ -154,16 +129,6 @@
                 <prop key="user" value="${datasource.username}"/>
                 <prop key="password" value="${datasource.password}"/>
                 <prop key="url" value="${datasource.url}"/>
-            </props>
-        </property>
-
-        <property name="opennmsNotificationDatasourceProperties">
-            <props>
-                <prop key="databaseName" value="${datasource.notificationDatabaseName}"/>
-
-                <prop key="user" value="${datasource.notificationUsername}"/>
-                <prop key="password" value="${datasource.notificationPassword}"/>
-                <prop key="url" value="${datasource.notificationUrl}"/>
             </props>
         </property>
 
