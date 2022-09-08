@@ -11,9 +11,11 @@
 import { useNodeStore } from '@/store/Views/nodeStore'
 
 const nodeStore = useNodeStore()
+const route = useRoute()
+
 const data = computed(() => {
-  const route = useRoute()
   const fetchedData = nodeStore.fetchedData
+
   return {
     event: fetchedData.events?.filter((event: any) => event.nodeId == route.params.id)[0],
     node: fetchedData.devices?.filter((device: any) => device.id == route.params.id)[0],
