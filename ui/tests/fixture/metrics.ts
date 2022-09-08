@@ -1,6 +1,6 @@
 import { TsResult, TimeSeriesQueryResult } from '@/types/graphql'
 
-const defaultsLatency: TsResult = {
+const mockData: TsResult = {
   'metric': {
     '__name__': 'minion_uptime_sec',
     'instance': 'minion-01',
@@ -14,16 +14,22 @@ const defaultsLatency: TsResult = {
   ]
 }
 
-export const latencyFixture = (): TimeSeriesQueryResult => {
-  return {
-    data: { result: [defaultsLatency] }
+export const latencyFixture = (props: Partial<TsResult> = {}): TimeSeriesQueryResult => ({
+  data: { 
+    result: [
+      { ...mockData, ...props }
+    ]
   }
-}
+})
 
 const defaultsUptime: TsResult = {}
 
-export const uptimeFixture = (): TimeSeriesQueryResult => {
-  return {
-    data: { result: Object.keys(defaultsUptime).length ? [defaultsUptime] : [] }
+export const uptimeFixture = (props: Partial<TsResult> = {}): TimeSeriesQueryResult => ({
+  data: { 
+    result: Object.keys(defaultsUptime).length ?
+      [
+        { ...defaultsUptime, ...props }
+      ] :
+      [] 
   }
-}
+})

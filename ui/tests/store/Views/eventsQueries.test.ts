@@ -13,7 +13,7 @@ describe('Events Queries', () => {
     vi.restoreAllMocks()
   })
 
-  it('fetches events', async () => {
+  it('fetches events, devices and metrics', () => {
     vi.mock('villus', () => ({
       useQuery: vi.fn().mockImplementation(() => ({
         data: { 

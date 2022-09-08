@@ -1,6 +1,6 @@
 import { EventDto, EventCollectionDto } from '@/types/graphql'
 
-const defaultsEvents: EventDto = {
+const mockData: EventDto = {
   'id': 2,
   'label': 'OpenNMS-defined node event: nodeAdded',
   'nodeId': 1,
@@ -9,8 +9,8 @@ const defaultsEvents: EventDto = {
   'time': '2022-09-07T17:52:51Z'
 }
 
-export const eventsFixture = (): EventCollectionDto => {
-  return {
-    events: [defaultsEvents]
-  }
-}
+export const eventsFixture = (props: Partial<EventDto> = {}): EventCollectionDto => ({
+  events: [
+    { ...mockData, ...props }
+  ]
+})
