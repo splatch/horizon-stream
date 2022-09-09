@@ -3,14 +3,15 @@ import { useQuery } from 'villus'
 import { ListDeviceStatusDocument } from '@/types/graphql'
 
 export const useEventsQueries = defineStore('eventsQueries', () => {
-  const fetchedData = ref()
+  const fetchedEvents = ref()
 
-  const { data } = useQuery({
-    query: ListDeviceStatusDocument
+  const { data, execute } = useQuery({
+    query: ListDeviceStatusDocument,
+    cachePolicy: 'network-only' // always fetch and do not cache
   })
 
   watchEffect(() => {
-    fetchedData.value = {
+    fetchedEvents.value = {
       events: data.value?.listEvents?.events || [],
       devices: data.value?.listDevices?.devices || [],
       deviceLatency: data.value?.deviceLatency?.data?.result || [],
@@ -19,6 +20,7 @@ export const useEventsQueries = defineStore('eventsQueries', () => {
   })
 
   return {
-    fetchedData
+    fetchedEvents,
+    fetch: execute
   }
 })

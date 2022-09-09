@@ -314,8 +314,8 @@ const tileProviders = ref([
 
 onMounted(() => {
   nodesReady.value = computed(() => {
-    mapStore.devicesAreFetched ? stopSpinner() : startSpinner()
-    return mapStore.devicesAreFetched
+    mapStore.areDevicesFetched ? stopSpinner() : startSpinner()
+    return mapStore.areDevicesFetched
   })
 })
 

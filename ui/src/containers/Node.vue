@@ -14,13 +14,13 @@ const nodeStore = useNodeStore()
 const route = useRoute()
 
 const data = computed(() => {
-  const fetchedData = nodeStore.fetchedData
+  const fetchedEvents = nodeStore.fetchedEvents
 
   return {
-    event: fetchedData.events?.filter((event: any) => event.nodeId == route.params.id)[0],
-    node: fetchedData.devices?.filter((device: any) => device.id == route.params.id)[0],
-    latency: fetchedData.deviceLatency,
-    uptime: fetchedData.deviceUptime
+    event: fetchedEvents.events?.filter((event: any) => event.nodeId == route.params.id)[0],
+    node: fetchedEvents.devices?.filter((device: any) => device.id == route.params.id)[0],
+    latency: fetchedEvents.deviceLatency,
+    uptime: fetchedEvents.deviceUptime
   }
 })
 </script>

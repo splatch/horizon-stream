@@ -13,8 +13,8 @@ export const useApplianceQueries = defineStore('applianceQueries', {
     // fetch appliance devices table data
     const fetchDevicesForTable = async () => {
       const { data: devicesData } = await useQuery({
-        cachePolicy: 'network-only',
-        query: ListDevicesForTableDocument
+        query: ListDevicesForTableDocument,
+        cachePolicy: 'network-only' // always fetch and do not cache
       })
 
       tableDevices.value = addMetricsToDevices(devicesData)
@@ -80,8 +80,9 @@ export const useApplianceQueries = defineStore('applianceQueries', {
     }
 
     // minions AND devices table
-    const { data: minionsAndDevices } = useQuery({
-      query: ListMinionsAndDevicesForTablesDocument
+    const { data: minionsAndDevices, execute } = useQuery({
+      query: ListMinionsAndDevicesForTablesDocument,
+      cachePolicy: 'network-only' // always fetch and do not cache
     })
 
     watchEffect(() => {
@@ -96,7 +97,8 @@ export const useApplianceQueries = defineStore('applianceQueries', {
       tableMinions,
       locations,
       fetchDevicesForTable,
-      fetchMinionsForTable
+      fetchMinionsForTable,
+      fetch: execute
     }
   }
 })
