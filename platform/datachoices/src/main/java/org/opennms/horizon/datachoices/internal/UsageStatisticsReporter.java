@@ -62,7 +62,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public synchronized void init() {
         OnmsDataChoices dataChoices = this.stateManager.getDataChoices();
-        if (Boolean.TRUE.equals(dataChoices.getEnabled())) {
+        if (dataChoices.getEnabled()) {
             LOG.info("Scheduling usage statistic reporting");
             schedule();
         } else {
