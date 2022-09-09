@@ -36,15 +36,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * <p>OnmsDataChoices class.</p>
  */
-@XmlRootElement(name = "datachoices")
 @Entity
 @Table(name = "datachoices")
 public class OnmsDataChoices implements Serializable {
@@ -71,7 +67,6 @@ public class OnmsDataChoices implements Serializable {
     @SequenceGenerator(name = "datachoiceSequence", sequenceName = "datachoiceNxtId", allocationSize = 1)
     @GeneratedValue(generator = "datachoiceSequence")
     @Column(name = "datachoiceid", nullable = false)
-    @XmlAttribute(name = "id")
     public Integer getId() {
         return this.m_id;
     }
@@ -91,7 +86,6 @@ public class OnmsDataChoices implements Serializable {
      * @return a {@link String} object.
      */
     @Column(name = "systemid", length = 256, nullable = false)
-    @XmlElement(name = "systemId")
     public String getSystemId() {
         return this.m_systemId;
     }
@@ -112,7 +106,6 @@ public class OnmsDataChoices implements Serializable {
      * @return a {@link String} object.
      */
     @Column(name = "enabled", nullable = false)
-    @XmlElement(name = "enabled")
     public Boolean getEnabled() {
         return this.m_enabled;
     }

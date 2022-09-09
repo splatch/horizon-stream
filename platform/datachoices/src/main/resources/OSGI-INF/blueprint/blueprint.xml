@@ -10,9 +10,8 @@
 
     <cm:property-placeholder persistent-id="org.opennms.horizon.datachoices">
         <cm:default-properties>
-
-            <!-- TODO: Change this once stats.opennms.com has been updated for the /hs-usage-report endpoint -->
-            <cm:property name="url" value="http://192.168.1.90:3542/"/> <!-- IP of Machine for local testing -->
+<!--            Note: to test this with a local version of UsageStatsHandler, use the IP of your machine to connect to it outside the l8s cluster -->
+            <cm:property name="url" value="http://stats.opennms.com/"/>
             <cm:property name="interval" value="86400000"/> <!-- 24 hours -->
         </cm:default-properties>
     </cm:property-placeholder>
