@@ -11,7 +11,7 @@
 
   <div class="minions-device-container">
     <div class="minions-table"><MinionsTable /></div>
-    <div class="device-table"><DeviceTable /></div>
+    <div class="devices-table"><DevicesTable /></div>
   </div>
 </template>
 
@@ -50,7 +50,7 @@ const gapWidth = computed<string>(() => appliancesStore.minionsTableOpen ? '20px
     width: v-bind(minionTableWidth);
     transition: width 0.4s ease-out;
   }
-  .device-table {
+  .devices-table {
     flex-grow: 1;
   }
 }
@@ -67,7 +67,7 @@ $breakpoint: 1024px;
       width: 100%;
       margin-bottom: 20px;
     }
-    .device-table {
+    .devices-table {
       width: 100%;
     }
   }

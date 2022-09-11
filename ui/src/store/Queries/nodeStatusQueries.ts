@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { useQuery } from 'villus'
 import { ListDeviceStatusDocument } from '@/types/graphql'
 
-export const useEventsQueries = defineStore('eventsQueries', () => {
+export const useNodeStatusQueries = defineStore('nodeStatusQueries', () => {
   const fetchedEvents = ref()
 
   const { data, execute } = useQuery({
