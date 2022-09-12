@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div class="minions-device-container">
+  <div class="minions-devices-container">
     <div class="minions-table"><MinionsTable /></div>
     <div class="devices-table"><DevicesTable /></div>
   </div>
@@ -42,7 +42,7 @@ const gapWidth = computed<string>(() => appliancesStore.minionsTableOpen ? '20px
     gap: 20px;
   }
 }
-.minions-device-container {
+.minions-devices-container {
   display: flex;
   gap: v-bind(gapWidth);
   
@@ -61,7 +61,7 @@ $breakpoint: 1024px;
   .header-container {
     display: block;
   }
-  .minions-device-container {
+  .minions-devices-container {
     display: block;
     .minions-table {
       width: 100%;
