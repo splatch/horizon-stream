@@ -14,7 +14,6 @@ declare module '@vue/runtime-core' {
     CtrlLayers: typeof import('./src/components/Topology/CtrlLayers.vue')['default']
     CtrlSemanticZoomLevel: typeof import('./src/components/Topology/CtrlSemanticZoomLevel.vue')['default']
     DevicesTable: typeof import('./src/components/Appliances/DevicesTable.vue')['default']
-    DeviceTable: typeof import('./src/components/Appliances/DeviceTable.vue')['default']
     DeviceWidget: typeof import('./src/components/Widgets/DeviceWidget.vue')['default']
     DrawerBtn: typeof import('./src/components/Topology/DrawerBtn.vue')['default']
     EventsTable: typeof import('./src/components/Events/EventsTable.vue')['default']
