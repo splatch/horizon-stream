@@ -12,7 +12,7 @@ const wrapper = setup({
 
 const widgets = [
   ['Minion', '../Appliances/MinionsTable.vue'],
-  ['Device', '../Appliances/DeviceTable.vue'],
+  ['Device', '../Appliances/DevicesTable.vue'],
   ['Map', '../Map/LeafletMap.vue'],
   ['Tag', '../Tags/Tags.vue']
 ]

@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
-import { useEventsQueries } from '@/store/Queries/eventsQueries'
+import { useNodeStatusQueries } from '@/store/Queries/nodeStatusQueries'
 
 export const useNodeStore = defineStore('nodeStore', () => {
-  const eventsQueries = useEventsQueries()
+  const nodeStatusQueries = useNodeStatusQueries()
 
-  const fetchedData = computed(() => eventsQueries.fetchedData)
+  const fetchedData = computed(() => nodeStatusQueries.fetchedData)
 
   return {
     fetchedData

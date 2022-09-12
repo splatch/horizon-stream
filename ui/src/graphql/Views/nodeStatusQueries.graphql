@@ -1,0 +1,36 @@
+fragment ListEventsParts on Query {
+  listEvents {
+    events {
+      id
+      label
+      nodeId
+      nodeLabel
+      severity
+      time
+    }
+  }
+}
+
+fragment ListDevicesParts on Query {
+  listDevices {
+    devices {
+      foreignSource
+      managementIp
+      id
+      label
+      createTime
+      location {
+        locationName
+        latitude
+        longitude
+      }
+    }
+  }
+}
+
+query ListDeviceStatus {
+  ...ListDevicesParts
+  ...DeviceUptimeParts
+  ...DeviceLatencyParts
+  ...ListEventsParts
+}
