@@ -27,12 +27,12 @@ describe('Events Queries', () => {
     }))
     
     const nodeStatusQueries = useNodeStatusQueries()
-    const expectedFetchedEvents = {
+    const expectedFetchedData = {
       ...eventsFixture(),
       ...devicesFixture(),
       deviceLatency: (latencyFixture()).data?.result,
       deviceUptime: (uptimeFixture()).data?.result
     }
-    expect(nodeStatusQueries.fetchedEvents).toStrictEqual(expectedFetchedEvents)
+    expect(nodeStatusQueries.fetchedData).toStrictEqual(expectedFetchedData)
   })
 })
