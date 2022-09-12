@@ -17,6 +17,7 @@ declare module '@vue/runtime-core' {
     DeviceWidget: typeof import('./src/components/Widgets/DeviceWidget.vue')['default']
     DrawerBtn: typeof import('./src/components/Topology/DrawerBtn.vue')['default']
     EventsTable: typeof import('./src/components/Events/EventsTable.vue')['default']
+    EventsWidget: typeof import('./src/components/Widgets/EventsWidget.vue')['default']
     FeatherAppBar: typeof import('@featherds/app-bar')['FeatherAppBar']
     FeatherAppBarLink: typeof import('@featherds/app-bar')['FeatherAppBarLink']
     FeatherAppLayout: typeof import('@featherds/app-layout')['FeatherAppLayout']
