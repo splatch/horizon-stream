@@ -1,6 +1,6 @@
 <template>
 <h1>{{headerLabel}} (id: {{route.params.id}})</h1>
-<EventsWidget :data="data" />
+<EventsWidget :data="nodeData" />
 </template>
 
 <script setup lang="ts">
@@ -10,21 +10,15 @@ import EventsWidget from '@/components/Widgets/EventsWidget.vue'
 const nodeStore = useNodeStore()
 const route = useRoute()
 
-const headerLabel = ref()
+const headerLabel = computed(() => nodeStore.fetchedData?.device?.label)
+const nodeData = computed(() => ({
+  events: nodeStore.fetchedData?.events?.filter((event: any) => event.nodeId == route.params.id),
+  node: nodeStore.fetchedData?.device,
+  latencies: nodeStore.fetchedData?.deviceLatency,
+  uptimes: nodeStore.fetchedData?.deviceUptime
+}))
 
-const data = computed(() => {
-  const fetchedData = nodeStore.fetchedData
-  const nodeData = fetchedData.devices?.filter((device: any) => device.id == route.params.id)[0]
-  
-  headerLabel.value = nodeData?.label
-
-  return {
-    events: fetchedData.events?.filter((event: any) => event.nodeId == route.params.id),
-    node: nodeData,
-    latencies: fetchedData.deviceLatency,
-    uptimes: fetchedData.deviceUptime
-  }
-})
+nodeStore.setNodeId(Number(route.params.id))
 </script>
 
 <style lang="scss">

@@ -3,22 +3,28 @@ import { useQuery } from 'villus'
 import { ListDeviceStatusDocument } from '@/types/graphql'
 
 export const useNodeStatusQueries = defineStore('nodeStatusQueries', () => {
-  const fetchedData = ref()
+  const variables = ref({})
+
+  const setNodeId = (id: number) => {
+    variables.value = { id }
+  }
 
   const { data } = useQuery({
-    query: ListDeviceStatusDocument
+    query: ListDeviceStatusDocument,
+    variables,
+    cachePolicy: 'network-only'
+
   })
 
-  watchEffect(() => {
-    fetchedData.value = {
-      events: data.value?.listEvents?.events || [],
-      devices: data.value?.listDevices?.devices || [],
-      deviceLatency: data.value?.deviceLatency?.data?.result || [],
-      deviceUptime: data.value?.deviceUptime?.data?.result || []
-    }
-  })
+  const fetchedData = computed(() => ({
+    events: data.value?.listEvents?.events || [],
+    device: data.value?.device || {},
+    deviceLatency: data.value?.deviceLatency?.data?.result || [],
+    deviceUptime: data.value?.deviceUptime?.data?.result || []
+  }))
 
   return {
+    setNodeId,
     fetchedData
   }
 })

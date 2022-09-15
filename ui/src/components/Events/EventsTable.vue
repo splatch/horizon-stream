@@ -1,5 +1,5 @@
 <template>
-  <div>Events table widget</div>
+  <div>Events table</div>
   <!-- <pre>{{props.data}}</pre> -->
 </template>
 
