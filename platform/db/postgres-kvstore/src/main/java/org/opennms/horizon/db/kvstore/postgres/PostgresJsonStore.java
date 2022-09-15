@@ -26,33 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.cache;
+package org.opennms.horizon.db.kvstore.postgres;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.opennms.horizon.db.kvstore.api.JsonStore;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.CaffeineSpec;
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-@Configuration
-public class CacheConfig {
-
-    @Value("${spring.cache.caffeine.spec}")
-    private String cacheSpec;
-
-    @Bean
-    public Caffeine createCaffeine() {
-        CaffeineSpec spec = CaffeineSpec.parse(cacheSpec);
-        return Caffeine.from(spec);
+public class PostgresJsonStore extends AbstractPostgresKeyValueStore<String, String> implements JsonStore {
+    public PostgresJsonStore(DataSource dataSource) {
+        super(dataSource);
     }
 
-    @Bean
-    public CacheManager cacheManager(Caffeine caffeine) {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCaffeine(caffeine);
-        return cacheManager;
+    @Override
+    protected String getTableName() {
+        return "kvstore_jsonb";
+    }
+
+    @Override
+    protected String getValueStatementPlaceholder() {
+        return super.getValueStatementPlaceholder() + "::JSON";
+    }
+
+    @Override
+    protected String getValueTypeFromSQLType(ResultSet resultSet, String columnName) throws SQLException {
+        return resultSet.getString(columnName);
+    }
+
+    @Override
+    protected String getPkConstraintName() {
+        return "pk_kvstore_jsonb";
     }
 }
