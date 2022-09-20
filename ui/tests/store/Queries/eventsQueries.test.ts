@@ -30,7 +30,7 @@ describe('Events Queries', () => {
     nodeStatusQueries.setNodeId(2)
 
     const expectedFetchedData = {
-      ...eventsFixture(),
+      listEvents: { ...eventsFixture() },
       device: deviceFixture(),
       deviceLatency: (latencyFixture()).data?.result,
       deviceUptime: (uptimeFixture()).data?.result
