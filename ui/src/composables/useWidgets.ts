@@ -14,7 +14,7 @@ const displayedWidgets = ref<Widget[]>([])
 
 const useWidgets = () => {
 
-  const addWidget = (
+  const addWidget = async (
     appContext: AppContext,
     widget: string,
     element: HTMLElement,
@@ -23,7 +23,7 @@ const useWidgets = () => {
     ) => {
     
     // async import a component from a given path
-    const component = defineAsyncComponent(() => import(`../Components/Widgets/${widget}.vue`))
+    const component = (await import(`../Components/Widgets/${widget}.vue`)).default
     const div = document.createElement('div')
     div.id = widget
   
