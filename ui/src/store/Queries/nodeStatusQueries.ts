@@ -17,7 +17,7 @@ export const useNodeStatusQueries = defineStore('nodeStatusQueries', () => {
   })
 
   const fetchedData = computed(() => ({
-    events: data.value?.listEvents?.events || [],
+    listEvents: data.value?.listEvents || {},
     device: data.value?.device || {},
     deviceLatency: data.value?.deviceLatency?.data?.result || [],
     deviceUptime: data.value?.deviceUptime?.data?.result || []
