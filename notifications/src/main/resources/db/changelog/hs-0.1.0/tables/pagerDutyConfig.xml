@@ -15,11 +15,6 @@
 
 		<createTable tableName="pager_duty_config">
 
-			<!-- token for calling PagerDuty API. -->
-			<column name="token" type="varchar(256)">
-				<constraints nullable="false" />
-			</column>
-
 			<!-- Integration key for calling PagerDuty API. -->
 			<column name="integrationkey" type="varchar(256)">
 				<constraints nullable="false" />

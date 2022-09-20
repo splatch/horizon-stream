@@ -89,13 +89,10 @@ class AlarmKafkaConsumerIntegrationTest {
         stringProducer = stringFactory.createProducer();
     }
 
-    private void setupConfig() throws NotificationException {
-        Mockito.doNothing().when(pagerDutyAPI).validateConfig(any());
-
-        String token = "unverified_token";
+    private void setupConfig() {
         String integrationKey = "not_verified";
 
-        PagerDutyConfigDTO config = new PagerDutyConfigDTO(token, integrationKey);
+        PagerDutyConfigDTO config = new PagerDutyConfigDTO(integrationKey);
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<PagerDutyConfigDTO> request = new HttpEntity<>(config, headers);
 
