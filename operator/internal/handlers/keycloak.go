@@ -17,8 +17,6 @@ package handlers
 import (
 	"github.com/OpenNMS/opennms-operator/internal/model/values"
 	"github.com/OpenNMS/opennms-operator/internal/util/yaml"
-	olmv1 "github.com/operator-framework/api/pkg/operators/v1"
-	olmv1alpha1 "github.com/operator-framework/api/pkg/operators/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -29,8 +27,8 @@ type KeycloakHandler struct {
 }
 
 func (h *KeycloakHandler) ProvideConfig(values values.TemplateValues) []client.Object {
-	var opGroup olmv1.OperatorGroup
-	var opSub olmv1alpha1.Subscription
+	//var opGroup olmv1.OperatorGroup
+	//var opSub olmv1alpha1.Subscription
 	var initialAdminSecret corev1.Secret
 	var credSecret corev1.Secret
 	var keycloak unstructured.Unstructured
@@ -39,8 +37,8 @@ func (h *KeycloakHandler) ProvideConfig(values values.TemplateValues) []client.O
 	var internalService corev1.Service
 
 	yaml.LoadYaml(filepath("keycloak/keycloak-initial-cred-secret.yaml"), values, &initialAdminSecret)
-	yaml.LoadYaml(filepath("keycloak/keycloak-operator-group.yaml"), values, &opGroup)
-	yaml.LoadYaml(filepath("keycloak/keycloak-operator-sub.yaml"), values, &opSub)
+	//yaml.LoadYaml(filepath("keycloak/keycloak-operator-group.yaml"), values, &opGroup)
+	//yaml.LoadYaml(filepath("keycloak/keycloak-operator-sub.yaml"), values, &opSub)
 	yaml.LoadYaml(filepath("keycloak/keycloak-cred-secret.yaml"), values, &credSecret)
 	yaml.LoadYaml(filepath("keycloak/keycloak.yaml"), values, &keycloak)
 	yaml.LoadYaml(filepath("keycloak/keycloak-realmimport.yaml"), values, &realmImport)
@@ -49,8 +47,8 @@ func (h *KeycloakHandler) ProvideConfig(values values.TemplateValues) []client.O
 
 	h.Config = []client.Object{
 		&initialAdminSecret,
-		&opGroup,
-		&opSub,
+		//&opGroup,
+		//&opSub,
 		&credSecret,
 		&keycloak,
 		&realmImport,

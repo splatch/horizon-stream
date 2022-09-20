@@ -8,9 +8,9 @@ metadata:
 spec:
   keycloakCRName: {{ .Values.Keycloak.ServiceName }}
   realm:
-    accessTokenLifespan: 6000
     id: {{ .Values.Keycloak.UUID.RealmId }}
     realm: {{ .Values.Keycloak.RealmName }}
+    accessTokenLifespan: 6000
     enabled: true
     loginTheme: "horizon-stream"
     emailTheme: "horizon-stream"
