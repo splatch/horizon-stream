@@ -79,18 +79,8 @@ public class DefaultConfigService implements ConfigService {
 
     @Override
     public void updateConfig(String configName, String jsonConfig, String source) {
-        addConfigNameToJsonStore(configName);
-        try {
-            Optional<String> existingConfig = getConfig(configName);
-            if (existingConfig.isPresent() && existingConfig.get().equals(jsonConfig)) {
-                LOG.info("Given config matches with existing config for {}, no update made", configName);
-            }
-            objectMapper.readTree(jsonConfig);
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Invalid json " + jsonConfig);
-        }
-        jsonStore.put(configName, jsonConfig, CONFIG);
-        sendConfigUpdatedEvent(configName, source);
+        // May change later, currently this is identical to addConfig
+         addConfig(configName, jsonConfig, source);
     }
 
     @Override
