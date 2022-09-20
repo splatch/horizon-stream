@@ -36,9 +36,11 @@ import lombok.Setter;
 public class PagerDutyConfigDTO {
     public PagerDutyConfigDTO() {
     }
-    public PagerDutyConfigDTO(String integrationkey) {
+    public PagerDutyConfigDTO(String token, String integrationkey) {
+        this.token = token;
         this.integrationkey = integrationkey;
     }
 
+    String token;
     String integrationkey;
 }
