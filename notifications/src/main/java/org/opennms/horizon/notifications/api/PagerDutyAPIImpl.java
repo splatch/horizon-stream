@@ -29,7 +29,6 @@
 package org.opennms.horizon.notifications.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opennms.horizon.notifications.api.dto.*;
 import org.opennms.horizon.notifications.exceptions.*;
@@ -44,13 +43,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,9 +64,6 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
     @Autowired
     RestTemplate restTemplate;
 
-    @Autowired
-    ObjectMapper mapper;
-
     @Value("${horizon.pagerduty.client}")
     String client;
 
@@ -81,8 +77,10 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
 
             String baseUrl = "https://events.pagerduty.com/v2/enqueue";
             URI uri = new URI(baseUrl);
+            String token = getAuthToken();
 
             HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Token token="+token);
             headers.set("Accept", "application/vnd.pagerduty+json;version=2");
             headers.set("Content-Type", "application/json");
 
@@ -104,9 +102,40 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
         pagerDutyDao.saveConfig(config);
     }
 
+    @Override
+    public void validateConfig(PagerDutyConfigDTO config) throws NotificationException {
+        callGetService(config);
+    }
+
+    private void callGetService(PagerDutyConfigDTO config) throws NotificationException {
+        try {
+            String baseUrl = "https://api.pagerduty.com/services?include%5B%5D=integrations";
+            URI uri = new URI(baseUrl);
+            String token = config.getToken();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Token token="+token);
+            headers.set("Accept", "application/vnd.pagerduty+json;version=2");
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+            restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class);
+        } catch (URISyntaxException e) {
+            throw new NotificationInternalException("Bad PagerDuty validation url", e);
+        } catch (HttpClientErrorException e) {
+            throw new NotificationBadDataException("Invalid PagerDuty token");
+        }
+    }
+
     private String getPagerDutyIntegrationKey() throws NotificationConfigUninitializedException {
         PagerDutyConfigDTO config = pagerDutyDao.getConfig();
         return config.getIntegrationkey();
+    }
+
+    private String getAuthToken() throws NotificationConfigUninitializedException {
+        PagerDutyConfigDTO config = pagerDutyDao.getConfig();
+        return config.getToken();
     }
 
     private String getEvent(AlarmDTO alarm) throws NotificationConfigUninitializedException, JsonProcessingException {
@@ -150,43 +179,16 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
         event.setClient(client);
         event.setClientUrl(clientURL);
 
-        payload.setCustomDetails(new HashMap<>());
-
-        String customDetailsAlarmName = "alarm";
         EventDTO lastEvent = alarm.getLastEvent();
+
         if (lastEvent != null) {
             Map<String, Object> customDetails = eparmsToMap(lastEvent.getParameters());
-            payload.getCustomDetails().putAll(customDetails);
-
-            customDetailsAlarmName = getCustomDetailsAlarmName(customDetailsAlarmName, customDetails);
+            payload.setCustomDetails(customDetails);
         }
-
-        // Add the alarm as custom details
-        JsonNode alarmJson = mapper.convertValue(alarm, JsonNode.class);
-        payload.getCustomDetails().put(customDetailsAlarmName, alarmJson);
-
         event.setPayload(payload);
 
         String bodyJson = objectMapper.writeValueAsString(event);
         return bodyJson;
-    }
-
-    private String getCustomDetailsAlarmName(String customDetailsAlarmName, Map<String, Object> customDetails) {
-        int suffix = 0;
-        boolean loop = true;
-        if (customDetails == null) {
-            loop = false;
-        }
-
-        while (loop) {
-            if (customDetails.get(customDetailsAlarmName) != null) {
-                customDetailsAlarmName = "alarm_" + ++suffix;
-            } else {
-                loop = false;
-            }
-        }
-
-        return customDetailsAlarmName;
     }
 
     protected static Map<String, Object> eparmsToMap(List<EventParameterDTO> eparms) {

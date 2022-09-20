@@ -48,13 +48,14 @@ public class PagerDutyDaoImpl implements PagerDutyDao{
 
     @Override
     public PagerDutyConfigDTO getConfig() throws NotificationConfigUninitializedException {
-        String sql = "SELECT integrationKey FROM pager_duty_config";
+        String sql = "SELECT token, integrationKey FROM pager_duty_config";
         List<PagerDutyConfigDTO> configList = null;
         try {
             configList = jdbcTemplate.query(
                 sql,
                 (rs, rowNum) ->
                     new PagerDutyConfigDTO(
+                        rs.getString("token"),
                         rs.getString("integrationKey")
                     )
             );
@@ -74,9 +75,9 @@ public class PagerDutyDaoImpl implements PagerDutyDao{
         int count = getRowCount();
 
         if (count == 0) {
-            jdbcTemplate.update("INSERT INTO pager_duty_config(integrationkey) VALUES(?)", config.getIntegrationkey());
+            jdbcTemplate.update("INSERT INTO pager_duty_config(token, integrationkey) VALUES(?,?)", config.getToken(), config.getIntegrationkey());
         } else {
-            jdbcTemplate.update("UPDATE pager_duty_config SET integrationkey=?", config.getIntegrationkey());
+            jdbcTemplate.update("UPDATE pager_duty_config SET token=?, integrationkey=?", config.getToken(), config.getIntegrationkey());
         }
     }
 

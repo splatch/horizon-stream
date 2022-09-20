@@ -28,7 +28,6 @@
 
 package org.opennms.horizon.notifications.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -39,16 +38,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opennms.horizon.notifications.api.dto.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.exceptions.NotificationBadDataException;
 import org.opennms.horizon.shared.dto.event.AlarmDTO;
-import org.opennms.horizon.shared.dto.event.EventDTO;
-import org.opennms.horizon.shared.dto.event.EventParameterDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -64,23 +59,13 @@ public class PagerDutyAPIImplTest {
     RestTemplate restTemplate;
 
     @Mock
-    ObjectMapper mapper;
-
-    @Mock
     PagerDutyDao pagerDutyDao;
 
     @Test
     public void postNotifications() throws Exception {
         Mockito.when(pagerDutyDao.getConfig()).thenReturn(getConfigDTO());
-        AlarmDTO alarm = getAlarm(false);
-        pagerDutyAPI.postNotification(alarm);
-    }
-
-    @Test
-    public void postNotificationsWithAlarmClash() throws Exception {
-        Mockito.when(pagerDutyDao.getConfig()).thenReturn(getConfigDTO());
-        AlarmDTO alarm = getAlarm(true);
-        pagerDutyAPI.postNotification(alarm);
+        AlarmDTO notificationDTO = getAlarm();
+        pagerDutyAPI.postNotification(notificationDTO);
     }
 
     @Test
@@ -88,25 +73,39 @@ public class PagerDutyAPIImplTest {
         pagerDutyAPI.saveConfig(getConfigDTO());
     }
 
-    private PagerDutyConfigDTO getConfigDTO() {
-        return new PagerDutyConfigDTO("integration_key");
+    @Test
+    public void validateConfig() throws Exception {
+        pagerDutyAPI.validateConfig(getConfigDTO());
     }
 
-    private AlarmDTO getAlarm(boolean includeParams) {
-        AlarmDTO alarmDTO = new AlarmDTO();
-        alarmDTO.setLogMessage("Exciting message to go here");
-        alarmDTO.setReductionKey("srv01/mysql");
-        alarmDTO.setSeverity("Indeterminate");
+    @Test
+    public void validateConfigInvalidToken() throws Exception {
+        doThrow(HttpClientErrorException.class)
+            .when(restTemplate).exchange(ArgumentMatchers.any(URI.class),
+                ArgumentMatchers.any(HttpMethod.class),
+                ArgumentMatchers.any(HttpEntity.class),
+                ArgumentMatchers.any(Class.class));
 
-        EventDTO lastEvent = new EventDTO();
-        if (includeParams) {
-            EventParameterDTO param = new EventParameterDTO();
-            param.setName("alarm");
-            param.setValue("value");
-
-            lastEvent.setParameters(Arrays.asList(param));
+        boolean exceptionCaught = false;
+        try{
+            pagerDutyAPI.validateConfig(getConfigDTO());
+        } catch (NotificationBadDataException e) {
+            assertEquals("Invalid PagerDuty token", e.getMessage());
+            exceptionCaught = true;
         }
-        alarmDTO.setLastEvent(lastEvent);
-        return alarmDTO;
+
+        assertTrue(exceptionCaught);
+    }
+
+    private PagerDutyConfigDTO getConfigDTO() {
+        return new PagerDutyConfigDTO("token", "integration_key");
+    }
+
+    private AlarmDTO getAlarm() {
+        AlarmDTO notificationDTO = new AlarmDTO();
+        notificationDTO.setLogMessage("Exciting message to go here");
+        notificationDTO.setReductionKey("srv01/mysql");
+        notificationDTO.setSeverity("Indeterminate");
+        return notificationDTO;
     }
 }
