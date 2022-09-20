@@ -1,6 +1,22 @@
 import { createTestingPinia } from '@pinia/testing'
 import { useMapQueries } from '@/store/Queries/mapQueries'
-import { devicesFixture, mockMapDevice } from '../../fixture/devices'
+import { devicesFixture } from '../../fixture/devices'
+import { DeviceDto } from '@/types/graphql'
+
+const mockMapDevice: DeviceDto = {
+  'foreignId': '',
+  'foreignSource': '',
+  'labelSource': '',
+  'location': {
+    'latitude': 46.69197463989258,
+    'longitude': 2.377929925918579
+  },
+  'sysContact': '',
+  'sysDescription': '',
+  'sysLocation': '',
+  'sysName': '',
+  'sysOid': ''
+}
 
 describe('Map queries', () =>{
   beforeEach(() => {
