@@ -35,7 +35,6 @@ import com.google.common.collect.SortedSetMultimap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.horizon.core.lib.LocationUtils;
 import org.opennms.horizon.db.dao.api.AbstractInterfaceToNodeCache;
-import org.opennms.horizon.db.dao.api.InterfaceToNodeCache;
 import org.opennms.horizon.db.dao.api.IpInterfaceDao;
 import org.opennms.horizon.db.dao.api.NodeDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
@@ -65,7 +64,7 @@ import java.util.stream.Collectors;
 
 import static org.opennms.horizon.core.lib.InetAddressUtils.str;
 
-public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache implements InterfaceToNodeCache {
+public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache {
     private static final Logger LOG = LoggerFactory.getLogger(InterfaceToNodeCacheDaoImpl.class);
 
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
@@ -182,14 +181,14 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         }
     }
 
-    private NodeDao m_nodeDao;
+    private NodeDao nodeDao;
 
-    private IpInterfaceDao m_ipInterfaceDao;
+    private IpInterfaceDao ipInterfaceDao;
 
     private SessionUtils sessionUtils;
 
-    private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
-    private SortedSetMultimap<Key, Value> m_managedAddresses = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private SortedSetMultimap<Key, Value> managedAddresses = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
 
     private final Timer refreshTimer = new Timer(getClass().getSimpleName());
 
@@ -229,19 +228,19 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     }
 
     public NodeDao getNodeDao() {
-        return m_nodeDao;
+        return nodeDao;
     }
 
     public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
+        this.nodeDao = nodeDao;
     }
 
     public IpInterfaceDao getIpInterfaceDao() {
-        return m_ipInterfaceDao;
+        return ipInterfaceDao;
     }
 
     public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
+        this.ipInterfaceDao = ipInterfaceDao;
     }
 
     public SessionUtils getSessionUtils() {
@@ -284,12 +283,12 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         final SortedSetMultimap<Key, Value> newAlreadyDiscovered = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
 
         // Fetch all non-deleted nodes
-        var builder = m_nodeDao.getEntityManager().getCriteriaBuilder();
+        var builder = nodeDao.getEntityManager().getCriteriaBuilder();
         var criteriaQuery = builder.createQuery(OnmsNode.class);
         var root = criteriaQuery.from(OnmsNode.class);
         criteriaQuery.where(builder.notEqual(root.get("type"), String.valueOf(OnmsNode.NodeType.DELETED.value())));
 
-        for (OnmsNode node : m_nodeDao.findMatching(criteriaQuery)) {
+        for (OnmsNode node : nodeDao.findMatching(criteriaQuery)) {
             for (final OnmsIpInterface iface : node.getIpInterfaces()) {
                 // Skip deleted interfaces
                 // TODO: Refactor the 'D' value with an enumeration
@@ -302,13 +301,13 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
         }
 
         try {
-            m_lock.writeLock().lock();
-            m_managedAddresses = newAlreadyDiscovered;
+            lock.writeLock().lock();
+            managedAddresses = newAlreadyDiscovered;
         } finally {
-            m_lock.writeLock().unlock();
+            lock.writeLock().unlock();
         }
 
-        LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
+        LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", managedAddresses.size());
     }
 
     @Override
@@ -317,12 +316,12 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             return Optional.empty();
         }
         waitForInitialNodeSync();
-        m_lock.readLock().lock();
+        lock.readLock().lock();
         try {
-            var values = m_managedAddresses.get(new Key(location, ipAddr));
+            var values = managedAddresses.get(new Key(location, ipAddr));
             return values.isEmpty() ? Optional.empty() : Optional.of(new Entry(values.first().nodeId, values.first().interfaceId));
         } finally {
-            m_lock.readLock().unlock();
+            lock.readLock().unlock();
         }
     }
 
@@ -348,18 +347,18 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             return false;
         }
 
-        final OnmsIpInterface iface = m_ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, str(addr));
+        final OnmsIpInterface iface = ipInterfaceDao.findByNodeIdAndIpAddress(nodeid, str(addr));
         if (iface == null) {
             return false;
         }
 
         LOG.debug("setNodeId: adding IP address to cache: {}:{} -> {}", location, str(addr), nodeid);
 
-        m_lock.writeLock().lock();
+        lock.writeLock().lock();
         try {
-            return m_managedAddresses.put(new Key(location, addr), new Value(nodeid, iface.getId(), iface.getIsSnmpPrimary()));
+            return managedAddresses.put(new Key(location, addr), new Value(nodeid, iface.getId(), iface.getIsSnmpPrimary()));
         } finally {
-            m_lock.writeLock().unlock();
+            lock.writeLock().unlock();
         }
     }
 
@@ -378,51 +377,51 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
 
         LOG.debug("removeNodeId: removing IP address from cache: {}:{}", location, str(address));
 
-        m_lock.writeLock().lock();
+        lock.writeLock().lock();
         try {
             final Key key = new Key(location, address);
-            return m_managedAddresses.get(key).removeIf(e -> e.nodeId == nodeId);
+            return managedAddresses.get(key).removeIf(e -> e.nodeId == nodeId);
         } finally {
-            m_lock.writeLock().unlock();
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public int size() {
         waitForInitialNodeSync();
-        m_lock.readLock().lock();
+        lock.readLock().lock();
         try {
-            return m_managedAddresses.size();
+            return managedAddresses.size();
         } finally {
-            m_lock.readLock().unlock();
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public void clear() {
-        m_lock.writeLock().lock();
+        lock.writeLock().lock();
         try {
-            m_managedAddresses.clear();
+            managedAddresses.clear();
         } finally {
-            m_lock.writeLock().unlock();
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public void removeInterfacesForNode(int nodeId) {
-        m_lock.writeLock().lock();
+        lock.writeLock().lock();
         try {
-            List<Map.Entry<Key, Value>> keyValues = m_managedAddresses.entries().stream()
+            List<Map.Entry<Key, Value>> keyValues = managedAddresses.entries().stream()
                 .filter(keyValueEntry -> keyValueEntry.getValue().getNodeId() == nodeId)
                 .collect(Collectors.toList());
             keyValues.forEach(keyValue -> {
-                boolean succeeded = m_managedAddresses.remove(keyValue.getKey(), keyValue.getValue());
+                boolean succeeded = managedAddresses.remove(keyValue.getKey(), keyValue.getValue());
                 if (succeeded) {
                     LOG.debug("removeInterfacesForNode: removed IP address from cache: {}", str(keyValue.getKey().getIpAddress()));
                 }
             });
         } finally {
-            m_lock.writeLock().unlock();
+            lock.writeLock().unlock();
         }
     }
 }

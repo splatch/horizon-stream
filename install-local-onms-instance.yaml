@@ -14,11 +14,11 @@ spec:
   api:
     image: opennms/horizon-stream-rest-server
     cpu: "0"
-    mem: 500Mi
+    mem: "0"
   ui:
     image: opennms/horizon-stream-ui
     cpu: "0"
-    mem: 100Mi
+    mem: "0"
   postgres:
     image: postgres:13.3-alpine
   credentials:
