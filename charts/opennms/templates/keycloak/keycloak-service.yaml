@@ -11,9 +11,14 @@ spec:
   - IPv4
   ipFamilyPolicy: SingleStack
   ports:
-  - port: {{ .Values.Keycloak.Port }}
-    protocol: TCP
-    targetPort: {{ .Values.Keycloak.Port }}
+    - port: {{ .Values.Keycloak.Port }}
+      name: http
+      protocol: TCP
+      targetPort: {{ .Values.Keycloak.Port }}
+    - port: {{ .Values.Keycloak.HttpsPort }}
+      name: https
+      protocol: TCP
+      targetPort: {{ .Values.Keycloak.HttpsPort }}
   selector:
     app: keycloak
   sessionAffinity: None

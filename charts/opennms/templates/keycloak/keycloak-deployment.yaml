@@ -18,7 +18,7 @@ spec:
       containers:
         - name: keycloak
           image: "{{ .Values.Keycloak.Image }}"
-          imagePullPolicy: "{{ .Values.Keycloak.ImagePullPolicy }}"\
+          imagePullPolicy: "{{ .Values.Keycloak.ImagePullPolicy }}"
           resources:
             limits:
               cpu: "{{ .Values.Keycloak.Resources.Limits.Cpu }}"
@@ -26,14 +26,10 @@ spec:
             requests:
               cpu: "{{ .Values.Keycloak.Resources.Requests.Cpu }}"
               memory: "{{ .Values.Keycloak.Resources.Requests.Memory }}"
-          args: ['--verbose', 'start',  '--import-realm', --optimized']
+          args: ['start', '--optimized', '--import-realm']
           env:
             - name: KC_HEALTH_ENABLED
               value: "true"
-            - name: KC_CACHE
-              value: ispn
-            - name: KC_CACHE_STACK
-              value: kubernetes
             - name: KC_HOSTNAME
               value: "{{ .Values.Host }}"
             - name: KC_DB
@@ -82,26 +78,26 @@ spec:
           volumeMounts:
             - mountPath: /mnt/certificates
               name: keycloak-tls-certificates
-            - mountPath: /data/import
+            - mountPath: /opt/keycloak/data/import
               name: realm-config
-          livenessProbe:
-            exec:
-              command:
-              - curl
-              - --head
-              - --fail
-              - --silent
-              - --insecure
-              - https://127.0.0.1:{{ .Values.Keycloak.HttpsPort }}{{ .Values.Keycloak.Path }}/health/live
-          readinessProbe:
-            exec:
-              command:
-              - curl
-              - --head
-              - --fail
-              - --silent
-              - --insecure
-              - https://127.0.0.1:{{ .Values.Keycloak.HttpsPort }}{{ .Values.Keycloak.Path }}/health/ready
+          # livenessProbe: TODO fix
+          #   exec:
+          #     command:
+          #     - curl
+          #     - --head
+          #     - --fail
+          #     - --silent
+          #     - --insecure
+          #     - https://127.0.0.1:{{ .Values.Keycloak.HttpsPort }}{{ .Values.Keycloak.Path }}/health/live
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #     - curl
+          #     - --head
+          #     - --fail
+          #     - --silent
+          #     - --insecure
+          #     - https://127.0.0.1:{{ .Values.Keycloak.HttpsPort }}{{ .Values.Keycloak.Path }}/health/ready
       volumes:
         - name: keycloak-tls-certificates
           secret:
