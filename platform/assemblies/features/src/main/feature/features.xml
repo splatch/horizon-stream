@@ -492,13 +492,18 @@
         <bundle>mvn:org.opennms.horizon.metrics/impl/${project.version}</bundle>
     </feature>
 
-    <feature name="horizon-core-config" version="${project.version}">
-        <feature>horizon-db</feature>
+    <feature name="horizon-core-config-rest" version="${project.version}">
+        <feature>horizon-core-config-service</feature>
         <feature>horizon-core-rest</feature>
+        <bundle>mvn:org.opennms.horizon.config/rest/${project.version}</bundle>
+    </feature>
+
+    <feature name="horizon-core-config-service" version="${project.version}">
+        <feature>horizon-db</feature>
+        <feature>horizon-events</feature>
         <bundle>wrap:mvn:org.json/json/${json.version}$Export-Package=org.json</bundle>
         <bundle>mvn:org.opennms.horizon.config/api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.config/service/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.config/rest/${project.version}</bundle>
     </feature>
 
 
@@ -506,11 +511,8 @@
         <feature>horizon-db</feature>
         <feature>horizon-ipc-api</feature>
         <feature>horizon-snmp</feature>
+        <feature>horizon-core-config-service</feature>
         <feature>horizon-ipc-twin-grpc</feature>
-        <bundle>wrap:mvn:org.json/json/${json.version}$Export-Package=org.json</bundle>
-        <bundle>mvn:org.opennms.core.ipc.twin/api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.config/api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.config/service/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon/traps/${project.version}</bundle>
     </feature>
 </features>
