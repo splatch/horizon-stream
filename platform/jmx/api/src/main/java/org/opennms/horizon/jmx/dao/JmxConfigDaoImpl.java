@@ -30,10 +30,15 @@ package org.opennms.horizon.jmx.dao;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
+
+import org.opennms.horizon.config.service.api.ConfigConstants;
+import org.opennms.horizon.config.service.api.ConfigService;
 import org.opennms.horizon.jmx.config.JmxConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -41,10 +46,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Christian Pape <Christian.Pape@informatik.hs-fulda.de>
  */
-public class JmxConfigDaoJaxb implements JmxConfigDao {
-    private static final Logger LOG = LoggerFactory.getLogger(JmxConfigDaoJaxb.class);
+public class JmxConfigDaoImpl implements JmxConfigDao {
+    private static final Logger LOG = LoggerFactory.getLogger(JmxConfigDaoImpl.class);
+    ObjectMapper mapper = new ObjectMapper();
+    private final ConfigService configService;
 
-    private JmxConfig config;
+    public JmxConfigDaoImpl(ConfigService configService) {
+        this.configService = configService;
+    }
+
+    public void initConfig() {
+        Optional<String> jmxConfOp = configService.getConfig(ConfigConstants.JMX_CONFIG);
+        if (jmxConfOp.isEmpty()) {
+            try {
+                URL url = this.getClass().getClassLoader().getResource("jmx-config.json");
+                JmxConfig config = mapper.readValue(url, JmxConfig.class);
+                configService.addConfig(ConfigConstants.JMX_CONFIG, mapper.writeValueAsString(config));
+            } catch (IOException e) {
+                LOG.error("Failed to initial JMX config from jmx-config.json file", e);
+            }
+        }
+    }
+
     /**
      * Returns the loaded config object.
      *
@@ -52,14 +75,18 @@ public class JmxConfigDaoJaxb implements JmxConfigDao {
      */
     @Override
     public JmxConfig getConfig() {
-        URL url = this.getClass().getClassLoader().getResource("jmx-config.json");
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            config = mapper.readValue(url, JmxConfig.class);
-        } catch (IOException ex) {
-            LOG.error("Failed to load JmxConfig from jmx-config.json file", ex);
+        Optional<String> jmxConfOp = configService.getConfig(ConfigConstants.JMX_CONFIG);
+        if (!jmxConfOp.isEmpty()) {
+            try {
+                return mapper.readValue(jmxConfOp.get(), JmxConfig.class);
+            } catch (JsonProcessingException e) {
+                LOG.error("failed to map the config string {} to JmxConfig", jmxConfOp.get(), e);
+                throw new RuntimeException(e);
+            }
+        } else {
+            LOG.error("The JMX config has not been initialized");
+            return null;
         }
-        return config;
     }
 
     //TODO: might be safe to remove this method
