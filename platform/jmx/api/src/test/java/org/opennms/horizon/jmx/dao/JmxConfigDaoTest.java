@@ -28,19 +28,59 @@
 
 package org.opennms.horizon.jmx.dao;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.ArrayList;
+import java.util.Optional;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.horizon.config.service.api.ConfigConstants;
+import org.opennms.horizon.config.service.api.ConfigService;
 import org.opennms.horizon.jmx.config.JmxConfig;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.opennms.horizon.jmx.config.MBeanServer;
 
 public class JmxConfigDaoTest {
-    private JmxConfigDaoJaxb configDao = new JmxConfigDaoJaxb();
-
+    private ConfigService mockService;
+    private JmxConfigDaoImpl configDao;
+    private String configStr = "{\"mbeanServer\":[{\"ipAddress\":\"127.0.0.10\", \"port\":18980, \"parameters\":[{\"key\":\"protocol\",\"value\":\"rmi\"}]}]}";
+    @Before
+    public void setUp() {
+        mockService = mock(ConfigService.class);
+        configDao = new JmxConfigDaoImpl(mockService);
+    }
     @Test
-    public void testLoadConfigFromFile() throws JsonProcessingException {
+    public void testLoadConfigFromFile() {
+        doReturn(Optional.empty()).when(mockService).getConfig(ConfigConstants.JMX_CONFIG);
         JmxConfig config = configDao.getConfig();
         assertNotNull(config);
+        verify(mockService).getConfig(ConfigConstants.JMX_CONFIG);
+        verify(mockService).addConfig(eq(ConfigConstants.JMX_CONFIG), anyString());
+        verifyNoMoreInteractions(mockService);
     }
+
+    @Test
+    public void testInitConfigFromService() {
+        doReturn(Optional.of(configStr)).when(mockService).getConfig(ConfigConstants.JMX_CONFIG);
+        JmxConfig config = configDao.getConfig();
+        assertNotNull(config);
+        assertEquals(1, config.getMBeanServer().size());
+        MBeanServer mBeanServer = new ArrayList<MBeanServer>(config.getMBeanServer()).get(0);
+        assertEquals("127.0.0.10", mBeanServer.getIpAddress());
+        assertEquals(18980, mBeanServer.getPort());
+        assertEquals(1, mBeanServer.getParameters().size());
+        assertEquals("protocol", mBeanServer.getParameters().get(0).getKey());
+        assertEquals("rmi", mBeanServer.getParameters().get(0).getValue());
+        verify(mockService).getConfig(ConfigConstants.JMX_CONFIG);
+        verifyNoMoreInteractions(mockService);
+    }
+
+
 }
