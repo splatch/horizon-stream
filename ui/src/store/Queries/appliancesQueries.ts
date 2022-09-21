@@ -5,7 +5,7 @@ import { ExtendedMinionDTO } from '@/types/minion'
 import { ExtendedDeviceDTO } from '@/types/device'
 import { Ref } from 'vue'
 
-export const useApplianceQueries = defineStore('applianceQueries', {
+export const useAppliancesQueries = defineStore('appliancesQueries', {
   state: () => {
     const tableDevices = ref()
     const tableMinions = ref()

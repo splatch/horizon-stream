@@ -1,5 +1,5 @@
 import { createTestingPinia } from '@pinia/testing'
-import { useApplianceQueries } from '@/store/Queries/applianceQueries'
+import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
 import { minionFixture } from '../../fixture/minions'
 import { deviceFixture } from '../../fixture/devices'
 import { minionLatencyFixture, minionUptimeFixture, deviceLatencyFixture, deviceUptimeFixture } from '../../fixture/metrics'
@@ -58,7 +58,7 @@ describe('Appliances queries', () =>{
       }
     ]
 
-    const appliancesQueries = useApplianceQueries()
+    const appliancesQueries = useAppliancesQueries()
     expect(appliancesQueries.tableMinions).toStrictEqual(expectedAppliancesMinions)
     expect(appliancesQueries.tableDevices).toStrictEqual(expectedAppliancesDevices)
     expect(appliancesQueries.locations).toStrictEqual(expectedLocations)
