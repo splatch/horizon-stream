@@ -52,9 +52,6 @@ public class PagerDutyAPIImplTest {
     RestTemplate restTemplate;
 
     @Mock
-    ObjectMapper mapper;
-
-    @Mock
     PagerDutyDao pagerDutyDao;
 
     @Test

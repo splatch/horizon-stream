@@ -44,7 +44,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -65,9 +64,6 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
 
     @Autowired
     RestTemplate restTemplate;
-
-    @Autowired
-    ObjectMapper mapper;
 
     @Value("${horizon.pagerduty.client}")
     String client;
@@ -152,35 +148,34 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
         event.setClientUrl(clientURL);
 
         payload.setCustomDetails(new HashMap<>());
-        String customDetailsAlarmName = "alarm";
 
         EventDTO lastEvent = alarm.getLastEvent();
 
         if (lastEvent != null) {
             Map<String, Object> customDetails = eparmsToMap(lastEvent.getParameters());
             payload.getCustomDetails().putAll(customDetails);
-
-            customDetailsAlarmName = getCustomDetailsAlarmName(customDetailsAlarmName, customDetails);
         }
 
+        // If the event parameters contains a field called 'alarm', then we cannot
+        // add the actual alarm into the map under the same key.
+        String customDetailsAlarmName = getUniqueAlarmNameForCustomDetails("alarm", payload.getCustomDetails());
+
+        ObjectMapper mapper = new ObjectMapper();
         JsonNode alarmJson = mapper.convertValue(alarm, JsonNode.class);
         payload.getCustomDetails().put(customDetailsAlarmName, alarmJson);
 
         event.setPayload(payload);
 
-        String bodyJson = objectMapper.writeValueAsString(event);
-        return bodyJson;
+        return objectMapper.writeValueAsString(event);
     }
 
-    private String getCustomDetailsAlarmName(String customDetailsAlarmName, Map<String, Object> customDetails) {
+    private String getUniqueAlarmNameForCustomDetails(String customDetailsAlarmName, Map<String, Object> customDetails) {
         int suffix = 0;
         boolean loop = true;
-        if (customDetails == null) {
-            loop = false;
-        }
 
+        // Need to loop here in case 'alarm_1', 'alarm_2' etc is somehow in custom details as well.
         while (loop) {
-            if (customDetails.get(customDetailsAlarmName) != null) {
+            if (customDetails.containsKey(customDetailsAlarmName)) {
                 customDetailsAlarmName = "alarm_" + ++suffix;
             } else {
                 loop = false;
