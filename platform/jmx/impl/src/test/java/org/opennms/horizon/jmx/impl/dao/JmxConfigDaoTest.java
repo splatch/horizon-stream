@@ -26,10 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.jmx.dao;
+package org.opennms.horizon.jmx.impl.dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -56,18 +57,19 @@ public class JmxConfigDaoTest {
         mockService = mock(ConfigService.class);
         configDao = new JmxConfigDaoImpl(mockService);
     }
+
     @Test
-    public void testLoadConfigFromFile() {
+    public void testInitConfig() {
         doReturn(Optional.empty()).when(mockService).getConfig(ConfigConstants.JMX_CONFIG);
-        JmxConfig config = configDao.getConfig();
-        assertNotNull(config);
+        configDao.initConfig();
         verify(mockService).getConfig(ConfigConstants.JMX_CONFIG);
-        verify(mockService).addConfig(eq(ConfigConstants.JMX_CONFIG), anyString());
+        verify(mockService).addConfig(eq(ConfigConstants.JMX_CONFIG), anyString(), eq(JmxConfigDaoImpl.JMX_CONFIG_EVENT));
         verifyNoMoreInteractions(mockService);
     }
 
+
     @Test
-    public void testInitConfigFromService() {
+    public void testGetConfig() {
         doReturn(Optional.of(configStr)).when(mockService).getConfig(ConfigConstants.JMX_CONFIG);
         JmxConfig config = configDao.getConfig();
         assertNotNull(config);
@@ -82,5 +84,12 @@ public class JmxConfigDaoTest {
         verifyNoMoreInteractions(mockService);
     }
 
-
+    @Test
+    public void testGetConfigNotFound() {
+        doReturn(Optional.empty()).when(mockService).getConfig(ConfigConstants.JMX_CONFIG);
+        JmxConfig config = configDao.getConfig();
+        assertNull(config);
+        verify(mockService).getConfig(ConfigConstants.JMX_CONFIG);
+        verifyNoMoreInteractions(mockService);
+    }
 }

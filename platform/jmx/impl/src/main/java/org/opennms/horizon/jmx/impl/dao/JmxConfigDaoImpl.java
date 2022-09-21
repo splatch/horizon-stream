@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.horizon.jmx.dao;
+package org.opennms.horizon.jmx.impl.dao;
 
 
 import java.io.IOException;
@@ -35,6 +35,7 @@ import java.util.Optional;
 import org.opennms.horizon.config.service.api.ConfigConstants;
 import org.opennms.horizon.config.service.api.ConfigService;
 import org.opennms.horizon.jmx.config.JmxConfig;
+import org.opennms.horizon.jmx.dao.JmxConfigDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JmxConfigDaoImpl implements JmxConfigDao {
     private static final Logger LOG = LoggerFactory.getLogger(JmxConfigDaoImpl.class);
+    protected static final String JMX_CONFIG_EVENT = "jmx-config-init";
     ObjectMapper mapper = new ObjectMapper();
     private final ConfigService configService;
 
@@ -61,7 +63,7 @@ public class JmxConfigDaoImpl implements JmxConfigDao {
             try {
                 URL url = this.getClass().getClassLoader().getResource("jmx-config.json");
                 JmxConfig config = mapper.readValue(url, JmxConfig.class);
-                configService.addConfig(ConfigConstants.JMX_CONFIG, mapper.writeValueAsString(config));
+                configService.addConfig(ConfigConstants.JMX_CONFIG, mapper.writeValueAsString(config), JMX_CONFIG_EVENT);
             } catch (IOException e) {
                 LOG.error("Failed to initial JMX config from jmx-config.json file", e);
             }
