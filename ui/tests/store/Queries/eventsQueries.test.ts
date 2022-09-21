@@ -1,7 +1,7 @@
 import { createTestingPinia } from '@pinia/testing'
 import { useNodeStatusQueries } from '@/store/Queries/nodeStatusQueries'
 import { eventsFixture } from '../../fixture/events'
-import { devicesFixture } from '../../fixture/devices'
+import { deviceFixture } from '../../fixture/devices'
 import { deviceLatencyFixture, deviceUptimeFixture } from '../../fixture/metrics'
 
 describe('Events queries', () => {
@@ -19,7 +19,7 @@ describe('Events queries', () => {
         data: { 
           value: { 
             listEvents: eventsFixture(),
-            listDevices: devicesFixture(),
+            device: deviceFixture(),
             deviceLatency: deviceLatencyFixture(),
             deviceUptime: deviceUptimeFixture()
           }}
@@ -27,12 +27,14 @@ describe('Events queries', () => {
     }))
     
     const nodeStatusQueries = useNodeStatusQueries()
-    const expectedFetchedEvents = {
-      ...eventsFixture(),
-      ...devicesFixture(),
+    nodeStatusQueries.setNodeId(2)
+
+    const expectedFetchedData = {
+      listEvents: eventsFixture(),
+      device: deviceFixture(),
       deviceLatency: (deviceLatencyFixture()).data?.result,
       deviceUptime: (deviceUptimeFixture()).data?.result
     }
-    expect(nodeStatusQueries.fetchedEvents).toStrictEqual(expectedFetchedEvents)
+    expect(nodeStatusQueries.fetchedData).toStrictEqual(expectedFetchedData)
   })
 })

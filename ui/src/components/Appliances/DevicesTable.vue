@@ -35,7 +35,7 @@
     </div>
     <div class="data-table">
       <TransitionGroup name="data-table" tag="div">
-        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" @click="gotoNode(device.id as number)" data-test="device-item">
+        <div class="card pointer" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" @click="gotoNode(device.id as number)" data-test="device-item">
           <div class="name" data-test="col-device">
               <div class="name-cell">
                 <FeatherIcon :icon="Instances" class="icon"/>

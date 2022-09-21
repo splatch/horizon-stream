@@ -1,6 +1,6 @@
 import { createTestingPinia } from '@pinia/testing'
 import { useMapQueries } from '@/store/Queries/mapQueries'
-import { devicesFixture } from '../../fixture/devices'
+import { deviceFixture } from '../../fixture/devices'
 import { DeviceDto } from '@/types/graphql'
 
 const mockMapDevice: DeviceDto = {
@@ -33,7 +33,7 @@ describe('Map queries', () =>{
         data: {
           value: {
             listDevices: {
-              devices: devicesFixture(mockMapDevice)
+              devices: deviceFixture(mockMapDevice)
             }
           }
         }
@@ -41,6 +41,6 @@ describe('Map queries', () =>{
     }))
 
     const mapQueries = useMapQueries()
-    expect(mapQueries.devices).toStrictEqual(devicesFixture(mockMapDevice))
+    expect(mapQueries.devices).toStrictEqual(deviceFixture(mockMapDevice))
   })
 })

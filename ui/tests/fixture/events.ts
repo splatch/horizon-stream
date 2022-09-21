@@ -1,17 +1,21 @@
 import { EventDto, EventCollectionDto } from '@/types/graphql'
 
-const mockEvent: EventDto = {
+const mockData: EventDto = {
   'id': 2,
-  'label': 'OpenNMS-defined node event: nodeAdded',
-  'nodeId': 1,
-  'nodeLabel': 'France',
   'severity': 'WARNING',
-  'time': '2022-09-07T17:52:51Z'
+  'time': '2022-09-20T09:25:44Z',
+  'source': 'Device-Rest-Service',
+  'nodeLabel': 'Unknown',
+  'location': 'Default',
+  'ipAddress': '',
+  'nodeId': 1
 }
 const eventsFixture = (props: Partial<EventDto> = {}): EventCollectionDto => ({
   events: [
-    { ...mockEvent, ...props }
-  ]
+    { ...mockData, ...props }
+  ],
+  offset: 0,
+  totalCount: 1
 })
 
 export {

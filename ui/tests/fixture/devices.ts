@@ -1,17 +1,10 @@
-import { DeviceDto, DeviceCollectionDto } from '@/types/graphql'
+import { DeviceDto } from '@/types/graphql'
 
-const mockDevice: DeviceDto = {
+const mockData: DeviceDto | undefined = {
   'id': 1,
   'label': 'France',
   'createTime': '2022-09-07T17:52:51Z',
   'managementIp': '127.0.0.1'
 }
-const devicesFixture = (props: Partial<DeviceDto> = {}): DeviceCollectionDto => ({
-  devices: [
-    { ...mockDevice, ...props }
-  ]
-})
 
-export {
-  devicesFixture
-}
+export const deviceFixture = (mockDevice = mockData, props: Partial<DeviceDto> = {}): DeviceDto => ({ ...mockDevice, ...props })

@@ -2,11 +2,15 @@ import { defineStore } from 'pinia'
 import { useNodeStatusQueries } from '@/store/Queries/nodeStatusQueries'
 
 export const useNodeStore = defineStore('nodeStore', () => {
-  const eventsQueries = useNodeStatusQueries()
-
-  const fetchedEvents = computed(() => eventsQueries.fetchedEvents)
+  const nodeStatusQueries = useNodeStatusQueries()
+  const fetchedData = computed(() => nodeStatusQueries.fetchedData)
+  
+  const setNodeId = (id: number) => {
+    nodeStatusQueries.setNodeId(id)
+  }
 
   return {
-    fetchedEvents
+    fetchedData,
+    setNodeId
   }
 })

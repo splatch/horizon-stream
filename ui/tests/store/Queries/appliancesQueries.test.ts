@@ -1,7 +1,7 @@
 import { createTestingPinia } from '@pinia/testing'
 import { useApplianceQueries } from '@/store/Queries/applianceQueries'
-import { minionsFixture, expectedAppliancesMinions } from '../../fixture/minions'
-import { devicesFixture } from '../../fixture/devices'
+import { minionFixture } from '../../fixture/minions'
+import { deviceFixture } from '../../fixture/devices'
 import { minionLatencyFixture, minionUptimeFixture, deviceLatencyFixture, deviceUptimeFixture } from '../../fixture/metrics'
 import { locationsFixture, expectedLocations } from '../../fixture/locations'
 
@@ -19,10 +19,14 @@ describe('Appliances queries', () =>{
       useQuery: vi.fn().mockImplementation(() => ({
         data: {
           value: {
-            listMinions: minionsFixture(),    
+            listMinions: {
+              minions: [ minionFixture() ]
+            },
             minionLatency: minionLatencyFixture(),
             minionUptime: minionUptimeFixture(),
-            listDevices: devicesFixture(),
+            listDevices: {
+              devices: [ deviceFixture() ]
+            },
             deviceLatency: deviceLatencyFixture(),
             deviceUptime: deviceUptimeFixture(),
             listLocations: locationsFixture()
@@ -30,6 +34,17 @@ describe('Appliances queries', () =>{
         } 
       }))
     }))
+    
+    const expectedAppliancesMinions = [
+      {
+        id: 'minion-01',
+        status: 'UP',
+        location: 'Default',
+        lastUpdated: '2022-09-09T12:17:09.497Z',
+        icmp_latency: 2,
+        snmp_uptime: 97419
+      }
+    ]
 
     const expectedAppliancesDevices = [
       {
@@ -41,11 +56,11 @@ describe('Appliances queries', () =>{
         snmp_uptime: undefined,
         status: 'DOWN'
       }
-    ]    
+    ]
 
     const appliancesQueries = useApplianceQueries()
-    expect(appliancesQueries.tableDevices).toStrictEqual(expectedAppliancesDevices)
     expect(appliancesQueries.tableMinions).toStrictEqual(expectedAppliancesMinions)
+    expect(appliancesQueries.tableDevices).toStrictEqual(expectedAppliancesDevices)
     expect(appliancesQueries.locations).toStrictEqual(expectedLocations)
   })
 })
