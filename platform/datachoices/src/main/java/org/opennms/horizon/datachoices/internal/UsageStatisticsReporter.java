@@ -35,14 +35,20 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.horizon.datachoices.dto.UsageStatisticsReportDTO;
 import org.opennms.horizon.datachoices.internal.StateManager.StateChangeHandler;
+import org.opennms.horizon.db.dao.api.MonitoredServiceDao;
 import org.opennms.horizon.db.dao.api.NodeDao;
+import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsDataChoices;
+import org.opennms.horizon.db.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -55,7 +61,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private StateManager stateManager;
 
+    private SessionUtils sessionUtils;
+
     private NodeDao nodeDao;
+
+    private MonitoredServiceDao monitoredServiceDao;
 
     private String url;
 
@@ -104,9 +114,37 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatsReport.setSystemId(dataChoices.getSystemId());
         usageStatsReport.setVersion(getVersion());
 
-        usageStatsReport.setNodes(nodeDao.countAll());
+        sessionUtils.withReadOnlyTransaction(() -> setUsageStatsReport(usageStatsReport));
 
         return usageStatsReport;
+    }
+
+    private void setUsageStatsReport(UsageStatisticsReportDTO usageStatsReport) {
+        usageStatsReport.setNodes(nodeDao.countAll());
+        usageStatsReport.setMonitoredServices(monitoredServiceDao.countAll());
+        usageStatsReport.setDeviceTypeCounts(getDeviceTypeCounts());
+    }
+
+    /*
+     * Counting the number of occurrences of a string.
+     *
+     * Currently this takes the node label as the DeviceType as this field is currently not available.
+     * TODO: Update to a DeviceType (ie. router, server, storage) when available
+     */
+    private Map<String, Integer> getDeviceTypeCounts() {
+        Map<String, Integer> deviceTypeCounts = new HashMap<>();
+
+        for (OnmsNode node : nodeDao.findAll()) {
+            String deviceType = node.getLabel();
+            if (deviceTypeCounts.containsKey(deviceType)) {
+                int currentCount = deviceTypeCounts.get(deviceType);
+                deviceTypeCounts.put(deviceType, ++currentCount);
+            } else {
+                deviceTypeCounts.put(deviceType, 1);
+            }
+        }
+
+        return deviceTypeCounts;
     }
 
     private String getVersion() {
@@ -136,8 +174,16 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         this.stateManager = stateManager;
     }
 
+    public void setSessionUtils(SessionUtils sessionUtils) {
+        this.sessionUtils = sessionUtils;
+    }
+
     public void setNodeDao(NodeDao nodeDao) {
         this.nodeDao = nodeDao;
+    }
+
+    public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
+        this.monitoredServiceDao = monitoredServiceDao;
     }
 
     private class DataChoicesTimerTask extends TimerTask {
