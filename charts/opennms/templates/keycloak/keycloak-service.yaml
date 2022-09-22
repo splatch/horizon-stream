@@ -19,7 +19,11 @@ spec:
       name: https
       protocol: TCP
       targetPort: {{ .Values.Keycloak.HttpsPort }}
+    - port: 7800
+      name: discovery
+      protocol: TCP
+      targetPort: 7800
   selector:
-    app: keycloak
+    app: {{ .Values.Keycloak.ServiceName }}
   sessionAffinity: None
   type: ClusterIP

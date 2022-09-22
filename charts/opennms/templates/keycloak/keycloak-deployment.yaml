@@ -28,8 +28,12 @@ spec:
               memory: "{{ .Values.Keycloak.Resources.Requests.Memory }}"
           args: ['start', '--optimized', '--import-realm']
           env:
+            - name: KC_CACHE_STACK
+              value: kubernetes
             - name: KC_HEALTH_ENABLED
               value: "true"
+            - name: KC_CACHE
+              value: ispn
             - name: KC_HOSTNAME
               value: "{{ .Values.Host }}"
             - name: KC_DB
@@ -66,6 +70,8 @@ spec:
               value: "{{ .Values.Keycloak.Path }}"
             - name: KC_PROXY
               value: passthrough
+            - name: jgroups.dns.query
+              value: "{{ .Values.Keycloak.ServiceName }}.{{ .Values.Namespace }}"
             - name: KC_HTTPS_CERTIFICATE_FILE
               value: /mnt/certificates/tls.crt
             - name: KC_HTTPS_CERTIFICATE_KEY_FILE
@@ -80,24 +86,34 @@ spec:
               name: keycloak-tls-certificates
             - mountPath: /opt/keycloak/data/import
               name: realm-config
-          # livenessProbe: TODO fix
-          #   exec:
-          #     command:
-          #     - curl
-          #     - --head
-          #     - --fail
-          #     - --silent
-          #     - --insecure
-          #     - https://127.0.0.1:{{ .Values.Keycloak.HttpsPort }}{{ .Values.Keycloak.Path }}/health/live
-          # readinessProbe:
-          #   exec:
-          #     command:
-          #     - curl
-          #     - --head
-          #     - --fail
-          #     - --silent
-          #     - --insecure
-          #     - https://127.0.0.1:{{ .Values.Keycloak.HttpsPort }}{{ .Values.Keycloak.Path }}/health/ready
+          livenessProbe:
+            exec:
+              command:
+              - curl
+              - --head
+              - --fail
+              - --silent
+              - --insecure
+              - https://127.0.0.1:{{ .Values.Keycloak.HttpsPort }}{{ .Values.Keycloak.Path }}/health/live
+            failureThreshold: 150
+            initialDelaySeconds: 20
+            periodSeconds: 2
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            exec:
+              command:
+              - curl
+              - --head
+              - --fail
+              - --silent
+              - --insecure
+              - https://127.0.0.1:{{ .Values.Keycloak.HttpsPort }}{{ .Values.Keycloak.Path }}/health/ready
+            failureThreshold: 250
+            initialDelaySeconds: 20
+            periodSeconds: 2
+            successThreshold: 1
+            timeoutSeconds: 1
       volumes:
         - name: keycloak-tls-certificates
           secret:
