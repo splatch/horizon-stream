@@ -5,6 +5,11 @@ metadata:
   namespace: {{ .Values.Namespace }}
 spec:
   ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: {{ .Values.OpenNMS.UI.ServiceName }}
+      port:
+        number: {{ .Values.OpenNMS.UI.Port }}
   rules:
     - host: {{ .Values.Host }}
       http:

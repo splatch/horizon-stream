@@ -169,3 +169,7 @@ MailServer:
     Requests:
       Cpu: 100m
       Memory: 100Mi
+Ingress:
+  NginxController:
+    HttpPort: 80
+    HttpsPort: 443
