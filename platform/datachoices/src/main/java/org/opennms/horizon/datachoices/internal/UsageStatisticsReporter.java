@@ -35,6 +35,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.horizon.datachoices.dto.UsageStatisticsReportDTO;
 import org.opennms.horizon.datachoices.internal.StateManager.StateChangeHandler;
+import org.opennms.horizon.db.dao.api.NodeDao;
 import org.opennms.horizon.db.model.OnmsDataChoices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private static final String USAGE_REPORT = "hs-usage-report";
 
     private StateManager stateManager;
+
+    private NodeDao nodeDao;
 
     private String url;
 
@@ -101,6 +104,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatsReport.setSystemId(dataChoices.getSystemId());
         usageStatsReport.setVersion(getVersion());
 
+        usageStatsReport.setNodes(nodeDao.countAll());
+
         return usageStatsReport;
     }
 
@@ -129,6 +134,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setStateManager(StateManager stateManager) {
         this.stateManager = stateManager;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
     }
 
     private class DataChoicesTimerTask extends TimerTask {

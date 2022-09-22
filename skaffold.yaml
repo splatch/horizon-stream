@@ -102,7 +102,7 @@ portForward:
   - resourceType: deployment
     resourceName: my-postgres
     port: 5432 # Postgres
-    localPort: 5432
+    localPort: 15432
   - resourceType: deployment
     resourceName: prometheus
     port: 9090 # prometheus tcp

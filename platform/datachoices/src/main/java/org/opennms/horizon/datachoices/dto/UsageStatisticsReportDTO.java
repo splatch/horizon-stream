@@ -42,6 +42,8 @@ public class UsageStatisticsReportDTO {
 
     private String version;
 
+    private long nodes;
+
     public String getSystemId() {
         return this.systemId;
     }
@@ -56,6 +58,14 @@ public class UsageStatisticsReportDTO {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public long getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(long nodes) {
+        this.nodes = nodes;
     }
 
     public String toJson() {

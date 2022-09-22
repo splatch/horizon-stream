@@ -11,13 +11,15 @@
     <cm:property-placeholder persistent-id="org.opennms.horizon.datachoices">
         <cm:default-properties>
 <!--            Note: to test this with a local version of UsageStatsHandler, use the IP of your machine to connect to it outside the l8s cluster -->
-            <cm:property name="url" value="http://stats.opennms.com/"/>
-            <cm:property name="interval" value="86400000"/> <!-- 24 hours -->
+            <cm:property name="url" value="http://192.168.1.90:3542/"/>
+<!--            <cm:property name="interval" value="86400000"/> &lt;!&ndash; 24 hours &ndash;&gt;-->
+            <cm:property name="interval" value="30000"/> <!-- 24 hours -->
         </cm:default-properties>
     </cm:property-placeholder>
 
     <reference id="dataChoicesDao" interface="org.opennms.horizon.db.dao.api.DataChoicesDao"/>
     <reference id="sessionUtils" interface="org.opennms.horizon.db.dao.api.SessionUtils"/>
+    <reference id="nodeDao" interface="org.opennms.horizon.db.dao.api.NodeDao" />
 
     <bean id="stateManager" class="org.opennms.horizon.datachoices.internal.StateManager">
         <property name="dataChoicesDao" ref="dataChoicesDao"/>
@@ -29,6 +31,7 @@
         <property name="url" value="${url}"/>
         <property name="interval" value="${interval}"/>
         <property name="stateManager" ref="stateManager"/>
+        <property name="nodeDao" ref="nodeDao"/>
     </bean>
 
     <bean id="dataChoiceRestService" class="org.opennms.horizon.datachoices.web.internal.DataChoiceRestServiceImpl">
