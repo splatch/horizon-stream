@@ -156,10 +156,8 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
             payload.getCustomDetails().putAll(customDetails);
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-
         // If the event parameters contains a field called 'alarm', then the alarm itself overwrites that (by design).
-        JsonNode alarmJson = mapper.convertValue(alarm, JsonNode.class);
+        JsonNode alarmJson = objectMapper.convertValue(alarm, JsonNode.class);
         payload.getCustomDetails().put("alarm", alarmJson);
 
         event.setPayload(payload);
