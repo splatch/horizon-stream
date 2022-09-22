@@ -14,7 +14,7 @@ describe('DevicesTable.vue', () => {
           status: 'UP'
         }
       ]
-      setAppliancesStore(computed(() => deviceItems)) 
+      setAppliancesStore({devices: computed(() => deviceItems)})
     })
 
     const requiredColumns = [
@@ -34,7 +34,7 @@ describe('DevicesTable.vue', () => {
 
   describe('Device list', () => {
     it('should have an empty table when there\'s no device', () =>{
-      setAppliancesStore(computed(() => [])) 
+      setAppliancesStore({devices: computed(() => [])})
       const wrapper = mount(DevicesTable)
          
       const deviceItem = wrapper.find('[data-test="device-item"]')
@@ -51,7 +51,7 @@ describe('DevicesTable.vue', () => {
           status: 'DOWN'
         }
       ]
-      setAppliancesStore(computed(() => deviceItems)) 
+      setAppliancesStore({devices: computed(() => deviceItems)}) 
       const wrapper = mount(DevicesTable)
 
       const deviceItem = wrapper.find('[data-test="device-item"]')
@@ -99,7 +99,7 @@ describe('DevicesTable.vue', () => {
             status: 'UP'
           }
         ] 
-        setAppliancesStore(computed(() => deviceItems)) 
+        setAppliancesStore({devices: computed(() => deviceItems)}) 
       })
   
       const formatValueBackground = (elems: any[]) => elems.map((elem: any) => {
@@ -154,7 +154,7 @@ describe('DevicesTable.vue', () => {
             status: 'DOWN'
           }
         ] 
-        setAppliancesStore(computed(() => deviceItems)) 
+        setAppliancesStore({devices: computed(() => deviceItems)}) 
       })
 
       /**

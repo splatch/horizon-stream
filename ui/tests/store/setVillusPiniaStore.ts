@@ -13,7 +13,8 @@ const setActive = (state: any) => {
   }))
 }
 
-const setAppliancesStore = (tableMinions?: ComputedRef<any[]>, tableDevices?: ComputedRef<any[]>) => {
+const setAppliancesStore = (minionsDevices: any) => {
+  const { minions: tableMinions, devices: tableDevices } = minionsDevices
   const state = {
     appliancesQueries: { 
       tableMinions,

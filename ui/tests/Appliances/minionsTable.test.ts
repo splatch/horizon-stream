@@ -25,7 +25,7 @@ describe('MinionsTable.vue', () => {
           location: 'default'
         }
       ] 
-      setAppliancesStore(undefined, computed(() => minionsItems))
+      setAppliancesStore({minions: computed(() => minionsItems)})
     })
 
     const requiredColumns = [
@@ -46,7 +46,7 @@ describe('MinionsTable.vue', () => {
     
   describe('Minions list', () => {
     it('should have an empty table when there\'s no minion', () =>{
-      setAppliancesStore(undefined, computed(() => []))
+      setAppliancesStore({minions: computed(() => [])})
       const wrapper = mount(MinionsTable)
         
       const minionItem = wrapper.find('[data-test="minion-item"]')
@@ -74,7 +74,7 @@ describe('MinionsTable.vue', () => {
           location: 'default'
         }
       ] 
-      setAppliancesStore(undefined, computed(() => minionsItems))
+      setAppliancesStore({minions: computed(() => minionsItems)})
       const wrapper = mount(MinionsTable)
       
       const minionItem = wrapper.find('[data-test="minion-item"]')
@@ -114,7 +114,7 @@ describe('MinionsTable.vue', () => {
             location: 'default'
           }
         ] 
-        setAppliancesStore(undefined, computed(() => minionsItems))
+        setAppliancesStore({minions: computed(() => minionsItems)})
       })
   
       /**
@@ -177,7 +177,7 @@ describe('MinionsTable.vue', () => {
             location: 'default'
           }
         ] 
-        setAppliancesStore(undefined, computed(() => minionsItems)) 
+        setAppliancesStore({minions: computed(() => minionsItems)}) 
       })
   
       /**
