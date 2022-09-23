@@ -26,12 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.config.service.api;
+package org.opennms.horizon.collection;
 
-public class ConfigConstants {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-    public static final String CONFIG = "config";
-    public static final String CONFIG_NAMES = "config-names";
-    public static final String SNMP_TRAPS_CONFIG = "snmp-traps";
-    public static final String JMX_CONFIG = "jmx-config";
+public class Rrd {
+    private int step = 0;
+    private List<String> rraList = new ArrayList<>();
+
+    public void addRra(final String rra) {
+        rraList.add(rra);
+    }
+
+    public List<String> getRraCollection() {
+        return rraList;
+    }
+
+    public int getRraCount() {
+        return rraList.size();
+    }
+
+    public int getStep() {
+        return step;
+    }
+
+    public boolean hasStep() {
+        return step > 0;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
+    }
+
+    public void setRraList(List<String> rraList) {
+        this.rraList = rraList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Rrd rrd = (Rrd) o;
+        return step == rrd.step && Objects.equals(rraList, rrd.rraList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(step, rraList);
+    }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,13 +25,30 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.horizon.jmx.connection;
 
-package org.opennms.horizon.config.service.api;
+import java.io.IOException;
 
-public class ConfigConstants {
+/**
+ * Is used to indicate that a connection to a JMX Server (MBeanServer) could not be established.
+ * The reason may be that the server is not reachable, or credentials are invalid or
+ * there is no {@link org.opennms.horizon.jmx.connection.JmxServerConnector} registered
+ * for the {@link org.opennms.horizon.jmx.connection.JmxConnectors}.
+ * <p/>
+ * The exception's <code>errorMessage</code> should provide details about the concrete error.
+ */
+public class JmxServerConnectionException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-    public static final String CONFIG = "config";
-    public static final String CONFIG_NAMES = "config-names";
-    public static final String SNMP_TRAPS_CONFIG = "snmp-traps";
-    public static final String JMX_CONFIG = "jmx-config";
+    public JmxServerConnectionException(final String errorMessage) {
+        super(errorMessage);
+    }
+
+    public JmxServerConnectionException(final IOException ioException) {
+        super(ioException);
+    }
+
+    public JmxServerConnectionException(String errorMessage, Exception exception) {
+        super(errorMessage, exception);
+    }
 }

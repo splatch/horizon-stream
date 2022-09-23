@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,13 +25,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.horizon.jmx.connection;
 
-package org.opennms.horizon.config.service.api;
-
-public class ConfigConstants {
-
-    public static final String CONFIG = "config";
-    public static final String CONFIG_NAMES = "config-names";
-    public static final String SNMP_TRAPS_CONFIG = "snmp-traps";
-    public static final String JMX_CONFIG = "jmx-config";
+/**
+ * All available connectors.
+ */
+public enum JmxConnectors {
+    DEFAULT,
+    jsr160,
+    platform
 }

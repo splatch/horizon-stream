@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,13 +25,30 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.horizon.jmx.config;
 
-package org.opennms.horizon.config.service.api;
+public class Parameter {
+    private String key;
+    private String value;
 
-public class ConfigConstants {
+    public Parameter() {
+    }
 
-    public static final String CONFIG = "config";
-    public static final String CONFIG_NAMES = "config-names";
-    public static final String SNMP_TRAPS_CONFIG = "snmp-traps";
-    public static final String JMX_CONFIG = "jmx-config";
+    public Parameter(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public String getKey() {
+        return key;
+    }
+    public String getValue() {
+        return value;
+    }
+    public void setKey(String key) {
+        this.key = key;
+    }
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

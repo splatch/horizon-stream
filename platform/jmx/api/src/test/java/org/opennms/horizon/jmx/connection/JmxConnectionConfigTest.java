@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,12 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.config.service.api;
+package org.opennms.horizon.jmx.connection;
 
-public class ConfigConstants {
+import java.net.MalformedURLException;
 
-    public static final String CONFIG = "config";
-    public static final String CONFIG_NAMES = "config-names";
-    public static final String SNMP_TRAPS_CONFIG = "snmp-traps";
-    public static final String JMX_CONFIG = "jmx-config";
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.horizon.core.lib.InetAddressUtils;
+
+public class JmxConnectionConfigTest {
+
+    @Test
+    public void verifyIsLocalConnection() throws MalformedURLException {
+        JmxConnectionConfig config = new JmxConnectionConfigBuilder()
+                .withUrl("service:jmx:rmi://localhost:18980")
+                .withUsername("admin")
+                .withPassword("admin")
+                .build();
+        Assert.assertEquals(Boolean.TRUE, config.isLocalConnection());
+
+        // Try with substitution
+        config.setUrl("service:jmx:rmi://${ipaddr}:18980");
+        config.setIpAddress(InetAddressUtils.getInetAddress("localhost"));
+        Assert.assertEquals(Boolean.TRUE, config.isLocalConnection());
+    }
 }

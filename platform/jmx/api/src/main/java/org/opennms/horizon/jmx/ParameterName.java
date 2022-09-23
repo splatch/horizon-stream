@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,12 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.config.service.api;
+package org.opennms.horizon.jmx;
 
-public class ConfigConstants {
+/**
+ * Defines parameter names which should be available as
+ * parameters in service definition in collectd-configuratin.xml.
+ *
+ * */
+public enum ParameterName {
+    COLLECTION("collection"),
+    RETRY("retry"),
+    FRIENDLY_NAME("friendly-name"),
+    PORT("port"),
+    USE_MBEAN_NAME_FOR_RRDS("use-mbean-name-for-rrds");
 
-    public static final String CONFIG = "config";
-    public static final String CONFIG_NAMES = "config-names";
-    public static final String SNMP_TRAPS_CONFIG = "snmp-traps";
-    public static final String JMX_CONFIG = "jmx-config";
+    private final String m_value;
+
+    private ParameterName(String value) {
+        m_value = value;
+    }
+
+    @Override
+    public String toString() {
+        return m_value;
+    }
 }

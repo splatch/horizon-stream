@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,12 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.config.service.api;
+package org.opennms.horizon.jmx;
 
-public class ConfigConstants {
+import javax.management.ObjectName;
 
-    public static final String CONFIG = "config";
-    public static final String CONFIG_NAMES = "config-names";
-    public static final String SNMP_TRAPS_CONFIG = "snmp-traps";
-    public static final String JMX_CONFIG = "jmx-config";
+import org.opennms.horizon.jmx.samples.JmxAttributeSample;
+import org.opennms.horizon.jmx.samples.JmxCompositeSample;
+
+/**
+ * Processes collected JMX Samples.
+ */
+public interface JmxSampleProcessor {
+    /**
+     * Callback method for each collected MBean Attribute.
+     *
+     * @param attributeSample The collected sample.
+     */
+    void process(JmxAttributeSample attributeSample, ObjectName objectName);
+
+    /**
+     * Callback method for each collected Composite Member.
+     *
+     * @param compositeSample The collected sample.
+     */
+    void process(JmxCompositeSample compositeSample, ObjectName objectName);
 }

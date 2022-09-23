@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,13 +25,31 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.horizon.jmx.config;
 
-package org.opennms.horizon.config.service.api;
+import java.util.HashSet;
+import java.util.Set;
 
-public class ConfigConstants {
+public class JmxConfig {
+    private Set<MBeanServer> mBeanServer = new HashSet<>();
 
-    public static final String CONFIG = "config";
-    public static final String CONFIG_NAMES = "config-names";
-    public static final String SNMP_TRAPS_CONFIG = "snmp-traps";
-    public static final String JMX_CONFIG = "jmx-config";
+    public Set<MBeanServer> getMBeanServer() {
+        return mBeanServer;
+    }
+
+    public void setMBeanServer(Set<MBeanServer> mBeanServer) {
+        this.mBeanServer = mBeanServer;
+    }
+
+    public MBeanServer lookupMBeanServer(String ipAddress, int port) {
+        for (MBeanServer mBeanServer : getMBeanServer()) {
+            if (port == mBeanServer.getPort() && ipAddress.equals(mBeanServer.getIpAddress()))
+                return mBeanServer;
+        }
+        return null;
+    }
+
+    public MBeanServer lookupMBeanServer(String ipAddress, String port) {
+        return lookupMBeanServer(ipAddress, Integer.parseInt(port));
+    }
 }
