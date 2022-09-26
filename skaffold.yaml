@@ -83,10 +83,12 @@ build:
   - image: opennms/horizon-stream-keycloak-dev
     context: keycloak-ui
     sync:
-      infer:
-        - "themes/**"
+      manual: # Inferred file sync is limited for multi-stage builds, use manual sync.
+        - src: 'themes/**'
+          dest: .
     docker:
       dockerfile: Dockerfile
+      target: development
   - image: opennms/horizon-stream-grafana-dev
     context: grafana
     docker:
