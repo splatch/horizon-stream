@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.service;
+package org.opennms.horizon.server.service.gateway;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -43,19 +43,10 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Slf4j
-public class PlatformGateway {
-    public static final String URL_PATH_EVENTS = "/events";
-    public static final String URL_PATH_ALARMS = "/alarms";
-    public static final String URL_PATH_DEVICES = "/devices";
-    public static final String URL_PATH_LOCATIONS = "/locations";
-    public static final String URL_PATH_ALARMS_LIST = URL_PATH_ALARMS + "/list";
-    public static final String URL_PATH_ALARMS_ACK = URL_PATH_ALARMS + "/%d/ack";
-    public static final String URL_PATH_ALARMS_CLEAR = URL_PATH_ALARMS + "/%d/clear";
-    public static final String URL_PATH_MINIONS = "/minions";
-    public static final String URL_PATH_MINIONS_ID = "/minions/%s";
+public abstract class GatewayBase {
     private final WebClient webclient;
 
-    public PlatformGateway(String baseUrl) {
+    public GatewayBase(String baseUrl) {
         webclient = WebClient.builder()
             .baseUrl(baseUrl)
             .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
