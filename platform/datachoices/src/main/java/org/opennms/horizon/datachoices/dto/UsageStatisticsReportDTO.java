@@ -39,7 +39,6 @@ import java.util.Map;
 
 @XmlRootElement
 public class UsageStatisticsReportDTO {
-
     private String systemId;
 
     private String version;

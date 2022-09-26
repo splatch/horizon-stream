@@ -28,11 +28,6 @@
 
 package org.opennms.horizon.datachoices.internal;
 
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.horizon.datachoices.dto.UsageStatisticsReportDTO;
 import org.opennms.horizon.datachoices.internal.StateManager.StateChangeHandler;
 import org.opennms.horizon.db.dao.api.MonitoredServiceDao;
@@ -47,17 +42,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class UsageStatisticsReporter implements StateChangeHandler {
     private static final Logger LOG = LoggerFactory.getLogger(UsageStatisticsReporter.class);
     private static final String POM_PROPERTIES_FILE_NAME = "properties-from-pom.properties";
     private static final String DISPLAY_VERSION = "display.version";
-    private static final String USAGE_REPORT = "hs-usage-report";
 
     private StateManager stateManager;
 
@@ -104,7 +96,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     public synchronized void schedule() {
         LOG.info("Scheduling usage statistics report every {} ms", interval);
         timer = new Timer();
-        timer.schedule(new DataChoicesTimerTask(), 0, interval);
+
+        DataChoicesTimerTask timerTask = new DataChoicesTimerTask(this, url);
+        timer.schedule(timerTask, 0, interval);
     }
 
     public UsageStatisticsReportDTO generateReport() {
@@ -119,7 +113,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         return usageStatsReport;
     }
 
-    private void setUsageStatsReport(UsageStatisticsReportDTO usageStatsReport) {
+    protected void setUsageStatsReport(UsageStatisticsReportDTO usageStatsReport) {
         usageStatsReport.setNodes(nodeDao.countAll());
         usageStatsReport.setMonitoredServices(monitoredServiceDao.countAll());
         usageStatsReport.setDeviceTypeCounts(getDeviceTypeCounts());
@@ -184,28 +178,5 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
         this.monitoredServiceDao = monitoredServiceDao;
-    }
-
-    private class DataChoicesTimerTask extends TimerTask {
-
-        @Override
-        public void run() {
-            UsageStatisticsReportDTO usageStatsReport = generateReport();
-            String usageStatsReportJson = usageStatsReport.toJson();
-
-            try (HttpClientWrapper clientWrapper = HttpClientWrapper.create();
-                 CloseableHttpClient client = clientWrapper.getClient()) {
-
-                HttpPost httpRequest = new HttpPost(url + USAGE_REPORT);
-                httpRequest.setEntity(new StringEntity(usageStatsReportJson, ContentType.APPLICATION_JSON));
-
-                LOG.info("Sending usage statistics report to {}: {}", httpRequest.getURI(), usageStatsReportJson);
-                client.execute(httpRequest);
-                LOG.info("Successfully sent usage statistics report.");
-
-            } catch (IOException e) {
-                LOG.error("The usage statistics report was not successfully delivered", e);
-            }
-        }
     }
 }
