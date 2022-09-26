@@ -30,8 +30,6 @@ spec:
           env:
             - name: KC_CACHE_STACK
               value: kubernetes
-            - name: KC_HEALTH_ENABLED
-              value: "true"
             - name: KC_CACHE
               value: ispn
             - name: KC_HOSTNAME
@@ -54,7 +52,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: username
-                  name: onms-keycloak-initial-admin
+                  name: {{ .Values.Keycloak.ServiceName }}-initial-admin
             - name: KEYCLOAK_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
