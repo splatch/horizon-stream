@@ -13,9 +13,6 @@ data:
       "emailTheme": "horizon-stream",
       "rememberMe": true,
       "resetPasswordAllowed": true,
-      "attributes": {
-        "frontendUrl": "https://{{ .Values.Host }}{{ .Values.Keycloak.Path }}"
-      },
       "clients": [
         {
           "clientId": "horizon-stream",
