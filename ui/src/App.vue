@@ -6,11 +6,12 @@
     </template>
 
     <template v-slot:rail>
-      <NavigationRail :modelValue="store.navRailOpen" />
+      <NavigationRail />
+      <!-- <NavigationRail :modelValue="store.navRailOpen"/> -->
     </template>
-
+    
     <div class="content-and-widget">
-      <div class="main-content">
+      <div id="mainContent" class="main-content">
         <Spinner />
         <Snackbar />
         <router-view />
@@ -19,7 +20,6 @@
         <Widgetbar v-if="store.widgetBarOpen" />
       </transition>
     </div>
-
   </FeatherAppLayout>
 </template>
   
@@ -123,11 +123,17 @@ a {
 </style>
 
 <style scoped lang="scss">
-  .fade-enter-active {
-    transition: all 0.5s;
-  }
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-  }
+.fade-enter-active {
+  transition: all 0.5s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+:deep(.app-aside) {
+  border-right: 1px solid var(--feather-border-on-surface);
+}
+:deep(.feather-app-rail) {
+  border-right: 0 !important;
+}
 </style>

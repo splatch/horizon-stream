@@ -1,15 +1,5 @@
 <template>
   <FeatherAppBar :labels="{ skip: 'main' }" content="app" v-if="keycloak?.authenticated">
-    <template v-slot:left>
-      <FeatherAppBarLink 
-        class="app-bar" 
-        :icon="Logo" 
-        title="Home" 
-        type="home" 
-        url="/" 
-      />
-    </template>
-
     <template v-slot:right>
       <FeatherIcon
         :icon="LightDarkMode"
@@ -37,7 +27,6 @@
 import LightDarkMode from '@featherds/icon/action/LightDarkMode'
 import LogOut from '@featherds/icon/action/LogOut'
 import Dashboard from '@featherds/icon/action/Dashboard'
-import Logo from '@/assets/Logo.vue'
 import useKeycloak from '@/composables/useKeycloak'
 import useTheme from '@/composables/useTheme'
 import { logout } from '@/services/authService'
@@ -52,12 +41,6 @@ const { triggerWidgetBar } = useLayoutStore()
 @import "@featherds/styles/themes/open-mixins";
 body {
   background: var($background);
-
-  .app-bar {
-    .logo {
-      width: 8em !important;
-    }
-  }
 }
 .open-light {
   @include open-light;
