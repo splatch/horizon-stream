@@ -1,12 +1,24 @@
 package org.opennms.horizon.datachoices.internal;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opennms.horizon.datachoices.dto.UsageStatisticsReportDTO;
 
 import java.util.Collections;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
 public class DataChoicesTimerTaskTest {
     private static final String TEST_DEVICE_TYPE = "device";
     private static final int TEST_DEVICE_TYPE_COUNT = 1;
@@ -22,28 +34,27 @@ public class DataChoicesTimerTaskTest {
     @Mock
     private UsageStatisticsReporter reporter;
 
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.wireMockConfig().dynamicPort());
+
     @Before
     public void setup() {
-        timerTask = new DataChoicesTimerTask(reporter, "http://localhost:" + TEST_PORT);
+        String url = String.format("http://localhost:%d/", wireMockRule.port());
+        timerTask = new DataChoicesTimerTask(reporter, url);
     }
 
     @Test
     public void testRun() {
-
         UsageStatisticsReportDTO report = getReport();
         String json = report.toJson();
 
-        System.out.println("json = " + json);
+        when(reporter.generateReport()).thenReturn(report);
 
+        wireMockRule.stubFor(post(urlEqualTo("/hs-usage-report"))
+            .withRequestBody(equalToJson(json))
+            .willReturn(ok()));
 
-//        stubFor(WireMock.any(WireMock.urlPathEqualTo("/hs-usage-report"))
-//            .withRequestBody(WireMock.equalToJson(json))
-//            .willReturn(WireMock.ok()));
-
-//        UsageStatisticsReportDTO report = getReport();
-//        when(reporter.generateReport()).thenReturn(report);
-//
-//        timerTask.run();
+        timerTask.run();
     }
 
     private static UsageStatisticsReportDTO getReport() {
