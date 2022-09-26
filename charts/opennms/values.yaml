@@ -143,6 +143,19 @@ Prometheus:
       Requests:
         Cpu: 100m
         Memory: 100Mi
+Kafka:
+  ServiceName: onms-kafka
+  Image: quay.io/strimzi/kafka:latest-kafka-2.8.1-amd64
+  Replicas: 1 
+  Port: 9092
+  Resources:
+    Limits:
+      Cpu: 500m
+      Memory: 512Mi
+    Requests:
+      Cpu: 100m
+      Memory: 256Mi
+  VolumeSize: 10Gi
 MailServer:
   ServiceName: mail-server
   Image: mailhog/mailhog:latest
