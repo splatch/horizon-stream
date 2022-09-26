@@ -19,7 +19,5 @@ type KeycloakValues struct {
 	HttpsPort     string `yaml:"HttpsPort"`
 	AdminUsername string `yaml:"AdminUsername"`
 	AdminPassword string `yaml:"AdminPassword"`
-	//UserUsername  string `yaml:"UserUsername"`
-	//UserPassword  string `yaml:"UserPassword"`
-	RealmName string `yaml:"RealmName"`
+	RealmName     string `yaml:"RealmName"`
 }

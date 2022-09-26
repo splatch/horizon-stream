@@ -104,7 +104,6 @@ func TestCheckForExistingCoreCreds(t *testing.T) {
 	res, resbool := testRecon.CheckForExistingCoreCreds(ctx, testValues, "")
 	assert.True(t, resbool, "should return that there are existing creds")
 	assert.Equal(t, adminPwd, res.Values.Keycloak.AdminPassword, "should return the expected admin password values")
-	assert.Equal(t, userPwd, res.Values.Keycloak.UserPassword, "should return the expected admin password values")
 
 	adminPglPwd := "testpostgresadminpwd"
 	keycloakPwd := "testpostgreskeycloakpwd"
