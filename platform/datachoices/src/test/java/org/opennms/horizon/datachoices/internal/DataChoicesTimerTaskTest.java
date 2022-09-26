@@ -1,21 +1,24 @@
 package org.opennms.horizon.datachoices.internal;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opennms.horizon.datachoices.dto.UsageStatisticsReportDTO;
 
 import java.util.Collections;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.badRequest;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,8 +29,6 @@ public class DataChoicesTimerTaskTest {
     private static final String TEST_VERSION = "1.0.0";
     private static final int TEST_NODE_COUNT = 1;
     private static final int TEST_MONITORED_SERVICES = 2;
-
-    private static final int TEST_PORT = 55555;
 
     private DataChoicesTimerTask timerTask;
 
@@ -55,6 +56,24 @@ public class DataChoicesTimerTaskTest {
             .willReturn(ok()));
 
         timerTask.run();
+
+        wireMockRule.verify(1, anyRequestedFor(urlEqualTo("/hs-usage-report")));
+    }
+
+    @Test
+    public void testRunFailed() {
+        UsageStatisticsReportDTO report = getReport();
+        String json = report.toJson();
+
+        when(reporter.generateReport()).thenReturn(report);
+
+        wireMockRule.stubFor(post(urlEqualTo("/hs-usage-report"))
+            .withRequestBody(equalToJson(json))
+            .willReturn(badRequest()));
+
+        timerTask.run();
+
+        assertTrue(true);
     }
 
     private static UsageStatisticsReportDTO getReport() {
