@@ -11,9 +11,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.opennms.horizon.notifications.NotificationsApplication;
 import org.opennms.horizon.notifications.api.PagerDutyAPIImpl;
-import org.opennms.horizon.shared.dto.notifications.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.exceptions.NotificationException;
 import org.opennms.horizon.shared.dto.event.AlarmDTO;
+import org.opennms.horizon.shared.dto.notifications.PagerDutyConfigDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
@@ -54,8 +53,8 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = NotificationsApplication.class)
 @TestPropertySource(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}", locations = "classpath:application.yml")
-class AlarmKafkaConsumerIntegrationTest {
-    private static final int KAFKA_TIMEOUT = 5000;
+class AlarmKafkaConsumerIntegrationTestNoConfig {
+    private static final int KAFKA_TIMEOUT = 30000;
     private static final int HTTP_TIMEOUT = 5000;
 
     @Value("${horizon.kafka.alarms.topic}")
@@ -93,20 +92,8 @@ class AlarmKafkaConsumerIntegrationTest {
         stringProducer = stringFactory.createProducer();
     }
 
-    private void setupConfig() throws NotificationException {
-        String integrationKey = "not_verified";
-
-        PagerDutyConfigDTO config = new PagerDutyConfigDTO(integrationKey);
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<PagerDutyConfigDTO> request = new HttpEntity<>(config, headers);
-
-        testRestTemplate.postForEntity("http://localhost:" + port + "/notifications/config", request, String.class);
-    }
-
     @Test
-    void testProducingAlarmWithConfigSetup() throws NotificationException {
-        setupConfig();
-
+    void testProducingAlarmWithNoConfigSetup() {
         int id = 1234;
         stringProducer.send(new ProducerRecord<>(alarmsTopic, String.format("{\"id\": %d, \"severity\":\"indeterminate\", \"logMessage\":\"hello\"}", id)));
         stringProducer.flush();
@@ -117,9 +104,9 @@ class AlarmKafkaConsumerIntegrationTest {
         AlarmDTO capturedAlarm = alarmCaptor.getValue();
         assertEquals(id, capturedAlarm.getId());
 
-        // This is the call to the PagerDuty API, it will fail due to an invalid token, but we just need to
-        // verify that the call has been attempted.
-        verify(restTemplate, timeout(HTTP_TIMEOUT).times(1)).exchange(ArgumentMatchers.any(URI.class),
+        // This is the call to the PagerDuty API, we won't get this far, as we will get an exception when we try
+        // to get the token, as the config table hasn't been setup.
+        verify(restTemplate, timeout(HTTP_TIMEOUT).times(0)).exchange(ArgumentMatchers.any(URI.class),
             ArgumentMatchers.eq(HttpMethod.POST),
             ArgumentMatchers.any(HttpEntity.class),
             ArgumentMatchers.any(Class.class));
