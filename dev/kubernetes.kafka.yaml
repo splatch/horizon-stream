@@ -616,7 +616,6 @@ spec:
       containers:
         - name: keycloak
           image: opennms/horizon-stream-keycloak-dev
-          args: [ "start-dev" ]
           env:
             - name: KEYCLOAK_CREATE_ADMIN_USER
               value: "true"
@@ -634,6 +633,8 @@ spec:
               value: postgres
             - name: KC_DB_URL
               value: jdbc:postgresql://postgres/keycloak
+            - name: jgroups.dns.query
+              value: "keycloak.default" # TODO - not working, but it gets Keycloak started and this file won't be used
             #
             # TODO: use keycloak user (and password) instead of the admin "postgres" user
             #
