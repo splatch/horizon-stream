@@ -1,5 +1,6 @@
 package org.opennms.horizon.notifications.kafka;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -23,9 +24,14 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.KafkaMessageListenerContainer;
+import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -80,11 +86,27 @@ class AlarmKafkaConsumerIntegrationTest {
 
     @BeforeAll
     void setUp() {
-        Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
+        Map<String, Object> producerConfig = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
+        Map<String, Object> consumerConfig = new HashMap<>(KafkaTestUtils.consumerProps("OtherGroup", "true", embeddedKafkaBroker));
 
         DefaultKafkaProducerFactory<String, String> stringFactory
-            = new DefaultKafkaProducerFactory<>(configs, new StringSerializer(), new StringSerializer());
+            = new DefaultKafkaProducerFactory<>(producerConfig, new StringSerializer(), new StringSerializer());
         stringProducer = stringFactory.createProducer();
+
+        DefaultKafkaConsumerFactory<Integer, String> cf =
+            new DefaultKafkaConsumerFactory<Integer, String>(consumerConfig);
+        ContainerProperties containerProperties = new ContainerProperties(alarmsTopic);
+        KafkaMessageListenerContainer<Integer, String> container =
+            new KafkaMessageListenerContainer<>(cf, containerProperties);
+        container.setupMessageListener(new MessageListener<Integer, String>() {
+            @Override
+            public void onMessage(ConsumerRecord<Integer, String> record) {
+            }
+        });
+
+        container.start();
+        ContainerTestUtils.waitForAssignment(container,
+            embeddedKafkaBroker.getPartitionsPerTopic());
     }
 
     private void setupConfig() throws NotificationException {
