@@ -12,6 +12,9 @@ Operator:
       cpu: 100m
       memory: 500Mi
   devMode: false
+customErrors:
+  image: quay.io/kubernetes-ingress-controller/custom-error-pages-amd64:0.4
+  debug: true
 TLS:
   Enabled: true
 NodeRestrictions: # will be applied to every pod in the instance

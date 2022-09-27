@@ -5,6 +5,8 @@ metadata:
 spec:
   allowedUsers: []
   host: onmshs
+  httpPort: 80
+  httpsPort: 443
   namespace: local-instance
   deployOnly: true
   core:
