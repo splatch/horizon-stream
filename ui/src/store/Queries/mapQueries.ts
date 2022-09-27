@@ -4,22 +4,19 @@ import { DeviceForMapDocument } from '@/types/graphql'
 
 export const useMapQueries = defineStore('mapQueries', () => {
   const devices = ref()
-  const areDevicesFetched = ref()
 
-  const { data, execute } = useQuery({
+  const { data, execute, isFetching } = useQuery({
     query: DeviceForMapDocument,
     cachePolicy: 'network-only' // always fetch and do not cache
   })
 
   watchEffect(() => {
-    const devicesData = data.value?.listDevices?.devices
-    devices.value = devicesData || []
-    areDevicesFetched.value = devicesData ? true : false
+    devices.value = data.value?.listDevices?.devices || []
   })
 
   return {
     devices,
-    areDevicesFetched,
-    fetch: execute
+    fetch: execute,
+    isFetching
   }
 })

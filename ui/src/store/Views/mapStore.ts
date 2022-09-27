@@ -10,7 +10,7 @@ import { AlarmModificationQueryVariable } from '@/types/map'
 export const useMapStore = defineStore('mapStore', () => {
   const mapQueries = useMapQueries()
   
-  const areDevicesFetched = computed(() => mapQueries.areDevicesFetched)
+  const areDevicesFetching = computed(() => mapQueries.isFetching)
   const devicesWithCoordinates = computed(() => mapQueries.devices.filter((device: DeviceDto) => device.location?.latitude && device.location.longitude))
 
   const devicesInbounds = computed(() => mapQueries.devices.filter((device: DeviceDto) => {
@@ -54,7 +54,7 @@ export const useMapStore = defineStore('mapStore', () => {
   }
 
   return {
-    areDevicesFetched,
+    areDevicesFetching,
     devicesWithCoordinates,
     devicesInbounds,
     alarms,
