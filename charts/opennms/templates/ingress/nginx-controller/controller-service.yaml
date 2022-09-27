@@ -14,12 +14,12 @@ spec:
   ports:
     - appProtocol: http
       name: http
-      port: {{ .Values.Ingress.NginxController.HttpPort }}
+      port: {{ .Values.Ingress.HttpPort }}
       protocol: TCP
       targetPort: http
     - appProtocol: https
       name: https
-      port: {{ .Values.Ingress.NginxController.HttpsPort }}
+      port: {{ .Values.Ingress.HttpsPort }}
       protocol: TCP
       targetPort: https
   selector:
