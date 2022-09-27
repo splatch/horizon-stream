@@ -35,7 +35,6 @@ const app = createApp(App)
     },
     onReady: (kc: KeycloakInstance) => {
       setKeycloak(kc)
-      console.log('from kc', kc.authServerUrl)
       const gqlClient = getGqlClient(kc)
       app.use(gqlClient)
       app.mount('#app')
