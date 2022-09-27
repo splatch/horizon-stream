@@ -22,21 +22,19 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type StunnelHandler struct {
+type KafkaHandler struct {
 	ServiceHandlerObject
 }
 
-func (h *StunnelHandler) ProvideConfig(values values.TemplateValues) []client.Object {
-	var configMap corev1.ConfigMap
-	var service corev1.Service
-	var deployment appsv1.Deployment
+func (h *KafkaHandler) ProvideConfig(values values.TemplateValues) []client.Object {
 
-	yaml.LoadYaml(filepath("stunnel/stunnel-configmap.yaml"), values, &configMap)
-	yaml.LoadYaml(filepath("stunnel/stunnel-service.yaml"), values, &service)
-	yaml.LoadYaml(filepath("stunnel/stunnel-deployment.yaml"), values, &deployment)
+	var deployment appsv1.Deployment
+	var service corev1.Service
+
+	yaml.LoadYaml(filepath("kafka/kafka-service.yaml"), values, &service)
+	yaml.LoadYaml(filepath("kafka/kafka-deployment.yaml"), values, &deployment)
 
 	h.Config = []client.Object{
-		&configMap,
 		&service,
 		&deployment,
 	}

@@ -2,9 +2,9 @@ import { createTestingPinia } from '@pinia/testing'
 import { useNodeStatusQueries } from '@/store/Queries/nodeStatusQueries'
 import { eventsFixture } from '../../fixture/events'
 import { deviceFixture } from '../../fixture/devices'
-import { latencyFixture, uptimeFixture } from '../../fixture/metrics'
+import { deviceLatencyFixture, deviceUptimeFixture } from '../../fixture/metrics'
 
-describe('Events Queries', () => {
+describe('Events queries', () => {
   beforeEach(() => {
     createTestingPinia()
   })
@@ -13,15 +13,15 @@ describe('Events Queries', () => {
     vi.restoreAllMocks()
   })
 
-  it('fetches events, devices and metrics', () => {
+  it('fetched events, devices and metrics', () => {
     vi.mock('villus', () => ({
       useQuery: vi.fn().mockImplementation(() => ({
         data: { 
           value: { 
             listEvents: eventsFixture(),
             device: deviceFixture(),
-            deviceLatency: latencyFixture(),
-            deviceUptime: uptimeFixture()
+            deviceLatency: deviceLatencyFixture(),
+            deviceUptime: deviceUptimeFixture()
           }}
       }))
     }))
@@ -30,10 +30,10 @@ describe('Events Queries', () => {
     nodeStatusQueries.setNodeId(2)
 
     const expectedFetchedData = {
-      listEvents: { ...eventsFixture() },
+      listEvents: eventsFixture(),
       device: deviceFixture(),
-      deviceLatency: (latencyFixture()).data?.result,
-      deviceUptime: (uptimeFixture()).data?.result
+      deviceLatency: (deviceLatencyFixture()).data?.result,
+      deviceUptime: (deviceUptimeFixture()).data?.result
     }
     expect(nodeStatusQueries.fetchedData).toStrictEqual(expectedFetchedData)
   })

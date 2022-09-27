@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { useNodeStatusQueries } from '@/store/Queries/nodeStatusQueries'
 
-export const useNodeStore = defineStore('nodeStore', () => {
+export const useNodeStatusStore = defineStore('nodeStatusStore', () => {
   const nodeStatusQueries = useNodeStatusQueries()
   const fetchedData = computed(() => nodeStatusQueries.fetchedData)
   

@@ -26,19 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.api.dto;
+package org.opennms.horizon.shared.dto.notifications;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class PagerDutyConfigDTO {
     public PagerDutyConfigDTO() {
     }
+
     public PagerDutyConfigDTO(String integrationkey) {
         this.integrationkey = integrationkey;
     }
 
-    String integrationkey;
+    private String integrationkey;
+
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        if (!super.equals(object)) return false;
+
+        PagerDutyConfigDTO that = (PagerDutyConfigDTO) object;
+
+        if (!integrationkey.equals(that.integrationkey)) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + integrationkey.hashCode();
+        return result;
+    }
+
+    public String getIntegrationkey() {
+        return integrationkey;
+    }
+
+    public void setIntegrationkey(String integrationkey) {
+        this.integrationkey = integrationkey;
+    }
 }
