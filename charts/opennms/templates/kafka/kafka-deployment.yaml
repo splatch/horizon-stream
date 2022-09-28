@@ -27,7 +27,7 @@ spec:
             - name: LOG_DIR
               value: /tmp/logs
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: PLAINTEXT://{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port  }}
+              value: http://{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port  }}
           resources:
             limits:
               cpu: "{{ .Values.Kafka.Resources.Limits.Cpu }}"
@@ -37,4 +37,4 @@ spec:
               memory: "{{ .Values.Keycloak.Resources.Requests.Memory }}"
           ports:
             - name: http
-              containerPort: {{ .Values.Kafka.Port  }}
+              containerPort: {{ .Values.Kafka.Port }}
