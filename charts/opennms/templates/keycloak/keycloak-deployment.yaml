@@ -91,28 +91,30 @@ spec:
             - mountPath: /opt/keycloak/data/import
               name: realm-config
           livenessProbe:
-            exec:
-              command:
-              - curl
-              - --head
-              - --fail
-              - --silent
-              - --insecure
-              - https://127.0.0.1:{{ .Values.Keycloak.HttpsPort }}{{ .Values.Keycloak.Path }}/health/live
+            httpGet:
+              {{- if .Values.TLS.Enabled }}
+              scheme: HTTPS
+              port: https
+              {{- else }}
+              scheme: HTTP
+              port: http
+              {{- end }}
+              path: {{ .Values.Keycloak.Path }}/health/live
             failureThreshold: 150
             initialDelaySeconds: 20
             periodSeconds: 2
             successThreshold: 1
             timeoutSeconds: 1
           readinessProbe:
-            exec:
-              command:
-              - curl
-              - --head
-              - --fail
-              - --silent
-              - --insecure
-              - https://127.0.0.1:{{ .Values.Keycloak.HttpsPort }}{{ .Values.Keycloak.Path }}/health/ready
+            httpGet:
+              {{- if .Values.TLS.Enabled }}
+              scheme: HTTPS
+              port: https
+              {{- else }}
+              scheme: HTTP
+              port: http
+              {{- end }}
+              path: {{ .Values.Keycloak.Path }}/health/ready
             failureThreshold: 250
             initialDelaySeconds: 20
             periodSeconds: 2
