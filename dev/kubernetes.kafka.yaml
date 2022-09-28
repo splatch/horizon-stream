@@ -1449,8 +1449,6 @@ spec:
     emailTheme: "horizon-stream"
     rememberMe: true
     resetPasswordAllowed: true
-    attributes:
-      frontendUrl: "http://localhost:26080"
     clients:
       - id: b67dfe9a-36c2-42bc-bd23-b380023d4238
         clientId: horizon-stream
