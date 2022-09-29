@@ -155,7 +155,7 @@ Prometheus:
         Memory: 100Mi
 Kafka:
   ServiceName: onms-kafka
-  Image: quay.io/strimzi/kafka:latest-kafka-2.8.1-amd64
+  Image: quay.io/strimzi/kafka:latest-kafka-2.8.1
   ImagePullPolicy: IfNotPresent
   Replicas: 1 
   Port: 9092
