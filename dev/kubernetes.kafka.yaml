@@ -418,7 +418,7 @@ spec:
             - name: API_SERVER_URL
               value: "http://horizon-stream-api:9090"
             - name: KEYCLOAK_URL
-              value: "http://keycloak:8080"
+              value: "http://keycloak:8080/auth"
             - name: KEYCLOAK_REALM
               value: "opennms"
           volumeMounts:
