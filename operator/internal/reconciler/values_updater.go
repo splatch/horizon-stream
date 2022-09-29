@@ -31,9 +31,10 @@ func (r *OpenNMSReconciler) UpdateValues(ctx context.Context, instance v1alpha1.
 		r.ValuesMap = map[string]values.TemplateValues{}
 	}
 
-	namespace := instance.Name
+	name := instance.Name
+	namespace := instance.Spec.Namespace
 
-	templateValues, ok := r.ValuesMap[namespace]
+	templateValues, ok := r.ValuesMap[name]
 	if !ok {
 		templateValues = r.DefaultValues
 	}
@@ -50,7 +51,7 @@ func (r *OpenNMSReconciler) UpdateValues(ctx context.Context, instance v1alpha1.
 		templateValues = setPostgresPassword(templateValues)
 	}
 
-	r.ValuesMap[namespace] = templateValues
+	r.ValuesMap[name] = templateValues
 
 	return templateValues
 }
