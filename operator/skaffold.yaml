@@ -25,4 +25,4 @@ profiles:
             createNamespace: true
             chartPath: ../charts/opennms-operator
             artifactOverrides:
-              Operator.image: opennms/operator
+              image: opennms/operator

@@ -1,14 +1,12 @@
-Operator:
-  Namespace: opennms
-  serviceName: opennms-operator
-  image: opennms/operator:latest
-  imagePullPolicy: IfNotPresent
-  imageUpdateFreq: 60
-  resources:
-    limits:
-      cpu: 100m
-      memory: 500Mi
-    requests:
-      cpu: 100m
-      memory: 500Mi
-  devMode: false
+serviceName: opennms-operator
+image: opennms/operator:latest
+imagePullPolicy: IfNotPresent
+imageUpdateFreq: 60
+resources:
+  limits:
+    cpu: 100m
+    memory: 500Mi
+  requests:
+    cpu: 100m
+    memory: 500Mi
+devMode: false
