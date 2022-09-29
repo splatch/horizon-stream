@@ -34,6 +34,7 @@ type Values struct {
 	MailServer       MailServerValues       `yaml:"MailServer"`
 	NodeRestrictions NodeRestrictionsValues `yaml:"NodeRestrictions"`
 	Operator         OperatorValues         `yaml:"Operator"`
+	CustomErrors     CustomErrorsValues     `yaml:"CustomErrors"`
 }
 
 // HelmRelease - Special Helm values

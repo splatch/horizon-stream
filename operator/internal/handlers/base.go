@@ -30,7 +30,7 @@ func (h *BaseHandler) ProvideConfig(values values.TemplateValues) []client.Objec
 	var certSecret v1.Secret
 
 	yaml.LoadYaml(filepath("_namespace.yaml"), values, &namespace)
-	yaml.LoadYaml(filepath("opennms/cert/cert-secret.yaml"), values, &certSecret)
+	yaml.LoadYaml(filepath("cert/cert-secret.yaml"), values, &certSecret)
 
 	h.Config = []client.Object{
 		&namespace,
