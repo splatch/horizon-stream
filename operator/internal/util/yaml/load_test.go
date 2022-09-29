@@ -35,7 +35,7 @@ metadata:
   labels:
     app: test
   name: test
-  namespace: {{ .Values.Namespace }}
+  namespace: {{ .Release.Namespace }}
 `
 
 func TestLoadYaml(t *testing.T) {
