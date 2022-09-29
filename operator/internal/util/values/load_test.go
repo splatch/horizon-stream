@@ -29,7 +29,7 @@ func TestLoadValues(t *testing.T) {
 
 	v := LoadValues(TestFilename1, TestFilename2)
 	assert.NotNil(t, v)
-	assert.Equal(t, "testDeploy", v.TestDeploy, "should load the first yaml file correctly")
+	assert.Equal(t, false, v.TestDeploy, "should load the first yaml file correctly")
 	assert.Equal(t, "testHost", v.Host, "should load the second yaml file correctly")
 
 }
