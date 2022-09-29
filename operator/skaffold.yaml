@@ -21,8 +21,8 @@ profiles:
       helm:
         releases:
           - name: opennms-operator
-            namespace: opennms
-            createNamespace: true
             chartPath: ../charts/opennms-operator
+            setValues:
+              devMode: true
             artifactOverrides:
               image: opennms/operator
