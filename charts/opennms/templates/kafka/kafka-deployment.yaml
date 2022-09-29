@@ -27,7 +27,7 @@ spec:
             - name: LOG_DIR
               value: /tmp/logs
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: http://{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port  }}
+              value: "PLAINTEXT://{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
           resources:
             limits:
               cpu: "{{ .Values.Kafka.Resources.Limits.Cpu }}"
