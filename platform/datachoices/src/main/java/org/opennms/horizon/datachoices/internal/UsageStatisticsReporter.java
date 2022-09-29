@@ -28,13 +28,13 @@
 
 package org.opennms.horizon.datachoices.internal;
 
-import org.opennms.horizon.datachoices.dto.UsageStatisticsReportDTO;
 import org.opennms.horizon.datachoices.internal.StateManager.StateChangeHandler;
 import org.opennms.horizon.db.dao.api.MonitoredServiceDao;
 import org.opennms.horizon.db.dao.api.NodeDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsDataChoices;
 import org.opennms.horizon.db.model.OnmsNode;
+import org.opennms.horizon.shared.dto.datachoices.UsageStatisticsReportDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

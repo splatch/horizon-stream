@@ -33,12 +33,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opennms.horizon.datachoices.dto.UsageStatisticsReportDTO;
 import org.opennms.horizon.db.dao.api.MonitoredServiceDao;
 import org.opennms.horizon.db.dao.api.NodeDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsDataChoices;
 import org.opennms.horizon.db.model.OnmsNode;
+import org.opennms.horizon.shared.dto.datachoices.UsageStatisticsReportDTO;
 
 import java.util.Collections;
 import java.util.Map;
