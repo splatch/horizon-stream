@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.Prometheus.Server.ServiceName }}
   labels:
     app: {{ .Values.Prometheus.Server.ServiceName }}
-  namespace: {{ .Values.Namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.Prometheus.Server.Replicas }}
   selector:

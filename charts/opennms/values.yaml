@@ -1,4 +1,3 @@
-Namespace: opennms-instance
 Host: onmshs
 TestDeploy: false
 OpenNMS:

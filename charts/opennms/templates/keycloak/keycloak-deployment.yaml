@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.Keycloak.ServiceName }}
   labels:
     app: keycloak
-  namespace: {{ .Values.Namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -71,7 +71,7 @@ spec:
             - name: KC_PROXY
               value: passthrough
             - name: jgroups.dns.query
-              value: "{{ .Values.Keycloak.ServiceName }}.{{ .Values.Namespace }}"
+              value: "{{ .Values.Keycloak.ServiceName }}.{{ .Release.Namespace }}"
             {{- if .Values.TLS.Enabled }}
             - name: KC_HTTPS_CERTIFICATE_FILE
               value: "/mnt/certificates/tls.crt"

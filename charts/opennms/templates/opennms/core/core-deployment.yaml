@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.OpenNMS.Core.ServiceName }}
-  namespace: {{ .Values.Namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Values.OpenNMS.Core.ServiceName }}
     app.kubernetes.io/name: {{ .Values.OpenNMS.Core.ServiceName }}

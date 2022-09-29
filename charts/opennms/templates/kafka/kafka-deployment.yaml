@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.Kafka.ServiceName }}
   labels:
     app: kafka
-  namespace: {{ .Values.Namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
