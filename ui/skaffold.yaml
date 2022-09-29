@@ -28,7 +28,8 @@ build:
         VITE_KEYCLOAK_URL: "http://localhost:28080"
 portForward:
   - resourceType: deployment
-    resourceName: my-horizon-stream-ui
+    resourceName: opennms-ui
+    namespace: skaffold-instance
     port: 80 # nginx HTTP
     localPort: 3000
 profiles:
