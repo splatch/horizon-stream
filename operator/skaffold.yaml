@@ -12,8 +12,11 @@ profiles:
     build:
       artifacts:
         - image: opennms/operator
-          docker:
-            dockerfile: Dockerfile
+          custom:
+            buildCommand: make local-docker
+            dependencies:
+              dockerfile:
+                path: Dockerfile
     deploy:
       helm:
         releases:

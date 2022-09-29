@@ -25,7 +25,8 @@ import (
 func GetDefaultValues(operatorConfig config.OperatorConfig) values.TemplateValues {
 	v := LoadValues(operatorConfig.DefaultOpenNMSValuesFile, operatorConfig.DefaultOperatorValuesFile)
 	return values.TemplateValues{
-		Values: v,
+		Values:  v,
+		Release: values.HelmRelease{},
 	}
 }
 
