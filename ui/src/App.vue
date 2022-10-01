@@ -130,8 +130,8 @@ a {
 .fade-leave-to {
   opacity: 0;
 }
-:deep(.app-aside) {
-  border-right: 1px solid var(--feather-border-on-surface);
+:deep(.header) {
+  border-bottom: 0;
 }
 :deep(.feather-app-rail) {
   border-right: 0 !important;
