@@ -1,4 +1,3 @@
-  
 <template>
   <FeatherAppLayout contentLayout="full" class="feather-styles layout">
     <template v-slot:header>
@@ -7,7 +6,6 @@
 
     <template v-slot:rail>
       <NavigationRail />
-      <!-- <NavigationRail :modelValue="store.navRailOpen"/> -->
     </template>
     
     <div class="content-and-widget">
@@ -31,15 +29,7 @@ const route = useRoute()
 const router = useRouter()
 if (route.query.theme) router.replace(route.path)
 
-// transition nav rail open / close
 const store = useLayoutStore()
-const contentMargin = computed(() => store.navRailOpen ? '230px' : '15px')
-const ease = computed(() => store.navRailOpen ? '10ms' : '80ms')
-const maxWidth = computed(() => {
-  const navWidth = store.navRailOpen ? 223 : 0
-  const widgetWidth = store.widgetBarOpen ? 500 : 0
-  return navWidth + widgetWidth + 'px'
-})
 </script>
   
 <style lang="scss">
@@ -62,12 +52,9 @@ body {
 }
 
 .main-content {
-  position: relative;
   width: 100%;
-  margin-left: v-bind(contentMargin);
-  margin-right: 12px;
-  transition: margin-left 0.28s ease-in-out v-bind(ease);
-  max-width: calc(100% - v-bind(maxWidth));
+  margin-left: 15px;
+  margin-right: 15px;
 
   table {
     width: 100%;

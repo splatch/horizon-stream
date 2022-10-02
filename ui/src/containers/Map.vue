@@ -62,7 +62,6 @@ import 'splitpanes/dist/splitpanes.css'
 import LeafletMap from '../components/Map/LeafletMap.vue'
 import GridTabs from '@/components/Map/GridTabs.vue'
 import { debounce } from 'lodash'
-import { useLayoutStore } from '@/store/Views/layoutStore'
 // import { ViewType, DisplayType } from '@/components/Topology/topology.constants'
 // import Topology from './Topology.vue'
 // import TopologyLeftDrawer from '@/components/Topology/TopologyLeftDrawer.vue'
@@ -72,7 +71,6 @@ import { useLayoutStore } from '@/store/Views/layoutStore'
 // import DrawerBtn from '@/components/Topology/DrawerBtn.vue'
 // import { useTopologyStore } from '@/store/Views/topologyStore'
 
-const layoutStore = useLayoutStore()
 const split = ref()
 const leafletComponent = ref()
 
@@ -103,9 +101,7 @@ onMounted(() => {
   // topologyStore.getVerticesAndEdges()
 })
 
-onActivated(() => layoutStore.navRailOpen = false)
 onDeactivated(() => {
-  layoutStore.navRailOpen = true
   // topologyStore.setSelectedView(ViewType.map)
   // topologyStore.setSelectedDisplay(DisplayType.nodes)
 })
