@@ -2,22 +2,20 @@
   <FeatherAppBar :labels="{ skip: 'main' }" content="app" v-if="keycloak?.authenticated">
     <template v-slot:right>
       <FeatherIcon
+        :icon="Dashboard"
+        class="pointer menu-icon widgets"
+        @click="triggerWidgetBar()"
+      />
+      <FeatherIcon
         :icon="LightDarkMode"
         class="pointer menu-icon"
         @click="toggleDark()"
         data-test="toggle-dark"
       />
-
       <FeatherIcon
         :icon="LogOut"
         class="pointer menu-icon"
         @click="logout()"
-      />
-
-      <FeatherIcon
-        :icon="Dashboard"
-        class="pointer menu-icon widgets"
-        @click="triggerWidgetBar()"
       />
     </template>
   </FeatherAppBar>
@@ -52,8 +50,8 @@ body {
   font-size: 24px;
   margin-top: 2px;
   margin-right: 15px;
-  &.widgets {
-    margin-right: 45px;
+  &:last-child {
+    margin-right: 0;
   }
 }
 </style>
