@@ -79,10 +79,10 @@ import { WidgetProps } from '@/types'
 defineProps<{widgetProps?: WidgetProps}>()
 
 const appliancesStore = useAppliancesStore()
-const applianceQueries = useAppliancesQueries()
+const appliancesQueries = useAppliancesQueries()
 const router = useRouter()
 
-const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableDevices))
+const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(appliancesQueries.tableDevices))
 
 const searchValue = ref('')
 
