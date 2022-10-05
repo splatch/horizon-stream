@@ -9,4 +9,6 @@ mock-graphql
 node_modules
 .env.local
 .env.*.local
-!.env.development.local # only used during development with Skaffold
+
+# only used during development with Skaffold
+!.env.development.local
