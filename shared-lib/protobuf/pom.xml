@@ -11,8 +11,8 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>task-set</artifactId>
-    <name>OpenNMS Horizon :: Shared Library:: Task Set</name>
+    <artifactId>protobuf</artifactId>
+    <name>OpenNMS Horizon :: Shared Library:: Protobuf</name>
     <packaging>bundle</packaging>
 
     <description>
