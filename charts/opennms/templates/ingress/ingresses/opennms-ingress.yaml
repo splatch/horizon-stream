@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: opennms-ingress
-  namespace: {{ .Values.Namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   ingressClassName: nginx
   defaultBackend:
@@ -42,9 +42,9 @@ spec:
                 name: {{ .Values.Grafana.ServiceName }}
                 port:
                   number: {{ .Values.Grafana.Port }}
-  {{ if .Values.TLS.Enabled }}
+  {{- if .Values.TLS.Enabled }}
   tls:
     - hosts:
         -  {{.Values.Host }}
       secretName: {{ .Values.TLS.Cert.Name }}
-  {{ end }}
+  {{- end }}

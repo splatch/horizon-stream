@@ -5,10 +5,7 @@ metadata:
 spec:
   allowedUsers: []
   host: onmshs
-  httpPort: 80
-  httpsPort: 443
-  namespace: local-instance
-  deployOnly: true
+  namespace: skaffold-instance
   core:
     image: opennms/horizon-stream-core
     cpu: "0"
@@ -16,25 +13,18 @@ spec:
   api:
     image: opennms/horizon-stream-rest-server
     cpu: "0"
-    mem: 500Mi
+    mem: "0"
   ui:
     image: opennms/horizon-stream-ui
     cpu: "0"
-    mem: 100Mi
-  minion:
-    image: opennms/minion:29.0.10
-    cpu: "0"
-    mem: 1000Mi
+    mem: "0"
   notification:
     image: opennms/horizon-stream-notification
     cpu: "0"
-    mem: 100Mi
+    mem: "0"
   keycloak:
-    image: opennms/horizon-stream-keycloak:latest
+    image: opennms/horizon-stream-keycloak-dev
   grafana:
-    image: opennms/horizon-stream-grafana
+    image: opennms/horizon-stream-grafana-dev
   postgres:
     image: postgres:13.3-alpine
-  credentials:
-    adminPassword: admin
-    userPassword: passw0rd

@@ -4,7 +4,7 @@ metadata:
   labels:
     app: kafka
   name: {{ .Values.Kafka.ServiceName }}
-  namespace: {{ .Values.Namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   ports:
     - port: {{ .Values.Kafka.Port }}

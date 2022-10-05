@@ -1,7 +1,9 @@
+{{/*FIXME Is this even used?*/}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: opennms-nginx-errors
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/name: opennms-nginx-errors
 spec:
@@ -16,9 +18,9 @@ spec:
     spec:
       containers:
         - name: opennms-nginx-error-server
-          image: {{ .Values.customErrors.image }}
+          image: {{ .Values.CustomErrors.Image }}
           ports:
             - containerPort: 8080
           env:
             - name: DEBUG
-              value: "{{ .Values.customErrors.debug }}"
+              value: "{{ .Values.CustomErrors.Debug }}"

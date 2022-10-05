@@ -28,7 +28,7 @@ build:
         VITE_KEYCLOAK_URL: "http://localhost:26080"
 portForward:
   - resourceType: deployment
-    resourceName: my-horizon-stream-ui
+    resourceName: opennms-ui
     port: 80 # nginx HTTP
     localPort: 17080
 profiles:

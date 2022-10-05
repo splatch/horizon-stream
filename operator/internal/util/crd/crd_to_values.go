@@ -24,9 +24,10 @@ func ConvertCRDToValues(crd v1alpha1.OpenNMS, defaultValues values.TemplateValue
 	templateValues := defaultValues
 
 	v := templateValues.Values
+	r := templateValues.Release
 	spec := crd.Spec
 
-	v.Namespace = spec.Namespace
+	r.Namespace = spec.Namespace
 	v.Host = spec.Host
 
 	if spec.HttpPort != 0 {
@@ -66,6 +67,7 @@ func ConvertCRDToValues(crd v1alpha1.OpenNMS, defaultValues values.TemplateValue
 	}
 
 	templateValues.Values = v
+	templateValues.Release = r
 
 	return templateValues
 }
