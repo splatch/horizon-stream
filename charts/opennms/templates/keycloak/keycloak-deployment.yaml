@@ -34,6 +34,10 @@ spec:
               value: ispn
             - name: KC_HOSTNAME
               value: "{{ .Values.Host }}"
+            {{- if .Values.Keycloak.HostnamePort }}
+            - name: KC_HOSTNAME_PORT
+              value: "{{ .Values.Keycloak.HostnamePort }}"
+            {{- end }}
             - name: KC_DB
               value: postgres
             - name: KC_DB_URL_HOST

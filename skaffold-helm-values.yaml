@@ -2,6 +2,9 @@ Namespace: skaffold-instance
 Host: localhost
 TLS:
   Enabled: False
+Keycloak:
+  AdminPassword: admin
+  HostnamePort: 8123
 
 OpenNMS:
   API:
