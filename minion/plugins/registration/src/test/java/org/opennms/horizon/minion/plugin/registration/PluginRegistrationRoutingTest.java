@@ -7,7 +7,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.NotifyBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Before;
@@ -58,7 +60,10 @@ public class PluginRegistrationRoutingTest extends CamelTestSupport {
         doNothing().when(dispatcher).send(pluginConfigMessageArgumentCaptor.capture());
         template.sendBody(uri, new PluginMetadata("blah", TaskType.DETECTOR));
 
-        Thread.sleep(aggregationDelay + 2000);
+        NotifyBuilder notify = new NotifyBuilder(context()).whenDone(1).create();
+        boolean done = notify.matches(aggregationDelay + 2000, TimeUnit.MILLISECONDS);
+
+        assertTrue("Exchange didn't complete", done);
 
         verify(dispatcher).send(any());
         PluginConfigMessage pluginConfigMessage = pluginConfigMessageArgumentCaptor.getValue();
@@ -71,8 +76,10 @@ public class PluginRegistrationRoutingTest extends CamelTestSupport {
 
         template.sendBody(uri, null);
 
-        Thread.sleep(aggregationDelay + 2000);
+        NotifyBuilder notify = new NotifyBuilder(context()).whenDone(1).create();
+        boolean done = notify.matches(aggregationDelay + 2000, TimeUnit.MILLISECONDS);
 
+        assertTrue("Exchange didn't complete", done);
         verifyNoInteractions(dispatcher);
     }
 }
