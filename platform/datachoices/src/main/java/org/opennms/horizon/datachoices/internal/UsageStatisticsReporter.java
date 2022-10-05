@@ -122,14 +122,14 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     /*
      * Counting the number of occurrences of a string.
      *
-     * Currently this takes the node label as the DeviceType as this field is currently not available.
+     * Currently this takes a default value as the DeviceType as this field is currently not available.
      * TODO: Update to a DeviceType (ie. router, server, storage) when available
      */
     private Map<String, Integer> getDeviceTypeCounts() {
         Map<String, Integer> deviceTypeCounts = new HashMap<>();
 
         for (OnmsNode node : nodeDao.findAll()) {
-            String deviceType = node.getLabel();
+            String deviceType = "device";
             if (deviceTypeCounts.containsKey(deviceType)) {
                 int currentCount = deviceTypeCounts.get(deviceType);
                 deviceTypeCounts.put(deviceType, ++currentCount);

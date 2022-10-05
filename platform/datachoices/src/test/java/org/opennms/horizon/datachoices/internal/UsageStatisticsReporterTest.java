@@ -56,7 +56,7 @@ public class UsageStatisticsReporterTest {
     private static final long TEST_NODE_DAO_COUNT = 2;
     private static final long TEST_MONITORED_SERVICE_DAO_COUNT = 3;
     private static final int TEST_NODE_ID = 123;
-    private static final String TEST_NODE_LABEL = "node-label";
+    private static final String TEST_DEFAULT_DEVICE_TYPE = "device";
     private static final long TEST_INTERVAL = 100L;
     private static final int TEST_NODE_COUNT = 1;
 
@@ -140,7 +140,7 @@ public class UsageStatisticsReporterTest {
 
         OnmsNode node = new OnmsNode();
         node.setId(TEST_NODE_ID);
-        node.setLabel(TEST_NODE_LABEL);
+        node.setLabel(TEST_DEFAULT_DEVICE_TYPE);
 
         when(nodeDao.findAll()).thenReturn(Collections.singletonList(node));
 
@@ -156,7 +156,7 @@ public class UsageStatisticsReporterTest {
         Map.Entry<String, Integer> entry = deviceTypeCounts
             .entrySet().stream().iterator().next();
 
-        assertEquals(TEST_NODE_LABEL, entry.getKey());
+        assertEquals(TEST_DEFAULT_DEVICE_TYPE, entry.getKey());
         assertEquals(TEST_NODE_COUNT, entry.getValue().intValue());
     }
 }
