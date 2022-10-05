@@ -16,8 +16,10 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
         query: ListMinionsForTableDocument,
         cachePolicy: 'network-only'
       })
-    
-      tableMinions.value = addMetricsToMinions(minionsData)
+
+      watchEffect(() => {
+        tableMinions.value = addMetricsToMinions(minionsData)
+      })
     }
     
     const addMetricsToMinions = (data: Ref<ListMinionsForTableQuery | null>)=> {
@@ -50,8 +52,10 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
         query: ListDevicesForTableDocument,
         cachePolicy: 'network-only' // always fetch and do not cache
       })
-      
-      tableDevices.value = addMetricsToDevices(devicesData)
+
+      watchEffect(() => {
+        tableDevices.value = addMetricsToDevices(devicesData)
+      })
     }
 
     const addMetricsToDevices = (data: Ref<ListDevicesForTableQuery | null>)=> {
@@ -75,7 +79,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
         device.snmp_uptime = uptimesMap[device.managementIp as string]
         device.status = (device.icmp_latency >= 0 && device.snmp_uptime >= 0) ? 'UP' : 'DOWN'
       }
-
+      
       return devices
     }
 

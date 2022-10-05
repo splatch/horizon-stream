@@ -16,13 +16,11 @@
 
   <PrimaryModal title="Add Device" :visible="isVisible">
     <template v-slot:content>
-      <!-- Device Name -->
       <FeatherInput
         data-test="name-input"
         label="Name"
         v-model="device.label"
       />
-      <!-- Location name -->
       <FeatherSelect
         data-test="location-name-input"
         name="locationOptions"
@@ -32,37 +30,28 @@
         @update:modelValue="selectLocation"
         label="Location"
       />
-      <!-- Management IP -->
       <FeatherInput
         data-test="ip-input"
         label="Management IP"
         v-model="device.managementIp"
       />
-
-      <!-- Community String -->
       <FeatherInput
         data-test="string-input"
         label="Community String (Optional)"
         v-model="device.snmpCommunityString"
       />
-
-      <!-- Port -->
       <FeatherInput
         type="number"
         data-test="port-input"
         label="SNMP Port (Optional)"
         v-model="device.port"
       />
-      
-      <!-- Latitude -->
       <FeatherInput
         type="number"
         data-test="port-latitude"
         label="Latitude (Optional)"
         v-model="device.latitude"
       />
-      
-      <!-- Longitude -->
       <FeatherInput
         type="number"
         data-test="port-longitude"
