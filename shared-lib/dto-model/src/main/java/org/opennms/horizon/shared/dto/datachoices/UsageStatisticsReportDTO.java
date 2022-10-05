@@ -25,25 +25,22 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.horizon.shared.dto.datachoices;
 
-package org.opennms.horizon.datachoices.web;
+import lombok.Data;
 
-import org.opennms.horizon.shared.dto.datachoices.UsageStatisticsReportDTO;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
+@Data
+public class UsageStatisticsReportDTO {
+    private String systemId;
 
-@Path("/datachoices")
-public interface DataChoicesRestService {
+    private String version;
 
-    @POST
-    void toggleUsageStatistics(@QueryParam("toggle") boolean toggle);
+    private long nodes;
 
-    @GET
-    @Produces(value = {MediaType.APPLICATION_JSON})
-    UsageStatisticsReportDTO getUsageStatistics();
+    private long monitoredServices;
+
+    private Map<String, Integer> deviceTypeCounts = new HashMap<>();
 }
