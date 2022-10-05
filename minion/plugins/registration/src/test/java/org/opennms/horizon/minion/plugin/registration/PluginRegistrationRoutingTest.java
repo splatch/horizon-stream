@@ -34,7 +34,8 @@ public class PluginRegistrationRoutingTest extends CamelTestSupport {
 
     private String uri = "direct:blah";
     private ProducerTemplate template;
-    private long aggregationDelay = 10000;
+    private long aggregationDelay = 1000;
+    private long additionalTestDelay = 1500;
 
     @Captor
     private ArgumentCaptor<PluginConfigMessage> pluginConfigMessageArgumentCaptor;
@@ -60,8 +61,8 @@ public class PluginRegistrationRoutingTest extends CamelTestSupport {
         doNothing().when(dispatcher).send(pluginConfigMessageArgumentCaptor.capture());
         template.sendBody(uri, new PluginMetadata("blah", TaskType.DETECTOR));
 
-        NotifyBuilder notify = new NotifyBuilder(context()).whenDone(1).create();
-        boolean done = notify.matches(aggregationDelay + 2000, TimeUnit.MILLISECONDS);
+        NotifyBuilder notify = new NotifyBuilder(context()).fromRoute(PluginRegistrationRouting.ROUTE_ID).waitTime(aggregationDelay+additionalTestDelay).whenDone(1).create();
+        boolean done = notify.matchesWaitTime();
 
         assertTrue("Exchange didn't complete", done);
 
@@ -76,8 +77,8 @@ public class PluginRegistrationRoutingTest extends CamelTestSupport {
 
         template.sendBody(uri, null);
 
-        NotifyBuilder notify = new NotifyBuilder(context()).whenDone(1).create();
-        boolean done = notify.matches(aggregationDelay + 2000, TimeUnit.MILLISECONDS);
+        NotifyBuilder notify = new NotifyBuilder(context()).fromRoute(PluginRegistrationRouting.ROUTE_ID).waitTime(aggregationDelay+additionalTestDelay).whenDone(1).create();
+        boolean done = notify.matchesWaitTime();
 
         assertTrue("Exchange didn't complete", done);
         verifyNoInteractions(dispatcher);
