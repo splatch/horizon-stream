@@ -99,23 +99,15 @@ portForward:
     resourceName: opennms-rest-server
     port: 9090 # HTTP
   - resourceType: deployment
-    resourceName: opennms-notifications
-    port: 8080 # HTTP
-    localPort: 38080
-  - resourceType: deployment
-    resourceName: opennms-notifications
-    port: 5005 # Debug
-    localPort: 5007
-  - resourceType: deployment
     resourceName: opennms-rest-server
     port: 5005 # Debug
     localPort: 13050
   - resourceType: deployment
-    resourceName: my-horizon-stream-notification
+    resourceName: opennms-notifications
     port: 8080 # HTTP
     localPort: 15080
   - resourceType: deployment
-    resourceName: my-horizon-stream-notification
+    resourceName: opennms-notifications
     port: 5005 # Debug
     localPort: 15050
   - resourceType: deployment
