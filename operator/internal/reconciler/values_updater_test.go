@@ -21,7 +21,6 @@ import (
 	"context"
 	"github.com/OpenNMS/opennms-operator/api/v1alpha1"
 	"github.com/OpenNMS/opennms-operator/internal/model/values"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -68,8 +67,15 @@ func TestUpdateValues(t *testing.T) {
 }
 
 func TestCheckForExistingCoreCreds(t *testing.T) {
+	testKeycloakService := "onms-keycloak"
 	testValues := values.TemplateValues{
-		Values: values.Values{},
+		Values: values.Values{
+			Keycloak: values.KeycloakValues{
+				ServiceValues: values.ServiceValues{
+					ServiceName: testKeycloakService,
+				},
+			},
+		},
 	}
 	k8sClient := fake.NewClientBuilder().Build()
 	testRecon := OpenNMSReconciler{
@@ -84,18 +90,12 @@ func TestCheckForExistingCoreCreds(t *testing.T) {
 	assert.False(t, resbool, "should return that no postgres creds existed")
 
 	adminPwd := "testadminpwd"
-	userPwd := "testuserpwd"
 	coreSecret := corev1.Secret{
 		ObjectMeta: v1.ObjectMeta{
-			Name: "keycloak-credentials",
+			Name: "onms-keycloak-initial-admin",
 		},
 		Data: map[string][]byte{
-			"adminPwd": []byte(adminPwd),
-			"userPwd":  []byte(userPwd),
-			"realmId":  []byte(uuid.New().String()),
-			"clientId": []byte(uuid.New().String()),
-			"adminId":  []byte(uuid.New().String()),
-			"userId":   []byte(uuid.New().String()),
+			"password": []byte(adminPwd),
 		},
 	}
 	err := k8sClient.Create(ctx, &coreSecret)
@@ -104,7 +104,6 @@ func TestCheckForExistingCoreCreds(t *testing.T) {
 	res, resbool := testRecon.CheckForExistingCoreCreds(ctx, testValues, "")
 	assert.True(t, resbool, "should return that there are existing creds")
 	assert.Equal(t, adminPwd, res.Values.Keycloak.AdminPassword, "should return the expected admin password values")
-	assert.Equal(t, userPwd, res.Values.Keycloak.UserPassword, "should return the expected admin password values")
 
 	adminPglPwd := "testpostgresadminpwd"
 	keycloakPwd := "testpostgreskeycloakpwd"

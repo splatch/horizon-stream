@@ -32,14 +32,12 @@ func (h *KeycloakHandler) ProvideConfig(values values.TemplateValues) []client.O
 	var realmConfigmap corev1.ConfigMap
 	var deployment appsv1.Deployment
 	var service corev1.Service
-	var internalService corev1.Service
 
 	yaml.LoadYaml(filepath("keycloak/keycloak-initial-cred-secret.yaml"), values, &initialAdminSecret)
 	yaml.LoadYaml(filepath("keycloak/keycloak-cred-secret.yaml"), values, &credSecret)
 	yaml.LoadYaml(filepath("keycloak/keycloak-realm-configmap.yaml"), values, &realmConfigmap)
 	yaml.LoadYaml(filepath("keycloak/keycloak-deployment.yaml"), values, &deployment)
 	yaml.LoadYaml(filepath("keycloak/keycloak-service.yaml"), values, &service)
-	yaml.LoadYaml(filepath("keycloak/keycloak-internal-service.yaml"), values, &internalService)
 
 	h.Config = []client.Object{
 		&initialAdminSecret,
@@ -47,7 +45,6 @@ func (h *KeycloakHandler) ProvideConfig(values values.TemplateValues) []client.O
 		&realmConfigmap,
 		&deployment,
 		&service,
-		&internalService,
 	}
 
 	return h.Config

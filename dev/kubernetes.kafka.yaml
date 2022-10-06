@@ -418,7 +418,7 @@ spec:
             - name: API_SERVER_URL
               value: "http://horizon-stream-api:9090"
             - name: KEYCLOAK_URL
-              value: "http://keycloak:8080"
+              value: "http://keycloak:8080/auth"
             - name: KEYCLOAK_REALM
               value: "opennms"
           volumeMounts:
@@ -616,7 +616,6 @@ spec:
       containers:
         - name: keycloak
           image: opennms/horizon-stream-keycloak-dev
-          args: [ "start-dev" ]
           env:
             - name: KEYCLOAK_CREATE_ADMIN_USER
               value: "true"
@@ -634,6 +633,8 @@ spec:
               value: postgres
             - name: KC_DB_URL
               value: jdbc:postgresql://postgres/keycloak
+            - name: jgroups.dns.query
+              value: "keycloak.default" # TODO - not working, but it gets Keycloak started and this file won't be used
             #
             # TODO: use keycloak user (and password) instead of the admin "postgres" user
             #
@@ -1448,8 +1449,6 @@ spec:
     emailTheme: "horizon-stream"
     rememberMe: true
     resetPasswordAllowed: true
-    attributes:
-      frontendUrl: "http://localhost:26080"
     clients:
       - id: b67dfe9a-36c2-42bc-bd23-b380023d4238
         clientId: horizon-stream

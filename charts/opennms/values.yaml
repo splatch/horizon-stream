@@ -90,6 +90,7 @@ Keycloak:
   ImagePullPolicy: IfNotPresent
   Port: 8080
   HttpsPort: 8443
+  HostnamePort: ~
   Replicas: 1
   ServiceName: onms-keycloak
   Resources:
@@ -104,11 +105,6 @@ Keycloak:
   UserUsername: user001
   UserPassword: notset
   RealmName: opennms
-  UUID:
-    RealmId: ~
-    ClientId: ~
-    BaseUserId: ~
-    AdminUserId: ~
 Grafana:
   Path: /grafana
   Port: 3000
