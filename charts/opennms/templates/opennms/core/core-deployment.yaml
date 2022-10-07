@@ -106,8 +106,6 @@ spec:
               containerPort: {{ .Values.OpenNMS.Core.SshPort }}
             - name: http
               containerPort: {{ .Values.OpenNMS.Core.HttpPort }}
-            - name: grpc
-              containerPort: {{ .Values.OpenNMS.Core.GrpcPort }}
           {{- if not .Values.TestDeploy }}
 {{/*    TODO  livenessProbe:*/}}
 {{/*          readinessProbe:*/}}

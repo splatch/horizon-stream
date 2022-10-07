@@ -13,9 +13,6 @@ spec:
     - port: {{ .Values.OpenNMS.Core.HttpPort }}
       protocol: TCP
       name: http
-    - port: {{ .Values.OpenNMS.Core.GrpcPort }}
-      protocol: TCP
-      name: grpc
   selector:
     app: {{ .Values.OpenNMS.Core.ServiceName }}
   type: NodePort

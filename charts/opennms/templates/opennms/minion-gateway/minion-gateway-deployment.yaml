@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
+  labels:
+    app: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      run: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
+  replicas: {{ .Values.OpenNMS.MinionGateway.Replicas }}
+  template:
+    metadata:
+      labels:
+        run: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
+    spec:
+      containers:
+        - name: minion-gateway
+          image: {{ .Values.OpenNMS.MinionGateway.Image }}
+          imagePullPolicy: {{ .Values.OpenNMS.MinionGateway.ImagePullPolicy }}
+          args: ["-f"]
+          env:
+            - name: TZ
+              value: "America/New_York"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
+          ports:
+            - containerPort: {{ .Values.OpenNMS.MinionGateway.HttpPort }}
+            - containerPort: {{ .Values.OpenNMS.MinionGateway.IgniteClientPort }}
+            - containerPort: 47100
+            - containerPort: 47500
+          resources:
+            limits:
+              cpu: "{{ .Values.OpenNMS.Minion.Resources.Limits.Cpu }}"
+              memory: "{{ .Values.OpenNMS.Minion.Resources.Limits.Memory }}"
+            requests:
+              cpu: "{{ .Values.OpenNMS.Minion.Resources.Requests.Cpu }}"
+              memory: "{{ .Values.OpenNMS.Minion.Resources.Requests.Memory }}"

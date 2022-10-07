@@ -9,7 +9,6 @@ OpenNMS:
     Replicas: 1
     HttpPort: 8181
     SshPort: 8101
-    GrpcPort: 8990
     Resources:
       Limits:
         Cpu: "2"
@@ -53,6 +52,21 @@ OpenNMS:
     SshPort: 8201
     SnmpPort: 1162
     SyslogPort: 1514
+    Resources:
+      Limits:
+        Cpu: "1"
+        Memory: 2050M
+      Requests:
+        Cpu: "1"
+        Memory: 512Mi
+  MinionGateway:
+    ServiceName: opennms-minion-gateway
+    Image: opennms/minion-gateway
+    ImagePullPolicy: IfNotPresent
+    Replicas: 1
+    HttpPort: 8080
+    GrpcPort: 8990
+    IgniteClientPort: 10800
     Resources:
       Limits:
         Cpu: "1"
