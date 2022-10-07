@@ -59,7 +59,7 @@ build:
   - image: opennms/horizon-stream-minion
     context: minion
     custom:
-      buildCommand: "mvn install -Pbuild-docker-images-enabled -DskipTests=$SKIP_TEST -Ddocker.image=$IMAGE -Ddocker.skipPush={{ .PUSH_IMAGE | not }}"
+      buildCommand: "mvn install -Dtest={{ .SKIP_TEST | not }} -DfailIfNoTests=false -DskipITs=true -DskipTests=$SKIP_TEST -Ddocker.image=$IMAGE -Ddocker.skipPush={{ .PUSH_IMAGE | not }}"
       dependencies:
         paths: ["."]
         ignore: [
