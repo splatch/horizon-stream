@@ -49,7 +49,7 @@ body {
 
 .content-and-widget {
   display: flex;
-  padding: 0 1.5rem;
+  padding: 0 1rem;
 }
 
 .main-content {
