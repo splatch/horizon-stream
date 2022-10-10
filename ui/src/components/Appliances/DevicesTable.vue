@@ -35,8 +35,8 @@
     </div>
     <div class="data-table">
       <TransitionGroup name="data-table" tag="div">
-        <div class="card pointer" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" @click="gotoNode(device.id as number)" data-test="device-item">
-          <div class="name" data-test="col-device">
+        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" data-test="device-item">
+          <div class="name pointer" @click="gotoNode(device.id as number)" data-test="col-device">
               <div class="name-cell">
                 <FeatherIcon :icon="Instances" class="icon"/>
                 <div class="text">
@@ -45,11 +45,11 @@
                 </div>
               </div>
           </div>
-          <div data-test="col-latency">
+          <div class="pointer" data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
             <div :data-metric="device.icmp_latency" class="value" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
           </div>
-          <div data-test="col-uptime">
+          <div class="pointer" data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
             <div :data-metric="device.snmp_uptime" class="value" :class="device.uptimeBgColor">{{ getHumanReadableDuration(device.snmp_uptime) }}</div>
           </div>
