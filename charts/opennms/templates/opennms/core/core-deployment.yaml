@@ -72,6 +72,8 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: opennmsPwd
+            - name: ORG_OPENNMS_CORE_IGNITE_CLIENT_KUBERNETESSERVICENAME
+              value: "{{ .Values.OpenNMS.MinionGateway.ServiceName }}-ignite"
             - name: KAFKA_BROKER_HOST
               value: "{{ .Values.Kafka.ServiceName }}"
             - name: KAFKA_BROKER_PORT
