@@ -30,7 +30,7 @@ spec:
     cpu: "0"
     mem: 100Mi
   keycloak:
-    image: opennms/horizon-stream-keycloak:test
+    image: opennms/horizon-stream-keycloak
   grafana:
     image: opennms/horizon-stream-grafana
   postgres:
