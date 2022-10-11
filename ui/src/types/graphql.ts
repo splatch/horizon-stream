@@ -13,6 +13,7 @@ export type Scalars = {
   Float: number;
   Date: any;
   Long: any;
+  Map_String_IntegerScalar: any;
   Map_String_StringScalar: any;
   UNREPRESENTABLE: any;
 };
@@ -276,6 +277,7 @@ export type Mutation = {
   clearAlarm?: Maybe<Scalars['String']>;
   createEvent?: Maybe<Scalars['Boolean']>;
   savePagerDutyConfig?: Maybe<Scalars['Boolean']>;
+  toggleUsageStatsReport?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -303,6 +305,12 @@ export type MutationSavePagerDutyConfigArgs = {
   config?: InputMaybe<PagerDutyConfigDtoInput>;
 };
 
+
+/** Mutation root */
+export type MutationToggleUsageStatsReportArgs = {
+  toggleDataChoices?: InputMaybe<ToggleDataChoicesDtoInput>;
+};
+
 export type PagerDutyConfigDtoInput = {
   integrationkey?: InputMaybe<Scalars['String']>;
 };
@@ -319,6 +327,7 @@ export type Query = {
   locationById?: Maybe<LocationDto>;
   metric?: Maybe<TimeSeriesQueryResult>;
   minionById?: Maybe<MinionDto>;
+  usageStatsReport?: Maybe<UsageStatisticsReportDto>;
 };
 
 
@@ -383,6 +392,19 @@ export type TimeSeriesQueryResult = {
   __typename?: 'TimeSeriesQueryResult';
   data?: Maybe<TsData>;
   status?: Maybe<Scalars['String']>;
+};
+
+export type ToggleDataChoicesDtoInput = {
+  toggle: Scalars['Boolean'];
+};
+
+export type UsageStatisticsReportDto = {
+  __typename?: 'UsageStatisticsReportDTO';
+  deviceTypeCounts?: Maybe<Scalars['Map_String_IntegerScalar']>;
+  monitoredServices: Scalars['Long'];
+  nodes: Scalars['Long'];
+  systemId?: Maybe<Scalars['String']>;
+  version?: Maybe<Scalars['String']>;
 };
 
 export type AlarmsQueryVariables = Exact<{ [key: string]: never; }>;
