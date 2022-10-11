@@ -8,7 +8,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: {{ .Values.OpenNMS.Core.ServiceName }}-sa
-  namespace: {{ .Release.Namespace }}-sa
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: role-endpoints
