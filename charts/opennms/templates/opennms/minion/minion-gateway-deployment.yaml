@@ -17,6 +17,7 @@ spec:
         app: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
         ignite-cluster: core
     spec:
+      serviceAccountName: {{ .Values.OpenNMS.Minion.ServiceName }}-sa
       containers:
         - name: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
           image: {{ .Values.OpenNMS.MinionGateway.Image }}

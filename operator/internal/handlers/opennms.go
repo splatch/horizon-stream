@@ -19,6 +19,7 @@ import (
 	"github.com/OpenNMS/opennms-operator/internal/util/yaml"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -29,11 +30,15 @@ type OpenNMSHandler struct {
 func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Object {
 	//core
 	var configMap corev1.ConfigMap
+	var coreSA corev1.ServiceAccount
+	var coreRB rbacv1.RoleBinding
 	var coreService corev1.Service
 	var coreIgniteService corev1.Service
 	var coreDeployment appsv1.Deployment
 
 	yaml.LoadYaml(filepath("opennms/core/core-configmap.yaml"), values, &configMap)
+	yaml.LoadYaml(filepath("opennms/core/core-serviceaccount.yaml"), values, &coreSA)
+	yaml.LoadYaml(filepath("opennms/core/core-rolebinding.yaml"), values, &coreRB)
 	yaml.LoadYaml(filepath("opennms/core/core-service.yaml"), values, &coreService)
 	yaml.LoadYaml(filepath("opennms/core/core-ignite-service.yaml"), values, &coreIgniteService)
 	yaml.LoadYaml(filepath("opennms/core/core-deployment.yaml"), values, &coreDeployment)
@@ -54,6 +59,8 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 
 	//minion
 	var minionCM corev1.ConfigMap
+	var minionSA corev1.ServiceAccount
+	var minionRB rbacv1.RoleBinding
 	var minionSVC corev1.Service
 	var minionGatewaySVC corev1.Service
 	var minionGatewayIgniteSVC corev1.Service
@@ -61,6 +68,8 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 	var minionGatewayDeploy appsv1.Deployment
 
 	yaml.LoadYaml(filepath("opennms/minion/minion-configmap.yaml"), values, &minionCM)
+	yaml.LoadYaml(filepath("opennms/minion/minion-serviceaccount.yaml"), values, &minionSA)
+	yaml.LoadYaml(filepath("opennms/minion/minion-rolebinding.yaml"), values, &minionRB)
 	yaml.LoadYaml(filepath("opennms/minion/minion-service.yaml"), values, &minionSVC)
 	yaml.LoadYaml(filepath("opennms/minion/minion-gateway-service.yaml"), values, &minionGatewaySVC)
 	yaml.LoadYaml(filepath("opennms/minion/minion-gateway-ignite-service.yaml"), values, &minionGatewayIgniteSVC)
@@ -76,6 +85,8 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 
 	h.Config = []client.Object{
 		&configMap,
+		&coreSA,
+		&coreRB,
 		&coreService,
 		&coreIgniteService,
 		&coreDeployment,
@@ -84,6 +95,8 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 		&uiDeployment,
 		&uiService,
 		&minionCM,
+		&minionSA,
+		&minionRB,
 		&minionSVC,
 		&minionGatewaySVC,
 		&minionGatewayIgniteSVC,

@@ -21,6 +21,7 @@ spec:
         app: {{ .Values.OpenNMS.Core.ServiceName }}
         ignite-cluster: core
     spec:
+      serviceAccountName: {{ .Values.OpenNMS.Core.ServiceName }}-sa
       {{- if .Values.NodeRestrictions.Enabled }}
       tolerations:
         - effect: "NoSchedule"
