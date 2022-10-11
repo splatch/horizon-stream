@@ -45,11 +45,11 @@
                 </div>
               </div>
           </div>
-          <div class="pointer" data-test="col-latency">
+          <div class="pointer" @click="openGraphLatency(device.id as number)" data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
             <div :data-metric="device.icmp_latency" class="value" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
           </div>
-          <div class="pointer" data-test="col-uptime">
+          <div class="pointer" @click="openGraphUptime(device.id as number)" data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
             <div :data-metric="device.snmp_uptime" class="value" :class="device.uptimeBgColor">{{ getHumanReadableDuration(device.snmp_uptime) }}</div>
           </div>
@@ -61,6 +61,14 @@
       </TransitionGroup>
     </div>
   </TableCard>
+  <PrimaryModal :visible="graph.isVisible" :title="graph.title">
+    <template #content>
+      <Graph :data-sets="graph.dataSets" :label="graph.label" />
+    </template>
+    <template #footer>
+      <FeatherButton primary @click="graph.isVisible = false">Close</FeatherButton>
+    </template>
+  </PrimaryModal>
 </template>
 
 <script setup lang="ts">
@@ -75,6 +83,10 @@ import { ExtendedDeviceDTOWithBGColors } from '@/types/device'
 import { ComputedRef } from 'vue'
 import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './appliances.helpers'
 import { WidgetProps } from '@/types'
+import PrimaryModal from '@/components/Common/PrimaryModal.vue'
+import Graph from '@/components/Graphs/Graph.vue'
+import { PropType } from 'vue'
+import { DataSets } from '@/types/graphs'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
@@ -87,6 +99,29 @@ const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = com
 const searchValue = ref('')
 
 const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
+
+let graph = ref({
+  isVisible: false,
+  title: '',
+  dataSets: [] as PropType<DataSets>,
+  label: ''
+})
+const openGraphUptime = (nodeId: number) => {
+  graph.value = {
+    isVisible: true,
+    title: 'Uptime',
+    dataSets: [],
+    label: ''
+  }
+}
+const openGraphLatency = (nodeId: number) => {
+  graph.value = {
+    isVisible: true,
+    title: 'Latency',
+    dataSets: [],
+    label: ''
+  }
+}
 </script>
 
 <style lang="scss" scoped>

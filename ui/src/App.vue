@@ -49,7 +49,6 @@ body {
 
 .content-and-widget {
   display: flex;
-  padding: 0 1rem;
 }
 
 .main-content {
