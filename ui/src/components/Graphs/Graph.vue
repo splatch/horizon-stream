@@ -1,28 +1,28 @@
 <template>
-  <div class="feather-row">
-    <div class="feather-col-12 container">
-        <div class="canvas-wrapper">
-          <canvas :id="`${label}`"></canvas>
-        </div>
-    </div>
+  <div class="container">
+      <div class="canvas-wrapper">
+        <canvas :id="`${label}`"></canvas>
+      </div>
   </div>
 </template>
   
 <script setup lang="ts">
+import { useGraphs } from '@/composables/useGraphs'
 import { ChartOptions, TitleOptions, ChartData } from 'chart.js'
 import { Chart, registerables }  from 'chart.js'
-import zoomPlugin from 'chartjs-plugin-zoom'
+// import zoomPlugin from 'chartjs-plugin-zoom'
 import { PropType } from 'vue'
-import { DataSets } from '@/types/graphs'
 import { formatTimestamp } from './utils'
 import { uniq } from 'lodash'
 Chart.register(...registerables)
-Chart.register(zoomPlugin)
+// Chart.register(zoomPlugin) disable zoom until phase 2
+
+const graphs = useGraphs()
 
 const props = defineProps({
-  dataSets: {
+  metricStrings: {
     required: true,
-    type: Array as PropType<DataSets>
+    type: Array as PropType<string[]>
   },
   label: {
     required: true,
@@ -75,7 +75,7 @@ const options = computed<ChartOptions>(() => ({
 const xAxisLabels = computed(() => {
   const totalLabels = []
 
-  for (const dataSet of props.dataSets) {
+  for (const dataSet of graphs.dataSets.value) {
     const labels = dataSet.map((result) => {
       if (result.value) return formatTimestamp(result.value[0], 'hours')
     })
@@ -88,7 +88,7 @@ const xAxisLabels = computed(() => {
 const dataSets = computed(() => {
   const dataSets: any = []
 
-  for (const dataSet of props.dataSets) {
+  for (const dataSet of graphs.dataSets.value) {
     const dataObject = {
       label: dataSet[0].metric.__name__,
       data: dataSet.map((result) => {
@@ -130,7 +130,10 @@ const render = async (update?: boolean) => {
   }
 }
 
-onMounted(() => render())
+onMounted(async () => {
+  await graphs.getMetrics(props.metricStrings)
+  render()
+})
 </script>
   
 <style scoped lang="scss">
@@ -140,6 +143,6 @@ onMounted(() => render())
 }
 .canvas-wrapper {
   display: block;
-  height: 370px;
+  height: 300px;
 }
 </style>
