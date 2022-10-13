@@ -1,0 +1,10 @@
+spring:
+  kafka:
+    consumer:
+      group-id: "ts-consumer"
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.StringOrBytesSerializer
+    bootstrap-servers: localhost:59092
+    template:
+      default-topic: "task-set.results"

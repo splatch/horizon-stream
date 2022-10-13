@@ -33,6 +33,18 @@ OpenNMS:
       Requests:
         Cpu: "1"
         Memory: 1Gi
+  MetricsProcessor:
+    ServiceName: opennms-metrics-processor
+    Image: opennms/horizon-stream-metrics-processor
+    ImagePullPolicy: IfNotPresent
+    Replicas: 1
+    Resources:
+      Limits:
+        Cpu: "2"
+        Memory: 2Gi
+      Requests:
+        Cpu: "1"
+        Memory: 1Gi
   UI:
     Path: /
     ServiceName: opennms-ui
