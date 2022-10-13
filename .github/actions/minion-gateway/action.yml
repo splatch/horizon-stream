@@ -13,6 +13,7 @@ runs:
       run: |
         #cd ${{ inputs.dir-location }}
 
+        mvn -f minion-gateway clean install
         mvn -f minion-gateway/main jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-minion-gateway:local
 
       shell: bash
