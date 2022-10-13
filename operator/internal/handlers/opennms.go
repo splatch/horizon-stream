@@ -101,7 +101,7 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 		&minionGatewaySVC,
 		&minionGatewayIgniteSVC,
 		&minionDeploy,
-		&minionDeploy,
+		&minionGatewayDeploy,
 		&noteDeployment,
 		&noteService,
 	}
