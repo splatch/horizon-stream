@@ -13,6 +13,12 @@ runs:
       run: |
         #cd ${{ inputs.dir-location }}
 
-        skaffold build -m minion-gateway -t local
+        curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+        install skaffold /usr/local/bin/
+        #sudo install skaffold /usr/local/bin/
+        # Needs skaffold installed if we want to go that route.
+        
+        #skaffold build -m minion-gateway -t local
+
 
       shell: bash
