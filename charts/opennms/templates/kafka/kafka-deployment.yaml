@@ -20,6 +20,8 @@ spec:
           image: {{ .Values.Kafka.Image }}
           imagePullPolicy: {{ .Values.Kafka.ImagePullPolicy }}
           env:
+            - name: BITNAMI_DEBUG
+              value: "true"
             - name: KAFKA_ENABLE_KRAFT
               value: "yes"
             - name: KAFKA_CFG_BROKER_ID
@@ -35,7 +37,7 @@ spec:
             - name: KAFKA_CFG_LISTENERS
               value: "CLIENT://:{{ .Values.Kafka.Port }},CONTROLLER://:{{ .Values.Kafka.ControllerPort }},LOCALCLIENT://:{{ .Values.Kafka.LocalPort }}"
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: "CLIENT://{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }},CONTROLLER://localhost:{{ .Values.Kafka.ControllerPort }},LOCALCLIENT://localhost:{{ .Values.Kafka.LocalPort }}"
+              value: "CLIENT://{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }},LOCALCLIENT://localhost:{{ .Values.Kafka.LocalPort }}"
             - name: KAFKA_INTER_BROKER_LISTENER_NAME
               value: "CLIENT"
             - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
@@ -46,7 +48,7 @@ spec:
               memory: "{{ .Values.Kafka.Resources.Limits.Memory }}"
             requests:
               cpu: "{{ .Values.Kafka.Resources.Requests.Cpu }}"
-              memory: "{{ .Values.Keycloak.Resources.Requests.Memory }}"
+              memory: "{{ .Values.Kafka.Resources.Requests.Memory }}"
           ports:
             - name: client
               containerPort: {{ .Values.Kafka.Port }}
@@ -54,3 +56,19 @@ spec:
               containerPort: {{ .Values.Kafka.ControllerPort }}
             - name: local
               containerPort: {{ .Values.Kafka.LocalPort }}
+          livenessProbe:
+            failureThreshold: 15
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: client
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 15
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: client
+            timeoutSeconds: 5

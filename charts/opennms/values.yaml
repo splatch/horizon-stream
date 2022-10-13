@@ -164,7 +164,7 @@ Prometheus:
         Memory: 100Mi
 Kafka:
   ServiceName: onms-kafka
-  Image: bitnami/kafka:3.1.2
+  Image: bitnami/kafka:3.3.1-debian-11-r1
   ImagePullPolicy: IfNotPresent
   Replicas: 1 
   Port: 9092
@@ -172,11 +172,11 @@ Kafka:
   LocalPort: 59092
   Resources:
     Limits:
+      Cpu: "2"
+      Memory: 2Gi
+    Requests:
       Cpu: 500m
       Memory: 512Mi
-    Requests:
-      Cpu: 100m
-      Memory: 256Mi
   VolumeSize: 10Gi
 MailServer:
   ServiceName: mail-server
