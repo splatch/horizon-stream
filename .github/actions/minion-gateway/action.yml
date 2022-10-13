@@ -13,6 +13,6 @@ runs:
       run: |
         #cd ${{ inputs.dir-location }}
 
-	skaffold build -m minion-gateway -t local
+        skaffold build -m minion-gateway -t local
 
       shell: bash
