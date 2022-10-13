@@ -11,12 +11,9 @@ runs:
   steps:
     - name: global data
       run: |
-        echo "Testing actions - " ${{ inputs.dir-location }}
 
-        netstat -ltan
+        #cd ${{ inputs.dir-location }}
 
-        cd ${{ inputs.dir-location }}
-
-        mvn install -Dtest=true -DfailIfNoTests=false -DskipITs=true -DskipTests=false -Ddocker.image=opennms/horizon-stream-minion:local -Ddocker.skipPush=false
+        mvn -f minion install -Pbuild-docker-images-enabled -DskipTests -Ddocker.image=opennms/horizon-stream-minion:local -Ddocker.skipPush=true
 
       shell: bash
