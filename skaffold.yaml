@@ -173,7 +173,7 @@ portForward:
     localPort: 18080
   - resourceType: deployment
     resourceName: onms-kafka
-    port: 9092 # kafka tcp local client port
+    port: 59092 # kafka tcp local client port
     localPort: 59092 # default port for kafka broker
   - resourceType: deployment
     resourceName: ingress-nginx-controller

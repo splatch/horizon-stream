@@ -15,6 +15,7 @@
 	<description>metrics-processor</description>
 	<properties>
 		<java.version>11</java.version>
+        <prometheus.version>0.16.0</prometheus.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -42,14 +43,24 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>protobuf</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+        <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_pushgateway</artifactId>
+            <version>${prometheus.version}</version>
         </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

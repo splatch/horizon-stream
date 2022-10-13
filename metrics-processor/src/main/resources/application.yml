@@ -4,7 +4,9 @@ spring:
       group-id: "ts-consumer"
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.StringOrBytesSerializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
     bootstrap-servers: localhost:59092
     template:
       default-topic: "task-set.results"
+
+prometheus.pushgateway.url: localhost:21080

@@ -26,25 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.tsdata.config;
+package org.opennms.horizon.tsdata;
 
+import static org.apache.kafka.clients.CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG;
+import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG;
+import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG;
+import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.KStream;
+import org.opennms.horizon.tsdata.metrics.MetricsPushAdapter;
+import org.opennms.horizon.tsdata.metrics.PrometheusMetricsPushAdapter;
+import org.opennms.taskset.contract.TaskSetResults;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.annotation.EnableKafkaStreams;
+import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
+import org.springframework.kafka.config.KafkaStreamsConfiguration;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 
 @Configuration
-//@EnableKafka
-//@EnableKafkaStreams
-public class KafkaConfig {
+@EnableKafka
+@EnableKafkaStreams
+public class ApplicationConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
     @Value("${spring.kafka.consumer.group-id}")
     private String groupID;
     @Value("${spring.kafka.template.default-topic}")
     private String topic;
+    @Value("${prometheus.pushgateway.url}")
+    private String dataPushURL;
 
-
-
-    /* @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
+    @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     public KafkaStreamsConfiguration streamConfig() {
         Map<String, Object> props = new HashMap<>();
         props.put(APPLICATION_ID_CONFIG, "ts-data-stream");
@@ -64,8 +86,12 @@ public class KafkaConfig {
                 throw new RuntimeException(e);
             }
         });
-        resultsStream.print(Printed.toSysOut());
         return resultsStream;
-    }*/
+    }
+
+    @Bean
+    public MetricsPushAdapter createPushAdapter() {
+        return new PrometheusMetricsPushAdapter(dataPushURL);
+    }
 }
 
