@@ -14,7 +14,6 @@ runs:
 
         #cd ${{ inputs.dir-location }}
 
-        mvn -f minion clean install
-        mvn -f minion install -Pbuild-docker-images-enabled -DskipTests -Ddocker.image=opennms/horizon-stream-minion:local -Ddocker.skipPush=true
+        mvn -f minion clean install -Pbuild-docker-images-enabled -DskipTests -Ddocker.image=opennms/horizon-stream-minion:local -Ddocker.skipPush=true
 
       shell: bash
