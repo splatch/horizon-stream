@@ -88,6 +88,18 @@ jobs:
         with:
           dir-location: 'notifications'
 
+      - name: feature-minion
+        id: action-minion
+        uses: ./.github/actions/minion
+        with:
+          dir-location: 'minion'
+
+      - name: feature-minion-gateway
+        id: action-minion-gateway
+        uses: ./.github/actions/minion-gateway
+        with:
+          dir-location: 'minion-gateway'
+
       #- name: external-it
       #  id: action-external-it
       #  uses: ./.github/actions/external-it
