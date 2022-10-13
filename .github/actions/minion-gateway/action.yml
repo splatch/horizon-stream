@@ -1,0 +1,18 @@
+name: 'Build and test Minion Gateway'
+description: 'This implements unit and built-time integration tests on minion gateway, dir minion-gateway.'
+inputs:
+  dir-location:
+    description: 'The dir containing the change.'
+    required: true
+    default: 'none'
+
+runs:
+  using: "composite"
+  steps:
+    - name: global data
+      run: |
+        #cd ${{ inputs.dir-location }}
+
+	skaffold build -m minion-gateway -t local
+
+      shell: bash
