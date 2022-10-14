@@ -69,7 +69,6 @@ public class TSDataProcessor {
         stream.foreach((k, results)-> CompletableFuture.supplyAsync(()->{
             List<TaskResult> resultList = results.getResultsList();
             for (TaskResult oneResult : resultList) {
-                log.info("pushing {}", oneResult);
                 // TODO: update all returned metrics from the monitor
                 // TODO: support monitor results vs detector results
                 try {
