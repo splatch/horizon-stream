@@ -30,6 +30,7 @@ package org.opennms.horizon.tsdata;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -65,7 +66,7 @@ public class TSDataProcessor {
 
     private void processTaskResults() {
         log.info("start processing messages");
-        stream.foreach((k, results)->{
+        stream.foreach((k, results)-> CompletableFuture.supplyAsync(()->{
             List<TaskResult> resultList = results.getResultsList();
             for (TaskResult oneResult : resultList) {
                 log.info("pushing {}", oneResult);
@@ -102,7 +103,9 @@ public class TSDataProcessor {
                     // TODO: throttle
                     log.warn("Error processing task result", exc);
                 }
-            }});
+            }
+            return null;
+        }));
     }
 
     private void processIcmpMonitorResponse(TaskResult taskResult, MonitorResponse monitorResponse) {
@@ -136,10 +139,10 @@ public class TSDataProcessor {
 
     private void updateSnmpMetrics(String ipAddress, String location, String systemId, String status, double responseTime, Map<String, Double> metrics) {
         String[] labelValues = commonUpdateMonitorMetrics(gaugeFactory.lookupGauge(GaugeFactory.METRICS_NAME_SNMP_TRIP), ipAddress, location, systemId, responseTime, metrics);
-        updateSnmpUptime(ipAddress, location, systemId, status, labelValues);
+        updateSnmpUptime(ipAddress, location, status, labelValues);
     }
 
-    private void updateSnmpUptime(String ipAddress, String location, String systemId, String status, String[] labelValues) {
+    private void updateSnmpUptime(String ipAddress, String location, String status, String[] labelValues) {
         if ("Up".equalsIgnoreCase(status)) {
             Long firstUpTime = snmpUpTimeCache.get(ipAddress);
             long totalUpTimeInNanoSec = 0;
