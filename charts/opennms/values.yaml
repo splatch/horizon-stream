@@ -40,11 +40,11 @@ OpenNMS:
     Replicas: 1
     Resources:
       Limits:
-        Cpu: "2"
-        Memory: 2Gi
+        Cpu: "1"
+        Memory: 512Mi
       Requests:
         Cpu: "1"
-        Memory: 1Gi
+        Memory: 256Mi
   UI:
     Path: /
     ServiceName: opennms-ui
