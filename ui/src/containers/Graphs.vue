@@ -22,16 +22,18 @@ onMounted(() => store.getMinionUptime())
 </script>
   
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@use "@featherds/styles/themes/variables";
+@use "@featherds/styles/mixins/typography";
+
 .container {
-  border: 2px solid var($shade-4);
+  border: 2px solid var(variables.$shade-4);
   margin-bottom: 15px;
 
   .header {
-    @include headline3();
+    @include typography.headline3();
     text-align: center;
     padding: 6px;
-    background: var($shade-4);
+    background: var(variables.$shade-4);
   }
 }
 </style>

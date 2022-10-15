@@ -38,26 +38,26 @@ const options = computed<ChartOptions>(() => ({
   plugins: {
     title: {
       display: true,
-      text: props.label,
+      text: props.label
     } as TitleOptions,
     zoom: {
       zoom: {
         wheel: {
-          enabled: true,
+          enabled: true
         },
-        mode: 'x',
+        mode: 'x'
       },
       pan: {
         enabled: true,
         mode: 'x'
       }
-    },
+    }
   },
   scales: {
     y: {
       title: {
         display: true,
-        text: props.label,
+        text: props.label
       } as TitleOptions,
       ticks: {
         maxTicksLimit: 8
@@ -134,7 +134,6 @@ onMounted(() => render())
 </script>
   
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
 .container {
   position: relative;
 }

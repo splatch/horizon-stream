@@ -125,9 +125,11 @@ const openGraphLatency = (nodeId: number) => {
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
+@use "@featherds/styles/themes/variables";
+@use "@featherds/styles/mixins/typography";
+@use "@/styles/_app";
+@use "@/styles/_transitionDataTable";
+@use "@/styles/_statusBackground";
 
 .header {
   display: flex;
@@ -136,7 +138,7 @@ const openGraphLatency = (nodeId: number) => {
   .title-container {
     display: flex;
     .title {
-      @include headline3;
+      @include typography.headline3;
       margin-left: 15px;
       margin-top: 2px;
     }
@@ -151,7 +153,7 @@ const openGraphLatency = (nodeId: number) => {
   }
 }
 .card {
-  border: 1px solid var($shade-4);
+  border: 1px solid var(variables.$shade-4);
   display: flex;
   margin-bottom: 10px;
   border-radius: 5px;
@@ -167,9 +169,9 @@ const openGraphLatency = (nodeId: number) => {
     font-size: 11px;
 
     &.name {
-      @include subtitle1;
+      @include typography.subtitle1;
       width: 40%;
-      color: var($primary);
+      color: var(variables.$primary);
 
       .name-cell {
         flex-direction: row;
@@ -179,7 +181,7 @@ const openGraphLatency = (nodeId: number) => {
         align-items: center;
         .icon {
           font-size: 25px;
-          color: var($shade-2);
+          color: var(variables.$shade-2);
         }
 
         .text {
@@ -191,7 +193,7 @@ const openGraphLatency = (nodeId: number) => {
           }
           .server {
             line-height: 10px;
-            color: var($secondary)
+            color: var(variables.$secondary)
           }
         }
       }
