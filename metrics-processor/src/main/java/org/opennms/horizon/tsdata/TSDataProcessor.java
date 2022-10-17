@@ -94,7 +94,7 @@ public class TSDataProcessor {
                             log.info("Have detector response: task-id={}; detected={}", result.getId(), detectorResponse.getDetected());
                         }
                     } else {
-                        log.warn("Task result appears to be missing the echo response details");
+                        log.warn("Task result appears to be missing the echo response details with results {}", results);
                     }
                 } catch (Exception exc) {
                     // TODO: throttle
