@@ -28,7 +28,6 @@
 
 package org.opennms.horizon.tsdata;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,64 +35,63 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.kafka.streams.kstream.KStream;
 import org.opennms.horizon.tsdata.metrics.GaugeFactory;
 import org.opennms.horizon.tsdata.metrics.MetricsPushAdapter;
 import org.opennms.taskset.contract.DetectorResponse;
 import org.opennms.taskset.contract.MonitorResponse;
 import org.opennms.taskset.contract.TaskResult;
 import org.opennms.taskset.contract.TaskSetResults;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.prometheus.client.Gauge;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@PropertySource("classpath:application.yml")
 public class TSDataProcessor {
     public static final Long INVALID_UP_TIME = -1L;
     private final MetricsPushAdapter pushAdapter;
-    private final KStream<String, TaskSetResults> stream;
     private final GaugeFactory gaugeFactory;
     private final Map<String, Long> snmpUpTimeCache = new ConcurrentHashMap<>();
 
-    public TSDataProcessor(MetricsPushAdapter pushAdapter, KStream<String, TaskSetResults> stream, GaugeFactory gaugeFactory) {
+    public TSDataProcessor(MetricsPushAdapter pushAdapter, GaugeFactory gaugeFactory) {
         this.pushAdapter = pushAdapter;
-        this.stream = stream;
         this.gaugeFactory = gaugeFactory;
-        processTaskResults();
     }
 
-    private void processTaskResults() {
-        log.info("start processing messages");
-        stream.foreach((k, results)-> CompletableFuture.supplyAsync(()->{
-            List<TaskResult> resultList = results.getResultsList();
-            for (TaskResult oneResult : resultList) {
-                // TODO: update all returned metrics from the monitor
-                // TODO: support monitor results vs detector results
+    @KafkaListener(topics = "${kafka.topics}", concurrency = "1")
+    public void consume(byte[] data) {
+        try {
+            TaskSetResults results = TaskSetResults.parseFrom(data);
+            results.getResultsList().forEach(result -> CompletableFuture.supplyAsync(()->{
                 try {
-                    if (oneResult != null) {
-                        if (oneResult.hasMonitorResponse()) {
-                            MonitorResponse monitorResponse = oneResult.getMonitorResponse();
+                    if (result != null) {
+                        if (result.hasMonitorResponse()) {
+                            MonitorResponse monitorResponse = result.getMonitorResponse();
 
                             switch (monitorResponse.getMonitorType()) {
                                 case ICMP:
-                                    processIcmpMonitorResponse(oneResult, monitorResponse);
+                                    processIcmpMonitorResponse(result, monitorResponse);
                                     break;
 
                                 case SNMP:
-                                    processSnmpMonitorResponse(oneResult, monitorResponse);
+                                    processSnmpMonitorResponse(result, monitorResponse);
                                     break;
 
                                 default:
                                     log.warn("Have response for unrecognized monitor type: type={}", monitorResponse.getMonitorType());
                                     break;
                             }
-                        } else if (oneResult.hasDetectorResponse()) {
-                            DetectorResponse detectorResponse = oneResult.getDetectorResponse();
+                        } else if (result.hasDetectorResponse()) {
+                            DetectorResponse detectorResponse = result.getDetectorResponse();
 
                             // TBD: how to process?
-                            log.info("Have detector response: task-id={}; detected={}", oneResult.getId(), detectorResponse.getDetected());
+                            log.info("Have detector response: task-id={}; detected={}", result.getId(), detectorResponse.getDetected());
                         }
                     } else {
                         log.warn("Task result appears to be missing the echo response details");
@@ -102,9 +100,11 @@ public class TSDataProcessor {
                     // TODO: throttle
                     log.warn("Error processing task result", exc);
                 }
-            }
-            return null;
-        }));
+                return null;
+            }));
+        } catch (InvalidProtocolBufferException e) {
+            log.error("Invalid data from kafka", e);
+        }
     }
 
     private void processIcmpMonitorResponse(TaskResult taskResult, MonitorResponse monitorResponse) {
