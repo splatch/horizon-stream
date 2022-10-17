@@ -36,6 +36,8 @@ requires:
     path: shared-lib/skaffold.yaml
   - configs: ["horizon-stream-ui"]
     path: ui/skaffold.yaml
+  - configs: ["minion-gateway"]
+    path: minion-gateway/skaffold.yaml
   - configs: ["operator"]
     path: operator/skaffold.yaml
 build:
@@ -123,25 +125,21 @@ portForward:
     port: 5005 # Debug
     localPort: 11050
   - resourceType: deployment
-    resourceName: my-horizon-stream-minion
+    resourceName: opennms-minion
     port: 8181 # HTTP
     localPort: 12080
   - resourceType: deployment
-    resourceName: my-horizon-stream-minion
+    resourceName: opennms-minion
     port: 8102 # SSH
     localPort: 12022
   - resourceType: deployment
-    resourceName: my-horizon-stream-minion
+    resourceName: opennms-minion
     port: 5005 # Debug
     localPort: 12050
   - resourceType: deployment
     resourceName: onms-keycloak
     port: 8080 # HTTP
     localPort: 26080
-  - resourceType: deployment
-    resourceName: opennms-minion
-    port: 8201 # SSH
-    localPort: 27022
   - resourceType: deployment
     resourceName: mail-server
     port: 8025 # HTTP
@@ -186,6 +184,8 @@ deploy:
           OpenNMS.API.Image: opennms/horizon-stream-rest-server
           OpenNMS.UI.Image: opennms/horizon-stream-ui
           OpenNMS.Notification.Image: opennms/horizon-stream-notification
+          OpenNMS.Minion.Image: opennms/horizon-stream-minion
+          OpenNMS.MinionGateway.Image: opennms/horizon-stream-minion-gateway
           Keycloak.Image: opennms/horizon-stream-keycloak-dev
           Grafana.Image: opennms/horizon-stream-grafana-dev
 profiles:

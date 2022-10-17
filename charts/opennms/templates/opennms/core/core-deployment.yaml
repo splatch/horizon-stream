@@ -6,6 +6,7 @@ metadata:
   labels:
     app: {{ .Values.OpenNMS.Core.ServiceName }}
     app.kubernetes.io/name: {{ .Values.OpenNMS.Core.ServiceName }}
+    ignite-cluster: core
   annotations:
     autoupdate: "true"
 spec:
@@ -13,11 +14,14 @@ spec:
   selector:
     matchLabels:
       app: {{ .Values.OpenNMS.Core.ServiceName }}
+      ignite-cluster: core
   template:
     metadata:
       labels:
         app: {{ .Values.OpenNMS.Core.ServiceName }}
+        ignite-cluster: core
     spec:
+      serviceAccountName: {{ .Values.OpenNMS.Core.ServiceName }}-sa
       {{- if .Values.NodeRestrictions.Enabled }}
       tolerations:
         - effect: "NoSchedule"
@@ -68,6 +72,8 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: opennmsPwd
+            - name: ORG_OPENNMS_CORE_IGNITE_CLIENT_KUBERNETESSERVICENAME
+              value: "{{ .Values.OpenNMS.MinionGateway.ServiceName }}-ignite"
             - name: KAFKA_BROKER_HOST
               value: "{{ .Values.Kafka.ServiceName }}"
             - name: KAFKA_BROKER_PORT
@@ -107,7 +113,11 @@ spec:
             - name: http
               containerPort: {{ .Values.OpenNMS.Core.HttpPort }}
             - name: grpc
-              containerPort: {{ .Values.OpenNMS.Core.GrpcPort }}
+              containerPort: {{ .Values.OpenNMS.Core.GrpcPort }}                        
+            - name: ig-cluster
+              containerPort: {{ .Values.OpenNMS.Core.IgniteClusterPort }}
+            - name: ig-discovery
+              containerPort: {{ .Values.OpenNMS.Core.IgniteDiscoveryPort }}
           {{- if not .Values.TestDeploy }}
 {{/*    TODO  livenessProbe:*/}}
 {{/*          readinessProbe:*/}}
