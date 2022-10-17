@@ -48,19 +48,19 @@ type OpenNMSReconciler struct {
 	ImageChecker     image.ImageUpdater
 }
 
-func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (reconcile.Result, error) {
 	instanceCRD, err := crd.GetInstance(ctx, r.Client, req.NamespacedName)
 	if err != nil && errors.IsNotFound(err) {
 		if instance, ok := r.Instances[req.Name]; ok {
 			r.Log.Info("known instance no longer not exists, forgetting it", "name", instance.Name)
 			delete(r.Instances, instance.Name)
-			return ctrl.Result{}, nil
+			return reconcile.Result{}, nil
 		} else {
-			return ctrl.Result{}, nil
+			return reconcile.Result{}, nil
 		}
 	} else if err != nil {
 		r.Log.Error(err, "failed to get crd for instance", "name", req.Name)
-		return ctrl.Result{}, err
+		return reconcile.Result{}, err
 	}
 	instance, ok := r.Instances[instanceCRD.Name]
 	if !ok {
@@ -68,7 +68,7 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 		instance.Init(ctx, r.Client, r.DefaultValues, r.StandardHandlers, instanceCRD)
 		r.Instances[instanceCRD.Name] = instance
 	} else if instance.Deployed && instance.CRD.Spec.DeployOnly {
-		return ctrl.Result{RequeueAfter: 30 * time.Second}, nil
+		return reconcile.Result{RequeueAfter: 30 * time.Second}, nil
 	} else {
 		instance.Update(ctx, instanceCRD)
 	}
@@ -91,15 +91,15 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 
 				if err := ctrl.SetControllerReference(&instance.CRD, resource, r.Scheme); err != nil {
 					r.Log.Error(err, "error setting resource controller reference", "controller", instance, "resource", resource, "kind", kind, "error", err)
-					return ctrl.Result{}, err
+					return reconcile.Result{}, err
 				}
 
 				if err := r.Create(ctx, resource); err != nil {
 					r.Log.Error(err, "error creating resource", "namespace", resource.GetNamespace(), "name", resource.GetName(), "kind", kind, "error", err)
-					return ctrl.Result{}, err
+					return reconcile.Result{}, err
 				}
 				if kind == "v1.Deployment" || kind == "v1.Job" || kind == "v1.StatefulSet" {
-					return ctrl.Result{RequeueAfter: 10 * time.Second}, nil
+					return reconcile.Result{RequeueAfter: 10 * time.Second}, nil
 				}
 			} else {
 				r.Log.Info("checking resource for update", "namespace", resource.GetNamespace(), "name", resource.GetName(), "kind", kind)
@@ -148,7 +148,7 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	// all clear, instance is ready
 	r.updateStatus(ctx, &instance.CRD, true, "instance ready")
 	instance.Deployed = true
-	return ctrl.Result{}, nil
+	return reconcile.Result{RequeueAfter: 30 * time.Second}, nil
 }
 
 func (r *OpenNMSReconciler) getResourceFromCluster(ctx context.Context, resource client.Object) (client.Object, bool) {

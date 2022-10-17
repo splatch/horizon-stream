@@ -24,7 +24,6 @@ import (
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"time"
@@ -36,12 +35,12 @@ func (r *OpenNMSReconciler) updateDeployment(ctx context.Context, instance *v1al
 		if err := r.Update(ctx, resource); err != nil {
 			return &reconcile.Result{}, err
 		}
-		return &ctrl.Result{RequeueAfter: 10 * time.Second}, nil
+		return &reconcile.Result{RequeueAfter: 10 * time.Second}, nil
 	} else {
 		// Determine if the resources are fully created, otherwise wait longer
 		deployment := deployedResource.(*v1.Deployment)
 		if deployment.Status.ReadyReplicas != deployment.Status.Replicas {
-			return &ctrl.Result{RequeueAfter: 10 * time.Second}, nil
+			return &reconcile.Result{RequeueAfter: 10 * time.Second}, nil
 		}
 	}
 	return nil, nil
@@ -53,12 +52,12 @@ func (r *OpenNMSReconciler) updateStatefulSet(ctx context.Context, instance *v1a
 		if err := r.Update(ctx, resource); err != nil {
 			return &reconcile.Result{}, err
 		}
-		return &ctrl.Result{RequeueAfter: 10 * time.Second}, nil
+		return &reconcile.Result{RequeueAfter: 10 * time.Second}, nil
 	} else {
 		// Determine if the resources are fully created, otherwise wait longer
 		statefulset := deployedResource.(*v1.StatefulSet)
 		if statefulset.Status.ReadyReplicas != statefulset.Status.Replicas {
-			return &ctrl.Result{RequeueAfter: 10 * time.Second}, nil
+			return &reconcile.Result{RequeueAfter: 10 * time.Second}, nil
 		}
 	}
 
@@ -68,7 +67,7 @@ func (r *OpenNMSReconciler) updateStatefulSet(ctx context.Context, instance *v1a
 func (r *OpenNMSReconciler) updateJob(deployedResource client.Object) (*reconcile.Result, error) {
 	job := deployedResource.(*batchv1.Job)
 	if job.Status.Succeeded < 1 {
-		return &ctrl.Result{RequeueAfter: 10 * time.Second}, nil
+		return &reconcile.Result{RequeueAfter: 10 * time.Second}, nil
 	}
 	return nil, nil
 }

@@ -26,7 +26,7 @@ spec:
             requests:
               cpu: "{{ .Values.Keycloak.Resources.Requests.Cpu }}"
               memory: "{{ .Values.Keycloak.Resources.Requests.Memory }}"
-          args: ['--import-realm']
+          args: ['--optimized', '--import-realm']
           env:
             - name: KC_CACHE_STACK
               value: kubernetes
