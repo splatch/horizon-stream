@@ -102,36 +102,42 @@ describe('DevicesTable.vue', () => {
         setAppliancesStore({devices: computed(() => deviceItems)}) 
       })
   
+      /**
+       * Construct an array containing arrays of metric value and background
+       * @param elems Elements of the selector
+       * @returns Array of arrays [[undefined, 'unknown'], ['-10', 'failed'],...]
+       */
       const formatValueBackground = (elems: any[]) => elems.map((elem: any) => {
-        const css = elem.classes().filter((cl: string | string[]) => cl.indexOf('bg-') >= 0)[0]
+        const css = elem.classes().filter((cl: string | string[]) => ['unknown',  'ok', 'failed'].find(status => status === cl))[0]
+
         return [elem.attributes('data-metric'), css]
       })
 
       test('Latency OK/FAILED/UNKNOWN should have the corresponding background color', () => {
         const wrapper = mount(DevicesTable)
+
         const latencies = formatValueBackground(wrapper.findAll('[data-test="col-latency"] > .value'))
         const expectedValueBackground = [
-          [undefined, 'bg-unknown'],
-          [undefined, 'bg-unknown'],
-          ['-10', 'bg-failed'],
-          ['0', 'bg-ok'],
-          ['10', 'bg-ok']
+          [undefined, 'unknown'],
+          [undefined, 'unknown'],
+          ['-10', 'failed'],
+          ['0', 'ok'],
+          ['10', 'ok']
         ]
-
         expect(latencies).toStrictEqual(expectedValueBackground)
       })
         
       test('Uptime OK/FAILED/UNKNOWN should have the corresponding background color', () => {
         const wrapper = mount(DevicesTable)
+
         const uptimes = formatValueBackground(wrapper.findAll('[data-test="col-uptime"] > .value'))
         const expectedValueBackground = [
-          [undefined, 'bg-unknown'],
-          [undefined, 'bg-unknown'],
-          ['-10', 'bg-failed'],
-          ['0', 'bg-ok'],
-          ['10', 'bg-ok']
+          [undefined, 'unknown'],
+          [undefined, 'unknown'],
+          ['-10', 'failed'],
+          ['0', 'ok'],
+          ['10', 'ok'] 
         ]
-
         expect(uptimes).toStrictEqual(expectedValueBackground)
       })
     })
@@ -158,13 +164,14 @@ describe('DevicesTable.vue', () => {
       })
 
       /**
-       * Filter in status' value and background css class
+       * Construct an array containing arrays of status and background
        * @param elems Elements of the selector
-       * @returns Array of arrays [['OK', 'bg-ok'],[...]]
+       * @returns Array of arrays [['UP', 'ok'],[...]]
        */
       const formatValueBackground = (elems: any[]) => elems.map((elem: { classes: () => any; text: () => any }) => {
         const val = ['UP','DOWN'].filter((val: string) => elem.text().indexOf(val) >= 0)[0]
-        const css = elem.classes().filter((cl: string | string[]) => cl.indexOf('bg-') >= 0)[0]
+        const css = elem.classes().filter((cl: string | string[]) => ['ok', 'failed'].find(status => status === cl))[0]
+        
         return [ val, css ]
       })
 
@@ -173,8 +180,8 @@ describe('DevicesTable.vue', () => {
 
         const statuses = formatValueBackground(wrapper.findAll('[data-test="col-status"] > .value'))
         const expectedValueBackground = [
-          ['UP', 'bg-ok'],
-          ['DOWN', 'bg-failed']
+          ['UP', 'ok'],
+          ['DOWN', 'failed']
         ]
         expect(statuses).toStrictEqual(expectedValueBackground)
       })
