@@ -108,7 +108,7 @@ describe('DevicesTable.vue', () => {
        * @returns Array of arrays [[undefined, 'unknown'], ['-10', 'failed'],...]
        */
       const formatValueBackground = (elems: any[]) => elems.map((elem: any) => {
-        const css = elem.classes().filter((cl: string | string[]) => ['unknown',  'ok', 'failed'].find(status => status === cl))[0]
+        const css = elem.classes().filter((cl: string | string[]) => ['unknown', 'ok', 'failed'].find(status => status === cl))[0]
 
         return [elem.attributes('data-metric'), css]
       })

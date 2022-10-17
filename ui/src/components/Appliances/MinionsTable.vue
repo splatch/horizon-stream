@@ -29,12 +29,12 @@
             <td>{{ minion.lastUpdated }}</td>
             <td>{{ minion.id }}</td>
             <td>
-              <div class="bg-status" :class="minion.latencyBgColor">
+              <div :data-metric="minion.icmp_latency" class="bg-status" :class="minion.latencyBgColor" data-test="minion-item-latency">
                 {{ formatLatencyDisplay(minion.icmp_latency) }}
               </div>
             </td>
             <td>
-              <div class="bg-status" :class="minion.latencyBgColor">
+              <div :data-metric="minion.snmp_uptime" class="bg-status" :class="minion.uptimeBgColor" data-test="minion-item-uptime">
                 {{ getHumanReadableDuration(minion.snmp_uptime) }}
               </div>
             </td>

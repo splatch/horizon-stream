@@ -61,8 +61,9 @@ export const formatLatencyDisplay = (latency: any) => {
   let display = '--' // undefined | null
 
   if(![undefined, null].includes(latency)) {
-    if(latency > 0 || latency < 0) display = `${latency}ms`
-    else display = latency
+    display = latency
+
+    if(latency !== 0) display += 'ms'
   }
 
   return display
