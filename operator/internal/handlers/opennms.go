@@ -27,7 +27,7 @@ type OpenNMSHandler struct {
 	ServiceHandlerObject
 }
 
-func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Object {
+func (h *OpenNMSHandler) UpdateConfig(values values.TemplateValues) {
 	//core
 	var configMap corev1.ConfigMap
 	var coreSA corev1.ServiceAccount
@@ -101,10 +101,8 @@ func (h *OpenNMSHandler) ProvideConfig(values values.TemplateValues) []client.Ob
 		&minionGatewaySVC,
 		&minionGatewayIgniteSVC,
 		&minionDeploy,
-		&minionDeploy,
+		&minionGatewayDeploy,
 		&noteDeployment,
 		&noteService,
 	}
-
-	return h.Config
 }

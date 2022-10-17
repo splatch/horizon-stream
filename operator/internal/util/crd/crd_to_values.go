@@ -203,6 +203,9 @@ func overrideImages(v values.Values) values.Values {
 
 // getPostgresValues - get Postgres DB values from the CRD
 func getPostgresValues(spec v1alpha1.OpenNMSSpec, v values.PostgresValues) values.PostgresValues {
+	if spec.Postgres.Image != "" {
+		v.Image = spec.Postgres.Image
+	}
 	if spec.Postgres.Disk != "" {
 		v.VolumeSize = spec.Postgres.Disk
 	}

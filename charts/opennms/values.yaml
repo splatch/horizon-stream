@@ -103,7 +103,7 @@ OpenNMS:
         Memory: 250Mi
 Postgres:
   ServiceName: postgres
-  Image: postgres
+  Image: postgres:14.5-alpine
   ImagePullPolicy: IfNotPresent
   Replicas: 1
   AdminPassword: notset
@@ -119,6 +119,7 @@ Keycloak:
   Port: 8080
   HttpsPort: 8443
   HostnamePort: ~
+  HostnameAdminUrl: ~
   Replicas: 1
   ServiceName: onms-keycloak
   Resources:
