@@ -30,6 +30,9 @@ public class MinionLookupServiceImpl implements MinionLookupService {
 
         this.ignite = ignite;
 
+        // We need to be able to lock the caches when inserting new values, to insure that there is no race condition
+        // with competing threads that may be trying to insert the same new location. So we will configure both caches
+        // to be TRANSACTIONAL and be ready for locking.
         CacheConfiguration<String, UUID> minionByIdCacheConfig = new CacheConfiguration<String, UUID>().
             setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL).
             setName(MINIONS_BY_ID);
