@@ -107,6 +107,7 @@ Keycloak:
   Port: 8080
   HttpsPort: 8443
   HostnamePort: ~
+  HostnameAdminUrl: ~
   Replicas: 1
   ServiceName: onms-keycloak
   Resources:
