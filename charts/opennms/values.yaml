@@ -43,7 +43,7 @@ OpenNMS:
         Cpu: "1"
         Memory: 512Mi
       Requests:
-        Cpu: "1"
+        Cpu: 250m
         Memory: 256Mi
   UI:
     Path: /

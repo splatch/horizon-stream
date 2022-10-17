@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<artifactId>metrics-processor</artifactId>
-    <name>OpenNMS Horizon::Time Serials Data</name>
+    <name>OpenNMS Horizon::Metrics Processor</name>
 	<version>0.1.0-SNAPSHOT</version>
 	<description>metrics-processor</description>
     <properties>
