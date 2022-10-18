@@ -1,29 +1,26 @@
-## Tilt config ##
+# Tilt config #
 load('ext://tilt_inspector', 'tilt_inspector')
 tilt_inspector()
 
 secret_settings(disable_scrub=True)  ## TODO: update secret values so we can reenable scrub
-update_settings(suppress_unused_image_warnings=['opennms/horizon-stream-grafana', 'opennms/horizon-stream-keycloak'])
 
-## Helm ##
+# Deployment #
 k8s_yaml(
     helm(
         'charts/opennms',
         values=['./skaffold-helm-values.yaml'],
-        set=['Keycloak.Image=opennms/horizon-stream-keycloak-dev',
-             'Grafana.Image=opennms/horizon-stream-grafana-dev'
-             ],
     )
 )
 
-## pre-build dependencies ##
+# Builds #
+## Shared ##
 local_resource(
     'parent-pom',
     cmd='mvn clean install -N',
     dir='parent-pom',
     deps=['./parent-pom'],
-    ignore=['**/target/'],
-    labels=['compilation'],
+    ignore=['**/target'],
+    labels=['opennms'],
 )
 
 local_resource(
@@ -31,19 +28,17 @@ local_resource(
     cmd='mvn clean install -DskipTests=true',
     dir='shared-lib',
     deps=['./shared-lib'],
-    ignore=['**/target/'],
+    ignore=['**/target'],
     labels=['opennms'],
 )
 
+## OpenNMS ##
 ### Core ###
 custom_build(
     'opennms/horizon-stream-core',
     'mvn install -Pbuild-docker-images-enabled -DskipTests -Ddocker.image=$EXPECTED_REF -f platform',
     deps=['./platform'],
     ignore=['**/target', '**/dependency-reduced-pom.xml'],
-    # live_update=[
-    #     sync('./platform/*.jar', '/opt/horizon-stream/deploy'),
-    # ],
 )
 
 k8s_resource(
@@ -52,80 +47,13 @@ k8s_resource(
     labels=['opennms'],
 )
 
-### Minion ###
-custom_build(
-    'opennms/horizon-stream-minion',
-    'mvn install -f minion -Ddocker.image=$EXPECTED_REF -Dtest=false -DfailIfNoTests=false -DskipITs=true -DskipTests=true',
-    deps=['./minion'],
-    ignore=['**/target', '**/dependency-reduced-pom.xml'],
-    # live_update=[
-    #     sync('./platform/*.jar', '/opt/horizon-stream/deploy'),
-    # ],
-)
-
-k8s_resource(
-    'opennms-minion',
-    port_forwards=['12022:8101', '12080:8181', '12050:5005'],
-    labels=['opennms'],
-)
-
-### minion gateway ###
-local_resource(
-    'compile-minion-gateway',
-    'mvn clean compile -f minion-gateway -pl main -am',
-    deps=['./minion-gateway/main/src', './minion-gateway/main/pom.xml'],
-    ignore=['**/target'],
-    labels=['compilation'],
-)
-
-custom_build(
-    'opennms/horizon-stream-minion-gateway',
-    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f minion-gateway -pl main',
-    deps=['./minion-gateway/main/target/classes', './minion-gateway/main/pom.xml'],
-    live_update=[
-        sync('./minion-gateway/main/target/classes', '/app/classes'),
-    ],
-)
-
-k8s_resource(
-    'opennms-minion-gateway',
-    port_forwards=['16080:8080', '16089:8990'],
-    resource_deps=['compile-minion-gateway'],
-    labels=['opennms'],
-)
-
-### rest server ###
-local_resource(
-    'compile-rest-server',
-    'mvn compile -f rest-server',
-    deps=['./rest-server/src', './rest-server/pom.xml'],
-    ignore=['**/target'],
-    labels=['compilation'],
-)
-
-custom_build(
-    'opennms/horizon-stream-rest-server',
-    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f rest-server',
-    deps=['./rest-server/target/classes', './rest-server/pom.xml'],
-    live_update=[
-        sync('./rest-server/target/classes', '/app/classes'),
-    ],
-)
-
-k8s_resource(
-    'opennms-rest-server',
-    port_forwards=['13080:9090', '13050:5005'],
-    resource_deps=['compile-rest-server'],
-    labels=['opennms'],
-)
-
-### notification ###
+### Notification ###
 local_resource(
     'compile-notifications',
-    'mvn compile -f notifications',
+    'mvn clean compile -f notifications',
     deps=['./notifications/src', './notifications/pom.xml'],
     ignore=['**/target'],
-    labels=['compilation'],
+    labels=['opennms'],
 )
 
 custom_build(
@@ -140,11 +68,34 @@ custom_build(
 k8s_resource(
     'opennms-notifications',
     port_forwards=['15080:8080', '15050:5005'],
-    resource_deps=['compile-notifications'],
     labels=['opennms'],
 )
 
-### ui ###
+### Vue.js BFF ###
+local_resource(
+    'compile-rest-server',
+    'mvn clean compile -f rest-server',
+    deps=['./rest-server/src', './rest-server/pom.xml'],
+    ignore=['**/target'],
+    labels=['opennms'],
+)
+
+custom_build(
+    'opennms/horizon-stream-rest-server',
+    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f rest-server',
+    deps=['./rest-server/target/classes', './rest-server/pom.xml'],
+    live_update=[
+        sync('./rest-server/target/classes', '/app/classes'),
+    ],
+)
+
+k8s_resource(
+    'opennms-rest-server',
+    port_forwards=['13080:9090', '13050:5005'],
+    labels=['opennms'],
+)
+
+### Vue.js UI ###
 docker_build(
     'opennms/horizon-stream-ui',
     'ui',
@@ -160,10 +111,48 @@ k8s_resource(
     labels=['opennms'],
 )
 
-## 3rd party resources ##
-### keycloak ###
+### Minion Gateway ###
+local_resource(
+    'compile-minion-gateway',
+    'mvn clean compile -f minion-gateway -pl main -am',
+    deps=['./minion-gateway/main/src', './minion-gateway/main/pom.xml'],
+    ignore=['**/target'],
+    labels=['opennms'],
+)
+
+custom_build(
+    'opennms/horizon-stream-minion-gateway',
+    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f minion-gateway -pl main',
+    deps=['./minion-gateway/main/target/classes', './minion-gateway/main/pom.xml'],
+    live_update=[
+        sync('./minion-gateway/main/target/classes', '/app/classes'),
+    ],
+)
+
+k8s_resource(
+    'opennms-minion-gateway',
+    port_forwards=['16080:8080', '16089:8990'],
+    labels=['opennms'],
+)
+
+### Minion ###
+custom_build(
+    'opennms/horizon-stream-minion',
+    'mvn install -f minion -Ddocker.image=$EXPECTED_REF -Dtest=false -DfailIfNoTests=false -DskipITs=true -DskipTests=true',
+    deps=['./minion'],
+    ignore=['**/target', '**/dependency-reduced-pom.xml'],
+)
+
+k8s_resource(
+    'opennms-minion',
+    port_forwards=['12022:8101', '12080:8181', '12050:5005'],
+    labels=['opennms'],
+)
+
+## 3rd Party Resources ##
+### Keycloak ###
 docker_build(
-    'opennms/horizon-stream-keycloak-dev',
+    'opennms/horizon-stream-keycloak',
     'keycloak-ui',
     target='development',
     live_update=[
@@ -172,43 +161,20 @@ docker_build(
 )
 k8s_resource(
     'onms-keycloak',
-    labels=['third-party'],
 )
 
-### grafana ###
+### Grafana ###
 docker_build(
-    'opennms/horizon-stream-grafana-dev',
+    'opennms/horizon-stream-grafana',
     'grafana',
 )
 k8s_resource(
     'grafana',
     port_forwards=['18080:3000'],
-    labels=['third-party'],
 )
 
-### others ###
+### Others ###
 k8s_resource(
     'ingress-nginx-controller',
     port_forwards=['8123:80'],
-    labels=['third-party'],
-)
-k8s_resource(
-    'prometheus',
-    labels=['third-party'],
-)
-k8s_resource(
-    'prometheus-pushgateway',
-    labels=['third-party'],
-)
-k8s_resource(
-    'onms-kafka',
-    labels=['third-party'],
-)
-k8s_resource(
-    'mail-server',
-    labels=['third-party'],
-)
-k8s_resource(
-    'postgres',
-    labels=['third-party'],
 )
