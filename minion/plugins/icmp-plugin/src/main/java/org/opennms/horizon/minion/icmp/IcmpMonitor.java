@@ -148,7 +148,6 @@ public class IcmpMonitor extends AbstractServiceMonitor {
 
         @Override
         public void handleError(InetAddress inetAddress, EchoPacket echoPacket, Throwable throwable) {
-            throwable.printStackTrace();
             future.complete(ServiceMonitorResponseImpl.down());
         }
     }
