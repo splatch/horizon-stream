@@ -12,12 +12,15 @@
     <repository>mvn:org.opennms.horizon.shared/snmp-api/${project.version}/xml/features</repository>
     <repository>mvn:org.opennms.horizon.minion/snmp-plugin/${project.version}/xml/features</repository>
 
+
     <feature name="minion-ng">
         <feature>taskset-minion</feature>
         <feature>icmp-plugins</feature>
         <feature>icmp-rpc</feature>
         <feature>snmp-plugins</feature>
         <feature>snmp-rpc</feature>
+        <feature>ipc-traps-listener</feature>
     </feature>
+
 
 </features>

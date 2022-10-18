@@ -26,41 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.traps.utils;
+package org.opennms.horizon.minion.traps;
 
-import org.opennms.horizon.shared.snmp.SnmpObjId;
-import org.opennms.horizon.shared.snmp.SnmpVarBindDTO;
+import org.opennms.horizon.grpc.traps.contract.TrapDTO;
+import org.opennms.horizon.shared.snmp.SnmpException;
 import org.opennms.horizon.shared.snmp.traps.TrapInformation;
 
 import java.net.InetAddress;
 import java.util.Objects;
 
-public class TrapUtils {
+public class TrapInformationWrapper {
 
-    /**
-     * SNMP-COMMUNITY-MIB: snmpTrapAddress (1.3.6.1.6.3.18.1.3.0) of type IpAddress
-     */
-    protected static final SnmpObjId SNMP_TRAP_ADDRESS_OID = SnmpObjId.get(".1.3.6.1.6.3.18.1.3.0");
+    private final TrapInformation trapInformation;
 
-    public static final String GET_TRAP_ADDRESS_FROM_VARBIND_SYS_PROP = "org.opennms.trapd";
+    private final TrapDTO trapDTO;
 
-    public static InetAddress getEffectiveTrapAddress(TrapInformation trapInfo, boolean useAddressFromVarbind) {
-        if (useAddressFromVarbind) {
-            final SnmpVarBindDTO varBindDTO = getFirstVarBindWithOid(trapInfo, SNMP_TRAP_ADDRESS_OID);
-            if (varBindDTO != null) {
-                return varBindDTO.getSnmpValue().toInetAddress();
-            }
-        }
-        return trapInfo.getTrapAddress();
+    private InetAddress trapAddress;
+
+    public TrapInformationWrapper(TrapInformation trapInformation) throws SnmpException {
+        this.trapInformation = Objects.requireNonNull(trapInformation);
+        this.trapDTO = null;
+        trapInformation.validate(); // Before this was at ProcessQueueProcessor which does not exist anymore
     }
 
-    public static SnmpVarBindDTO getFirstVarBindWithOid(TrapInformation trapInfo, SnmpObjId oid) {
-        for (int i = 0; i < trapInfo.getPduLength(); i++) {
-            final SnmpVarBindDTO varBindDTO = trapInfo.getSnmpVarBindDTO(i);
-            if (varBindDTO != null && Objects.equals(oid, varBindDTO.getSnmpObjectId())) {
-                return varBindDTO;
-            }
+    public TrapInformationWrapper(TrapDTO trapDTO) {
+        this.trapDTO = trapDTO;
+        this.trapInformation = null;
+    }
+
+    public TrapInformation getTrapInformation() {
+        return trapInformation;
+    }
+
+    public TrapDTO getTrapDTO() {
+        return trapDTO;
+    }
+
+
+    public InetAddress getTrapAddress() {
+        if (trapInformation != null) {
+            return getTrapInformation().getTrapAddress();
         }
-        return null;
+        return trapAddress;
+    }
+
+    public void setTrapAddress(InetAddress trapAddress) {
+        this.trapAddress = trapAddress;
     }
 }

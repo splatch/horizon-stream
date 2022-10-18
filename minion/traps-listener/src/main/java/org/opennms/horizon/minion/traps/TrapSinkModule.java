@@ -26,32 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.traps.consumer;
+package org.opennms.horizon.minion.traps;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import org.opennms.horizon.db.model.OnmsDistPoller;
+import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.horizon.grpc.traps.contract.TrapDTO;
 import org.opennms.horizon.grpc.traps.contract.TrapLogDTO;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AggregationPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
 import org.opennms.horizon.shared.snmp.traps.TrapdConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
-
-public class TrapSinkModule implements SinkModule<org.opennms.horizon.grpc.traps.contract.TrapDTO, org.opennms.horizon.grpc.traps.contract.TrapLogDTO> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TrapSinkModule.class);
+public class TrapSinkModule implements SinkModule<TrapDTO, TrapLogDTO> {
 
     private final TrapdConfig config;
 
-    private OnmsDistPoller distPoller;
+    private final IpcIdentity identity;
 
-    public TrapSinkModule(TrapdConfig trapdConfig, OnmsDistPoller distPoller) {
-        this.config = Objects.requireNonNull(trapdConfig);
-        this.distPoller = Objects.requireNonNull(distPoller);
+    public TrapSinkModule(TrapdConfig trapdConfig, IpcIdentity identity) {
+        this.config = trapdConfig;
+        this.identity = identity;
     }
 
     @Override
@@ -94,7 +89,6 @@ public class TrapSinkModule implements SinkModule<org.opennms.horizon.grpc.traps
 
     @Override
     public AggregationPolicy<TrapDTO, TrapLogDTO, TrapLogDTO> getAggregationPolicy() {
-
         return new AggregationPolicy<>() {
             @Override
             public int getCompletionSize() {
@@ -116,6 +110,7 @@ public class TrapSinkModule implements SinkModule<org.opennms.horizon.grpc.traps
                 if (accumulator == null) {
                     accumulator = TrapLogDTO.newBuilder()
                         .setTrapAddress(newMessage.getTrapAddress())
+                        .setIdentity(Identity.newBuilder().setSystemId(identity.getId()).setLocation(identity.getLocation()).build())
                         .addTrapDTO(newMessage).build();
                 } else {
                     TrapLogDTO.newBuilder(accumulator).addTrapDTO(newMessage);
@@ -149,6 +144,4 @@ public class TrapSinkModule implements SinkModule<org.opennms.horizon.grpc.traps
             }
         };
     }
-
-
 }

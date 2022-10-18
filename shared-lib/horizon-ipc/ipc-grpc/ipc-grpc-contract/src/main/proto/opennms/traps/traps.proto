@@ -1,0 +1,63 @@
+syntax = "proto3";
+package opennms.sink.traps;
+
+option java_multiple_files = true;
+option java_package = "org.opennms.horizon.grpc.traps.contract";
+
+import "snmp.proto";
+import "opennms_minion_ipc.proto";
+
+
+enum SnmpValueType {
+  NONE = 0x0 [deprecated = true];
+  INT32 = 0x02;
+  OCTET_STRING = 0x04;
+  NULL = 0x05;
+  OBJECT_IDENTIFIER = 0x06;
+  IPADDRESS = 0x40;         // 64
+  COUNTER32 = 0x41;         // 65
+  GAUGE32 = 0x42;           // 66
+  TIMETICKS = 0x43;         // 67
+  OPAQUE = 0x44;            // 68
+  COUNTER64 = 0x46;         // 70
+  NO_SUCH_OBJECT = 0x80;    // 128
+  NO_SUCH_INSTANCE = 0x81;  // 129
+  END_OF_MIB = 0x82;        // 8*16 + 2 = 130
+}
+
+message SnmpValue {
+  SnmpValueType type = 1;
+  bytes value = 2;
+}
+
+message SnmpResult {
+  string base = 1;
+  string instance = 2;
+  SnmpValue value = 3;
+}
+
+message TrapIdentity {
+  int32 generic = 1;
+  int32 specific = 2;
+  string enterpriseId = 3;
+  string trapOID = 4;
+}
+
+message TrapDTO {
+  string agentAddress = 1;
+  string community = 2;
+  string version = 3;
+  int64 timestamp = 4;
+  int32 pduLength = 5;
+  int64 creationTime = 6;
+  bytes rawMessage = 7;
+  string trapAddress = 8;
+  TrapIdentity trapIdentity = 9;
+  repeated opennms.snmp.SnmpResult snmpResults = 10;
+}
+
+message TrapLogDTO {
+  minion.Identity identity = 1;
+  string trapAddress = 2;
+  repeated TrapDTO trapDTO = 3;
+}

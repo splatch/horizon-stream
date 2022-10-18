@@ -1,39 +1,9 @@
 syntax = "proto3";
-package opennms.rpc.snmp;
+package opennms.snmp;
 
 option java_multiple_files = true;
-option java_package = "org.opennms.horizon.grpc.snmp.contract";
+option java_package = "org.opennms.horizon.snmp.api";
 
-
-message SnmpRequest {
-  SnmpConfiguration agent = 1;
-  string description = 2;
-  repeated SnmpGetRequest gets = 3;
-  repeated SnmpWalkRequest walks = 4;
-  int64 ttl = 5;
-}
-
-message SnmpMultiResponse {
-  string error = 1;
-  repeated SnmpResponse responses = 2;
-}
-
-message SnmpGetRequest {
-  string correlationId = 1;
-  repeated string oids = 2;
-}
-
-message SnmpWalkRequest {
-  string correlationId = 1;
-  repeated string oids = 2;
-  optional int32 maxRepetitions = 3;
-  optional string instance = 5;
-}
-
-message SnmpResponse {
-  string correlationId = 1;
-  repeated SnmpResult results = 2;
-}
 
 message SnmpResult {
   string base = 1;

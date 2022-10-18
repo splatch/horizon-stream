@@ -23,7 +23,7 @@ import java.util.stream.IntStream;
 /**
  * Process results received from Minions
  */
-public class DeviceMonitorResultProcessor implements Processor {
+    public class DeviceMonitorResultProcessor implements Processor {
 
     public static final Long INVALID_UP_TIME = -1L;
 
