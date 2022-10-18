@@ -9,14 +9,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: m2 Dir Population
-      run: |
-
-        #cd ${{ inputs.dir-location }}
-
-        mvn -f minion -Dmaven.wagon.httpconnectionManager.ttlSeconds=60 dependency:go-offline
-
-      shell: bash
     - name: global data
       run: |
 
