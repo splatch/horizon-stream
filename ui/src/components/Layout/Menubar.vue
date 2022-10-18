@@ -1,22 +1,24 @@
 <template>
   <FeatherAppBar :labels="{ skip: 'main' }" content="app" v-if="keycloak?.authenticated">
     <template v-slot:right>
-      <FeatherIcon
-        :icon="Dashboard"
-        class="pointer menu-icon widgets"
-        @click="triggerWidgetBar()"
-      />
-      <FeatherIcon
-        :icon="LightDarkMode"
-        class="pointer menu-icon"
-        @click="toggleDark()"
-        data-test="toggle-dark"
-      />
-      <FeatherIcon
-        :icon="LogOut"
-        class="pointer menu-icon"
-        @click="logout()"
-      />
+      <div class="right-container">
+        <FeatherIcon
+          :icon="Dashboard"
+          class="pointer menu-icon widgets"
+          @click="triggerWidgetBar()"
+        />
+        <FeatherIcon
+          :icon="LightDarkMode"
+          class="pointer menu-icon"
+          @click="toggleDark()"
+          data-test="toggle-dark"
+        />
+        <FeatherIcon
+          :icon="LogOut"
+          class="pointer menu-icon"
+          @click="logout()"
+        />
+      </div>
     </template>
   </FeatherAppBar>
 </template>

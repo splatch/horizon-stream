@@ -31,8 +31,8 @@ const onSeveritySelect = () => mapStore.selectedSeverity = selectedSeverity.valu
 
 // positioning the severity element in the header bar
 const elemWidth = 250
-const headerContentLeftWidth = document.querySelector('.left.center-horiz')?.clientWidth || 0
-const elemPosRight = `${headerContentLeftWidth - elemWidth}px`
+const rightContainerWidth = document.querySelector('.right.center-horiz > .right-container')?.clientWidth || 0
+const elemPosRight = `${rightContainerWidth}px`
 </script>
 
 <style lang="scss">
@@ -42,6 +42,7 @@ const elemPosRight = `${headerContentLeftWidth - elemWidth}px`
   position: absolute;
   width: v-bind(elemWidth);
   right: v-bind(elemPosRight);
+  margin-right: 5rem;
   top: 11px;
   z-index: var(variables.$zindex-tooltip);
   .feather-input-wrapper {
