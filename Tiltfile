@@ -4,6 +4,9 @@ tilt_inspector()
 
 secret_settings(disable_scrub=True)  ## TODO: update secret values so we can reenable scrub
 
+cluster_arch = local('tilt get cluster default -o=jsonpath --template="{.status.arch}"', quiet=True, echo_off=True)
+os.putenv('CLUSTER_ARCH', cluster_arch)
+
 # Deployment #
 k8s_yaml(
     helm(
@@ -58,7 +61,7 @@ local_resource(
 
 custom_build(
     'opennms/horizon-stream-notification',
-    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f notifications',
+    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f notifications -Djib.from.platforms=linux/$CLUSTER_ARCH',
     deps=['./notifications/target/classes', './notifications/pom.xml'],
     live_update=[
         sync('./notifications/target/classes', '/app/classes'),
@@ -69,6 +72,7 @@ k8s_resource(
     'opennms-notifications',
     port_forwards=['15080:8080', '15050:5005'],
     labels=['opennms'],
+    resource_deps=['compile-notifications'],
 )
 
 ### Vue.js BFF ###
@@ -82,7 +86,7 @@ local_resource(
 
 custom_build(
     'opennms/horizon-stream-rest-server',
-    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f rest-server',
+    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f rest-server -Djib.from.platforms=linux/$CLUSTER_ARCH',
     deps=['./rest-server/target/classes', './rest-server/pom.xml'],
     live_update=[
         sync('./rest-server/target/classes', '/app/classes'),
@@ -93,6 +97,7 @@ k8s_resource(
     'opennms-rest-server',
     port_forwards=['13080:9090', '13050:5005'],
     labels=['opennms'],
+    resource_deps=['compile-rest-server'],
 )
 
 ### Vue.js UI ###
@@ -122,7 +127,7 @@ local_resource(
 
 custom_build(
     'opennms/horizon-stream-minion-gateway',
-    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f minion-gateway -pl main',
+    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f minion-gateway -pl main -Djib.from.platforms=linux/$CLUSTER_ARCH',
     deps=['./minion-gateway/main/target/classes', './minion-gateway/main/pom.xml'],
     live_update=[
         sync('./minion-gateway/main/target/classes', '/app/classes'),
@@ -133,6 +138,7 @@ k8s_resource(
     'opennms-minion-gateway',
     port_forwards=['16080:8080', '16089:8990'],
     labels=['opennms'],
+    resource_deps=['compile-minion-gateway'],
 )
 
 ### Minion ###
