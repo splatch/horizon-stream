@@ -115,6 +115,31 @@ k8s_resource(
     labels=['opennms'],
 )
 
+### Metrics Processor ###
+local_resource(
+    'compile-metrics-processor',
+    'mvn compile -f metrics-processor -am',
+    deps=['./metrics-processor/src', './metrics-processor/pom.xml'],
+    ignore=['**/target'],
+    labels=['opennms'],
+)
+
+custom_build(
+    'opennms/horizon-stream-metrics-processor',
+    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f metrics-processor -Djib.from.platforms=linux/' + cluster_arch_cmd,
+    deps=['./metrics-processor/target/classes', './metrics-processor/pom.xml'],
+    live_update=[
+        sync('./metrics-processor/target/classes', '/app/classes'),
+    ],
+)
+
+k8s_resource(
+    'opennms-metrics-processor',
+    port_forwards=['28050:5005'],
+    labels=['opennms'],
+    resource_deps=['compile-metrics-processor'],
+)
+
 ### Minion Gateway ###
 local_resource(
     'compile-minion-gateway',
