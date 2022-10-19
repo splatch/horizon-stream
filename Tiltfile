@@ -45,13 +45,14 @@ custom_build(
 
 k8s_resource(
     'opennms-core',
+    new_name='core',
     port_forwards=['11022:8101', '11080:8181', '11050:5005'],
     labels=['opennms'],
 )
 
 ### Notification ###
 local_resource(
-    'compile-notifications',
+    'notifications-compile',
     'mvn clean compile -f notifications',
     deps=['./notifications/src', './notifications/pom.xml'],
     ignore=['**/target'],
@@ -69,14 +70,15 @@ custom_build(
 
 k8s_resource(
     'opennms-notifications',
+    new_name='notifications',
     port_forwards=['15080:8080', '15050:5005'],
     labels=['opennms'],
-    resource_deps=['compile-notifications'],
+    resource_deps=['notifications-compile'],
 )
 
 ### Vue.js BFF ###
 local_resource(
-    'compile-rest-server',
+    'vuejs-bff-compile',
     'mvn clean compile -f rest-server',
     deps=['./rest-server/src', './rest-server/pom.xml'],
     ignore=['**/target'],
@@ -88,15 +90,16 @@ custom_build(
     'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f rest-server -Djib.from.platforms=linux/' + cluster_arch_cmd,
     deps=['./rest-server/target/classes', './rest-server/pom.xml'],
     live_update=[
-        sync('./rest-server/target/classes', '/app/classes'),
+        sync('./rest-server/target/classes/org/opennms/horizon/notifications', '/app/classes'),
     ],
 )
 
 k8s_resource(
     'opennms-rest-server',
+    new_name='vuejs-bff',
     port_forwards=['13080:9090', '13050:5005'],
     labels=['opennms'],
-    resource_deps=['compile-rest-server'],
+    resource_deps=['vuejs-bff-compile'],
 )
 
 ### Vue.js UI ###
@@ -111,13 +114,14 @@ docker_build(
 )
 k8s_resource(
     'opennms-ui',
+    new_name='vuejs-ui',
     port_forwards=['17080:80'],
     labels=['opennms'],
 )
 
 ### Metrics Processor ###
 local_resource(
-    'compile-metrics-processor',
+    'metrics-processor-compile',
     'mvn compile -f metrics-processor -am',
     deps=['./metrics-processor/src', './metrics-processor/pom.xml'],
     ignore=['**/target'],
@@ -135,14 +139,15 @@ custom_build(
 
 k8s_resource(
     'opennms-metrics-processor',
+    new_name='metrics-processor',
     port_forwards=['28050:5005'],
     labels=['opennms'],
-    resource_deps=['compile-metrics-processor'],
+    resource_deps=['metrics-processor-compile'],
 )
 
 ### Minion Gateway ###
 local_resource(
-    'compile-minion-gateway',
+    'minion-gateway-compile',
     'mvn clean compile -f minion-gateway -pl main -am',
     deps=['./minion-gateway/main/src', './minion-gateway/main/pom.xml'],
     ignore=['**/target'],
@@ -160,9 +165,10 @@ custom_build(
 
 k8s_resource(
     'opennms-minion-gateway',
+    new_name='minion-gateway',
     port_forwards=['16080:8080', '16089:8990'],
     labels=['opennms'],
-    resource_deps=['compile-minion-gateway'],
+    resource_deps=['minion-gateway-compile'],
 )
 
 ### Minion ###
@@ -175,6 +181,7 @@ custom_build(
 
 k8s_resource(
     'opennms-minion',
+    new_name='minion',
     port_forwards=['12022:8101', '12080:8181', '12050:5005'],
     labels=['opennms'],
 )
@@ -191,6 +198,7 @@ docker_build(
 )
 k8s_resource(
     'onms-keycloak',
+    new_name='keycloak',
 )
 
 ### Grafana ###
