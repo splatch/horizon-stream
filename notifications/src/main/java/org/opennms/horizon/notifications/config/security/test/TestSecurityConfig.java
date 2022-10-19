@@ -1,4 +1,4 @@
-package org.opennms.horizon.notifications.config.test;
+package org.opennms.horizon.notifications.config.security.test;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package org.opennms.horizon.notifications.config.keycloak;
+package org.opennms.horizon.notifications.config.security.keycloak;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;

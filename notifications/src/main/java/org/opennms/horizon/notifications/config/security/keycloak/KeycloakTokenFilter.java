@@ -1,4 +1,4 @@
-package org.opennms.horizon.notifications.config.keycloak;
+package org.opennms.horizon.notifications.config.security.keycloak;
 
 import org.keycloak.TokenVerifier;
 import org.keycloak.adapters.KeycloakDeployment;
