@@ -11,6 +11,7 @@
     <repository>mvn:org.opennms.horizon.minion/icmp-plugin/${project.version}/xml/features</repository>
     <repository>mvn:org.opennms.horizon.shared/snmp-api/${project.version}/xml/features</repository>
     <repository>mvn:org.opennms.horizon.minion/snmp-plugin/${project.version}/xml/features</repository>
+    <repository>mvn:org.opennms.horizon.minion/traps-features/${project.version}/xml/features</repository>
 
 
     <feature name="minion-ng">
@@ -19,7 +20,7 @@
         <feature>icmp-rpc</feature>
         <feature>snmp-plugins</feature>
         <feature>snmp-rpc</feature>
-        <feature>ipc-traps-listener</feature>
+        <feature>minion-traps</feature>
     </feature>
 
 

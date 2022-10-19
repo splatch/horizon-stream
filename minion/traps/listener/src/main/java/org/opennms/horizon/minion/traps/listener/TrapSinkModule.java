@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.minion.traps;
+package org.opennms.horizon.minion.traps.listener;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.opennms.cloud.grpc.minion.Identity;

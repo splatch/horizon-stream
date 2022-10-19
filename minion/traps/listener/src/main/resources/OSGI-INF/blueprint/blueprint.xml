@@ -36,7 +36,7 @@
     <reference id="messageDispatcherFactory" interface="org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory"/>
     <reference id="identity" interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity"/>
 
-    <bean id="trapListener" class="org.opennms.horizon.minion.traps.TrapListener"  init-method="start" destroy-method="stop">
+    <bean id="trapListener" class="org.opennms.horizon.minion.traps.listener.TrapListener" init-method="start" destroy-method="stop">
         <argument ref="trapdConfig"/>
         <argument ref="snmpHelper"/>
         <argument ref="messageDispatcherFactory"/>

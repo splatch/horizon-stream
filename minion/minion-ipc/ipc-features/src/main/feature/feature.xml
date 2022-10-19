@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <features name="minion-ipc-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.6.0">
 
-    <repository>mvn:org.opennms.horizon.shared/snmp-api/${project.version}/xml/features</repository>
-
     <feature name="ipc-guava-internal">
         <bundle>mvn:com.google.guava/guava/${guava.version}</bundle>
         <bundle dependency="true">mvn:com.google.guava/failureaccess/1.0.1</bundle>
@@ -71,12 +69,6 @@
         <bundle>mvn:org.opennms.horizon.minion/twin-whiteboard/${project.version}</bundle>
 
         <bundle>mvn:org.opennms.horizon.shared/protobuf/${project.version}</bundle>
-    </feature>
-
-    <feature name="ipc-traps-listener" version="${project.version}">
-        <feature>ipc-minion</feature>
-        <feature>snmp-snmp4j</feature>
-        <bundle>mvn:org.opennms.horizon.minion/traps-listener/${project.version}</bundle>
     </feature>
 
 </features>

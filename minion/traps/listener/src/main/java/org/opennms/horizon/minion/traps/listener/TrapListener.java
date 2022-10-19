@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.minion.traps;
+package org.opennms.horizon.minion.traps.listener;
 
 import com.google.protobuf.ByteString;
 import org.opennms.horizon.grpc.traps.contract.TrapDTO;
