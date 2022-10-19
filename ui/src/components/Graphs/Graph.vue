@@ -13,7 +13,6 @@ import { Chart, registerables }  from 'chart.js'
 // import zoomPlugin from 'chartjs-plugin-zoom'
 import { PropType } from 'vue'
 import { formatTimestamp } from './utils'
-import { uniq } from 'lodash'
 Chart.register(...registerables)
 // Chart.register(zoomPlugin) disable zoom until phase 2
 
@@ -56,7 +55,7 @@ const options = computed<ChartOptions>(() => ({
   scales: {
     y: {
       title: {
-        display: true,
+        display: false,
         text: props.label
       } as TitleOptions,
       ticks: {
@@ -73,32 +72,33 @@ const options = computed<ChartOptions>(() => ({
 }))
 
 const xAxisLabels = computed(() => {
-  const totalLabels = []
+  const totalLabels: any = new Set()
 
-  for (const dataSet of graphs.dataSets.value) {
-    const labels = dataSet.map((result) => {
-      if (result.value) return formatTimestamp(result.value[0], 'hours')
-    })
-    totalLabels.push(...labels)
-  }
+  graphs.dataSets.value[0].values.forEach(value => {
+    if(value[0]) totalLabels.add(formatTimestamp(value[0], 'hours'))
+  })
 
-  return uniq(totalLabels)
+  // return totalLabels
+  return ['01:12', '01:22', '01:32', '01:42']
 })
 
 const dataSets = computed(() => {
   const dataSets: any = []
-
-  for (const dataSet of graphs.dataSets.value) {
-    const dataObject = {
-      label: dataSet[0].metric.__name__,
-      data: dataSet.map((result) => {
-        if (result.value) return result.value[1]
-      }),
-      backgroundColor: 'green'
-    }
-
-    dataSets.push(dataObject)
+  const dataObject = {
+    label: graphs.dataSets.value[0].metric.__name__,
+    data: graphs.dataSets.value[0].values.map((value) => {
+      if (value[1]) return value[1]
+    }),
+    /* data: [
+      '10.069208',
+      '8.355875',
+      '6.045458',
+      '31.727167'
+    ], */
+    backgroundColor: 'green'
   }
+
+  dataSets.push(dataObject)
   
   return dataSets
 })

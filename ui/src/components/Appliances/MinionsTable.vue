@@ -34,7 +34,7 @@
               </div>
             </td>
             <td>
-              <div :data-metric="minion.snmp_uptime" class="bg-status" :class="minion.uptimeBgColor" data-test="minion-item-uptime">
+              <div @click="openUptimeGraph" :data-metric="minion.snmp_uptime" class="bg-status pointer" :class="minion.uptimeBgColor" data-test="minion-item-uptime">
                 {{ getHumanReadableDuration(minion.snmp_uptime) }}
               </div>
             </td>
@@ -48,6 +48,14 @@
       </table>
     </div>
   </TableCard>
+  <PrimaryModal :visible="graph.isVisible" :title="graph.title" :hide-title="graph.hideTitle">
+    <template #content>
+      <Graph :metric-strings="graph.metricStrings" :label="graph.label" />
+    </template>
+    <template #footer>
+      <FeatherButton primary @click="graph.isVisible = false">Close</FeatherButton>
+    </template>
+  </PrimaryModal>
 </template>
 
 <script setup lang="ts">
@@ -58,12 +66,31 @@ import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
 import { ComputedRef } from 'vue'
 import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './utils'
 import { WidgetProps } from '@/types'
+import PrimaryModal from '@/components/Common/PrimaryModal.vue'
+import Graph from '@/components/Graphs/Graph.vue'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useAppliancesQueries()
 const listMinionsWithBgColor: ComputedRef<ExtendedMinionDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableMinions))
+
+let graph = ref({
+  isVisible: false,
+  title: '',
+  hideTitle: true,
+  metricStrings: [''],
+  label: ''
+})
+const openUptimeGraph = () => {
+  graph.value = {
+    ...graph.value,
+    isVisible: true,
+    title: 'Minion Uptime',
+    metricStrings: ['minion_uptime_sec'], // TODO: to be changed when BE avail (e.g. snmp_round_trip_time_msec)
+    label: 'Minion Uptime'
+  }
+}
 </script>
 
 <style lang="scss" scoped>

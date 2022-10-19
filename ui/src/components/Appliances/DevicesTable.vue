@@ -61,7 +61,7 @@
       </TransitionGroup>
     </div>
   </TableCard>
-  <PrimaryModal :visible="graph.isVisible" :title="graph.title">
+  <PrimaryModal :visible="graph.isVisible">
     <template #content>
       <Graph :data-sets="graph.dataSets" :label="graph.label" />
     </template>
@@ -100,7 +100,7 @@ const searchValue = ref('')
 
 const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
 
-let graph = ref({
+const graph = ref({
   isVisible: false,
   title: '',
   dataSets: [] as PropType<DataSets>,
@@ -127,7 +127,6 @@ const openGraphLatency = (nodeId: number) => {
 <style lang="scss" scoped>
 @use "@featherds/styles/themes/variables";
 @use "@featherds/styles/mixins/typography";
-@use "@/styles/_app";
 @use "@/styles/_transitionDataTable";
 @use "@/styles/_statusBackground";
 
