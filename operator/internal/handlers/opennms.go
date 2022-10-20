@@ -90,6 +90,11 @@ func (h *OpenNMSHandler) UpdateConfig(values values.TemplateValues) {
 	yaml.LoadYaml(filepath("opennms/notification/notification-deployment.yaml"), values, &noteDeployment)
 	yaml.LoadYaml(filepath("opennms/notification/notification-service.yaml"), values, &noteService)
 
+	//metrics processor
+	var mpDeployment appsv1.Deployment
+
+	yaml.LoadYaml(filepath("opennms/metricsprocessor/metricsprocessor-deployment.yaml"), values, &mpDeployment)
+
 	h.Config = []client.Object{
 		&configMap,
 		&coreSA,
@@ -113,5 +118,6 @@ func (h *OpenNMSHandler) UpdateConfig(values values.TemplateValues) {
 		&inventoryService,
 		&noteDeployment,
 		&noteService,
+		&mpDeployment,
 	}
 }
