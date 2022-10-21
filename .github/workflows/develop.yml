@@ -82,6 +82,12 @@ jobs:
         with:
           dir-location: 'rest-server'
 
+      - name: feature-inventory
+        id: action-notifications
+        uses: ./.github/actions/inventory
+        with:
+          dir-location: 'inventory'
+
       - name: feature-notifications
         id: action-notifications
         uses: ./.github/actions/notifications
