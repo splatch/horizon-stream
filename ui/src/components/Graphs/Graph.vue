@@ -72,35 +72,23 @@ const options = computed<ChartOptions>(() => ({
 }))
 
 const xAxisLabels = computed(() => {
-  const totalLabels: any = new Set()
-
-  graphs.dataSets.value[0].values.forEach(value => {
-    if(value[0]) totalLabels.add(formatTimestamp(value[0], 'hours'))
+  const totalLabels = graphs.dataSets.value[0].values.map(([timestamp]) => {
+    // TODO: look to eliminate redundancy in labels; do not display repetitive hour but once and the following labels with minutes and seconds. E.g. use formatTimestamp(timestamp * 1000, 'hh') / formatTimestamp(timestamp * 1000, 'mmss')
+    return formatTimestamp(timestamp * 1000, 'minutes')
   })
-
-  // return totalLabels
-  return ['01:12', '01:22', '01:32', '01:42']
+  
+  return totalLabels
 })
 
 const dataSets = computed(() => {
-  const dataSets: any = []
-  const dataObject = {
-    label: graphs.dataSets.value[0].metric.__name__,
-    data: graphs.dataSets.value[0].values.map((value) => {
-      if (value[1]) return value[1]
-    }),
-    /* data: [
-      '10.069208',
-      '8.355875',
-      '6.045458',
-      '31.727167'
-    ], */
-    backgroundColor: 'green'
-  }
+  const graphsDataSets = graphs.dataSets.value[0]
+  console.log('graphsDataSets',graphsDataSets)
 
-  dataSets.push(dataObject)
-  
-  return dataSets
+  return [{
+    label: graphsDataSets.metric.__name__,
+    data: graphsDataSets.values.map(([, value]) => value),
+    backgroundColor: 'green' // TODO: use featherds var
+  }]
 })
 
 const chartData = computed<ChartData<any>>(() => {
@@ -118,7 +106,7 @@ const render = async (update?: boolean) => {
     } else {
       const ctx: any = document.getElementById(`${props.label}`)
       chart = new Chart(ctx, {
-        type: 'line',
+        type: 'line', // TODO: make type parametrized
         data: chartData.value,
         options: options.value,
         plugins: []
@@ -135,7 +123,8 @@ onMounted(async () => {
   render()
 })
 </script>
-  
+
+// TODO: make theme switching works in graphs
 <style scoped lang="scss">
 .container {
   position: relative;
