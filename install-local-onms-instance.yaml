@@ -33,6 +33,8 @@ spec:
     image: opennms/horizon-stream-notification:local
     cpu: "0"
     mem: 100Mi
+  inventory:
+    image: opennms/horizon-stream-inventory:local
   keycloak:
     image: opennms/horizon-stream-keycloak:local
   grafana:
