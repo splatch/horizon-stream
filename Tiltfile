@@ -2,7 +2,7 @@
 load('ext://tilt_inspector', 'tilt_inspector')
 tilt_inspector()
 
-secret_settings(disable_scrub=True)  ## TODO: update secret values so we can reenable scru
+secret_settings(disable_scrub=True)  ## TODO: update secret values so we can reenable scrub
 
 # Functions #
 cluster_arch_cmd = '$(tilt get cluster default -o=jsonpath --template="{.status.arch}")'
