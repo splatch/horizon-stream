@@ -83,7 +83,7 @@ jobs:
           dir-location: 'rest-server'
 
       - name: feature-inventory
-        id: action-notifications
+        id: action-inventory
         uses: ./.github/actions/inventory
         with:
           dir-location: 'inventory'
