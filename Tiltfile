@@ -72,11 +72,18 @@ local_resource(
     deps=['./shared-lib'],
     ignore=['**/target'],
     labels=['shared'],
+    resource_deps=['parent-pom'],
 )
 
 ## Microservices ##
 ### Notification ###
-jib_project('notification', 'opennms/horizon-stream-notification', 'notifications', 'opennms-notifications', port_forwards=['15080:9090', '15050:5005'])
+jib_project(
+    'notification',
+    'opennms/horizon-stream-notification',
+    'notifications',
+    'opennms-notifications',
+    port_forwards=['15080:9090', '15050:5005'],
+)
 
 ### Vue.js App ###
 #### UI ####
@@ -98,16 +105,42 @@ k8s_resource(
 )
 
 #### BFF ####
-jib_project('vuejs-bff', 'opennms/horizon-stream-rest-server', 'rest-server', 'opennms-rest-server', labels=['vuejs-app'], port_forwards=['13080:9090', '13050:5005'])
+jib_project(
+    'vuejs-bff',
+    'opennms/horizon-stream-rest-server',
+    'rest-server',
+    'opennms-rest-server',
+    labels=['vuejs-app'],
+    port_forwards=['13080:9090', '13050:5005'],
+)
 
 ### Inventory ###
-jib_project('inventory', 'opennms/horizon-stream-inventory', 'inventory', 'opennms-inventory', port_forwards=['29080:9090', '29050:5005'])
+jib_project(
+    'inventory',
+    'opennms/horizon-stream-inventory',
+    'inventory',
+    'opennms-inventory',
+    port_forwards=['29080:9090', '29050:5005'],
+)
 
 ### Metrics Processor ###
-jib_project('metrics-processor', 'opennms/horizon-stream-metrics-processor', 'metrics-processor', 'opennms-metrics-processor', port_forwards=['30080:9090', '30050:5005'])
+jib_project(
+    'metrics-processor',
+    'opennms/horizon-stream-metrics-processor',
+    'metrics-processor',
+    'opennms-metrics-processor',
+    port_forwards=['30080:9090', '30050:5005'],
+)
 
 ### Minion Gateway ###
-jib_project('minion-gateway', 'opennms/horizon-stream-minion-gateway', 'minion-gateway', 'opennms-minion-gateway', submodule='main', port_forwards=['16080:9090', '16050:5005'])
+jib_project(
+    'minion-gateway',
+    'opennms/horizon-stream-minion-gateway',
+    'minion-gateway',
+    'opennms-minion-gateway',
+    submodule='main',
+    port_forwards=['16080:9090', '16050:5005'],
+)
 
 ### Core ###
 custom_build(
