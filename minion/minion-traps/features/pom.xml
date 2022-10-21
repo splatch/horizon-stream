@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>traps</artifactId>
+        <artifactId>minion-traps</artifactId>
         <groupId>org.opennms.horizon.minion</groupId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
@@ -42,6 +42,13 @@
             <type>xml</type>
         </dependency>
         <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>snmp-api</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>observability-features</artifactId>
             <version>${project.version}</version>
@@ -68,6 +75,10 @@
                                 <descriptor>mvn:org.apache.karaf.features/framework/${karaf.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karaf.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.horizon.minion/snmp-plugin/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.horizon.shared/snmp-api/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.horizon.minion/ipc-features/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.horizon.minion/grpc-features/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.horizon.minion/observability-features/${project.version}/xml/features</descriptor>
                                 <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
                             </descriptors>
                             <javase>11</javase>
