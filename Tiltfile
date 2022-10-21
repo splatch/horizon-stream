@@ -98,7 +98,7 @@ k8s_resource(
 )
 
 #### BFF ####
-jib_project('vuejs-bff', 'opennms/horizon-stream-rest-server', 'rest-server', 'opennms-rest-server', ['vuejs-app'], port_forwards=['13080:9090', '13050:5005'])
+jib_project('vuejs-bff', 'opennms/horizon-stream-rest-server', 'rest-server', 'opennms-rest-server', labels=['vuejs-app'], port_forwards=['13080:9090', '13050:5005'])
 
 ### Inventory ###
 jib_project('inventory', 'opennms/horizon-stream-inventory', 'inventory', 'opennms-inventory', port_forwards=['29080:9090', '29050:5005'])
