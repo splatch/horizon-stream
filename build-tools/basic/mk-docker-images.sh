@@ -41,15 +41,30 @@ time {
 
 	echo ""
 	echo "==="
+	echo "=== INVENTORY IMAGE"
+	echo "==="
+	mvn -f inventory jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-inventory:local-basic
+
+	echo ""
+	echo "==="
 	echo "=== NOTIFICATION IMAGE"
 	echo "==="
 	mvn -f notifications jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-notification:local-basic
 
 	echo ""
 	echo "==="
+	echo "=== METRICS PROCESSOR IMAGE"
+	echo "==="
+	mvn -f metrics-processor jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-metrics-processor:local-basic
+
+	echo ""
+	echo "==="
 	echo "=== KEYCLOAK UI IMAGE"
 	echo "==="
-	DOCKER_BUILDKIT=1 docker build -t opennms/horizon-stream-keycloak-dev:local-basic keycloak-ui
+	DOCKER_BUILDKIT=1 docker build \
+		--target development \
+		-t opennms/horizon-stream-keycloak-dev:local-basic \
+		keycloak-ui
 
 	echo ""
 	echo "==="

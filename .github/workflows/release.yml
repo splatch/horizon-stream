@@ -12,7 +12,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: docker-publish-account
     # Enviroment that contains the required secrets.
     steps:
@@ -22,6 +22,10 @@ jobs:
 
       - name: init
         run: |
+
+          # In case a workflow, using the self-hosted runner, has failed and
+          # the kind cluster is still running.
+          kind delete clusters kind
 
           TAG=$(echo ${{ github.event.head_commit.message }} | awk '{ print $2 }')
 
@@ -67,7 +71,7 @@ jobs:
         with:
           dir-location: 'ui'
 
-      # This needs to happen before core, rest-server, and notifications.
+      # This needs to happen before core, rest-server, inventory, and notifications.
       - name: shared-lib
         id: action-shared-lib
         uses: ./.github/actions/shared-lib
@@ -85,6 +89,12 @@ jobs:
         uses: ./.github/actions/rest-server
         with:
           dir-location: 'rest-server'
+
+      - name: feature-inventory
+        id: action-inventory
+        uses: ./.github/actions/inventory
+        with:
+          dir-location: 'inventory'
       
       - name: feature-notifications
         id: action-notifications
@@ -229,6 +239,22 @@ jobs:
 
           docker push opennms/horizon-stream-rest-server:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-rest-server:latest
+
+      - name: publish-image-inventory
+        run: |
+
+          # Login to dockerhub. Probably could remove this, session created in previous step.
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+
+          # Test build images
+          docker images
+
+          # Tag and save the image as a file to be published. Both release version and latest.
+          docker tag opennms/horizon-stream-inventory:local opennms/horizon-stream-inventory:${{ env.RELEASE_TAG }}
+          docker tag opennms/horizon-stream-inventory:local opennms/horizon-stream-inventory:latest
+
+          docker push opennms/horizon-stream-inventory:${{ env.RELEASE_TAG }}
+          docker push opennms/horizon-stream-inventory:latest
       
       - name: publish-image-notifications
         run: |
@@ -259,13 +285,13 @@ jobs:
           docker push opennms/operator:${{ env.RELEASE_TAG }}
           docker push opennms/operator:latest
 
-      - name: tag-release-branch
-        run: |
+      #- name: tag-release-branch
+      #  run: |
 
-          # The following checkouts the release branch and merges develop into
-          # it and then tags release.
-          git fetch
-          git tag ${{ env.RELEASE_TAG }}
-          git push origin ${{ env.RELEASE_TAG }}
+      #    # The following checkouts the release branch and merges develop into
+      #    # it and then tags release.
+      #    git fetch
+      #    git tag ${{ env.RELEASE_TAG }}
+      #    git push origin ${{ env.RELEASE_TAG }}
 
 
