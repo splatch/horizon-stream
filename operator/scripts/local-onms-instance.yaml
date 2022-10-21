@@ -37,6 +37,10 @@ spec:
     image: opennms/horizon-stream-notification
     cpu: "0"
     mem: 100Mi
+  metricsProcessor:
+    image: opennms/horizon-stream-metrics-processor
+    cpu: "0"
+    mem: 256Mi
   keycloak:
     image: opennms/horizon-stream-keycloak
   grafana:
