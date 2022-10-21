@@ -89,7 +89,7 @@ local_resource(
 custom_build(
     'opennms/horizon-stream-rest-server',
     'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f rest-server -Djib.from.platforms=linux/' + cluster_arch_cmd,
-    deps=['./rest-server/target/classes', './rest-server/pom.xml'],
+    deps=['./rest-server/target/classes', './rest-server/pom.xml', './rest-server/src/main/resources'],
     live_update=[
         sync('./rest-server/target/classes/org/opennms', '/app/classes/org/opennms'),
         sync('./rest-server/src/main/resources', '/app/resources'),
