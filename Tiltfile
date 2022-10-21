@@ -53,7 +53,7 @@ k8s_resource(
 ### Notification ###
 local_resource(
     'notifications-compile',
-    'mvn clean compile -f notifications',
+    'mvn compile -f notifications',
     deps=['./notifications/src', './notifications/pom.xml'],
     ignore=['**/target'],
     labels=['opennms'],
@@ -62,9 +62,10 @@ local_resource(
 custom_build(
     'opennms/horizon-stream-notification',
     'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f notifications -Djib.from.platforms=linux/' + cluster_arch_cmd,
-    deps=['./notifications/target/classes', './notifications/pom.xml'],
+    deps=['./notifications/target/classes/org/opennms', './notifications/pom.xml', './notifications/src/main/resources'],
     live_update=[
-        sync('./notifications/target/classes/org/opennms/horizon/notifications', '/app/classes'),
+        sync('./notifications/target/classes/org/opennms', '/app/classes/org/opennms'),
+        sync('./notifications/src/main/resources', '/app/resources'),
     ],
 )
 
@@ -79,7 +80,7 @@ k8s_resource(
 ### Vue.js BFF ###
 local_resource(
     'vuejs-bff-compile',
-    'mvn clean compile -f rest-server',
+    'mvn compile -f rest-server',
     deps=['./rest-server/src', './rest-server/pom.xml'],
     ignore=['**/target'],
     labels=['opennms'],
@@ -90,7 +91,8 @@ custom_build(
     'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f rest-server -Djib.from.platforms=linux/' + cluster_arch_cmd,
     deps=['./rest-server/target/classes', './rest-server/pom.xml'],
     live_update=[
-        sync('./rest-server/target/classes/org/opennms/horizon/notifications', '/app/classes'),
+        sync('./rest-server/target/classes/org/opennms', '/app/classes/org/opennms'),
+        sync('./rest-server/src/main/resources', '/app/resources'),
     ],
 )
 
@@ -131,9 +133,10 @@ local_resource(
 custom_build(
     'opennms/horizon-stream-inventory',
     'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f inventory -Djib.from.platforms=linux/' + cluster_arch_cmd,
-    deps=['./inventory/target/classes', './inventory/pom.xml'],
+    deps=['./inventory/target/classes', './inventory/pom.xml', './inventory/src/main/resources'],
     live_update=[
-        sync('./inventory/target/classes/org/opennms/horizon', '/app/classes/org/opennms/horizon'),
+        sync('./inventory/target/classes/org/opennms', '/app/classes/org/opennms'),
+        sync('./inventory/src/main/resources', '/app/resources'),
     ],
 )
 
@@ -156,9 +159,10 @@ local_resource(
 custom_build(
     'opennms/horizon-stream-metrics-processor',
     'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f metrics-processor -Djib.from.platforms=linux/' + cluster_arch_cmd,
-    deps=['./metrics-processor/target/classes', './metrics-processor/pom.xml'],
+    deps=['./metrics-processor/target/classes', './metrics-processor/pom.xml', './metrics-processor/src/main/resources'],
     live_update=[
-        sync('./metrics-processor/target/classes', '/app/classes'),
+        sync('./metrics-processor/target/classes/org/opennms', '/app/classes/org/opennms'),
+        sync('./metrics-processor/src/main/resources', '/app/resources'),
     ],
 )
 
@@ -173,7 +177,7 @@ k8s_resource(
 ### Minion Gateway ###
 local_resource(
     'minion-gateway-compile',
-    'mvn clean compile -f minion-gateway -pl main -am',
+    'mvn compile -f minion-gateway -pl main -am',
     deps=['./minion-gateway/main/src', './minion-gateway/main/pom.xml'],
     ignore=['**/target'],
     labels=['opennms'],
@@ -182,9 +186,10 @@ local_resource(
 custom_build(
     'opennms/horizon-stream-minion-gateway',
     'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f minion-gateway -pl main -Djib.from.platforms=linux/' + cluster_arch_cmd,
-    deps=['./minion-gateway/main/target/classes', './minion-gateway/main/pom.xml'],
+    deps=['./minion-gateway/main/target/classes', './minion-gateway/main/pom.xml', './minion-gateway/main/src/main/resources'],
     live_update=[
-        sync('./minion-gateway/main/target/classes', '/app/classes'),
+        sync('./minion-gateway/main/target/classes/org/opennms', '/app/classes/org/opennms'),
+        sync('./minion-gateway/main/src/main/resources', '/app/resources'),
     ],
 )
 
