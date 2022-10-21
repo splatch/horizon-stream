@@ -64,7 +64,7 @@ custom_build(
     'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f notifications -Djib.from.platforms=linux/' + cluster_arch_cmd,
     deps=['./notifications/target/classes', './notifications/pom.xml'],
     live_update=[
-        sync('./notifications/target/classes', '/app/classes'),
+        sync('./notifications/target/classes/org/opennms/horizon/notifications', '/app/classes'),
     ],
 )
 
@@ -117,6 +117,31 @@ k8s_resource(
     new_name='vuejs-ui',
     port_forwards=['17080:80'],
     labels=['opennms'],
+)
+
+### Inventory ###
+local_resource(
+    'inventory-compile',
+    'mvn compile -f inventory -am',
+    deps=['./inventory/src', './inventory/pom.xml'],
+    ignore=['**/target'],
+    labels=['opennms'],
+)
+
+custom_build(
+    'opennms/horizon-stream-inventory',
+    'mvn jib:dockerBuild -Dimage=$EXPECTED_REF -f inventory -Djib.from.platforms=linux/' + cluster_arch_cmd,
+    deps=['./inventory/target/classes', './inventory/pom.xml'],
+    live_update=[
+        sync('./inventory/target/classes/org/opennms/horizon', '/app/classes/org/opennms/horizon'),
+    ],
+)
+
+k8s_resource(
+    'opennms-inventory',
+    new_name='inventory',
+    labels=['opennms'],
+    resource_deps=['inventory-compile'],
 )
 
 ### Metrics Processor ###
