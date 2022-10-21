@@ -1,6 +1,6 @@
-package org.opennms.horizon.notifications.config;
+package org.opennms.horizon.notifications.config.security.keycloak;
 
-import org.opennms.horizon.notifications.config.keycloak.KeycloakTokenFilter;
+import org.opennms.horizon.notifications.config.security.keycloak.KeycloakTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -20,11 +20,11 @@ import javax.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Profile("!test")
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class KeycloakSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final KeycloakTokenFilter keycloakTokenFilter;
 
-    SecurityConfig(KeycloakTokenFilter keycloakTokenFilter) {
+    KeycloakSecurityConfig(KeycloakTokenFilter keycloakTokenFilter) {
         this.keycloakTokenFilter = keycloakTokenFilter;
     }
 

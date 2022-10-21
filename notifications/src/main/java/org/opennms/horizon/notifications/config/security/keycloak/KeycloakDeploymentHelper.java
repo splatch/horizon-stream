@@ -1,4 +1,4 @@
-package org.opennms.horizon.notifications.config.keycloak;
+package org.opennms.horizon.notifications.config.security.keycloak;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpClient;
