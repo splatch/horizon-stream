@@ -35,7 +35,7 @@ else
     kind load docker-image opennms/horizon-stream-notification:local&
     kind load docker-image opennms/horizon-stream-rest-server:local&
     kind load docker-image opennms/horizon-stream-inventory:local&
-    kind load docker-image opennms/horizon-stream-metric-processor:local&
+    kind load docker-image opennms/horizon-stream-metrics-processor:local&
 
     # Need to wait for the images to be loaded.
     sleep 120
@@ -72,8 +72,14 @@ bash scripts/add-local-ssl-cert.sh
 kubectl config set-context --current --namespace=local-instance
 
 # This is the last pod to run, if ready, then give back the terminal session.
+JOB_FAIL=1
 while [ -v $(kubectl get pods -n local-instance -l=app.kubernetes.io/component='controller-local-instance' -o jsonpath='{.items[*].status.containerStatuses[0].ready}')  ]; do 
   echo "not-ready"
+  if [ $JOB_FAIL == 8 ]; then
+    exit 1;
+  else
+    JOB_FAIL=$((JOB_FAIL+1))
+  fi
   sleep 60
 done
 
