@@ -82,7 +82,7 @@ let graph = ref({
   metricStrings: [''],
   label: ''
 })
-const openLatencyGraph = () => {
+const openLatencyGraph = (nodeId: number) => {
   graph.value = {
     ...graph.value,
     isVisible: true,
@@ -91,12 +91,12 @@ const openLatencyGraph = () => {
     label: 'Minion Latency'
   }
 }
-const openUptimeGraph = () => {
+const openUptimeGraph = (nodeId: number) => {
   graph.value = {
     ...graph.value,
     isVisible: true,
     title: 'Minion Uptime',
-    metricStrings: ['snmp_uptime_sec'], // TODO: might be different once BE avail
+    metricStrings: ['minion_uptime_sec'], // TODO: might be different once BE avail
     label: 'Minion Uptime'
   }
 }

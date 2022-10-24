@@ -61,9 +61,9 @@
       </TransitionGroup>
     </div>
   </TableCard>
-  <PrimaryModal :visible="graph.isVisible">
+  <PrimaryModal :visible="graph.isVisible" :title="graph.title" :hide-title="graph.hideTitle">
     <template #content>
-      <Graph :data-sets="graph.dataSets" :label="graph.label" />
+      <Graph :metric-strings="graph.metricStrings" :label="graph.label" />
     </template>
     <template #footer>
       <FeatherButton primary @click="graph.isVisible = false">Close</FeatherButton>
@@ -85,8 +85,6 @@ import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } fro
 import { WidgetProps } from '@/types'
 import PrimaryModal from '@/components/Common/PrimaryModal.vue'
 import Graph from '@/components/Graphs/Graph.vue'
-import { PropType } from 'vue'
-import { DataSets } from '@/types/graphs'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
@@ -103,23 +101,26 @@ const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
 const graph = ref({
   isVisible: false,
   title: '',
-  dataSets: [] as PropType<DataSets>,
+  hideTitle: true,
+  metricStrings: [''],
   label: ''
 })
-const openGraphUptime = (nodeId: number) => {
-  graph.value = {
-    isVisible: true,
-    title: 'Uptime',
-    dataSets: [],
-    label: ''
-  }
-}
 const openGraphLatency = (nodeId: number) => {
   graph.value = {
+    ...graph.value,
     isVisible: true,
-    title: 'Latency',
-    dataSets: [],
-    label: ''
+    title: 'Device Latency',
+    metricStrings: ['snmp_round_trip_time_msec'], // TODO: might be different once BE avail
+    label: 'Device Latency'
+  }
+}
+const openGraphUptime = (nodeId: number) => {
+  graph.value = {
+    ...graph.value,
+    isVisible: true,
+    title: 'Device Uptime',
+    metricStrings: ['device_uptime_sec'], // TODO: might be different once BE avail
+    label: 'Device Uptime'
   }
 }
 </script>
