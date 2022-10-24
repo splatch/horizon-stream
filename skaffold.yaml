@@ -202,6 +202,7 @@ portForward:
     port: 5005 #debug
     localPort: 28050
 deploy:
+  statusCheck: false
   helm:
     releases:
       - name: opennms
@@ -223,6 +224,7 @@ profiles:
   - name: prod
   - name: use-operator
     deploy:
+      statusCheck: false
       kubectl:
         manifests:
           - skaffold-custom-resource.yaml
