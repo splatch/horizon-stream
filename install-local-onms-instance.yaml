@@ -35,6 +35,8 @@ spec:
     mem: 100Mi
   inventory:
     image: opennms/horizon-stream-inventory:local
+  metricsProcessor:
+    image: opennms/horizon-stream-metrics-processor:local
   keycloak:
     image: opennms/horizon-stream-keycloak:local
   grafana:
