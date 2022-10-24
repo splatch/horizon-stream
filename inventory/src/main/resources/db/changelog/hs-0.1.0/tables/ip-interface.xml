@@ -4,31 +4,34 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-    <changeSet author="tbigg" id="0.1.0-node">
+    <changeSet author="tbigg" id="0.1.0-ip-interface">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="node"/>
+                <tableExists tableName="ip_interface"/>
             </not>
         </preConditions>
 
-        <createTable tableName="node">
+        <createTable tableName="ip_interface">
             <column name="id" type="BIGINT" autoIncrement="true"/>
 
             <column name="tenant_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="create_time" type="TIMESTAMP">
+            <column name="node_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="node_label" type="VARCHAR(256)">
+            <column name="ip_address" type="INET">
                 <constraints nullable="false"/>
             </column>
 
         </createTable>
 
-        <addPrimaryKey tableName="node" columnNames="id" constraintName="pk_node_id"/>
+        <addPrimaryKey tableName="ip_interface" columnNames="id" constraintName="pk_ip_interface_id"/>
 
+        <addForeignKeyConstraint constraintName="fk_ip_interface_node_id" onDelete="CASCADE"
+                                 baseTableName="ip_interface" baseColumnNames="node_id"
+                                 referencedTableName="node" referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>
