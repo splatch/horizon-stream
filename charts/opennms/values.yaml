@@ -51,7 +51,7 @@ OpenNMS:
     Image: opennms/horizon-stream-ui
     ImagePullPolicy: IfNotPresent
     Replicas: 1
-    Port: 80
+    Port: 8080
     Resources:
       Limits:
         Cpu: "1"
