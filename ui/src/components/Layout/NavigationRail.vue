@@ -59,6 +59,6 @@ const gotoHome = () => {
 }
 .product-text {
   @include typography.headline2;
-  color: var(--feather-app-rail-text-color); // TODO: use #var
+  color: var(--feather-app-rail-text-color);
 }
 </style>

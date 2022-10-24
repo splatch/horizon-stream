@@ -29,8 +29,8 @@
             <td>{{ minion.lastUpdated }}</td>
             <td>{{ minion.id }}</td>
             <td>
-              <div :data-metric="minion.icmp_latency" class="bg-status" :class="minion.latencyBgColor" data-test="minion-item-latency">
-                {{ formatLatencyDisplay(minion.icmp_latency) }}
+              <div @click="openLatencyGraph" :data-metric="minion.icmp_latency" class="bg-status pointer" :class="minion.latencyBgColor" data-test="minion-item-latency">
+                {{ getHumanReadableDuration(minion.icmp_latency) }}
               </div>
             </td>
             <td>
@@ -64,7 +64,7 @@ import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
 import { ComputedRef } from 'vue'
-import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './utils'
+import { formatItemBgColor, getHumanReadableDuration } from './utils'
 import { WidgetProps } from '@/types'
 import PrimaryModal from '@/components/Common/PrimaryModal.vue'
 import Graph from '@/components/Graphs/Graph.vue'
@@ -82,12 +82,21 @@ let graph = ref({
   metricStrings: [''],
   label: ''
 })
+const openLatencyGraph = () => {
+  graph.value = {
+    ...graph.value,
+    isVisible: true,
+    title: 'Minion Latency',
+    metricStrings: ['snmp_round_trip_time_msec'], // TODO: might be different once BE avail
+    label: 'Minion Latency'
+  }
+}
 const openUptimeGraph = () => {
   graph.value = {
     ...graph.value,
     isVisible: true,
     title: 'Minion Uptime',
-    metricStrings: ['minion_uptime_sec'], // TODO: to be changed when BE avail (e.g. snmp_round_trip_time_msec)
+    metricStrings: ['snmp_uptime_sec'], // TODO: might be different once BE avail
     label: 'Minion Uptime'
   }
 }

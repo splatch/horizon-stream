@@ -1,36 +1,12 @@
 import { useQuery } from 'villus'
 import { GetMetricDocument } from '@/types/graphql'
 import { DataSets } from '@/types/graphs'
+import { getMockData } from '@/types/mocks'
+
 export const useGraphs = () => {
   const variables = ref({ metric: '' })
   const dataSetsObject = reactive({} as any)
 
-  // TODO: to remove once real data avail
-  const mockData = (data: any) => {
-    const values = [
-      [
-        1665763347.046,
-        '10.069208'
-      ],
-      [
-        1665763362.061,
-        '8.355875'
-      ],
-      [
-        1665763377.047,
-        '6.045458'
-      ],
-      [
-        1665763392.050,
-        '31.727167'
-      ]
-    ]
-    return {
-      ...data,
-      values
-    }
-  }
-  
   const { data, execute: getMetric } = useQuery({
     query: GetMetricDocument,
     cachePolicy: 'network-only',
@@ -44,7 +20,8 @@ export const useGraphs = () => {
       
       await getMetric()
       
-      const {metric, values, value} = mockData(data.value?.metric?.data?.result?.[0])
+      // const {metric, values} = data.value?.metric?.data?.result?.[0]
+      const {metric, values} = getMockData(metricStr) // TODO: to be removed once real data avail
 
       if(values.length) {
         dataSetsObject[metric.__name__] = {

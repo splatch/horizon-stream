@@ -73,16 +73,14 @@ const options = computed<ChartOptions>(() => ({
 
 const xAxisLabels = computed(() => {
   const totalLabels = graphs.dataSets.value[0].values.map(([timestamp]) => {
-    // TODO: look to eliminate redundancy in labels; do not display repetitive hour but once and the following labels with minutes and seconds. E.g. use formatTimestamp(timestamp * 1000, 'hh') / formatTimestamp(timestamp * 1000, 'mmss')
-    return formatTimestamp(timestamp * 1000, 'minutes')
+    return formatTimestamp(timestamp * 1000, 'minutes') // TODO: '* 1000' may not be needed! if not then '/ 1000' must be removed from formatTimestamp method
   })
-  
+
   return totalLabels
 })
 
 const dataSets = computed(() => {
   const graphsDataSets = graphs.dataSets.value[0]
-  console.log('graphsDataSets',graphsDataSets)
 
   return [{
     label: graphsDataSets.metric.__name__,
@@ -106,7 +104,7 @@ const render = async (update?: boolean) => {
     } else {
       const ctx: any = document.getElementById(`${props.label}`)
       chart = new Chart(ctx, {
-        type: 'line', // TODO: make type parametrized
+        type: 'line', // TODO: parameterize type
         data: chartData.value,
         options: options.value,
         plugins: []
