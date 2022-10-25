@@ -1,7 +1,7 @@
 <template>
   <div class="container">
       <div class="canvas-wrapper">
-        <canvas :id="`${label}`"></canvas>
+        <canvas :id="`${graph.label}`"></canvas>
       </div>
   </div>
 </template>
@@ -13,19 +13,17 @@ import { Chart, registerables }  from 'chart.js'
 // import zoomPlugin from 'chartjs-plugin-zoom'
 import { PropType } from 'vue'
 import { formatTimestamp } from './utils'
+import { GraphMetric } from '@/types/graphs'
+
 Chart.register(...registerables)
 // Chart.register(zoomPlugin) disable zoom until phase 2
 
 const graphs = useGraphs()
 
 const props = defineProps({
-  metricStrings: {
+  graph: {
     required: true,
-    type: Array as PropType<string[]>
-  },
-  label: {
-    required: true,
-    type: String
+    type: Object as PropType<GraphMetric>
   }
 })
 
@@ -37,7 +35,7 @@ const options = computed<ChartOptions>(() => ({
   plugins: {
     title: {
       display: true,
-      text: props.label
+      text: props.graph.label
     } as TitleOptions,
     zoom: {
       zoom: {
@@ -56,7 +54,7 @@ const options = computed<ChartOptions>(() => ({
     y: {
       title: {
         display: false,
-        text: props.label
+        text: props.graph.label
       } as TitleOptions,
       ticks: {
         maxTicksLimit: 8
@@ -102,7 +100,7 @@ const render = async (update?: boolean) => {
       chart.data = chartData.value
       chart.update()
     } else {
-      const ctx: any = document.getElementById(`${props.label}`)
+      const ctx: any = document.getElementById(`${props.graph.label}`)
       chart = new Chart(ctx, {
         type: 'line', // TODO: parameterize type
         data: chartData.value,
@@ -112,12 +110,12 @@ const render = async (update?: boolean) => {
     }
   } catch (error) {
     console.log(error)
-    console.log('Could not render graph for ', props.label)
+    console.log('Could not render graph for ', props.graph.label)
   }
 }
 
 onMounted(async () => {
-  await graphs.getMetrics(props.metricStrings)
+  await graphs.getMetrics(props.graph.metrics)
   render()
 })
 </script>

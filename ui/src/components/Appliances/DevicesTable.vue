@@ -45,11 +45,11 @@
                 </div>
               </div>
           </div>
-          <div class="pointer" @click="openGraphLatency(device.id as number)" data-test="col-latency">
+          <div class="pointer" @click="openLatencyGraph(device)" data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
             <div :data-metric="device.icmp_latency" class="value bg-status" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
           </div>
-          <div class="pointer" @click="openGraphUptime(device.id as number)" data-test="col-uptime">
+          <div class="pointer" @click="openUptimeGraph(device)" data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
             <div :data-metric="device.snmp_uptime" class="value bg-status" :class="device.uptimeBgColor">{{ getHumanReadableDuration(device.snmp_uptime) }}</div>
           </div>
@@ -61,12 +61,12 @@
       </TransitionGroup>
     </div>
   </TableCard>
-  <PrimaryModal :visible="graph.isVisible" :title="graph.title" :hide-title="graph.hideTitle">
+  <PrimaryModal :visible="modal.isVisible" :title="modal.title" :hide-title="modal.hideTitle">
     <template #content>
-      <Graph :metric-strings="graph.metricStrings" :label="graph.label" />
+      <Graph :graph="graphMetric" />
     </template>
     <template #footer>
-      <FeatherButton primary @click="graph.isVisible = false">Close</FeatherButton>
+      <FeatherButton primary @click="modal.isVisible = false">Close</FeatherButton>
     </template>
   </PrimaryModal>
 </template>
@@ -85,6 +85,7 @@ import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } fro
 import { WidgetProps } from '@/types'
 import PrimaryModal from '@/components/Common/PrimaryModal.vue'
 import Graph from '@/components/Graphs/Graph.vue'
+import { GraphMetric } from '@/types/graphs'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
@@ -98,29 +99,38 @@ const searchValue = ref('')
 
 const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
 
-const graph = ref({
+const graphMetric = ref({} as GraphMetric)
+const modal = ref({
   isVisible: false,
   title: '',
-  hideTitle: true,
-  metricStrings: [''],
-  label: ''
+  hideTitle: true
 })
-const openGraphLatency = (nodeId: number) => {
-  graph.value = {
-    ...graph.value,
-    isVisible: true,
-    title: 'Device Latency',
-    metricStrings: ['snmp_round_trip_time_msec'], // TODO: might be different once BE avail
-    label: 'Device Latency'
+const openLatencyGraph = (device: any) => {
+  modal.value = {
+    ...modal.value,
+    isVisible: true
+  }
+  
+  const {id, location} = device
+  graphMetric.value = {
+    label: 'Device Latency',
+    metrics: ['snmp_round_trip_time_msec'], // TODO: might be different once BE avail
+    id,
+    location // TODO: device argument does not have location prop
   }
 }
-const openGraphUptime = (nodeId: number) => {
-  graph.value = {
-    ...graph.value,
-    isVisible: true,
-    title: 'Device Uptime',
-    metricStrings: ['device_uptime_sec'], // TODO: might be different once BE avail
-    label: 'Device Uptime'
+const openUptimeGraph = (device: any) => {
+  modal.value = {
+    ...modal.value,
+    isVisible: true
+  }
+  
+  const {id, location} = device
+  graphMetric.value = {
+    label: 'Device Uptime',
+    metrics: ['device_uptime_sec'], // TODO: might be different once BE avail
+    id,
+    location // TODO: device argument does not have location prop
   }
 }
 </script>

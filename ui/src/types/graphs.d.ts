@@ -5,3 +5,10 @@ interface ExtendedTsResult extends TsResult {
 }
 
 type DataSets = ExtendedTsResult[][]
+
+interface GraphMetric {
+  label: string,
+  metrics: [string],
+  id: string,
+  location: string
+}

@@ -29,12 +29,12 @@
             <td>{{ minion.lastUpdated }}</td>
             <td>{{ minion.id }}</td>
             <td>
-              <div @click="openLatencyGraph" :data-metric="minion.icmp_latency" class="bg-status pointer" :class="minion.latencyBgColor" data-test="minion-item-latency">
+              <div @click="openLatencyGraph(minion)" :data-metric="minion.icmp_latency" class="bg-status pointer" :class="minion.latencyBgColor" data-test="minion-item-latency">
                 {{ getHumanReadableDuration(minion.icmp_latency) }}
               </div>
             </td>
             <td>
-              <div @click="openUptimeGraph" :data-metric="minion.snmp_uptime" class="bg-status pointer" :class="minion.uptimeBgColor" data-test="minion-item-uptime">
+              <div @click="openUptimeGraph(minion)" :data-metric="minion.snmp_uptime" class="bg-status pointer" :class="minion.uptimeBgColor" data-test="minion-item-uptime">
                 {{ getHumanReadableDuration(minion.snmp_uptime) }}
               </div>
             </td>
@@ -48,12 +48,12 @@
       </table>
     </div>
   </TableCard>
-  <PrimaryModal :visible="graph.isVisible" :title="graph.title" :hide-title="graph.hideTitle">
+  <PrimaryModal :visible="modal.isVisible" :title="modal.title" :hide-title="modal.hideTitle">
     <template #content>
-      <Graph :metric-strings="graph.metricStrings" :label="graph.label" />
+      <Graph :graph="graphMetric" />
     </template>
     <template #footer>
-      <FeatherButton primary @click="graph.isVisible = false">Close</FeatherButton>
+      <FeatherButton primary @click="modal.isVisible = false">Close</FeatherButton>
     </template>
   </PrimaryModal>
 </template>
@@ -68,6 +68,7 @@ import { formatItemBgColor, getHumanReadableDuration } from './utils'
 import { WidgetProps } from '@/types'
 import PrimaryModal from '@/components/Common/PrimaryModal.vue'
 import Graph from '@/components/Graphs/Graph.vue'
+import { GraphMetric } from '@/types/graphs'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
@@ -75,29 +76,38 @@ const appliancesStore = useAppliancesStore()
 const applianceQueries = useAppliancesQueries()
 const listMinionsWithBgColor: ComputedRef<ExtendedMinionDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableMinions))
 
-let graph = ref({
+const graphMetric = ref({} as GraphMetric)
+const modal = ref({
   isVisible: false,
   title: '',
-  hideTitle: true,
-  metricStrings: [''],
-  label: ''
+  hideTitle: true
 })
-const openLatencyGraph = (nodeId: number) => {
-  graph.value = {
-    ...graph.value,
-    isVisible: true,
-    title: 'Minion Latency',
-    metricStrings: ['snmp_round_trip_time_msec'], // TODO: might be different once BE avail
-    label: 'Minion Latency'
+const openLatencyGraph = (minion: any) => {
+  modal.value = {
+    ...modal.value,
+    isVisible: true
+  }
+  
+  const {id, location} = minion
+  graphMetric.value = {
+    label: 'Minion Latency',
+    metrics: ['snmp_round_trip_time_msec'], // TODO: might be different once BE avail
+    id,
+    location
   }
 }
-const openUptimeGraph = (nodeId: number) => {
-  graph.value = {
-    ...graph.value,
-    isVisible: true,
-    title: 'Minion Uptime',
-    metricStrings: ['minion_uptime_sec'], // TODO: might be different once BE avail
-    label: 'Minion Uptime'
+const openUptimeGraph = (minion: any) => {
+  modal.value = {
+    ...modal.value,
+    isVisible: true
+  }
+  
+  const {id, location} = minion
+  graphMetric.value = {
+    label: 'Minion Uptime',
+    metrics: ['minion_uptime_sec'], // TODO: might be different once BE avail
+    id,
+    location
   }
 }
 </script>
