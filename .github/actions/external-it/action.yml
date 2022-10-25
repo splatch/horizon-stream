@@ -39,7 +39,8 @@ runs:
         kubectl --context kind-kind -n local-instance port-forward --pod-running-timeout 1s services/opennms-core 11080:8181 &
 
         # Core takes some time after ready status true before it is setup and
-        # has the minion coming in. 
+        # has the minion coming in.
+        echo "Waiting for OpenNMS Horizon Core to start completely..."
         sleep 500
 
         mvn clean install
