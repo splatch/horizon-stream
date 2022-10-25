@@ -40,7 +40,7 @@ runs:
 
         # Core takes some time after ready status true before it is setup and
         # has the minion coming in.
-        echo "Waiting for OpenNMS Horizon Core to start completely...
+        echo "Waiting for OpenNMS Horizon Core to start completely..."
         sleep 500
 
         mvn clean install
