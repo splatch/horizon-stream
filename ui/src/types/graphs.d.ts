@@ -8,7 +8,7 @@ type DataSets = ExtendedTsResult[][]
 
 interface GraphMetric {
   label: string,
-  metrics: [string],
+  metrics: Array<string>,
   id: string,
   location: string
 }

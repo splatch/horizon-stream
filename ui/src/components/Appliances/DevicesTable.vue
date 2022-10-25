@@ -83,8 +83,6 @@ import { ExtendedDeviceDTOWithBGColors } from '@/types/device'
 import { ComputedRef } from 'vue'
 import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './utils'
 import { WidgetProps } from '@/types'
-import PrimaryModal from '@/components/Common/PrimaryModal.vue'
-import Graph from '@/components/Graphs/Graph.vue'
 import { GraphMetric } from '@/types/graphs'
 
 defineProps<{widgetProps?: WidgetProps}>()
