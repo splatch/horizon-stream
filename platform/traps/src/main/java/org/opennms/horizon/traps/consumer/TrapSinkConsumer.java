@@ -129,10 +129,8 @@ public class TrapSinkConsumer implements  EventListener, Processor {
     public void init() throws Exception {
         eventSubscriptionService.addEventListener(this, EventConstants.CONFIG_UPDATED_UEI);
         eventCreator = new EventCreator(interfaceToNodeCache, eventConfDao, snmpHelper);
-        registerTwinPublisher();
         // Initialize Config.
         initializeConfig();
-        //messageConsumerManager.registerConsumer(this);
     }
 
     void initializeConfig() throws IOException {
@@ -154,25 +152,9 @@ public class TrapSinkConsumer implements  EventListener, Processor {
         publishTrapConfig();
     }
 
-    private void registerTwinPublisher() {
-        // Register Twin Publisher
-        try {
-            twinSession = twinPublisher.register(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class, null);
-        } catch (IOException e) {
-            LOG.error("Failed to register twin for trap listener config", e);
-            throw new RuntimeException(e);
-        }
-    }
+
 
     private void publishTrapConfig() {
-       /* // Publish existing config.
-        try {
-            twinSession.publish(from(config));
-            LOG.info("Published Trap config with Twin Publisher");
-        } catch (IOException e) {
-            LOG.error("Failed to publish trap listener config", e);
-            throw new RuntimeException(e);
-        }*/
 
         TaskSet trapsConfigTaskSet = TaskSet.newBuilder()
             .addTaskDefinition(TaskDefinition.newBuilder()
