@@ -93,6 +93,11 @@
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-protobuf</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>task-set-ignite-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>

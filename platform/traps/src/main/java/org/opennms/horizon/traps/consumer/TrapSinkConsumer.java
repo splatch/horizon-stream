@@ -31,6 +31,7 @@ package org.opennms.horizon.traps.consumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.protobuf.Any;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
@@ -40,7 +41,6 @@ import org.opennms.horizon.core.lib.Logging;
 import org.opennms.horizon.db.dao.api.DistPollerDao;
 import org.opennms.horizon.db.dao.api.InterfaceToNodeCache;
 import org.opennms.horizon.db.dao.api.SessionUtils;
-import org.opennms.horizon.db.model.OnmsDistPoller;
 import org.opennms.horizon.events.api.EventBuilder;
 import org.opennms.horizon.events.api.EventConfDao;
 import org.opennms.horizon.events.api.EventConstants;
@@ -55,6 +55,7 @@ import org.opennms.horizon.events.xml.Events;
 import org.opennms.horizon.events.xml.Log;
 import org.opennms.horizon.grpc.traps.contract.TrapDTO;
 import org.opennms.horizon.grpc.traps.contract.TrapLogDTO;
+import org.opennms.horizon.grpc.traps.contract.Traps;
 import org.opennms.horizon.shared.snmp.SnmpHelper;
 import org.opennms.horizon.shared.snmp.traps.TrapListenerConfig;
 import org.opennms.horizon.shared.snmp.traps.TrapdConfig;
@@ -63,6 +64,12 @@ import org.opennms.horizon.shared.snmp.traps.TrapdInstrumentation;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.horizon.traps.config.SnmpTrapsConfig;
 import org.opennms.horizon.traps.utils.EventCreator;
+import org.opennms.sink.traps.contract.TrapsBaseConfig;
+import org.opennms.sink.traps.contract.TrapsConfig;
+import org.opennms.taskset.contract.TaskDefinition;
+import org.opennms.taskset.contract.TaskSet;
+import org.opennms.taskset.contract.TaskType;
+import org.opennms.taskset.service.api.TaskSetPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +118,12 @@ public class TrapSinkConsumer implements  EventListener, Processor {
 
     private SnmpHelper snmpHelper;
 
+    private TaskSetPublisher taskSetPublisher;
+
     private final SnmpTrapsConfig snmpTrapsConfig = new SnmpTrapsConfig();
+
+    public TrapSinkConsumer() {
+    }
 
 
     public void init() throws Exception {
@@ -153,15 +165,40 @@ public class TrapSinkConsumer implements  EventListener, Processor {
     }
 
     private void publishTrapConfig() {
-        // Publish existing config.
+       /* // Publish existing config.
         try {
             twinSession.publish(from(config));
             LOG.info("Published Trap config with Twin Publisher");
         } catch (IOException e) {
             LOG.error("Failed to publish trap listener config", e);
             throw new RuntimeException(e);
-        }
+        }*/
 
+        TaskSet trapsConfigTaskSet = TaskSet.newBuilder()
+            .addTaskDefinition(TaskDefinition.newBuilder()
+                .setId("traps-config")
+                .setPluginName("trapd.listener.config")
+                .setType(TaskType.LISTENER)
+                .setConfiguration(Any.pack(mapConfigToProto()))
+                .build())
+            .build();
+
+        // Setting the location to be Default for now.
+        taskSetPublisher.publishTaskSet("Default", trapsConfigTaskSet);
+
+    }
+
+    private TrapsConfig mapConfigToProto() {
+        return TrapsConfig.newBuilder().
+            addTrapsBaseConfig(TrapsBaseConfig.newBuilder()
+                .setSnmpTrapAddress(config.getSnmpTrapAddress())
+                .setSnmpTrapPort(config.getSnmpTrapPort())
+                .setIncludeRawMessage(config.isIncludeRawMessage())
+                .setUseAddressFromVarbind(config.shouldUseAddressFromVarbind())
+                // Just set to "Default" location for now.
+                .setLocation("Default")
+                .build())
+            .build();
     }
 
 
@@ -296,6 +333,10 @@ public class TrapSinkConsumer implements  EventListener, Processor {
 
     public void setSnmpHelper(SnmpHelper snmpHelper) {
         this.snmpHelper = snmpHelper;
+    }
+
+    public void setTaskSetPublisher(TaskSetPublisher taskSetPublisher) {
+        this.taskSetPublisher = taskSetPublisher;
     }
 
     public static TrapListenerConfig from(final TrapdConfig config) {

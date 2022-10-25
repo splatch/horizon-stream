@@ -31,24 +31,24 @@ package org.opennms.horizon.minion.traps.listener;
 import com.google.protobuf.ByteString;
 import org.opennms.horizon.grpc.traps.contract.TrapDTO;
 import org.opennms.horizon.grpc.traps.contract.TrapIdentity;
-import org.opennms.horizon.minion.ipc.twin.api.TwinListener;
+import org.opennms.horizon.minion.plugin.api.Listener;
 import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.horizon.shared.logging.Logging;
 import org.opennms.horizon.shared.snmp.SnmpHelper;
+import org.opennms.horizon.shared.snmp.SnmpV3User;
 import org.opennms.horizon.shared.snmp.SnmpVarBindDTO;
 import org.opennms.horizon.shared.snmp.snmp4j.Snmp4JStrategy;
 import org.opennms.horizon.shared.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.opennms.horizon.shared.snmp.snmp4j.Snmp4JUtils;
 import org.opennms.horizon.shared.snmp.traps.TrapInformation;
-import org.opennms.horizon.shared.snmp.traps.TrapListenerConfig;
 import org.opennms.horizon.shared.snmp.traps.TrapNotificationListener;
-import org.opennms.horizon.shared.snmp.traps.TrapdConfig;
 import org.opennms.horizon.shared.snmp.traps.TrapdInstrumentation;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.horizon.snmp.api.SnmpResult;
 import org.opennms.horizon.snmp.api.SnmpValue;
+import org.opennms.sink.traps.contract.TrapsBaseConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -58,17 +58,12 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class TrapListener implements TrapNotificationListener, TwinListener<TrapListenerConfig> {
+public class TrapListener implements TrapNotificationListener, Listener {
 
     private static final Logger LOG = LoggerFactory.getLogger(TrapListener.class);
 
-    private final TrapdConfig config;
-
-    private final SnmpHelper snmpHelper;
 
     private final MessageDispatcherFactory messageDispatcherFactory;
 
@@ -78,14 +73,20 @@ public class TrapListener implements TrapNotificationListener, TwinListener<Trap
 
     private final AtomicBoolean registeredForTraps = new AtomicBoolean(false);
 
+    private final TrapsBaseConfig trapsBaseConfig;
+
+    private final SnmpHelper snmpHelper;
+
     public static final TrapdInstrumentation trapdInstrumentation = new TrapdInstrumentation();
 
-    public TrapListener(TrapdConfig config, SnmpHelper snmpHelper,
-                        MessageDispatcherFactory messageDispatcherFactory, IpcIdentity identity) {
-        this.config = config;
-        this.snmpHelper = snmpHelper;
+    public TrapListener(TrapsBaseConfig trapsBaseConfig,
+                        MessageDispatcherFactory messageDispatcherFactory,
+                        IpcIdentity identity,
+                        SnmpHelper snmpHelper) {
+        this.trapsBaseConfig = trapsBaseConfig;
         this.messageDispatcherFactory = messageDispatcherFactory;
         this.identity = identity;
+        this.snmpHelper = snmpHelper;
     }
 
     @Override
@@ -113,12 +114,12 @@ public class TrapListener implements TrapNotificationListener, TwinListener<Trap
         LOG.warn("Error Processing Received Trap: error = {} {}", error, (msg != null ? ", ref = " + msg : ""));
     }
 
-    private void open(final TrapListenerConfig listenerConfig) {
-        final int m_snmpTrapPort = config.getSnmpTrapPort();
-        final InetAddress address = getInetAddress();
+    private void open() {
+        final int snmpTrapPort = trapsBaseConfig.getSnmpTrapPort();
+        final InetAddress address = getInetAddress(trapsBaseConfig);
         try {
-            LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
-            snmpHelper.registerForTraps(this, address, m_snmpTrapPort, listenerConfig.getSnmpV3Users());
+            LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), snmpTrapPort);
+            snmpHelper.registerForTraps(this, address, snmpTrapPort, transformFromProto(trapsBaseConfig.getSnmpV3UserList()));
             registeredForTraps.set(true);
 
             LOG.debug("init: Creating the trap session");
@@ -127,16 +128,32 @@ public class TrapListener implements TrapNotificationListener, TwinListener<Trap
                 Logging.withPrefix("OpenNMS.Manager", new Runnable() {
                     @Override
                     public void run() {
-                        LOG.error("init: Failed to listen on SNMP trap port {}, perhaps something else is already listening?", m_snmpTrapPort, e);
+                        LOG.error("init: Failed to listen on SNMP trap port {}, perhaps something else is already listening?", snmpTrapPort, e);
                     }
                 });
-                LOG.error("init: Failed to listen on SNMP trap port {}, perhaps something else is already listening?", m_snmpTrapPort, e);
-                throw new UndeclaredThrowableException(e, "Failed to listen on SNMP trap port " + m_snmpTrapPort + ", perhaps something else is already listening?");
+                LOG.error("init: Failed to listen on SNMP trap port {}, perhaps something else is already listening?", snmpTrapPort, e);
+                throw new UndeclaredThrowableException(e, "Failed to listen on SNMP trap port " + snmpTrapPort + ", perhaps something else is already listening?");
             } else {
-                LOG.error("init: Failed to initialize SNMP trap socket on port {}", m_snmpTrapPort, e);
-                throw new UndeclaredThrowableException(e, "Failed to initialize SNMP trap socket on port " + m_snmpTrapPort);
+                LOG.error("init: Failed to initialize SNMP trap socket on port {}", snmpTrapPort, e);
+                throw new UndeclaredThrowableException(e, "Failed to initialize SNMP trap socket on port " + snmpTrapPort);
             }
         }
+    }
+
+    private List<SnmpV3User> transformFromProto(List<org.opennms.sink.traps.contract.SnmpV3User> snmpV3Users) {
+        var snmpUsers = new ArrayList<SnmpV3User>();
+        snmpV3Users.forEach((snmpV3User -> {
+            SnmpV3User v3User = new SnmpV3User();
+            v3User.setEngineId(snmpV3User.getEngineId());
+            v3User.setAuthProtocol(snmpV3User.getAuthProtocol());
+            v3User.setAuthPassPhrase(snmpV3User.getAuthPassphrase());
+            v3User.setPrivProtocol(snmpV3User.getPrivacyProtocol());
+            v3User.setPrivPassPhrase(snmpV3User.getPrivacyPassphrase());
+            v3User.setSecurityLevel(snmpV3User.getSecurityLevel());
+            v3User.setSecurityName(snmpV3User.getSecurityName());
+            snmpUsers.add(v3User);
+        }));
+        return snmpUsers;
     }
 
     private void close() {
@@ -156,29 +173,16 @@ public class TrapListener implements TrapNotificationListener, TwinListener<Trap
         }
     }
 
-    private InetAddress getInetAddress() {
-        if (config.getSnmpTrapAddress().equals("*")) {
+
+    private InetAddress getInetAddress(TrapsBaseConfig trapsBaseConfig) {
+        if (trapsBaseConfig.getSnmpTrapAddress().equals("*")) {
             return null;
         }
-        return InetAddressUtils.addr(config.getSnmpTrapAddress());
+        return InetAddressUtils.addr(trapsBaseConfig.getSnmpTrapAddress());
     }
 
     public void start() {
-        // Even if we don't receive a config update in time, we should still start listener.
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                delayedTrapsListening();
-            }
-        }, 60);
-    }
-
-
-    private void delayedTrapsListening() {
-        if (!registeredForTraps.get()) {
-            LOG.warn("No trap configuration received from core, using default settings");
-            this.open(new TrapListenerConfig());
-        }
+        this.open();
     }
 
     public void stop() {
@@ -186,20 +190,9 @@ public class TrapListener implements TrapNotificationListener, TwinListener<Trap
     }
 
 
-    @Override
-    public Class<TrapListenerConfig> getType() {
-        return TrapListenerConfig.class;
-    }
-
-    @Override
-    public void accept(TrapListenerConfig trapListenerConfig) {
-        this.close();
-        this.open(trapListenerConfig);
-    }
-
     private AsyncDispatcher<TrapDTO> getMessageDispatcher() {
         if (dispatcher == null) {
-            dispatcher = messageDispatcherFactory.createAsyncDispatcher(new TrapSinkModule(config, identity));
+            dispatcher = messageDispatcherFactory.createAsyncDispatcher(new TrapSinkModule(trapsBaseConfig, identity));
         }
         return dispatcher;
     }
@@ -244,7 +237,7 @@ public class TrapListener implements TrapNotificationListener, TwinListener<Trap
             .addAllSnmpResults(results);
 
         // include the raw message, if configured
-        if (config.isIncludeRawMessage()) {
+        if (trapsBaseConfig.getIncludeRawMessage()) {
             byte[] rawMessage = convertToRawMessage(trapInfo);
             if (rawMessage != null) {
                 trapDTOBuilder.setRawMessage(ByteString.copyFrom(rawMessage));
