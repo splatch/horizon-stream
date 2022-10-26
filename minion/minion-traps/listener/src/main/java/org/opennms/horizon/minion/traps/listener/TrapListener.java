@@ -48,7 +48,7 @@ import org.opennms.horizon.shared.snmp.traps.TrapdInstrumentation;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.horizon.snmp.api.SnmpResult;
 import org.opennms.horizon.snmp.api.SnmpValue;
-import org.opennms.sink.traps.contract.TrapsBaseConfig;
+import org.opennms.sink.traps.contract.TrapConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -73,13 +73,13 @@ public class TrapListener implements TrapNotificationListener, Listener {
 
     private final AtomicBoolean registeredForTraps = new AtomicBoolean(false);
 
-    private final TrapsBaseConfig trapsBaseConfig;
+    private final TrapConfig trapsBaseConfig;
 
     private final SnmpHelper snmpHelper;
 
     public static final TrapdInstrumentation trapdInstrumentation = new TrapdInstrumentation();
 
-    public TrapListener(TrapsBaseConfig trapsBaseConfig,
+    public TrapListener(TrapConfig trapsBaseConfig,
                         MessageDispatcherFactory messageDispatcherFactory,
                         IpcIdentity identity,
                         SnmpHelper snmpHelper) {
@@ -174,7 +174,7 @@ public class TrapListener implements TrapNotificationListener, Listener {
     }
 
 
-    private InetAddress getInetAddress(TrapsBaseConfig trapsBaseConfig) {
+    private InetAddress getInetAddress(TrapConfig trapsBaseConfig) {
         if (trapsBaseConfig.getSnmpTrapAddress().equals("*")) {
             return null;
         }

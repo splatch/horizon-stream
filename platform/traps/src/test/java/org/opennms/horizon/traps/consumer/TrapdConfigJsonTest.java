@@ -35,7 +35,6 @@ import org.mockito.Mockito;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.horizon.config.service.api.ConfigConstants;
 import org.opennms.horizon.config.service.api.ConfigService;
-import org.opennms.horizon.shared.snmp.traps.TrapListenerConfig;
 import org.opennms.horizon.shared.snmp.traps.TrapdConfigBean;
 import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.service.api.TaskSetPublisher;
@@ -53,7 +52,6 @@ public class TrapdConfigJsonTest {
         TrapSinkConsumer trapSinkConsumer = new TrapSinkConsumer();
         ConfigService configService = new MockConfigService();
         TwinPublisher twinPublisher = Mockito.mock(TwinPublisher.class);
-        trapSinkConsumer.setTwinPublisher(twinPublisher);
         trapSinkConsumer.setConfigService(configService);
         trapSinkConsumer.setTaskSetPublisher(new TaskSetPublisher() {
             @Override

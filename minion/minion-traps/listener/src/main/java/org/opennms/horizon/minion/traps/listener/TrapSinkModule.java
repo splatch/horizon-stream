@@ -36,16 +36,15 @@ import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AggregationPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
-import org.opennms.horizon.shared.snmp.traps.TrapdConfig;
-import org.opennms.sink.traps.contract.TrapsBaseConfig;
+import org.opennms.sink.traps.contract.TrapConfig;
 
 public class TrapSinkModule implements SinkModule<TrapDTO, TrapLogDTO> {
 
     private final IpcIdentity identity;
 
-    private final TrapsBaseConfig config;
+    private final TrapConfig config;
 
-    public TrapSinkModule(TrapsBaseConfig trapdConfig, IpcIdentity identity) {
+    public TrapSinkModule(TrapConfig trapdConfig, IpcIdentity identity) {
         this.config = trapdConfig;
         this.identity = identity;
     }

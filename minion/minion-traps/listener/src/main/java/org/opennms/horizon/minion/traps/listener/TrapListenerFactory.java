@@ -36,8 +36,7 @@ import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;
 import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.horizon.shared.snmp.SnmpHelper;
-import org.opennms.sink.traps.contract.TrapsBaseConfig;
-import org.opennms.sink.traps.contract.TrapsConfig;
+import org.opennms.sink.traps.contract.TrapConfig;
 
 import java.util.function.Consumer;
 
@@ -57,14 +56,12 @@ public class TrapListenerFactory implements ListenerFactory {
 
     @Override
     public Listener create(Consumer<ServiceMonitorResponse> resultProcessor, Any config) {
-        if (!config.is(TrapsConfig.class)) {
+        if (!config.is(TrapConfig.class)) {
             throw new IllegalArgumentException("configuration must be TrapsConfig; type-url=" + config.getTypeUrl());
         }
 
         try {
-            TrapsConfig trapsConfig = config.unpack(TrapsConfig.class);
-            // TODO : Ideally we will get one TrapsBaseConfig from Minion Gateway.
-            TrapsBaseConfig trapsBaseConfig = trapsConfig.getTrapsBaseConfig(0);
+            TrapConfig trapsBaseConfig = config.unpack(TrapConfig.class);
             return new TrapListener(trapsBaseConfig, messageDispatcherFactory, identity, snmpHelper);
         } catch (InvalidProtocolBufferException e) {
             throw new IllegalArgumentException("Error while parsing config with type-url=" + config.getTypeUrl());

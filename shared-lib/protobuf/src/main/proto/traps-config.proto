@@ -33,20 +33,14 @@ package opennms.sink.traps;
 option java_multiple_files = true;
 option java_package = "org.opennms.sink.traps.contract";
 
-message TrapsBaseConfig {
+message TrapConfig {
   string snmp_trap_address = 1;
   int32 snmp_trap_port = 2;
   bool new_suspect_on_trap = 3;
   bool include_raw_message = 4;
   bool use_address_from_varbind = 5;
-  // Config specific to a location
-  // If not specified, config applies to all locations
-  optional string location = 6;
-  // Config specific to minion
-  // If not specified, config applies to all minions
-  optional string system_id = 7;
-  repeated SnmpV3User snmp_v3_user = 8;
-  ListenerConfig listener_config = 9;
+  repeated SnmpV3User snmp_v3_user = 6;
+  ListenerConfig listener_config = 7;
 }
 
 message SnmpV3User {
@@ -66,6 +60,4 @@ message ListenerConfig {
   int32  num_threads = 4;
 }
 
-message TrapsConfig {
-  repeated TrapsBaseConfig traps_base_config = 1;
-}
+

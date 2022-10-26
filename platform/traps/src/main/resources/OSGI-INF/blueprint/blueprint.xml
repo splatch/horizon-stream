@@ -48,7 +48,6 @@
         <property name="distPollerDao" ref="distPollerDao"/>
         <property name="interfaceToNodeCache" ref="interfaceToNodeCache"/>
         <property name="configService" ref="configService"/>
-        <property name="twinPublisher" ref="twinPublisher"/>
         <property name="sessionUtils" ref="sessionUtils"/>
         <property name="eventSubscriptionService" ref="eventSubscriptionService"/>
         <property name="snmpHelper" ref="snmpHelper"/>

@@ -30,11 +30,9 @@ package org.opennms.horizon.traps.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.Any;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.horizon.config.service.api.ConfigConstants;
 import org.opennms.horizon.config.service.api.ConfigService;
 import org.opennms.horizon.core.lib.Logging;
@@ -55,7 +53,6 @@ import org.opennms.horizon.events.xml.Events;
 import org.opennms.horizon.events.xml.Log;
 import org.opennms.horizon.grpc.traps.contract.TrapDTO;
 import org.opennms.horizon.grpc.traps.contract.TrapLogDTO;
-import org.opennms.horizon.grpc.traps.contract.Traps;
 import org.opennms.horizon.shared.snmp.SnmpHelper;
 import org.opennms.horizon.shared.snmp.traps.TrapListenerConfig;
 import org.opennms.horizon.shared.snmp.traps.TrapdConfig;
@@ -64,8 +61,9 @@ import org.opennms.horizon.shared.snmp.traps.TrapdInstrumentation;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.horizon.traps.config.SnmpTrapsConfig;
 import org.opennms.horizon.traps.utils.EventCreator;
-import org.opennms.sink.traps.contract.TrapsBaseConfig;
-import org.opennms.sink.traps.contract.TrapsConfig;
+import org.opennms.sink.traps.contract.ListenerConfig;
+import org.opennms.sink.traps.contract.SnmpV3User;
+import org.opennms.sink.traps.contract.TrapConfig;
 import org.opennms.taskset.contract.TaskDefinition;
 import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.contract.TaskType;
@@ -75,7 +73,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.opennms.horizon.shared.utils.InetAddressUtils.addr;
 
@@ -108,9 +108,6 @@ public class TrapSinkConsumer implements  EventListener, Processor {
 
     private EventCreator eventCreator;
 
-    private TwinPublisher twinPublisher;
-
-    private TwinPublisher.Session<TrapListenerConfig> twinSession;
 
     private SessionUtils sessionUtils;
 
@@ -156,12 +153,14 @@ public class TrapSinkConsumer implements  EventListener, Processor {
 
     private void publishTrapConfig() {
 
+        TrapConfig trapConfig = mapConfigToProto();
+
         TaskSet trapsConfigTaskSet = TaskSet.newBuilder()
             .addTaskDefinition(TaskDefinition.newBuilder()
                 .setId("traps-config")
                 .setPluginName("trapd.listener.config")
                 .setType(TaskType.LISTENER)
-                .setConfiguration(Any.pack(mapConfigToProto()))
+                .setConfiguration(Any.pack(trapConfig))
                 .build())
             .build();
 
@@ -170,45 +169,33 @@ public class TrapSinkConsumer implements  EventListener, Processor {
 
     }
 
-    private TrapsConfig mapConfigToProto() {
-        return TrapsConfig.newBuilder().
-            addTrapsBaseConfig(TrapsBaseConfig.newBuilder()
-                .setSnmpTrapAddress(config.getSnmpTrapAddress())
-                .setSnmpTrapPort(config.getSnmpTrapPort())
-                .setIncludeRawMessage(config.isIncludeRawMessage())
-                .setUseAddressFromVarbind(config.shouldUseAddressFromVarbind())
-                // Just set to "Default" location for now.
-                .setLocation("Default")
-                .build())
+    private TrapConfig mapConfigToProto() {
+        return TrapConfig.newBuilder()
+            .setSnmpTrapAddress(config.getSnmpTrapAddress())
+            .setSnmpTrapPort(config.getSnmpTrapPort())
+            .setNewSuspectOnTrap(config.getNewSuspectOnTrap())
+            .setIncludeRawMessage(config.isIncludeRawMessage())
+            .setUseAddressFromVarbind(config.shouldUseAddressFromVarbind())
+            .setListenerConfig(ListenerConfig.newBuilder()
+                .setBatchIntervalMs(config.getBatchIntervalMs())
+                .setBatchSize(config.getBatchSize())
+                .setQueueSize(config.getQueueSize())
+                .setNumThreads(config.getNumThreads()))
+            .addAllSnmpV3User(mapSnmpV3Users())
             .build();
     }
 
-
-    /*@Override
-    public SinkModule<TrapDTO, TrapLogDTO> getModule() {
-        OnmsDistPoller distPoller = sessionUtils.withReadOnlyTransaction(() -> distPollerDao.whoami());
-        return new TrapSinkModule(snmpTrapsConfig, distPoller);
+    private List<SnmpV3User> mapSnmpV3Users() {
+        return config.getSnmpV3Users().stream().map(snmpV3User -> {
+           return SnmpV3User.newBuilder()
+               .setEngineId(snmpV3User.getEngineId())
+               .setAuthPassphrase(snmpV3User.getAuthPassPhrase())
+               .setAuthProtocol(snmpV3User.getAuthProtocol())
+               .setPrivacyPassphrase(snmpV3User.getPrivPassPhrase())
+               .setPrivacyProtocol(snmpV3User.getPrivProtocol())
+               .build();
+        }).collect(Collectors.toList());
     }
-
-    @Override
-    public void handleMessage(org.opennms.horizon.grpc.traps.contract.TrapLogDTO messageLog) {
-        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(LOG4J_CATEGORY)) {
-            final Log eventLog = toLog(messageLog);
-
-            eventForwarder.sendNowSync(eventLog);
-
-            // If configured, also send events for new suspects
-            if (config.getNewSuspectOnTrap()) {
-                eventLog.getEvents().getEventCollection().stream()
-                    .filter(e -> !e.hasNodeid())
-                    .forEach(e -> {
-                        sendNewSuspectEvent(e.getInterface(), e.getDistPoller(), messageLog.getIdentity().getLocation());
-                        LOG.debug("Sent newSuspectEvent for interface {}", e.getInterface());
-                    });
-            }
-        }
-    }*/
-
 
     private Log toLog(TrapLogDTO messageLog) {
         final Log log = new Log();
@@ -301,9 +288,6 @@ public class TrapSinkConsumer implements  EventListener, Processor {
         this.distPollerDao = distPollerDao;
     }
 
-    public void setTwinPublisher(TwinPublisher twinPublisher) {
-        this.twinPublisher = twinPublisher;
-    }
 
     public void setSessionUtils(SessionUtils sessionUtils) {
         this.sessionUtils = sessionUtils;
@@ -347,10 +331,6 @@ public class TrapSinkConsumer implements  EventListener, Processor {
         }
     }
 
-    @VisibleForTesting
-    void setTwinSession(TwinPublisher.Session<TrapListenerConfig> twinSession) {
-        this.twinSession = twinSession;
-    }
 
     @Override
     public void process(Exchange exchange) throws Exception {
