@@ -28,14 +28,10 @@
 
 package org.opennms.horizon.tsdata;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import org.opennms.horizon.tsdata.metrics.GaugeFactory;
 import org.opennms.horizon.tsdata.metrics.MetricsPushAdapter;
 import org.opennms.taskset.contract.DetectorResponse;
 import org.opennms.taskset.contract.MonitorResponse;
@@ -47,6 +43,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Gauge;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,14 +51,14 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @PropertySource("classpath:application.yml")
 public class TSDataProcessor {
-    public static final Long INVALID_UP_TIME = -1L;
+    public static final String METRICS_RESPONSE_UNIT = "msec";
+    private static final String METRICS_LABEL_INSTANCE  = "instance";
+    private static final String METRICS_LABEL_LOCATION  = "location";
+    private static final String METRICS_LABEL_SYSTEM_ID = "system_id";
     private final MetricsPushAdapter pushAdapter;
-    private final GaugeFactory gaugeFactory;
-    private final Map<String, Long> snmpUpTimeCache = new ConcurrentHashMap<>();
 
-    public TSDataProcessor(MetricsPushAdapter pushAdapter, GaugeFactory gaugeFactory) {
+    public TSDataProcessor(MetricsPushAdapter pushAdapter) {
         this.pushAdapter = pushAdapter;
-        this.gaugeFactory = gaugeFactory;
     }
 
     @KafkaListener(topics = "${kafka.topics}", concurrency = "1")
@@ -71,25 +68,11 @@ public class TSDataProcessor {
             results.getResultsList().forEach(result -> CompletableFuture.supplyAsync(()->{
                 try {
                     if (result != null) {
+                        log.info("Processing task set result {}", result);
                         if (result.hasMonitorResponse()) {
-                            MonitorResponse monitorResponse = result.getMonitorResponse();
-
-                            switch (monitorResponse.getMonitorType()) {
-                                case ICMP:
-                                    processIcmpMonitorResponse(result, monitorResponse);
-                                    break;
-
-                                case SNMP:
-                                    processSnmpMonitorResponse(result, monitorResponse);
-                                    break;
-
-                                default:
-                                    log.warn("Have response for unrecognized monitor type: type={}", monitorResponse.getMonitorType());
-                                    break;
-                            }
+                            processMonitorResponse(result);
                         } else if (result.hasDetectorResponse()) {
                             DetectorResponse detectorResponse = result.getDetectorResponse();
-
                             // TBD: how to process?
                             log.info("Have detector response: task-id={}; detected={}", result.getId(), detectorResponse.getDetected());
                         }
@@ -107,87 +90,31 @@ public class TSDataProcessor {
         }
     }
 
-    private void processIcmpMonitorResponse(TaskResult taskResult, MonitorResponse monitorResponse) {
-        double responseTimeMs = taskResult.getMonitorResponse().getResponseTimeMs();
-
-        updateIcmpMetrics(
-            monitorResponse.getIpAddress(),
-            taskResult.getLocation(),
-            taskResult.getSystemId(),
-            responseTimeMs,
-            monitorResponse.getMetricsMap()
-        );
-    }
-
-    private void processSnmpMonitorResponse(TaskResult taskResult, MonitorResponse monitorResponse) {
-        double responseTimeMs = taskResult.getMonitorResponse().getResponseTimeMs();
-
-        updateSnmpMetrics(
-            monitorResponse.getIpAddress(),
-            taskResult.getLocation(),
-            taskResult.getSystemId(),
-            monitorResponse.getStatus(),
-            responseTimeMs,
-            monitorResponse.getMetricsMap()
-        );
-    }
-
-    private void updateIcmpMetrics(String ipAddress, String location, String systemId, double responseTime, Map<String, Double> metrics) {
-        commonUpdateMonitorMetrics(gaugeFactory.lookupGauge(GaugeFactory.METRICS_NAME_ICMP_TRIP), ipAddress, location, systemId, responseTime, metrics);
-    }
-
-    private void updateSnmpMetrics(String ipAddress, String location, String systemId, String status, double responseTime, Map<String, Double> metrics) {
-        String[] labelValues = commonUpdateMonitorMetrics(gaugeFactory.lookupGauge(GaugeFactory.METRICS_NAME_SNMP_TRIP), ipAddress, location, systemId, responseTime, metrics);
-        updateSnmpUptime(ipAddress, location, status, labelValues);
-    }
-
-    private void updateSnmpUptime(String ipAddress, String location, String status, String[] labelValues) {
-        if ("Up".equalsIgnoreCase(status)) {
-            Long firstUpTime = snmpUpTimeCache.get(ipAddress);
-            long totalUpTimeInNanoSec = 0;
-            if ((firstUpTime != null) && (firstUpTime.longValue() != INVALID_UP_TIME)) {
-                totalUpTimeInNanoSec = System.nanoTime() - firstUpTime;
-            } else {
-                snmpUpTimeCache.put(ipAddress, System.nanoTime());
-            }
-            long totalUpTimeInSec = TimeUnit.NANOSECONDS.toSeconds(totalUpTimeInNanoSec);
-
-            gaugeFactory.lookupGauge(GaugeFactory.METRICS_NAME_SNMP_UP).labels(labelValues).set(totalUpTimeInSec);
-
-            log.info("Total upTime of SNMP for {} at location {} : {} sec", ipAddress, location, totalUpTimeInSec);
-        } else {
-            snmpUpTimeCache.put(ipAddress, INVALID_UP_TIME);
+    private void processMonitorResponse(TaskResult result) {
+        final CollectorRegistry collectorRegistry = new CollectorRegistry();
+        MonitorResponse response = result.getMonitorResponse();
+        Map<String, String> labels = new HashMap<>(Map.of(METRICS_LABEL_INSTANCE, response.getIpAddress(), METRICS_LABEL_LOCATION,
+            result.getLocation(), METRICS_LABEL_SYSTEM_ID, result.getSystemId()));
+        if(result.getExtraLabelsMap()!=null && result.getExtraLabelsMap().size()>0) {
+            labels.putAll(result.getExtraLabelsMap());
         }
-    }
+        Gauge gauge = Gauge.build()
+            .name(response.getMonitorType().name())
+            .help(response.getMonitorType().name() + " Response Time")
+            .unit(METRICS_RESPONSE_UNIT)
+            .labelNames(labels.keySet().toArray(new String[0]))
+            .register(collectorRegistry);
+        gauge.labels(labels.values().toArray(new String[0])).set(response.getResponseTimeMs());
 
-    private String[] commonUpdateMonitorMetrics(Gauge gauge, String ipAddress, String location, String systemId, double responseTime, Map<String, Double> metrics) {
-        String[] labelValues = {ipAddress, location, systemId};
-
-        // Update the response-time gauge
-        gauge.labels(labelValues).set(responseTime);
-
-        // Also update the gauges for additional metrics from the monitor
-        for (Map.Entry<String, Double> oneMetric : metrics.entrySet()) {
-            try {
-                Gauge dynamicMetricGauge = gaugeFactory.lookupGauge(oneMetric.getKey());
-                dynamicMetricGauge.labels(labelValues).set(oneMetric.getValue());
-            } catch (Exception exc) {
-                log.warn("Failed to record metric: metric-name={}; value={}", oneMetric.getKey(), oneMetric.getValue(), exc);
-            }
+        if(response.getMetricsMap()!=null) {
+            response.getMetricsMap().forEach((k, v)-> {
+                Gauge extGauge = Gauge.build()
+                    .name(k)
+                    .labelNames(labels.keySet().toArray(new String[0]))
+                    .register(collectorRegistry);
+                extGauge.labels(labels.values().toArray(new String[0])).set(v);
+            });
         }
-
-        pushMetrics(labelValues);
-
-        return labelValues;
-    }
-
-    private void pushMetrics(String[] labelValues) {
-        var groupingKey =
-            IntStream
-                .range(0, GaugeFactory.LABEL_NAMES.length)
-                .boxed()
-                .collect(Collectors.toMap(i -> GaugeFactory.LABEL_NAMES[i], i -> labelValues[i]));
-
-        pushAdapter.pushMetrics(gaugeFactory.getCollectorRegistry(), groupingKey);
+        pushAdapter.pushMetrics(collectorRegistry, labels);
     }
 }

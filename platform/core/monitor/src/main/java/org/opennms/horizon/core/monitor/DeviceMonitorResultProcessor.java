@@ -77,8 +77,9 @@ public class DeviceMonitorResultProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         TaskSetResults results = exchange.getIn().getMandatoryBody(TaskSetResults.class);
+        log.info("received result: {}", results);
 
-        List<TaskResult> resultsList = results.getResultsList();
+        /* List<TaskResult> resultsList = results.getResultsList();
         for (TaskResult oneResult : resultsList) {
 
             // TODO: update all returned metrics from the monitor
@@ -114,7 +115,7 @@ public class DeviceMonitorResultProcessor implements Processor {
                 // TODO: throttle
                 log.warn("Error processing task result", exc);
             }
-        }
+        }*/
     }
 
 //========================================
