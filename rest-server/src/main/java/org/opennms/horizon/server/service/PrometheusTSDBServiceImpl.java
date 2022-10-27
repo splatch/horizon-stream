@@ -30,6 +30,7 @@ package org.opennms.horizon.server.service;
 
 import java.util.Map;
 
+import org.opennms.horizon.server.model.TimeRangeUnit;
 import org.opennms.horizon.server.model.TimeSeriesQueryResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -45,11 +46,9 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @GraphQLApi
 @Service
-public class PrometheusTSDBServiceImpl implements TSDBService {
-    private static final String QUERY_TEMPLATE = "query=%s{%s}";
-    private static final String QUERY_TEMPLATE_WITHOUT_LABELS = "query=%s";
-    private static final String LABEL_INSTANCE = "instance";
-    private WebClient webClient;
+public class PrometheusTSDBServiceImpl {
+    private static final String QUERY_TEMPLATE = "query=%s";
+    private final WebClient webClient;
 
     public PrometheusTSDBServiceImpl(@Value("${tsdb.url}") String tsdbURL) {
         webClient = WebClient.builder()
@@ -60,17 +59,21 @@ public class PrometheusTSDBServiceImpl implements TSDBService {
     }
 
     @GraphQLQuery
-    @Override
-    public Mono<TimeSeriesQueryResult> getMetric(String name, Map<String, String> labels) {
+    public Mono<TimeSeriesQueryResult> getMetric(String name, Map<String, String> labels, Integer timeRange, TimeRangeUnit timeRangeUnit) {
+        String queryString = generatePayloadString(name, labels);
+        if(timeRange != null && timeRangeUnit != null) {
+            queryString += "[" + timeRange + timeRangeUnit.value + "]";
+        }
         return webClient.post()
-            .bodyValue(generatePayloadString(name, labels))
+            .bodyValue(queryString)
             .retrieve()
             .bodyToMono(TimeSeriesQueryResult.class);
     }
 
     private String generatePayloadString(String name, Map<String, String> labels) {
-        StringBuilder filterStr = new StringBuilder();
+        String queryString = name;
         if (labels != null && labels.size() > 0) {
+            StringBuilder filterStr = new StringBuilder();
             String filterTmp = "%s=\"%s\"";
             for (Map.Entry<String, String> entry : labels.entrySet()) {
                 if (filterStr.length() > 0) {
@@ -78,9 +81,10 @@ public class PrometheusTSDBServiceImpl implements TSDBService {
                 }
                 filterStr.append(String.format(filterTmp, entry.getKey(), entry.getValue()));
             }
-        } else {
-            return String.format(QUERY_TEMPLATE_WITHOUT_LABELS, name);
+            filterStr.insert(0, "{");
+            filterStr.append("}");
+            queryString += filterStr;
         }
-        return String.format(QUERY_TEMPLATE, name, filterStr);
+        return String.format(QUERY_TEMPLATE, queryString);
     }
 }

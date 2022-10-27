@@ -39,4 +39,5 @@ import lombok.Setter;
 public class TSResult {
     private Map<String, String> metric;
     List<Double> value;
+    List<List<Double>> values;
 }
