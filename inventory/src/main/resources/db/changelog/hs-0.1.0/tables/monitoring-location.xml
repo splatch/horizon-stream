@@ -4,14 +4,14 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-    <changeSet author="tbigg" id="0.1.0-monitoring-locations">
+    <changeSet author="tbigg" id="0.1.0-monitoring-location">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="monitoring_locations"/>
+                <tableExists tableName="monitoring_location"/>
             </not>
         </preConditions>
 
-        <createTable tableName="monitoring_locations">
+        <createTable tableName="monitoring_location">
             <column name="id" type="BIGINT" autoIncrement="true"/>
 
             <column name="tenant_id" type="UUID">
@@ -24,8 +24,8 @@
 
         </createTable>
 
-        <addPrimaryKey tableName="monitoring_locations" columnNames="id"
-                       constraintName="pk_monitoring_locations_id"/>
+        <addPrimaryKey tableName="monitoring_location" columnNames="id"
+                       constraintName="pk_monitoring_location_id"/>
 
     </changeSet>
 </databaseChangeLog>

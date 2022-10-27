@@ -4,14 +4,14 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-    <changeSet author="tbigg" id="0.1.0-monitoring-systems">
+    <changeSet author="tbigg" id="0.1.0-monitoring-system">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="monitoring_systems"/>
+                <tableExists tableName="monitoring_system"/>
             </not>
         </preConditions>
 
-        <createTable tableName="monitoring_systems">
+        <createTable tableName="monitoring_system">
             <column name="id" type="BIGINT" autoIncrement="true"/>
 
             <column name="tenant_id" type="UUID">
@@ -32,11 +32,11 @@
 
         </createTable>
 
-        <addPrimaryKey tableName="monitoring_systems" columnNames="id" constraintName="pk_monitoring_systems_id"/>
+        <addPrimaryKey tableName="monitoring_system" columnNames="id" constraintName="pk_monitoring_system_id"/>
 
-        <addForeignKeyConstraint constraintName="fk_monitoring_systems_monitoring_location_id" onDelete="CASCADE"
-                                 baseTableName="monitoring_systems" baseColumnNames="monitoring_location_id"
-                                 referencedTableName="monitoring_locations" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="fk_monitoring_system_monitoring_location_id" onDelete="CASCADE"
+                                 baseTableName="monitoring_system" baseColumnNames="monitoring_location_id"
+                                 referencedTableName="monitoring_location" referencedColumnNames="id"/>
 
     </changeSet>
 </databaseChangeLog>
