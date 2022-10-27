@@ -28,8 +28,10 @@
 
 package org.opennms.horizon.tsdata;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.horizon.tsdata.metrics.MetricsPushAdapter;
 import org.opennms.taskset.contract.DetectorResponse;
@@ -50,11 +52,17 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @PropertySource("classpath:application.yml")
 public class TSDataProcessor {
-    private static final String MONITOR_METRICS_NAME = "response_time";
-    private static final String METRICS_RESPONSE_UNIT = "msec";
-    private static final String METRICS_LABEL_INSTANCE  = "instance";
-    private static final String METRICS_LABEL_LOCATION  = "location";
-    private static final String METRICS_LABEL_SYSTEM_ID = "system_id";
+    private static final String METRICS_NAME_PREFIX_MONITOR = "monitor_";
+    private static final String METRICS_UNIT_MS = "msec";
+    private static final String METRICS_NAME_RESPONSE = "response_time";
+
+    private static final String[] MONITOR_METRICS_LABEL_NAMES = {
+        METRICS_NAME_PREFIX_MONITOR + "instance",
+        METRICS_NAME_PREFIX_MONITOR + "location",
+        METRICS_NAME_PREFIX_MONITOR + "system_id",
+        METRICS_NAME_PREFIX_MONITOR + "monitor_type"};
+    private final CollectorRegistry collectorRegistry = new CollectorRegistry();
+    private final Map<String, Gauge> gauges = new ConcurrentHashMap<>();
     private final MetricsPushAdapter pushAdapter;
 
     public TSDataProcessor(MetricsPushAdapter pushAdapter) {
@@ -91,27 +99,42 @@ public class TSDataProcessor {
     }
 
     private void processMonitorResponse(TaskResult result) {
-        final CollectorRegistry collectorRegistry = new CollectorRegistry();
         MonitorResponse response = result.getMonitorResponse();
-        Map<String, String> labels = Map.of(METRICS_LABEL_INSTANCE, response.getIpAddress(), METRICS_LABEL_LOCATION,
-            result.getLocation(), METRICS_LABEL_SYSTEM_ID, result.getSystemId());
-        Gauge gauge = Gauge.build()
-            .name(response.getMonitorType() + "_" + MONITOR_METRICS_NAME + "_" + METRICS_RESPONSE_UNIT)
-            .help(response.getMonitorType().name() + " round trip response Time")
-            .unit(METRICS_RESPONSE_UNIT)
-            .labelNames(labels.keySet().toArray(new String[0]))
-            .register(collectorRegistry);
-        gauge.labels(labels.values().toArray(new String[0])).set(response.getResponseTimeMs());
+        String [] labelValues = {response.getIpAddress(), result.getLocation(), result.getSystemId(), response.getMonitorType().name()};
+        Gauge gauge = getGaugeFromName(METRICS_NAME_PREFIX_MONITOR + METRICS_NAME_RESPONSE+"_" + METRICS_UNIT_MS, true);
+        gauge.labels(labelValues).set(response.getResponseTimeMs());
+        Map<String, String> labels = new HashMap<>();
+        for (int i = 0; i< MONITOR_METRICS_LABEL_NAMES.length; i++) {
+            labels.put(MONITOR_METRICS_LABEL_NAMES[i], labelValues[i]);
+        }
 
         if(response.getMetricsMap()!=null) {
             response.getMetricsMap().forEach((k, v)-> {
-                Gauge extGauge = Gauge.build()
-                    .name(k)
-                    .labelNames(labels.keySet().toArray(new String[0]))
-                    .register(collectorRegistry);
-                extGauge.labels(labels.values().toArray(new String[0])).set(v);
+                Gauge extGauge = getGaugeFromName(METRICS_NAME_PREFIX_MONITOR + k, false);
+                extGauge.labels(labelValues).set(v);
             });
         }
         pushAdapter.pushMetrics(collectorRegistry, labels);
+    }
+
+    private Gauge getGaugeFromName(String name, boolean withDesc) {
+        return gauges.compute(name, (key, gauge) -> {
+            if(gauge != null) {
+                return gauge;
+            }
+            if(withDesc) {
+                return Gauge.build()
+                    .name(name)
+                    .help("Monitor round trip response time")
+                    .unit(METRICS_UNIT_MS)
+                    .labelNames(MONITOR_METRICS_LABEL_NAMES)
+                    .register(collectorRegistry);
+            }
+            return Gauge.build()
+                .name(name)
+                .unit(METRICS_UNIT_MS)
+                .labelNames(MONITOR_METRICS_LABEL_NAMES)
+                .register(collectorRegistry);
+        });
     }
 }
