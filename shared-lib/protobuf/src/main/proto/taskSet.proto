@@ -73,8 +73,6 @@ message TaskResult {
     MonitorResponse monitor_response = 7;
     DetectorResponse detector_response = 8;
   }
-
-  map<string, string> extra_labels = 9;
 }
 
 message TaskSetResults {

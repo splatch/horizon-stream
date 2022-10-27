@@ -28,7 +28,6 @@
 
 package org.opennms.horizon.tsdata;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -51,7 +50,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @PropertySource("classpath:application.yml")
 public class TSDataProcessor {
-    public static final String METRICS_RESPONSE_UNIT = "msec";
+    private static final String MONITOR_METRICS_NAME = "response_time";
+    private static final String METRICS_RESPONSE_UNIT = "msec";
     private static final String METRICS_LABEL_INSTANCE  = "instance";
     private static final String METRICS_LABEL_LOCATION  = "location";
     private static final String METRICS_LABEL_SYSTEM_ID = "system_id";
@@ -93,14 +93,11 @@ public class TSDataProcessor {
     private void processMonitorResponse(TaskResult result) {
         final CollectorRegistry collectorRegistry = new CollectorRegistry();
         MonitorResponse response = result.getMonitorResponse();
-        Map<String, String> labels = new HashMap<>(Map.of(METRICS_LABEL_INSTANCE, response.getIpAddress(), METRICS_LABEL_LOCATION,
-            result.getLocation(), METRICS_LABEL_SYSTEM_ID, result.getSystemId()));
-        if(result.getExtraLabelsMap()!=null && result.getExtraLabelsMap().size()>0) {
-            labels.putAll(result.getExtraLabelsMap());
-        }
+        Map<String, String> labels = Map.of(METRICS_LABEL_INSTANCE, response.getIpAddress(), METRICS_LABEL_LOCATION,
+            result.getLocation(), METRICS_LABEL_SYSTEM_ID, result.getSystemId());
         Gauge gauge = Gauge.build()
-            .name(response.getMonitorType().name())
-            .help(response.getMonitorType().name() + " Response Time")
+            .name(response.getMonitorType() + "_" + MONITOR_METRICS_NAME + "_" + METRICS_RESPONSE_UNIT)
+            .help(response.getMonitorType().name() + " round trip response Time")
             .unit(METRICS_RESPONSE_UNIT)
             .labelNames(labels.keySet().toArray(new String[0]))
             .register(collectorRegistry);

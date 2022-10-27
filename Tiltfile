@@ -208,7 +208,7 @@ k8s_resource(
 ### Prometheus Push Gateway ###
 k8s_resource(
     'prometheus-pushgateway',
-    port_forwards=['21080:9090'],
+    port_forwards=['21080:9091'],
 )
 
 ### Others ###
