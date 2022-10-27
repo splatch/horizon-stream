@@ -60,7 +60,7 @@ public class TSDataProcessor {
         "instance",
         "location",
         "system_id",
-        "type"};
+        "monitor"};
     private final CollectorRegistry collectorRegistry = new CollectorRegistry();
     private final Map<String, Gauge> gauges = new ConcurrentHashMap<>();
     private final MetricsPushAdapter pushAdapter;
@@ -100,8 +100,8 @@ public class TSDataProcessor {
 
     private void processMonitorResponse(TaskResult result) {
         MonitorResponse response = result.getMonitorResponse();
-        String [] labelValues = {response.getIpAddress(), result.getLocation(), result.getSystemId(), METRICS_NAME_PREFIX_MONITOR + response.getMonitorType().name()};
-        Gauge gauge = getGaugeFromName(METRICS_NAME_PREFIX_MONITOR + METRICS_NAME_RESPONSE + "_" + METRICS_UNIT_MS, true);
+        String [] labelValues = {response.getIpAddress(), result.getLocation(), result.getSystemId(),  response.getMonitorType().name()};
+        Gauge gauge = getGaugeFromName(METRICS_NAME_RESPONSE, true);
         gauge.labels(labelValues).set(response.getResponseTimeMs());
         Map<String, String> labels = new HashMap<>();
         for (int i = 0; i< MONITOR_METRICS_LABEL_NAMES.length; i++) {
