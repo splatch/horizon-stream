@@ -199,6 +199,18 @@ k8s_resource(
     port_forwards=['18080:3000'],
 )
 
+### Prometheus ###
+k8s_resource(
+    'prometheus',
+    port_forwards=['19080:9090'],
+)
+
+### Prometheus Push Gateway ###
+k8s_resource(
+    'prometheus-pushgateway',
+    port_forwards=['21080:9091'],
+)
+
 ### Others ###
 k8s_resource(
     'ingress-nginx-controller',
