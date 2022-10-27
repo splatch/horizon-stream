@@ -1,6 +1,10 @@
 server:
   port: 9090
 
+spring:
+  jackson:
+    default-property-inclusion: non_null
+
 # graphql
 graphql:
   spqr:

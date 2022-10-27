@@ -26,13 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.service;
+package org.opennms.horizon.server.model;
 
-import java.util.Map;
+public enum TimeRangeUnit {
+    SECOND("s"),
+    MINUTE("m"),
+    HOUR("h"),
+    DAY("d"),
+    WEEK("w");
 
-import org.opennms.horizon.server.model.TimeSeriesQueryResult;
-import reactor.core.publisher.Mono;
+    public final String value;
 
-public interface TSDBService {
-    Mono<TimeSeriesQueryResult> getMetric(String name, Map<String, String> labels);
+    TimeRangeUnit(String value) {
+        this.value = value;
+    }
 }
