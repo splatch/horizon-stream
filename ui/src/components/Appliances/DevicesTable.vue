@@ -112,7 +112,7 @@ const openLatencyGraph = (device: any) => {
   const {id, location} = device
   graphMetric.value = {
     label: 'Device Latency',
-    metrics: ['snmp_round_trip_time_msec'], // TODO: might be different once BE avail
+    metrics: ['icmp_round_trip_time_msec'], // TODO: might be different once BE avail
     id,
     location // TODO: device argument does not have location prop
   }
@@ -126,7 +126,7 @@ const openUptimeGraph = (device: any) => {
   const {id, location} = device
   graphMetric.value = {
     label: 'Device Uptime',
-    metrics: ['device_uptime_sec'], // TODO: might be different once BE avail
+    metrics: ['minion_uptime_sec'], // TODO: might be different once BE avail
     id,
     location // TODO: device argument does not have location prop
   }

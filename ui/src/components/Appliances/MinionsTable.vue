@@ -89,7 +89,7 @@ const openLatencyGraph = (minion: any) => {
   const {id, location} = minion
   graphMetric.value = {
     label: 'Minion Latency',
-    metrics: ['snmp_round_trip_time_msec'], // TODO: might be different once BE avail
+    metrics: ['icmp_round_trip_time_msec'], // TODO: might be different once BE avail
     id,
     location
   }
