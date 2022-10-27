@@ -70,19 +70,21 @@ const options = computed<ChartOptions>(() => ({
 }))
 
 const xAxisLabels = computed(() => {
-  const totalLabels = graphs.dataSets.value[0].values.map(([timestamp]) => {
-    return formatTimestamp(timestamp * 1000, 'minutes') // TODO: '* 1000' may not be needed! if not then '/ 1000' must be removed from formatTimestamp method
+  const graphsDataSetsValues = graphs.dataSets.value[0].values as any
+  
+  const totalLabels = graphsDataSetsValues.map((val: any) => {
+    return formatTimestamp(val[0] * 1000, 'minutes') // TODO: '* 1000' may not be needed! if not then '/ 1000' must be removed from formatTimestamp method
   })
 
   return totalLabels
 })
 
 const dataSets = computed(() => {
-  const graphsDataSets = graphs.dataSets.value[0]
+  const graphsDataSets = graphs.dataSets.value[0] as any
 
   return [{
     label: graphsDataSets.metric.__name__,
-    data: graphsDataSets.values.map(([, value]) => value),
+    data: graphsDataSets.values.map((val: any) => val[1]),
     backgroundColor: 'green' // TODO: use featherds var
   }]
 })
