@@ -70,6 +70,9 @@ type OpenNMSSpec struct {
     // Defines service values for MetricsProcessor service
     MetricsProcessor BaseServiceResources `json:"metricsProcessor,omitempty"`
 
+	// Defines service values for MetricsProcessor service
+    Events BaseServiceResources `json:"events,omitempty"`
+
     // Defines service values for Postgres
     Postgres BaseServiceResources `json:"postgres,omitempty"`
 

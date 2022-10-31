@@ -23,6 +23,7 @@ type OpenNMSValues struct {
     Inventory        ServiceValues          `yaml:"Inventory"`
     Notification     ServiceValues          `yaml:"Notification"`
     MetricsProcessor MetricsProcessorValues `yaml:"MetricsProcessor"`
+    Events           ServiceValues          `yaml:"Events"`
 }
 
 type CoreValues struct {

@@ -129,6 +129,19 @@ spec:
                     image:
                       description: Docker Image tag for the service
                       type: string
+                events:
+                  description: Defines cpu,mem and disk size for the Events service
+                  type: object
+                  properties:
+                    cpu:
+                      type: string
+                    disk:
+                      type: string
+                    mem:
+                      type: string
+                    image:
+                      description: Docker Image tag for the service
+                      type: string
                 keycloak:
                   description: Defines service configuration for keycloak
                   type: object

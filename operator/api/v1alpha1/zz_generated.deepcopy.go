@@ -98,6 +98,7 @@ func (in *OpenNMSSpec) DeepCopyInto(out *OpenNMSSpec) {
 	out.Postgres = in.Postgres
 	out.Keycloak = in.Keycloak
 	out.Grafana = in.Grafana
+	out.Events = in.Events
 	out.ImageUpdateConfig = in.ImageUpdateConfig
 }
 

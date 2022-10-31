@@ -108,6 +108,7 @@ func TestCheckForExistingCoreCreds(t *testing.T) {
 	keycloakPwd := "testpostgreskeycloakpwd"
     inventoryPwd := "testpostgresinventorypwd"
 	notificationPwd := "testpostgresnotificationpwd"
+	eventsPwd := "testpostgreseventspwd"
 	pgSecret := corev1.Secret{
 		ObjectMeta: v1.ObjectMeta{
 			Name: "postgres",
@@ -117,6 +118,7 @@ func TestCheckForExistingCoreCreds(t *testing.T) {
 			"keycloakPwd":     []byte(keycloakPwd),
 			"inventoryPwd":    []byte(inventoryPwd),
 			"notificationPwd": []byte(notificationPwd),
+		    "eventsPwd":       []byte(eventsPwd),
 		},
 	}
 	err = k8sClient.Create(ctx, &pgSecret)
@@ -128,4 +130,5 @@ func TestCheckForExistingCoreCreds(t *testing.T) {
 	assert.Equal(t, keycloakPwd, res.Values.Postgres.KeycloakPassword, "should return the postgres expected values")
 	assert.Equal(t, inventoryPwd, res.Values.Postgres.InventoryPassword, "should return the postgres expected values")
 	assert.Equal(t, notificationPwd, res.Values.Postgres.NotificationPassword, "should return the postgres expected values")
+	assert.Equal(t, eventsPwd, res.Values.Postgres.EventsPassword, "should return the postgres expected values")
 }

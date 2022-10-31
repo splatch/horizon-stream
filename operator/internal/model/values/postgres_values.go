@@ -22,4 +22,5 @@ type PostgresValues struct {
 	InventoryPassword    string `yaml:"InventoryPassword"`
 	NotificationPassword string `yaml:"NotificationPassword"`
 	GrafanaPassword      string `yaml:"GrafanaPassword"`
+	EventsPassword       string `yaml:"EventsPassword"`
 }

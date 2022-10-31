@@ -42,6 +42,10 @@ spec:
     image: opennms/horizon-stream-metrics-processor
     cpu: "0"
     mem: 256Mi
+  events:
+    image: opennms/horizon-stream-events
+    cpu: "0"
+    mem: 100Mi
   keycloak:
     image: opennms/horizon-stream-keycloak
   grafana:
