@@ -29,12 +29,12 @@
             <td>{{ minion.lastUpdated }}</td>
             <td>{{ minion.id }}</td>
             <td>
-              <div @click="openLatencyGraph(minion)" :data-metric="minion.icmp_latency" class="bg-status pointer" :class="minion.latencyBgColor" data-test="minion-item-latency">
+              <div @click="openLatencyGraph(minion.id as string)" :data-metric="minion.icmp_latency" class="bg-status pointer" :class="minion.latencyBgColor" data-test="minion-item-latency">
                 {{ getHumanReadableDuration(minion.icmp_latency) }}
               </div>
             </td>
             <td>
-              <div @click="openUptimeGraph(minion)" :data-metric="minion.snmp_uptime" class="bg-status pointer" :class="minion.uptimeBgColor" data-test="minion-item-uptime">
+              <div @click="openUptimeGraph(minion.id as string)" :data-metric="minion.snmp_uptime" class="bg-status pointer" :class="minion.uptimeBgColor" data-test="minion-item-uptime">
                 {{ getHumanReadableDuration(minion.snmp_uptime) }}
               </div>
             </td>
@@ -50,7 +50,7 @@
   </TableCard>
   <PrimaryModal :visible="modal.isVisible" :title="modal.title" :hide-title="modal.hideTitle">
     <template #content>
-      <Graph :graph="graphMetric" />
+      <Graph :graph="graphProps" />
     </template>
     <template #footer>
       <FeatherButton primary @click="modal.isVisible = false">Close</FeatherButton>
@@ -66,7 +66,8 @@ import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
 import { ComputedRef } from 'vue'
 import { formatItemBgColor, getHumanReadableDuration } from './utils'
 import { WidgetProps } from '@/types'
-import { GraphMetric } from '@/types/graphs'
+import { GraphProps } from '@/types/graphs'
+import { TimeRangeUnit } from '@/types/graphql'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
@@ -74,38 +75,40 @@ const appliancesStore = useAppliancesStore()
 const applianceQueries = useAppliancesQueries()
 const listMinionsWithBgColor: ComputedRef<ExtendedMinionDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableMinions))
 
-const graphMetric = ref({} as GraphMetric)
+const graphProps = ref({} as GraphProps)
 const modal = ref({
   isVisible: false,
   title: '',
   hideTitle: true
 })
-const openLatencyGraph = (minion: any) => {
+const openLatencyGraph = (id: string) => {
   modal.value = {
     ...modal.value,
     isVisible: true
   }
-  
-  const {id, location} = minion
-  graphMetric.value = {
+  graphProps.value = {
     label: 'Minion Latency',
     metrics: ['icmp_round_trip_time_msec'], // TODO: might be different once BE avail
-    id,
-    location
+    monitor: 'ICMP',
+    // id, // not yet implemented in BE
+    instance: id, // not yet implemented in BE
+    timeRange: 10,
+    timeRangeUnit: TimeRangeUnit.Minute
   }
 }
-const openUptimeGraph = (minion: any) => {
+const openUptimeGraph = (id: string) => {
   modal.value = {
     ...modal.value,
     isVisible: true
   }
-  
-  const {id, location} = minion
-  graphMetric.value = {
+  graphProps.value = {
     label: 'Minion Uptime',
     metrics: ['minion_uptime_sec'], // TODO: might be different once BE avail
-    id,
-    location
+    monitor: 'ICMP',
+    // id, // not yet implemented in BE
+    instance: id, // not yet implemented in BE
+    timeRange: 10,
+    timeRangeUnit: TimeRangeUnit.Minute
   }
 }
 </script>

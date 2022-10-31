@@ -217,4 +217,37 @@ describe('MinionsTable.vue', () => {
       })
     })
   })
+
+  /** 
+   * TODO:
+   * - stub Graph component
+   * - assert query arguments and result
+  */
+  describe.skip('Metric charts', () => {
+    it('should make query `response_time_msec`', async () => {
+      const minionsItems = [
+        {
+          id: '1',
+          date: 'date1',
+          label: 'minion1',
+          icmp_latency: 5,
+          snmp_uptime: 5,
+          status: 'UP',
+          location: 'default'
+        }
+      ]
+      setAppliancesStore({minions: computed(() => minionsItems)})
+      const wrapper = mount(MinionsTable, {
+        stubs: {
+          PrimaryModal: true,
+          Graph: true
+        }
+      })
+      
+      const btn = wrapper.find('[data-test="minion-item-latency"]')
+      await btn.trigger('click')
+
+      expect(false).toBe(true)
+    })
+  })
 })
