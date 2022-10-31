@@ -10,7 +10,7 @@
         >
           <FeatherIcon :icon="ChevronRight" />
         </FeatherButton>
-        <span class="title">Devices</span>
+        <span class="title">Devices ({{listDevicesWithBgColor.length}})</span>
       </div>
 
       <FeatherInput
@@ -45,11 +45,11 @@
                 </div>
               </div>
           </div>
-          <div class="pointer" @click="openLatencyGraph(device)" data-test="col-latency">
+          <div class="pointer" @click="openLatencyGraph(device.id as number)" data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
             <div :data-metric="device.icmp_latency" class="value bg-status" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
           </div>
-          <div class="pointer" @click="openUptimeGraph(device)" data-test="col-uptime">
+          <div class="pointer" @click="openUptimeGraph(device.id as number)" data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
             <div :data-metric="device.snmp_uptime" class="value bg-status" :class="device.uptimeBgColor">{{ getHumanReadableDuration(device.snmp_uptime) }}</div>
           </div>
@@ -63,7 +63,7 @@
   </TableCard>
   <PrimaryModal :visible="modal.isVisible" :title="modal.title" :hide-title="modal.hideTitle">
     <template #content>
-      <Graph :graph="graphMetric" />
+      <Graph :graph="graphProps" />
     </template>
     <template #footer>
       <FeatherButton primary @click="modal.isVisible = false">Close</FeatherButton>
@@ -83,7 +83,8 @@ import { ExtendedDeviceDTOWithBGColors } from '@/types/device'
 import { ComputedRef } from 'vue'
 import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './utils'
 import { WidgetProps } from '@/types'
-import { GraphMetric } from '@/types/graphs'
+import { GraphProps } from '@/types/graphs'
+import { TimeRangeUnit } from '@/types/graphql'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
@@ -97,38 +98,38 @@ const searchValue = ref('')
 
 const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
 
-const graphMetric = ref({} as GraphMetric)
+const graphProps = ref({} as GraphProps)
 const modal = ref({
   isVisible: false,
   title: '',
   hideTitle: true
 })
-const openLatencyGraph = (device: any) => {
+const openLatencyGraph = (id: number) => {
   modal.value = {
     ...modal.value,
     isVisible: true
   }
-  
-  const {id, location} = device
-  graphMetric.value = {
+  graphProps.value = {
     label: 'Device Latency',
-    metrics: ['icmp_round_trip_time_msec'], // TODO: might be different once BE avail
-    id,
-    location // TODO: device argument does not have location prop
+    metrics: ['response_time_msec'], // TODO: might be different once BE avail
+    monitor: 'ICMP',
+    id, // not yet implemented in BE
+    timeRange: 10,
+    timeRangeUnit: TimeRangeUnit.Minute
   }
 }
-const openUptimeGraph = (device: any) => {
+const openUptimeGraph = (id: number) => {
   modal.value = {
     ...modal.value,
     isVisible: true
   }
-  
-  const {id, location} = device
-  graphMetric.value = {
+  graphProps.value = {
     label: 'Device Uptime',
     metrics: ['minion_uptime_sec'], // TODO: might be different once BE avail
-    id,
-    location // TODO: device argument does not have location prop
+    monitor: 'ICMP',
+    id, // not yet implemented in BE
+    timeRange: 10,
+    timeRangeUnit: TimeRangeUnit.Minute
   }
 }
 </script>

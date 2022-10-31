@@ -13,7 +13,7 @@ import { Chart, registerables }  from 'chart.js'
 // import zoomPlugin from 'chartjs-plugin-zoom'
 import { PropType } from 'vue'
 import { formatTimestamp } from './utils'
-import { GraphMetric } from '@/types/graphs'
+import { GraphProps } from '@/types/graphs'
 
 Chart.register(...registerables)
 // Chart.register(zoomPlugin) disable zoom until phase 2
@@ -23,7 +23,7 @@ const graphs = useGraphs()
 const props = defineProps({
   graph: {
     required: true,
-    type: Object as PropType<GraphMetric>
+    type: Object as PropType<GraphProps>
   }
 })
 
@@ -117,7 +117,7 @@ const render = async (update?: boolean) => {
 }
 
 onMounted(async () => {
-  await graphs.getMetrics(props.graph.metrics)
+  await graphs.getMetrics(props.graph)
   render()
 })
 </script>
