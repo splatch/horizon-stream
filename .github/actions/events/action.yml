@@ -1,0 +1,12 @@
+name: 'Build and test Events'
+description: 'This implements unit and built-time integration tests on Events, dir platform.'
+runs:
+  using: "composite"
+  steps:
+    - name: build-image
+      run: |
+
+        mvn clean install -f events
+        mvn -f events jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-events:local
+
+      shell: bash

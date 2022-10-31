@@ -105,6 +105,12 @@ jobs:
         uses: ./.github/actions/notifications
         with:
           dir-location: 'notifications'
+
+      - name: feature-events
+        id: action-events
+        uses: ./.github/actions/events
+        with:
+          dir-location: 'events'
       
       - name: feature-operator
         id: action-feature-operator
@@ -275,6 +281,22 @@ jobs:
 
           docker push opennms/horizon-stream-metrics-processor:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-metrics-processor:latest
+
+      - name: publish-image-events
+        run: |
+
+          # Login to dockerhub. Probably could remove this, session created in previous step.
+          echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+
+          # Test build images
+          docker images
+
+          # Tag and save the image as a file to be published. Both release version and latest.
+          docker tag opennms/horizon-stream-events:local opennms/horizon-stream-events:${{ env.RELEASE_TAG }}
+          docker tag opennms/horizon-stream-events:local opennms/horizon-stream-events:latest
+
+          docker push opennms/horizon-stream-events:${{ env.RELEASE_TAG }}
+          docker push opennms/horizon-stream-events:latest
       
       - name: publish-image-notifications
         run: |

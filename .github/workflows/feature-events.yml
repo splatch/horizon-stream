@@ -1,13 +1,13 @@
-name: feature-metrics-processor
+name: feature-events
 
-on:  
+on:
   push:
     branches:
       - '**'
       - '!develop'
       - '!release'
     paths:
-      - 'metrics-processor/**'
+      - 'events/**'
 
 jobs:
 
@@ -36,8 +36,8 @@ jobs:
         with:
           dir-location: 'shared-lib'
 
-      - name: feature-metrics-processor
-        id: action-feature-metrics-processor
-        uses: ./.github/actions/metrics-processor
+      - name: feature-events
+        id: action-feature-events
+        uses: ./.github/actions/events
         with:
-          dir-location: 'metrics-processor'
+          dir-location: 'events'

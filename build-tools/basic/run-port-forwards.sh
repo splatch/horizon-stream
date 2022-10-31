@@ -29,6 +29,7 @@ kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace de
 kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/onms-kafka 59092:59092 &
 kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/ingress-nginx-controller 8123:80 &
 kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-metrics-processor 28050:5005 &
+kubectl --context kind-kind port-forward --pod-running-timeout 1s --namespace default deployment/opennms-events 30050:5005 &
 
 while wait
 do

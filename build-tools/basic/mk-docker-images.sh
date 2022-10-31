@@ -57,6 +57,12 @@ time {
 	echo "==="
 	mvn -f metrics-processor jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-metrics-processor:local-basic
 
+  echo ""
+  echo "==="
+  echo "=== EVENTS IMAGE"
+  echo "==="
+  mvn -f events jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-events:local-basic
+
 	echo ""
 	echo "==="
 	echo "=== KEYCLOAK UI IMAGE"
