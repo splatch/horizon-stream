@@ -50,7 +50,7 @@
   </TableCard>
   <PrimaryModal :visible="modal.isVisible" :title="modal.title" :hide-title="modal.hideTitle">
     <template #content>
-      <Graph :graph="graphProps" />
+      <LineGraph :graph="graphProps" />
     </template>
     <template #footer>
       <FeatherButton primary @click="modal.isVisible = false">Close</FeatherButton>

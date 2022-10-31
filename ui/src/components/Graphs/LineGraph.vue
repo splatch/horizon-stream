@@ -104,7 +104,7 @@ const render = async (update?: boolean) => {
     } else {
       const ctx: any = document.getElementById(`${props.graph.label}`)
       chart = new Chart(ctx, {
-        type: 'line', // TODO: parameterize type
+        type: 'line',
         data: chartData.value,
         options: options.value,
         plugins: []
