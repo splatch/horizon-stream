@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -143,8 +140,9 @@ class MonitoringLocationsIntegrationTest {
         HttpEntity<MonitoringLocations> request = new HttpEntity<>(ml, headers);
 
         // Update
-        this.testRestTemplate
-            .put("http://localhost:" + port + "/inventory/monitoring_locations", request);
+        ResponseEntity<MonitoringLocations> putResponse = this.testRestTemplate
+            .exchange("http://localhost:" + port + "/inventory/monitoring_locations", HttpMethod.PUT, request, MonitoringLocations.class);
+        assertEquals(HttpStatus.OK, putResponse.getStatusCode());
 
         // Check there is one database entry
         ResponseEntity<List> response = this.testRestTemplate
@@ -177,5 +175,37 @@ class MonitoringLocationsIntegrationTest {
             .getForEntity("http://localhost:" + port + "/inventory/monitoring_locations/1", MonitoringLocations.class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(7)
+    void testUpdateBadId() throws Exception {
+        String location = "not here";
+        MonitoringLocations ml = postMonitoringLocations(location);
+        ml.setId(Long.MAX_VALUE);
+
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<MonitoringLocations> request = new HttpEntity<>(ml, headers);
+
+        ResponseEntity<MonitoringLocations> response = this.testRestTemplate
+            .exchange("http://localhost:" + port + "/inventory/monitoring_locations", HttpMethod.PUT, request, MonitoringLocations.class);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(8)
+    void testPostExistingId() throws Exception {
+        String location = "not here";
+        MonitoringLocations ml = postMonitoringLocations(location);
+
+        ml.setLocation("something else");
+
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<MonitoringLocations> request = new HttpEntity<>(ml, headers);
+
+        ResponseEntity<MonitoringLocations> response = this.testRestTemplate
+            .postForEntity("http://localhost:" + port + "/inventory/monitoring_locations", request, MonitoringLocations.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }
