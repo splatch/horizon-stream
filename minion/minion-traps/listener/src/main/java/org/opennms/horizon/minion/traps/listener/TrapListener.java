@@ -162,7 +162,7 @@ public class TrapListener implements TrapNotificationListener, Listener {
                 LOG.debug("stop: Closing SNMP trap session.");
                 snmpHelper.unregisterForTraps(this);
                 registeredForTraps.set(false);
-                LOG.debug("stop: SNMP trap session closed.");
+                LOG.info("stop: SNMP trap session closed.");
             } else {
                 LOG.debug("stop: not attemping to closing SNMP trap session--it was never opened or already closed.");
             }
@@ -187,6 +187,11 @@ public class TrapListener implements TrapNotificationListener, Listener {
 
     public void stop() {
         this.close();
+        try {
+            getMessageDispatcher().close();
+        } catch (Exception e) {
+            LOG.error("Exception while closing dispatcher ", e);
+        }
     }
 
 
