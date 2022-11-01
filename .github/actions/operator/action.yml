@@ -17,6 +17,9 @@ runs:
 
     - name: Setup golang
       uses: actions/setup-go@v3
+      with:
+        go-version-file: operator/go.mod
+        cache-dependency-path: operator/go.sum
 
     - name: Copy charts
       run: make copy-charts
