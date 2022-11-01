@@ -137,6 +137,8 @@ jobs:
         uses: ./.github/actions/events
         with:
           dir-location: 'events'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: feature-minion
         id: action-minion

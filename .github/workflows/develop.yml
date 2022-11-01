@@ -113,7 +113,8 @@ jobs:
         id: action-events
         uses: ./.github/actions/events
         with:
-          dir-location: 'events'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: feature-notifications
         id: action-notifications
