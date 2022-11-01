@@ -30,4 +30,5 @@ kind load docker-image "opennms/horizon-stream-notification:local-basic"
 kind load docker-image "opennms/horizon-stream-rest-server:local-basic"
 kind load docker-image "opennms/horizon-stream-minion-gateway:local-basic"
 kind load docker-image "opennms/horizon-stream-metrics-processor:local-basic"
+kind load docker-image "opennms/horizon-stream-events:local-basic"
 

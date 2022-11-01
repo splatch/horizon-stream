@@ -59,8 +59,11 @@ func ConvertCRDToValues(crd v1alpha1.OpenNMS, defaultValues values.TemplateValue
 	//ONMS Metrics Processor
 	v.OpenNMS = getMetricsProcessorValues(spec, v.OpenNMS)
 
-	//Keycloak
-	v.Keycloak = getKeycloakValues(spec, v.Keycloak)
+    //ONMS Events Processor
+    v.OpenNMS = getEventsValues(spec, v.OpenNMS)
+
+    //Keycloak
+    v.Keycloak = getKeycloakValues(spec, v.Keycloak)
 
 	//Grafana
 	v.Grafana = getGrafanaValues(spec, v.Grafana)
@@ -225,6 +228,25 @@ func getMetricsProcessorValues(spec v1alpha1.OpenNMSSpec, v values.OpenNMSValues
 		v.MetricsProcessor.VolumeSize = spec.MetricsProcessor.Disk
 	}
 	return v
+}
+
+// getEventsValues - get ONMS Inventory values from the crd
+func getEventsValues(spec v1alpha1.OpenNMSSpec, v values.OpenNMSValues) values.OpenNMSValues {
+    if spec.Events.Image != "" {
+        v.Events.Image = spec.Events.Image
+    }
+    if spec.Events.CPU != "" {
+        v.Events.Resources.Requests.Cpu = spec.Events.CPU
+        v.Events.Resources.Limits.Cpu = spec.Events.CPU
+    }
+    if spec.Events.MEM != "" {
+        v.Events.Resources.Requests.Memory = spec.Events.MEM
+        v.Events.Resources.Limits.Memory = spec.Events.MEM
+    }
+    if spec.Events.Disk != "" {
+        v.Events.VolumeSize = spec.Events.Disk
+    }
+    return v
 }
 
 // getKeycloakValues - get Keycloak values from the crd

@@ -92,6 +92,12 @@ jobs:
         with:
           dir-location: 'inventory'
 
+      - name: feature-events
+        id: action-events
+        uses: ./.github/actions/events
+        with:
+          dir-location: 'events'
+
       - name: feature-notifications
         id: action-notifications
         uses: ./.github/actions/notifications

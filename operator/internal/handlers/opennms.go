@@ -95,6 +95,15 @@ func (h *OpenNMSHandler) UpdateConfig(values values.TemplateValues) {
 
 	yaml.LoadYaml(filepath("opennms/metricsprocessor/metricsprocessor-deployment.yaml"), values, &mpDeployment)
 
+
+ 	//Events
+    var eventsDeployment appsv1.Deployment
+    var eventsService corev1.Service
+
+    yaml.LoadYaml(filepath("opennms/events/events-deployment.yaml"), values, &eventsDeployment)
+    yaml.LoadYaml(filepath("opennms/events/events-deployment.yaml"), values, &eventsDeployment)
+    yaml.LoadYaml(filepath("opennms/events/events-service.yaml"), values, &eventsService)
+
 	h.Config = []client.Object{
 		&configMap,
 		&coreSA,
@@ -116,6 +125,8 @@ func (h *OpenNMSHandler) UpdateConfig(values values.TemplateValues) {
 		&minionGatewayDeploy,
 		&inventoryDeployment,
 		&inventoryService,
+	    &eventsDeployment,
+        &eventsService,
 		&noteDeployment,
 		&noteService,
 		&mpDeployment,
