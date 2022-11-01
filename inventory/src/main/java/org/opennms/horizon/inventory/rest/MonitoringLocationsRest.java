@@ -1,9 +1,9 @@
 package org.opennms.horizon.inventory.rest;
 
 import lombok.RequiredArgsConstructor;
+import org.opennms.horizon.inventory.dto.MonitoringLocationsDTO;
 import org.opennms.horizon.inventory.model.MonitoringLocations;
 import org.opennms.horizon.inventory.service.MonitoringLocationsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,22 +17,22 @@ import java.util.Optional;
 public class MonitoringLocationsRest {
     private final MonitoringLocationsService monitoringLocationsService;
 
-    @PostMapping(consumes="application/json")
-    public ResponseEntity<MonitoringLocations> postMonitoringLocations(@RequestBody MonitoringLocations data) throws Exception {
-        Optional<MonitoringLocations> ml = monitoringLocationsService.findMonitoringLocations(data.getId());
+    @PostMapping
+    public ResponseEntity<MonitoringLocationsDTO> postMonitoringLocations(@RequestBody MonitoringLocationsDTO dto) throws Exception {
+        Optional<MonitoringLocationsDTO> ml = monitoringLocationsService.findMonitoringLocations(dto.getId());
         if (ml.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
-            MonitoringLocations saved = monitoringLocationsService.saveMonitoringLocations(data);
+            MonitoringLocationsDTO saved = monitoringLocationsService.saveMonitoringLocations(dto);
             return new ResponseEntity<>(saved, HttpStatus.CREATED);
         }
     }
 
-    @PutMapping(consumes="application/json")
-    public ResponseEntity<MonitoringLocations> putMonitoringLocations(@RequestBody MonitoringLocations data) throws Exception {
-        Optional<MonitoringLocations> ml = monitoringLocationsService.findMonitoringLocations(data.getId());
+    @PutMapping
+    public ResponseEntity<MonitoringLocationsDTO> putMonitoringLocations(@RequestBody MonitoringLocationsDTO data) throws Exception {
+        Optional<MonitoringLocationsDTO> ml = monitoringLocationsService.findMonitoringLocations(data.getId());
         if (ml.isPresent()) {
-            MonitoringLocations saved = monitoringLocationsService.saveMonitoringLocations(data);
+            MonitoringLocationsDTO saved = monitoringLocationsService.saveMonitoringLocations(data);
             return new ResponseEntity<>(saved, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -40,14 +40,14 @@ public class MonitoringLocationsRest {
     }
 
     @GetMapping
-    public ResponseEntity<List<MonitoringLocations>> getMonitoringLocations() throws Exception {
-        List<MonitoringLocations> all = monitoringLocationsService.findAllMonitoringLocations();
+    public ResponseEntity<List<MonitoringLocationsDTO>> getMonitoringLocations() throws Exception {
+        List<MonitoringLocationsDTO> all = monitoringLocationsService.findAllMonitoringLocations();
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<MonitoringLocations> getMonitoringLocations(@PathVariable long id) throws Exception {
-        Optional<MonitoringLocations> ml = monitoringLocationsService.findMonitoringLocations(id);
+    public ResponseEntity<MonitoringLocationsDTO> getMonitoringLocations(@PathVariable long id) throws Exception {
+        Optional<MonitoringLocationsDTO> ml = monitoringLocationsService.findMonitoringLocations(id);
         if (ml.isPresent()) {
             return new ResponseEntity<>(ml.get(), HttpStatus.OK);
         } else {
