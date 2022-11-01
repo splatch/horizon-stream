@@ -88,10 +88,10 @@ const openLatencyGraph = (id: string) => {
   }
   graphProps.value = {
     label: 'Minion Latency',
-    metrics: ['icmp_round_trip_time_msec'], // TODO: might be different once BE avail
-    monitor: 'ICMP',
+    metrics: ['minion_response_time_msec'], // TODO: might be different once BE avail
+    monitor: '', // 'ICMP',
     // id, // not yet implemented in BE
-    instance: id, // not yet implemented in BE
+    // instance: id, // not yet implemented in BE
     timeRange: 10,
     timeRangeUnit: TimeRangeUnit.Minute
   }
@@ -104,9 +104,9 @@ const openUptimeGraph = (id: string) => {
   graphProps.value = {
     label: 'Minion Uptime',
     metrics: ['minion_uptime_sec'], // TODO: might be different once BE avail
-    monitor: 'ICMP',
+    monitor: '', // 'ICMP',
     // id, // not yet implemented in BE
-    instance: id, // not yet implemented in BE
+    // instance: id, // not yet implemented in BE
     timeRange: 10,
     timeRangeUnit: TimeRangeUnit.Minute
   }

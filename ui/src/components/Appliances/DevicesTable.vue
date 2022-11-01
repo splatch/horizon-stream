@@ -113,7 +113,7 @@ const openLatencyGraph = (id: number) => {
     label: 'Device Latency',
     metrics: ['response_time_msec'], // TODO: might be different once BE avail
     monitor: 'ICMP',
-    id, // not yet implemented in BE
+    // id, // not yet implemented in BE
     timeRange: 10,
     timeRangeUnit: TimeRangeUnit.Minute
   }
@@ -125,9 +125,9 @@ const openUptimeGraph = (id: number) => {
   }
   graphProps.value = {
     label: 'Device Uptime',
-    metrics: ['minion_uptime_sec'], // TODO: might be different once BE avail
+    metrics: ['device_uptime_sec'], // TODO: might be different once BE avail
     monitor: 'ICMP',
-    id, // not yet implemented in BE
+    // id, // not yet implemented in BE
     timeRange: 10,
     timeRangeUnit: TimeRangeUnit.Minute
   }

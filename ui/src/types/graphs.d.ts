@@ -15,7 +15,7 @@ interface GraphProps {
   label: string!,
   metrics: string[],
   monitor: string, // ICMP
-  id?: number,
+  id?: number | string,
   instance?: string!
   timeRange: number,
   timeRangeUnit: TimeRangeUnit
