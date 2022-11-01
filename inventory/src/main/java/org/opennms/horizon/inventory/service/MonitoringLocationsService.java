@@ -22,12 +22,7 @@ public class MonitoringLocationsService {
 
     public MonitoringLocationsDTO saveMonitoringLocations(MonitoringLocationsDTO dto) {
         MonitoringLocations ml = mapper.dtoToModel(dto);
-        MonitoringLocations ret;
-        try {
-            ret = mlRepo.save(ml);
-        } catch (Exception ex) {
-            throw ex;
-        }
+        MonitoringLocations ret = mlRepo.save(ml);
         return mapper.modelToDTO(ret);
     }
 

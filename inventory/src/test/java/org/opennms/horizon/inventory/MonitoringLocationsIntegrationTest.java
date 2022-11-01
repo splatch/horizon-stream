@@ -111,8 +111,6 @@ class MonitoringLocationsIntegrationTest {
         return saved;
     }
 
-    // TODO: Exception Handling not working nicely with proto. Get this working.
-    @Disabled
     @Test
     @Order(3)
     void testViolateUniqueConstraint() throws Exception {
