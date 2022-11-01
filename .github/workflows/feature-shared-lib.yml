@@ -36,6 +36,12 @@ jobs:
         with:
           working-directory: 'shared-lib'
 
+      - name: parent-pom
+        id: action-parent-pom
+        uses: ./.github/actions/parent-pom
+        with:
+          dir-location: 'parent-pom'
+
       - name: Maven Install & Sonar Scan
         uses: ./.github/actions/maven-install-sonar
         with:

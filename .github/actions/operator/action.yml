@@ -21,6 +21,7 @@ runs:
     - name: Copy charts
       run: make copy-charts
       working-directory: operator
+      shell: bash
 
     - name: unit-test
       run: |
