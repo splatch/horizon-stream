@@ -24,8 +24,13 @@ runs:
     - uses: actions/setup-node@v3
       with:
         node-version: 18
-        cache: yarn
-        cache-dependency-path: ui/yarn.lock
+# FIXME: Cache disabled until yarn is installed on self-hosted runner
+#        cache: yarn
+#        cache-dependency-path: ui/yarn.lock
+
+    - name: Install yarn
+      run: npm install -g yarn
+      shell: bash
 
     - name: Install dependencies
       run: yarn install --frozen-lockfile
@@ -55,3 +60,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         SONAR_TOKEN: ${{ inputs.sonar-token }}
+
+    - name: Uninstall yarn
+      if: always()
+      run: npm uninstall -g yarn
+      shell: bash
