@@ -16,9 +16,9 @@ jobs:
     environment: docker-publish-account
     # Enviroment that contains the required secrets.
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-        # Is required to call actions.
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: init
         run: |
@@ -47,14 +47,16 @@ jobs:
             exit 1
           fi
 
-      - name: parent-pom
-        id: action-parent-pom
-        uses: ./.github/actions/parent-pom
+      - name: feature-ui
+        id: action-feature-ui
+        uses: ./.github/actions/ui
         with:
-          dir-location: 'parent-pom'
+          dir-location: 'ui'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: feature-grafana
-        id: action-grafana
+        id: action-feature-grafana
         uses: ./.github/actions/grafana
         with:
           dir-location: 'grafana'
@@ -65,70 +67,92 @@ jobs:
         with:
           dir-location: 'keycloak-ui'
 
-      - name: feature-ui
-        id: action-feature-ui
-        uses: ./.github/actions/ui
+      - name: feature-operator
+        id: action-feature-operator
+        uses: ./.github/actions/operator
         with:
-          dir-location: 'ui'
+          dir-location: 'operator'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
-      # This needs to happen before core, rest-server, inventory, and notifications.
+      # This needs to happen before shared-lib.
+      - name: parent-pom
+        id: action-parent-pom
+        uses: ./.github/actions/parent-pom-sonar
+        with:
+          dir-location: 'parent-pom'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+
+      # This needs to happen before core, rest-server, and notifications.
       - name: shared-lib
         id: action-shared-lib
-        uses: ./.github/actions/shared-lib
+        uses: ./.github/actions/shared-lib-sonar
         with:
           dir-location: 'shared-lib'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: feature-core
         id: action-feature-core
         uses: ./.github/actions/core
         with:
           dir-location: 'platform'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: feature-metrics-processor
         id: action-feature-metrics-processor
         uses: ./.github/actions/metrics-processor
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: feature-rest-server
         id: action-rest-server
         uses: ./.github/actions/rest-server
         with:
           dir-location: 'rest-server'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: feature-inventory
         id: action-inventory
         uses: ./.github/actions/inventory
         with:
           dir-location: 'inventory'
-      
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+
       - name: feature-notifications
         id: action-notifications
         uses: ./.github/actions/notifications
         with:
           dir-location: 'notifications'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: feature-events
         id: action-events
         uses: ./.github/actions/events
         with:
           dir-location: 'events'
-      
-      - name: feature-operator
-        id: action-feature-operator
-        uses: ./.github/actions/operator
-        with:
-          dir-location: 'operator'
 
       - name: feature-minion
         id: action-minion
         uses: ./.github/actions/minion
         with:
           dir-location: 'minion'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: feature-minion-gateway
         id: action-minion-gateway
         uses: ./.github/actions/minion-gateway
         with:
           dir-location: 'minion-gateway'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: external-it
         id: action-external-it
@@ -297,7 +321,7 @@ jobs:
 
           docker push opennms/horizon-stream-events:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-events:latest
-      
+
       - name: publish-image-notifications
         run: |
 

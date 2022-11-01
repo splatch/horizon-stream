@@ -9,6 +9,12 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-${{ runner.arch }}-sonar
+
     - name: build-image
       run: |
 
@@ -17,6 +23,11 @@ runs:
         # When there are tests to run, put those here.
 
         # Create the docker image.
-        mvn package jib:dockerBuild -Dimage=opennms/horizon-stream-notification:local
+        mvn package jib:dockerBuild -Dimage=opennms/horizon-stream-notification:local \
+          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
 
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
+        SONAR_PROJECT_KEY: 'opennms_horizon-stream_notification'

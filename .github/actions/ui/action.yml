@@ -7,8 +7,24 @@ inputs:
     default: 'none'
 
 runs:
-  using: "composite"
+  using: composite
   steps:
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-${{ runner.arch }}-sonar
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: yarn
+        cache-dependency-path: ui/yarn.lock
+
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+      working-directory: ui
+
     - name: build-image
       run: |
 
@@ -18,5 +34,16 @@ runs:
 
         # Create the docker image with BuildKit enabled.
         DOCKER_BUILDKIT=1 docker build -t opennms/horizon-stream-ui:local .
-
       shell: bash
+
+    - name: Coverage Report
+      run: yarn test:coverage:sonar
+      working-directory: ui
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      with:
+        projectBaseDir: ui
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

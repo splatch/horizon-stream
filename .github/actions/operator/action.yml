@@ -9,6 +9,19 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-${{ runner.arch }}-sonar
+
+    - name: Setup golang
+      uses: actions/setup-go@v3
+
+    - name: Copy charts
+      run: make copy-charts
+      working-directory: operator
+
     - name: unit-test
       run: |
         cd ${{ inputs.dir-location }}
@@ -27,6 +40,18 @@ runs:
 
         # Create the docker image.
         make local-docker
-
       shell: bash
+
+    - name: Test Coverage
+      run: make coverage
+      shell: bash
+      working-directory: operator
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      with:
+        projectBaseDir: operator
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
   
