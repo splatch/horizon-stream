@@ -19,26 +19,26 @@ runs:
   using: composite
   steps:
     - name: Cache SonarCloud packages
-      if: ${{ !inputs.is-self-hosted-runner }}
+      if: ${{ inputs.is-self-hosted-runner == 'false' }}
       uses: actions/cache@v3
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-${{ runner.arch }}-sonar
 
     - uses: actions/setup-node@v3
-      if: ${{ !inputs.is-self-hosted-runner }}
+      if: ${{ inputs.is-self-hosted-runner == 'false' }}
       with:
         node-version: 18
         cache: yarn
         cache-dependency-path: ui/yarn.lock
 
     - name: Install yarn
-      if: ${{ !inputs.is-self-hosted-runner }}
+      if: ${{ inputs.is-self-hosted-runner == 'false' }}
       run: npm install -g yarn
       shell: bash
 
     - name: Install dependencies
-      if: ${{ !inputs.is-self-hosted-runner }}
+      if: ${{ inputs.is-self-hosted-runner == 'false' }}
       run: yarn install --frozen-lockfile
       working-directory: ui
       shell: bash
@@ -55,13 +55,13 @@ runs:
       shell: bash
 
     - name: Coverage Report
-      if: ${{ !inputs.is-self-hosted-runner }}
+      if: ${{ inputs.is-self-hosted-runner == 'false' }}
       run: yarn test:coverage:sonar
       working-directory: ui
       shell: bash
 
     - name: SonarCloud Scan
-      if: ${{ !inputs.is-self-hosted-runner }}
+      if: ${{ inputs.is-self-hosted-runner == 'false' }}
       uses: SonarSource/sonarcloud-github-action@v1.7
       with:
         projectBaseDir: ui
@@ -70,6 +70,6 @@ runs:
         SONAR_TOKEN: ${{ inputs.sonar-token }}
 
     - name: Uninstall yarn
-      if: ${{ !inputs.is-self-hosted-runner }}
+      if: ${{ inputs.is-self-hosted-runner == 'false' }}
       run: npm uninstall -g yarn
       shell: bash
