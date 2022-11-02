@@ -9,13 +9,24 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: test runner name check
+      run: echo "runner name is ${{ runner.name }}"
+      shell: bash
+
+    - name: test runner name check
+      if: ${{ runner.name == 'self-hosted' }}
+      run: echo "self hosted runner!"
+      shell: bash
+
     - name: Cache SonarCloud packages
+      if: ${{ never() }}
       uses: actions/cache@v3
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-${{ runner.arch }}-sonar
 
     - name: Setup golang
+      if: ${{ never() }}
       uses: actions/setup-go@v3
       with:
         go-version-file: operator/go.mod
@@ -47,12 +58,14 @@ runs:
       shell: bash
 
     - name: Test Coverage
+      if: ${{ never() }}
       run: make coverage
       shell: bash
       working-directory: operator
 
     - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
+      if: ${{ never() }}
+      uses: SonarSource/sonarcloud-github-action@v1.7
       with:
         projectBaseDir: operator
       env:
