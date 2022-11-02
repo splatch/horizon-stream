@@ -19,14 +19,14 @@ runs:
   using: "composite"
   steps:
     - name: Cache SonarCloud packages
-      if: ${{ !is-self-hosted-runner }}
+      if: ${{ !inputs.is-self-hosted-runner }}
       uses: actions/cache@v3
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-${{ runner.arch }}-sonar
 
     - name: Setup golang
-      if: ${{ !is-self-hosted-runner }}
+      if: ${{ !inputs.is-self-hosted-runner }}
       uses: actions/setup-go@v3
       with:
         go-version-file: operator/go.mod
@@ -58,13 +58,13 @@ runs:
       shell: bash
 
     - name: Test Coverage
-      if: ${{ !is-self-hosted-runner }}
+      if: ${{ !inputs.is-self-hosted-runner }}
       run: make coverage
       shell: bash
       working-directory: operator
 
     - name: SonarCloud Scan
-      if: ${{ !is-self-hosted-runner }}
+      if: ${{ !inputs.is-self-hosted-runner }}
       uses: SonarSource/sonarcloud-github-action@v1.7
       with:
         projectBaseDir: operator
