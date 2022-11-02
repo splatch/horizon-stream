@@ -27,8 +27,7 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
-      - name: scan-ui
-        id: action-feature-ui
+      - name: Scan UI with SonarCloud
         uses: ./.github/actions/ui
         with:
           dir-location: 'ui'
@@ -36,8 +35,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 
-      - name: feature-operator
-        id: action-feature-operator
+      - name: Scan Operator with SonarCloud
         uses: ./.github/actions/operator
         with:
           dir-location: 'operator'
