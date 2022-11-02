@@ -58,7 +58,6 @@ watchEffect(() => {
 @use "@featherds/styles/themes/variables";
 
 #widget-bar {
-  display: block;
   width: 500px;
   height: calc(100vh - 62px);
   border-left: 3px solid var(variables.$primary);
