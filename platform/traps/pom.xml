@@ -98,6 +98,11 @@
             <artifactId>task-set-ignite-client</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon</groupId>
+            <artifactId>taskset-manager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>

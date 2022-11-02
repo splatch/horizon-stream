@@ -29,9 +29,9 @@
 package org.opennms.horizon.core.monitor;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.opennms.horizon.taskset.manager.TaskSetManager;
 import org.opennms.icmp.contract.IcmpMonitorRequest;
-import org.opennms.horizon.core.monitor.taskset.LocationBasedTaskSetManager;
-import org.opennms.horizon.core.monitor.taskset.TaskSetManager;
+import org.opennms.horizon.core.monitor.taskset.TaskSetManagerUtil;
 import org.opennms.horizon.db.dao.api.IpInterfaceDao;
 import org.opennms.horizon.db.dao.api.MonitoringLocationDao;
 import org.opennms.horizon.db.dao.api.NodeDao;
@@ -61,8 +61,6 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * TBD888: Rework still needed for task-set definitions, and general completeness
@@ -84,6 +82,7 @@ public class DeviceMonitorManager implements EventListener {
     private final SessionUtils sessionUtils;
     private final OnmsMetricsAdapter metricsAdapter;
     private final MonitoringLocationDao monitoringLocationDao;
+    private final TaskSetManager taskSetManager;
     private final List<OnmsNode> nodeCache = new ArrayList<>();
     private final ThreadFactory monitorThreadFactory = new ThreadFactoryBuilder()
         .setNameFormat("device-monitor-runner-%d")
@@ -91,8 +90,8 @@ public class DeviceMonitorManager implements EventListener {
 
     private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(25, monitorThreadFactory);
 
-    private final LocationBasedTaskSetManager locationBasedTaskSetManager = new LocationBasedTaskSetManager();
     private final TaskSetPublisher taskSetIgniteClient;
+    private final TaskSetManagerUtil taskSetManagerUtil;
 
     public DeviceMonitorManager(EventSubscriptionService eventSubscriptionService,
                                 NodeDao nodeDao,
@@ -100,7 +99,8 @@ public class DeviceMonitorManager implements EventListener {
                                 SessionUtils sessionUtils,
                                 OnmsMetricsAdapter metricsAdapter,
                                 TaskSetPublisher taskSetIgniteClient,
-                                MonitoringLocationDao locationDao) {
+                                MonitoringLocationDao locationDao,
+                                TaskSetManager taskSetManager) {
         this.eventSubscriptionService = eventSubscriptionService;
         this.nodeDao = nodeDao;
         this.ipInterfaceDao = ipInterfaceDao;
@@ -108,6 +108,8 @@ public class DeviceMonitorManager implements EventListener {
         this.metricsAdapter = metricsAdapter;
         this.taskSetIgniteClient = taskSetIgniteClient;
         this.monitoringLocationDao = locationDao;
+        this.taskSetManager = taskSetManager;
+        this.taskSetManagerUtil = new TaskSetManagerUtil(taskSetManager);
     }
 
     // TODO: don't use a static snapshot of nodes at init-time; need to update as new nodes are discovered.
@@ -132,16 +134,15 @@ public class DeviceMonitorManager implements EventListener {
             ipInterfaces.forEach(onmsIpInterface -> {
                 LOG.info("Polling ICMP/SNMP Monitor for IPAddress {}", onmsIpInterface.getIpAddress());
 
-                TaskSetManager taskSetManager = locationBasedTaskSetManager.getManagerForLocation(locationName);
-
-                addPollIcmpTask(taskSetManager, onmsIpInterface.getIpAddress());
-                addPollSnmpTask(taskSetManager, onmsIpInterface.getIpAddress(), onmsNode.getSnmpCommunityString());
+                addPollIcmpTask(locationName, onmsIpInterface.getIpAddress());
+                addPollSnmpTask(locationName, onmsIpInterface.getIpAddress(), onmsNode.getSnmpCommunityString());
             });
         } catch (Exception e) {
             LOG.error("Exception while running monitors for device with Id : {}", onmsNode.getId(), e);
         }
 
-        TaskSet updatedTaskSet = locationBasedTaskSetManager.getManagerForLocation(locationName).getTaskSet();
+        //TaskSet updatedTaskSet = locationBasedTaskSetManager.getManagerForLocation(locationName).getTaskSet();
+        TaskSet updatedTaskSet = taskSetManager.getTaskSet(locationName);
 
         // TODO: reduce log level to debug
         LOG.info("Publishing task set for location: location={}; num-task={}",
@@ -151,7 +152,7 @@ public class DeviceMonitorManager implements EventListener {
         taskSetIgniteClient.publishTaskSet(locationName, updatedTaskSet);
     }
 
-    private void addPollIcmpTask(TaskSetManager taskSetManager, InetAddress inetAddress) {
+    private void addPollIcmpTask(String location, InetAddress inetAddress) {
         IcmpMonitorRequest echoRequest =
             IcmpMonitorRequest.newBuilder()
                 .setHost(inetAddress.getHostAddress())
@@ -159,10 +160,10 @@ public class DeviceMonitorManager implements EventListener {
                 .build()
                 ;
 
-        taskSetManager.addEchoTask(inetAddress, "icmp-monitor", TaskType.MONITOR, "ICMPMonitor", "5000", echoRequest);
+        taskSetManagerUtil.addEchotask(location, inetAddress, "icmp-monitor", TaskType.MONITOR, "ICMPMonitor", "5000", echoRequest);
     }
 
-    private void addPollSnmpTask(TaskSetManager taskSetManager, InetAddress inetAddress, String snmpCommunityString) {
+    private void addPollSnmpTask(String location, InetAddress inetAddress, String snmpCommunityString) {
         SnmpMonitorRequest.Builder snmpRequestBuilder =
             SnmpMonitorRequest.newBuilder()
                 .setHost(inetAddress.getHostAddress())
@@ -179,7 +180,7 @@ public class DeviceMonitorManager implements EventListener {
 
         SnmpMonitorRequest snmpMonitorRequest = snmpRequestBuilder.build();
 
-        taskSetManager.addSnmpTask(inetAddress, "snmp-monitor", TaskType.MONITOR, "SNMPMonitor", "5000", snmpMonitorRequest);
+        taskSetManagerUtil.addSnmpTask(location, inetAddress, "snmp-monitor", TaskType.MONITOR, "SNMPMonitor", "5000", snmpMonitorRequest);
     }
 
     @Override

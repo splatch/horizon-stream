@@ -316,6 +316,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.horizon</groupId>
+            <artifactId>taskset-manager</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.horizon.common</groupId>
             <artifactId>common-collection</artifactId>
             <version>${project.version}</version>

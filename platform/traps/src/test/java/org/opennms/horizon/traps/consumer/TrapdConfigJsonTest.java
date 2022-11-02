@@ -31,11 +31,11 @@ package org.opennms.horizon.traps.consumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.horizon.config.service.api.ConfigConstants;
 import org.opennms.horizon.config.service.api.ConfigService;
 import org.opennms.horizon.shared.snmp.traps.TrapdConfigBean;
+import org.opennms.horizon.taskset.manager.TaskSetManager;
+import org.opennms.taskset.contract.TaskDefinition;
 import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.service.api.TaskSetPublisher;
 
@@ -51,14 +51,18 @@ public class TrapdConfigJsonTest {
     public void testTrapdConfigInJson() throws IOException {
         TrapSinkConsumer trapSinkConsumer = new TrapSinkConsumer();
         ConfigService configService = new MockConfigService();
-        TwinPublisher twinPublisher = Mockito.mock(TwinPublisher.class);
         trapSinkConsumer.setConfigService(configService);
-        trapSinkConsumer.setTaskSetPublisher(new TaskSetPublisher() {
+        trapSinkConsumer.setTaskSetManager(new TaskSetManager() {
             @Override
-            public void publishTaskSet(String location, TaskSet taskSet) {
-                //Ignore
+            public void addTaskSet(String location, TaskDefinition taskDefinition) {
+
+            }
+            @Override
+            public TaskSet getTaskSet(String location) {
+                return null;
             }
         });
+        trapSinkConsumer.setTaskSetPublisher((location, taskSet) -> {});
         trapSinkConsumer.initializeConfig();
         Optional<String> optionalConfig = configService.getConfig(ConfigConstants.SNMP_TRAPS_CONFIG);
         Assert.assertTrue("Config must be present", optionalConfig.isPresent());

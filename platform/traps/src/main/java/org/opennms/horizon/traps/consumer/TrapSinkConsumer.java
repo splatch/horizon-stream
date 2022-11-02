@@ -59,6 +59,7 @@ import org.opennms.horizon.shared.snmp.traps.TrapdConfig;
 import org.opennms.horizon.shared.snmp.traps.TrapdConfigBean;
 import org.opennms.horizon.shared.snmp.traps.TrapdInstrumentation;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
+import org.opennms.horizon.taskset.manager.TaskSetManager;
 import org.opennms.horizon.traps.config.SnmpTrapsConfig;
 import org.opennms.horizon.traps.utils.EventCreator;
 import org.opennms.sink.traps.contract.ListenerConfig;
@@ -117,6 +118,8 @@ public class TrapSinkConsumer implements  EventListener, Processor {
 
     private TaskSetPublisher taskSetPublisher;
 
+    private TaskSetManager taskSetManager;
+
     private final SnmpTrapsConfig snmpTrapsConfig = new SnmpTrapsConfig();
 
     public TrapSinkConsumer() {
@@ -154,18 +157,18 @@ public class TrapSinkConsumer implements  EventListener, Processor {
     private void publishTrapConfig() {
 
         TrapConfig trapConfig = mapConfigToProto();
+        // Setting the location to be Default for now.
+        String location = "Default";
 
-        TaskSet trapsConfigTaskSet = TaskSet.newBuilder()
-            .addTaskDefinition(TaskDefinition.newBuilder()
-                .setId("traps-config")
-                .setPluginName("trapd.listener.config")
-                .setType(TaskType.LISTENER)
-                .setConfiguration(Any.pack(trapConfig))
-                .build())
+        TaskDefinition taskDefinition = TaskDefinition.newBuilder()
+            .setId("traps-config")
+            .setPluginName("trapd.listener.config")
+            .setType(TaskType.LISTENER)
+            .setConfiguration(Any.pack(trapConfig))
             .build();
 
-        // Setting the location to be Default for now.
-        taskSetPublisher.publishTaskSet("Default", trapsConfigTaskSet);
+        taskSetManager.addTaskSet(location, taskDefinition);
+        taskSetPublisher.publishTaskSet(location, taskSetManager.getTaskSet(location));
 
     }
 
@@ -303,6 +306,14 @@ public class TrapSinkConsumer implements  EventListener, Processor {
 
     public void setTaskSetPublisher(TaskSetPublisher taskSetPublisher) {
         this.taskSetPublisher = taskSetPublisher;
+    }
+
+    public TaskSetManager getTaskSetManager() {
+        return taskSetManager;
+    }
+
+    public void setTaskSetManager(TaskSetManager taskSetManager) {
+        this.taskSetManager = taskSetManager;
     }
 
     public static TrapListenerConfig from(final TrapdConfig config) {

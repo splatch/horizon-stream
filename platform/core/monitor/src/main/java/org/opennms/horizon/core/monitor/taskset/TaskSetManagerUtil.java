@@ -1,6 +1,7 @@
 package org.opennms.horizon.core.monitor.taskset;
 
 import com.google.protobuf.Any;
+import org.opennms.horizon.taskset.manager.TaskSetManager;
 import org.opennms.icmp.contract.IcmpMonitorRequest;
 import org.opennms.snmp.contract.SnmpMonitorRequest;
 import org.opennms.taskset.contract.TaskDefinition;
@@ -11,19 +12,17 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class TaskSetManager {
+public class TaskSetManagerUtil {
 
     private MonitorTaskSetIdentityUtil monitorTaskSetIdentityUtil = new MonitorTaskSetIdentityUtil();
 
-    private Map<String, TaskDefinition> tasksById = new TreeMap<>();
+    private TaskSetManager taskSetManager;
 
-    public TaskSet getTaskSet() {
-        return TaskSet.newBuilder()
-            .addAllTaskDefinition(tasksById.values())
-            .build();
+    public TaskSetManagerUtil(TaskSetManager taskSetManager) {
+        this.taskSetManager = taskSetManager;
     }
 
-    public void addEchoTask(InetAddress inetAddress, String name, TaskType taskType, String pluginName, String schedule, IcmpMonitorRequest echoRequest) {
+    public void addEchotask(String location, InetAddress inetAddress, String name, TaskType taskType, String pluginName, String schedule, IcmpMonitorRequest echoRequest) {
         String taskId = monitorTaskSetIdentityUtil.identityForIpTask(inetAddress.getHostAddress(), name);
 
         TaskDefinition.Builder builder =
@@ -37,10 +36,10 @@ public class TaskSetManager {
 
         TaskDefinition taskDefinition = builder.build();
 
-        tasksById.put(taskId, taskDefinition);
+        taskSetManager.addTaskSet(location, taskDefinition);
     }
 
-    public void addSnmpTask(InetAddress inetAddress, String name, TaskType taskType, String pluginName, String schedule, SnmpMonitorRequest snmpMonitorRequest) {
+    public void addSnmpTask(String location, InetAddress inetAddress, String name, TaskType taskType, String pluginName, String schedule, SnmpMonitorRequest snmpMonitorRequest) {
         String taskId = monitorTaskSetIdentityUtil.identityForIpTask(inetAddress.getHostAddress(), name);
 
         TaskDefinition.Builder builder =
@@ -54,6 +53,6 @@ public class TaskSetManager {
 
         TaskDefinition taskDefinition = builder.build();
 
-        tasksById.put(taskId, taskDefinition);
+        taskSetManager.addTaskSet(location, taskDefinition);
     }
 }
