@@ -5,6 +5,9 @@ inputs:
     description: 'The dir containing the change.'
     required: true
     default: 'none'
+  is-self-hosted-runner:
+    description: 'Temporary workaround: Toggle off sonar scans for self-hosted runners'
+    required: true
   github-token:
     description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information'
     required: true
@@ -16,29 +19,26 @@ runs:
   using: composite
   steps:
     - name: Cache SonarCloud packages
-      if: ${{ false }}
+      if: ${{ !is-self-hosted-runner }}
       uses: actions/cache@v3
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-${{ runner.arch }}-sonar
 
     - uses: actions/setup-node@v3
-      if: ${{ false }}
-      continue-on-error: true # FIXME: Remove once nodejs/npm/yarn are installed on runner
+      if: ${{ !is-self-hosted-runner }}
       with:
         node-version: 18
         cache: yarn
         cache-dependency-path: ui/yarn.lock
 
     - name: Install yarn
-      if: ${{ false }}
-      continue-on-error: true # FIXME: Remove once nodejs/npm/yarn are installed on runner
+      if: ${{ !is-self-hosted-runner }}
       run: npm install -g yarn
       shell: bash
 
     - name: Install dependencies
-      if: ${{ false }}
-      continue-on-error: true # FIXME: Remove once nodejs/npm/yarn are installed on runner
+      if: ${{ !is-self-hosted-runner }}
       run: yarn install --frozen-lockfile
       working-directory: ui
       shell: bash
@@ -55,15 +55,13 @@ runs:
       shell: bash
 
     - name: Coverage Report
-      if: ${{ false }}
-      continue-on-error: true # FIXME: Remove once nodejs/npm/yarn are installed on runner
+      if: ${{ !is-self-hosted-runner }}
       run: yarn test:coverage:sonar
       working-directory: ui
       shell: bash
 
     - name: SonarCloud Scan
-      if: ${{ false }}
-      continue-on-error: true # FIXME: Remove once nodejs/npm/yarn are installed on runner
+      if: ${{ !is-self-hosted-runner }}
       uses: SonarSource/sonarcloud-github-action@v1.7
       with:
         projectBaseDir: ui
@@ -72,7 +70,6 @@ runs:
         SONAR_TOKEN: ${{ inputs.sonar-token }}
 
     - name: Uninstall yarn
-      continue-on-error: true # FIXME: Remove once nodejs/npm/yarn are installed on runner
-      if: ${{ false }}
+      if: ${{ !is-self-hosted-runner }}
       run: npm uninstall -g yarn
       shell: bash

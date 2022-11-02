@@ -16,6 +16,35 @@ on:
 # can split them up later.
 
 jobs:
+  # Workaround for issues caused by running sonar scans on self-hosted runner
+  # Run the problematic scans on a hosted runner, separately
+  scan:
+    # If label for PR, closed on PR, or develop branch on push, then run.,
+    if: ${{ ( github.event.label.name == 'actions-develop' ) || ( github.event.action == 'closed' ) || ( github.event.ref == 'refs/heads/develop' ) }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: scan-ui
+        id: action-feature-ui
+        uses: ./.github/actions/ui
+        with:
+          dir-location: 'ui'
+          is-self-hosted-runner: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+
+      - name: feature-operator
+        id: action-feature-operator
+        uses: ./.github/actions/operator
+        with:
+          dir-location: 'operator'
+          is-self-hosted-runner: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+
   develop:
     # If label for PR, closed on PR, or develop branch on push, then run., 
     if: ${{ ( github.event.label.name == 'actions-develop' ) || ( github.event.action == 'closed' ) || ( github.event.ref == 'refs/heads/develop' ) }}
@@ -37,6 +66,7 @@ jobs:
         uses: ./.github/actions/ui
         with:
           dir-location: 'ui'
+          is-self-hosted-runner: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
   
@@ -57,6 +87,7 @@ jobs:
         uses: ./.github/actions/operator
         with:
           dir-location: 'operator'
+          is-self-hosted-runner: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 

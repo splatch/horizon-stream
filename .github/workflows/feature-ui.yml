@@ -29,6 +29,7 @@ jobs:
         uses: ./.github/actions/ui
         with:
           dir-location: 'ui'
+          is-self-hosted-runner: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 

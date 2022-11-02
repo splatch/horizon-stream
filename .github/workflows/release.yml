@@ -14,7 +14,7 @@ jobs:
   release:
     runs-on: self-hosted
     environment: docker-publish-account
-    # Enviroment that contains the required secrets.
+    # Environment that contains the required secrets.
     steps:
       - uses: actions/checkout@v3
         with:
@@ -52,6 +52,7 @@ jobs:
         uses: ./.github/actions/ui
         with:
           dir-location: 'ui'
+          is-self-hosted-runner: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 
@@ -72,6 +73,7 @@ jobs:
         uses: ./.github/actions/operator
         with:
           dir-location: 'operator'
+          is-self-hosted-runner: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 
