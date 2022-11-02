@@ -1,31 +1,26 @@
 package org.opennms.horizon.inventory.model;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-// TODO: Lombok isn't playing nicely with MapStruct, so generate getters and setters with IDE for now.
+// Lombok isn't playing nicely with MapStruct, so generate getters and setters with IDE for now.
 //@Getter
 //@Setter
 @RequiredArgsConstructor
 @Entity
-public class MonitoringLocations {
+public class MonitoringLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NotNull
     @Type(type="pg-uuid")
-@Column(name = "tenant_id")
-private UUID tenantId;
+    @Column(name = "tenant_id")
+    private UUID tenantId;
 
     @NotNull
     private String location;
@@ -38,12 +33,12 @@ private UUID tenantId;
         this.id = id;
     }
 
-    public UUID getTenant_id() {
-        return tenant_id;
+    public UUID getTenantId() {
+        return tenantId;
     }
 
-    public void setTenant_id(UUID tenant_id) {
-        this.tenant_id = tenant_id;
+    public void setTenantId(UUID tenantId) {
+        this.tenantId = tenantId;
     }
 
     public String getLocation() {

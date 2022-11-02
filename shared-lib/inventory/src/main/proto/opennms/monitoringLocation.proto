@@ -33,7 +33,7 @@ package opennms.inventory;
 option java_multiple_files = true;
 option java_package = "org.opennms.horizon.inventory.dto";
 
-message MonitoringLocationsDTO {
+message MonitoringLocationDTO {
   int64 id = 1;
   string tenant_id = 2;
   string location = 3;

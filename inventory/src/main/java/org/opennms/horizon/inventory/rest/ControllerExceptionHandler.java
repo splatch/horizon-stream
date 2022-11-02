@@ -12,6 +12,6 @@ public class ControllerExceptionHandler {
     @ResponseBody
     public void dataIntegrityViolationException(DataIntegrityViolationException ex) {
         // TODO: Figure out how to return exception info.
-        // throw ex; worked until the switch to use proto DTOs.
+        //throw ex;// worked until the switch to use proto DTOs.
     }
 }
