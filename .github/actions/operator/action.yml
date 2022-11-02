@@ -19,14 +19,14 @@ runs:
       shell: bash
 
     - name: Cache SonarCloud packages
-      if: ${{ never() }}
+      if: ${{ false }}
       uses: actions/cache@v3
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-${{ runner.arch }}-sonar
 
     - name: Setup golang
-      if: ${{ never() }}
+      if: ${{ false }}
       uses: actions/setup-go@v3
       with:
         go-version-file: operator/go.mod
@@ -58,13 +58,13 @@ runs:
       shell: bash
 
     - name: Test Coverage
-      if: ${{ never() }}
+      if: ${{ false }}
       run: make coverage
       shell: bash
       working-directory: operator
 
     - name: SonarCloud Scan
-      if: ${{ never() }}
+      if: ${{ false }}
       uses: SonarSource/sonarcloud-github-action@v1.7
       with:
         projectBaseDir: operator
