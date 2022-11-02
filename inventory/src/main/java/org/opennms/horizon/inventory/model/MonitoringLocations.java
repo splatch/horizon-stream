@@ -24,7 +24,8 @@ public class MonitoringLocations {
 
     @NotNull
     @Type(type="pg-uuid")
-    private UUID tenant_id;
+@Column(name = "tenant_id")
+private UUID tenantId;
 
     @NotNull
     private String location;
