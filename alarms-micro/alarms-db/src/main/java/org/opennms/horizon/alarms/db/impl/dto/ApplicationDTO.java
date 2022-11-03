@@ -42,85 +42,58 @@ import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.opennms.horizon.db.model.OnmsMonitoredService;
-import org.opennms.horizon.db.model.OnmsMonitoringLocation;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Entity
-@Table(name = "applications")
-@XmlRootElement(name="application")
 /**
  * An Application is a grouping of services that belong together.
  * They can run in different locations.
  * An example would be "website", or "database".
  */
+@Entity
+@Table(name = "applications")
+@Getter
+@Setter
 public class ApplicationDTO implements Comparable<ApplicationDTO> {
-
-    private Integer id;
-
-    private String name;
-
-    private Set<OnmsMonitoredService> monitoredServices = new LinkedHashSet<>();
-
-    /**
-     * These are locations from where the application is monitored.
-     */
-    private Set<OnmsMonitoringLocation> perspectiveLocations = new LinkedHashSet<>();
 
     @Id
     @Column(nullable=false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId", allocationSize = 1)
     @GeneratedValue(generator = "opennmsSequence")
-    public Integer getId() {
-        return id;
-    }
+    private Integer id;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    @Column(name = "name", length=32, nullable=false, unique=true)
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Column(length=32, nullable=false, unique=true)
+    private String name;
 
     @ManyToMany(
-                mappedBy="applications",
-                cascade={CascadeType.PERSIST, CascadeType.MERGE}
+        mappedBy="applications",
+        cascade={CascadeType.PERSIST, CascadeType.MERGE}
     )
-    public Set<OnmsMonitoredService> getMonitoredServices() {
-        return monitoredServices;
-    }
+    private Set<MonitoredServiceDTO> monitoredServices = new LinkedHashSet<>();
 
-    public void setMonitoredServices(Set<OnmsMonitoredService> services) {
+    /**
+     * These are locations from where the application is monitored.
+     */
+    @ManyToMany( cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name="application_perspective_location_map",
+        joinColumns=@JoinColumn(name="appid", referencedColumnName = "id"),
+        inverseJoinColumns=@JoinColumn(name="monitoringlocationid", referencedColumnName = "id"))
+    private Set<MonitoringLocationDTO> perspectiveLocations = new LinkedHashSet<>();
+
+    public void setMonitoredServices(Set<MonitoredServiceDTO> services) {
         monitoredServices = services;
     }
 
-    public void addMonitoredService(OnmsMonitoredService service) {
+    public void addMonitoredService(MonitoredServiceDTO service) {
         getMonitoredServices().add(service);
     }
 
-    public void removeMonitoredService(OnmsMonitoredService service) {
+    public void removeMonitoredService(MonitoredServiceDTO service) {
         getMonitoredServices().remove(service);
     }
 
-
-    @ManyToMany( cascade={CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name="application_perspective_location_map",
-            joinColumns=@JoinColumn(name="appid", referencedColumnName = "id"),
-            inverseJoinColumns=@JoinColumn(name="monitoringlocationid", referencedColumnName = "id"))
-    public Set<OnmsMonitoringLocation> getPerspectiveLocations() {
-        return this.perspectiveLocations;
-    }
-
-    public void setPerspectiveLocations(Set<OnmsMonitoringLocation> perspectiveLocations) {
-        this.perspectiveLocations = perspectiveLocations;
-    }
-
-    public void addPerspectiveLocation(OnmsMonitoringLocation perspectiveLocation) {
+    public void addPerspectiveLocation(MonitoringLocationDTO perspectiveLocation) {
         getPerspectiveLocations().add(perspectiveLocation);
     }
 

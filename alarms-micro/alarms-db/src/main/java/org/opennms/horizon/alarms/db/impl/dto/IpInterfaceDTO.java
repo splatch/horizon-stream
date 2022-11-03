@@ -56,147 +56,75 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
-import org.opennms.core.xml.InetAddressXmlAdapter;
 import org.opennms.horizon.alarms.db.api.EntityVisitor;
 import org.opennms.horizon.alarms.db.impl.PrimaryType;
-import org.opennms.horizon.shared.utils.InetAddressUtils;
+import org.opennms.horizon.alarms.db.impl.utils.InetAddressUtils;
 
-/**
- * <p>OnmsIpInterface class.</p>
- */
-@XmlRootElement(name = "ipInterface")
 @Entity
 @Table(name="ipInterface")
-@XmlAccessorType(XmlAccessType.NONE)
+@Getter
+@Setter
+@NoArgsConstructor
 public class IpInterfaceDTO extends EntityDTO implements Serializable {
     private static final long serialVersionUID = 8463903013592837114L;
 
-    private Integer m_id;
-
-    private InetAddress m_ipAddress;
-
-    private InetAddress m_netMask;
-
-    private String m_ipHostName;
-
-    private String m_isManaged;
-
-    @Embedded
-    private PrimaryType m_isSnmpPrimary = PrimaryType.NOT_ELIGIBLE;
-
-    private Date m_ipLastCapsdPoll;
-
-    @OneToOne
-    @JoinColumn(name = "m_node_node_id")
-    private NodeDTO m_node;
-
-    private Set<MonitoredServiceDTO> m_monitoredServices = new LinkedHashSet<>();
-
-    @OneToOne
-    @JoinColumn(name = "m_snmp_interface_id")
-    private SnmpInterfaceDTO m_snmpInterface;
-
-    private List<MetaDataDTO> m_metaData = new ArrayList<>();
-
-    private List<MetaDataDTO> m_requisitionedMetaData = new ArrayList<>();
-
-    public PrimaryType getM_isSnmpPrimary() {
-        return m_isSnmpPrimary;
-    }
-
-    public void setM_isSnmpPrimary(PrimaryType m_isSnmpPrimary) {
-        this.m_isSnmpPrimary = m_isSnmpPrimary;
-    }
-
-    public NodeDTO getM_node() {
-        return m_node;
-    }
-
-    public void setM_node(NodeDTO m_node) {
-        this.m_node = m_node;
-    }
-
-    public SnmpInterfaceDTO getM_snmpInterface() {
-        return m_snmpInterface;
-    }
-
-    public void setM_snmpInterface(SnmpInterfaceDTO m_snmpInterface) {
-        this.m_snmpInterface = m_snmpInterface;
-    }
-
-    /**
-     * <p>Constructor for OnmsIpInterface.</p>
-     */
-    public IpInterfaceDTO() {
-    }
-
-    /**
-     * minimal constructor
-     * @deprecated Use the {@link InetAddress} version instead.
-     * @param ipAddr a {@link String} object.
-     * @param node a {@link NodeDTO} object.
-     */
-    public IpInterfaceDTO(String ipAddr, NodeDTO node) {
-        this(InetAddressUtils.getInetAddress(ipAddr), node);
-    }
-
-    public IpInterfaceDTO(String ipAddr) {
-        m_ipAddress = InetAddressUtils.getInetAddress(ipAddr);
-    }
-
-    /**
-     * minimal constructor
-     *
-     * @param ipAddr a {@link String} object.
-     * @param node a {@link NodeDTO} object.
-     */
-    public IpInterfaceDTO(InetAddress ipAddr, NodeDTO node) {
-        m_ipAddress = ipAddr;
-        m_node = node;
-        if (node != null) {
-            node.getIpInterfaces().add(this);
-        }
-    }
-
-    /**
-     * Unique identifier for ipInterface.
-     *
-     * @return a {@link Integer} object.
-     */
     @Id
     @Column(nullable=false)
-    @XmlTransient
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId", allocationSize = 1)
-    @GeneratedValue(generator="opennmsSequence")    
-    public Integer getId() {
-        return m_id;
-    }
-    
-    /**
-     * <p>setId</p>
-     *
-     * @param id a {@link Integer} object.
-     */
-    public void setId(Integer id) {
-        m_id = id;
+    @GeneratedValue(generator="opennmsSequence")
+    private Integer id;
+
+    @Column(name="ipAddr")
+    @Type(type="InetAddressUserType")
+    private InetAddress ipAddress;
+
+    @Column(name = "netmask")
+    @Type(type="InetAddressUserType")
+    private InetAddress netMask;
+
+    @Column(name="ipHostName", length=256)
+    private String ipHostName;
+
+    @Column(name="isManaged", length=1)
+    private String isManaged;
+
+    @Embedded
+    @Column(name="isSnmpPrimary", length=1)
+    @Type(type="CharacterUserType")
+    private PrimaryType isSnmpPrimary = PrimaryType.NOT_ELIGIBLE;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ipLastCapsdPoll")
+    private Date ipLastCapsdPoll;
+
+    @OneToMany(mappedBy="ipInterface",orphanRemoval=true)
+    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private Set<MonitoredServiceDTO> monitoredServices = new LinkedHashSet<>();
+
+    @ManyToOne(optional=true, fetch=FetchType.LAZY)
+    @JoinColumn(name="snmpInterfaceId")
+    private SnmpInterfaceDTO snmpInterface;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="ipInterface_metadata", joinColumns = @JoinColumn(name = "id"))
+    private List<MetaDataDTO> metaData = new ArrayList<>();
+
+    @Transient
+    private List<MetaDataDTO> requisitionedMetaData = new ArrayList<>();
+
+    public IpInterfaceDTO(String ipAddr) {
+        ipAddress = InetAddressUtils.getInetAddress(ipAddr);
     }
 
-    /**
-     * <p>getInterfaceId</p>
-     *
-     * @return a {@link String} object.
-     */
-    @XmlID
-    @XmlAttribute(name="id")
+    public IpInterfaceDTO(InetAddress ipAddr) {
+        ipAddress = ipAddr;
+    }
+
+
     @Transient
     public String getInterfaceId() {
         return getId() == null? null : getId().toString();
@@ -207,23 +135,21 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
     }
 
     @Transient
-    @XmlAttribute(name="lastIngressFlow")
     public Date getLastIngressFlow() {
-        if (m_snmpInterface == null) {
+        if (snmpInterface == null) {
             return null;
         }
 
-        return m_snmpInterface.getLastIngressFlow();
+        return snmpInterface.getLastIngressFlow();
     }
 
     @Transient
-    @XmlAttribute(name="lastEgressFlow")
     public Date getLastEgressFlow() {
-        if (m_snmpInterface == null) {
+        if (snmpInterface == null) {
             return null;
         }
 
-        return m_snmpInterface.getLastEgressFlow();
+        return snmpInterface.getLastEgressFlow();
     }
 
     /**
@@ -233,9 +159,8 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
      * @deprecated
      */
     @Transient
-    @XmlTransient
     public String getIpAddressAsString() {
-        return InetAddressUtils.toIpAddrString(m_ipAddress);
+        return InetAddressUtils.toIpAddrString(ipAddress);
     }
 
     //@Column(name="ifIndex")
@@ -245,12 +170,11 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
      * @return a {@link Integer} object.
      */
     @Transient
-    @XmlAttribute(name="ifIndex")
     public Integer getIfIndex() {
-        if (m_snmpInterface == null) {
+        if (snmpInterface == null) {
             return null;
         }
-        return m_snmpInterface.getIfIndex();
+        return snmpInterface.getIfIndex();
         //return m_ifIndex;
     }
 
@@ -260,51 +184,11 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
      * @param ifindex a {@link Integer} object.
      */
     public void setIfIndex(Integer ifindex) {
-        if (m_snmpInterface == null) {
+        if (snmpInterface == null) {
             throw new IllegalStateException("Cannot set ifIndex if snmpInterface relation isn't setup");
         }
-        m_snmpInterface.setIfIndex(ifindex);
+        snmpInterface.setIfIndex(ifindex);
         //m_ifIndex = ifindex;
-    }
-
-    /**
-     * <p>getIpHostName</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Column(name="ipHostName", length=256)
-    @XmlElement(name="hostName")
-    public String getIpHostName() {
-        return m_ipHostName;
-    }
-
-    /**
-     * <p>setIpHostName</p>
-     *
-     * @param iphostname a {@link String} object.
-     */
-    public void setIpHostName(String iphostname) {
-        m_ipHostName = iphostname;
-    }
-
-    /**
-     * <p>getIsManaged</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Column(name="isManaged", length=1)
-    @XmlAttribute(name="isManaged")
-    public String getIsManaged() {
-        return m_isManaged;
-    }
-
-    /**
-     * <p>setIsManaged</p>
-     *
-     * @param ismanaged a {@link String} object.
-     */
-    public void setIsManaged(String ismanaged) {
-        m_isManaged = ismanaged;
     }
 
     /**
@@ -313,42 +197,17 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
      * @return a boolean.
      */
     @Transient
-    @XmlTransient
     public boolean isManaged() {
         return "M".equals(getIsManaged());
     }
 
-    /**
-     * <p>getIpLastCapsdPoll</p>
-     *
-     * @return a {@link Date} object.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ipLastCapsdPoll")
-    @XmlElement(name="lastCapsdPoll")
-    public Date getIpLastCapsdPoll() {
-        return m_ipLastCapsdPoll;
-    }
-
-    /**
-     * <p>setIpLastCapsdPoll</p>
-     *
-     * @param iplastcapsdpoll a {@link Date} object.
-     */
-    public void setIpLastCapsdPoll(Date iplastcapsdpoll) {
-        m_ipLastCapsdPoll = iplastcapsdpoll;
-    }
-
-    @Column(name="isSnmpPrimary", length=1)
-    @XmlAttribute(name="snmpPrimary")
-    @Type(type="CharacterUserType")
     public String getSnmpPrimary() {
-        final PrimaryType type = m_isSnmpPrimary == null? PrimaryType.NOT_ELIGIBLE : m_isSnmpPrimary;
+        final PrimaryType type = isSnmpPrimary == null? PrimaryType.NOT_ELIGIBLE : isSnmpPrimary;
         return type.getCode();
     }
 
     public void setSnmpPrimary(final String primary) {
-        this.m_isSnmpPrimary = PrimaryType.get(primary);
+        this.isSnmpPrimary = PrimaryType.get(primary);
     }
 
     /**
@@ -356,19 +215,9 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
      *
      * @return a {@link .PrimaryType} object.
      */
-    @XmlTransient
     @Transient
     public PrimaryType getIsSnmpPrimary() {
-        return m_isSnmpPrimary == null? PrimaryType.NOT_ELIGIBLE : m_isSnmpPrimary;
-    }
-
-    /**
-     * <p>setIsSnmpPrimary</p>
-     *
-     * @param issnmpprimary a {@link .PrimaryType} object.
-     */
-    public void setIsSnmpPrimary(PrimaryType issnmpprimary) {
-        m_isSnmpPrimary = issnmpprimary;
+        return isSnmpPrimary == null? PrimaryType.NOT_ELIGIBLE : isSnmpPrimary;
     }
 
     /**
@@ -377,35 +226,12 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
      * @return a boolean.
      */
     @Transient
-    @XmlTransient
     public boolean isPrimary(){
-        return PrimaryType.PRIMARY.equals(m_isSnmpPrimary);
-    }
-
-    @Transient
-    @XmlTransient
-    public List<MetaDataDTO> getRequisitionedMetaData() {
-        return m_requisitionedMetaData;
-    }
-
-    public void setRequisionedMetaData(final List<MetaDataDTO> requisitionedMetaData) {
-        m_requisitionedMetaData = requisitionedMetaData;
+        return PrimaryType.PRIMARY.equals(isSnmpPrimary);
     }
 
     public void addRequisionedMetaData(final MetaDataDTO onmsMetaData) {
-        m_requisitionedMetaData.add(onmsMetaData);
-    }
-
-    
-    @XmlTransient
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name="ipInterface_metadata", joinColumns = @JoinColumn(name = "id"))
-    public List<MetaDataDTO> getMetaData() {
-        return m_metaData;
-    }
-
-    public void setMetaData(final List<MetaDataDTO> metaData) {
-        m_metaData = metaData;
+        requisitionedMetaData.add(onmsMetaData);
     }
 
     public void addMetaData(final String context, final String key, final String value) {
@@ -453,85 +279,12 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
         }
     }
 
-    /**
-     * <p>getNode</p>
-     *
-     * @return a {@link NodeDTO} object.
-     */
-    @ManyToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name="nodeId")
-    @XmlElement(name="nodeId")
-    public NodeDTO getNode() {
-        return m_node;
-    }
-
-    /**
-     * <p>setNode</p>
-     *
-     * @param node a {@link NodeDTO} object.
-     */
-    public void setNode(NodeDTO node) {
-        m_node = node;
-    }
-
-    @Transient
-    @XmlTransient
-    public Integer getNodeId() {
-        if (m_node != null) {
-            return m_node.getId();
-        }
-        return null;
-    }
-
-    /**
-     * The services on this interface
-     *
-     * @return a {@link Set} object.
-     */
-    @XmlTransient
-    @OneToMany(mappedBy="ipInterface",orphanRemoval=true)
-    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
-    public Set<MonitoredServiceDTO> getMonitoredServices() {
-        return m_monitoredServices ;
-    }
-
-    /**
-     * <p>setMonitoredServices</p>
-     *
-     * @param ifServices a {@link Set} object.
-     */
-    public void setMonitoredServices(Set<MonitoredServiceDTO> ifServices) {
-        m_monitoredServices = ifServices;
-    }
-
     public void addMonitoredService(final MonitoredServiceDTO svc) {
-        m_monitoredServices.add(svc);
+        monitoredServices.add(svc);
     }
 
     public void removeMonitoredService(final MonitoredServiceDTO svc) {
-        m_monitoredServices.remove(svc);
-    }
-
-    /**
-     * The SnmpInterface associated with this interface if any
-     *
-     * @return a {@link .OnmsSnmpInterface} object.
-     */
-    @XmlElement(name = "snmpInterface")
-    @ManyToOne(optional=true, fetch=FetchType.LAZY)
-    @JoinColumn(name="snmpInterfaceId")
-    public SnmpInterfaceDTO getSnmpInterface() {
-        return m_snmpInterface;
-    }
-
-
-    /**
-     * <p>setSnmpInterface</p>
-     *
-     * @param snmpInterface a {@link .OnmsSnmpInterface} object.
-     */
-    public void setSnmpInterface(SnmpInterfaceDTO snmpInterface) {
-        m_snmpInterface = snmpInterface;
+        monitoredServices.remove(svc);
     }
 
     /**
@@ -542,14 +295,13 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-        .add("id", m_id)
-        .add("ipAddr", InetAddressUtils.str(m_ipAddress))
-        .add("netMask", InetAddressUtils.str(m_netMask))
-        .add("ipHostName", m_ipHostName)
-        .add("isManaged", m_isManaged)
-        .add("snmpPrimary", m_isSnmpPrimary)
-        .add("ipLastCapsdPoll", m_ipLastCapsdPoll)
-        .add("nodeId", getNodeId())
+        .add("id", id)
+        .add("ipAddr", InetAddressUtils.str(ipAddress))
+        .add("netMask", InetAddressUtils.str(netMask))
+        .add("ipHostName", ipHostName)
+        .add("isManaged", isManaged)
+        .add("snmpPrimary", isSnmpPrimary)
+        .add("ipLastCapsdPoll", ipLastCapsdPoll)
         .toString();
     }
 
@@ -564,39 +316,6 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
 
         visitor.visitIpInterfaceComplete(this);
     }
-
-    /**
-     * <p>getInetAddress</p>
-     *
-     * @return a {@link InetAddress} object.
-     */
-    @Column(name="ipAddr")
-    @XmlElement(name="ipAddress")
-    @Type(type="InetAddressUserType")
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-    public InetAddress getIpAddress() {
-        return m_ipAddress;
-    }
-
-    /**
-     * <p>setInetAddress</p>
-     *
-     * @param ipaddr a {@link String} object.
-     */
-    public void setIpAddress(InetAddress ipaddr) {
-        m_ipAddress = ipaddr;
-    }
-
-    @Column(name = "netmask")
-    @Type(type="InetAddressUserType")
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-    public InetAddress getNetMask() {
-        return m_netMask;
-    }
-
-    public void setNetMask(final InetAddress netMask) {
-        m_netMask = netMask;
-    }
     
     /**
      * <p>isDown</p>
@@ -604,10 +323,9 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
      * @return a boolean.
      */
     @Transient
-    @XmlAttribute(name="isDown")
     public boolean isDown() {
         boolean down = true;
-        for (MonitoredServiceDTO svc : m_monitoredServices) {
+        for (MonitoredServiceDTO svc : monitoredServices) {
             if (!svc.isDown()) {
                 return !down;
             }
@@ -616,10 +334,9 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
     }
 
     
-    @Transient 
-    @XmlAttribute
+    @Transient
     public int getMonitoredServiceCount () {
-    	return m_monitoredServices.size();
+    	return monitoredServices.size();
     }
     
     /**
@@ -753,47 +470,6 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
         if (scannedIface.getSnmpInterface() == null) {
             // there is no longer an snmpInterface associated with the ipInterface
             setSnmpInterface(null);
-        } else {
-            // locate the snmpInterface on this node that has the new ifIndex and set it
-            // into the interface
-            SnmpInterfaceDTO snmpIface = getNode().getSnmpInterfaceWithIfIndex(scannedIface.getIfIndex());
-            setSnmpInterface(snmpIface);
         }
-        
-        
-        
     }
-//
-//    /**
-//     * <p>mergeInterface</p>
-//     *
-//     * @param scannedIface a {@link OnmsIpInterface} object.
-//     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
-//     * @param deleteMissing a boolean.
-//     */
-//    public void mergeInterface(OnmsIpInterface scannedIface, EventForwarder eventForwarder, boolean deleteMissing) {
-//        updateSnmpInterface(scannedIface);
-//        mergeInterfaceAttributes(scannedIface);
-//        mergeMonitoredServices(scannedIface, eventForwarder, deleteMissing);
-//        mergeMetaData(scannedIface);
-//    }
-
-    @Transient
-    @XmlTransient
-    public String getForeignSource() {
-        if (getNode() != null) {
-            return getNode().getForeignSource();
-        }
-        return null;
-    }
-
-    @Transient
-    @XmlTransient
-    public String getForeignId() {
-        if (getNode() != null) {
-            return getNode().getForeignId();
-        }
-        return null;
-    }
-
 }

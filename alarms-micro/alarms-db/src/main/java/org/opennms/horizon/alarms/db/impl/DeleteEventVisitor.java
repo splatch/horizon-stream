@@ -30,12 +30,11 @@ package org.opennms.horizon.alarms.db.impl;
 
 import org.opennms.horizon.alarms.db.impl.dto.IpInterfaceDTO;
 import org.opennms.horizon.alarms.db.impl.dto.MonitoredServiceDTO;
-import org.opennms.horizon.alarms.db.impl.dto.NodeDTO;
 import org.opennms.horizon.events.api.EventForwarder;
 
 public class DeleteEventVisitor extends AbstractEntityVisitor {
     private final EventForwarder m_eventForwarder;
-    private static final String m_eventSource = "Provisiond";
+    private static final String m_eventSource = "alarms";
 
     public DeleteEventVisitor(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -51,11 +50,5 @@ public class DeleteEventVisitor extends AbstractEntityVisitor {
     public void visitIpInterfaceComplete(final IpInterfaceDTO iface) {
         // FIXME: OOPS:
         //m_eventForwarder.sendNow(EventUtils.createInterfaceDeletedEvent(m_eventSource, iface.getNode().getId(), iface.getIpAddress()));
-    }
-
-    @Override
-    public void visitNodeComplete(final NodeDTO node) {
-        // FIXME: OOPS:
-        //m_eventForwarder.sendNow(EventUtils.createNodeDeletedEvent(m_eventSource, node.getId(), node.getLabel(), node.getLabel(), node.getLocation(), node.getForeignId(), node.getForeignSource(), node.getPrimaryInterface()));
     }
 }

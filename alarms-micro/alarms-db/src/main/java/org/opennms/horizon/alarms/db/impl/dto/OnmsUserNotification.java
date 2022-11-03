@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,19 +28,16 @@
 
 package org.opennms.horizon.alarms.db.impl.dto;
 
+import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -48,42 +45,38 @@ import javax.persistence.TemporalType;
 import lombok.Data;
 
 @Entity
-@Table(name = "memos")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="type", discriminatorType= DiscriminatorType.STRING)
-@DiscriminatorValue(value="Memo")
+/**
+ * <p>OnmsUserNotification class.</p>
+ */
+@Table(name="usersNotified")
 @Data
-public class MemoDTO implements Serializable {
+public class OnmsUserNotification implements Serializable {
 
-    private static final long serialVersionUID = 7272348439687562161L;
+    private static final long serialVersionUID = -1750912427062821742L;
 
     @Id
-    @Column(nullable = false)
-    @SequenceGenerator(name = "memoSequence", sequenceName = "memoNxtId", allocationSize = 1)
-    @GeneratedValue(generator = "memoSequence")
-    private Integer id;
+    @Column(nullable=false)
+    @SequenceGenerator(name="userNotificationSequence", sequenceName="userNotifNxtId", allocationSize = 1)
+    @GeneratedValue(generator="userNotificationSequence")
+    private Integer m_id;
 
-    @Column
-    private String body;
+    @Column(name="userId", length=256)
+    private String m_userId;
 
-    @Column
-    private String author;
-
-    @Column
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updated;
+    @Column(name="notifyTime")
+    private Date m_notifyTime;
 
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
-    
-    @PreUpdate
-    private void preUpdate() {
-        updated = new Date();
-    }
+    @Column(name="media", length=32)
+    private String m_media;
 
-    @PrePersist
-    private void prePersist() {
-        created = new Date();
-    }
+    @Column(name="contactInfo", length=64)
+    private String m_contactInfo;
+
+    @Column(name="autoNotify", length=1)
+    private String m_autoNotify;
+
+    @ManyToOne(fetch=FetchType.LAZY, optional=false)
+    @JoinColumn(name="notifyId")
+    private NotificationDTO m_notification;
 }

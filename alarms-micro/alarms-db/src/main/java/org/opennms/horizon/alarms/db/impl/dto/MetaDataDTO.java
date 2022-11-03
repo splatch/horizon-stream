@@ -29,84 +29,25 @@
 package org.opennms.horizon.alarms.db.impl.dto;
 
 import java.io.Serializable;
-import java.util.Objects;
-import java.util.StringJoiner;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@XmlRootElement(name="meta-data")
 @Embeddable
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class MetaDataDTO implements Serializable {
 
     private static final long serialVersionUID = 3529745790145204662L;
 
+    @Column(nullable = false)
     private String context;
+    @Column(nullable = false)
     private String key;
+    @Column(nullable = false)
     private String value;
-
-    public MetaDataDTO() {
-    }
-
-    public MetaDataDTO(String context, String key, String value) {
-        this.context = Objects.requireNonNull(context);
-        this.key = Objects.requireNonNull(key);
-        this.value = Objects.requireNonNull(value);
-    }
-
-    @XmlElement(name="context")
-    @Column(name="context", nullable = false)
-    public String getContext(){
-        return context;
-    }
-
-    public void setContext(String context) {
-        this.context = context;
-    }
-
-    @XmlElement(name="key")
-    @Column(name="key", nullable = false)
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    
-    @XmlElement(name="value")
-    @Column(name="value", nullable = false)
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", MetaDataDTO.class.getSimpleName() + "[", "]")
-                .add("context='" + context + "'")
-                .add("key='" + key + "'")
-                .add("value='" + value + "'")
-                .toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MetaDataDTO that = (MetaDataDTO) o;
-        return com.google.common.base.Objects.equal(context, that.context) &&
-                com.google.common.base.Objects.equal(key, that.key) &&
-                com.google.common.base.Objects.equal(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return com.google.common.base.Objects.hashCode(context, key, value);
-    }
 }

@@ -48,12 +48,9 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlID;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.DiscriminatorOptions;
 
 /**
@@ -82,7 +79,9 @@ import org.hibernate.annotations.DiscriminatorOptions;
 @DiscriminatorValue("System")
 // Require all objects to have a discriminator type
 @DiscriminatorOptions(force=true)
-@XmlAccessorType(XmlAccessType.NONE)
+@Getter
+@Setter
+@NoArgsConstructor
 public class MonitoringSystemDTO implements Serializable {
 
     private static final long serialVersionUID = -5095710111103727832L;
@@ -90,188 +89,40 @@ public class MonitoringSystemDTO implements Serializable {
     public static final String TYPE_OPENNMS = "OpenNMS";
     public static final String TYPE_MINION = "Minion";
 
-    @XmlID
-    @XmlAttribute(name="id")
-    private String m_id;
-
-    @XmlAttribute(name="label")
-    private String m_label;
-
-    @XmlAttribute(name="location")
-    private String m_location;
-
-    @XmlAttribute(name="type")
-    private String m_type;
-
-    // TODO: Add type converter
-    //@XmlElement(name="ipAddress")
-    //private InetAddress m_ipAddress;
-
-    /*
-    @XmlElement(name="status")
-    private String m_status;
-    */
-
-    @XmlAttribute(name="date")
-    private Date m_lastUpdated;
-    
-    @XmlAttribute(name = "lastCheckedIn")
-    private Date m_lastCheckedIn;
-
-    @XmlElementWrapper(name="properties")
-    @XmlElement(name="property")
-    private Map<String,String> m_properties = new HashMap<String,String>();
-
-    /**
-     * default constructor
-     */
-    public MonitoringSystemDTO() {}
-
-    /**
-     * Minimal constructor.
-     *
-     * @param id a {@link String} object.
-     * @param ipAddress a {@link String} object.
-     */
-    public MonitoringSystemDTO(String id, String location) {
-        m_id = id;
-        m_location = location;
-    }
-
-    /**
-     * A human-readable name for each system.
-     * Typically, the system's hostname (not fully qualified).
-     *
-     * @return a {@link String} object.
-     */
-    @Id 
+    @Id
     @Column(name="id", nullable=false)
-    public String getId() {
-        return m_id;
-    }
+    private String id;
 
-    /**
-     * <p>setName</p>
-     *
-     * @param id a {@link String} object.
-     */
-    public void setId(String id) {
-        m_id = id;
-    }
-
-    /**
-     * A human-readable name for each system.
-     * Typically, the system's hostname (not fully qualified).
-     *
-     * @return a {@link String} object.
-     */
     @Column(name="label")
-    public String getLabel() {
-        return m_label;
-    }
+    private String label;
 
-    /**
-     * @param label a {@link String} object.
-     */
-    public void setLabel(String label) {
-        m_label = label;
-    }
-
-    /**
-     * The monitoring location that this system is located in.
-     *
-     * @return a {@link String} object.
-     */
     @Column(name="location", nullable=false)
-    public String getLocation() {
-        return m_location;
-    }
+    private String location;
 
-    /**
-     *
-     * @param location a {@link String} object.
-     */
-    public void setLocation(String location) {
-        m_location = location;
-    }
-
-    /**
-     * The type of monitoring system. Mark this as insertable=false and updatable=false
-     * because it is also used as the @DiscriminatorColumn.
-     *
-     * @return a {@link String} object.
-     */
     @Column(name="type", nullable=false, insertable=false, updatable=false)
-    public String getType() {
-        return m_type;
-    }
+    private String type;
 
-    /**
-     *
-     * @param type a {@link String} object.
-     */
-    public void setType(String type) {
-        m_type = type;
-    }
-
-    /**
-     * The timestamp of the last message passed from the remote system.
-     * TODO: Should this be nullable=false?
-     *
-     * @return a {@link String} object.
-     */
     @Column(name="last_updated")
     @Temporal(TemporalType.TIMESTAMP)
-    public Date getLastUpdated() {
-        return m_lastUpdated;
-    }
+    private Date lastUpdated;
 
-    public void setLastUpdated(final Date lastUpdated) {
-        m_lastUpdated = lastUpdated;
-    }
+    //TODO:MMF check with jesse on this, no accessors currently!
+    private Date lastCheckedIn;
 
-    /**
-     * IP address of the distributed poller.
-     *
-     * @return a {@link String} object.
-     */
-    /*
-    @Column(name="ipaddr", nullable=false)
-    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
-    public final InetAddress getIpAddress() {
-        return m_ipAddress;
-    }
-    */
-
-    /**
-     * <p>setIpAddress</p>
-     *
-     * @param ipAddress a {@link String} object.
-     */
-    /*
-    public final void setIpAddress(InetAddress ipAddress) {
-        m_ipAddress = ipAddress;
-    }
-    */
-
-    
     @ElementCollection
     @JoinTable(name="monitoringSystemsProperties", joinColumns = @JoinColumn(name="monitoringSystemId"))
     @MapKeyColumn(name="property", nullable=false)
     @Column(name="propertyValue")
-    public Map<String, String> getProperties() {
-        return m_properties;
-    }
+    private Map<String,String> properties = new HashMap<String,String>();
 
-    /**
-     * @param properties a {@link Map} object.
-     */
-    public void setProperties(Map<String, String> properties) {
-        m_properties = properties;
+    public MonitoringSystemDTO(String id, String location) {
+        id = id;
+        location = location;
     }
+    
 
     public void setProperty(String property, String value) {
-        m_properties.put(property, value);
+        properties.put(property, value);
     }
 
     /**
@@ -286,7 +137,6 @@ public class MonitoringSystemDTO implements Serializable {
             .add("label", getLabel())
             .add("location", getLocation())
             .add("type", getType())
-            //.add("ipAddress", str(getIpAddress()))
             .toString();
     }
 }

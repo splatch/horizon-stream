@@ -47,385 +47,91 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarms.db.api.EntityVisitor;
-import org.opennms.horizon.core.lib.AlphaNumeric;
-import org.opennms.horizon.core.lib.RrdLabelUtils;
-import org.opennms.horizon.core.lib.SystemProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * <p>OnmsSnmpInterface class.</p>
- */
-@XmlRootElement(name = "snmpInterface")
 @Entity
 @Table(name = "snmpInterface")
+@Slf4j
+@Data
+@NoArgsConstructor
 public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
     private static final long serialVersionUID = 4688655131862954563L;
-    private static final Logger LOG = LoggerFactory.getLogger(SnmpInterfaceDTO.class);
 
-    private Integer m_id;
-
-    /** identifier field */
-    private String m_physAddr;
-
-    /** identifier field */
-    private Integer m_ifIndex;
-
-    /** identifier field */
-    private String m_ifDescr;
-
-    /** identifier field */
-    private Integer m_ifType;
-
-    /** identifier field */
-    private String m_ifName;
-
-    /** identifier field */
-    private Long m_ifSpeed;
-
-    /** identifier field */
-    private Integer m_ifAdminStatus;
-
-    /** identifier field */
-    private Integer m_ifOperStatus;
-
-    /** identifier field */
-    private String m_ifAlias;
-    
-    private Date m_lastCapsdPoll;
-
-    private String m_collect = "N";
-    
-    private String m_poll;
-
-    private Date m_lastSnmpPoll;
-
-    @OneToOne
-    @JoinColumn(name = "m_node_node_id")
-    private NodeDTO m_node;
-
-    private Set<IpInterfaceDTO> m_ipInterfaces = new HashSet<>();
-
-    /** timestamps for a flow exporting node */
-    private Date m_lastIngressFlow;
-    private Date m_lastEgressFlow;
-    public static final int MAX_FLOW_AGE = SystemProperties.getInteger("org.opennms.features.telemetry.maxFlowAgeSeconds", 604800);
-    public static final boolean INGRESS_AND_EGRESS_REQUIRED = Boolean.getBoolean("org.opennms.features.telemetry.ingressAndEgressRequired");
-
-    public NodeDTO getM_node() {
-        return m_node;
-    }
-
-    public void setM_node(NodeDTO m_node) {
-        this.m_node = m_node;
-    }
-
-    /**
-     * <p>Constructor for OnmsSnmpInterface.</p>
-     * @param node a {@link NodeDTO} object.
-     * @param ifIndex a int.
-     */
-    public SnmpInterfaceDTO(NodeDTO node, int ifIndex) {
-        this(node, Integer.valueOf(ifIndex));
-    }
-
-    /**
-     * <p>Constructor for OnmsSnmpInterface.</p>
-     * @param node a {@link NodeDTO} object.
-     * @param ifIndex a {@link Integer} object.
-     */
-    public SnmpInterfaceDTO(NodeDTO node, Integer ifIndex) {
-        m_ifIndex = ifIndex;
-        m_node = node;
-        if (node != null) {
-            node.getSnmpInterfaces().add(this);
-        }
-    }
-
-    /**
-     * default constructor
-     */
-    public SnmpInterfaceDTO() {
-    }
-
-    /**
-     * Unique identifier for snmpInterface.
-     *
-     * @return a {@link Integer} object.
-     */
     @Id
     @Column(nullable=false)
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId", allocationSize = 1)
     @GeneratedValue(generator = "opennmsSequence")
-    @XmlAttribute(name="id")
-    public Integer getId() {
-        return m_id;
-    }
+    private Integer id;
 
-    /**
-     * <p>setId</p>
-     *
-     * @param id a {@link Integer} object.
-     */
-    public void setId(Integer id) {
-        m_id = id;
-    }
-
-    /**
-     * <p>getPhysAddr</p>
-     *
-     * @return a {@link String} object.
-     */
     @Column(name = "snmpPhysAddr", length = 32)
-    public String getPhysAddr() {
-        return m_physAddr;
-    }
+    private String physAddr;
 
-    /**
-     * <p>setPhysAddr</p>
-     *
-     * @param snmpphysaddr a {@link String} object.
-     */
-    public void setPhysAddr(String snmpphysaddr) {
-        m_physAddr = snmpphysaddr;
-    }
-
-    /**
-     * <p>getIfIndex</p>
-     *
-     * @return a {@link Integer} object.
-     */
     @Column(name = "snmpIfIndex")
-    @XmlAttribute(name="ifIndex")
-    public Integer getIfIndex() {
-        return m_ifIndex;
-    }
+    private Integer ifIndex;
 
-    /**
-     * <p>setIfIndex</p>
-     *
-     * @param snmpifindex a {@link Integer} object.
-     */
-    public void setIfIndex(Integer snmpifindex) {
-        m_ifIndex = snmpifindex;
-    }
-
-    /**
-     * <p>getIfDescr</p>
-     *
-     * @return a {@link String} object.
-     */
     @Column(name = "snmpIfDescr", length = 256)
-    public String getIfDescr() {
-        return m_ifDescr;
-    }
+    private String ifDescr;
 
-    /**
-     * <p>setIfDescr</p>
-     *
-     * @param snmpifdescr a {@link String} object.
-     */
-    public void setIfDescr(String snmpifdescr) {
-        m_ifDescr = snmpifdescr;
-    }
-
-    /**
-     * <p>getIfType</p>
-     *
-     * @return a {@link Integer} object.
-     */
     @Column(name = "snmpIfType")
-    public Integer getIfType() {
-        return m_ifType;
-    }
+    private Integer ifType;
 
-    /**
-     * <p>setIfType</p>
-     *
-     * @param snmpiftype a {@link Integer} object.
-     */
-    public void setIfType(Integer snmpiftype) {
-        m_ifType = snmpiftype;
-    }
-
-    /**
-     * <p>getIfName</p>
-     *
-     * @return a {@link String} object.
-     */
     @Column(name = "snmpIfName", length = 32)
-    public String getIfName() {
-        return m_ifName;
-    }
+    private String ifName;
 
-    /**
-     * <p>setIfName</p>
-     *
-     * @param snmpifname a {@link String} object.
-     */
-    public void setIfName(String snmpifname) {
-        m_ifName = snmpifname;
-    }
-
-    /**
-     * <p>getIfSpeed</p>
-     *
-     * @return a {@link Long} object.
-     */
     @Column(name = "snmpIfSpeed")
-    public Long getIfSpeed() {
-        return m_ifSpeed;
-    }
+    private Long ifSpeed;
 
-    /**
-     * <p>setIfSpeed</p>
-     *
-     * @param snmpifspeed a {@link Long} object.
-     */
-    public void setIfSpeed(Long snmpifspeed) {
-        m_ifSpeed = snmpifspeed;
-    }
-
-    /**
-     * <p>getIfAdminStatus</p>
-     *
-     * @return a {@link Integer} object.
-     */
     @Column(name = "snmpIfAdminStatus")
-    public Integer getIfAdminStatus() {
-        return m_ifAdminStatus;
-    }
+    private Integer ifAdminStatus;
 
-    /**
-     * <p>setIfAdminStatus</p>
-     *
-     * @param snmpifadminstatus a {@link Integer} object.
-     */
-    public void setIfAdminStatus(Integer snmpifadminstatus) {
-        m_ifAdminStatus = snmpifadminstatus;
-    }
-
-    /**
-     * <p>getIfOperStatus</p>
-     *
-     * @return a {@link Integer} object.
-     */
     @Column(name = "snmpIfOperStatus")
-    public Integer getIfOperStatus() {
-        return m_ifOperStatus;
-    }
+    private Integer ifOperStatus;
 
-    /**
-     * <p>setIfOperStatus</p>
-     *
-     * @param snmpifoperstatus a {@link Integer} object.
-     */
-    public void setIfOperStatus(Integer snmpifoperstatus) {
-        m_ifOperStatus = snmpifoperstatus;
-    }
-
-    /**
-     * <p>getIfAlias</p>
-     *
-     * @return a {@link String} object.
-     */
     @Column(name = "snmpIfAlias", length = 256)
-    public String getIfAlias() {
-        return m_ifAlias;
-    }
+    private String ifAlias;
 
-    /**
-     * <p>setIfAlias</p>
-     *
-     * @param snmpifalias a {@link String} object.
-     */
-    public void setIfAlias(String snmpifalias) {
-        m_ifAlias = snmpifalias;
-    }
-    
-    /**
-     * <p>getLastCapsdPoll</p>
-     *
-     * @return a {@link Date} object.
-     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="snmpLastCapsdPoll")
-    public Date getLastCapsdPoll() {
-        return m_lastCapsdPoll;
-    }
-    
-    /**
-     * <p>setLastCapsdPoll</p>
-     *
-     * @param lastCapsdPoll a {@link Date} object.
-     */
-    public void setLastCapsdPoll(Date lastCapsdPoll) {
-        m_lastCapsdPoll = lastCapsdPoll;
-    }
-    
-    /**
-     * <p>getCollect</p>
-     *
-     * @return a {@link String} object.
-     */
+    private Date lastCapsdPoll;
+
     @Column(name="snmpCollect")
-    @XmlAttribute(name="collectFlag")
-    public String getCollect() {
-        return m_collect;
-    }
-    
-    /**
-     * <p>setCollect</p>
-     *
-     * @param collect a {@link String} object.
-     */
-    public void setCollect(String collect) {
-        m_collect = collect;
-    }
+    private String collect = "N";
 
-    /**
-     * <p>getPoll</p>
-     *
-     * @return a {@link String} object.
-     */
     @Column(name="snmpPoll")
-    @XmlAttribute(name="pollFlag")
-    public String getPoll() {
-        return m_poll;
-    }
-    
-    /**
-     * <p>setPoll</p>
-     *
-     * @param poll a {@link String} object.
-     */
-    public void setPoll(String poll) {
-        m_poll = poll;
-    }
+    private String poll;
 
-    /**
-     * <p>getLastSnmpPoll</p>
-     *
-     * @return a {@link Date} object.
-     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="snmpLastSnmpPoll")
-    public Date getLastSnmpPoll() {
-        return m_lastSnmpPoll;
+    private Date lastSnmpPoll;
+
+    @OneToMany(mappedBy = "snmpInterface", fetch = FetchType.LAZY)
+    private Set<IpInterfaceDTO> ipInterfaces = new HashSet<>();
+
+    /** timestamps for a flow exporting node */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="last_ingress_flow")
+    private Date lastIngressFlow;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="last_egress_flow")
+    private Date lastEgressFlow;
+
+    public static final int MAX_FLOW_AGE = SystemProperties.getInteger("org.opennms.features.telemetry.maxFlowAgeSeconds", 604800);
+    public static final boolean INGRESS_AND_EGRESS_REQUIRED = Boolean.getBoolean("org.opennms.features.telemetry.ingressAndEgressRequired");
+
+
+    /**
+     * <p>Constructor for OnmsSnmpInterface.</p>
+     * @param ifIndex a {@link Integer} object.
+     */
+    public SnmpInterfaceDTO(Integer ifIndex) {
+        ifIndex = ifIndex;
     }
     
-    /**
-     * <p>setLastSnmpPoll</p>
-     *
-     * @param lastSnmpPoll a {@link Date} object.
-     */
-    public void setLastSnmpPoll(Date lastSnmpPoll) {
-        m_lastSnmpPoll = lastSnmpPoll;
-    }
+
 
     /**
      * <p>isCollectionUserSpecified</p>
@@ -434,7 +140,7 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
      */
     @Transient
     public boolean isCollectionUserSpecified(){
-        return m_collect.startsWith("U");
+        return collect.startsWith("U");
     }
     
     /**
@@ -443,9 +149,8 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
      * @return a boolean.
      */
     @Transient
-    @XmlAttribute(name="collect")
     public boolean isCollectionEnabled() {
-        return "C".equals(m_collect) || "UC".equals(m_collect);
+        return "C".equals(collect) || "UC".equals(collect);
     }
     
     /**
@@ -465,9 +170,9 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
      */
     public void setCollectionEnabled(boolean shouldCollect, boolean userSpecified){
        if(userSpecified){
-           m_collect = shouldCollect ? "UC":"UN";
-       }else if(!m_collect.startsWith("U")){
-           m_collect = shouldCollect ? "C" : "N";
+           collect = shouldCollect ? "UC":"UN";
+       }else if(!collect.startsWith("U")){
+           collect = shouldCollect ? "C" : "N";
        }
     }
 
@@ -477,40 +182,10 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
      * @return a boolean.
      */
     @Transient
-    @XmlAttribute(name="poll")
     public boolean isPollEnabled() {
-        return "P".equals(m_poll);
+        return "P".equals(poll);
     }
 
-    /**
-     * <p>getNode</p>
-     *
-     * @return a {@link NodeDTO} object.
-     */
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "nodeId")
-
-    public NodeDTO getNode() {
-        return m_node;
-    }
-
-    /**
-     * <p>setNode</p>
-     *
-     * @param node a {@link NodeDTO} object.
-     */
-    public void setNode(NodeDTO node) {
-        m_node = node;
-    }
-
-    @Transient
-    @XmlTransient
-    public Integer getNodeId() {
-        if (m_node != null) {
-            return m_node.getId();
-        }
-        return null;
-    }
 
     @Transient
     public boolean getHasFlows() {
@@ -523,41 +198,20 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
 
     @Transient
     public boolean getHasIngressFlows() {
-        if (m_lastIngressFlow == null) {
+        if (lastIngressFlow == null) {
             return false;
         }
-        return (System.currentTimeMillis() - m_lastIngressFlow.getTime()) / 1000 < MAX_FLOW_AGE;
+        return (System.currentTimeMillis() - lastIngressFlow.getTime()) / 1000 < MAX_FLOW_AGE;
     }
 
     @Transient
     public boolean getHasEgressFlows() {
-        if (m_lastEgressFlow == null) {
+        if (lastEgressFlow == null) {
             return false;
         }
-        return (System.currentTimeMillis() - m_lastEgressFlow.getTime()) / 1000 < MAX_FLOW_AGE;
+        return (System.currentTimeMillis() - lastEgressFlow.getTime()) / 1000 < MAX_FLOW_AGE;
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="last_ingress_flow")
-    @XmlAttribute(name="lastIngressFlow")
-    public Date getLastIngressFlow() {
-        return m_lastIngressFlow;
-    }
-
-    public void setLastIngressFlow(Date lastIngressFlow) {
-        this.m_lastIngressFlow = lastIngressFlow;
-    }
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="last_egress_flow")
-    @XmlAttribute(name="lastEgressFlow")
-    public Date getLastEgressFlow() {
-        return m_lastEgressFlow;
-    }
-
-    public void setLastEgressFlow(Date lastEgressFlow) {
-        this.m_lastEgressFlow = lastEgressFlow;
-    }
 
     /**
      * <p>toString</p>
@@ -578,11 +232,10 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
             .add("snmpifalias", getIfAlias())
             .add("snmpCollect", getCollect())
             .add("snmpPoll", getPoll())
-            .add("nodeId", getNode() == null ? null : getNode().getId())
             .add("lastCapsdPoll", getLastCapsdPoll())
             .add("lastSnmpPoll", getLastSnmpPoll())
-            .add("lastIngressFlow", m_lastIngressFlow)
-            .add("lastEgressFlow", m_lastEgressFlow)
+            .add("lastIngressFlow", lastIngressFlow)
+            .add("lastEgressFlow", lastEgressFlow)
             .toString();
     }
 
@@ -591,25 +244,6 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
     public void visit(EntityVisitor visitor) {
         visitor.visitSnmpInterface(this);
         visitor.visitSnmpInterfaceComplete(this);
-    }
-
-    /**
-     * <p>getIpInterfaces</p>
-     *
-     * @return a {@link Set} object.
-     */
-    @OneToMany(mappedBy = "snmpInterface", fetch = FetchType.LAZY)
-    public Set<IpInterfaceDTO> getIpInterfaces() {
-        return m_ipInterfaces;
-    }
-
-    /**
-     * <p>setIpInterfaces</p>
-     *
-     * @param ipInterfaces a {@link Set} object.
-     */
-    public void setIpInterfaces(Set<IpInterfaceDTO> ipInterfaces) {
-        m_ipInterfaces = ipInterfaces;
     }
 
     // @Transient
@@ -624,19 +258,6 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
     // }
     // return ifsForSnmpIface;
     // }
-
-    /**
-     * <p>getPrimaryIpInterface</p>
-     *
-     * @return an {@link IpInterfaceDTO} object.
-     */
-    @Transient
-    @XmlTransient
-    public IpInterfaceDTO getPrimaryIpInterface() {
-        return getNode().getPrimaryInterface();
-    }
-
-    
 
     /**
      * <p>computePhysAddrForRRD</p>
@@ -656,10 +277,10 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
             if (parsedPhysAddr.length() == 12) {
                 physAddrForRRD = parsedPhysAddr;
             } else {
-                    LOG.debug("physAddrForRRD: physical address len is NOT 12, physAddr={}", parsedPhysAddr);
+                    log.debug("physAddrForRRD: physical address len is NOT 12, physAddr={}", parsedPhysAddr);
             }
         }
-        LOG.debug("computed physAddr for {} to be {}", this, physAddrForRRD);
+        log.debug("computed physAddr for {} to be {}", this, physAddrForRRD);
         return physAddrForRRD;
     }
 
@@ -687,7 +308,7 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
             label = RrdLabelUtils.DONT_SANITIZE_IFNAME ? secondChoice : AlphaNumeric.parseAndReplace(secondChoice, '_');
         } else {
             // TODO: Use IfLabel.NO_IFLABEL instead of "no_ifLabel"
-            LOG.info("Interface ({}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", this);
+            log.info("Interface ({}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", this);
             label = "no_ifLabel";
         }
         return label;
@@ -709,7 +330,7 @@ public class SnmpInterfaceDTO extends EntityDTO implements Serializable {
      */
     public void addIpInterface(IpInterfaceDTO iface) {
         iface.setSnmpInterface(this);
-        m_ipInterfaces.add(iface);
+        ipInterfaces.add(iface);
     }
 
     /**

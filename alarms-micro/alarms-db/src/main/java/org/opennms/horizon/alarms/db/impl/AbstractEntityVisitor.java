@@ -32,7 +32,6 @@ import org.opennms.horizon.alarms.db.api.EntityVisitor;
 import org.opennms.horizon.alarms.db.impl.dto.EntityDTO;
 import org.opennms.horizon.alarms.db.impl.dto.IpInterfaceDTO;
 import org.opennms.horizon.alarms.db.impl.dto.MonitoredServiceDTO;
-import org.opennms.horizon.alarms.db.impl.dto.NodeDTO;
 
 /**
  * <p>
@@ -40,11 +39,6 @@ import org.opennms.horizon.alarms.db.impl.dto.NodeDTO;
  * </p>
  */
 public class AbstractEntityVisitor implements EntityVisitor {
-
-    /** {@inheritDoc} */
-    @Override
-    public void visitNode(final NodeDTO node) {
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -59,11 +53,6 @@ public class AbstractEntityVisitor implements EntityVisitor {
     /** {@inheritDoc} */
     @Override
     public void visitMonitoredService(final MonitoredServiceDTO monSvc) {
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void visitNodeComplete(final NodeDTO node) {
     }
 
     /** {@inheritDoc} */

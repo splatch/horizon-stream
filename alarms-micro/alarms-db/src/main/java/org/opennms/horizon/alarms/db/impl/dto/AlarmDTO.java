@@ -100,7 +100,6 @@ public class AlarmDTO implements Serializable {
     @Column(nullable=false)
     private Integer counter;
 
-    //TODO:MMF Enum, move to shared or microservice
     @Column(nullable=false)
     @Type(type= "org.opennms.horizon.alarms.db.impl.dto.SeverityUserTypeDTO")
     private AlarmSeverity severity = AlarmSeverity.INDETERMINATE;
@@ -134,7 +133,6 @@ public class AlarmDTO implements Serializable {
     @Column(length=128)
     private String tTicketId;
 
-    //TODO: Enum, move to shared
     @Column
     private TroubleTicketState tTicketState;
 
@@ -163,7 +161,7 @@ public class AlarmDTO implements Serializable {
     private String clearKey;
 
 
-//    TODO: flatten maybe just store last event serverity, etc. Store what you need.
+//    TODO:MMF flatten maybe just store last event serverity, etc. Store what you need.
 //    private OnmsEvent m_lastEvent;
 
     @Column(length=512)
@@ -173,7 +171,7 @@ public class AlarmDTO implements Serializable {
     private String managedObjectType;
 
     @Column(length=512)
-    private String applicationDN;   //todo
+    private String applicationDN;
 
     @Column(length=512)
     private String ossPrimaryKey;
@@ -193,12 +191,10 @@ public class AlarmDTO implements Serializable {
     @Column(name="attributeValue", nullable=false)
     private Map<String, String> details;
 
-    //TODO:MMF - moved to shared or microservice
     @OneToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="stickymemo")
     private MemoDTO stickyMemo;
 
-    //TODO:MMF - moved to shared or microservice
     @ManyToOne
     @JoinColumn(name="reductionKey", referencedColumnName="reductionkey", updatable=false, insertable=false)
     private ReductionKeyMemoDTO reductionKeyMemo;

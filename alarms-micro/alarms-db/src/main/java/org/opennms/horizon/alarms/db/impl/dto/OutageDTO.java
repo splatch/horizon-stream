@@ -45,20 +45,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.hibernate.annotations.Type;
-import org.opennms.core.xml.InetAddressXmlAdapter;
 
 /**
  * <p>OnmsOutage class.</p>
  *
  * @hibernate.class table="outages"
  */
-@XmlRootElement(name="outage")
 @Entity
 @Table(name="outages")
 public class OutageDTO implements Serializable {
@@ -195,7 +188,6 @@ public class OutageDTO implements Serializable {
      * @return a {@link Integer} object.
      */
     @Id
-    @XmlAttribute(name="id")
     @Column(name="outageId", nullable=false)
     @SequenceGenerator(name="outageSequence", sequenceName="outageNxtId", allocationSize = 1)
     @GeneratedValue(generator="outageSequence")
@@ -356,35 +348,6 @@ public class OutageDTO implements Serializable {
     }
 
 
-    /**
-     * This method is necessary for CXF to be able to introspect
-     * the type of {@link NodeDTO} parameters.
-     *
-     * @return a {@link NodeDTO} object.
-     */
-    @Transient
-    @XmlTransient
-    public NodeDTO getNode() {
-        return getMonitoredService().getIpInterface().getNode();
-    }
-
-    /**
-     * This method is necessary for CXF to be able to introspect
-     * the type of {@link NodeDTO} parameters.
-     */
-    public void setNode(NodeDTO node) {
-        MonitoredServiceDTO service = getMonitoredService();
-        if (service == null) {
-            service = new MonitoredServiceDTO();
-            setMonitoredService(service);
-        }
-        IpInterfaceDTO intf = service.getIpInterface();
-        if (intf == null) {
-            intf = new IpInterfaceDTO();
-            service.setIpInterface(intf);
-        }
-        intf.setNode(node);
-    }
 
     /**
      * <p>getNodeId</p>
@@ -392,53 +355,8 @@ public class OutageDTO implements Serializable {
      * @return a {@link Integer} object.
      */
     @Transient
-    @XmlElement(name="nodeId")
     public Integer getNodeId(){
-    	return getMonitoredService().getNodeId();
-    }
-
-    /**
-     * <p>getNodeLabel</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Transient
-    @XmlElement(name="nodeLabel")
-    public String getNodeLabel(){
-        return getMonitoredService().getIpInterface().getNode().getLabel();
-    }
-
-    /**
-     * <p>getForeignSource</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Transient
-    @XmlElement(name="foreignSource")
-    public String getForeignSource(){
-        return getMonitoredService().getIpInterface().getNode().getForeignSource();
-    }
-
-    /**
-     * <p>getForeignId</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Transient
-    @XmlElement(name="foreignId")
-    public String getForeignId(){
-        return getMonitoredService().getIpInterface().getNode().getForeignId();
-    }
-
-    /**
-     * <p>getLocationName</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Transient
-    @XmlElement(name="locationName")
-    public String getLocationName(){
-        return getMonitoredService().getIpInterface().getNode().getLocation().getLocationName();
+    	return getMonitoredService().getId();
     }
 
     /**
@@ -447,9 +365,7 @@ public class OutageDTO implements Serializable {
      * @return a {@link String} object.
      */
     @Transient
-    @XmlElement(name="ipAddress")
     @Type(type="org.opennms.horizon.db.model.InetAddressUserType")
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     public InetAddress getIpAddress() {
         return getMonitoredService().getIpAddress();
     }
@@ -461,7 +377,6 @@ public class OutageDTO implements Serializable {
      * @deprecated use getIpAddress
      */
     @Transient
-    @XmlTransient
     public String getIpAddressAsString() {
         return getMonitoredService().getIpAddressAsString();
     }
@@ -476,14 +391,14 @@ public class OutageDTO implements Serializable {
     	return getMonitoredService().getServiceId();
     }
 
+    //TODO:MMF therefore not needed?
     /**
      * This method is necessary for CXF to be able to introspect
-     * the type of {@link NodeDTO} parameters.
+     * the type of NodeDTO} parameters.
      *
      * @return a {@link ServiceTypeDTO} object.
      */
     @Transient
-    @XmlTransient
     public ServiceTypeDTO getServiceType() {
         return getMonitoredService().getServiceType();
     }
@@ -504,7 +419,6 @@ public class OutageDTO implements Serializable {
     /**
      * Monitoring perspective that this outage is associated with.
      */
-    @XmlElement(name="perspective")
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="perspective")
     public MonitoringLocationDTO getPerspective() {

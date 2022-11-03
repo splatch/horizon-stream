@@ -28,11 +28,8 @@
 
 package org.opennms.horizon.alarms.db.impl.dto;
 
-import static org.opennms.horizon.shared.utils.InetAddressUtils.toInteger;
-
 import com.google.common.base.MoreObjects;
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,43 +60,51 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Where;
 import org.opennms.horizon.alarms.db.api.EntityVisitor;
 
-@XmlRootElement(name = "service")
 @Entity
 @Table(name="ifServices")
+@Getter
+@Setter
 public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comparable<MonitoredServiceDTO> {
     private static final long serialVersionUID = 7899180234592272274L;
 
-    private Integer m_id;
+    @Id
+    @Column(nullable=false)
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId", allocationSize = 1)
+    @GeneratedValue(generator="opennmsSequence")
+    private Integer id;
 
-    private Date m_lastGood;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="lastGood")
+    private Date lastGood;
 
-    private Date m_lastFail;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="lastFail")
+    private Date lastFail;
 
-    private String m_qualifier;
+    @Column(name="qualifier", length=16)
+    private String qualifier;
 
-    private String m_status;
+    @Column(name="status", length=1)
+    private String status;
 
-    private String m_source;
+    @Column(name="source", length=1)
+    private String source;
 
-    private String m_notify;
+    @Column(name="notify", length=1)
+    private String notify;
 
-    @OneToOne
-    @JoinColumn(name = "m_service_type_service_id")
-    private ServiceTypeDTO m_serviceType;
+    @ManyToOne(optional=false)
+    @JoinColumn(name="serviceId")
+    private ServiceTypeDTO serviceType;
 
-    @OneToOne
-    @JoinColumn(name = "m_ip_interface_id")
-    private IpInterfaceDTO m_ipInterface;
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
+    @JoinColumn(name="ipInterfaceId")
+    private IpInterfaceDTO ipInterface;
 
     /*
      * This is a set only because we want it to be lazy
@@ -112,29 +117,25 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
      * be a model change were one service can be represented
      * by more than one outage.
      */
-    private Set<OutageDTO> m_currentOutages = new LinkedHashSet<>();
+    @OneToMany(mappedBy="monitoredService", fetch=FetchType.LAZY)
+    @Where(clause="ifRegainedService is null")
+    private Set<OutageDTO> currentOutages = new LinkedHashSet<>();
 
-    private Set<ApplicationDTO> m_applications = new LinkedHashSet<>();
+    @ManyToMany(
+        cascade={CascadeType.PERSIST, CascadeType.MERGE}
+    )
+    @JoinTable(
+        name="application_service_map",
+        joinColumns={@JoinColumn(name="ifserviceid")},
+        inverseJoinColumns={@JoinColumn(name="appid")}
+    )
+    private Set<ApplicationDTO> applications = new LinkedHashSet<>();
 
-    private List<MetaDataDTO> m_metaData = new ArrayList<>();
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="ifServices_metadata", joinColumns = @JoinColumn(name = "id"))
+    private List<MetaDataDTO> metaData = new ArrayList<>();
 
     public static final Map<String, String> STATUS_MAP;
-
-    public IpInterfaceDTO getM_ipInterface() {
-        return m_ipInterface;
-    }
-
-    public void setM_ipInterface(IpInterfaceDTO m_ipInterface) {
-        this.m_ipInterface = m_ipInterface;
-    }
-
-    public ServiceTypeDTO getM_serviceType() {
-        return m_serviceType;
-    }
-
-    public void setM_serviceType(ServiceTypeDTO m_serviceType) {
-        this.m_serviceType = m_serviceType;
-    }
 
     static {
         STATUS_MAP = new HashMap<String, String>();
@@ -161,51 +162,10 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
      * @param serviceType a {@link ServiceTypeDTO} object.
      */
     public MonitoredServiceDTO(IpInterfaceDTO ipIf, ServiceTypeDTO serviceType) {
-        m_ipInterface = ipIf;
-        m_ipInterface.getMonitoredServices().add(this);
-        m_serviceType = serviceType;
+        ipInterface = ipIf;
+        ipInterface.getMonitoredServices().add(this);
+        this.serviceType = serviceType;
 
-    }
-
-    /**
-     * Unique identifier for ifService.
-     *
-     * @return a {@link Integer} object.
-     */
-    @Id
-    @Column(nullable=false)
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId", allocationSize = 1)
-    @GeneratedValue(generator="opennmsSequence")
-    @XmlTransient
-    public Integer getId() {
-        return m_id;
-    }
-
-    @Transient
-    public Integer getJsonId() {
-        return m_id;
-    }
-    /**
-     * <p>setId</p>
-     *
-     * @param id a {@link Integer} object.
-     */
-    public void setId(Integer id) {
-        m_id = id;
-    }
-
-    /**
-     * This id is used for the serialized representation such as json, xml etc.
-     */
-    @XmlID
-    @XmlAttribute(name="id")
-    @Transient
-    public String getXmlId() {
-        return getId() == null? null : getId().toString();
-    }
-
-    public void setXmlId(final String id) {
-        setId(Integer.valueOf(id));
     }
 
     /**
@@ -213,10 +173,9 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
      *
      * @return a {@link String} object.
      */
-    @XmlTransient
     @Transient
     public InetAddress getIpAddress() {
-        return m_ipInterface.getIpAddress();
+        return ipInterface.getIpAddress();
     }
 
     /**
@@ -226,10 +185,9 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
      * 
      * @deprecated
      */
-    @XmlTransient
     @Transient
     public String getIpAddressAsString() {
-        return m_ipInterface.getIpAddressAsString();
+        return ipInterface.getIpAddressAsString();
     }
 
     /**
@@ -237,146 +195,15 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
      *
      * @return a {@link Integer} object.
      */
-    @XmlTransient
     @Transient
     public Integer getIfIndex() {
-        return m_ipInterface.getIfIndex();
+        return ipInterface.getIfIndex();
     }
 
-    /**
-     * <p>getLastGood</p>
-     *
-     * @return a {@link Date} object.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="lastGood")
-    public Date getLastGood() {
-        return m_lastGood;
-    }
-
-    /**
-     * <p>setLastGood</p>
-     *
-     * @param lastgood a {@link Date} object.
-     */
-    public void setLastGood(Date lastgood) {
-        m_lastGood = lastgood;
-    }
-
-    /**
-     * <p>getLastFail</p>
-     *
-     * @return a {@link Date} object.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="lastFail")
-    public Date getLastFail() {
-        return m_lastFail;
-    }
-
-    /**
-     * <p>setLastFail</p>
-     *
-     * @param lastfail a {@link Date} object.
-     */
-    public void setLastFail(Date lastfail) {
-        m_lastFail = lastfail;
-    }
-
-    /**
-     * <p>getQualifier</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Column(name="qualifier", length=16)
-    public String getQualifier() {
-        return m_qualifier;
-    }
-
-    /**
-     * <p>setQualifier</p>
-     *
-     * @param qualifier a {@link String} object.
-     */
-    public void setQualifier(String qualifier) {
-        m_qualifier = qualifier;
-    }
-
-    /**
-     * <p>getStatus</p>
-     *
-     * @return a {@link String} object.
-     */
-    @XmlAttribute
-    @Column(name="status", length=1)
-    public String getStatus() {
-        return m_status;
-    }
-
-    /**
-     * <p>setStatus</p>
-     *
-     * @param status a {@link String} object.
-     */
-    public void setStatus(String status) {
-        m_status = status;
-    }
     
     @Transient
-    @XmlAttribute
     public String getStatusLong() {
     	return STATUS_MAP.get(getStatus());
-    }
-
-    /**
-     * <p>getSource</p>
-     *
-     * @return a {@link String} object.
-     */
-    @XmlAttribute
-    @Column(name="source", length=1)
-    public String getSource() {
-        return m_source;
-    }
-
-    /**
-     * <p>setSource</p>
-     *
-     * @param source a {@link String} object.
-     */
-    public void setSource(String source) {
-        m_source = source;
-    }
-
-    /**
-     * <p>getNotify</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Column(name="notify", length=1)
-    public String getNotify() {
-        return m_notify;
-    }
-
-    /**
-     * <p>setNotify</p>
-     *
-     * @param notify a {@link String} object.
-     */
-    public void setNotify(String notify) {
-        m_notify = notify;
-    }
-
-    
-    @XmlTransient
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name="ifServices_metadata", joinColumns = @JoinColumn(name = "id"))
-    public List<MetaDataDTO> getMetaData() {
-        return m_metaData;
-    }
-
-    public void setMetaData(final List<MetaDataDTO> metaData) {
-        m_metaData = metaData;
     }
 
     public void addMetaData(final String context, final String key, final String value) {
@@ -424,64 +251,10 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
         }
     }
 
-    /**
-     * <p>getIpInterface</p>
-     *
-     * @return a {@link IpInterfaceDTO} object.
-     */
-    @XmlIDREF
-    
-    @XmlElement(name="ipInterfaceId")
-    @ManyToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name="ipInterfaceId")
-    public IpInterfaceDTO getIpInterface() {
-        return m_ipInterface;
-    }
 
     @Transient
     public Integer getIpInterfaceId() {
-        return m_ipInterface.getId();
-    }
-
-    /**
-     * <p>setIpInterface</p>
-     *
-     * @param ipInterface a {@link IpInterfaceDTO} object.
-     */
-    public void setIpInterface(IpInterfaceDTO ipInterface) {
-        m_ipInterface = ipInterface;
-    }
-
-    /**
-     * <p>getNodeId</p>
-     *
-     * @return a {@link Integer} object.
-     */
-    @XmlTransient
-    @Transient
-    
-    public Integer getNodeId() {
-        return m_ipInterface.getNode().getId();
-    }
-
-    /**
-     * <p>getServiceType</p>
-     *
-     * @return a {@link ServiceTypeDTO} object.
-     */
-    @ManyToOne(optional=false)
-    @JoinColumn(name="serviceId")
-    public ServiceTypeDTO getServiceType() {
-        return m_serviceType;
-    }
-
-    /**
-     * <p>setServiceType</p>
-     *
-     * @param service a {@link ServiceTypeDTO} object.
-     */
-    public void setServiceType(ServiceTypeDTO service) {
-        m_serviceType = service;
+        return ipInterface.getId();
     }
 
     /**
@@ -492,18 +265,14 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-        .add("id", m_id)
-        .add("lastGood", m_lastGood)
-        .add("lastFail", m_lastFail)
-        .add("qualifier", m_qualifier)
-        .add("status", m_status)
-        .add("source", m_source)
-        .add("notify", m_notify)
-        .add("serviceType", m_serviceType)
-        // cannot include these since the require db queries
-//        .add("ipInterface", m_ipInterface)
-//        .add("currentOutages", m_currentOutages)
-//        .add("applications", m_applications)
+        .add("id", id)
+        .add("lastGood", lastGood)
+        .add("lastFail", lastFail)
+        .add("qualifier", qualifier)
+        .add("status", status)
+        .add("source", source)
+        .add("notify", notify)
+        .add("serviceType", serviceType)
         .toString();
     }
 
@@ -542,64 +311,13 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
      * @return a boolean.
      */
     @Transient
-    @XmlAttribute(name="down")
     public boolean isDown() {
         boolean down = true;
-        if (!"A".equals(getStatus()) || m_currentOutages.isEmpty()) {
+        if (!"A".equals(getStatus()) || currentOutages.isEmpty()) {
             return !down;
         }
 
         return down;
-    }
-
-    /**
-     * <p>getCurrentOutages</p>
-     *
-     * @return a {@link Set} object.
-     */
-    @XmlTransient
-    @OneToMany(mappedBy="monitoredService", fetch=FetchType.LAZY)
-    @Where(clause="ifRegainedService is null")
-    
-    public Set<OutageDTO> getCurrentOutages() {
-        return m_currentOutages;
-    }
-
-    /**
-     * <p>setCurrentOutages</p>
-     *
-     * @param currentOutages a {@link Set} object.
-     */
-    public void setCurrentOutages(Set<OutageDTO> currentOutages) {
-        m_currentOutages = currentOutages;
-    }
-
-    /**
-     * <p>getApplications</p>
-     *
-     * @return a {@link Set} object.
-     */
-    @ManyToMany(
-                cascade={CascadeType.PERSIST, CascadeType.MERGE}
-    )
-    @JoinTable(
-               name="application_service_map",
-               joinColumns={@JoinColumn(name="ifserviceid")},
-               inverseJoinColumns={@JoinColumn(name="appid")}
-    )
-    @XmlElementWrapper(name="applications")
-    @XmlElement(name="application")
-    public Set<ApplicationDTO> getApplications() {
-        return m_applications;
-    }
-
-    /**
-     * <p>setApplications</p>
-     *
-     * @param applications a {@link Set} object.
-     */
-    public void setApplications(Set<ApplicationDTO> applications) {
-        m_applications = applications;
     }
 
     /**
@@ -631,18 +349,6 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
     @Override
     public int compareTo(MonitoredServiceDTO o) {
         int diff;
-
-        diff = getIpInterface().getNode().getLabel().compareToIgnoreCase(o.getIpInterface().getNode().getLabel());
-        if (diff != 0) {
-            return diff;
-        }
-
-        BigInteger a = toInteger(getIpAddress());
-        BigInteger b = toInteger(o.getIpAddress());
-        diff = a.compareTo(b);
-        if (diff != 0) {
-            return diff;
-        }
 
         return getServiceName().compareToIgnoreCase(o.getServiceName());
     }
@@ -686,24 +392,4 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
 		 */
 		return !"N".equals(oldStatus) && newStatus != null && !newStatus.equals(oldStatus);
 	}
-
-    @Transient
-    @XmlTransient
-    
-    public String getForeignSource() {
-        if (getIpInterface() != null) {
-            return getIpInterface().getForeignSource();
-        }
-        return null;
-    }
-
-    @Transient
-    @XmlTransient
-    
-    public String getForeignId() {
-        if (getIpInterface() != null) {
-            return getIpInterface().getForeignId();
-        }
-        return null;
-    }
 }

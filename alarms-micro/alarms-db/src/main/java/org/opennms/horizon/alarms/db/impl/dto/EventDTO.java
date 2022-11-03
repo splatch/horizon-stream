@@ -51,16 +51,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
 import org.opennms.horizon.alarms.db.api.EntityVisitor;
 import org.opennms.horizon.alarms.db.impl.AlarmSeverity;
-import org.opennms.horizon.events.api.EventParameterUtils;
-import org.opennms.horizon.events.xml.Event;
 
 @Entity
 @Table(name="events")
@@ -215,17 +210,11 @@ public class EventDTO extends EntityDTO implements Serializable {
 	@JoinColumn(name="alarmId")
     //TODO:MMF Eh? This is a circulular reference now!
 	private AlarmDTO alarm;
-
-//	
-//	@ManyToOne(fetch=FetchType.LAZY)
-//	@JoinColumn(name="nodeId")
-//	private OnmsNode node;
-
 	
 	@OneToMany(mappedBy="event", fetch=FetchType.LAZY)
 	private Set<NotificationDTO> notifications = new HashSet<>();
 
-	
+
 	@OneToMany(mappedBy="serviceRegainedEvent", fetch=FetchType.LAZY)
 	private Set<OutageDTO> associatedServiceRegainedOutages = new HashSet<>();
 
@@ -239,8 +228,6 @@ public class EventDTO extends EntityDTO implements Serializable {
 	public EventDTO() {
 	}
 
-	@XmlElementWrapper(name="parameters")
-	@XmlElement(name="parameter")
 	public List<EventParameterDTO> getEventParameters() {
 		if(this.eventParameters != null) {
 			this.eventParameters.sort(Comparator.comparing(EventParameterDTO::getPosition));
@@ -253,12 +240,13 @@ public class EventDTO extends EntityDTO implements Serializable {
 		setPositionsOnParameters(this.eventParameters);
 	}
 
-	public void setEventParametersFromEvent(final Event event) {
-		this.eventParameters = EventParameterUtils.normalizePreserveOrder(event.getParmCollection()).stream()
-				.map(p -> new EventParameterDTO(this, p))
-				.collect(Collectors.toList());
-		setPositionsOnParameters(eventParameters);
-	}
+    //TODO:MMF
+//	public void setEventParametersFromEvent(final Event event) {
+//		this.eventParameters = EventParameterUtils.normalizePreserveOrder(event.getParmCollection()).stream()
+//				.map(p -> new EventParameterDTO(this, p))
+//				.collect(Collectors.toList());
+//		setPositionsOnParameters(eventParameters);
+//	}
 
 	public void addEventParameter(EventParameterDTO parameter) {
 		if (eventParameters == null) {
@@ -290,7 +278,6 @@ public class EventDTO extends EntityDTO implements Serializable {
      *
      * @return a {@link String} object.
      */
-    @XmlAttribute(name="severity")
     public String getSeverityLabel() {
         return AlarmSeverity.get(eventSeverity).name();
     }

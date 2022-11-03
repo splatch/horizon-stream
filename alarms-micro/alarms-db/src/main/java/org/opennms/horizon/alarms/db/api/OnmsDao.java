@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,36 +26,62 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarms.db.impl.dto;
+package org.opennms.horizon.alarms.db.api;
 
 import java.io.Serializable;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlRootElement;
-import org.opennms.horizon.db.model.OnmsMonitoringSystem;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaQuery;
 
 /**
- * Represents an OpenNMS Distributed Poller.
+ * OnmsDao interface.
+ * @param <T> The type of the Entity this DAO is intended to manage.
+ * @param <K> The key of the Entity.
  */
-@Entity
-@DiscriminatorValue(org.opennms.horizon.db.model.OnmsMonitoringSystem.TYPE_OPENNMS)
-@XmlRootElement(name="distPoller")
-public class DistPollerDTO extends OnmsMonitoringSystem implements Serializable {
+public interface OnmsDao<T, K extends Serializable> {
 
-    private static final long serialVersionUID = -1094353783612066524L;
+    EntityManager getEntityManager();
 
-    /**
-     * default constructor
-     */
-    public DistPollerDTO() {}
+    void delete(T entity);
 
-    /**
-     * minimal constructor
-     *
-     * @param id a {@link String} object.
-     */
-    public DistPollerDTO(String id) {
-        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
-        super(id, "Default");
-    }
+    void delete(K key);
+
+    List<T> findAll();
+
+    T get(K id);
+
+    K save(T entity);
+
+    void saveOrUpdate(T entity);
+
+    void update(T entity);
+
+    void flush();
+
+    List<T> findMatching(CriteriaQuery<?> query);
+
+    long countAll();
+
+//    /**
+//     * This is used to lock the table in order to implement upsert type operations
+//     */
+//    void lock();
+//
+//    void initialize(Object obj);
+//
+//
+//
+//    void clear();
+//
+//
+//
+//
+//
+//    T load(K id);
+//
+//
+//    void saveOrUpdate(T entity);
+//
+//    void update(T entity);
+
 }

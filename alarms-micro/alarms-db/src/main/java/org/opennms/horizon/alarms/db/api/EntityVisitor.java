@@ -31,17 +31,12 @@ package org.opennms.horizon.alarms.db.api;
 import org.opennms.horizon.alarms.db.impl.dto.EntityDTO;
 import org.opennms.horizon.alarms.db.impl.dto.IpInterfaceDTO;
 import org.opennms.horizon.alarms.db.impl.dto.MonitoredServiceDTO;
-import org.opennms.horizon.alarms.db.impl.dto.NodeDTO;
 
 /**
  * <p>EntityVisitor interface.</p>
  */
 public interface EntityVisitor {
-	
-	public void visitNode(NodeDTO node);
-
-	public void visitNodeComplete(NodeDTO node);
-
+    
 	public void visitSnmpInterface(EntityDTO snmpIface);
 
 	public void visitSnmpInterfaceComplete(EntityDTO snmpIface);
