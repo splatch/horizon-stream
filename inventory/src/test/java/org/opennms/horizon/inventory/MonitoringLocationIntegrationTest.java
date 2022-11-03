@@ -74,7 +74,7 @@ class MonitoringLocationIntegrationTest {
         postMonitoringLocations(secondLocation);
 
         ResponseEntity<List> response = this.testRestTemplate
-            .getForEntity("http://localhost:" + port + "/inventory/monitoring_location", List.class);
+            .getForEntity("http://localhost:" + port + "/inventory/locations", List.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -103,7 +103,7 @@ class MonitoringLocationIntegrationTest {
         HttpEntity<MonitoringLocationDTO> request = new HttpEntity<>(ml, headers);
 
         ResponseEntity<MonitoringLocationDTO> response = this.testRestTemplate
-            .postForEntity("http://localhost:" + port + "/inventory/monitoring_location", request, MonitoringLocationDTO.class);
+            .postForEntity("http://localhost:" + port + "/inventory/locations", request, MonitoringLocationDTO.class);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
@@ -130,7 +130,7 @@ class MonitoringLocationIntegrationTest {
         HttpEntity<MonitoringLocationDTO> request = new HttpEntity<>(ml, headers);
 
         ResponseEntity<MonitoringLocationDTO> response = this.testRestTemplate
-            .postForEntity("http://localhost:" + port + "/inventory/monitoring_location", request, MonitoringLocationDTO.class);
+            .postForEntity("http://localhost:" + port + "/inventory/locations", request, MonitoringLocationDTO.class);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
@@ -145,12 +145,12 @@ class MonitoringLocationIntegrationTest {
 
         // Update
         ResponseEntity<MonitoringLocationDTO> putResponse = this.testRestTemplate
-            .exchange("http://localhost:" + port + "/inventory/monitoring_location", HttpMethod.PUT, request, MonitoringLocationDTO.class);
+            .exchange("http://localhost:" + port + "/inventory/locations", HttpMethod.PUT, request, MonitoringLocationDTO.class);
         assertEquals(HttpStatus.OK, putResponse.getStatusCode());
 
         // Check there is one database entry
         ResponseEntity<List> response = this.testRestTemplate
-            .getForEntity("http://localhost:" + port + "/inventory/monitoring_location", List.class);
+            .getForEntity("http://localhost:" + port + "/inventory/locations", List.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         List body = response.getBody();
@@ -164,7 +164,7 @@ class MonitoringLocationIntegrationTest {
         MonitoringLocationDTO ml = postMonitoringLocations(location);
 
         ResponseEntity<MonitoringLocationDTO> response = this.testRestTemplate
-            .getForEntity("http://localhost:" + port + "/inventory/monitoring_location/" + ml.getId(), MonitoringLocationDTO.class);
+            .getForEntity("http://localhost:" + port + "/inventory/locations/" + ml.getId(), MonitoringLocationDTO.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -176,7 +176,7 @@ class MonitoringLocationIntegrationTest {
     @Order(6)
     void testGetNotFound() throws Exception {
         ResponseEntity<MonitoringLocationDTO> response = this.testRestTemplate
-            .getForEntity("http://localhost:" + port + "/inventory/monitoring_location/1", MonitoringLocationDTO.class);
+            .getForEntity("http://localhost:" + port + "/inventory/locations/1", MonitoringLocationDTO.class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -195,7 +195,7 @@ class MonitoringLocationIntegrationTest {
         HttpEntity<MonitoringLocationDTO> request = new HttpEntity<>(bad, headers);
 
         ResponseEntity<MonitoringLocationDTO> response = this.testRestTemplate
-            .exchange("http://localhost:" + port + "/inventory/monitoring_location", HttpMethod.PUT, request, MonitoringLocationDTO.class);
+            .exchange("http://localhost:" + port + "/inventory/locations", HttpMethod.PUT, request, MonitoringLocationDTO.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
@@ -213,7 +213,7 @@ class MonitoringLocationIntegrationTest {
         HttpEntity<MonitoringLocationDTO> request = new HttpEntity<>(bad, headers);
 
         ResponseEntity<MonitoringLocationDTO> response = this.testRestTemplate
-            .postForEntity("http://localhost:" + port + "/inventory/monitoring_location", request, MonitoringLocationDTO.class);
+            .postForEntity("http://localhost:" + port + "/inventory/locations", request, MonitoringLocationDTO.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
