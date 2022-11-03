@@ -88,6 +88,7 @@
         <snmp4j.version>2.5.5</snmp4j.version>
         <snmp4j.agent.version>2.5.3</snmp4j.agent.version>
         <spring.version>5.3.23</spring.version>
+        <servicemix.spring.version>5.3.14_1</servicemix.spring.version>
         <spring-boot.version>2.7.4</spring-boot.version>
         <spring-security.version>5.7.3</spring-security.version>
         <spring-kafka.version>2.8.6</spring-kafka.version>
@@ -306,22 +307,22 @@
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
-                <version>${spring.version}</version>
+                <version>${servicemix.spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.spring-context</artifactId>
-                <version>${spring.version}</version>
+                <version>${servicemix.spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.spring-context-support</artifactId>
-                <version>${spring.version}</version>
+                <version>${servicemix.spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
-                <version>${spring.version}</version>
+                <version>${servicemix.spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>

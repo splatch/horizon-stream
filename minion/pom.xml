@@ -31,7 +31,7 @@
         <module>assembly</module>
 
         <module>testtools</module>
-        <module>docker-it</module>
+<!--        <module>docker-it</module>-->
     </modules>
 
     <properties>
