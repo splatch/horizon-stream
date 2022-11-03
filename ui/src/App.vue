@@ -30,6 +30,7 @@ const router = useRouter()
 if (route.query.theme) router.replace(route.path)
 
 const store = useLayoutStore()
+const mainContentWidth = computed(() => store.widgetBarOpen ? 'calc(100% - 500px)' : '100%')
 </script>
 
 <style lang="scss" scoped>
@@ -37,7 +38,7 @@ const store = useLayoutStore()
   display: flex;
 }
 .main-content {
-  width: 100%;
+  width: v-bind(mainContentWidth);
 }
 :deep(.feather-app-rail) {
   border-right: 0 !important;
