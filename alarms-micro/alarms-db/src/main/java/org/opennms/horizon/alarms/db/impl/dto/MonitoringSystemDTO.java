@@ -90,16 +90,16 @@ public class MonitoringSystemDTO implements Serializable {
     public static final String TYPE_MINION = "Minion";
 
     @Id
-    @Column(name="id", nullable=false)
+    @Column(nullable=false)
     private String id;
 
-    @Column(name="label")
+    @Column
     private String label;
 
-    @Column(name="location", nullable=false)
+    @Column(nullable=false)
     private String location;
 
-    @Column(name="type", nullable=false, insertable=false, updatable=false)
+    @Column(nullable=false, insertable=false, updatable=false)
     private String type;
 
     @Column(name="last_updated")

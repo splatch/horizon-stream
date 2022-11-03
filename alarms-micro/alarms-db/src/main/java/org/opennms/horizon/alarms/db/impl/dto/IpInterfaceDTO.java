@@ -79,26 +79,29 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
     private Integer id;
 
     @Column(name="ipAddr")
+    //TODO:MMF fix this
     @Type(type="InetAddressUserType")
     private InetAddress ipAddress;
 
     @Column(name = "netmask")
+    //TODO:MMF fix this
     @Type(type="InetAddressUserType")
     private InetAddress netMask;
 
-    @Column(name="ipHostName", length=256)
+    @Column(length=256)
     private String ipHostName;
 
-    @Column(name="isManaged", length=1)
+    @Column(length=1)
     private String isManaged;
 
     @Embedded
-    @Column(name="isSnmpPrimary", length=1)
+    @Column(length=1)
+    //TODO:MMF fix this
     @Type(type="CharacterUserType")
     private PrimaryType isSnmpPrimary = PrimaryType.NOT_ELIGIBLE;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ipLastCapsdPoll")
+    @Column
     private Date ipLastCapsdPoll;
 
     @OneToMany(mappedBy="ipInterface",orphanRemoval=true)
@@ -106,7 +109,7 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
     private Set<MonitoredServiceDTO> monitoredServices = new LinkedHashSet<>();
 
     @ManyToOne(optional=true, fetch=FetchType.LAZY)
-    @JoinColumn(name="snmpInterfaceId")
+    @JoinColumn
     private SnmpInterfaceDTO snmpInterface;
 
     @ElementCollection(fetch = FetchType.LAZY)
@@ -163,19 +166,15 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
         return InetAddressUtils.toIpAddrString(ipAddress);
     }
 
-    //@Column(name="ifIndex")
-    /**
-     * <p>getIfIndex</p>
-     *
-     * @return a {@link Integer} object.
-     */
+
+
     @Transient
     public Integer getIfIndex() {
         if (snmpInterface == null) {
             return null;
         }
         return snmpInterface.getIfIndex();
-        //return m_ifIndex;
+
     }
 
     /**

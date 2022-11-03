@@ -28,7 +28,6 @@
 
 package org.opennms.horizon.alarms.db.impl.dto;
 
-import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -50,7 +49,7 @@ import lombok.Data;
  */
 @Table(name="usersNotified")
 @Data
-public class OnmsUserNotification implements Serializable {
+public class UserNotificationDTO implements Serializable {
 
     private static final long serialVersionUID = -1750912427062821742L;
 
@@ -58,25 +57,25 @@ public class OnmsUserNotification implements Serializable {
     @Column(nullable=false)
     @SequenceGenerator(name="userNotificationSequence", sequenceName="userNotifNxtId", allocationSize = 1)
     @GeneratedValue(generator="userNotificationSequence")
-    private Integer m_id;
+    private Integer id;
 
-    @Column(name="userId", length=256)
-    private String m_userId;
+    @Column(length=256)
+    private String userId;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="notifyTime")
-    private Date m_notifyTime;
+    @Column
+    private Date notifyTime;
 
-    @Column(name="media", length=32)
-    private String m_media;
+    @Column(length=32)
+    private String media;
 
-    @Column(name="contactInfo", length=64)
-    private String m_contactInfo;
+    @Column(length=64)
+    private String contactInfo;
 
-    @Column(name="autoNotify", length=1)
-    private String m_autoNotify;
+    @Column(length=1)
+    private String autoNotify;
 
     @ManyToOne(fetch=FetchType.LAZY, optional=false)
     @JoinColumn(name="notifyId")
-    private NotificationDTO m_notification;
+    private NotificationDTO notification;
 }

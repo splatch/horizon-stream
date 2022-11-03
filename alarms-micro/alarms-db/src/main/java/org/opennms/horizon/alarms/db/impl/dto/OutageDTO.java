@@ -45,6 +45,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import lombok.Data;
 import org.hibernate.annotations.Type;
 
 /**
@@ -54,6 +55,7 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name="outages")
+@Data
 public class OutageDTO implements Serializable {
 
     /**
@@ -61,71 +63,73 @@ public class OutageDTO implements Serializable {
      */
     private static final long serialVersionUID = 3846398168228820151L;
 
-    /** identifier field */
-    private Integer m_id;
+    @Id
+    @Column(name="outageId", nullable=false)
+    @SequenceGenerator(name="outageSequence", sequenceName="outageNxtId", allocationSize = 1)
+    @GeneratedValue(generator="outageSequence")
+    private Integer id;
 
-    /** persistent field */
-    private Date m_ifLostService;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ifLostService", nullable=false)
+    private Date ifLostService;
 
-    /** nullable persistent field */
-    private Date m_ifRegainedService;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ifRegainedService")
+    private Date ifRegainedService;
 
-    /** persistent field */
-    @OneToOne
-    @JoinColumn(name = "m_service_regained_event_event_id")
-    private EventDTO m_serviceRegainedEvent;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="svcRegainedEventId")
+    private EventDTO serviceRegainedEvent;
 
-    /** persistent field */
-    @OneToOne
-    @JoinColumn(name = "m_service_lost_event_event_id")
-    private EventDTO m_serviceLostEvent;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="svcLostEventId")
+    private EventDTO serviceLostEvent;
 
-    /** persistent field */
-    @OneToOne
-    @JoinColumn(name = "m_monitored_service_id")
-    private MonitoredServiceDTO m_monitoredService;
-    
-    /** persistent field */
-    private Date m_suppressTime;
-    
-    /** persistent field */
-    private String m_suppressedBy;
+    @ManyToOne
+    @JoinColumn(name="ifserviceId")
+    private MonitoredServiceDTO monitoredService;
 
-    /** persistent field */
-    @OneToOne
-    @JoinColumn(name = "m_perspective_id")
-    private MonitoringLocationDTO m_perspective;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="suppressTime")
+    private Date suppressTime;
+
+    @Column(name="suppressedBy")
+    private String suppressedBy;
+
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
+    @JoinColumn(name="perspective")
+    private MonitoringLocationDTO perspective;
 
     public MonitoringLocationDTO getM_perspective() {
-        return m_perspective;
+        return perspective;
     }
 
-    public void setM_perspective(MonitoringLocationDTO m_perspective) {
-        this.m_perspective = m_perspective;
+    public void setM_perspective(MonitoringLocationDTO perspective) {
+        this.perspective = perspective;
     }
 
     public EventDTO getM_serviceRegainedEvent() {
-        return m_serviceRegainedEvent;
+        return serviceRegainedEvent;
     }
 
-    public void setM_serviceRegainedEvent(EventDTO m_serviceRegainedEvent) {
-        this.m_serviceRegainedEvent = m_serviceRegainedEvent;
+    public void setM_serviceRegainedEvent(EventDTO serviceRegainedEvent) {
+        this.serviceRegainedEvent = serviceRegainedEvent;
     }
 
     public EventDTO getM_serviceLostEvent() {
-        return m_serviceLostEvent;
+        return serviceLostEvent;
     }
 
-    public void setM_serviceLostEvent(EventDTO m_serviceLostEvent) {
-        this.m_serviceLostEvent = m_serviceLostEvent;
+    public void setM_serviceLostEvent(EventDTO serviceLostEvent) {
+        this.serviceLostEvent = serviceLostEvent;
     }
 
     public MonitoredServiceDTO getM_monitoredService() {
-        return m_monitoredService;
+        return monitoredService;
     }
 
-    public void setM_monitoredService(MonitoredServiceDTO m_monitoredService) {
-        this.m_monitoredService = m_monitoredService;
+    public void setM_monitoredService(MonitoredServiceDTO monitoredService) {
+        this.monitoredService = monitoredService;
     }
 
     /**
@@ -133,20 +137,16 @@ public class OutageDTO implements Serializable {
      *
      * @param ifLostService a {@link Date} object.
      * @param ifRegainedService a {@link Date} object.
-     * @param eventBySvcRegainedEvent a {@link EventDTO} object.
-     * @param eventBySvcLostEvent a {@link EventDTO} object.
      * @param monitoredService a {@link MonitoredServiceDTO} object.
      * @param suppressTime a {@link Date} object.
      * @param suppressedBy a {@link String} object.
      */
-    public OutageDTO(Date ifLostService, Date ifRegainedService, EventDTO eventBySvcRegainedEvent, EventDTO eventBySvcLostEvent, MonitoredServiceDTO monitoredService, Date suppressTime, String suppressedBy) {
-        m_ifLostService = ifLostService;
-        m_ifRegainedService = ifRegainedService;
-//        m_serviceRegainedEvent = eventBySvcRegainedEvent;
-//        m_serviceLostEvent = eventBySvcLostEvent;
-        m_monitoredService = monitoredService;
-        m_suppressTime = suppressTime;
-        m_suppressedBy = suppressedBy;
+    public OutageDTO(Date ifLostService, Date ifRegainedService, MonitoredServiceDTO monitoredService, Date suppressTime, String suppressedBy) {
+        this.ifLostService = ifLostService;
+        this.ifRegainedService = ifRegainedService;
+        this.monitoredService = monitoredService;
+        this.suppressTime = suppressTime;
+        this.suppressedBy = suppressedBy;
         
     }
 
@@ -159,195 +159,15 @@ public class OutageDTO implements Serializable {
     /**
      */
     public OutageDTO(Date ifLostService, MonitoredServiceDTO monitoredService) {
-        m_ifLostService = ifLostService;
-        m_monitoredService = monitoredService;
+        this.ifLostService = ifLostService;
+        this.monitoredService = monitoredService;
     }
 
     public OutageDTO(Date ifLostService, Date ifRegainedService, MonitoredServiceDTO monitoredService) {
-        m_ifLostService = ifLostService;
-        m_ifRegainedService = ifRegainedService;
-        m_monitoredService = monitoredService;
+        this.ifLostService = ifLostService;
+        this.ifRegainedService = ifRegainedService;
+        this.monitoredService = monitoredService;
     }
-
-    /**
-     * minimal constructor
-     *
-     * @param ifLostService a {@link Date} object.
-     * @param eventBySvcLostEvent a {@link EventDTO} object.
-     * @param monitoredService a {@link MonitoredServiceDTO} object.
-     */
-    public OutageDTO(Date ifLostService, EventDTO eventBySvcLostEvent, MonitoredServiceDTO monitoredService) {
-        m_ifLostService = ifLostService;
-//        m_serviceLostEvent = eventBySvcLostEvent;
-        m_monitoredService = monitoredService;
-    }
-
-    /**
-     * <p>getId</p>
-     *
-     * @return a {@link Integer} object.
-     */
-    @Id
-    @Column(name="outageId", nullable=false)
-    @SequenceGenerator(name="outageSequence", sequenceName="outageNxtId", allocationSize = 1)
-    @GeneratedValue(generator="outageSequence")
-    public Integer getId() {
-        return m_id;
-    }
-
-    /**
-     * <p>setId</p>
-     *
-     * @param outageId a {@link Integer} object.
-     */
-    public void setId(Integer outageId) {
-        m_id = outageId;
-    }
-
-    // @XmlTransient
-    /**
-     * <p>getMonitoredService</p>
-     *
-     * @return a {@link MonitoredServiceDTO} object.
-     */
-    @ManyToOne
-    @JoinColumn(name="ifserviceId")
-    public MonitoredServiceDTO getMonitoredService() {
-        return m_monitoredService;
-    }
-
-    /**
-     * <p>setMonitoredService</p>
-     *
-     * @param monitoredService a {@link MonitoredServiceDTO} object.
-     */
-    public void setMonitoredService(MonitoredServiceDTO monitoredService) {
-        m_monitoredService = monitoredService;
-    }
-
-    
-    /**
-     * <p>getIfLostService</p>
-     *
-     * @return a {@link Date} object.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ifLostService", nullable=false)
-    public Date getIfLostService() {
-        return m_ifLostService;
-    }
-
-    /**
-     * <p>setIfLostService</p>
-     *
-     * @param ifLostService a {@link Date} object.
-     */
-    public void setIfLostService(Date ifLostService) {
-        m_ifLostService = ifLostService;
-    }
-
-    /**
-     * <p>getServiceLostEvent</p>
-     *
-     * @return a {@link EventDTO} object.
-     */
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="svcLostEventId")
-    public EventDTO getServiceLostEvent() {
-        return m_serviceLostEvent;
-    }
-
-    /**
-     * <p>setServiceLostEvent</p>
-     *
-     * @param svcLostEvent a {@link EventDTO} object.
-     */
-    public void setServiceLostEvent(EventDTO svcLostEvent) {
-        m_serviceLostEvent = svcLostEvent;
-    }
-
-
-    /**
-     * <p>getIfRegainedService</p>
-     *
-     * @return a {@link Date} object.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="ifRegainedService")
-    public Date getIfRegainedService() {
-        return m_ifRegainedService;
-    }
-    
-    /**
-     * <p>setIfRegainedService</p>
-     *
-     * @param ifRegainedService a {@link Date} object.
-     */
-    public void setIfRegainedService(Date ifRegainedService) {
-        m_ifRegainedService = ifRegainedService;
-    }
-
-    /**
-     * <p>getServiceRegainedEvent</p>
-     *
-     * @return a {@link EventDTO} object.
-     */
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="svcRegainedEventId")
-    public EventDTO getServiceRegainedEvent() {
-        return m_serviceRegainedEvent;
-    }
-
-    /**
-     * <p>setServiceRegainedEvent</p>
-     *
-     * @param svcRegainedEvent a {@link EventDTO} object.
-     */
-    public void setServiceRegainedEvent(EventDTO svcRegainedEvent) {
-        m_serviceRegainedEvent = svcRegainedEvent;
-    }
-
-    /**
-     * <p>getSuppressTime</p>
-     *
-     * @return a {@link Date} object.
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="suppressTime")
-    public Date getSuppressTime(){
-    	return m_suppressTime;
-    }
-    
-    /**
-     * <p>setSuppressTime</p>
-     *
-     * @param timeToSuppress a {@link Date} object.
-     */
-    public void setSuppressTime(Date timeToSuppress){
-    	m_suppressTime = timeToSuppress;
-    }
-    
-    
-    /**
-     * <p>getSuppressedBy</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Column(name="suppressedBy")
-    public String getSuppressedBy(){
-    	return m_suppressedBy;
-    }
-    
-    /**
-     * <p>setSuppressedBy</p>
-     *
-     * @param suppressorMan a {@link String} object.
-     */
-    public void setSuppressedBy(String suppressorMan){
-    	m_suppressedBy = suppressorMan;
-    }
-
-
 
     /**
      * <p>getNodeId</p>
@@ -365,6 +185,7 @@ public class OutageDTO implements Serializable {
      * @return a {@link String} object.
      */
     @Transient
+    //TODO:MMF fix this
     @Type(type="org.opennms.horizon.db.model.InetAddressUserType")
     public InetAddress getIpAddress() {
         return getMonitoredService().getIpAddress();
@@ -415,40 +236,4 @@ public class OutageDTO implements Serializable {
         }
         service.setServiceType(type);
     }
-
-    /**
-     * Monitoring perspective that this outage is associated with.
-     */
-    @ManyToOne(optional=false, fetch=FetchType.LAZY)
-    @JoinColumn(name="perspective")
-    public MonitoringLocationDTO getPerspective() {
-        return m_perspective;
-    }
-
-    /**
-     * Set the monitoring perspective for this outage.
-     */
-    public void setPerspective(MonitoringLocationDTO perspective) {
-        m_perspective = perspective;
-    }
-
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("outageId", m_id)
-            .add("ifLostService", m_ifLostService)
-            .add("ifRegainedService", m_ifRegainedService)
-            .add("ifRegainedServiceEvent", m_serviceRegainedEvent)
-            .add("service", m_monitoredService)
-            .add("suppressedBy", m_suppressedBy)
-            .add("suppressTime", m_suppressTime)
-            .add("perspective", m_perspective)
-            .toString();
-    }
-
 }

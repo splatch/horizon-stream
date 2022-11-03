@@ -90,6 +90,7 @@ public class EventDTO extends EntityDTO implements Serializable {
 
 	
 	@Column
+    //TODO:MMF fix this
 	@Type(type="org.opennms.horizon.db.model.InetAddressUserType")
 	private InetAddress ipAddr;
 

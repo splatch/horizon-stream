@@ -38,7 +38,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.opennms.horizon.events.api.EventDatabaseConstants;
 //import org.opennms.horizon.events.api.EventDatabaseConstants;

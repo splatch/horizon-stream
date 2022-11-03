@@ -31,7 +31,6 @@ package org.opennms.horizon.alarms.db.impl.dto;
 import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,7 +49,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 
@@ -69,27 +67,28 @@ public class NotificationDTO implements Serializable {
     @GeneratedValue(generator="notifySequence")
     private Integer notifyId;
 
-    @Column(name="textMsg", length=4000, nullable=false)
+    @Column(length=4000, nullable=false)
     private String textMsg;
 
-    @Column(name="subject", length=256)
+    @Column(length=256)
     private String subject;
 
-    @Column(name="numericMsg", length=256)
+    @Column(length=256)
     private String numericMsg;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="pageTime")
+    @Column
     private Date pageTime;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="respondTime")
+    @Column
     private Date respondTime;
 
-    @Column(name="answeredBy", length=256)
+    @Column(length=256)
     private String answeredBy;
 
     @Column(name="interfaceId")
+    //TODO:MMF fix this
     @Type(type="org.opennms.horizon.db.model.InetAddressUserType")
     private InetAddress ipAddress;
 
@@ -97,7 +96,7 @@ public class NotificationDTO implements Serializable {
     @JoinColumn(name="serviceId")
     private ServiceTypeDTO serviceType;
 
-    @Column(name="queueId", length=256)
+    @Column(length=256)
     private String queueId;
 
     @ManyToOne(fetch=FetchType.LAZY)
@@ -106,16 +105,16 @@ public class NotificationDTO implements Serializable {
 
     /** persistent field */
     @OneToMany(mappedBy="notification", fetch=FetchType.LAZY)
-    private Set<OnmsUserNotification> usersNotified = new HashSet<>();
+    private Set<UserNotificationDTO> usersNotified = new HashSet<>();
     
     /**
      * persistent field representing the name of the configured notification from
      * notifications.xml
      */
-    @Column(name="notifConfigName", length=63 )
+    @Column(length=63 )
     private String notifConfigName;
     
-    public NotificationDTO(Integer notifyId, String textMsg, EventDTO event,Set<OnmsUserNotification> usersNotified) {
+    public NotificationDTO(Integer notifyId, String textMsg, EventDTO event,Set<UserNotificationDTO> usersNotified) {
         notifyId = notifyId;
         textMsg = textMsg;
         event = event;

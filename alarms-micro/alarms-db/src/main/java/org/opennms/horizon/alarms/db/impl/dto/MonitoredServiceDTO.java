@@ -79,23 +79,23 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
     private Integer id;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="lastGood")
+    @Column
     private Date lastGood;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name="lastFail")
+    @Column
     private Date lastFail;
 
-    @Column(name="qualifier", length=16)
+    @Column(length=16)
     private String qualifier;
 
-    @Column(name="status", length=1)
+    @Column(length=1)
     private String status;
 
-    @Column(name="source", length=1)
+    @Column(length=1)
     private String source;
 
-    @Column(name="notify", length=1)
+    @Column(length=1)
     private String notify;
 
     @ManyToOne(optional=false)
