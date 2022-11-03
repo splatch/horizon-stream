@@ -27,7 +27,8 @@
  *******************************************************************************/
 syntax = "proto3";
 
-import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
 package opennms.inventory;
 option java_multiple_files = true;
@@ -38,3 +39,13 @@ message MonitoringLocationDTO {
   string tenant_id = 2;
   string location = 3;
 }
+
+service LocationService {
+  rpc createLocation(MonitoringLocationDTO) returns (MonitoringLocationDTO) {};
+  rpc UpdateLocation(MonitoringLocationDTO) returns (MonitoringLocationDTO) {};
+  rpc listLocations(google.protobuf.Empty) returns (stream MonitoringLocationDTO) {};
+  rpc getLocationById(google.protobuf.Int64Value) returns (MonitoringLocationDTO) {};
+  rpc deleteLocation(google.protobuf.Int64Value) returns (google.protobuf.BoolValue) {};
+}
+
+
