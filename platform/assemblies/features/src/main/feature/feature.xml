@@ -179,6 +179,7 @@
         <feature>horizon-echo-client</feature>
 
         <bundle>mvn:org.opennms.horizon.core/monitor/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon/taskset-manager/${project.version}</bundle>
 
         <bundle dependency="true">mvn:org.opennms.horizon.shared/horizon-common-logging/${project.version}</bundle>
     </feature>
@@ -633,7 +634,12 @@
         <feature>horizon-grpc-contract</feature>
         <feature>snmp-snmp4j</feature>
         <feature>horizon-grpc</feature>
+        <feature>horizon-ignite</feature>
+        <feature>horizon-shared-lang</feature>
+        <feature>horizon-shared-task-set-service</feature>
+        <feature>horizon-shared-task-set-publisher</feature>
         <bundle>mvn:org.opennms.horizon.shared/ipc-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon/taskset-manager/${project.version}</bundle>
         <bundle dependency="true">mvn:org.opennms.horizon.shared/horizon-common-logging/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon/traps/${project.version}</bundle>
     </feature>

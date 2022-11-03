@@ -10,7 +10,7 @@
         >
           <FeatherIcon :icon="ChevronRight" />
         </FeatherButton>
-        <span class="title">Devices</span>
+        <span class="title">Devices ({{listDevicesWithBgColor.length}})</span>
       </div>
 
       <FeatherInput
@@ -35,8 +35,8 @@
     </div>
     <div class="data-table">
       <TransitionGroup name="data-table" tag="div">
-        <div class="card pointer" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" @click="gotoNode(device.id as number)" data-test="device-item">
-          <div class="name" data-test="col-device">
+        <div class="card" v-for="(device) in listDevicesWithBgColor" :key="(device.id as number)" data-test="device-item">
+          <div class="name pointer" @click="gotoNode(device.id as number)" data-test="col-device">
               <div class="name-cell">
                 <FeatherIcon :icon="Instances" class="icon"/>
                 <div class="text">
@@ -45,22 +45,30 @@
                 </div>
               </div>
           </div>
-          <div data-test="col-latency">
+          <div class="pointer" @click="openLatencyGraph(device.id as number)" data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
-            <div :data-metric="device.icmp_latency" class="value" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
+            <div :data-metric="device.icmp_latency" class="value bg-status" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
           </div>
-          <div data-test="col-uptime">
+          <div class="pointer" @click="openUptimeGraph(device.id as number)" data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
-            <div :data-metric="device.snmp_uptime" class="value" :class="device.uptimeBgColor">{{ getHumanReadableDuration(device.snmp_uptime) }}</div>
+            <div :data-metric="device.snmp_uptime" class="value bg-status" :class="device.uptimeBgColor">{{ getHumanReadableDuration(device.snmp_uptime) }}</div>
           </div>
           <div data-test="col-status">
             <pre class="title">Status</pre>
-            <div class="value" :class="device.statusBgColor">{{ device.status }}</div>
+            <div class="value bg-status" :class="device.statusBgColor">{{ device.status }}</div>
           </div>
         </div>
       </TransitionGroup>
     </div>
   </TableCard>
+  <PrimaryModal :visible="modal.isVisible" :title="modal.title" :hide-title="modal.hideTitle">
+    <template #content>
+      <LineGraph :graph="graphProps" />
+    </template>
+    <template #footer>
+      <FeatherButton primary @click="modal.isVisible = false">Close</FeatherButton>
+    </template>
+  </PrimaryModal>
 </template>
 
 <script setup lang="ts">
@@ -73,8 +81,10 @@ import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import { ExtendedDeviceDTOWithBGColors } from '@/types/device'
 import { ComputedRef } from 'vue'
-import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './appliances.helpers'
+import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './utils'
 import { WidgetProps } from '@/types'
+import { GraphProps } from '@/types/graphs'
+import { TimeRangeUnit } from '@/types/graphql'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
@@ -87,12 +97,48 @@ const listDevicesWithBgColor: ComputedRef<ExtendedDeviceDTOWithBGColors[]> = com
 const searchValue = ref('')
 
 const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
+
+const graphProps = ref({} as GraphProps)
+const modal = ref({
+  isVisible: false,
+  title: '',
+  hideTitle: true
+})
+const openLatencyGraph = (id: number) => {
+  modal.value = {
+    ...modal.value,
+    isVisible: true
+  }
+  graphProps.value = {
+    label: 'Device Latency',
+    metrics: ['response_time_msec'], // TODO: might be different once BE avail
+    monitor: 'ICMP',
+    // id, // not yet implemented in BE
+    timeRange: 10,
+    timeRangeUnit: TimeRangeUnit.Minute
+  }
+}
+const openUptimeGraph = (id: number) => {
+  modal.value = {
+    ...modal.value,
+    isVisible: true
+  }
+  graphProps.value = {
+    label: 'Device Uptime',
+    metrics: ['device_uptime_sec'], // TODO: might be different once BE avail
+    monitor: 'ICMP',
+    // id, // not yet implemented in BE
+    timeRange: 10,
+    timeRangeUnit: TimeRangeUnit.Minute
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-@import "@featherds/styles/themes/variables";
-@import "@featherds/styles/mixins/elevation";
-@import "@featherds/styles/mixins/typography";
+@use "@featherds/styles/themes/variables";
+@use "@featherds/styles/mixins/typography";
+@use "@/styles/_transitionDataTable";
+@use "@/styles/_statusBackground";
 
 .header {
   display: flex;
@@ -101,7 +147,7 @@ const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
   .title-container {
     display: flex;
     .title {
-      @include headline3;
+      @include typography.headline3;
       margin-left: 15px;
       margin-top: 2px;
     }
@@ -116,7 +162,7 @@ const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
   }
 }
 .card {
-  border: 1px solid var($shade-4);
+  border: 1px solid var(variables.$shade-4);
   display: flex;
   margin-bottom: 10px;
   border-radius: 5px;
@@ -132,9 +178,9 @@ const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
     font-size: 11px;
 
     &.name {
-      @include subtitle1;
+      @include typography.subtitle1;
       width: 40%;
-      color: var($primary);
+      color: var(variables.$primary);
 
       .name-cell {
         flex-direction: row;
@@ -144,7 +190,7 @@ const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
         align-items: center;
         .icon {
           font-size: 25px;
-          color: var($shade-2);
+          color: var(variables.$shade-2);
         }
 
         .text {
@@ -156,7 +202,7 @@ const gotoNode = (nodeId: number) => router.push(`/node/${nodeId}`)
           }
           .server {
             line-height: 10px;
-            color: var($secondary)
+            color: var(variables.$secondary)
           }
         }
       }

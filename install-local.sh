@@ -11,6 +11,8 @@ operator_run () {
     echo "not-ready"
     sleep 60
   done
+
+  kubectl config set-context --current --namespace=local-instance
 }
 
 # For local, we can setup localhost as the default on port 8080 or something.
@@ -23,8 +25,9 @@ if [[ -z "$2" || -z "$1" ]]; then
   exit 1
 else
   mkdir -p tmp
-  cat install-local-onms-instance.yaml| sed "s/onmshs/$2/g" > tmp/install-local-onms-instance.yaml
-  cat install-local-onms-instance-custom-images.yaml| sed "s/onmshs/$2/g" > tmp/install-local-onms-instance-custom-images.yaml
+  cat install-local-onms-instance.yaml | sed "s/onmshs/$2/g" > tmp/install-local-onms-instance.yaml
+  cat install-local-onms-instance-custom-images.yaml | sed "s/onmshs/$2/g" > tmp/install-local-onms-instance-custom-images.yaml
+  cat charts/opennms/values.yaml | sed "s/onmshs/$2/g" > tmp/values.yaml
 fi
 
 if [ $1 == "local" ]; then
@@ -71,7 +74,7 @@ elif [ "$1" == "custom-images" ]; then
   echo
   echo ________________Installing Operator________________
   echo
-  helm upgrade -i operator-local ../charts/opennms-operator -f scripts/local-operator-values.yaml --namespace opennms --create-namespace
+  helm upgrade -i operator-local ../charts/opennms-operator -f ../install-local-operator-values.yaml --namespace opennms --create-namespace
   if [ $? -ne 0 ]; then exit; fi
 
   echo
@@ -105,15 +108,13 @@ elif [ $1 == "existing-k8s-no-op" ]; then
   echo
   echo ____________Installing HS Instance______________
   echo
-  helm upgrade -i horizon-stream charts/opennms -f ./tmp/install-local-onms-instance.yaml --namespace hs-instance --create-namespace
+  helm upgrade -i horizon-stream charts/opennms -f ./tmp/values.yaml --namespace hs-instance --create-namespace
 
 else
   echo "$HELP"
 fi
 
 bash scripts/add-local-ssl-cert.sh
-
-kubectl config set-context --current --namespace=local-instance
 
 # This is the last pod to run, if ready, then give back the terminal session.
 JOB_FAIL=1

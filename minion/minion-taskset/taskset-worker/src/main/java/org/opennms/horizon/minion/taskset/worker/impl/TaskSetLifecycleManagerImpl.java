@@ -1,9 +1,12 @@
 package org.opennms.horizon.minion.taskset.worker.impl;
 
 import com.google.common.collect.Sets;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -18,6 +21,7 @@ import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.contract.TaskType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.DigestUtils;
 
 public class TaskSetLifecycleManagerImpl implements TaskSetLifecycleManager {
 
@@ -42,11 +46,15 @@ public class TaskSetLifecycleManagerImpl implements TaskSetLifecycleManager {
         // Take the snapshot of currently running services.
         Collection<ServiceDescriptor> serviceDescriptorList = ignite.services().serviceDescriptors();
 
-        // Deploy the services that run on every node in the cluster.
+        // Prepare singleton services that run on every node in the cluster.
         // WARNING: very large numbers of these node singletons will impact startup performance notably due to the
         //  slowness with starting Ignite services one at a time.  Unfortunately, the "node singleton" cannot be started
         //  via deployAllAsync().
-        List<String> singletonIds = deployNodeSingletonServices(taskSet);
+        // Below code calculates list of node singletons with their names without actual deployment. Launch of services
+        // is deferred and executed after termination of earlier services. While this will add delay in activation of these
+        // it ensures fewer conflicts with port allocation and similar. Because node singleton services are bound to listeners
+        // whose can be partially re-configured old and new configuration might still rely on same port number.
+        Map<String, TaskExecutorIgniteService> nodeSingletons = prepareNodeSingletonServices(taskSet);
 
         // Prepare the services that run on only 1 node across the cluster
         List<ServiceConfiguration> serviceConfigurationList = prepareOnePerClusterServiceConfigurations(taskSet);
@@ -58,12 +66,18 @@ public class TaskSetLifecycleManagerImpl implements TaskSetLifecycleManager {
 
         // Find the set of services that are no longer needed
         Collection<String> canceledServices =
-            calculateServicesToUndeploy(serviceConfigurationList, singletonIds, serviceDescriptorList);
-        ignite.services().cancelAllAsync(canceledServices);
+            calculateServicesToUndeploy(serviceConfigurationList, nodeSingletons.keySet(), serviceDescriptorList);
+        ignite.services().cancelAllAsync(canceledServices).listen(in -> {
+          // deploy node singletons only if earlier services are terminated
+          log.info("Deploying {} node singletons", nodeSingletons.size());
+          for (Entry<String, TaskExecutorIgniteService> entry : nodeSingletons.entrySet()) {
+            ignite.services().deployNodeSingletonAsync(entry.getKey(), entry.getValue());
+          }
+        });
 
         // Log the update summary
         log.info("Completed task set update: deploy-count={}; cancel-count={}",
-            serviceConfigurationList.size() + singletonIds.size(),
+            serviceConfigurationList.size() + nodeSingletons.size(),
             canceledServices.size());
         return canceledServices.size();
     }
@@ -82,28 +96,25 @@ public class TaskSetLifecycleManagerImpl implements TaskSetLifecycleManager {
      *
      * @param workflowDefinitions
      */
-    private List<String> deployNodeSingletonServices(TaskSet workflowDefinitions) {
-        List<String> deployedServices = new LinkedList<>();
+    private Map<String, TaskExecutorIgniteService> prepareNodeSingletonServices(TaskSet workflowDefinitions) {
+        Map<String, TaskExecutorIgniteService> preparedNodeSingletons = new LinkedHashMap<>();
 
         int count = 0;
         for (TaskDefinition task : workflowDefinitions.getTaskDefinitionList()) {
             if (task.getType().equals(TaskType.LISTENER)) {
                 count++;
-                String serviceName = deployOneNodeSingletonService(task);
-                deployedServices.add(serviceName);
+                Entry<String, TaskExecutorIgniteService> entry = prepareNodeSingletonService(task);
+                preparedNodeSingletons.put(entry.getKey(), entry.getValue());
             }
         }
 
-        return deployedServices;
+        return preparedNodeSingletons;
     }
 
-    private String deployOneNodeSingletonService(TaskDefinition taskDefinition) {
+    private Entry<String, TaskExecutorIgniteService> prepareNodeSingletonService(TaskDefinition taskDefinition) {
         String serviceName = formulateServiceNameForTaskSet(taskDefinition);
         TaskExecutorIgniteService workflowExecutorIgniteService = new TaskExecutorIgniteService(taskDefinition);
-
-        ignite.services().deployNodeSingletonAsync(serviceName, workflowExecutorIgniteService);
-
-        return serviceName;
+        return new SimpleEntry<>(serviceName, workflowExecutorIgniteService);
     }
 
     private List<ServiceConfiguration> prepareOnePerClusterServiceConfigurations(TaskSet taskSet) {
@@ -135,7 +146,8 @@ public class TaskSetLifecycleManagerImpl implements TaskSetLifecycleManager {
     }
 
     private String formulateServiceNameForTaskSet(TaskDefinition taskDefinition) {
-        return SERVICE_NAME_PREFIX + taskDefinition.getId();
+        String checksum = DigestUtils.md5DigestAsHex(taskDefinition.getConfiguration().toByteArray());
+        return SERVICE_NAME_PREFIX + taskDefinition.getId() + ":" + checksum;
     }
 
     private ServiceConfiguration prepareServiceConfiguration(TaskDefinition taskDefinition, Service service) {
@@ -153,12 +165,12 @@ public class TaskSetLifecycleManagerImpl implements TaskSetLifecycleManager {
 
     private Collection<String>
     calculateServicesToUndeploy(
-        List<ServiceConfiguration> deployed,
-        List<String> deployedSingletonIds,
+        Collection<ServiceConfiguration> deployed,
+        Collection<String> plannedSingletonIds,
         Collection<ServiceDescriptor> serviceDescriptorList) {
 
         Set<String> deployedNames = deployed.stream().map(ServiceConfiguration::getName).collect(Collectors.toSet());
-        deployedNames.addAll(deployedSingletonIds);
+        deployedNames.addAll(plannedSingletonIds);
 
         Set<String> existingNames =
             serviceDescriptorList.stream().

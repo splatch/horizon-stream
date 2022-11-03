@@ -1,6 +1,6 @@
 {
   "snmpTrapAddress":"*",
-  "snmpTrapPort":10162,
+  "snmpTrapPort":1162,
   "newSuspectOnTrap":false,
   "snmpV3Users":[],
   "includeRawMessage":false,

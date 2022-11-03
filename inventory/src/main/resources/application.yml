@@ -8,5 +8,9 @@ spring:
     username: inventory
     password: passw0rd
 
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
   liquibase:
     change-log: db/changelog/changelog.xml

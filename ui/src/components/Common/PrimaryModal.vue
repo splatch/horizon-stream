@@ -1,5 +1,5 @@
 <template>
-  <FeatherDialog hideClose v-model="visible" :labels="labels" @update:modelValue="$emit('close')">
+  <FeatherDialog hideClose :hide-title="hideTitle" v-model="isVisible" :labels="labels" @update:modelValue="$emit('close')">
       <div class="content">
         <!-- Main content -->
         <slot name="content" />
@@ -15,21 +15,29 @@
 <script setup lang="ts">
 const props = defineProps({
   visible: {
-    required: true,
-    type: Boolean
+    type: Boolean,
+    required: true
   },
   title: {
-    required: true,
-    default: String
+    type: String,
+    required: true
+  },
+  hideTitle: {
+    type: Boolean,
+    default: false
   }
 })
+
+const isVisible = computed(() => props.visible)
 
 const labels = reactive({
   title: '',
   close: 'Close'
 })
 
-watchEffect(() => labels.title = props.title)
+watchEffect(() => {
+  labels.title = props.title
+})
 </script>
 
 <style scoped lang="scss">
