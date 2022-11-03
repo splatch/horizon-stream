@@ -48,6 +48,7 @@ declare module '@vue/runtime-core' {
     NetworkGraph: typeof import('./src/components/Topology/NetworkGraph.vue')['default']
     NoFocusMsg: typeof import('./src/components/Topology/NoFocusMsg.vue')['default']
     NotificationsCtrl: typeof import('./src/components/Appliances/NotificationsCtrl.vue')['default']
+    OptInOutCtrl: typeof import('./src/components/UsageStats/OptInOutCtrl.vue')['default']
     PrimaryModal: typeof import('./src/components/Common/PrimaryModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

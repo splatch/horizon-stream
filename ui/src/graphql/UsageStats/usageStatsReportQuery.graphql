@@ -1,0 +1,9 @@
+query UsageStatsReport {
+  usageStatsReport {
+    deviceTypeCounts
+    monitoredServices
+    nodes
+    systemId
+    version
+  }
+}
