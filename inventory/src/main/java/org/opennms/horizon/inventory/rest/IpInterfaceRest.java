@@ -1,8 +1,8 @@
 package org.opennms.horizon.inventory.rest;
 
 import lombok.RequiredArgsConstructor;
-import org.opennms.horizon.inventory.dto.MonitoredServiceTypeDTO;
-import org.opennms.horizon.inventory.service.MonitoredServiceTypeService;
+import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
+import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,27 +17,27 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/inventory/serviceTypes")
+@RequestMapping("/inventory/ipInterfaces")
 @RequiredArgsConstructor
-public class MonitoredServiceTypeRest {
-    private final MonitoredServiceTypeService monitoredServiceTypeService;
+public class IpInterfaceRest {
+    private final IpInterfaceService ipInterfaceService;
 
     @PostMapping
-    public ResponseEntity<MonitoredServiceTypeDTO> postMonitoredServiceType(@RequestBody MonitoredServiceTypeDTO dto) {
-        Optional<MonitoredServiceTypeDTO> ml = monitoredServiceTypeService.findMonitoredServiceType(dto.getId());
+    public ResponseEntity<IpInterfaceDTO> postIpInterface(@RequestBody IpInterfaceDTO dto) {
+        Optional<IpInterfaceDTO> ml = ipInterfaceService.findIpInterface(dto.getId());
         if (ml.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
-            MonitoredServiceTypeDTO saved = monitoredServiceTypeService.saveMonitoredServiceType(dto);
+            IpInterfaceDTO saved = ipInterfaceService.saveIpInterface(dto);
             return new ResponseEntity<>(saved, HttpStatus.CREATED);
         }
     }
 
     @PutMapping
-    public ResponseEntity<MonitoredServiceTypeDTO> putMonitoredServiceType(@RequestBody MonitoredServiceTypeDTO data) {
-        Optional<MonitoredServiceTypeDTO> ml = monitoredServiceTypeService.findMonitoredServiceType(data.getId());
+    public ResponseEntity<IpInterfaceDTO> putIpInterface(@RequestBody IpInterfaceDTO data) {
+        Optional<IpInterfaceDTO> ml = ipInterfaceService.findIpInterface(data.getId());
         if (ml.isPresent()) {
-            MonitoredServiceTypeDTO saved = monitoredServiceTypeService.saveMonitoredServiceType(data);
+            IpInterfaceDTO saved = ipInterfaceService.saveIpInterface(data);
             return new ResponseEntity<>(saved, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -45,14 +45,14 @@ public class MonitoredServiceTypeRest {
     }
 
     @GetMapping
-    public ResponseEntity<List<MonitoredServiceTypeDTO>> getMonitoredServiceType() {
-        List<MonitoredServiceTypeDTO> all = monitoredServiceTypeService.findAllMonitoredServiceTypes();
+    public ResponseEntity<List<IpInterfaceDTO>> getIpInterface() {
+        List<IpInterfaceDTO> all = ipInterfaceService.findAllIpInterfaces();
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<MonitoredServiceTypeDTO> getMonitoredServiceType(@PathVariable long id) {
-        Optional<MonitoredServiceTypeDTO> ml = monitoredServiceTypeService.findMonitoredServiceType(id);
+    public ResponseEntity<IpInterfaceDTO> getIpInterface(@PathVariable long id) {
+        Optional<IpInterfaceDTO> ml = ipInterfaceService.findIpInterface(id);
         if (ml.isPresent()) {
             return new ResponseEntity<>(ml.get(), HttpStatus.OK);
         } else {
