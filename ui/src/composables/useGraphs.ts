@@ -1,7 +1,7 @@
 import { useQuery } from 'villus'
 import { GetTimeSeriesMetricDocument } from '@/types/graphql'
 import { DataSets, MetricArgs, GraphProps } from '@/types/graphs'
-import { getMockData } from '@/types/mocks'
+// import { getMockData } from '@/types/mocks'
 
 export const useGraphs = () => {
   const variables = ref({} as MetricArgs)

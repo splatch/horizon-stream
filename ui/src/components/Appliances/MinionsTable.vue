@@ -30,7 +30,7 @@
             <td>{{ minion.id }}</td>
             <td>
               <div @click="openLatencyGraph(minion.id as string)" :data-metric="minion.icmp_latency" class="bg-status pointer" :class="minion.latencyBgColor" data-test="minion-item-latency">
-                {{ getHumanReadableDuration(minion.icmp_latency) }}
+                {{ getHumanReadableDuration(minion.icmp_latency, 'msecs') }}
               </div>
             </td>
             <td>

@@ -5,7 +5,7 @@ fragment DeviceUptimeParts on Query {
 }
 
 fragment DeviceLatencyParts on Query {
-  deviceLatency: metric(name: "icmp_round_trip_time_msec") {
+  deviceLatency: metric(name: "response_time_msec") {
     ...MetricParts
   }
 }

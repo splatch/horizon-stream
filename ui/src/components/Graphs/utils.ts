@@ -1,7 +1,13 @@
 import { fromUnixTime, format } from 'date-fns'
 
+/**
+ * 
+ * @param timestamp in milliseconds
+ * @param formatStr 
+ * @returns 
+ */
 export const formatTimestamp = (timestamp: number, formatStr: string) => {
-  const date = fromUnixTime(timestamp / 1000) // TODO: /1000 is needed?
+  const date = fromUnixTime(timestamp)
 
   switch (formatStr) {
     case 'mmss':

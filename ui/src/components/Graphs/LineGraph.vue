@@ -73,20 +73,19 @@ const xAxisLabels = computed(() => {
   const graphsDataSetsValues = graphs.dataSets.value[0].values as any
   
   const totalLabels = graphsDataSetsValues.map((val: any) => {
-    return formatTimestamp(val[0] * 1000, 'minutes') // TODO: '* 1000' may not be needed! if not then '/ 1000' must be removed from formatTimestamp method
+    return formatTimestamp(val[0], 'minutes')
   })
 
   return totalLabels
 })
 
 const dataSets = computed(() => {
-  const graphsDataSets = graphs.dataSets.value[0] as any
-
-  return [{
-    label: graphsDataSets.metric.__name__,
-    data: graphsDataSets.values.map((val: any) => val[1]),
-    backgroundColor: 'green' // TODO: use featherds var
-  }]
+  const bgColor = ['green', 'blue'] // TODO: better solution to set bg color in regards to FeatherDS theme switching
+  return graphs.dataSets.value.map((data: any ,i) => ({
+    label: data.metric.__name__,
+    data: data.values.map((val: any) => val[1]),
+    backgroundColor: bgColor[i]
+  }))
 })
 
 const chartData = computed<ChartData<any>>(() => {

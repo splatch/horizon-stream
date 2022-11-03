@@ -21,10 +21,10 @@ export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[
     unknown: 'unknown' // undefined | null
   }
 
-  const setBgColor = (metric: any) => {
+  const setBgColor = (metric: number) => {
     let bgColor = bg.unknown
     
-    if(![undefined, null].includes(metric)) {
+    if(![undefined, null].includes(metric as any)) {
       bgColor = metric >= 0 ? bg.ok : bg.failed
     }
 
@@ -39,13 +39,19 @@ export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[
   }
 })
 
-export const getHumanReadableDuration = (timeMillisecs: any) => {
+/**
+ * 
+ * @param timestamp 
+ * @param timeUnit 
+ * @returns 
+ */
+export const getHumanReadableDuration = (timestamp: number, timeUnit = 'secs') => {
   let durationDisplay = '--' // undefined | null
 
-  if(![undefined, null].includes(timeMillisecs)) {
+  if(![undefined, null].includes(timestamp as any)) {
     const duration = intervalToDuration({
       start: new Date(),
-      end: add(new Date(), {seconds: timeMillisecs / 1000})
+      end: add(new Date(), {seconds: timeUnit === 'secs' ? timestamp : timestamp / 1000})
     })
       
     durationDisplay = formatDuration(duration, { format: ['days', 'hours', 'minutes']})
