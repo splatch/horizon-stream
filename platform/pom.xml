@@ -33,6 +33,7 @@
         <module>config</module>
         <module>traps</module>
         <module>jmx</module>
+        <module>taskset-manager</module>
     </modules>
 
     <properties>

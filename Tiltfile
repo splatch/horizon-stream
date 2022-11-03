@@ -196,6 +196,7 @@ docker_build(
 k8s_resource(
     'onms-keycloak',
     new_name='keycloak',
+    port_forwards=['26080:8080'],
 )
 
 ### Grafana ###
