@@ -1,0 +1,23 @@
+fragment ChartParts on TimeSeriesQueryResult {
+  data {
+    result {
+      metric
+      values
+    }
+  }
+}
+
+fragment ChartTimeSeriesMetric on Query {
+  metric: metric(
+    name: $name
+    labels: {
+      monitor: $monitor
+      # id: $id
+      # instance: $instance
+    }
+    timeRange: $timeRange
+    timeRangeUnit: $timeRangeUnit
+  ) {
+    ...ChartParts
+  }
+}

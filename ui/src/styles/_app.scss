@@ -1,0 +1,28 @@
+@use "@featherds/styles/themes/variables";
+@use "@featherds/styles/themes/open-mixins";
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  background: var(variables.$background);
+  margin: 0;
+}
+
+.open-light {
+  @include open-mixins.open-light;
+}
+
+.open-dark {
+  @include open-mixins.open-dark;
+}
+
+a {
+  text-decoration: none;
+  color: var(variables.$primary);
+}
+
+.pointer {
+  cursor: pointer;
+}

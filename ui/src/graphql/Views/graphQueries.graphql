@@ -1,3 +1,14 @@
 query GetMetric($metric: String!) {
   ...TimeSeriesMetric
 }
+
+query GetTimeSeriesMetric(
+  $name: String!, 
+  $monitor: String,
+  # $id: Int,
+  # $instance: String,
+  $timeRange: Int!,
+  $timeRangeUnit: TimeRangeUnit!
+) {
+  ...ChartTimeSeriesMetric
+}
