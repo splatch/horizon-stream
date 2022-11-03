@@ -1,7 +1,6 @@
 import { useQuery } from 'villus'
 import { GetTimeSeriesMetricDocument } from '@/types/graphql'
 import { DataSets, MetricArgs, GraphProps } from '@/types/graphs'
-// import { getMockData } from '@/types/mocks'
 
 export const useGraphs = () => {
   const variables = ref({} as MetricArgs)
@@ -25,7 +24,6 @@ export const useGraphs = () => {
   
       if(result) {
         const { metric, values } = result
-        // const { metric, values } = getMockData(metricStr) // TODO: to be removed once real data avail
     
         if(values?.length) {
           dataSetsObject[metric.__name__] = {
