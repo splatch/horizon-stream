@@ -1,13 +1,18 @@
 package org.opennms.horizon.inventory.model;
 
 import lombok.RequiredArgsConstructor;
+
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-// Lombok isn't playing nicely with MapStruct, so generate getters and setters with IDE for now.
+// TODO: Lombok isn't playing nicely with MapStruct, so generate getters and setters with IDE for now.
 //@Getter
 //@Setter
 @RequiredArgsConstructor

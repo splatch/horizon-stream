@@ -120,7 +120,7 @@ jib_project(
     'opennms/horizon-stream-inventory',
     'inventory',
     'opennms-inventory',
-    port_forwards=['29080:9090', '29050:5005'],
+    port_forwards=['29080:9090', '29050:5005', '29065:6565'],
 )
 
 ### Metrics Processor ###
