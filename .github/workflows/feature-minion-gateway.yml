@@ -1,11 +1,7 @@
 name: feature-minion-gateway
 
-on:  
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+on:
+  pull_request:
     paths:
       - 'minion-gateway/**'
 

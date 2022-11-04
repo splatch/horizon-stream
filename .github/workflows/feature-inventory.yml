@@ -1,11 +1,7 @@
 name: feature-inventory
 
-on:  
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+on:
+  pull_request:
     paths:
       - 'inventory/**'
 

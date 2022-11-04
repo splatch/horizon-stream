@@ -1,11 +1,7 @@
 name: feature-shared-lib
 
 on:
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+  pull_request:
     paths:
       - 'shared-lib/**'
   workflow_call:

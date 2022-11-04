@@ -1,11 +1,7 @@
 name: feature-metrics-processor
 
-on:  
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+on:
+  pull_request:
     paths:
       - 'metrics-processor/**'
 
