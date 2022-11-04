@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-        # Is required to call actions.
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: init
         run: |
@@ -40,4 +40,5 @@ jobs:
         id: action-feature-metrics-processor
         uses: ./.github/actions/metrics-processor
         with:
-          dir-location: 'metrics-processor'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
