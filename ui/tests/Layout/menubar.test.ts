@@ -2,11 +2,12 @@ import Menubar from '@/components/Layout/Menubar.vue'
 import useKeycloak from '@/composables/useKeycloak'
 import useTheme from '@/composables/useTheme'
 import { KeycloakInstance } from '@dsb-norge/vue-keycloak-js/dist/types'
-import { createTestingPinia } from '@pinia/testing'
-import { mount } from '@vue/test-utils'
+import setupWrapper from 'tests/setupWrapper'
 
 test('The menubar mounts', () => {
-  const wrapper = mount(Menubar, { global: { plugins: [createTestingPinia()] }, props: {} })
+  const wrapper = setupWrapper({
+    component: Menubar
+  })
   expect(wrapper).toBeTruthy()
 })
 
@@ -22,7 +23,9 @@ test('The toggle dark btn triggers the composible function, and the ref updates'
   theme.onThemeChange(mockFn)
   
   // get and trigger dark/light mode btn
-  const wrapper = mount(Menubar, { global: { plugins: [createTestingPinia()] }, props: {} })
+  const wrapper = setupWrapper({
+    component: Menubar
+  })
   const toggleDarkBtn = wrapper.get('[data-test="toggle-dark"]')
   await toggleDarkBtn.trigger('click')
 
