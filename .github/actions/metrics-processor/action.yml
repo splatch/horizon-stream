@@ -1,12 +1,30 @@
 name: 'Build and test Metrics Processor'
 description: 'This implements unit and built-time integration tests on Metrics Processor, dir platform.'
+inputs:
+  github-token:
+    description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information'
+    required: true
+  sonar-token:
+    description: 'SONAR_TOKEN secret to authenticate job with SonarCloud'
+    required: true
 runs:
   using: "composite"
   steps:
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-${{ runner.arch }}-sonar
+
     - name: global data
       run: |
 
         mvn clean install -f metrics-processor
-        mvn -f metrics-processor jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-metrics-processor:local
+        mvn -f metrics-processor jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-metrics-processor:local \
+          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
 
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
+        SONAR_PROJECT_KEY: 'opennms_horizon-stream_metrics-processor'

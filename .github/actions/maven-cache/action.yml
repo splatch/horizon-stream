@@ -1,0 +1,15 @@
+name: 'Maven Cache'
+description: 'Caches Maven dependencies in the runner''s local Maven repository'
+inputs:
+  working-directory:
+    description: 'The directory containing the top-level pom'
+    required: false
+    default: '.'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/cache@v3
+      with:
+        path: '~/.m2/repository'
+        key: maven-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(format('{0}/**/pom.xml', inputs.working-directory)) }}
