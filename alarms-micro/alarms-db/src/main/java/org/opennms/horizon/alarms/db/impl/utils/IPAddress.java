@@ -39,23 +39,23 @@ import java.util.regex.Pattern;
 
 public class IPAddress implements Comparable<IPAddress> {
     private static final Pattern LEADING_ZEROS = Pattern.compile("^0:[0:]+");
-    protected final InetAddress m_inetAddress;
+    protected final InetAddress inetAddress;
 
     public IPAddress(final IPAddress addr) {
-        m_inetAddress = addr.m_inetAddress;
+        inetAddress = addr.inetAddress;
     }
 
     public IPAddress(final String dottedNotation) {
-        m_inetAddress = getInetAddress(dottedNotation);
+        inetAddress = getInetAddress(dottedNotation);
     }
 
     public IPAddress(final InetAddress inetAddress) {
-        m_inetAddress = inetAddress;
+        this.inetAddress = inetAddress;
     }
 
     public IPAddress(final byte[] ipAddrOctets) {
         try {
-            m_inetAddress = InetAddress.getByAddress(ipAddrOctets);
+            inetAddress = InetAddress.getByAddress(ipAddrOctets);
         } catch (final UnknownHostException e) {
             throw new IllegalArgumentException("Cannot convert bytes to an InetAddress.", e);
         }
@@ -66,39 +66,39 @@ public class IPAddress implements Comparable<IPAddress> {
     }
 
     public InetAddress toInetAddress() {
-        return m_inetAddress;
+        return inetAddress;
     }
 
     public byte[] toOctets() {
-        return m_inetAddress.getAddress();
+        return inetAddress.getAddress();
     }
 
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof IPAddress) {
-            return Arrays.equals(m_inetAddress.getAddress(), ((IPAddress) obj).m_inetAddress.getAddress());
+            return Arrays.equals(inetAddress.getAddress(), ((IPAddress) obj).inetAddress.getAddress());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return m_inetAddress.hashCode();
+        return inetAddress.hashCode();
     }
 
     @Override
     public int compareTo(final IPAddress o) {
-        return compare(m_inetAddress.getAddress(), o.m_inetAddress.getAddress());
+        return compare(inetAddress.getAddress(), o.inetAddress.getAddress());
     }
 
     public String toUserString() {
-        if (m_inetAddress instanceof Inet4Address) {
-            return toIpAddrString(m_inetAddress);
-        } else if (m_inetAddress instanceof Inet6Address) {
+        if (inetAddress instanceof Inet4Address) {
+            return toIpAddrString(inetAddress);
+        } else if (inetAddress instanceof Inet6Address) {
             /*
              * <p>From: <a href="https://code.google.com/p/guava-libraries/source/browse/guava/src/com/google/common/primitives/Ints.java">Guava</a>.</p>
              */
-            final byte[] bytes = m_inetAddress.getAddress();
+            final byte[] bytes = inetAddress.getAddress();
             final int[] hextets = new int[8];
             for (int i = 0; i < hextets.length; i++) {
                 hextets[i] = fromBytes(
@@ -111,8 +111,8 @@ public class IPAddress implements Comparable<IPAddress> {
             compressLongestRunOfZeroes(hextets);
             return hextetsToIPv6String(hextets);
         } else {
-            System.err.println("Not an Inet4Address nor an Inet6Address! " + m_inetAddress.getClass());
-            return m_inetAddress.getHostAddress();
+            System.err.println("Not an Inet4Address nor an Inet6Address! " + inetAddress.getClass());
+            return inetAddress.getHostAddress();
         }
     }
 
@@ -122,12 +122,12 @@ public class IPAddress implements Comparable<IPAddress> {
     }
 
     public String toDbString() {
-        return toIpAddrString(m_inetAddress);
+        return toIpAddrString(inetAddress);
     }
 
     /** {@inheritDoc} */
     public BigInteger toBigInteger() {
-        return new BigInteger(1, m_inetAddress.getAddress());
+        return new BigInteger(1, inetAddress.getAddress());
     }
 
     /**
@@ -136,7 +136,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a {@link IPAddress} object.
      */
     public IPAddress incr() {
-        final byte[] current = m_inetAddress.getAddress();
+        final byte[] current = inetAddress.getAddress();
         final byte[] b = new byte[current.length];
 
         int carry = 1;
@@ -160,7 +160,7 @@ public class IPAddress implements Comparable<IPAddress> {
      * @return a {@link IPAddress} object.
      */
     public IPAddress decr() {
-        final byte[] current = m_inetAddress.getAddress();
+        final byte[] current = inetAddress.getAddress();
         final byte[] b = new byte[current.length];
 
         int borrow = 1;

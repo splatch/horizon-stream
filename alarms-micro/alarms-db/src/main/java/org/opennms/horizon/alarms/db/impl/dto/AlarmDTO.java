@@ -85,8 +85,7 @@ public class AlarmDTO implements Serializable {
     private String uei;
 
     @Column
-    //TODO:MMF fix this
-    @Type(type="org.opennms.horizon.db.model.InetAddressUserType")
+    @Type(type="org.opennms.horizon.alarms.db.impl.dto.InetAddressUserType")
     private InetAddress ipAddr;
 
     @Column(unique=true)
@@ -102,7 +101,6 @@ public class AlarmDTO implements Serializable {
     private Integer counter;
 
     @Column(nullable=false)
-    //TODO:MMF fix this
     @Type(type= "org.opennms.horizon.alarms.db.impl.dto.SeverityUserTypeDTO")
     private AlarmSeverity severity = AlarmSeverity.INDETERMINATE;
 

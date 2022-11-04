@@ -88,8 +88,7 @@ public class NotificationDTO implements Serializable {
     private String answeredBy;
 
     @Column(name="interfaceId")
-    //TODO:MMF fix this
-    @Type(type="org.opennms.horizon.db.model.InetAddressUserType")
+    @Type(type="org.opennms.horizon.alarms.db.impl.dto.InetAddressUserType")
     private InetAddress ipAddress;
 
     @ManyToOne

@@ -185,8 +185,7 @@ public class OutageDTO implements Serializable {
      * @return a {@link String} object.
      */
     @Transient
-    //TODO:MMF fix this
-    @Type(type="org.opennms.horizon.db.model.InetAddressUserType")
+    @Type(type="org.opennms.horizon.alarms.db.impl.dto.InetAddressUserType")
     public InetAddress getIpAddress() {
         return getMonitoredService().getIpAddress();
     }

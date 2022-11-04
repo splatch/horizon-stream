@@ -79,13 +79,11 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
     private Integer id;
 
     @Column(name="ipAddr")
-    //TODO:MMF fix this
-    @Type(type="InetAddressUserType")
+    @Type(type="org.opennms.horizon.alarms.db.impl.dto.InetAddressUserType")
     private InetAddress ipAddress;
 
     @Column(name = "netmask")
-    //TODO:MMF fix this
-    @Type(type="InetAddressUserType")
+    @Type(type="org.opennms.horizon.alarms.db.impl.dto.InetAddressUserType")
     private InetAddress netMask;
 
     @Column(length=256)
@@ -96,8 +94,7 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
 
     @Embedded
     @Column(length=1)
-    //TODO:MMF fix this
-    @Type(type="CharacterUserType")
+    @Type(type="CharacterUserType.CharacterUserType")
     private PrimaryType isSnmpPrimary = PrimaryType.NOT_ELIGIBLE;
 
     @Temporal(TemporalType.TIMESTAMP)

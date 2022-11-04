@@ -58,188 +58,151 @@ import org.opennms.horizon.alarms.db.api.EntityVisitor;
 import org.opennms.horizon.alarms.db.impl.AlarmSeverity;
 
 @Entity
-@Table(name="events")
+@Table(name = "events")
 @Data
 public class EventDTO extends EntityDTO implements Serializable {
 
-	private static final long serialVersionUID = -7412025003474162992L;
+    private static final long serialVersionUID = -7412025003474162992L;
 
-	
-	@Id
-	@Column(nullable=false)
-	@SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId", allocationSize = 1)
-	@GeneratedValue(generator="eventSequence")
-	private Integer eventId;
+    @Id
+    @Column(nullable = false)
+    @SequenceGenerator(name = "eventSequence", sequenceName = "eventsNxtId", allocationSize = 1)
+    @GeneratedValue(generator = "eventSequence")
+    private Integer eventId;
 
-	
-	@Column(length=256, nullable=false)
-	private String eventUei;
+    @Column(length = 256, nullable = false)
+    private String eventUei;
 
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
-	private Date eventTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    private Date eventTime;
 
-	
-	@Column(length=256)
-	private String eventHost;
+    @Column(length = 256)
+    private String eventHost;
 
-	
-	@Column( length=128, nullable=false)
-	private String eventSource;
+    @Column(length = 128, nullable = false)
+    private String eventSource;
 
-	
-	@Column
-    //TODO:MMF fix this
-	@Type(type="org.opennms.horizon.db.model.InetAddressUserType")
-	private InetAddress ipAddr;
+    @Column
+    @Type(type = "org.opennms.horizon.alarms.db.impl.dto.InetAddressUserType")
+    private InetAddress ipAddr;
 
-	
-    //TODO: bring this over too....
-	@ManyToOne
-	@JoinColumn(name="systemId", nullable=false)
-	private MonitoringSystemDTO distPoller;
+    @ManyToOne
+    @JoinColumn(name = "systemId", nullable = false)
+    private MonitoringSystemDTO distPoller;
 
-	
-	@Column(length=256)
-	private String eventSnmpHost;
+    @Column(length = 256)
+    private String eventSnmpHost;
 
-	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(nullable=true)
-	private ServiceTypeDTO serviceType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = true)
+    private ServiceTypeDTO serviceType;
 
-	
-	@Column(length=256)
-	private String eventSnmp;
+    @Column(length = 256)
+    private String eventSnmp;
 
-	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
-	private List<EventParameterDTO> eventParameters;
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<EventParameterDTO> eventParameters;
 
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
-	private Date eventCreateTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    private Date eventCreateTime;
 
-	
-	@Column(length=4000)
-	private String eventDescr;
+    @Column(length = 4000)
+    private String eventDescr;
 
-	
-	@Column(length=32)
-	private String eventLogGroup;
+    @Column(length = 32)
+    private String eventLogGroup;
 
-	
-	@Column(length=1024)
-	private String eventLogMsg;
+    @Column(length = 1024)
+    private String eventLogMsg;
 
-	
-	@Column(nullable=false)
-	private Integer eventSeverity;
+    @Column(nullable = false)
+    private Integer eventSeverity;
 
-	
-	@Column
+    @Column
     private Integer ifIndex;
 
-	
-	@Column(length=1024)
-	private String eventPathOutage;
+    @Column(length = 1024)
+    private String eventPathOutage;
 
-	
-	@Column(length=1024)
-	private String eventCorrelation;
+    @Column(length = 1024)
+    private String eventCorrelation;
 
-	
-	@Column
-	private Integer eventSuppressedCount;
+    @Column
+    private Integer eventSuppressedCount;
 
-	
-	@Column
-	private String eventOperInstruct;
+    @Column
+    private String eventOperInstruct;
 
-	
-	@Column(length=256)
-	private String eventAutoAction;
+    @Column(length = 256)
+    private String eventAutoAction;
 
-	
-	@Column(length=256)
-	private String eventOperAction;
+    @Column(length = 256)
+    private String eventOperAction;
 
-	
-	@Column(length=64)
-	private String eventOperActionMenuText;
+    @Column(length = 64)
+    private String eventOperActionMenuText;
 
-	
-	@Column(length=128)
-	private String eventNotification;
+    @Column(length = 128)
+    private String eventNotification;
 
-	
-	@Column(length=128)
-	private String eventTTicket;
+    @Column(length = 128)
+    private String eventTTicket;
 
-	
-	@Column
-	private Integer eventTTicketState;
+    @Column
+    private Integer eventTTicketState;
 
-	
-	@Column(length=256)
-	private String eventForward;
+    @Column(length = 256)
+    private String eventForward;
 
-	
-	@Column(length=64)
-	private String eventMouseOverText;
+    @Column(length = 64)
+    private String eventMouseOverText;
 
-	
-	@Column(length=1, nullable=false)
-	private String eventLog;
+    @Column(length = 1, nullable = false)
+    private String eventLog;
 
-	
-	@Column(length=1, nullable=false)
-	private String eventDisplay;
+    @Column(length = 1, nullable = false)
+    private String eventDisplay;
 
-	
-	@Column(length=256)
-	private String eventAckUser;
+    @Column(length = 256)
+    private String eventAckUser;
 
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column
-	private Date eventAckTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column
+    private Date eventAckTime;
 
-	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="alarmId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "alarmId")
     //TODO:MMF Eh? This is a circulular reference now!
-	private AlarmDTO alarm;
-	
-	@OneToMany(mappedBy="event", fetch=FetchType.LAZY)
-	private Set<NotificationDTO> notifications = new HashSet<>();
+    private AlarmDTO alarm;
 
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    private Set<NotificationDTO> notifications = new HashSet<>();
 
-	@OneToMany(mappedBy="serviceRegainedEvent", fetch=FetchType.LAZY)
-	private Set<OutageDTO> associatedServiceRegainedOutages = new HashSet<>();
+    @OneToMany(mappedBy = "serviceRegainedEvent", fetch = FetchType.LAZY)
+    private Set<OutageDTO> associatedServiceRegainedOutages = new HashSet<>();
 
-	
-	@OneToMany(mappedBy="serviceLostEvent", fetch=FetchType.LAZY)
-	private Set<OutageDTO> associatedServiceLostOutages = new HashSet<>();
+    @OneToMany(mappedBy = "serviceLostEvent", fetch = FetchType.LAZY)
+    private Set<OutageDTO> associatedServiceLostOutages = new HashSet<>();
 
-	/**
-	 * default constructor
-	 */
-	public EventDTO() {
-	}
+    /**
+     * default constructor
+     */
+    public EventDTO() {
+    }
 
-	public List<EventParameterDTO> getEventParameters() {
-		if(this.eventParameters != null) {
-			this.eventParameters.sort(Comparator.comparing(EventParameterDTO::getPosition));
-		}
-		return this.eventParameters;
-	}
+    public List<EventParameterDTO> getEventParameters() {
+        if (this.eventParameters != null) {
+            this.eventParameters.sort(Comparator.comparing(EventParameterDTO::getPosition));
+        }
+        return this.eventParameters;
+    }
 
-	public void setEventParameters(List<EventParameterDTO> eventParameters) {
-		this.eventParameters = eventParameters;
-		setPositionsOnParameters(this.eventParameters);
-	}
+    public void setEventParameters(List<EventParameterDTO> eventParameters) {
+        this.eventParameters = eventParameters;
+        setPositionsOnParameters(this.eventParameters);
+    }
 
     //TODO:MMF
 //	public void setEventParametersFromEvent(final Event event) {
@@ -249,18 +212,18 @@ public class EventDTO extends EntityDTO implements Serializable {
 //		setPositionsOnParameters(eventParameters);
 //	}
 
-	public void addEventParameter(EventParameterDTO parameter) {
-		if (eventParameters == null) {
-			eventParameters = new ArrayList<>();
-		}
-		if (eventParameters.contains(parameter)) {
-			eventParameters.remove(parameter);
-		}
-		eventParameters.add(parameter);
+    public void addEventParameter(EventParameterDTO parameter) {
+        if (eventParameters == null) {
+            eventParameters = new ArrayList<>();
+        }
+        if (eventParameters.contains(parameter)) {
+            eventParameters.remove(parameter);
+        }
+        eventParameters.add(parameter);
         setPositionsOnParameters(eventParameters);
-	}
+    }
 
-	/**
+    /**
      * We need this method to preserve the order in the m_eventParameters when saved and retrieved from the database.
      * There might be a more elegant solution via JPA but none seems to work in our context, see also:
      * https://issues.opennms.org/browse/NMS-9827
@@ -292,62 +255,23 @@ public class EventDTO extends EntityDTO implements Serializable {
         eventSeverity = AlarmSeverity.get(label).getId();
     }
 
+    /**
+     * <p>toString</p>
+     *
+     * @return a {@link String} object.
+     */
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).add("eventid", getEventId())
+            .add("eventuei", getEventUei())
+            .toString();
+    }
 
-    //TODO:MMF
-//	/**
-//	 * <p>getNode</p>
-//	 *
-//	 * @return a {@link OnmsNode} object.
-//	 */
-//	@XmlTransient
-//	public OnmsNode getNode() {
-//		return node;
-//	}
-//
-//    @XmlElement(name="nodeId")
-//    public Integer getNodeId() {
-//        try {
-//            return node != null ? node.getId() : null;
-//        } catch (ObjectNotFoundException e) {
-//            return null;
-//        }
-//    }
-//
-//    @XmlElement(name="nodeLabel", required=false)
-//    public String getNodeLabel() {
-//        try{
-//            if (node == null) return null;
-//            return node.getLabel();
-//        } catch (ObjectNotFoundException e){
-//            return "";
-//        }
-//
-//    }
-//
-//	/**
-//	 * <p>setNode</p>
-//	 *
-//	 * @param node a {@link OnmsNode} object.
-//	 */
-//	public void setNode(OnmsNode node) {
-//		this.node = node;
-//	}
-
-	/**
-	 * <p>toString</p>
-	 *
-	 * @return a {@link String} object.
-	 */
-        @Override
-	public String toString() {
-            return MoreObjects.toStringHelper(this).add("eventid", getEventId())
-		        .add("eventuei", getEventUei())
-				.toString();
-	}
-
-	/** {@inheritDoc} */
-        @Override
-	public void visit(EntityVisitor visitor) {
-		throw new RuntimeException("visitor method not implemented");
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void visit(EntityVisitor visitor) {
+        throw new RuntimeException("visitor method not implemented");
+    }
 }
