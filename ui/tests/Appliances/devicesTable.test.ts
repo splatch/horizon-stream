@@ -46,8 +46,8 @@ describe('DevicesTable.vue', () => {
         {
           id: '1',
           name: 'device1',
-          icmp_latency: 'UNKNOWN',
-          snmp_uptime: 'UNKNOWN',
+          icmp_latency: '604833',
+          snmp_uptime: '604833',
           status: 'DOWN'
         }
       ]

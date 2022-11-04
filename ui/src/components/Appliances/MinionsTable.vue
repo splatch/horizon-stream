@@ -30,7 +30,7 @@
             <td>{{ minion.id }}</td>
             <td>
               <div @click="openLatencyGraph(minion.id as string)" :data-metric="minion.icmp_latency" class="bg-status pointer" :class="minion.latencyBgColor" data-test="minion-item-latency">
-                {{ getHumanReadableDuration(minion.icmp_latency, 'msecs') }}
+                {{ getHumanReadableDuration(minion.icmp_latency, TimeUnit.MSecs) }}
               </div>
             </td>
             <td>
@@ -65,7 +65,7 @@ import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
 import { ComputedRef } from 'vue'
 import { formatItemBgColor, getHumanReadableDuration } from './utils'
-import { WidgetProps } from '@/types'
+import { WidgetProps, TimeUnit } from '@/types'
 import { GraphProps } from '@/types/graphs'
 import { TimeRangeUnit } from '@/types/graphql'
 
