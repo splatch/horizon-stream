@@ -1,7 +1,7 @@
 <template>
   <div class="container">
       <div class="canvas-wrapper">
-        <canvas :id="`${label}`"></canvas>
+        <canvas :id="`${graph.label}`"></canvas>
       </div>
   </div>
 </template>
@@ -13,20 +13,17 @@ import { Chart, registerables }  from 'chart.js'
 // import zoomPlugin from 'chartjs-plugin-zoom'
 import { PropType } from 'vue'
 import { formatTimestamp } from './utils'
-import { uniq } from 'lodash'
+import { GraphProps } from '@/types/graphs'
+
 Chart.register(...registerables)
 // Chart.register(zoomPlugin) disable zoom until phase 2
 
 const graphs = useGraphs()
 
 const props = defineProps({
-  metricStrings: {
+  graph: {
     required: true,
-    type: Array as PropType<string[]>
-  },
-  label: {
-    required: true,
-    type: String
+    type: Object as PropType<GraphProps>
   }
 })
 
@@ -38,26 +35,26 @@ const options = computed<ChartOptions>(() => ({
   plugins: {
     title: {
       display: true,
-      text: props.label,
+      text: props.graph.label
     } as TitleOptions,
     zoom: {
       zoom: {
         wheel: {
-          enabled: true,
+          enabled: true
         },
-        mode: 'x',
+        mode: 'x'
       },
       pan: {
         enabled: true,
         mode: 'x'
       }
-    },
+    }
   },
   scales: {
     y: {
       title: {
-        display: true,
-        text: props.label,
+        display: false,
+        text: props.graph.label
       } as TitleOptions,
       ticks: {
         maxTicksLimit: 8
@@ -73,34 +70,22 @@ const options = computed<ChartOptions>(() => ({
 }))
 
 const xAxisLabels = computed(() => {
-  const totalLabels = []
+  const graphsDataSetsValues = graphs.dataSets.value[0].values as any
+  
+  const totalLabels = graphsDataSetsValues.map((val: any) => {
+    return formatTimestamp(val[0], 'minutes')
+  })
 
-  for (const dataSet of graphs.dataSets.value) {
-    const labels = dataSet.map((result) => {
-      if (result.value) return formatTimestamp(result.value[0], 'hours')
-    })
-    totalLabels.push(...labels)
-  }
-
-  return uniq(totalLabels)
+  return totalLabels
 })
 
 const dataSets = computed(() => {
-  const dataSets: any = []
-
-  for (const dataSet of graphs.dataSets.value) {
-    const dataObject = {
-      label: dataSet[0].metric.__name__,
-      data: dataSet.map((result) => {
-        if (result.value) return result.value[1]
-      }),
-      backgroundColor: 'green'
-    }
-
-    dataSets.push(dataObject)
-  }
-  
-  return dataSets
+  const bgColor = ['green', 'blue'] // TODO: better solution to set bg color in regards to FeatherDS theme switching
+  return graphs.dataSets.value.map((data: any ,i) => ({
+    label: data.metric.__name__,
+    data: data.values.map((val: any) => val[1]),
+    backgroundColor: bgColor[i]
+  }))
 })
 
 const chartData = computed<ChartData<any>>(() => {
@@ -116,7 +101,7 @@ const render = async (update?: boolean) => {
       chart.data = chartData.value
       chart.update()
     } else {
-      const ctx: any = document.getElementById(`${props.label}`)
+      const ctx: any = document.getElementById(`${props.graph.label}`)
       chart = new Chart(ctx, {
         type: 'line',
         data: chartData.value,
@@ -126,18 +111,18 @@ const render = async (update?: boolean) => {
     }
   } catch (error) {
     console.log(error)
-    console.log('Could not render graph for ', props.label)
+    console.log('Could not render graph for ', props.graph.label)
   }
 }
 
 onMounted(async () => {
-  await graphs.getMetrics(props.metricStrings)
+  await graphs.getMetrics(props.graph)
   render()
 })
 </script>
-  
+
+// TODO: make theme switching works in graphs
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
 .container {
   position: relative;
 }

@@ -83,15 +83,15 @@ describe('MinionsTable.vue', () => {
   })
 
   describe('Background color coded', () => {
-    describe.skip('Latency/Uptime', () => {
+    describe('Latency/Uptime', () => {
       beforeAll(() => {
         const minionsItems = [
           {
             id: '1',
             date: 'date1',
             label: 'minion1',
-            icmp_latency: 5,
-            snmp_uptime: 5,
+            icmp_latency: 10,
+            snmp_uptime: 10,
             status: 'UP',
             location: 'default'
           }, 
@@ -99,8 +99,8 @@ describe('MinionsTable.vue', () => {
             id: '2',
             date: 'date2',
             label: 'minion2',
-            icmp_latency: 2000,
-            snmp_uptime: 0,
+            icmp_latency: -10,
+            snmp_uptime: -10,
             status: 'DOWN',
             location: 'default'
           }, 
@@ -112,32 +112,42 @@ describe('MinionsTable.vue', () => {
             snmp_uptime: undefined,
             status: 'DOWN',
             location: 'default'
+          },
+          {
+            id: '4',
+            date: 'date4',
+            label: 'minion4',
+            icmp_latency: null,
+            snmp_uptime: null,
+            status: 'DOWN',
+            location: 'default'
           }
         ] 
         setAppliancesStore({minions: computed(() => minionsItems)})
       })
   
       /**
-       * Filter in status' value and background css class
+       * Construct an array of metric value and background arrays
        * @param elems Elements of the selector
-       * @returns Array of arrays [['OK', 'bg-ok'],[...]]
+       * @returns Array of arrays [['2000', 'ok'],[...]]
        */
       const formatValueBackground = (elems: any[]) => {
-        return elems.map((elem: { classes: () => any; text: () => any }) => {
-          const val = ['OK', 'FAILED', 'UNKNOWN'].filter((val: string) => elem.text().indexOf(val) >= 0)[0]
-          const css = elem.classes().filter((cl: string | string[]) => cl.indexOf('bg-') >= 0)[0]
-          return [ val, css ]
+        return elems.map((elem) => {
+          const css = elem.classes().filter((cl: string | string[]) => ['ok', 'failed', 'unknown'].find(bg => bg === cl))[0]
+          
+          return [elem.attributes('data-metric'), css]
         })
       }
   
       test('Latency OK/FAILED/UNKNOWN should have the corresponding background color', () => {
         const wrapper = mount(MinionsTable)
   
-        const latencies = formatValueBackground(wrapper.findAll('[data-test="col-latency"]'))
+        const latencies = formatValueBackground(wrapper.findAll('[data-test="minion-item-latency"]'))
         const expectedValueBackground = [
-          ['OK', 'bg-ok'],
-          ['FAILED', 'bg-failed'],
-          ['UNKNOWN', 'bg-unknown']
+          ['10', 'ok'],
+          ['-10', 'failed'],
+          [undefined, 'unknown'],
+          [undefined, 'unknown']
         ]
         expect(latencies).toStrictEqual(expectedValueBackground)
       })
@@ -145,11 +155,12 @@ describe('MinionsTable.vue', () => {
       test('Uptime OK/FAILED/UNKNOWN should have the corresponding background color', () => {
         const wrapper = mount(MinionsTable)
   
-        const uptimes = formatValueBackground(wrapper.findAll('[data-test="col-uptime"]'))
+        const uptimes = formatValueBackground(wrapper.findAll('[data-test="minion-item-uptime"]'))
         const expectedValueBackground = [
-          ['OK', 'bg-ok'],
-          ['FAILED', 'bg-failed'],
-          ['UNKNOWN', 'bg-unknown']
+          ['10', 'ok'],
+          ['-10', 'failed'],
+          [undefined, 'unknown'],
+          [undefined, 'unknown']
         ]
         expect(uptimes).toStrictEqual(expectedValueBackground)
       })
@@ -181,15 +192,15 @@ describe('MinionsTable.vue', () => {
       })
   
       /**
-       * Filter in status' value and background css class
+       * Construct an array of status and background arrays
        * @param elems Elements of the selector
-       * @returns Array of arrays [['OK', 'bg-ok'],[...]]
+       * @returns Array of arrays [['UP', 'ok'],[...]]
        */
       const formatValueBackground = (elems: any[]) => {
-
-        return elems.map((elem: { classes: () => any; text: () => any }) => {
+        return elems.map(elem => {
           const val = ['UP','DOWN'].filter((val: string) => elem.text().indexOf(val) >= 0)[0]
-          const css = elem.classes().filter((cl: string | string[]) => cl.indexOf('bg-') >= 0)[0]
+          const css = elem.classes().filter((cl: string | string[]) => ['ok', 'failed'].find(status => status === cl))[0]
+          
           return [ val, css ]
         })
       }
@@ -199,11 +210,44 @@ describe('MinionsTable.vue', () => {
 
         const statuses = formatValueBackground(wrapper.findAll('[data-test="minion-item-status"]'))
         const expectedValueBackground = [
-          ['UP', 'bg-ok'],
-          ['DOWN', 'bg-failed']
+          ['UP', 'ok'],
+          ['DOWN', 'failed']
         ]
         expect(statuses).toStrictEqual(expectedValueBackground)
       })
+    })
+  })
+
+  /** 
+   * TODO:
+   * - stub Graph component
+   * - assert query arguments and result
+  */
+  describe.skip('Metric charts', () => {
+    it('should make query `response_time_msec`', async () => {
+      const minionsItems = [
+        {
+          id: '1',
+          date: 'date1',
+          label: 'minion1',
+          icmp_latency: 5,
+          snmp_uptime: 5,
+          status: 'UP',
+          location: 'default'
+        }
+      ]
+      setAppliancesStore({minions: computed(() => minionsItems)})
+      const wrapper = mount(MinionsTable, {
+        stubs: {
+          PrimaryModal: true,
+          Graph: true
+        }
+      })
+      
+      const btn = wrapper.find('[data-test="minion-item-latency"]')
+      await btn.trigger('click')
+
+      expect(false).toBe(true)
     })
   })
 })

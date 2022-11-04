@@ -23,7 +23,7 @@ public class TaskListenerRetryable implements RetryableExecutor {
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(TaskListenerRetryable.class);
 
     @SpringResource(resourceClass = ListenerFactoryRegistry.class)
-    private transient ListenerFactoryRegistry listenerFactoryRegistry;
+    private ListenerFactoryRegistry listenerFactoryRegistry;
 
     private Logger log = DEFAULT_LOGGER;
 
@@ -33,9 +33,12 @@ public class TaskListenerRetryable implements RetryableExecutor {
 
     private Runnable onDisconnect;
 
-    public TaskListenerRetryable(TaskDefinition taskDefinition, TaskExecutionResultProcessor resultProcessor) {
+    public TaskListenerRetryable(TaskDefinition taskDefinition,
+                                 TaskExecutionResultProcessor resultProcessor,
+                                 ListenerFactoryRegistry listenerFactoryRegistry) {
         this.taskDefinition = taskDefinition;
         this.resultProcessor = resultProcessor;
+        this.listenerFactoryRegistry = listenerFactoryRegistry;
     }
 
 //========================================

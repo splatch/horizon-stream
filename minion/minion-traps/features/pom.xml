@@ -55,6 +55,13 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.minion</groupId>
+            <artifactId>plugin-features</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -79,6 +86,7 @@
                                 <descriptor>mvn:org.opennms.horizon.minion/ipc-features/${project.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.horizon.minion/grpc-features/${project.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.horizon.minion/observability-features/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.horizon.minion/plugin-features/${project.version}/xml/features</descriptor>
                                 <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
                             </descriptors>
                             <javase>11</javase>

@@ -1,5 +1,6 @@
 package org.opennms.horizon.minion.taskset.worker.impl;
 
+import org.opennms.horizon.minion.plugin.api.registries.ListenerFactoryRegistry;
 import org.opennms.horizon.minion.plugin.api.registries.MonitorRegistry;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalService;
@@ -17,6 +18,7 @@ public class TaskExecutorLocalServiceFactoryImpl implements TaskExecutorLocalSer
 
     private final OpennmsScheduler scheduler;
     private final TaskExecutionResultProcessor resultProcessor;
+    private final ListenerFactoryRegistry listenerFactoryRegistry;
 
 //========================================
 // Constructor
@@ -24,11 +26,13 @@ public class TaskExecutorLocalServiceFactoryImpl implements TaskExecutorLocalSer
 
     public TaskExecutorLocalServiceFactoryImpl(
         OpennmsScheduler scheduler,
-        TaskExecutionResultProcessor resultProcessor
+        TaskExecutionResultProcessor resultProcessor,
+        ListenerFactoryRegistry listenerFactoryRegistry
     ) {
 
         this.scheduler = scheduler;
         this.resultProcessor = resultProcessor;
+        this.listenerFactoryRegistry = listenerFactoryRegistry;
     }
 
 //========================================
@@ -42,7 +46,7 @@ public class TaskExecutorLocalServiceFactoryImpl implements TaskExecutorLocalSer
                 return new TaskExecutorLocalMonitorServiceImpl(scheduler, taskDefinition, resultProcessor, monitorRegistry);
 
             case LISTENER:
-                TaskListenerRetryable listenerService = new TaskListenerRetryable(taskDefinition, resultProcessor);
+                TaskListenerRetryable listenerService = new TaskListenerRetryable(taskDefinition, resultProcessor, listenerFactoryRegistry);
                 return new TaskCommonRetryExecutor(scheduler, taskDefinition, resultProcessor, listenerService);
 
             case CONNECTOR:

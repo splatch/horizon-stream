@@ -15,19 +15,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-        # Is required to call actions.
-    
-      - name: Setup golang
-        uses: actions/setup-go@v3
-
-      - name: Copy charts
-        run: |
-          cp -rf charts/ operator/charts
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: feature-operator
         id: action-feature-operator
         uses: ./.github/actions/operator
         with:
           dir-location: 'operator'
+          is-self-hosted-runner: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}

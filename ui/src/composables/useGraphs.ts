@@ -1,27 +1,42 @@
 import { useQuery } from 'villus'
-import { GetMetricDocument, } from '@/types/graphql'
-import { DataSets } from '@/types/graphs'
+import { GetTimeSeriesMetricDocument } from '@/types/graphql'
+import { DataSets, MetricArgs, GraphProps } from '@/types/graphs'
 
 export const useGraphs = () => {
-  const variables = ref({ metric: '' })
+  const variables = ref({} as MetricArgs)
   const dataSetsObject = reactive({} as any)
-  
-  const getMetrics = async (metrics: string[]) => {
-    for (const metric of metrics) {
-      variables.value = { metric }
-      await getMetric()
-      if (data.value) {
-        dataSetsObject[data.value.metric?.data?.result?.[0].metric.__name__] = data.value.metric?.data?.result
-      }
-    }
-  }
 
   const { data, execute: getMetric } = useQuery({
-    query: GetMetricDocument,
+    query: GetTimeSeriesMetricDocument,
     cachePolicy: 'network-only',
     fetchOnMount: false,
     variables
   })
+
+  const getMetrics = async (props: GraphProps) => {
+    const { metrics, monitor, timeRange, timeRangeUnit } = props
+
+    for (const metricStr of metrics) {
+      variables.value = { name: metricStr, monitor, timeRange, timeRangeUnit }
+      await getMetric()
+      
+      const result = data.value?.metric?.data?.result?.[0]
+  
+      if(result) {
+        const { metric, values } = result
+    
+        if(values?.length) {
+          dataSetsObject[metric.__name__] = {
+            metric,
+            values: values.filter(val => {
+              const [timestamp, value] = val
+              if(timestamp && value) return val
+            })
+          }
+        }
+      }
+    }
+  }
 
   return {
     getMetrics,

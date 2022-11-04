@@ -62,6 +62,7 @@
   <bean id="workflowExecutorLocalServiceFactory" class="org.opennms.horizon.minion.taskset.worker.impl.TaskExecutorLocalServiceFactoryImpl">
     <argument ref="opennmsScheduler"/>
     <argument ref="workflowExecutionResultProcessor"/>
+    <argument ref="listenerFactoryRegistry"/>
   </bean>
 
   <bean id="workflowLifecycleManager" class="org.opennms.horizon.minion.taskset.worker.impl.TaskSetLifecycleManagerImpl" destroy-method="close">

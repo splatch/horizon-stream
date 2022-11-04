@@ -34,6 +34,7 @@
     <reference id="minionDao" interface="org.opennms.horizon.db.dao.api.MinionDao"/>
     <reference id="igniteClient" interface="org.apache.ignite.client.IgniteClient"/>
     <reference id="igniteTaskSetClientFactory" interface="org.opennms.taskset.service.igniteclient.TaskSetIgnitePublisherFactory"/>
+    <reference id="taskSetManager" interface="org.opennms.horizon.taskset.manager.TaskSetManager"/>
 
     <bean id="taskSetIgniteClient" factory-ref="igniteTaskSetClientFactory" factory-method="create">
         <argument ref="igniteClient"/>
@@ -58,6 +59,7 @@
         <argument ref="metricsAdapter"/>
         <argument ref="taskSetIgniteClient"/>
         <argument ref="monitoringLocationDao"/>
+        <argument ref="taskSetManager"/>
     </bean>
 
     <!--       -->

@@ -5,10 +5,22 @@ inputs:
     description: 'The dir containing the change.'
     required: true
     default: 'none'
+  github-token:
+    description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information'
+    required: true
+  sonar-token:
+    description: 'SONAR_TOKEN secret to authenticate job with SonarCloud'
+    required: true
 
 runs:
   using: "composite"
   steps:
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-${{ runner.arch }}-sonar
+
     - name: global data
       run: |
         echo "Testing actions - " ${{ inputs.dir-location }}
@@ -35,7 +47,9 @@ runs:
           -Dmaven.wagon.http.pool=false \
           -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
           -Dmaven.wagon.http.retryHandler.count=3 \
-          clean install 
+          clean install \
+          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
+
           # Added extra args to deal with time out issue, see
           # https://github.com/actions/virtual-environments/issues/1499.
 
@@ -46,3 +60,7 @@ runs:
         # integration tests, ignore.  
 
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
+        SONAR_PROJECT_KEY: 'opennms_horizon-stream_core'
