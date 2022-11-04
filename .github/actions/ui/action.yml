@@ -6,7 +6,7 @@ inputs:
     required: true
     default: 'none'
   enable-sonar-scan:
-    description: 'Temporary workaround: Toggle off sonar scans for self-hosted runners'
+    description: 'Enables code scanning with SonarCloud.'
     required: true
   github-token:
     description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information'

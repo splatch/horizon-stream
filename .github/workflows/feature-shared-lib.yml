@@ -41,11 +41,12 @@ jobs:
         uses: ./.github/actions/parent-pom
         with:
           dir-location: 'parent-pom'
+          enable-sonar-scan: false
 
-      - name: Maven Install & Sonar Scan
-        uses: ./.github/actions/maven-install-sonar
+      - name: feature-shared-lib
+        uses: ./.github/actions/shared-lib
         with:
-          working-directory: 'shared-lib'
+          dir-location: 'shared-lib'
+          enable-sonar-scan: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
-          project-key: 'opennms_horizon-stream_shared-lib'

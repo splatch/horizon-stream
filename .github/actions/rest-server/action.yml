@@ -5,12 +5,15 @@ inputs:
     description: 'The dir containing the change.'
     required: true
     default: 'none'
+  enable-sonar-scan:
+    description: 'Enables code scanning with SonarCloud.'
+    required: true
   github-token:
-    description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information'
-    required: true
+    description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information. Required if enable-sonar-scan is true.'
+    required: false
   sonar-token:
-    description: 'SONAR_TOKEN secret to authenticate job with SonarCloud'
-    required: true
+    description: 'SONAR_TOKEN secret to authenticate job with SonarCloud. Required if enable-sonar-scan is true.'
+    required: false
 
 runs:
   using: "composite"

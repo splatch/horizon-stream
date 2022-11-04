@@ -53,8 +53,6 @@ jobs:
         with:
           dir-location: 'ui'
           enable-sonar-scan: false
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       - name: feature-grafana
         id: action-feature-grafana
@@ -74,49 +72,42 @@ jobs:
         with:
           dir-location: 'operator'
           enable-sonar-scan: false
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
       # This needs to happen before shared-lib.
       - name: parent-pom
         id: action-parent-pom
-        uses: ./.github/actions/parent-pom-sonar
+        uses: ./.github/actions/parent-pom
         with:
           dir-location: 'parent-pom'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          enable-sonar-scan: false
 
       # This needs to happen before core, rest-server, and notifications.
       - name: shared-lib
         id: action-shared-lib
-        uses: ./.github/actions/shared-lib-sonar
+        uses: ./.github/actions/shared-lib
         with:
           dir-location: 'shared-lib'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          enable-sonar-scan: false
 
       - name: feature-core
         id: action-feature-core
         uses: ./.github/actions/core
         with:
           dir-location: 'platform'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          enable-sonar-scan: false
 
       - name: feature-metrics-processor
         id: action-feature-metrics-processor
         uses: ./.github/actions/metrics-processor
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          enable-sonar-scan: false
 
       - name: feature-rest-server
         id: action-rest-server
         uses: ./.github/actions/rest-server
         with:
           dir-location: 'rest-server'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          enable-sonar-scan: false
 
       - name: feature-inventory
         id: action-inventory
