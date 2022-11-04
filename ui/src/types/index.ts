@@ -20,3 +20,8 @@ export interface WidgetProps {
   [x: string]: any
   isWidget: boolean
 }
+
+export enum TimeUnit {
+  Secs,
+  MSecs
+}

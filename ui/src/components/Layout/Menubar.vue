@@ -2,9 +2,10 @@
   <FeatherAppBar :labels="{ skip: 'main' }" content="app" v-if="keycloak?.authenticated">
     <template v-slot:right>
       <div class="right-container">
+        <OptInOutCtrl />
         <FeatherIcon
           :icon="Dashboard"
-          class="pointer menu-icon widgets"
+          class="pointer menu-icon"
           @click="triggerWidgetBar()"
         />
         <FeatherIcon

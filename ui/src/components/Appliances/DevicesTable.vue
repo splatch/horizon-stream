@@ -47,7 +47,7 @@
           </div>
           <div class="pointer" @click="openLatencyGraph(device.id as number)" data-test="col-latency">
             <pre class="title">ICMP Latency</pre>
-            <div :data-metric="device.icmp_latency" class="value bg-status" :class="device.latencyBgColor">{{ formatLatencyDisplay(device.icmp_latency) }}</div>
+            <div :data-metric="device.icmp_latency" class="value bg-status" :class="device.latencyBgColor">{{ getHumanReadableDuration(device.icmp_latency, TimeUnit.MSecs) }}</div>
           </div>
           <div class="pointer" @click="openUptimeGraph(device.id as number)" data-test="col-uptime">
             <pre class="title">SNMP Uptime</pre>
@@ -81,8 +81,8 @@ import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import { ExtendedDeviceDTOWithBGColors } from '@/types/device'
 import { ComputedRef } from 'vue'
-import { formatItemBgColor, getHumanReadableDuration, formatLatencyDisplay } from './utils'
-import { WidgetProps } from '@/types'
+import { formatItemBgColor, getHumanReadableDuration } from './utils'
+import { WidgetProps, TimeUnit } from '@/types'
 import { GraphProps } from '@/types/graphs'
 import { TimeRangeUnit } from '@/types/graphql'
 
