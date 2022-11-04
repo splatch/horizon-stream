@@ -55,8 +55,6 @@ class MonitoringLocationIntegrationTest {
             () -> String.format("jdbc:postgresql://localhost:%d/%s", postgres.getFirstMappedPort(), postgres.getDatabaseName()));
         registry.add("spring.datasource.username", () -> postgres.getUsername());
         registry.add("spring.datasource.password", () -> postgres.getPassword());
-        registry.add("spring.autoconfigure.exclude", ()->"net.devh.boot.grpc.server.autoconfigure.GrpcServerAutoConfiguration," +
-            "net.devh.boot.grpc.server.autoconfigure.GrpcServerFactoryAutoConfiguration");
     }
 
     @BeforeEach
