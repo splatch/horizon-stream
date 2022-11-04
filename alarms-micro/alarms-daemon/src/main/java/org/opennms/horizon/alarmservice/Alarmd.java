@@ -28,6 +28,9 @@
 
 package org.opennms.horizon.alarmservice;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;
 import org.opennms.horizon.core.lib.SystemProperties;
 import org.opennms.horizon.events.api.DaemonTools;
@@ -40,30 +43,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * Alarm management Daemon
- *
- * @author jwhite
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- */
+@Setter
 public class Alarmd {
-    private static final Logger LOG = LoggerFactory.getLogger(Alarmd.class);
 
-    /** Constant <code>NAME="alarmd"</code> */
     public static final String NAME = "alarmd";
 
     protected static final Integer THREADS = SystemProperties.getInteger("org.opennms.alarmd.threads", 4);
 
-    private AlarmPersister m_persister;
+    //TODO: shouldn't this be autowired?
+    @Getter
+    private AlarmPersister persister;
+
+    //TODO:MMF not used, deprecated?
+//    @Autowired
+//    private AlarmLifecycleListenerManager alm;
 
     @Autowired
-    private AlarmLifecycleListenerManager m_alm;
+    private DroolsAlarmContext droolsAlarmContext;
 
     @Autowired
-    private DroolsAlarmContext m_droolsAlarmContext;
-
-    @Autowired
-    private EventForwarder m_eventForwarder;
+    private EventForwarder eventForwarder;
 
     public void onEvent(Event e) {
     	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
@@ -71,54 +70,24 @@ public class Alarmd {
             handleReloadEvent(immutableEvent);
             return;
     	}
-    	m_persister.persist(e);
+    	persister.persist(e);
     }
 
     private synchronized void handleReloadEvent(IEvent e) {
-        DaemonTools.handleReloadEvent(e, Alarmd.NAME, (event) -> onAlarmReload(), m_eventForwarder);
+        DaemonTools.handleReloadEvent(e, Alarmd.NAME, (event) -> onAlarmReload(), eventForwarder);
     }
 
     private void onAlarmReload() {
-        m_droolsAlarmContext.reload();
-    }
-
-	/**
-     * <p>setPersister</p>
-     *
-     * @param persister a {@link AlarmPersister} object.
-     */
-    public void setPersister(AlarmPersister persister) {
-        m_persister = persister;
-    }
-
-    /**
-     * <p>getPersister</p>
-     *
-     * @return a {@link AlarmPersister} object.
-     */
-    public AlarmPersister getPersister() {
-        return m_persister;
+        droolsAlarmContext.reload();
     }
 
     public synchronized void onStart() {
         // Start the Drools context
-        m_droolsAlarmContext.start();
+        droolsAlarmContext.start();
     }
 
     public synchronized void onStop() {
         // Stop the Drools context
-        m_droolsAlarmContext.stop();
-    }
-
-    public void setAlarmLifecycleListenerManager(AlarmLifecycleListenerManager allm) {
-        m_alm = allm;
-    }
-
-    public void setDroolsAlarmContext(DroolsAlarmContext droolsAlarmContext) {
-        m_droolsAlarmContext = droolsAlarmContext;
-    }
-
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        m_eventForwarder = eventForwarder;
+        droolsAlarmContext.stop();
     }
 }

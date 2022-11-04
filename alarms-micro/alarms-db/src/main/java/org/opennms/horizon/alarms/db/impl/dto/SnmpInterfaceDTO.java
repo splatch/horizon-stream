@@ -38,10 +38,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -51,6 +48,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarms.db.api.EntityVisitor;
+import org.opennms.horizon.alarms.db.impl.utils.AlphaNumeric;
+import org.opennms.horizon.alarms.db.impl.utils.RrdLabelUtils;
+import org.opennms.horizon.alarms.db.impl.utils.SystemProperties;
 
 @Entity
 @Table(name = "snmpInterface")

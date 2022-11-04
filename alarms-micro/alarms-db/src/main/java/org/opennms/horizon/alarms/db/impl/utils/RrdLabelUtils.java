@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarms.db.impl.dto;
+package org.opennms.horizon.alarms.db.impl.utils;
 
 public abstract class RrdLabelUtils {
     public static final boolean PREFER_IFDESCR = Boolean.getBoolean("org.opennms.core.utils.preferIfDescr");

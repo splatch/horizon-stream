@@ -50,7 +50,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -79,11 +78,11 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
     private Integer id;
 
     @Column(name="ipAddr")
-    @Type(type="org.opennms.horizon.alarms.db.impl.dto.InetAddressUserType")
+    @Type(type= "org.opennms.horizon.alarms.db.impl.utils.InetAddressUserType")
     private InetAddress ipAddress;
 
     @Column(name = "netmask")
-    @Type(type="org.opennms.horizon.alarms.db.impl.dto.InetAddressUserType")
+    @Type(type= "org.opennms.horizon.alarms.db.impl.utils.InetAddressUserType")
     private InetAddress netMask;
 
     @Column(length=256)
@@ -94,7 +93,7 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
 
     @Embedded
     @Column(length=1)
-    @Type(type="CharacterUserType.CharacterUserType")
+    @Type(type= "org.opennms.horizon.alarms.db.impl.utils.CharacterUserType.CharacterUserType")
     private PrimaryType isSnmpPrimary = PrimaryType.NOT_ELIGIBLE;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -311,22 +310,6 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
         }
 
         visitor.visitIpInterfaceComplete(this);
-    }
-    
-    /**
-     * <p>isDown</p>
-     *
-     * @return a boolean.
-     */
-    @Transient
-    public boolean isDown() {
-        boolean down = true;
-        for (MonitoredServiceDTO svc : monitoredServices) {
-            if (!svc.isDown()) {
-                return !down;
-            }
-        }
-        return down;
     }
 
     

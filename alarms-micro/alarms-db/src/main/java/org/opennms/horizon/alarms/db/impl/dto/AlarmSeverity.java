@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarms.db.impl;
+package org.opennms.horizon.alarms.db.impl.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;

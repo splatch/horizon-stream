@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,29 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarms.db.impl;
+package org.opennms.horizon.alarms.db.api;
 
-import org.opennms.horizon.alarms.db.impl.dto.IpInterfaceDTO;
-import org.opennms.horizon.alarms.db.impl.dto.MonitoredServiceDTO;
-import org.opennms.horizon.events.api.EventForwarder;
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaQuery;
 
-public class DeleteEventVisitor extends AbstractEntityVisitor {
-    private final EventForwarder m_eventForwarder;
-    private static final String m_eventSource = "alarms";
+/**
+ * OnmsDao interface.
+ * @param <T> The type of the Entity this DAO is intended to manage.
+ * @param <K> The key of the Entity.
+ */
+public interface BasicDao<T, K extends Serializable> {
 
-    public DeleteEventVisitor(EventForwarder eventForwarder) {
-        m_eventForwarder = eventForwarder;
-    }
+    EntityManager getEntityManager();
 
-    @Override
-    public void visitMonitoredServiceComplete(final MonitoredServiceDTO monSvc) {
-        // FIXME: OOPS:
-        // m_eventForwarder.sendNow(EventUtils.createServiceDeletedEvent(m_eventSource, monSvc.getNodeId(), monSvc.getIpAddress(), monSvc.getServiceType().getName()));
-    }
+    void delete(T entity);
 
-    @Override
-    public void visitIpInterfaceComplete(final IpInterfaceDTO iface) {
-        // FIXME: OOPS:
-        //m_eventForwarder.sendNow(EventUtils.createInterfaceDeletedEvent(m_eventSource, iface.getNode().getId(), iface.getIpAddress()));
-    }
+    void delete(K key);
+
+    List<T> findAll();
+
+    T get(K id);
+
+    K save(T entity);
+
+    void saveOrUpdate(T entity);
+
+    void update(T entity);
+
+    void flush();
+
+    List<T> findMatching(CriteriaQuery<?> query);
+
+    long countAll();
+
 }

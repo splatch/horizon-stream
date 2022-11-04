@@ -33,91 +33,87 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.opennms.horizon.alarms.api.AlarmEntityListener;
-import org.opennms.horizon.alarms.api.AlarmEntityNotifier;
-import org.opennms.horizon.db.model.OnmsAlarm;
-import org.opennms.horizon.db.model.OnmsMemo;
-import org.opennms.horizon.db.model.OnmsReductionKeyMemo;
-import org.opennms.horizon.db.model.OnmsSeverity;
-import org.opennms.horizon.db.model.TroubleTicketState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.opennms.horizon.alarms.db.impl.TroubleTicketState;
+import org.opennms.horizon.alarms.db.impl.dto.AlarmDTO;
+import org.opennms.horizon.alarms.db.impl.dto.MemoDTO;
+import org.opennms.horizon.alarms.db.impl.dto.ReductionKeyMemoDTO;
+import org.opennms.horizon.alarms.db.impl.dto.SeverityDTO;
 
 import com.google.common.collect.Sets;
 
+@Slf4j
 public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmEntityNotifierImpl.class);
 
     private Set<AlarmEntityListener> listeners = Sets.newConcurrentHashSet();
 
     @Override
-    public void didCreateAlarm(OnmsAlarm alarm) {
+    public void didCreateAlarm(AlarmDTO alarm) {
         forEachListener(l -> l.onAlarmCreated(alarm));
     }
 
     @Override
-    public void didUpdateAlarmWithReducedEvent(OnmsAlarm alarm) {
+    public void didUpdateAlarmWithReducedEvent(AlarmDTO alarm) {
         forEachListener(l -> l.onAlarmUpdatedWithReducedEvent(alarm));
     }
 
     @Override
-    public void didAcknowledgeAlarm(OnmsAlarm alarm, String previousAckUser, Date previousAckTime) {
+    public void didAcknowledgeAlarm(AlarmDTO alarm, String previousAckUser, Date previousAckTime) {
         forEachListener(l -> l.onAlarmAcknowledged(alarm, previousAckUser, previousAckTime));
     }
 
     @Override
-    public void didUnacknowledgeAlarm(OnmsAlarm alarm, String previousAckUser, Date previousAckTime) {
+    public void didUnacknowledgeAlarm(AlarmDTO alarm, String previousAckUser, Date previousAckTime) {
         forEachListener(l -> l.onAlarmUnacknowledged(alarm, previousAckUser, previousAckTime));
     }
 
     @Override
-    public void didUpdateAlarmSeverity(OnmsAlarm alarm, OnmsSeverity previousSeverity) {
+    public void didUpdateAlarmSeverity(AlarmDTO alarm, SeverityDTO previousSeverity) {
         forEachListener(l -> l.onAlarmSeverityUpdated(alarm, previousSeverity));
     }
 
     @Override
-    public void didArchiveAlarm(OnmsAlarm alarm, String previousReductionKey) {
+    public void didArchiveAlarm(AlarmDTO alarm, String previousReductionKey) {
         forEachListener(l -> l.onAlarmArchived(alarm, previousReductionKey));
     }
 
     @Override
-    public void didDeleteAlarm(OnmsAlarm alarm) {
+    public void didDeleteAlarm(AlarmDTO alarm) {
         forEachListener(l -> l.onAlarmDeleted(alarm));
     }
 
     @Override
-    public void didUpdateStickyMemo(OnmsAlarm alarm, String previousBody, String previousAuthor, Date previousUpdated) {
+    public void didUpdateStickyMemo(AlarmDTO alarm, String previousBody, String previousAuthor, Date previousUpdated) {
         forEachListener(l -> l.onStickyMemoUpdated(alarm, previousBody, previousAuthor, previousUpdated));
     }
 
     @Override
-    public void didUpdateReductionKeyMemo(OnmsAlarm alarm, String previousBody, String previousAuthor, Date previousUpdated) {
+    public void didUpdateReductionKeyMemo(AlarmDTO alarm, String previousBody, String previousAuthor, Date previousUpdated) {
         forEachListener(l -> l.onReductionKeyMemoUpdated(alarm, previousBody, previousAuthor, previousUpdated));
     }
 
     @Override
-    public void didDeleteStickyMemo(OnmsAlarm alarm, OnmsMemo memo) {
+    public void didDeleteStickyMemo(AlarmDTO alarm, MemoDTO memo) {
         forEachListener(l -> l.onStickyMemoDeleted(alarm, memo));
     }
 
     @Override
-    public void didDeleteReductionKeyMemo(OnmsAlarm alarm, OnmsReductionKeyMemo memo) {
+    public void didDeleteReductionKeyMemo(AlarmDTO alarm, ReductionKeyMemoDTO memo) {
         forEachListener(l -> l.onReductionKeyMemoDeleted(alarm, memo));
     }
 
     @Override
-    public void didUpdateLastAutomationTime(OnmsAlarm alarm, Date previousLastAutomationTime) {
+    public void didUpdateLastAutomationTime(AlarmDTO alarm, Date previousLastAutomationTime) {
         forEachListener(l -> l.onLastAutomationTimeUpdated(alarm, previousLastAutomationTime));
     }
 
     @Override
-    public void didUpdateRelatedAlarms(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms) {
+    public void didUpdateRelatedAlarms(AlarmDTO alarm, Set<AlarmDTO> previousRelatedAlarms) {
         forEachListener(l -> l.onRelatedAlarmsUpdated(alarm, previousRelatedAlarms));
     }
 
     @Override
-    public void didChangeTicketStateForAlarm(OnmsAlarm alarm, TroubleTicketState previousState) {
+    public void didChangeTicketStateForAlarm(AlarmDTO alarm, TroubleTicketState previousState) {
         forEachListener(l -> l.onTicketStateChanged(alarm, previousState));
     }
 
@@ -126,18 +122,18 @@ public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
             try {
                 callback.accept(listener);
             } catch (Exception e) {
-                LOG.error("Error occurred while invoking listener: {}. Skipping.", listener, e);
+                log.error("Error occurred while invoking listener: {}. Skipping.", listener, e);
             }
         }
     }
 
     public void onListenerRegistered(final AlarmEntityListener listener, final Map<String,String> properties) {
-        LOG.debug("onListenerRegistered: {} with properties: {}", listener, properties);
+        log.debug("onListenerRegistered: {} with properties: {}", listener, properties);
         listeners.add(listener);
     }
 
     public void onListenerUnregistered(final AlarmEntityListener listener, final Map<String,String> properties) {
-        LOG.debug("onListenerUnregistered: {} with properties: {}", listener, properties);
+        log.debug("onListenerUnregistered: {} with properties: {}", listener, properties);
         listeners.remove(listener);
     }
 

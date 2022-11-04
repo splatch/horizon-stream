@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarms.db.impl;
+package org.opennms.horizon.alarms.db.impl.dto;
 
 import com.google.common.base.MoreObjects;
 import java.io.Serializable;
@@ -44,79 +44,49 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
-import org.opennms.horizon.alarms.db.impl.dto.AlarmDTO;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p> Entity to store situations and their associated (related) alarms with other details like mappedTime </p>
  */
 @Entity
 @Table(name = "alarm_situations", uniqueConstraints={@UniqueConstraint(columnNames={"situation_id", "related_alarm_id"})})
-public class AlarmAssociation implements Serializable {
+@Getter
+@Setter
+public class AlarmAssociationDTO implements Serializable {
 
     private static final long serialVersionUID = 4115687014888009683L;
-
-    private Integer id;
-
-    private AlarmDTO situationAlarm;
-
-    private AlarmDTO relatedAlarm;
-
-    private Date mappedTime;
-
-    public AlarmAssociation() {
-    }
-
-    public AlarmAssociation(AlarmDTO situationAlarm, AlarmDTO relatedAlarm) {
-        this(situationAlarm, relatedAlarm, new Date());
-    }
-
-    public AlarmAssociation(AlarmDTO situationAlarm, AlarmDTO relatedAlarm, Date mappedTime) {
-        this.mappedTime = mappedTime;
-        this.situationAlarm = situationAlarm;
-        this.relatedAlarm = relatedAlarm;
-    }
 
     @Id
     @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId", allocationSize = 1)
     @GeneratedValue(generator="alarmSequence")
     @Column(name="id", nullable=false)
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "situation_id")
-    public AlarmDTO getSituationAlarm() {
-        return situationAlarm;
-    }
-
-    public void setSituationAlarm(AlarmDTO situationAlarm) {
-        this.situationAlarm = situationAlarm;
-    }
+    private AlarmDTO situationAlarm;
 
     @OneToOne
     @JoinColumn(name = "related_alarm_id")
-    public AlarmDTO getRelatedAlarm() {
-        return relatedAlarm;
-    }
-
-    public void setRelatedAlarm(AlarmDTO relatedAlarm) {
-        this.relatedAlarm = relatedAlarm;
-    }
-
-
-    public void setMappedTime(Date mappedTime) {
-        this.mappedTime = mappedTime;
-    }
+    private AlarmDTO relatedAlarm;
 
     @Column(name = "mapped_time")
     @Temporal(TemporalType.TIMESTAMP)
-    public Date getMappedTime() {
-        return mappedTime;
+    private Date mappedTime;
+
+    public AlarmAssociationDTO() {
+    }
+
+    public AlarmAssociationDTO(AlarmDTO situationAlarm, AlarmDTO relatedAlarm) {
+        this(situationAlarm, relatedAlarm, new Date());
+    }
+
+    public AlarmAssociationDTO(AlarmDTO situationAlarm, AlarmDTO relatedAlarm, Date mappedTime) {
+        this.mappedTime = mappedTime;
+        this.situationAlarm = situationAlarm;
+        this.relatedAlarm = relatedAlarm;
     }
 
     @Override
@@ -132,7 +102,7 @@ public class AlarmAssociation implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AlarmAssociation that = (AlarmAssociation) o;
+        AlarmAssociationDTO that = (AlarmAssociationDTO) o;
         return Objects.equals(situationAlarm, that.situationAlarm) &&
                 Objects.equals(relatedAlarm, that.relatedAlarm);
     }

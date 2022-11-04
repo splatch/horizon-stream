@@ -1,4 +1,4 @@
-package org.opennms.horizon.alarms.db.impl;
+package org.opennms.horizon.alarms.db.impl.dao;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

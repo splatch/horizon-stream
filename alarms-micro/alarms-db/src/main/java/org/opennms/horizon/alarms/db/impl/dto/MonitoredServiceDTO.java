@@ -106,20 +106,6 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
     @JoinColumn(name="ipInterfaceId")
     private IpInterfaceDTO ipInterface;
 
-    /*
-     * This is a set only because we want it to be lazy
-     * and we need a better query language (i.e. HQL)
-     * to make this work.  In this case, the Set size
-     * will always be 1 or empty because there can only
-     * be one outage at a time on a service.
-     * 
-     * With distributed monitoring, there will probably
-     * be a model change were one service can be represented
-     * by more than one outage.
-     */
-    @OneToMany(mappedBy="monitoredService", fetch=FetchType.LAZY)
-    @Where(clause="ifRegainedService is null")
-    private Set<OutageDTO> currentOutages = new LinkedHashSet<>();
 
     @ManyToMany(
         cascade={CascadeType.PERSIST, CascadeType.MERGE}
@@ -303,21 +289,6 @@ public class MonitoredServiceDTO extends EntityDTO implements Serializable, Comp
     
     public String getServiceName() {
         return getServiceType().getName();
-    }
-
-    /**
-     * <p>isDown</p>
-     *
-     * @return a boolean.
-     */
-    @Transient
-    public boolean isDown() {
-        boolean down = true;
-        if (!"A".equals(getStatus()) || currentOutages.isEmpty()) {
-            return !down;
-        }
-
-        return down;
     }
 
     /**

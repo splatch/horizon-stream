@@ -1,4 +1,4 @@
-package org.opennms.horizon.alarms.db.impl;
+package org.opennms.horizon.alarms.db.impl.dao;
 
 import java.io.Serializable;
 import java.util.List;
@@ -7,9 +7,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.Transactional;
 import org.hibernate.Session;
-import org.opennms.horizon.alarms.db.api.OnmsDao;
+import org.opennms.horizon.alarms.db.api.BasicDao;
 
-public abstract class AbstractDaoHibernate<T, K extends Serializable> implements OnmsDao<T, K> {
+public abstract class AbstractDaoHibernate<T, K extends Serializable> implements BasicDao<T, K> {
 
     private final EntityManagerHolder entityManagerHolder;
 

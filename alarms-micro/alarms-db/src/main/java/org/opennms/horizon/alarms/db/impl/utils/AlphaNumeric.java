@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarms.db.impl.dto;
+package org.opennms.horizon.alarms.db.impl.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

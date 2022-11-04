@@ -28,7 +28,7 @@
 
 package org.opennms.horizon.alarmservice;
 
-import org.opennms.horizon.db.model.OnmsAlarm;
+import org.opennms.horizon.alarms.db.impl.dto.AlarmDTO;
 import org.opennms.horizon.events.xml.Event;
 
 /**
@@ -39,6 +39,6 @@ import org.opennms.horizon.events.xml.Event;
  */
 public interface AlarmPersister {
 
-    OnmsAlarm persist(Event event);
+    AlarmDTO persist(Event event);
 
 }

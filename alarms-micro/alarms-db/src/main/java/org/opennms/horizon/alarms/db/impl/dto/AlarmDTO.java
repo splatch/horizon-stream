@@ -57,8 +57,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
-import org.opennms.horizon.alarms.db.impl.AlarmAssociation;
-import org.opennms.horizon.alarms.db.impl.AlarmSeverity;
 import org.opennms.horizon.alarms.db.impl.TroubleTicketState;
 
 @Entity
@@ -85,7 +83,7 @@ public class AlarmDTO implements Serializable {
     private String uei;
 
     @Column
-    @Type(type="org.opennms.horizon.alarms.db.impl.dto.InetAddressUserType")
+    @Type(type= "org.opennms.horizon.alarms.db.impl.utils.InetAddressUserType")
     private InetAddress ipAddr;
 
     @Column(unique=true)
@@ -123,8 +121,7 @@ public class AlarmDTO implements Serializable {
     @Column(length=4000)
     private String description;
 
-    //TODO:MMF Why change case on the name?
-    @Column(name="logmsg", length=1024)
+    @Column(length=1024)
     private String logMsg;
 
     @Column
@@ -160,10 +157,6 @@ public class AlarmDTO implements Serializable {
     @Column
     private String clearKey;
 
-
-//    TODO:MMF flatten maybe just store last event serverity, etc. Store what you need.
-//    private OnmsEvent m_lastEvent;
-
     @Column(length=512)
     private String managedObjectInstance;
 
@@ -198,7 +191,7 @@ public class AlarmDTO implements Serializable {
     @ManyToOne
     @JoinColumn(name="reductionKey", referencedColumnName="reductionkey", updatable=false, insertable=false)
     private ReductionKeyMemoDTO reductionKeyMemo;
-    private Set<AlarmAssociation> associatedAlarms = new HashSet<>();
+    private Set<AlarmAssociationDTO> associatedAlarms = new HashSet<>();
 
 
     @ElementCollection
@@ -212,6 +205,8 @@ public class AlarmDTO implements Serializable {
     @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.RELATED_ALARM_ID=ALARMID)")
     private boolean partOfSituation;
 
+    //TODO: add in whatever is needed form the Event protobuf as individual fields.
+
     /**
      * minimal constructor
      *
@@ -222,13 +217,13 @@ public class AlarmDTO implements Serializable {
      * @param firsteventtime a {@link Date} object.
      * @param event a {@link EventDTO} object.
      */
-    public AlarmDTO(Integer alarmid, String eventuei, Integer counter, Integer severity, Date firsteventtime, EventDTO event) {
+    public AlarmDTO(Integer alarmid, String eventuei, Integer counter, Integer severity, Date firsteventtime, Date lasteEventTime) {
         this.id = alarmid;
         this.uei = eventuei;
         this.counter = counter;
         this.severity = AlarmSeverity.get(severity);
         this.firstEventTime = firsteventtime;
-        setLastEventTime(event.getEventTime());
+        setLastEventTime(lasteEventTime);
     }
 
     @Transient
@@ -309,7 +304,7 @@ public class AlarmDTO implements Serializable {
     @Transient
     
     public Set<AlarmDTO> getRelatedAlarms() {
-        return associatedAlarms.stream().map(AlarmAssociation::getRelatedAlarm).collect(Collectors.toSet());
+        return associatedAlarms.stream().map(AlarmAssociationDTO::getRelatedAlarm).collect(Collectors.toSet());
     }
 
     @Transient
@@ -322,29 +317,29 @@ public class AlarmDTO implements Serializable {
 
     
     @OneToMany(mappedBy = "situationAlarm", orphanRemoval = true, cascade = CascadeType.ALL)
-    public Set<AlarmAssociation> getAssociatedAlarms() {
+    public Set<AlarmAssociationDTO> getAssociatedAlarms() {
         return associatedAlarms;
     }
 
-    public void setAssociatedAlarms(Set<AlarmAssociation> alarms) {
+    public void setAssociatedAlarms(Set<AlarmAssociationDTO> alarms) {
         associatedAlarms = alarms;
         situation = !associatedAlarms.isEmpty();
     }
 
     public void setRelatedAlarms(Set<AlarmDTO> alarms) {
         associatedAlarms.clear();
-        alarms.forEach(relatedAlarm -> associatedAlarms.add(new AlarmAssociation(this, relatedAlarm)));
+        alarms.forEach(relatedAlarm -> associatedAlarms.add(new AlarmAssociationDTO(this, relatedAlarm)));
         situation = !associatedAlarms.isEmpty();
     }
 
     public void setRelatedAlarms(Set<AlarmDTO> alarms, Date associationEventTime) {
         associatedAlarms.clear();
-        alarms.forEach(relatedAlarm -> associatedAlarms.add(new AlarmAssociation(this, relatedAlarm, associationEventTime)));
+        alarms.forEach(relatedAlarm -> associatedAlarms.add(new AlarmAssociationDTO(this, relatedAlarm, associationEventTime)));
         situation = !associatedAlarms.isEmpty();
     }
 
     public void addRelatedAlarm(AlarmDTO alarm) {
-        associatedAlarms.add(new AlarmAssociation(this, alarm));
+        associatedAlarms.add(new AlarmAssociationDTO(this, alarm));
         situation = !associatedAlarms.isEmpty();
     }
 
