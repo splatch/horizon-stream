@@ -1,5 +1,6 @@
 <template>
   <FeatherIcon
+    data-test="settings-btn"
     :icon="Settings"
     class="pointer ctrl-icon"
     @click="openModal()"
@@ -11,6 +12,17 @@
         Please opt-in to send anonymous usage statistics. This will help <br />
         us improve your software. You can change this setting at any time.
       </p>
+
+      <FeatherExpansionPanel
+        class="expansion"
+        v-if="!state.showModalOnLoad" 
+        title="Show me what is being sent.">
+        <pre>
+          <code>
+            {{ usageStatsQueries.usageStatsReport }}
+          </code>
+        </pre>
+      </FeatherExpansionPanel>
     </template>
 
     <template v-slot:footer>
@@ -35,12 +47,20 @@
 import Settings from "@featherds/icon/action/Settings"
 import useModal from '@/composables/useModal'
 import { useUsageStatsMutations } from '@/store/Mutations/usageStatsMutations'
+import { useUsageStatsQueries } from '@/store/Queries/usageStatsQueries'
 
 const { openModal, closeModal, isVisible } = useModal()
-const store = useUsageStatsMutations()
+const usageStatsMutations = useUsageStatsMutations()
+const usageStatsQueries = useUsageStatsQueries()
+
+const state = useStorage<{ showModalOnLoad: boolean } >('first-load', {
+  showModalOnLoad: true
+})
 
 const opt = (choice: boolean = false) => {
-  store.toggleUsageStats({ 
+  state.value.showModalOnLoad = false
+
+  usageStatsMutations.toggleUsageStats({ 
     toggleDataChoices: {
       toggle: choice
     }
@@ -48,6 +68,12 @@ const opt = (choice: boolean = false) => {
 
   closeModal()
 }
+
+onMounted(() => {
+  if (state.value.showModalOnLoad) {
+    openModal()
+  }
+})
 </script>
 
 <style scoped lang="scss">
@@ -55,5 +81,11 @@ const opt = (choice: boolean = false) => {
   font-size: 24px;
   margin-top: 2px;
   margin-right: 15px;
+}
+.expansion {
+  margin-top: 20px;
+  pre, code {
+    white-space: pre-line;
+  }
 }
 </style>

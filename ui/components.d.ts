@@ -25,6 +25,7 @@ declare module '@vue/runtime-core' {
     FeatherCheckbox: typeof import('@featherds/checkbox')['FeatherCheckbox']
     FeatherCheckboxGroup: typeof import('@featherds/checkbox')['FeatherCheckboxGroup']
     FeatherDialog: typeof import('@featherds/dialog')['FeatherDialog']
+    FeatherExpansionPanel: typeof import('@featherds/expansion')['FeatherExpansionPanel']
     FeatherIcon: typeof import('@featherds/icon')['FeatherIcon']
     FeatherInput: typeof import('@featherds/input')['FeatherInput']
     FeatherList: typeof import('@featherds/list')['FeatherList']
