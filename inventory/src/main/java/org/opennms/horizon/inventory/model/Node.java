@@ -3,13 +3,13 @@ package org.opennms.horizon.inventory.model;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.Type;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 // Lombok isn't playing nicely with MapStruct, so generate getters and setters with IDE for now.
@@ -17,7 +17,7 @@ import java.util.UUID;
 //@Setter
 @RequiredArgsConstructor
 @Entity
-public class MonitoredServiceType {
+public class Node {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -28,8 +28,12 @@ public class MonitoredServiceType {
     private UUID tenantId;
 
     @NotNull
-    @Column(name = "service_name")
-    private String serviceName;
+    @Column(name = "node_label")
+    private String nodeLabel;
+
+    @NotNull
+    @Column(name = "create_time", columnDefinition = "TIMESTAMP")
+    private LocalDateTime createTime;
 
     public long getId() {
         return id;
@@ -47,11 +51,19 @@ public class MonitoredServiceType {
         this.tenantId = tenantId;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public String getNodeLabel() {
+        return nodeLabel;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public void setNodeLabel(String nodeLabel) {
+        this.nodeLabel = nodeLabel;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
     }
 }

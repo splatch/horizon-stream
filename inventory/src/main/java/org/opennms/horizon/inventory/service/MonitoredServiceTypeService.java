@@ -19,13 +19,13 @@ public class MonitoredServiceTypeService {
 
     private MonitoredServiceTypeMapper mapper = Mappers.getMapper(MonitoredServiceTypeMapper.class);
 
-    public MonitoredServiceTypeDTO saveMonitoringLocation(MonitoredServiceTypeDTO dto) {
+    public MonitoredServiceTypeDTO saveMonitoredServiceType(MonitoredServiceTypeDTO dto) {
         MonitoredServiceType model = mapper.dtoToModel(dto);
         MonitoredServiceType ret = modelRepo.save(model);
         return mapper.modelToDTO(ret);
     }
 
-    public List<MonitoredServiceTypeDTO> findAllMonitoringLocations() {
+    public List<MonitoredServiceTypeDTO> findAllMonitoredServiceTypes() {
         List<MonitoredServiceType> all = modelRepo.findAll();
         return all
             .stream()
@@ -33,7 +33,7 @@ public class MonitoredServiceTypeService {
             .collect(Collectors.toList());
     }
 
-    public Optional<MonitoredServiceTypeDTO> findMonitoringLocation(long id) {
+    public Optional<MonitoredServiceTypeDTO> findMonitoredServiceType(long id) {
         Optional<MonitoredServiceType> model = modelRepo.findById(id);
         Optional<MonitoredServiceTypeDTO> dto = Optional.empty();
         if (model.isPresent()) {
