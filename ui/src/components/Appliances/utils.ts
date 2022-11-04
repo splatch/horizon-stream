@@ -1,6 +1,7 @@
 import { ExtendedDeviceDTO } from '@/types/device'
 import { ExtendedMinionDTO } from '@/types/minion'
 import { add, intervalToDuration, formatDuration } from 'date-fns'
+import { TimeUnit } from '@/types'
 
 export interface BGColors {
   latencyBgColor: string
@@ -45,13 +46,13 @@ export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[
  * @param timeUnit 
  * @returns 
  */
-export const getHumanReadableDuration = (timestamp: number, timeUnit = 'secs') => {
+export const getHumanReadableDuration = (timestamp: number, timeUnit = TimeUnit.Secs) => {
   let durationDisplay = '--' // undefined | null
 
   if(![undefined, null].includes(timestamp as any)) {
     const duration = intervalToDuration({
       start: new Date(),
-      end: add(new Date(), {seconds: timeUnit === 'secs' ? timestamp : timestamp / 1000})
+      end: add(new Date(), {seconds: timeUnit === TimeUnit.Secs ? timestamp : timestamp / 1000})
     })
       
     durationDisplay = formatDuration(duration, { format: ['days', 'hours', 'minutes']})
