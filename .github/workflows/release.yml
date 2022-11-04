@@ -52,7 +52,7 @@ jobs:
         uses: ./.github/actions/ui
         with:
           dir-location: 'ui'
-          is-self-hosted-runner: true
+          enable-sonar-scan: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 
@@ -73,7 +73,7 @@ jobs:
         uses: ./.github/actions/operator
         with:
           dir-location: 'operator'
-          is-self-hosted-runner: true
+          enable-sonar-scan: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 
