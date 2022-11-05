@@ -19,12 +19,14 @@ runs:
   using: "composite"
   steps:
     - name: Cache SonarCloud packages
+      if: ${{ inputs.enable-sonar-scan == 'true' }}
       uses: actions/cache@v3
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-${{ runner.arch }}-sonar
 
     - name: build-image
+      if: ${{ inputs.enable-sonar-scan == 'true' }}
       run: |
 
         cd ${{ inputs.dir-location }}
@@ -40,3 +42,16 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         SONAR_TOKEN: ${{ inputs.sonar-token }}
         SONAR_PROJECT_KEY: 'opennms_horizon-stream_bff'
+
+    - name: build-image
+      if: ${{ inputs.enable-sonar-scan == 'false' }}
+      run: |
+
+        cd ${{ inputs.dir-location }}
+
+        # When there are tests to run, put those here.
+
+        # Create the docker image.
+        mvn clean install jib:dockerBuild -Dimage=opennms/horizon-stream-rest-server:local
+
+      shell: bash
