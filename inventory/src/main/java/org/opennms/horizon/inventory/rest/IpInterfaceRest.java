@@ -24,8 +24,8 @@ public class IpInterfaceRest {
 
     @PostMapping
     public ResponseEntity<IpInterfaceDTO> postIpInterface(@RequestBody IpInterfaceDTO dto) {
-        Optional<IpInterfaceDTO> ml = ipInterfaceService.findIpInterface(dto.getId());
-        if (ml.isPresent()) {
+        Optional<IpInterfaceDTO> found = ipInterfaceService.findIpInterface(dto.getId());
+        if (found.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
             IpInterfaceDTO saved = ipInterfaceService.saveIpInterface(dto);
@@ -35,8 +35,8 @@ public class IpInterfaceRest {
 
     @PutMapping
     public ResponseEntity<IpInterfaceDTO> putIpInterface(@RequestBody IpInterfaceDTO data) {
-        Optional<IpInterfaceDTO> ml = ipInterfaceService.findIpInterface(data.getId());
-        if (ml.isPresent()) {
+        Optional<IpInterfaceDTO> found = ipInterfaceService.findIpInterface(data.getId());
+        if (found.isPresent()) {
             IpInterfaceDTO saved = ipInterfaceService.saveIpInterface(data);
             return new ResponseEntity<>(saved, HttpStatus.OK);
         } else {
@@ -50,11 +50,11 @@ public class IpInterfaceRest {
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<IpInterfaceDTO> getIpInterface(@PathVariable long id) {
-        Optional<IpInterfaceDTO> ml = ipInterfaceService.findIpInterface(id);
-        if (ml.isPresent()) {
-            return new ResponseEntity<>(ml.get(), HttpStatus.OK);
+        Optional<IpInterfaceDTO> found = ipInterfaceService.findIpInterface(id);
+        if (found.isPresent()) {
+            return new ResponseEntity<>(found.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
