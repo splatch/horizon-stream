@@ -28,7 +28,11 @@
 
 package org.opennms.horizon.inventory.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.opennms.horizon.inventory.dto.LocationList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringServiceGrpc;
 import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
@@ -52,8 +56,9 @@ public class MonitoringGrpcService extends MonitoringServiceGrpc.MonitoringServi
     private final MonitoringLocationMapper mapper;
 
     @Override
-    public void listLocations(Empty request, StreamObserver<MonitoringLocationDTO> responseObserver) {
-        locationRepo.findAll().forEach(l -> responseObserver.onNext(mapper.modelToDTO(l)));
+    public void listLocations(Empty request, StreamObserver<LocationList> responseObserver) {
+        List<MonitoringLocationDTO> result = locationRepo.findAll().stream().map(l->mapper.modelToDTO(l)).collect(Collectors.toList());
+        responseObserver.onNext(LocationList.newBuilder().addAllLocations(result).build());
         responseObserver.onCompleted();
     }
 

@@ -42,6 +42,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.inventory.InventoryApplication;
+import org.opennms.horizon.inventory.dto.LocationList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringServiceGrpc;
 import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
@@ -126,9 +127,9 @@ public class GrpcIntegrationTest {
 
     @Test
     public void testListLocations () {
-        Iterator<MonitoringLocationDTO> result = serviceStub.listLocations(Empty.newBuilder().build());
-        List<MonitoringLocationDTO> list = new ArrayList<>();
-        result.forEachRemaining(list::add);
+        LocationList locationList = serviceStub.listLocations(Empty.newBuilder().build());
+        assertThat(locationList).isNotNull();
+        List<MonitoringLocationDTO> list = locationList.getLocationsList();
         assertThat(list.size()).isEqualTo(2);
         assertThat(list.get(0).getLocation()).isEqualTo(location1.getLocation());
         assertThat(list.get(1).getLocation()).isEqualTo(location2.getLocation());
