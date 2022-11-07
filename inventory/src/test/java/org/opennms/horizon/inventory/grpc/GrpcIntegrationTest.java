@@ -130,15 +130,21 @@ public class GrpcIntegrationTest {
         List<MonitoringLocationDTO> list = new ArrayList<>();
         result.forEachRemaining(list::add);
         assertThat(list.size()).isEqualTo(2);
-        assertThat(list.get(0)).isEqualTo(location1);
-        assertThat(list.get(1)).isEqualTo(location2);
+        assertThat(list.get(0).getLocation()).isEqualTo(location1.getLocation());
+        assertThat(list.get(1).getLocation()).isEqualTo(location2.getLocation());
+        assertThat(list.get(0).getTenantId()).isEqualTo(location1.getTenantId());
+        assertThat(list.get(1).getTenantId()).isEqualTo(location2.getTenantId());
+        assertThat(list.get(0).getId()).isGreaterThan(0L);
+        assertThat(list.get(1).getId()).isGreaterThan(0L);
     }
 
     @Test
     public void testFindLocationByName() {
         MonitoringLocationDTO locationDTO = serviceStub.getLocationByName(StringValue.of("test-location"));
         assertThat(locationDTO).isNotNull();
-        assertThat(locationDTO).isEqualTo(location1);
+        assertThat(locationDTO.getId()).isGreaterThan(0L);
+        assertThat(locationDTO.getLocation()).isEqualTo(location1.getLocation());
+        assertThat(locationDTO.getTenantId()).isEqualTo(location1.getTenantId());
     }
 
     @Test()
