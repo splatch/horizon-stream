@@ -1,11 +1,7 @@
 name: feature-rest-server
 
-on:  
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+on:
+  pull_request:
     paths:
       - 'rest-server/**'
 
@@ -29,17 +25,20 @@ jobs:
         uses: ./.github/actions/parent-pom
         with:
           dir-location: 'parent-pom'
+          enable-sonar-scan: false
 
       - name: shared-lib
         id: action-shared-lib
         uses: ./.github/actions/shared-lib
         with:
           dir-location: 'shared-lib'
+          enable-sonar-scan: false
 
       - name: feature-rest-server
         id: action-feature-rest-server
         uses: ./.github/actions/rest-server
         with:
           dir-location: 'rest-server'
+          enable-sonar-scan: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}

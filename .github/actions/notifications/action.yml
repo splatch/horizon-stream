@@ -5,23 +5,28 @@ inputs:
     description: 'The dir containing the change.'
     required: true
     default: 'none'
+  enable-sonar-scan:
+    description: 'Enables code scanning with SonarCloud.'
+    required: true
   github-token:
-    description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information'
-    required: true
+    description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information. Required if enable-sonar-scan is true.'
+    required: false
   sonar-token:
-    description: 'SONAR_TOKEN secret to authenticate job with SonarCloud'
-    required: true
+    description: 'SONAR_TOKEN secret to authenticate job with SonarCloud. Required if enable-sonar-scan is true.'
+    required: false
 
 runs:
   using: "composite"
   steps:
     - name: Cache SonarCloud packages
+      if: ${{ inputs.enable-sonar-scan == 'true' }}
       uses: actions/cache@v3
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-${{ runner.arch }}-sonar
 
     - name: build-image
+      if: ${{ inputs.enable-sonar-scan == 'true' }}
       run: |
 
         cd ${{ inputs.dir-location }}
@@ -37,3 +42,16 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         SONAR_TOKEN: ${{ inputs.sonar-token }}
         SONAR_PROJECT_KEY: 'opennms_horizon-stream_notification'
+
+    - name: build-image
+      if: ${{ inputs.enable-sonar-scan == 'false' }}
+      run: |
+
+        cd ${{ inputs.dir-location }}
+
+        # When there are tests to run, put those here.
+
+        # Create the docker image.
+        mvn package jib:dockerBuild -Dimage=opennms/horizon-stream-notification:local
+
+      shell: bash

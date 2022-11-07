@@ -1,11 +1,7 @@
 name: feature-minion-gateway
 
-on:  
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+on:
+  pull_request:
     paths:
       - 'minion-gateway/**'
 
@@ -29,17 +25,20 @@ jobs:
         uses: ./.github/actions/parent-pom
         with:
           dir-location: 'parent-pom'
+          enable-sonar-scan: false
 
       - name: shared-lib
         id: action-shared-lib
         uses: ./.github/actions/shared-lib
         with:
           dir-location: 'shared-lib'
+          enable-sonar-scan: false
 
       - name: feature-minion-gateway
         id: action-feature-minion-gateway
         uses: ./.github/actions/minion-gateway
         with:
           dir-location: 'minion-gateway'
+          enable-sonar-scan: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
