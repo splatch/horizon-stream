@@ -15,30 +15,23 @@ limitations under the License.
 package handlers
 
 import (
-    "github.com/OpenNMS/opennms-operator/internal/model/values"
-    "github.com/OpenNMS/opennms-operator/internal/util/yaml"
-    appsv1 "k8s.io/api/apps/v1"
-    corev1 "k8s.io/api/core/v1"
-    "sigs.k8s.io/controller-runtime/pkg/client"
+	"github.com/OpenNMS/opennms-operator/internal/model/values"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 type GrafanaHandler struct {
-    ServiceHandlerObject
+	ServiceHandlerObject
 }
 
-func (h *GrafanaHandler) UpdateConfig(values values.TemplateValues) {
-    var secret corev1.Secret
-    var service corev1.Service
-    var deployment appsv1.Deployment
+func (h *GrafanaHandler) UpdateConfig(values values.TemplateValues) error {
+	var secret corev1.Secret
+	var service corev1.Service
+	var deployment appsv1.Deployment
 
-    yaml.LoadYaml(filepath("grafana/grafana-secret.yaml"), values, &secret)
-    yaml.LoadYaml(filepath("grafana/grafana-service.yaml"), values, &service)
-    yaml.LoadYaml(filepath("grafana/grafana-deployment.yaml"), values, &deployment)
+	h.AddToTemplates(filepath("grafana/grafana-secret.yaml"), values, &secret)
+	h.AddToTemplates(filepath("grafana/grafana-service.yaml"), values, &service)
+	h.AddToTemplates(filepath("grafana/grafana-deployment.yaml"), values, &deployment)
 
-    h.Config = []client.Object{
-        &secret,
-        &service,
-        &deployment,
-    }
-
+	return h.LoadTemplates()
 }

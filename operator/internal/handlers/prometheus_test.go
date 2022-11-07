@@ -1,3 +1,5 @@
+//go:build unit
+
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,27 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package yaml
+package handlers
 
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestCache(t *testing.T) {
-	assert.Nil(t, yamlcache, "cache should be nil")
-
-	cache := Cache()
-
-	assert.NotNil(t, yamlcache, "cache should be initialised")
-
-	cache.Set("key", "value")
-	storedVal := yamlcache.yamlmap["key"]
-	assert.Equal(t, "value", storedVal, "value should have been set in cache properly")
-
-	storedVal, _ = cache.Get("key")
-	assert.Equal(t, "value", storedVal, "get function should return correct value")
-
-	_, ok := cache.Get("trash")
-	assert.False(t, ok, "should return not ok for non existent key")
+func TestPrometheusUpdateConfig(t *testing.T) {
+	ConfigFilePath = "./../../charts/opennms/templates/"
+	handler := PrometheusHandler{}
+	assert.Nil(t, handler.GetConfig(), "config should start as nil")
+	values := DefaultValues()
+	values.Values.Prometheus.Enabled = false
+	handler.UpdateConfig(values)
+	assert.Nil(t, handler.GetConfig(), "config should remain nil when prom is disabled")
+	values.Values.Prometheus.Enabled = true
+	handler.UpdateConfig(values)
+	assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
 }

@@ -5,13 +5,13 @@ IMAGE ?= opennms/operator:local-build
 
 all: build
 
-unit-test:
+unit-test: copy-charts
 	go test --tags=unit ./...
 
 integration-test:
 	echo "These are integration tests"
 
-coverage:
+coverage: copy-charts
 	go test -covermode=atomic -coverprofile cover.out --tags=unit ./...
 
 kubebuilder:

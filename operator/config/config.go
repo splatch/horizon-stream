@@ -8,19 +8,8 @@ import (
 type OperatorConfig struct {
 	Version                   string `mapstructure:"VERSION"`
 	DefaultOpenNMSValuesFile  string `mapstructure:"DEFAULT_OPENNMS_VALUES_FILE"`
-	DefaultOperatorValuesFile string `mapstructure:"DEFAULT_OPERATOR_VALUES_FILE"`
 	DefaultOpenNMSTemplateLoc string `mapstructure:"DEFAULT_OPENNMS_TEMPLATE_LOC"`
 	DevMode                   bool   `mapstructure:"DEV_MODE"`
-
-	//Image update
-	ImageUpdateFreq int `mapstructure:"IMAGE_UPDATE_FREQUENCY"`
-
-	//Service and job images
-	ServiceImageGrafana string `mapstructure:"SERVICE_IMAGE_GRAFANA"`
-
-	//instance node restrictions
-	NodeRestrictionKey   string `mapstructure:"NODE_RESTRICTION_KEY"`
-	NodeRestrictionValue string `mapstructure:"NODE_RESTRICTION_VALUE"`
 }
 
 func LoadConfig() OperatorConfig {

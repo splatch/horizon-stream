@@ -43,7 +43,7 @@ package integration
 //
 //func DeployInstance(t *testing.T, ctx context.Context, k8sClient client.Client) {
 //	var testInstance v1alpha1.OpenNMS
-//	yaml.LoadYaml("test/integration/test_instance.yaml", values.TemplateValues{}, &testInstance)
+//	h.AddToTemplates("test/integration/test_instance.yaml", values.TemplateValues{}, &testInstance)
 //
 //	err := k8sClient.Create(ctx, &testInstance)
 //	assert.Nil(t, err)

@@ -1,3 +1,5 @@
+//go:build unit
+
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,25 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package handlers
+package reconciler
 
 import (
-	"github.com/OpenNMS/opennms-operator/internal/model/values"
-	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
+	"github.com/OpenNMS/opennms-operator/internal/handlers"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-type KafkaHandler struct {
-	ServiceHandlerObject
-}
+func TestInitServiceHandlers(t *testing.T) {
+	r := OpenNMSReconciler{}
+	r.InitServiceHandlers()
+	length := len(r.StandardHandlers)
+	first := r.StandardHandlers[0]
+	last := r.StandardHandlers[length-1]
 
-func (h *KafkaHandler) UpdateConfig(values values.TemplateValues) error {
-
-	var deployment appsv1.Deployment
-	var service corev1.Service
-
-	h.AddToTemplates(filepath("kafka/kafka-service.yaml"), values, &service)
-	h.AddToTemplates(filepath("kafka/kafka-deployment.yaml"), values, &deployment)
-
-	return h.LoadTemplates()
+	assert.IsType(t, &handlers.BaseHandler{}, first, "First handler must be the base handler")
+	assert.IsType(t, &handlers.IngressHandler{}, last, "Last handler must be the ingress handler")
 }

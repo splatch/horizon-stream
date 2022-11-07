@@ -31,12 +31,7 @@ func ConvertCRDToValues(crd v1alpha1.OpenNMS, defaultValues values.TemplateValue
 	v.Host = spec.Host
 	v.TLS.Enabled = spec.TLSEnabled
 
-	if spec.HttpPort != 0 {
-		v.Ingress.HttpPort = spec.HttpPort
-	}
-	if spec.HttpsPort != 0 {
-		v.Ingress.HttpsPort = spec.HttpsPort
-	}
+	v.Ingress = setPorts(spec, v.Ingress)
 
 	//ONMS Core
 	v.OpenNMS = getCoreValues(spec, v.OpenNMS)
@@ -70,11 +65,6 @@ func ConvertCRDToValues(crd v1alpha1.OpenNMS, defaultValues values.TemplateValue
 
 	//Postgres
 	v.Postgres = getPostgresValues(spec, v.Postgres)
-
-	if spec.TestDeploy {
-		v.TestDeploy = spec.TestDeploy
-		v = overrideImages(v)
-	}
 
 	templateValues.Values = v
 	templateValues.Release = r
@@ -265,24 +255,6 @@ func getGrafanaValues(spec v1alpha1.OpenNMSSpec, v values.GrafanaValues) values.
 	return v
 }
 
-// overrideImages - overrides images with noop images for deployment testing purposes
-func overrideImages(v values.Values) values.Values {
-	noopServiceImage := "lipanski/docker-static-website:latest"
-	noopJobImage := "alpine:latest"
-
-	v.OpenNMS.Core.Image = noopServiceImage
-	v.OpenNMS.API.Image = noopServiceImage
-	v.OpenNMS.Core.Image = noopServiceImage
-	v.Postgres.Image = noopServiceImage
-	v.Grafana.Image = noopServiceImage
-
-	v.Ingress.ControllerImage = noopServiceImage
-	v.Ingress.SecretJobImage = noopJobImage
-	v.Ingress.WebhookPatchJobImage = noopJobImage
-
-	return v
-}
-
 // getPostgresValues - get Postgres DB values from the CRD
 func getPostgresValues(spec v1alpha1.OpenNMSSpec, v values.PostgresValues) values.PostgresValues {
 	if spec.Postgres.Image != "" {
@@ -290,6 +262,16 @@ func getPostgresValues(spec v1alpha1.OpenNMSSpec, v values.PostgresValues) value
 	}
 	if spec.Postgres.Disk != "" {
 		v.VolumeSize = spec.Postgres.Disk
+	}
+	return v
+}
+
+func setPorts(spec v1alpha1.OpenNMSSpec, v values.IngressValues) values.IngressValues {
+	if spec.HttpPort != 0 {
+		v.HttpPort = spec.HttpPort
+	}
+	if spec.HttpsPort != 0 {
+		v.HttpsPort = spec.HttpsPort
 	}
 	return v
 }

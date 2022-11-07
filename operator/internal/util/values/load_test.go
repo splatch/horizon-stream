@@ -1,5 +1,4 @@
 //go:build unit
-// +build unit
 
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,27 +17,43 @@ limitations under the License.
 package values
 
 import (
+	"github.com/OpenNMS/opennms-operator/config"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
+func TestGetDefaultValues(t *testing.T) {
+	writeTestFiles(t)
+	opConfig := config.OperatorConfig{
+		DefaultOpenNMSValuesFile: TestFilename1,
+	}
+	v, err := GetDefaultValues(opConfig)
+	assert.Nil(t, err)
+	assert.NotNil(t, v)
+	assert.Equal(t, 123, v.Values.Port, "should load the yaml correctly")
+	assert.Equal(t, "testHost", v.Values.Host, "should load the yaml correctly")
+}
+
 func TestLoadValues(t *testing.T) {
 	writeTestFiles(t)
 
-	v := LoadValues(TestFilename1, TestFilename2)
-	assert.NotNil(t, v)
-	assert.Equal(t, false, v.TestDeploy, "should load the first yaml file correctly")
-	assert.Equal(t, "testHost", v.Host, "should load the second yaml file correctly")
+	_, err := LoadValues("notarealfile")
+	assert.NotNil(t, err, "should error when a invalid filename is given")
 
+	_, err = LoadValues(TestFilename2)
+	assert.NotNil(t, err, "should error when file is not valid YAML")
 }
 
 var TestFilename1 = "./testtmp/test1.yaml"
 var TestFilename2 = "./testtmp/test2.yaml"
 
-var TestFileContents1 = `TestDeploy: false`
-var TestFileContents2 = `Host: testHost`
+var TestFileContents1 = `
+Host: testHost
+Port: 123`
+
+var TestFileContents2 = `asd!@#$%^&*(thisfileistrash`
 
 func writeTestFiles(t *testing.T) {
 	file1 := []byte(TestFileContents1)

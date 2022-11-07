@@ -22,9 +22,8 @@ type TemplateValues struct {
 // Values - Helm values for a complete OpenNMS Horizon Stream instance
 type Values struct {
 	Host             string                 `yaml:"Host"`
-	Port             int                    `json:"Port"`
-	Protocol         string                 `json:"Protocol"`
-	TestDeploy       bool                   `yaml:"TestDeploy"`
+	Port             int                    `yaml:"Port"`
+	Protocol         string                 `yaml:"Protocol"`
 	Prometheus       PrometheusValues       `yaml:"Prometheus"`
 	OpenNMS          OpenNMSValues          `yaml:"OpenNMS"`
 	TLS              TLSValues              `yaml:"TLS"`

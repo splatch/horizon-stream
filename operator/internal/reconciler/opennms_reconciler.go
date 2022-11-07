@@ -20,7 +20,6 @@ import (
 	"github.com/OpenNMS/opennms-operator/api/v1alpha1"
 	"github.com/OpenNMS/opennms-operator/config"
 	"github.com/OpenNMS/opennms-operator/internal/handlers"
-	"github.com/OpenNMS/opennms-operator/internal/image"
 	"github.com/OpenNMS/opennms-operator/internal/model/values"
 	"github.com/OpenNMS/opennms-operator/internal/util/crd"
 	"github.com/go-logr/logr"
@@ -28,6 +27,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/apimachinery/pkg/types"
+	"log"
 	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -45,7 +45,6 @@ type OpenNMSReconciler struct {
 	DefaultValues    values.TemplateValues
 	StandardHandlers []handlers.ServiceHandler
 	Instances        map[string]*Instance
-	ImageChecker     image.ImageUpdater
 }
 
 func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (reconcile.Result, error) {
@@ -65,12 +64,18 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (re
 	instance, ok := r.Instances[instanceCRD.Name]
 	if !ok {
 		instance = &Instance{}
-		instance.Init(ctx, r.Client, r.DefaultValues, r.StandardHandlers, instanceCRD)
+		err := instance.Init(ctx, r.Client, r.DefaultValues, r.StandardHandlers, instanceCRD)
+		if err != nil {
+			log.Fatal(err)
+		}
 		r.Instances[instanceCRD.Name] = instance
 	} else if instance.Deployed && instance.CRD.Spec.DeployOnly {
 		return reconcile.Result{RequeueAfter: 30 * time.Second}, nil
 	} else {
-		instance.Update(ctx, instanceCRD)
+		err := instance.Update(ctx, instanceCRD)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	var autoUpdateServices []client.Object //todo remove
@@ -81,7 +86,7 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (re
 		}
 		for _, resource := range handler.GetConfig() {
 			kind := reflect.ValueOf(resource).Elem().Type().String()
-			if (kind == "v1.Deployment" || kind == "v1.StatefulSet") && r.ImageChecker.ServiceMarkedForImageCheck(resource) {
+			if kind == "v1.Deployment" || kind == "v1.StatefulSet" {
 				autoUpdateServices = append(autoUpdateServices, resource)
 			}
 			deployedResource, exists := r.getResourceFromCluster(ctx, resource)
@@ -134,16 +139,6 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (re
 		}
 		handler.SetDeployed(true)
 	}
-
-	//TODO - reenable below with HS-232
-
-	// start recurrent image check if not started
-	//if !r.ImageChecker.ImageCheckerForInstanceRunning(instance) {
-	//	r.ImageChecker.StartImageCheckerForInstance(instance, autoUpdateServices)
-	//}
-
-	//prompt an update to the instance's service, if any
-	//r.ImageChecker.UpdateServices(instance)
 
 	// all clear, instance is ready
 	r.updateStatus(ctx, &instance.CRD, true, "instance ready")

@@ -1,5 +1,4 @@
 //go:build unit
-// +build unit
 
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -106,7 +105,7 @@ func TestCheckForExistingCoreCreds(t *testing.T) {
 
 	adminPglPwd := "testpostgresadminpwd"
 	keycloakPwd := "testpostgreskeycloakpwd"
-    inventoryPwd := "testpostgresinventorypwd"
+	inventoryPwd := "testpostgresinventorypwd"
 	notificationPwd := "testpostgresnotificationpwd"
 	eventsPwd := "testpostgreseventspwd"
 	pgSecret := corev1.Secret{
