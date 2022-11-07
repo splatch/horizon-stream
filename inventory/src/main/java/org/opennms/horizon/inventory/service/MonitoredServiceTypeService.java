@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class MonitoredServiceTypeService {
     private final MonitoredServiceTypeRepository modelRepo;
 
-    private MonitoredServiceTypeMapper mapper = Mappers.getMapper(MonitoredServiceTypeMapper.class);
+    private final MonitoredServiceTypeMapper mapper;
 
     public MonitoredServiceTypeDTO saveMonitoredServiceType(MonitoredServiceTypeDTO dto) {
         MonitoredServiceType model = mapper.dtoToModel(dto);

@@ -24,7 +24,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.sql.DataSource;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -37,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     classes = InventoryApplication.class)
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class NodeIntegrationTest {
+class NodeIT {
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.5-alpine")

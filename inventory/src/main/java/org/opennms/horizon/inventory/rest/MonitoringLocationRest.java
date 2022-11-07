@@ -23,7 +23,7 @@ public class MonitoringLocationRest {
     private final MonitoringLocationService monitoringLocationService;
 
     @PostMapping
-    public ResponseEntity<MonitoringLocationDTO> postMonitoringLocations(@RequestBody MonitoringLocationDTO dto) throws Exception {
+    public ResponseEntity<MonitoringLocationDTO> postMonitoringLocations(@RequestBody MonitoringLocationDTO dto) {
         Optional<MonitoringLocationDTO> ml = monitoringLocationService.findMonitoringLocation(dto.getId());
         if (ml.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -34,7 +34,7 @@ public class MonitoringLocationRest {
     }
 
     @PutMapping
-    public ResponseEntity<MonitoringLocationDTO> putMonitoringLocations(@RequestBody MonitoringLocationDTO data) throws Exception {
+    public ResponseEntity<MonitoringLocationDTO> putMonitoringLocations(@RequestBody MonitoringLocationDTO data) {
         Optional<MonitoringLocationDTO> ml = monitoringLocationService.findMonitoringLocation(data.getId());
         if (ml.isPresent()) {
             MonitoringLocationDTO saved = monitoringLocationService.saveMonitoringLocation(data);
@@ -45,13 +45,13 @@ public class MonitoringLocationRest {
     }
 
     @GetMapping
-    public ResponseEntity<List<MonitoringLocationDTO>> getMonitoringLocations() throws Exception {
+    public ResponseEntity<List<MonitoringLocationDTO>> getMonitoringLocations() {
         List<MonitoringLocationDTO> all = monitoringLocationService.findAllMonitoringLocations();
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<MonitoringLocationDTO> getMonitoringLocations(@PathVariable long id) throws Exception {
+    public ResponseEntity<MonitoringLocationDTO> getMonitoringLocations(@PathVariable long id) {
         Optional<MonitoringLocationDTO> ml = monitoringLocationService.findMonitoringLocation(id);
         if (ml.isPresent()) {
             return new ResponseEntity<>(ml.get(), HttpStatus.OK);

@@ -1,11 +1,7 @@
 name: feature-events
 
 on:
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+  pull_request:
     paths:
       - 'events/**'
 
@@ -29,16 +25,19 @@ jobs:
         uses: ./.github/actions/parent-pom
         with:
           dir-location: 'parent-pom'
+          enable-sonar-scan: false
 
       - name: shared-lib
         id: action-shared-lib
         uses: ./.github/actions/shared-lib
         with:
           dir-location: 'shared-lib'
+          enable-sonar-scan: false
 
       - name: feature-events
         id: action-feature-events
         uses: ./.github/actions/events
         with:
+          enable-sonar-scan: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}

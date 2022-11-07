@@ -1,11 +1,7 @@
 name: feature-ui
 
-on:  
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+on:
+  pull_request:
     paths:
       - 'ui/**'
 
@@ -29,7 +25,7 @@ jobs:
         uses: ./.github/actions/ui
         with:
           dir-location: 'ui'
-          is-self-hosted-runner: false
+          enable-sonar-scan: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 

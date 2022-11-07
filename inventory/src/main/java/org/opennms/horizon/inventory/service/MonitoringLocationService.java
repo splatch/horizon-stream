@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class MonitoringLocationService {
     private final MonitoringLocationRepository modelRepo;
 
-    private MonitoringLocationMapper mapper = Mappers.getMapper(MonitoringLocationMapper.class);
+    private final MonitoringLocationMapper mapper;
 
     public MonitoringLocationDTO saveMonitoringLocation(MonitoringLocationDTO dto) {
         MonitoringLocation model = mapper.dtoToModel(dto);

@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     classes = InventoryApplication.class)
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class MonitoredServiceTypeIntegrationTest {
+class MonitoredServiceTypeIT {
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.5-alpine")

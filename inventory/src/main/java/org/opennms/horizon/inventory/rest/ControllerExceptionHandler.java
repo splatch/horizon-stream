@@ -17,4 +17,12 @@ public class ControllerExceptionHandler {
         // TODO: Figure out how to return exception info.
         //throw ex;// worked until the switch to use proto DTOs.
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public void illegalArgumentException(IllegalArgumentException ex) {
+        // TODO: Figure out how to return exception info.
+        //throw ex;// worked until the switch to use proto DTOs.
+    }
 }
