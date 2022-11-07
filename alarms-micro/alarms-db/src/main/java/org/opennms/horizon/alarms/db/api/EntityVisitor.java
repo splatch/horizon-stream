@@ -30,7 +30,6 @@ package org.opennms.horizon.alarms.db.api;
 
 import org.opennms.horizon.alarms.db.impl.dto.EntityDTO;
 import org.opennms.horizon.alarms.db.impl.dto.IpInterfaceDTO;
-import org.opennms.horizon.alarms.db.impl.dto.MonitoredServiceDTO;
 
 /**
  * <p>EntityVisitor interface.</p>
@@ -44,9 +43,4 @@ public interface EntityVisitor {
 	public void visitIpInterface(IpInterfaceDTO iface);
 
 	public void visitIpInterfaceComplete(IpInterfaceDTO iface);
-
-	public void visitMonitoredService(MonitoredServiceDTO monSvc);
-
-	public void visitMonitoredServiceComplete(MonitoredServiceDTO monSvc);
-
 }

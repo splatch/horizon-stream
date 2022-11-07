@@ -215,7 +215,6 @@ public class AlarmDTO implements Serializable {
      * @param counter a {@link Integer} object.
      * @param severity a {@link Integer} object.
      * @param firsteventtime a {@link Date} object.
-     * @param event a {@link EventDTO} object.
      */
     public AlarmDTO(Integer alarmid, String eventuei, Integer counter, Integer severity, Date firsteventtime, Date lasteEventTime) {
         this.id = alarmid;

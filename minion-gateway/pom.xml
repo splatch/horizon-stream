@@ -61,12 +61,6 @@
                     <artifactId>jib-maven-plugin</artifactId>
                     <version>3.2.1</version>
                 </plugin>
-<!--                //TODO:MMF Probably not needed since this is spring now-->
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.2</version>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>

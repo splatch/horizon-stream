@@ -32,7 +32,6 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import lombok.Data;
-import org.opennms.horizon.alarms.db.impl.dto.MemoDTO;
 
 @Entity
 @DiscriminatorValue(value="ReductionKeyMemo")

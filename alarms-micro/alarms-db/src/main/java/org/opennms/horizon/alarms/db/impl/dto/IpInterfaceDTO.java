@@ -34,11 +34,9 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -49,7 +47,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -99,10 +96,6 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column
     private Date ipLastCapsdPoll;
-
-    @OneToMany(mappedBy="ipInterface",orphanRemoval=true)
-    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private Set<MonitoredServiceDTO> monitoredServices = new LinkedHashSet<>();
 
     @ManyToOne(optional=true, fetch=FetchType.LAZY)
     @JoinColumn
@@ -274,14 +267,6 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
         }
     }
 
-    public void addMonitoredService(final MonitoredServiceDTO svc) {
-        monitoredServices.add(svc);
-    }
-
-    public void removeMonitoredService(final MonitoredServiceDTO svc) {
-        monitoredServices.remove(svc);
-    }
-
     /**
      * <p>toString</p>
      *
@@ -305,33 +290,7 @@ public class IpInterfaceDTO extends EntityDTO implements Serializable {
     public void visit(EntityVisitor visitor) {
         visitor.visitIpInterface(this);
 
-        for (MonitoredServiceDTO monSvc : getMonitoredServices()) {
-            monSvc.visit(visitor);
-        }
-
         visitor.visitIpInterfaceComplete(this);
-    }
-
-    
-    @Transient
-    public int getMonitoredServiceCount () {
-    	return monitoredServices.size();
-    }
-    
-    /**
-     * <p>getMonitoredServiceByServiceType</p>
-     *
-     * @param svcName a {@link String} object.
-     * @return a {@link .OnmsMonitoredService} object.
-     */
-    
-    public MonitoredServiceDTO getMonitoredServiceByServiceType(String svcName) {
-        for (MonitoredServiceDTO monSvc : getMonitoredServices()) {
-            if (monSvc.getServiceType().getName().equals(svcName)) {
-                return monSvc;
-            }
-        }
-        return null;
     }
 
     /**
