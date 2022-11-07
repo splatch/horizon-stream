@@ -29,8 +29,8 @@
 package org.opennms.horizon.inventory.service;
 
 import org.mapstruct.factory.Mappers;
-import org.opennms.horizon.inventory.dto.InventoryServiceGrpc;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
+import org.opennms.horizon.inventory.dto.MonitoringServiceGrpc;
 import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
@@ -45,11 +45,11 @@ import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class InventoryGrpcService extends InventoryServiceGrpc.InventoryServiceImplBase {
+public class MonitoringGrpcService extends MonitoringServiceGrpc.MonitoringServiceImplBase {
     private final MonitoringLocationRepository locationRepo;
     private final MonitoringLocationMapper mapper = Mappers.getMapper(MonitoringLocationMapper.class);
 
-    public InventoryGrpcService(MonitoringLocationRepository locationRepo) {
+    public MonitoringGrpcService(MonitoringLocationRepository locationRepo) {
         this.locationRepo = locationRepo;
     }
 

@@ -29,7 +29,6 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
-import "monitoring.proto";
 
 
 package opennms.inventory;
@@ -47,9 +46,4 @@ message MonitoredServiceTypeDTO {
   int64 id = 1;
   string tenant_id = 2;
   string service_name = 3;
-}
-//Maybe move all the services in a separated file
-service InventoryService {
-  rpc listLocations(google.protobuf.Empty) returns (stream MonitoringLocationDTO) {};
-  rpc getLocationByName(google.protobuf.StringValue) returns (MonitoringLocationDTO) {};
 }

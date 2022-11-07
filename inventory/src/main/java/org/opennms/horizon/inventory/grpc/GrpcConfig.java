@@ -28,8 +28,10 @@
 
 package org.opennms.horizon.inventory.grpc;
 
+import java.util.Collections;
+
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
-import org.opennms.horizon.inventory.service.InventoryGrpcService;
+import org.opennms.horizon.inventory.service.MonitoringGrpcService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,14 +52,15 @@ public class GrpcConfig {
     }
 
     @Bean
-    public InventoryGrpcService createService() {
-        return new InventoryGrpcService(locationRepo);
+    public MonitoringGrpcService createService() {
+        return new MonitoringGrpcService(locationRepo);
     }
 
     @Bean(destroyMethod = "stopServer")
-    public GrpcServerManager startServer(InventoryGrpcService service) {
+    public GrpcServerManager startServer(MonitoringGrpcService service) {
         GrpcServerManager manager = new GrpcServerManager(port, maxMessageSize);
-        manager.startServer(service);
+        //for next step with more than one services
+        manager.startServer(Collections.singletonList(service));
         return manager;
     }
 }

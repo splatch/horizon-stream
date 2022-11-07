@@ -58,14 +58,14 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.internal.testing.StreamRecorder;
 
-public class InventoryGrpcServiceTest {
-    private InventoryGrpcService locationService;
+public class MonitoringGrpcServiceTest {
+    private MonitoringGrpcService locationService;
     private MonitoringLocationRepository mockRepository;
     private final MonitoringLocationMapper mapper = Mappers.getMapper(MonitoringLocationMapper.class);
     @BeforeEach
     public void setUp(){
         mockRepository = mock(MonitoringLocationRepository.class);
-        locationService = new InventoryGrpcService(mockRepository);
+        locationService = new MonitoringGrpcService(mockRepository);
     }
 
     @AfterEach

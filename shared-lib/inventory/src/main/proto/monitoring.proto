@@ -39,3 +39,8 @@ message MonitoringLocationDTO {
   string tenant_id = 2;
   string location = 3;
 }
+
+service MonitoringService {
+  rpc listLocations(google.protobuf.Empty) returns (stream MonitoringLocationDTO) {};
+  rpc getLocationByName(google.protobuf.StringValue) returns (MonitoringLocationDTO) {};
+}

@@ -30,6 +30,7 @@ package org.opennms.horizon.inventory.grpc;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 import io.grpc.BindableService;
 import io.grpc.Server;
@@ -50,11 +51,11 @@ public class GrpcServerManager {
         this.maxMessageSize = maxMessageSize;
     }
 
-    public synchronized void startServer(BindableService service) {
+    public synchronized void startServer(List<BindableService> services) {
         NettyServerBuilder serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(port))
             .maxInboundMessageSize(maxMessageSize)
-            .addService(service)
             .addService(ProtoReflectionService.newInstance());
+        services.forEach(serverBuilder::addService);
         grpcServer = serverBuilder.build();
         try {
             grpcServer.start();
