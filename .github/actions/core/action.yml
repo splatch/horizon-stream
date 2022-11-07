@@ -5,11 +5,28 @@ inputs:
     description: 'The dir containing the change.'
     required: true
     default: 'none'
+  enable-sonar-scan:
+    description: 'Enables code scanning with SonarCloud.'
+    required: true
+  github-token:
+    description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information. Required if enable-sonar-scan is true.'
+    required: false
+  sonar-token:
+    description: 'SONAR_TOKEN secret to authenticate job with SonarCloud. Required if enable-sonar-scan is true.'
+    required: false
 
 runs:
   using: "composite"
   steps:
+    - name: Cache SonarCloud packages
+      if: ${{ inputs.enable-sonar-scan == 'true' }}
+      uses: actions/cache@v3
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-${{ runner.arch }}-sonar
+
     - name: global data
+      if: ${{ inputs.enable-sonar-scan == 'true' }}
       run: |
         echo "Testing actions - " ${{ inputs.dir-location }}
 
@@ -35,7 +52,53 @@ runs:
           -Dmaven.wagon.http.pool=false \
           -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
           -Dmaven.wagon.http.retryHandler.count=3 \
-          clean install 
+          clean install \
+          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
+
+          # Added extra args to deal with time out issue, see
+          # https://github.com/actions/virtual-environments/issues/1499.
+
+        # How do we trigger the unit tests?
+
+        #docker images
+        # The image, opennms-horizon-application-it-image, is just for the
+        # integration tests, ignore.  
+
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
+        SONAR_PROJECT_KEY: 'opennms_horizon-stream_core'
+
+    - name: global data
+      if: ${{ inputs.enable-sonar-scan == 'false' }}
+      run: |
+        echo "Testing actions - " ${{ inputs.dir-location }}
+
+        netstat -ltan
+
+        cd ${{ inputs.dir-location }}
+        # Keep the input arg of the dir, if the process is the same for each
+        # core, rest-server, and ui, we can make this like a generic function.
+
+        # IMPORTANT: Check the .circleci/ original build.
+
+        # Simple build - no Integration Tests
+        #mvn clean install
+        # For testing the pipeline, just run this without tests to get the
+        # publish working with releasing working correctly. The test takes
+        # 5mins roughly.
+        # Release on 0.0.0 for now.
+
+        # Full build, including docker image creation and Integration Tests
+        #mvn -Prun-it clean install
+        mvn -Prun-it \
+          -Dhttp.keepAlive=false \
+          -Dmaven.wagon.http.pool=false \
+          -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
+          -Dmaven.wagon.http.retryHandler.count=3 \
+          clean install
+
           # Added extra args to deal with time out issue, see
           # https://github.com/actions/virtual-environments/issues/1499.
 

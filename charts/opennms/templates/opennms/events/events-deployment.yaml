@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.OpenNMS.Events.ServiceName }}
+  labels:
+    app: {{ .Values.OpenNMS.Events.ServiceName }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.OpenNMS.Events.ServiceName }}
+  replicas: {{ .Values.OpenNMS.Events.Replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.OpenNMS.Events.ServiceName }}
+    spec:
+      containers:
+        - name: {{ .Values.OpenNMS.Events.ServiceName }}
+          image: {{ .Values.OpenNMS.Events.Image }}
+          imagePullPolicy: {{ .Values.OpenNMS.Events.ImagePullPolicy }}
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: eventsUser
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: eventsPwd
+          ports:
+            - name: http
+              containerPort: {{ .Values.OpenNMS.Events.Port }}

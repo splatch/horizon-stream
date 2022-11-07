@@ -5,10 +5,38 @@ inputs:
     description: 'The dir containing the change.'
     required: true
     default: 'operator'
+  enable-sonar-scan:
+    description: 'Enables code scanning with SonarCloud.'
+    required: true
+  github-token:
+    description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information. Required if enable-sonar-scan is true.'
+    required: false
+  sonar-token:
+    description: 'SONAR_TOKEN secret to authenticate job with SonarCloud. Required if enable-sonar-scan is true.'
+    required: false
 
 runs:
   using: "composite"
   steps:
+    - name: Cache SonarCloud packages
+      if: ${{ inputs.enable-sonar-scan == 'true' }}
+      uses: actions/cache@v3
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-${{ runner.arch }}-sonar
+
+    - name: Setup golang
+      if: ${{ inputs.enable-sonar-scan == 'true' }}
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: operator/go.mod
+        cache-dependency-path: operator/go.sum
+
+    - name: Copy charts
+      run: make copy-charts
+      working-directory: operator
+      shell: bash
+
     - name: unit-test
       run: |
         cd ${{ inputs.dir-location }}
@@ -27,6 +55,20 @@ runs:
 
         # Create the docker image.
         make local-docker
-
       shell: bash
+
+    - name: Test Coverage
+      if: ${{ inputs.enable-sonar-scan == 'true' }}
+      run: make coverage
+      shell: bash
+      working-directory: operator
+
+    - name: SonarCloud Scan
+      if: ${{ inputs.enable-sonar-scan == 'true' }}
+      uses: SonarSource/sonarcloud-github-action@v1.7
+      with:
+        projectBaseDir: operator
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
   

@@ -1,22 +1,25 @@
 <template>
   <FeatherAppBar :labels="{ skip: 'main' }" content="app" v-if="keycloak?.authenticated">
     <template v-slot:right>
-      <FeatherIcon
-        :icon="Dashboard"
-        class="pointer menu-icon widgets"
-        @click="triggerWidgetBar()"
-      />
-      <FeatherIcon
-        :icon="LightDarkMode"
-        class="pointer menu-icon"
-        @click="toggleDark()"
-        data-test="toggle-dark"
-      />
-      <FeatherIcon
-        :icon="LogOut"
-        class="pointer menu-icon"
-        @click="logout()"
-      />
+      <div class="right-container">
+        <OptInOutCtrl />
+        <FeatherIcon
+          :icon="Dashboard"
+          class="pointer menu-icon"
+          @click="triggerWidgetBar()"
+        />
+        <FeatherIcon
+          :icon="LightDarkMode"
+          class="pointer menu-icon"
+          @click="toggleDark()"
+          data-test="toggle-dark"
+        />
+        <FeatherIcon
+          :icon="LogOut"
+          class="pointer menu-icon"
+          @click="logout()"
+        />
+      </div>
     </template>
   </FeatherAppBar>
 </template>
@@ -35,17 +38,9 @@ const { toggleDark } = useTheme()
 const { triggerWidgetBar } = useLayoutStore()
 </script>
 
-<style lang="scss">
-@import "@featherds/styles/themes/open-mixins";
-body {
-  background: var($background);
-}
-.open-light {
-  @include open-light;
-}
-.open-dark {
-  @include open-dark;
-}
+<style lang="scss" scoped>
+@use "@/styles/_app";
+
 .menu-icon {
   font-size: 24px;
   margin-top: 2px;
@@ -53,6 +48,9 @@ body {
   &:last-child {
     margin-right: 0;
   }
+}
+:deep(.header) {
+  border-bottom: 0;
 }
 </style>
   

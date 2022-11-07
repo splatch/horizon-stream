@@ -68,6 +68,7 @@ func (i *Instance) CheckForExistingCoreCreds(ctx context.Context, v values.Templ
 
 // CheckForExistingPostgresCreds - checks if core credentials already exist for a given namespace
 func (i *Instance) CheckForExistingPostgresCreds(ctx context.Context, v values.TemplateValues, namespace string) (values.TemplateValues, bool) {
+
 	var credSecret v1.Secret
 	err := i.Client.Get(ctx, types.NamespacedName{Namespace: namespace, Name: "postgres"}, &credSecret)
 	if err != nil {
@@ -78,7 +79,8 @@ func (i *Instance) CheckForExistingPostgresCreds(ctx context.Context, v values.T
 	inventoryPwd := string(credSecret.Data["inventoryPwd"])
 	notificationPwd := string(credSecret.Data["notificationPwd"])
 	grafanaPwd := string(credSecret.Data["grafanaPwd"])
-	if adminPwd == "" || keycloakPwd == "" || inventoryPwd == "" || notificationPwd == "" {
+	eventsPwd := string(credSecret.Data["eventsPwd"])
+	if adminPwd == "" || keycloakPwd == "" || inventoryPwd == "" || notificationPwd == "" || eventsPwd == "" {
 		return v, false
 	}
 	v.Values.Postgres.AdminPassword = adminPwd
@@ -86,6 +88,7 @@ func (i *Instance) CheckForExistingPostgresCreds(ctx context.Context, v values.T
 	v.Values.Postgres.InventoryPassword = inventoryPwd
 	v.Values.Postgres.NotificationPassword = notificationPwd
 	v.Values.Postgres.GrafanaPassword = grafanaPwd
+	v.Values.Postgres.EventsPassword = eventsPwd
 	return v, true
 }
 
@@ -102,11 +105,13 @@ func setCorePasswords(tv values.TemplateValues, creds v1alpha1.Credentials) valu
 
 // setPostgresPassword - sets randomly generated password for Postgres if not already set
 func setPostgresPassword(tv values.TemplateValues) values.TemplateValues {
+
 	tv.Values.Postgres.AdminPassword = security.GeneratePassword(true)
 	tv.Values.Postgres.OpenNMSPassword = security.GeneratePassword(true)
 	tv.Values.Postgres.KeycloakPassword = security.GeneratePassword(true)
 	tv.Values.Postgres.InventoryPassword = security.GeneratePassword(true)
 	tv.Values.Postgres.NotificationPassword = security.GeneratePassword(true)
+	tv.Values.Postgres.EventsPassword = security.GeneratePassword(true)
 
 	//fed into Grafana via an .ini, so cannot generate with special characters
 	tv.Values.Postgres.GrafanaPassword = security.GeneratePassword(false)

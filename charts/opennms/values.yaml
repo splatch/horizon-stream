@@ -117,6 +117,19 @@ OpenNMS:
       Requests:
         Cpu: 100m
         Memory: 250Mi
+  Events:
+    ServiceName: opennms-events
+    Image: opennms/horizon-stream-events
+    ImagePullPolicy: IfNotPresent
+    Replicas: 1
+    Port: 8080
+    Resources:
+      Limits:
+        Cpu: "1"
+        Memory: 500Mi
+      Requests:
+        Cpu: 100m
+        Memory: 250Mi
 Postgres:
   ServiceName: postgres
   Image: postgres:14.5-alpine
@@ -126,6 +139,7 @@ Postgres:
   OpenNMSPassword: notset
   KeycloakPassword: notset
   InventoryPassword: notset
+  EventsPassword: notset
   NotificationPassword: notset
   GrafanaPassword: notset
   VolumeSize: 10Gi
@@ -169,7 +183,7 @@ Prometheus:
   Server:
     ServiceName: prometheus
     Port: 9090
-    Image: prom/prometheus
+    Image: prom/prometheus:v2.39.1
     ImagePullPolicy: IfNotPresent
     Replicas: 1
     Resources:
@@ -182,7 +196,7 @@ Prometheus:
   PushGateway:
     ServiceName: prometheus-pushgateway
     Port: 9091
-    Image: prom/pushgateway
+    Image: prom/pushgateway:v1.4.3
     ImagePullPolicy: IfNotPresent
     Replicas: 1
     Resources:
@@ -210,7 +224,7 @@ Kafka:
   VolumeSize: 10Gi
 MailServer:
   ServiceName: mail-server
-  Image: mailhog/mailhog:latest
+  Image: mailhog/mailhog:v1.0.1
   ImagePullPolicy: IfNotPresent
   Replicas: 1
   Port: 8025

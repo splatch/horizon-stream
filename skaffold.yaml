@@ -27,6 +27,7 @@
 ## 27 = minion (classic)
 ## 28 = metric processor
 ## 29 = horizon-stream-inventory
+## 30 = events
 ##
 
 apiVersion: skaffold/v2beta28
@@ -93,6 +94,13 @@ build:
       - image: shared_lib
   - image: opennms/horizon-stream-notification
     context: notifications
+    jib: {}
+    sync:
+      auto: true
+    requires:
+      - image: shared_lib
+  - image: opennms/horizon-stream-events
+    context: events
     jib: {}
     sync:
       auto: true
@@ -201,6 +209,10 @@ portForward:
     resourceName: opennms-metrics-processor
     port: 5005 #debug
     localPort: 28050
+  - resourceType: deployment
+    resourceName: opennms-events
+    port: 5005 #debug
+    localPort: 30050
 deploy:
   statusCheck: false
   helm:
@@ -220,6 +232,7 @@ deploy:
           Keycloak.Image: opennms/horizon-stream-keycloak-dev
           Grafana.Image: opennms/horizon-stream-grafana-dev
           OpenNMS.MetricsProcessor.Image: opennms/horizon-stream-metrics-processor
+          OpenNMS.Events.Image: opennms/horizon-stream-events
 profiles:
   - name: prod
   - name: use-operator

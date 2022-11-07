@@ -1,11 +1,7 @@
 name: feature-core
 
-on:  
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+on:
+  pull_request:
     paths:
       - 'platform/**'
 
@@ -15,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-        # Is required to call actions.
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: init
         run: |
@@ -29,15 +25,20 @@ jobs:
         uses: ./.github/actions/parent-pom
         with:
           dir-location: 'parent-pom'
+          enable-sonar-scan: false
 
       - name: shared-lib
         id: action-shared-lib
         uses: ./.github/actions/shared-lib
         with:
           dir-location: 'shared-lib'
+          enable-sonar-scan: false
 
       - name: feature-core
         id: action-feature-core
         uses: ./.github/actions/core
         with:
           dir-location: 'platform'
+          enable-sonar-scan: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}

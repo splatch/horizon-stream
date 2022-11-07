@@ -36,15 +36,15 @@ import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AggregationPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
-import org.opennms.horizon.shared.snmp.traps.TrapdConfig;
+import org.opennms.sink.traps.contract.TrapConfig;
 
 public class TrapSinkModule implements SinkModule<TrapDTO, TrapLogDTO> {
 
-    private final TrapdConfig config;
-
     private final IpcIdentity identity;
 
-    public TrapSinkModule(TrapdConfig trapdConfig, IpcIdentity identity) {
+    private final TrapConfig config;
+
+    public TrapSinkModule(TrapConfig trapdConfig, IpcIdentity identity) {
         this.config = trapdConfig;
         this.identity = identity;
     }
@@ -56,7 +56,7 @@ public class TrapSinkModule implements SinkModule<TrapDTO, TrapLogDTO> {
 
     @Override
     public int getNumConsumerThreads() {
-        return config.getNumThreads();
+        return config.getListenerConfig().getNumThreads();
     }
 
     @Override
@@ -92,12 +92,12 @@ public class TrapSinkModule implements SinkModule<TrapDTO, TrapLogDTO> {
         return new AggregationPolicy<>() {
             @Override
             public int getCompletionSize() {
-                return config.getBatchSize();
+                return config.getListenerConfig().getBatchSize();
             }
 
             @Override
             public int getCompletionIntervalMs() {
-                return config.getBatchIntervalMs();
+                return config.getListenerConfig().getBatchIntervalMs();
             }
 
             @Override
@@ -130,12 +130,12 @@ public class TrapSinkModule implements SinkModule<TrapDTO, TrapLogDTO> {
         return new AsyncPolicy() {
             @Override
             public int getQueueSize() {
-                return config.getQueueSize();
+                return config.getListenerConfig().getQueueSize();
             }
 
             @Override
             public int getNumThreads() {
-                return config.getNumThreads();
+                return config.getListenerConfig().getNumThreads();
             }
 
             @Override

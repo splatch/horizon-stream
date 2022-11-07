@@ -129,7 +129,16 @@ jib_project(
     'opennms/horizon-stream-metrics-processor',
     'metrics-processor',
     'opennms-metrics-processor',
-    port_forwards=['30080:9090', '30050:5005'],
+    port_forwards=['28080:9090', '28050:5005'],
+)
+
+### Events ###
+jib_project(
+    'events',
+    'opennms/horizon-stream-events',
+    'events',
+    'opennms-events',
+    port_forwards=['30050:5005'],
 )
 
 ### Minion Gateway ###
@@ -187,6 +196,7 @@ docker_build(
 k8s_resource(
     'onms-keycloak',
     new_name='keycloak',
+    port_forwards=['26080:8080'],
 )
 
 ### Grafana ###

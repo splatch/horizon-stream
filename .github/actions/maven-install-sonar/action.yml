@@ -1,0 +1,41 @@
+name: 'Maven Install & Cache'
+description: 'Builds a Maven project and installs it into the runner''s Maven repository'
+inputs:
+  working-directory:
+    description: 'The directory containing the top-level pom'
+    required: false
+    default: '.'
+  enable-sonar-scan:
+    description: 'Enables code scanning with SonarCloud.'
+    required: true
+  github-token:
+    description: 'GITHUB_TOKEN secret for the workflow so SonarCloud can get PR information. Required if enable-sonar-scan is true.'
+    required: false
+  sonar-token:
+    description: 'SONAR_TOKEN secret to authenticate job with SonarCloud. Required if enable-sonar-scan is true.'
+    required: false
+  project-key:
+    description: 'The Sonar project key'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-${{ runner.arch }}-sonar
+
+    - run: |
+        mvn -B install \
+            -T 1C \
+            -Dorg.slf4j.simpleLogger.showThreadName=true \
+            -Dorg.slf4j.simpleLogger.showDateTime=true \
+            -Dorg.slf4j.simpleLogger.dateTimeFormat="yyyy-MM-dd HH:mm:ss"
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
+        SONAR_PROJECT_KEY: ${{ inputs.project-key }}

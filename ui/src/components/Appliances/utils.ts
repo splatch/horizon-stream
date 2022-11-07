@@ -1,6 +1,7 @@
 import { ExtendedDeviceDTO } from '@/types/device'
 import { ExtendedMinionDTO } from '@/types/minion'
 import { add, intervalToDuration, formatDuration } from 'date-fns'
+import { TimeUnit } from '@/types'
 
 export interface BGColors {
   latencyBgColor: string
@@ -16,15 +17,15 @@ export interface BGColors {
 export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[]) => list.map(item => {
   const { icmp_latency: latency, snmp_uptime: uptime, status } = item
   const bg = {
-    ok: 'bg-ok',
-    failed: 'bg-failed',
-    unknown: 'bg-unknown' // undefined | null
+    ok: 'ok',
+    failed: 'failed',
+    unknown: 'unknown' // undefined | null
   }
 
-  const setBgColor = (metric: any) => {
+  const setBgColor = (metric: number) => {
     let bgColor = bg.unknown
     
-    if(![undefined, null].includes(metric)) {
+    if(![undefined, null].includes(metric as any)) {
       bgColor = metric >= 0 ? bg.ok : bg.failed
     }
 
@@ -39,19 +40,22 @@ export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[
   }
 })
 
-export const getHumanReadableDuration = (uptimeInSeconds: number) => {
+/**
+ * 
+ * @param timestamp 
+ * @param timeUnit 
+ * @returns 
+ */
+export const getHumanReadableDuration = (timestamp: number, timeUnit = TimeUnit.Secs) => {
   let durationDisplay = '--' // undefined | null
 
-  if(uptimeInSeconds >= 0) {
-    if (uptimeInSeconds < 60) durationDisplay = `${uptimeInSeconds} ${uptimeInSeconds <= 0 ? '' : 'seconds'}` // 0-59secs
-    else {
-      const duration = intervalToDuration({
-        start: new Date(),
-        end: add(new Date(), {seconds: uptimeInSeconds})
-      })
-  
-      durationDisplay = formatDuration(duration, { format: ['days', 'hours', 'minutes']}) // +1min
-    }
+  if(![undefined, null].includes(timestamp as any)) {
+    const duration = intervalToDuration({
+      start: new Date(),
+      end: add(new Date(), {seconds: timeUnit === TimeUnit.Secs ? timestamp : timestamp / 1000})
+    })
+      
+    durationDisplay = formatDuration(duration, { format: ['days', 'hours', 'minutes']})
   }
 
   return durationDisplay
@@ -61,8 +65,9 @@ export const formatLatencyDisplay = (latency: any) => {
   let display = '--' // undefined | null
 
   if(![undefined, null].includes(latency)) {
-    if(latency > 0 || latency < 0) display = `${latency}ms`
-    else display = latency
+    display = latency
+
+    if(latency !== 0) display += 'ms'
   }
 
   return display
