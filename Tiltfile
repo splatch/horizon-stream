@@ -1,7 +1,4 @@
 # Tilt config #
-load('ext://tilt_inspector', 'tilt_inspector')
-tilt_inspector()
-
 secret_settings(disable_scrub=True)  ## TODO: update secret values so we can reenable scrub
 
 # Functions #
