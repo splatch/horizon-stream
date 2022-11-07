@@ -43,17 +43,14 @@ public class GrpcServerManager {
 
     private Server grpcServer;
     private final int port;
-    private final int maxMessageSize;
 
 
-    public GrpcServerManager(int port, int maxMessageSize) {
+    public GrpcServerManager(int port) {
         this.port = port;
-        this.maxMessageSize = maxMessageSize;
     }
 
     public synchronized void startServer(List<BindableService> services) {
         NettyServerBuilder serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(port))
-            .maxInboundMessageSize(maxMessageSize)
             .addService(ProtoReflectionService.newInstance());
         services.forEach(serverBuilder::addService);
         grpcServer = serverBuilder.build();

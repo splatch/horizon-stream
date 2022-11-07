@@ -28,7 +28,7 @@
 
 package org.opennms.horizon.inventory.service;
 
-import org.mapstruct.factory.Mappers;
+import java.util.Optional;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringServiceGrpc;
 import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
@@ -42,16 +42,14 @@ import com.google.rpc.Status;
 
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 public class MonitoringGrpcService extends MonitoringServiceGrpc.MonitoringServiceImplBase {
     private final MonitoringLocationRepository locationRepo;
-    private final MonitoringLocationMapper mapper = Mappers.getMapper(MonitoringLocationMapper.class);
-
-    public MonitoringGrpcService(MonitoringLocationRepository locationRepo) {
-        this.locationRepo = locationRepo;
-    }
+    private final MonitoringLocationMapper mapper;
 
     @Override
     public void listLocations(Empty request, StreamObserver<MonitoringLocationDTO> responseObserver) {
@@ -61,9 +59,9 @@ public class MonitoringGrpcService extends MonitoringServiceGrpc.MonitoringServi
 
     @Override
     public void getLocationByName(StringValue request, StreamObserver<MonitoringLocationDTO> responseObserver) {
-        MonitoringLocation location = locationRepo.findByLocation(request.getValue());
-        if(location !=null ){
-            responseObserver.onNext(mapper.modelToDTO(location));
+        Optional<MonitoringLocation> location = locationRepo.findByLocation(request.getValue());
+        if(location.isPresent()){
+            responseObserver.onNext(mapper.modelToDTO(location.get()));
         } else {
             Status status = Status.newBuilder()
                 .setCode(Code.NOT_FOUND_VALUE)

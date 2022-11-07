@@ -30,35 +30,33 @@ package org.opennms.horizon.inventory.grpc;
 
 import java.util.Collections;
 
+import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.service.MonitoringGrpcService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Configuration
 public class GrpcConfig {
-    private static final long DEFAULT_MAX_MESSAGE_SIZE = 100 * ( 1024 * 1024 );
     private static final int DEFAULT_GRPC_PORT = 8990;
 
     @Value("${grpc.server.port:" + DEFAULT_GRPC_PORT +"}")
     private int port;
-    @Value("${grpc.server.max.message.size: " + DEFAULT_MAX_MESSAGE_SIZE +"}")
-    private int maxMessageSize;
     private final MonitoringLocationRepository locationRepo;
-
-    public GrpcConfig(MonitoringLocationRepository locationRepo) {
-        this.locationRepo = locationRepo;
-    }
+    private final MonitoringLocationMapper mapper;
 
     @Bean
     public MonitoringGrpcService createService() {
-        return new MonitoringGrpcService(locationRepo);
+        return new MonitoringGrpcService(locationRepo, mapper);
     }
 
     @Bean(destroyMethod = "stopServer")
     public GrpcServerManager startServer(MonitoringGrpcService service) {
-        GrpcServerManager manager = new GrpcServerManager(port, maxMessageSize);
+        GrpcServerManager manager = new GrpcServerManager(port);
         //for next step with more than one services
         manager.startServer(Collections.singletonList(service));
         return manager;

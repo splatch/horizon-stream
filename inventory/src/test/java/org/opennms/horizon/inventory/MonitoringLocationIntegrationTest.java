@@ -18,9 +18,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -230,10 +231,10 @@ class MonitoringLocationIntegrationTest {
         location.setTenantId(new UUID(10, 12));
         MonitoringLocation savedLocation = monitoringLocationRepository.saveAndFlush(location);
         assertNotNull(savedLocation);
-        MonitoringLocation dbLocation = monitoringLocationRepository.findByLocation(locationName);
-        assertNotNull(dbLocation);
-        MonitoringLocation notExist = monitoringLocationRepository.findByLocation("badname");
-        assertNull(notExist);
+        Optional<MonitoringLocation> dbLocation = monitoringLocationRepository.findByLocation(locationName);
+        assertTrue(dbLocation.isPresent());
+        Optional<MonitoringLocation> notExist = monitoringLocationRepository.findByLocation("badname");
+        assertFalse(notExist.isPresent());
 
     }
 }
