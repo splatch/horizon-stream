@@ -51,7 +51,7 @@ public class NodeRest {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<NodeDTO> getNode(@PathVariable long id) throws Exception {
+    public ResponseEntity<NodeDTO> getNode(@PathVariable long id) {
         Optional<NodeDTO> ml = nodeService.findNode(id);
         if (ml.isPresent()) {
             return new ResponseEntity<>(ml.get(), HttpStatus.OK);

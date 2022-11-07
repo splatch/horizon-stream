@@ -3,7 +3,6 @@ package org.opennms.horizon.inventory.model;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.Type;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
