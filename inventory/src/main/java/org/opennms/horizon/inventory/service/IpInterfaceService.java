@@ -20,7 +20,7 @@ public class IpInterfaceService {
     private final IpInterfaceRepository modelRepo;
     private final NodeRepository nodeRepo;
 
-    private IPInterfaceMapper mapper = Mappers.getMapper(IPInterfaceMapper.class);
+    private final IPInterfaceMapper mapper;
 
     public IpInterfaceDTO saveIpInterface(IpInterfaceDTO dto) {
         IpInterface model = mapper.dtoToModel(dto);

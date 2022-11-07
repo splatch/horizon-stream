@@ -5,7 +5,7 @@ import org.mapstruct.Mapper;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.model.IpInterface;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface IPInterfaceMapper {
     IpInterface dtoToModel(IpInterfaceDTO dto);
     IpInterfaceDTO modelToDTO(IpInterface model);
