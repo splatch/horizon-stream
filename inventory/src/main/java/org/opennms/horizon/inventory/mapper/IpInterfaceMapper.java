@@ -6,14 +6,22 @@ import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.model.IpInterface;
 
 @Mapper(componentModel = "spring")
-public interface IPInterfaceMapper {
+public interface IpInterfaceMapper {
     IpInterface dtoToModel(IpInterfaceDTO dto);
     IpInterfaceDTO modelToDTO(IpInterface model);
 
     default Inet map(String value) {
-        return new Inet(value);
+        if (value == null || value.length() == 0) {
+            return null;
+        } else {
+            return new Inet(value);
+        }
     }
     default String map(Inet value) {
-        return value.getAddress();
+        if (value == null) {
+            return "";
+        } else {
+            return value.getAddress();
+        }
     }
 }

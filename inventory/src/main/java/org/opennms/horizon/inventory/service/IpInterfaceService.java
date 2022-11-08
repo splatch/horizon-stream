@@ -1,9 +1,8 @@
 package org.opennms.horizon.inventory.service;
 
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
-import org.opennms.horizon.inventory.mapper.IPInterfaceMapper;
+import org.opennms.horizon.inventory.mapper.IpInterfaceMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
@@ -20,7 +19,7 @@ public class IpInterfaceService {
     private final IpInterfaceRepository modelRepo;
     private final NodeRepository nodeRepo;
 
-    private final IPInterfaceMapper mapper;
+    private final IpInterfaceMapper mapper;
 
     public IpInterfaceDTO saveIpInterface(IpInterfaceDTO dto) {
         IpInterface model = mapper.dtoToModel(dto);
