@@ -2,7 +2,6 @@ package org.opennms.horizon.inventory.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.opennms.horizon.inventory.dto.MonitoredServiceTypeDTO;
-import org.opennms.horizon.inventory.dto.MonitoredServiceTypeDTO;
 import org.opennms.horizon.inventory.service.MonitoredServiceTypeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,7 @@ public class MonitoredServiceTypeRest {
     private final MonitoredServiceTypeService monitoredServiceTypeService;
 
     @PostMapping
-    public ResponseEntity<MonitoredServiceTypeDTO> postMonitoredServiceType(@RequestBody MonitoredServiceTypeDTO dto) throws Exception {
+    public ResponseEntity<MonitoredServiceTypeDTO> postMonitoredServiceType(@RequestBody MonitoredServiceTypeDTO dto) {
         Optional<MonitoredServiceTypeDTO> ml = monitoredServiceTypeService.findMonitoredServiceType(dto.getId());
         if (ml.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -35,7 +34,7 @@ public class MonitoredServiceTypeRest {
     }
 
     @PutMapping
-    public ResponseEntity<MonitoredServiceTypeDTO> putMonitoredServiceType(@RequestBody MonitoredServiceTypeDTO data) throws Exception {
+    public ResponseEntity<MonitoredServiceTypeDTO> putMonitoredServiceType(@RequestBody MonitoredServiceTypeDTO data) {
         Optional<MonitoredServiceTypeDTO> ml = monitoredServiceTypeService.findMonitoredServiceType(data.getId());
         if (ml.isPresent()) {
             MonitoredServiceTypeDTO saved = monitoredServiceTypeService.saveMonitoredServiceType(data);
@@ -46,13 +45,13 @@ public class MonitoredServiceTypeRest {
     }
 
     @GetMapping
-    public ResponseEntity<List<MonitoredServiceTypeDTO>> getMonitoredServiceType() throws Exception {
+    public ResponseEntity<List<MonitoredServiceTypeDTO>> getMonitoredServiceType() {
         List<MonitoredServiceTypeDTO> all = monitoredServiceTypeService.findAllMonitoredServiceTypes();
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<MonitoredServiceTypeDTO> getMonitoredServiceType(@PathVariable long id) throws Exception {
+    public ResponseEntity<MonitoredServiceTypeDTO> getMonitoredServiceType(@PathVariable long id) {
         Optional<MonitoredServiceTypeDTO> ml = monitoredServiceTypeService.findMonitoredServiceType(id);
         if (ml.isPresent()) {
             return new ResponseEntity<>(ml.get(), HttpStatus.OK);

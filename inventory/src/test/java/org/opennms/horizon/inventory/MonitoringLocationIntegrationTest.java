@@ -2,6 +2,7 @@ package org.opennms.horizon.inventory;
 
 import org.junit.jupiter.api.*;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
+import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,9 +18,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(
@@ -216,5 +220,21 @@ class MonitoringLocationIntegrationTest {
             .postForEntity("http://localhost:" + port + "/inventory/locations", request, MonitoringLocationDTO.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    @Order(9)
+    public void testRepoFindByName() {
+        String locationName = "testLocation";
+        MonitoringLocation location = new MonitoringLocation();
+        location.setLocation(locationName);
+        location.setTenantId(new UUID(10, 12));
+        MonitoringLocation savedLocation = monitoringLocationRepository.saveAndFlush(location);
+        assertNotNull(savedLocation);
+        Optional<MonitoringLocation> dbLocation = monitoringLocationRepository.findByLocation(locationName);
+        assertTrue(dbLocation.isPresent());
+        Optional<MonitoringLocation> notExist = monitoringLocationRepository.findByLocation("badname");
+        assertFalse(notExist.isPresent());
+
     }
 }

@@ -1,11 +1,7 @@
 name: feature-grafana
 
-on:  
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+on:
+  pull_request:
     paths:
       - 'grafana/**'
 

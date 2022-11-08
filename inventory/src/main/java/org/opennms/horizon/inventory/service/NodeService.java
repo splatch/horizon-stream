@@ -1,7 +1,6 @@
 package org.opennms.horizon.inventory.service;
 
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.Node;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 public class NodeService {
     private final NodeRepository modelRepo;
 
-    private NodeMapper mapper = Mappers.getMapper(NodeMapper.class);
+    private final NodeMapper mapper;
 
     public NodeDTO saveNode(NodeDTO dto) {
         Node model = mapper.dtoToModel(dto);

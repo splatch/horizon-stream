@@ -1,11 +1,7 @@
 name: feature-operator
 
-on:  
-  push:
-    branches:
-      - '**'
-      - '!develop'
-      - '!release'
+on:
+  pull_request:
     paths:
       - 'operator/**'
 
@@ -24,6 +20,6 @@ jobs:
         uses: ./.github/actions/operator
         with:
           dir-location: 'operator'
-          is-self-hosted-runner: false
+          enable-sonar-scan: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
