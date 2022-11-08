@@ -1,4 +1,4 @@
-import Graphs from '@/containers/graphs.vue'
+import Graphs from '@/containers/Graphs.vue'
 import setupWrapper from 'tests/setupWrapper'
 
 const wrapper = setupWrapper({
