@@ -22,7 +22,7 @@
         <FeatherAppRailNavItem href="/" :icon="Appliances" title="Appliances" :class="{ selected: isSelected('/') }" />
         <FeatherAppRailNavItem href="/map" :icon="Location" title="Map" :class="{ selected: isSelected('/map') }" />
         <FeatherAppRailNavItem href="/graphs" :icon="Graphs" title="Graphs" :class="{ selected: isSelected('/graphs') }" />
-        <FeatherAppRailNavItem href="/inventory" :icon="Business" title="Business" :class="{ selected: isSelected('/inventory') }" />
+        <FeatherAppRailNavItem href="/inventory" :icon="Business" title="Inventory" :class="{ selected: isSelected('/inventory') }" />
       </template>
     </FeatherAppRail>
 </template>
