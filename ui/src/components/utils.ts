@@ -1,12 +1,6 @@
 import { add, intervalToDuration, formatDuration } from 'date-fns'
 import { TimeUnit } from '@/types'
 
-export interface BGColors {
-  latencyBgColor: string
-  uptimeBgColor: string
-  statusBgColor: string
-}
-
 /**
  * 
  * @param timestamp 
@@ -14,7 +8,6 @@ export interface BGColors {
  * @returns 
  */
 export const getHumanReadableDuration = (timestamp: number, timeUnit = TimeUnit.Secs) => {
-  console.log('timestamp',timestamp )
   let durationDisplay = '--' // undefined | null
 
   if(![undefined, null].includes(timestamp as any)) {

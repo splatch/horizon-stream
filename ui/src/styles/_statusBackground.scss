@@ -1,20 +1,30 @@
 @use "@featherds/styles/themes/variables";
 
-.bg-status {
-  color: var(variables.$primary-text-on-color);
-  &.ok {
+:deep(.bg-status) {
+  .label {
+    color: var(variables.$primary-text-on-color);
+  }
+  &.ok,
+  &.UP {
     background-color: var(variables.$success);
   }
-  &.failed {
+  &.failed,
+  &.DOWN {
     background-color: var(variables.$error);
   }
-  &.unknown {
+  &.unknown,
+  &.UNKNOWN {
     background-color: grey;
   }
 }
 
 .open-dark {
-  .bg-status.unknown {
-    color: rgb(10, 12, 27);
+  .bg-status {
+    &.unknown,
+    &.UNKNOWN {
+      .label {
+        color: rgb(10, 12, 27);
+      }
+    }
   }
 }
