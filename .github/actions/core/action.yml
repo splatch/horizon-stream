@@ -45,7 +45,7 @@ runs:
         # Release on 0.0.0 for now.
 
         # Full build, including docker image creation and Integration Tests
-        mvn -Prun-it,coverage verify \
+        mvn -Prun-it,coverage clean verify \
           -Dhttp.keepAlive=false \
           -Dmaven.wagon.http.pool=false \
           -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
@@ -89,7 +89,7 @@ runs:
 
         # Full build, including docker image creation and Integration Tests
         #mvn -Prun-it clean install
-        mvn -Prun-it verify \
+        mvn -Prun-it clean verify \
           -Dhttp.keepAlive=false \
           -Dmaven.wagon.http.pool=false \
           -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
