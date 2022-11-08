@@ -6,7 +6,7 @@
           title="Download to PDF"
           v-slot="{ attrs, on }"
         >
-          <FeatherButton 
+          <FeatherButton
             v-bind="attrs" 
             v-on="on" 
             icon="Download" 
@@ -26,15 +26,13 @@
 <script setup lang="ts">
 import { useGraphs } from '@/composables/useGraphs'
 import { ChartOptions, TitleOptions, ChartData } from 'chart.js'
-import { Chart, registerables }  from 'chart.js'
+import Chart from 'chart.js/auto'
 // import zoomPlugin from 'chartjs-plugin-zoom'
 import { PropType } from 'vue'
-import { formatTimestamp } from './utils'
+import { formatTimestamp, downloadCanvas } from './utils'
 import { GraphProps } from '@/types/graphs'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
-import { downloadCanvas } from './utils'
 
-Chart.register(...registerables)
 // Chart.register(zoomPlugin) disable zoom until phase 2
 
 const graphs = useGraphs()
