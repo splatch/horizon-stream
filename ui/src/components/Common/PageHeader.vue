@@ -1,5 +1,5 @@
 <template>
-  <div class="header">{{ props.heading }}</div>
+  <section class="header">{{ props.heading }}</section>
 </template>
 <script lang="ts" setup>
 const props = defineProps({
