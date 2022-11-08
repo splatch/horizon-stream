@@ -14,3 +14,7 @@ spring:
 
   liquibase:
     change-log: db/changelog/changelog.xml
+
+grpc:
+  server:
+    port: 6565
