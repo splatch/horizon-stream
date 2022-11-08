@@ -25,7 +25,7 @@ func TestPrometheusUpdateConfig(t *testing.T) {
 	ConfigFilePath = "./../../charts/opennms/templates/"
 	handler := PrometheusHandler{}
 	assert.Nil(t, handler.GetConfig(), "config should start as nil")
-	values := DefaultValues()
+	values := DefaultTestValues()
 	values.Values.Prometheus.Enabled = false
 	handler.UpdateConfig(values)
 	assert.Nil(t, handler.GetConfig(), "config should remain nil when prom is disabled")

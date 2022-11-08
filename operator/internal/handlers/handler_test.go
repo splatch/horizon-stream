@@ -57,7 +57,7 @@ var valuesSet bool
 
 var tvals values.TemplateValues
 
-func DefaultValues() values.TemplateValues {
+func DefaultTestValues() values.TemplateValues {
 	if !valuesSet {
 		tvals, _ = values2.GetDefaultValues(config.OperatorConfig{
 			DefaultOpenNMSValuesFile: "./../../charts/opennms/values.yaml",

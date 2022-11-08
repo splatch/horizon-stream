@@ -56,7 +56,9 @@ func (i *Instance) Update(ctx context.Context, crd v1alpha1.OpenNMS) error {
 func (i *Instance) updateHandlers() error {
 	for _, handler := range i.Handlers {
 		err := handler.UpdateConfig(i.Values)
-		return err
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

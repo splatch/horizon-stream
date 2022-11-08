@@ -25,7 +25,7 @@ func TestMailServerUpdateConfig(t *testing.T) {
 	ConfigFilePath = "./../../charts/opennms/templates/"
 	handler := MailServerHandler{}
 	assert.Nil(t, handler.GetConfig(), "config should start as nil")
-	err := handler.UpdateConfig(DefaultValues())
+	err := handler.UpdateConfig(DefaultTestValues())
 	assert.Nil(t, err)
 	assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
 }

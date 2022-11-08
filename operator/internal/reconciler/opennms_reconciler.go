@@ -78,17 +78,12 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (re
 		}
 	}
 
-	var autoUpdateServices []client.Object //todo remove
-
 	for _, handler := range instance.Handlers {
 		if handler.GetDeployed() && instance.CRD.Spec.DeployOnly { //skip handler if already deployed and the instance is marked as "deploy only"
 			continue
 		}
 		for _, resource := range handler.GetConfig() {
 			kind := reflect.ValueOf(resource).Elem().Type().String()
-			if kind == "v1.Deployment" || kind == "v1.StatefulSet" {
-				autoUpdateServices = append(autoUpdateServices, resource)
-			}
 			deployedResource, exists := r.getResourceFromCluster(ctx, resource)
 			if !exists {
 				r.updateStatus(ctx, &instance.CRD, false, "instance starting")
@@ -120,7 +115,7 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (re
 				case "v1.StatefulSet":
 					res, err = r.updateStatefulSet(ctx, &instance.CRD, resource, deployedResource)
 				case "v1.Job":
-					res, err = r.updateJob(deployedResource)
+					res = r.updateJob(deployedResource)
 				case "v1.Secret":
 					res, err = r.updateSecret(ctx, resource, deployedResource)
 				case "v1.ConfigMap":
