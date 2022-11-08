@@ -28,7 +28,7 @@ runs:
         key: ${{ runner.os }}-${{ runner.arch }}-sonar
 
     - run: |
-        mvn -B clean install \
+        mvn -B install \
             -T 1C \
             -Dorg.slf4j.simpleLogger.showThreadName=true \
             -Dorg.slf4j.simpleLogger.showDateTime=true \

@@ -38,14 +38,14 @@ runs:
         # IMPORTANT: Check the .circleci/ original build.
 
         # Simple build - no Integration Tests
-        #mvn clean install
+        #mvn install
         # For testing the pipeline, just run this without tests to get the
         # publish working with releasing working correctly. The test takes
         # 5mins roughly.
         # Release on 0.0.0 for now.
 
         # Full build, including docker image creation and Integration Tests
-        mvn -Prun-it,coverage clean verify \
+        mvn -Prun-it,coverage verify \
           -Dhttp.keepAlive=false \
           -Dmaven.wagon.http.pool=false \
           -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
@@ -81,15 +81,15 @@ runs:
         # IMPORTANT: Check the .circleci/ original build.
 
         # Simple build - no Integration Tests
-        #mvn clean install
+        #mvn install
         # For testing the pipeline, just run this without tests to get the
         # publish working with releasing working correctly. The test takes
         # 5mins roughly.
         # Release on 0.0.0 for now.
 
         # Full build, including docker image creation and Integration Tests
-        #mvn -Prun-it clean install
-        mvn -Prun-it clean verify \
+        #mvn -Prun-it install
+        mvn -Prun-it verify \
           -Dhttp.keepAlive=false \
           -Dmaven.wagon.http.pool=false \
           -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
