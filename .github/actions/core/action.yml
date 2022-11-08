@@ -46,13 +46,11 @@ runs:
         # Release on 0.0.0 for now.
 
         # Full build, including docker image creation and Integration Tests
-        #mvn -Prun-it clean install
-        mvn -Prun-it \
+        mvn -Prun-it,coverage verify \
           -Dhttp.keepAlive=false \
           -Dmaven.wagon.http.pool=false \
           -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
           -Dmaven.wagon.http.retryHandler.count=3 \
-          clean install \
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
 
           # Added extra args to deal with time out issue, see
@@ -64,6 +62,7 @@ runs:
         # The image, opennms-horizon-application-it-image, is just for the
         # integration tests, ignore.  
 
+      working-directory: ${{ inputs.dir-location }}
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
@@ -77,7 +76,6 @@ runs:
 
         netstat -ltan
 
-        cd ${{ inputs.dir-location }}
         # Keep the input arg of the dir, if the process is the same for each
         # core, rest-server, and ui, we can make this like a generic function.
 
@@ -92,12 +90,11 @@ runs:
 
         # Full build, including docker image creation and Integration Tests
         #mvn -Prun-it clean install
-        mvn -Prun-it \
+        mvn -Prun-it verify \
           -Dhttp.keepAlive=false \
           -Dmaven.wagon.http.pool=false \
           -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 \
-          -Dmaven.wagon.http.retryHandler.count=3 \
-          clean install
+          -Dmaven.wagon.http.retryHandler.count=3
 
           # Added extra args to deal with time out issue, see
           # https://github.com/actions/virtual-environments/issues/1499.
@@ -108,4 +105,5 @@ runs:
         # The image, opennms-horizon-application-it-image, is just for the
         # integration tests, ignore.  
 
+      working-directory: ${{ inputs.dir-location }}
       shell: bash

@@ -24,10 +24,11 @@ runs:
       if: ${{ inputs.enable-sonar-scan == 'true' }}
       run: |
 
-        mvn -f events install jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-events:local \
+        mvn -Pcoverage verify jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-events:local \
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
 
       shell: bash
+      working-directory: events
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         SONAR_TOKEN: ${{ inputs.sonar-token }}
@@ -37,6 +38,7 @@ runs:
       if: ${{ inputs.enable-sonar-scan == 'false' }}
       run: |
 
-        mvn -f events install jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-events:local
+        mvn verify jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-events:local
 
       shell: bash
+      working-directory: events
