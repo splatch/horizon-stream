@@ -231,9 +231,9 @@ class MonitoringLocationIntegrationTest {
         location.setTenantId(new UUID(10, 12));
         MonitoringLocation savedLocation = monitoringLocationRepository.saveAndFlush(location);
         assertNotNull(savedLocation);
-        Optional<MonitoringLocation> dbLocation = monitoringLocationRepository.findByLocation(locationName);
+        Optional<MonitoringLocation> dbLocation = monitoringLocationRepository.findMonitoringLocationByLocation(locationName);
         assertTrue(dbLocation.isPresent());
-        Optional<MonitoringLocation> notExist = monitoringLocationRepository.findByLocation("badname");
+        Optional<MonitoringLocation> notExist = monitoringLocationRepository.findMonitoringLocationByLocation("badname");
         assertFalse(notExist.isPresent());
 
     }

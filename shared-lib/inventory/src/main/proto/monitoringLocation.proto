@@ -40,11 +40,11 @@ message MonitoringLocationDTO {
   string location = 3;
 }
 
-message LocationList {
+message MonitoringLocationList {
   repeated MonitoringLocationDTO locations = 1;
 }
 
-service MonitoringService {
-  rpc listLocations(google.protobuf.Empty) returns (LocationList) {};
+service MonitoringLocationService {
+  rpc listLocations(google.protobuf.Empty) returns (MonitoringLocationList) {};
   rpc getLocationByName(google.protobuf.StringValue) returns (MonitoringLocationDTO) {};
 }

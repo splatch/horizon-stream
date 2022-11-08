@@ -32,9 +32,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.opennms.horizon.inventory.dto.LocationList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
-import org.opennms.horizon.inventory.dto.MonitoringServiceGrpc;
+import org.opennms.horizon.inventory.dto.MonitoringLocationList;
+import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
 import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
@@ -51,20 +51,20 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class MonitoringGrpcService extends MonitoringServiceGrpc.MonitoringServiceImplBase {
+public class MonitoringGrpcService extends MonitoringLocationServiceGrpc.MonitoringLocationServiceImplBase {
     private final MonitoringLocationRepository locationRepo;
     private final MonitoringLocationMapper mapper;
 
     @Override
-    public void listLocations(Empty request, StreamObserver<LocationList> responseObserver) {
-        List<MonitoringLocationDTO> result = locationRepo.findAll().stream().map(l->mapper.modelToDTO(l)).collect(Collectors.toList());
-        responseObserver.onNext(LocationList.newBuilder().addAllLocations(result).build());
+    public void listLocations(Empty request, StreamObserver<MonitoringLocationList> responseObserver) {
+        List<MonitoringLocationDTO> result = locationRepo.findAll().stream().map(mapper::modelToDTO).collect(Collectors.toList());
+        responseObserver.onNext(MonitoringLocationList.newBuilder().addAllLocations(result).build());
         responseObserver.onCompleted();
     }
 
     @Override
     public void getLocationByName(StringValue request, StreamObserver<MonitoringLocationDTO> responseObserver) {
-        Optional<MonitoringLocation> location = locationRepo.findByLocation(request.getValue());
+        Optional<MonitoringLocation> location = locationRepo.findMonitoringLocationByLocation(request.getValue());
         if(location.isPresent()){
             responseObserver.onNext(mapper.modelToDTO(location.get()));
         } else {
