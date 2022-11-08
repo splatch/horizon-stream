@@ -1,7 +1,24 @@
 <template>
   <div class="container">
       <div class="canvas-wrapper">
-        <canvas :id="`${graph.label}`"></canvas>
+
+        <FeatherTooltip
+          title="Download to PDF"
+          v-slot="{ attrs, on }"
+        >
+          <FeatherButton 
+            v-bind="attrs" 
+            v-on="on" 
+            icon="Download" 
+            class="download-icon" 
+            @click="onDownload" 
+            v-if="graphs.dataSets.value.length"
+          >
+            <FeatherIcon :icon="DownloadFile" />
+          </FeatherButton>
+        </FeatherTooltip>
+
+        <canvas class="canvas" :id="`${graph.label}`"></canvas>
       </div>
   </div>
 </template>
@@ -14,6 +31,8 @@ import { Chart, registerables }  from 'chart.js'
 import { PropType } from 'vue'
 import { formatTimestamp } from './utils'
 import { GraphProps } from '@/types/graphs'
+import DownloadFile from '@featherds/icon/action/DownloadFile'
+import { downloadCanvas } from './utils'
 
 Chart.register(...registerables)
 // Chart.register(zoomPlugin) disable zoom until phase 2
@@ -115,6 +134,11 @@ const render = async (update?: boolean) => {
   }
 }
 
+const onDownload = () => {
+  const canvas = document.getElementById(props.graph.label) as HTMLCanvasElement
+  downloadCanvas(canvas, props.graph.label)
+}
+
 onMounted(async () => {
   await graphs.getMetrics(props.graph)
   render()
@@ -129,5 +153,16 @@ onMounted(async () => {
 .canvas-wrapper {
   display: block;
   height: 300px;
+  position: relative;
+
+  .download-icon {
+    position: absolute;
+    right: 10px;
+    top: 30px;
+
+    svg {
+      font-size: 15px;
+    }
+  }
 }
 </style>
