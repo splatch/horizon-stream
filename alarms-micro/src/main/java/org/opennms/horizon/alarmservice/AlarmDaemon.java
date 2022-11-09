@@ -30,6 +30,7 @@ package org.opennms.horizon.alarmservice;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.opennms.horizon.alarmservice.api.AlarmPersister;
 import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;
 import org.opennms.horizon.core.lib.SystemProperties;
 import org.opennms.horizon.events.api.DaemonTools;

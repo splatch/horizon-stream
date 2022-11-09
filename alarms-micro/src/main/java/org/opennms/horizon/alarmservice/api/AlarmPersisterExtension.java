@@ -28,8 +28,7 @@
 
 package org.opennms.horizon.alarmservice.api;
 
-import org.opennms.horizon.db.model.OnmsAlarm;
-import org.opennms.horizon.db.model.OnmsEvent;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.events.xml.Event;
 
 /**
@@ -54,7 +53,8 @@ public interface AlarmPersisterExtension {
      * @param event the event that triggered the alarm
      * @param dbEvent the database entity associated with the given event
      */
-    void afterAlarmCreated(OnmsAlarm alarm, Event event, OnmsEvent dbEvent);
+    //TODO: This needs to be the new protobuf event
+    void afterAlarmCreated(Alarm alarm, Event event, String dbEvent);
 
     /**
      * Invoked by the AlarmPersister after the alarm has been updated, but *before*
@@ -64,6 +64,8 @@ public interface AlarmPersisterExtension {
      * @param event the event that triggered the update to the alarm
      * @param dbEvent the database entity associated with the given event
      */
-    void afterAlarmUpdated(OnmsAlarm alarm, Event event, OnmsEvent dbEvent);
+    //TODO: This needs to be the new protobuf event
+
+    void afterAlarmUpdated(Alarm alarm, Event event, String dbEvent);
 
 }

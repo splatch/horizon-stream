@@ -38,20 +38,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
-import org.opennms.horizon.alarms.api.AlarmEntityListener;
-import org.opennms.horizon.alarms.api.AlarmLifecycleListener;
+import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
+import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
+import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.impl.entity.Memo;
+import org.opennms.horizon.alarmservice.db.impl.entity.ReductionKeyMemo;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
+import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 import org.opennms.horizon.core.lib.SystemProperties;
-import org.opennms.horizon.db.dao.api.SessionUtils;
-import org.opennms.horizon.db.dao.api.AlarmDao;
-import org.opennms.horizon.db.model.OnmsAlarm;
-import org.opennms.horizon.db.model.OnmsMemo;
-import org.opennms.horizon.db.model.OnmsReductionKeyMemo;
-import org.opennms.horizon.db.model.OnmsSeverity;
-import org.opennms.horizon.db.model.TroubleTicketState;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class AlarmLifecycleListenerManager implements AlarmEntityListener {
 
@@ -63,9 +64,8 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
     private final Set<AlarmLifecycleListener> listeners = Sets.newConcurrentHashSet();
     private Timer timer;
 
-    private AlarmDao alarmDao;
-
-    private SessionUtils sessionUtils;
+    @Autowired
+    private AlarmRepository alarmRepository;
 
     public void start() {
         timer = new Timer("AlarmLifecycleListenerManager");
@@ -100,9 +100,10 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
         final AtomicLong systemMillisAfterLoad = new AtomicLong(-1);
         try {
             forEachListener(AlarmLifecycleListener::preHandleAlarmSnapshot);
-            sessionUtils.withTransaction(() -> {
+            //TODO:MMF
+//            sessionUtils.withTransaction(() -> {
                // Load all of the alarms
-               final List<OnmsAlarm> allAlarms = alarmDao.findAll();
+               final List<Alarm> allAlarms = alarmRepository.findAll();
                numAlarms.set(allAlarms.size());
                // Save the timestamp after the load, so we can differentiate between how long it took
                // to load the alarms and how long it took to invoke the callbacks
@@ -112,8 +113,8 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
                    l.handleAlarmSnapshot(allAlarms);
                    LOG.debug("Done calling listener.");
                });
-               return null;
-            });
+//               return null;
+//            });
         } finally {
             if (LOG.isDebugEnabled()) {
                 final long now = System.currentTimeMillis();
@@ -127,77 +128,77 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
         }
     }
 
-    public void onNewOrUpdatedAlarm(OnmsAlarm alarm) {
+    public void onNewOrUpdatedAlarm(Alarm alarm) {
         forEachListener(l -> l.handleNewOrUpdatedAlarm(alarm));
     }
 
     @Override
-    public void onAlarmArchived(OnmsAlarm alarm, String previousReductionKey) {
+    public void onAlarmArchived(Alarm alarm, String previousReductionKey) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onAlarmDeleted(OnmsAlarm alarm) {
+    public void onAlarmDeleted(Alarm alarm) {
         forEachListener(l -> l.handleDeletedAlarm(alarm.getId(), alarm.getReductionKey()));
     }
 
     @Override
-    public void onAlarmCreated(OnmsAlarm alarm) {
+    public void onAlarmCreated(Alarm alarm) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onAlarmUpdatedWithReducedEvent(OnmsAlarm alarm) {
+    public void onAlarmUpdatedWithReducedEvent(Alarm alarm) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onAlarmAcknowledged(OnmsAlarm alarm, String previousAckUser, Date previousAckTime) {
+    public void onAlarmAcknowledged(Alarm alarm, String previousAckUser, Date previousAckTime) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onAlarmUnacknowledged(OnmsAlarm alarm, String previousAckUser, Date previousAckTime) {
+    public void onAlarmUnacknowledged(Alarm alarm, String previousAckUser, Date previousAckTime) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onAlarmSeverityUpdated(OnmsAlarm alarm, OnmsSeverity previousSeverity) {
+    public void onAlarmSeverityUpdated(Alarm alarm, AlarmSeverity previousSeverity) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onStickyMemoUpdated(OnmsAlarm alarm, String previousBody, String previousAuthor, Date previousUpdated) {
+    public void onStickyMemoUpdated(Alarm alarm, String previousBody, String previousAuthor, Date previousUpdated) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onReductionKeyMemoUpdated(OnmsAlarm alarm, String previousBody, String previousAuthor, Date previousUpdated) {
+    public void onReductionKeyMemoUpdated(Alarm alarm, String previousBody, String previousAuthor, Date previousUpdated) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onStickyMemoDeleted(OnmsAlarm alarm, OnmsMemo memo) {
+    public void onStickyMemoDeleted(Alarm alarm, Memo memo) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onReductionKeyMemoDeleted(OnmsAlarm alarm, OnmsReductionKeyMemo memo) {
+    public void onReductionKeyMemoDeleted(Alarm alarm, ReductionKeyMemo memo) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onLastAutomationTimeUpdated(OnmsAlarm alarm, Date previousLastAutomationTime) {
+    public void onLastAutomationTimeUpdated(Alarm alarm, Date previousLastAutomationTime) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onRelatedAlarmsUpdated(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms) {
+    public void onRelatedAlarmsUpdated(Alarm alarm, Set<Alarm> previousRelatedAlarms) {
         onNewOrUpdatedAlarm(alarm);
     }
 
     @Override
-    public void onTicketStateChanged(OnmsAlarm alarm, TroubleTicketState previousState) {
+    public void onTicketStateChanged(Alarm alarm, TroubleTicketState previousState) {
         onNewOrUpdatedAlarm(alarm);
     }
 
@@ -223,14 +224,6 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
     public void onListenerUnregistered(final AlarmLifecycleListener listener, final Map<String,String> properties) {
         LOG.debug("onListenerUnregistered: {} with properties: {}", listener, properties);
         if (listener!=null) { listeners.remove(listener); }
-    }
-
-    public void setAlarmDao(AlarmDao alarmDao) {
-        this.alarmDao = alarmDao;
-    }
-
-    public void setSessionUtils(SessionUtils sessionUtils) {
-        this.sessionUtils = sessionUtils;
     }
 
 }

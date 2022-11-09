@@ -33,38 +33,13 @@
 
     <dependencies>
 <!--        //TODO:MMF remove ALL THESE -->
-        <dependency>
-            <groupId>org.opennms.horizon.core</groupId>
-            <artifactId>lib</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.events</groupId>
-            <artifactId>api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.db</groupId>
-            <artifactId>model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.alarms</groupId>
-            <artifactId>api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.db</groupId>
-            <artifactId>dao-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.events</groupId>
-            <artifactId>api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
-        <!--     END    //TODO:MMF remove ALL THESE -->
+        <dependency>
+            <groupId>org.opennms.horizon.events</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+<!--     END    //TODO:MMF remove ALL THESE -->
 
 
         <dependency>

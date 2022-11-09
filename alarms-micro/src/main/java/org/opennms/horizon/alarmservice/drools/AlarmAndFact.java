@@ -29,18 +29,18 @@
 package org.opennms.horizon.alarmservice.drools;
 
 import org.kie.api.runtime.rule.FactHandle;
-import org.opennms.horizon.db.model.OnmsAlarm;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 
 public class AlarmAndFact {
-    private OnmsAlarm alarm;
+    private Alarm alarm;
     private FactHandle fact;
 
-    public AlarmAndFact(OnmsAlarm alarm, FactHandle fact) {
+    public AlarmAndFact(Alarm alarm, FactHandle fact) {
         this.alarm = alarm;
         this.fact = fact;
     }
 
-    public OnmsAlarm getAlarm() {
+    public Alarm getAlarm() {
         return alarm;
     }
 

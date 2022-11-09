@@ -31,11 +31,11 @@ package org.opennms.horizon.alarmservice.api;
 import java.util.Date;
 import java.util.Set;
 
-import org.opennms.horizon.db.model.OnmsAlarm;
-import org.opennms.horizon.db.model.OnmsMemo;
-import org.opennms.horizon.db.model.OnmsReductionKeyMemo;
-import org.opennms.horizon.db.model.OnmsSeverity;
-import org.opennms.horizon.db.model.TroubleTicketState;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
+import org.opennms.horizon.alarmservice.model.TroubleTicketState;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.impl.entity.Memo;
+import org.opennms.horizon.alarmservice.db.impl.entity.ReductionKeyMemo;
 
 /**
  * Used to get callbacks when alarm entities are created, updated and/or deleted.
@@ -44,32 +44,32 @@ import org.opennms.horizon.db.model.TroubleTicketState;
  */
 public interface AlarmEntityListener {
 
-    void onAlarmCreated(OnmsAlarm alarm);
+    void onAlarmCreated(Alarm alarm);
 
-    void onAlarmUpdatedWithReducedEvent(OnmsAlarm alarm);
+    void onAlarmUpdatedWithReducedEvent(Alarm alarm);
 
-    void onAlarmAcknowledged(OnmsAlarm alarm, String previousAckUser, Date previousAckTime);
+    void onAlarmAcknowledged(Alarm alarm, String previousAckUser, Date previousAckTime);
 
-    void onAlarmUnacknowledged(OnmsAlarm alarm, String previousAckUser, Date previousAckTime);
+    void onAlarmUnacknowledged(Alarm alarm, String previousAckUser, Date previousAckTime);
 
-    void onAlarmSeverityUpdated(OnmsAlarm alarm, OnmsSeverity previousSeverity);
+    void onAlarmSeverityUpdated(Alarm alarm, AlarmSeverity previousSeverity);
 
-    void onAlarmArchived(OnmsAlarm alarm, String previousReductionKey);
+    void onAlarmArchived(Alarm alarm, String previousReductionKey);
 
-    void onAlarmDeleted(OnmsAlarm alarm);
+    void onAlarmDeleted(Alarm alarm);
 
-    void onStickyMemoUpdated(OnmsAlarm alarm, String previousBody, String previousAuthor, Date previousUpdated);
+    void onStickyMemoUpdated(Alarm alarm, String previousBody, String previousAuthor, Date previousUpdated);
 
-    void onReductionKeyMemoUpdated(OnmsAlarm alarm, String previousBody, String previousAuthor, Date previousUpdated);
+    void onReductionKeyMemoUpdated(Alarm alarm, String previousBody, String previousAuthor, Date previousUpdated);
 
-    void onStickyMemoDeleted(OnmsAlarm alarm, OnmsMemo memo);
+    void onStickyMemoDeleted(Alarm alarm, Memo memo);
 
-    void onReductionKeyMemoDeleted(OnmsAlarm alarm, OnmsReductionKeyMemo memo);
+    void onReductionKeyMemoDeleted(Alarm alarm, ReductionKeyMemo memo);
 
-    void onLastAutomationTimeUpdated(OnmsAlarm alarm, Date previousLastAutomationTime);
+    void onLastAutomationTimeUpdated(Alarm alarm, Date previousLastAutomationTime);
 
-    void onRelatedAlarmsUpdated(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms);
+    void onRelatedAlarmsUpdated(Alarm alarm, Set<Alarm> previousRelatedAlarms);
 
-    void onTicketStateChanged(OnmsAlarm alarm, TroubleTicketState previousState);
+    void onTicketStateChanged(Alarm alarm, TroubleTicketState previousState);
 
 }

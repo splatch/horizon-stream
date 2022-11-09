@@ -34,6 +34,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
+import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;

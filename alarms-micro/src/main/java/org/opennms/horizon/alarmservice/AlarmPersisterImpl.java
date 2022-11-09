@@ -39,12 +39,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.alarms.api.AlarmPersisterExtension;
+import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
+import org.opennms.horizon.alarmservice.api.AlarmPersister;
+import org.opennms.horizon.alarmservice.api.AlarmPersisterExtension;
 import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.Severity;
 import org.opennms.horizon.core.lib.SystemProperties;
-import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.events.conf.xml.LogDestType;
 import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.events.xml.Parm;
@@ -52,6 +53,7 @@ import org.opennms.horizon.events.xml.Parm;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Striped;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Singleton to persist AlarmDTOs.
@@ -69,8 +71,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
     protected static boolean LEGACY_ALARM_STATE = Boolean.getBoolean("org.opennms.alarmd.legacyAlarmState");
 
     private AlarmRepository alarmRepository;
-
-    private SessionUtils sessionUtils;
 
     private AlarmEntityNotifier m_alarmEntityNotifier;
 
@@ -100,10 +100,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
         final Alarm[] alarm = new Alarm[1];
         try {
             locks.forEach(Lock::lock);
-            // Process the alarm inside a transaction
-            sessionUtils.withTransaction(()->{
-                alarm[0] = addOrReduceEventAsAlarm(event);
-            });
+
+            alarm[0] = addOrReduceEventAsAlarm(event);
         } finally {
             locks.forEach(Lock::unlock);
         }
@@ -112,7 +110,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     //TODO:MMF this should come from kafka event, not DB
-    private Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
+    @Transactional
+    protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
 //        final OnmsEvent persistedEvent = m_eventDao.get(event.getDbid());
 //        if (persistedEvent == null) {
@@ -425,9 +424,5 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     public void setAlarmEntityNotifier(AlarmEntityNotifier m_alarmEntityNotifier) {
         this.m_alarmEntityNotifier = m_alarmEntityNotifier;
-    }
-
-    public void setSessionUtils(SessionUtils sessionUtils) {
-        this.sessionUtils = sessionUtils;
     }
 }

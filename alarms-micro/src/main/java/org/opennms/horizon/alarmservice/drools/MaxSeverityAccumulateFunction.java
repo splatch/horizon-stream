@@ -34,17 +34,17 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.drools.core.base.accumulators.AbstractAccumulateFunction;
-import org.opennms.horizon.db.model.OnmsSeverity;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 
 public class MaxSeverityAccumulateFunction extends AbstractAccumulateFunction<MaxSeverityAccumulateFunction.MaxSeverity> {
 
     protected static class MaxSeverity implements Externalizable {
-        public OnmsSeverity max = null;
+        public AlarmSeverity max = null;
 
         public MaxSeverity() {}
 
         public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-            max = (OnmsSeverity) in.readObject();
+            max = (AlarmSeverity) in.readObject();
         }
 
         public void writeExternal(ObjectOutput out) throws IOException {
@@ -69,8 +69,8 @@ public class MaxSeverityAccumulateFunction extends AbstractAccumulateFunction<Ma
 
     @Override
     public void accumulate(MaxSeverity context, Object value) {
-        if (value instanceof OnmsSeverity) {
-            final OnmsSeverity severity = (OnmsSeverity)value;
+        if (value instanceof AlarmSeverity) {
+            final AlarmSeverity severity = (AlarmSeverity)value;
             context.max = context.max == null || context.max.compareTo( severity ) < 0 ?
                     severity:
                     context.max;
@@ -94,7 +94,7 @@ public class MaxSeverityAccumulateFunction extends AbstractAccumulateFunction<Ma
 
     @Override
     public Class<?> getResultType() {
-        return OnmsSeverity.class;
+        return AlarmSeverity.class;
     }
 
     @Override

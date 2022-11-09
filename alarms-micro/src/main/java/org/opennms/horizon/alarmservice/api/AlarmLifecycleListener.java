@@ -29,8 +29,7 @@
 package org.opennms.horizon.alarmservice.api;
 
 import java.util.List;
-
-import org.opennms.horizon.db.model.OnmsAlarm;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 
 /**
  * A simplified version of the {@link AlarmEntityListener} interface with support
@@ -59,7 +58,7 @@ public interface AlarmLifecycleListener {
      *
      * @param alarms canonical set of alarms in the database
      */
-    void handleAlarmSnapshot(List<OnmsAlarm> alarms);
+    void handleAlarmSnapshot(List<Alarm> alarms);
 
     /**
      * Called before the transaction is opened and the alarms are read for subsequent
@@ -93,7 +92,7 @@ public interface AlarmLifecycleListener {
      *
      * @param alarm a newly created or updated alarm
      */
-    void handleNewOrUpdatedAlarm(OnmsAlarm alarm);
+    void handleNewOrUpdatedAlarm(Alarm alarm);
 
     /**
      * Called when an alarm has been deleted.

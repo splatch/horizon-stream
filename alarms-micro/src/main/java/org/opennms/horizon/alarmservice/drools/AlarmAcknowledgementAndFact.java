@@ -29,24 +29,25 @@
 package org.opennms.horizon.alarmservice.drools;
 
 import org.kie.api.runtime.rule.FactHandle;
-import org.opennms.horizon.db.model.OnmsAcknowledgment;
+//import org.opennms.horizon.db.model.OnmsAcknowledgment;
 
 public class AlarmAcknowledgementAndFact {
-    private OnmsAcknowledgment acknowledgement;
+    //TODO:MMF
+//    private OnmsAcknowledgment acknowledgement;
     private FactHandle fact;
 
-    public AlarmAcknowledgementAndFact(OnmsAcknowledgment acknowledgement, FactHandle fact) {
-        this.acknowledgement = acknowledgement;
-        this.fact = fact;
-    }
-
-    public OnmsAcknowledgment getAcknowledgement() {
-        return acknowledgement;
-    }
-
-    public void setAcknowledgement(OnmsAcknowledgment acknowledgement) {
-        this.acknowledgement = acknowledgement;
-    }
+//    public AlarmAcknowledgementAndFact(OnmsAcknowledgment acknowledgement, FactHandle fact) {
+//        this.acknowledgement = acknowledgement;
+//        this.fact = fact;
+//    }
+//
+//    public OnmsAcknowledgment getAcknowledgement() {
+//        return acknowledgement;
+//    }
+//
+//    public void setAcknowledgement(OnmsAcknowledgment acknowledgement) {
+//        this.acknowledgement = acknowledgement;
+//    }
 
     public FactHandle getFact() {
         return fact;

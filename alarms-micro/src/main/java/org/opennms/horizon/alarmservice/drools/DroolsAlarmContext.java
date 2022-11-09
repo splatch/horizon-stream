@@ -52,20 +52,25 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.hibernate.ObjectNotFoundException;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
-import org.opennms.horizon.alarms.api.AlarmCallbackStateTracker;
-import org.opennms.horizon.alarms.api.AlarmLifecycleListener;
+//import org.opennms.horizon.alarms.api.AlarmCallbackStateTracker;
+//import org.opennms.horizon.alarms.api.AlarmLifecycleListener;
+import org.opennms.horizon.alarmservice.api.AlarmCallbackStateTracker;
+import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
+import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.impl.entity.AlarmAssociation;
 import org.opennms.horizon.core.lib.SystemProperties;
-import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
-import org.opennms.horizon.db.dao.api.AlarmDao;
-import org.opennms.horizon.db.dao.api.SessionUtils;
-import org.opennms.horizon.db.model.AckAction;
-import org.opennms.horizon.db.model.AlarmAssociation;
-import org.opennms.horizon.db.model.OnmsAcknowledgment;
-import org.opennms.horizon.db.model.OnmsAlarm;
+//import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
+//import org.opennms.horizon.db.dao.api.AlarmDao;
+//import org.opennms.horizon.db.dao.api.SessionUtils;
+//import org.opennms.horizon.db.model.AckAction;
+//import org.opennms.horizon.db.model.AlarmAssociation;
+//import org.opennms.horizon.db.model.OnmsAcknowledgment;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -89,12 +94,12 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author jwhite
  */
+@Slf4j
 @ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
 public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLifecycleListener {
-    private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
 
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
-            .withRateLimit(LOG)
+            .withRateLimit(log)
             .maxRate(5)
             .every(Duration.ofSeconds(30))
             .build();
@@ -112,7 +117,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 //    private SessionUtils sessionUtils;
 
     @Autowired
-    private AlarmDao alarmDao;
+    private AlarmRepository alarmRepository;
 
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
 
@@ -146,12 +151,9 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             alarmAssociationById.clear();
             for (FactHandle fact : kieSession.getFactHandles()) {
                 final Object objForFact = kieSession.getObject(fact);
-                if (objForFact instanceof OnmsAlarm) {
-                    final OnmsAlarm alarmInSession = (OnmsAlarm)objForFact;
+                if (objForFact instanceof Alarm) {
+                    final Alarm alarmInSession = (Alarm)objForFact;
                     alarmsById.put(alarmInSession.getId(), new AlarmAndFact(alarmInSession, fact));
-                } else if (objForFact instanceof OnmsAcknowledgment) {
-                    final OnmsAcknowledgment ackInSession = (OnmsAcknowledgment)objForFact;
-                    acknowledgementsByAlarmId.put(ackInSession.getRefId(), new AlarmAcknowledgementAndFact(ackInSession, fact));
                 } else if (objForFact instanceof AlarmAssociation) {
                     final AlarmAssociation associationInSession = (AlarmAssociation)objForFact;
                     final Integer situationId = associationInSession.getSituationAlarm().getId();
@@ -204,9 +206,9 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             try {
                 preHandleAlarmSnapshot();
 //                sessionUtils.withTransaction(()->{
-                    LOG.info("Loading all alarms to seed Drools context.");
-                    final List<OnmsAlarm> allAlarms = alarmDao.findAll();
-                    LOG.info("Done loading {} alarms.", allAlarms.size());
+                    log.info("Loading all alarms to seed Drools context.");
+                    final List<Alarm> allAlarms = alarmRepository.findAll();
+                    log.info("Done loading {} alarms.", allAlarms.size());
                     // Leverage the existing snapshot processing function to see the engine
                     handleAlarmSnapshot(allAlarms);
                     // Seed was submitted as an atomic action
@@ -281,19 +283,19 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     @Override
-    public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
+    public void handleAlarmSnapshot(List<Alarm> alarms) {
         if (!isStarted()) {
-            LOG.debug("Ignoring alarm snapshot. Drools session is stopped.");
+            log.debug("Ignoring alarm snapshot. Drools session is stopped.");
             return;
         }
 
-        LOG.debug("Handling snapshot for {} alarms.", alarms.size());
-        final Map<Integer, OnmsAlarm> alarmsInDbById = alarms.stream()
+        log.debug("Handling snapshot for {} alarms.", alarms.size());
+        final Map<Integer, Alarm> alarmsInDbById = alarms.stream()
                 .filter(a -> a.getId() != null)
-                .collect(Collectors.toMap(OnmsAlarm::getId, a -> a));
+                .collect(Collectors.toMap(Alarm::getId, a -> a));
 
         // Eagerly initialize the alarms
-        for (OnmsAlarm alarm : alarms) {
+        for (Alarm alarm : alarms) {
             eagerlyInitializeAlarm(alarm);
         }
 
@@ -301,7 +303,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 //        final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(alarms);
 
         // Track some stats
-        final long numSituations = alarms.stream().filter(OnmsAlarm::isSituation).count();
+        final long numSituations = alarms.stream().filter(Alarm::isSituation).count();
         numAlarmsFromLastSnapshot.set(alarms.size() - numSituations);
         numSituationsFromLastSnapshot.set(numSituations);
 
@@ -330,26 +332,26 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                         if (stateTracker.wasAlarmWithIdUpdated(alarmId)) {
                             return false;
                         }
-                        final OnmsAlarm alarmInMem = alarmAndFact.getAlarm();
-                        final OnmsAlarm alarmInDb = alarmsInDbById.get(alarmId);
+                        final Alarm alarmInMem = alarmAndFact.getAlarm();
+                        final Alarm alarmInDb = alarmsInDbById.get(alarmId);
                         // Only update the alarms if they are different
                         return shouldUpdateAlarmForSnapshot(alarmInMem, alarmInDb);
                     })
                     .collect(Collectors.toSet());
 
             // Log details that help explain what actions are being performed, if any
-            if (LOG.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 if (!alarmIdsToAdd.isEmpty() || !alarmIdsToRemove.isEmpty() || !alarmIdsToUpdate.isEmpty()) {
-                    LOG.debug("Adding {} alarms, removing {} alarms and updating {} alarms for snapshot.",
+                    log.debug("Adding {} alarms, removing {} alarms and updating {} alarms for snapshot.",
                             alarmIdsToAdd.size(), alarmIdsToRemove.size(), alarmIdsToUpdate.size());
                 } else {
-                    LOG.debug("No actions to perform for alarm snapshot.");
+                    log.debug("No actions to perform for alarm snapshot.");
                 }
                 // When TRACE is enabled, include diagnostic information to help explain why
                 // the alarms are being updated
-                if (LOG.isTraceEnabled()) {
+                if (log.isTraceEnabled()) {
                     for (Integer alarmIdToUpdate : alarmIdsToUpdate) {
-                        LOG.trace("Updating alarm with id={}. Alarm from DB: {} vs Alarm from memory: {}",
+                        log.trace("Updating alarm with id={}. Alarm from DB: {} vs Alarm from memory: {}",
                                 alarmIdToUpdate,
                                 alarmsInDbById.get(alarmIdToUpdate),
                                 alarmsById.get(alarmIdToUpdate));
@@ -361,15 +363,15 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 handleDeletedAlarmForAtomic(kieSession, alarmIdToRemove, alarmsById.get(alarmIdToRemove).getAlarm().getReductionKey());
             }
 
-            final Set<OnmsAlarm> alarmsToUpdate = Sets.union(alarmIdsToAdd, alarmIdsToUpdate).stream()
+            final Set<Alarm> alarmsToUpdate = Sets.union(alarmIdsToAdd, alarmIdsToUpdate).stream()
                     .map(alarmsInDbById::get)
                     .collect(Collectors.toSet());
-//            for (OnmsAlarm alarm : alarmsToUpdate) {
+//            for (Alarm alarm : alarmsToUpdate) {
 //                handleNewOrUpdatedAlarmForAtomic(kieSession, alarm, acksByRefId.get(alarm.getId()));
 //            }
 
             stateTracker.resetStateAndStopTrackingAlarms();
-            LOG.debug("Done handling snapshot.");
+            log.debug("Done handling snapshot.");
         });
     }
 
@@ -386,15 +388,14 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
      * @param alarmInDb the alarm that is currently in the database
      * @return true if the alarm in the working memory should be updated, false otherwise
      */
-    protected static boolean shouldUpdateAlarmForSnapshot(OnmsAlarm alarmInMem, OnmsAlarm alarmInDb) {
-        return !Objects.equals(alarmInMem.getLastEventTime(), alarmInDb.getLastEventTime()) ||
-                !Objects.equals(alarmInMem.getAckTime(), alarmInDb.getAckTime());
+    protected static boolean shouldUpdateAlarmForSnapshot(Alarm alarmInMem, Alarm alarmInDb) {
+        return !Objects.equals(alarmInMem.getLastEventTime(), alarmInDb.getLastEventTime());
     }
 
     @Override
-    public void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
+    public void handleNewOrUpdatedAlarm(Alarm alarm) {
         if (!isStarted()) {
-            LOG.debug("Ignoring new/updated alarm. Drools session is stopped.");
+            log.debug("Ignoring new/updated alarm. Drools session is stopped.");
             return;
         }
         eagerlyInitializeAlarm(alarm);
@@ -409,10 +410,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     /**
-     * Fetches an {@link OnmsAcknowledgment ack} via the {link acknowledgmentDao ack DAO} for all the given alarms.
+     * Fetches an {link OnmsAcknowledgment ack} via the {link acknowledgmentDao ack DAO} for all the given alarms.
      * For any alarm for which an ack does not exist, a default ack is generated.
      */
-//    private Map<Integer, OnmsAcknowledgment> fetchAcks(Collection<OnmsAlarm> alarms) {
+//    private Map<Integer, OnmsAcknowledgment> fetchAcks(Collection<Alarm> alarms) {
 //        if (alarms.isEmpty()) {
 //            return Collections.emptyMap();
 //        }
@@ -427,7 +428,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 //        } else {
 //            // Calculate the creation time of the earliest alarm
 //            final Date earliestAlarm  = alarms.stream()
-//                    .map(OnmsAlarm::getFirstEventTime)
+//                    .map(Alarm::getFirstEventTime)
 //                    .filter(Objects::nonNull)
 //                    .min(Comparator.naturalOrder())
 //                    .orElseGet(() -> {
@@ -436,7 +437,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 //                        // Let's log an error, and return some date for sanity
 //                        final LocalDateTime oneMonthAgoLdt = LocalDateTime.now().minusMonths(1);
 //                        final Date oneMonthAgo = Date.from(oneMonthAgoLdt.atZone(ZoneId.systemDefault()).toInstant());
-//                        LOG.error("Could not find minimum alarm creation time for alarms: {}. Using: {}", alarms, oneMonthAgo);
+//                        log.error("Could not find minimum alarm creation time for alarms: {}. Using: {}", alarms, oneMonthAgo);
 //                        return oneMonthAgo;
 //                    });
 //            acks.addAll(acknowledgmentDao.findLatestAcks(earliestAlarm));
@@ -449,7 +450,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 //        // Handle all the alarms that no ack could be found for by generating a default ack
 //        acksById.putAll(alarms.stream()
 //                .filter(alarm -> !acksById.containsKey(alarm.getId()))
-//                .collect(Collectors.toMap(OnmsAlarm::getId, alarm -> {
+//                .collect(Collectors.toMap(Alarm::getId, alarm -> {
 //                    // For the purpose of making rule writing easier, we fake an
 //                    // Un-Acknowledgment for Alarms that have never been Acknowledged.
 //                    OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DefaultAlarmService.DEFAULT_USER,
@@ -462,67 +463,64 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 //        return acksById;
 //    }
 
-    private void eagerlyInitializeAlarm(OnmsAlarm alarm) {
+    private void eagerlyInitializeAlarm(Alarm alarm) {
         // Initialize any related objects that are needed for rule execution
         Hibernate.initialize(alarm.getAssociatedAlarms());
-        if (alarm.getLastEvent() != null) {
-            // The last event may be null in unit tests
-            try {
-                Hibernate.initialize(alarm.getLastEvent().getEventParameters());
-            } catch (ObjectNotFoundException ex) {
-                // This may be triggered if the event attached to the alarm entity is already gone
-                alarm.setLastEvent(null);
-            }
-        }
-        if (alarm.getNode() != null) {
-            // Allow rules to use the categories on the associated node
-            Hibernate.initialize(alarm.getNode().getCategories());
-        }
+        //TODO:MMF
+//        if (alarm.getLastEvent() != null) {
+//            // The last event may be null in unit tests
+//            try {
+//                Hibernate.initialize(alarm.getLastEvent().getEventParameters());
+//            } catch (ObjectNotFoundException ex) {
+//                // This may be triggered if the event attached to the alarm entity is already gone
+//                alarm.setLastEvent(null);
+//            }
+//        }
     }
 
-    private void handleNewOrUpdatedAlarmForAtomic(KieSession kieSession, OnmsAlarm alarm, OnmsAcknowledgment ack) {
+    private void handleNewOrUpdatedAlarmForAtomic(KieSession kieSession, Alarm alarm) {
         final AlarmAndFact alarmAndFact = alarmsById.get(alarm.getId());
         if (alarmAndFact == null) {
-            LOG.debug("Inserting alarm into session: {}", alarm);
+            log.debug("Inserting alarm into session: {}", alarm);
             final FactHandle fact = kieSession.insert(alarm);
             alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
         } else {
             // Updating the fact doesn't always give us to expected results so we resort to deleting it
             // and adding it again instead
-            LOG.trace("Deleting alarm from session (for re-insertion): {}", alarm);
+            log.trace("Deleting alarm from session (for re-insertion): {}", alarm);
             kieSession.delete(alarmAndFact.getFact());
             // Reinsert
-            LOG.trace("Re-inserting alarm into session: {}", alarm);
+            log.trace("Re-inserting alarm into session: {}", alarm);
             final FactHandle fact = kieSession.insert(alarm);
             alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
         }
 
         // Ack
-        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.get(alarm.getId());
-        if (acknowledgmentFact == null) {
-            LOG.debug("Inserting first alarm acknowledgement into session: {}", ack);
-            final FactHandle fact = kieSession.insert(ack);
-            acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
-        } else {
-            FactHandle fact = acknowledgmentFact.getFact();
-            LOG.trace("Updating acknowledgment in session: {}", ack);
-            kieSession.update(fact, ack);
-            acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
-        }
+//        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.get(alarm.getId());
+//        if (acknowledgmentFact == null) {
+//            log.debug("Inserting first alarm acknowledgement into session: {}", ack);
+//            final FactHandle fact = kieSession.insert(ack);
+//            acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
+//        } else {
+//            FactHandle fact = acknowledgmentFact.getFact();
+//            log.trace("Updating acknowledgment in session: {}", ack);
+//            kieSession.update(fact, ack);
+//            acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
+//        }
 
         if (alarm.isSituation()) {
-            final OnmsAlarm situation = alarm;
+            final Alarm situation = alarm;
             final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situation.getId(), (sid) -> new HashMap<>());
             for (AlarmAssociation association : situation.getAssociatedAlarms()) {
                 Integer alarmId = association.getRelatedAlarm().getId();
                 AlarmAssociationAndFact associationFact = associationFacts.get(alarmId);
                 if (associationFact == null) {
-                    LOG.debug("Inserting alarm association into session: {}", association);
+                    log.debug("Inserting alarm association into session: {}", association);
                     final FactHandle fact = kieSession.insert(association);
                     associationFacts.put(alarmId, new AlarmAssociationAndFact(association, fact));
                 } else {
                     FactHandle fact = associationFact.getFact();
-                    LOG.trace("Updating alarm association in session: {}", associationFact);
+                    log.trace("Updating alarm association in session: {}", associationFact);
                     kieSession.update(fact, association);
                     associationFacts.put(alarmId, new AlarmAssociationAndFact(association, fact));
                 }
@@ -535,7 +533,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             deletedAlarmIds.forEach(alarmId -> {
                 final AlarmAssociationAndFact associationAndFact = associationFacts.remove(alarmId);
                 if (associationAndFact != null) {
-                    LOG.debug("Deleting AlarmAssociationAndFact from session: {}", associationAndFact.getAlarmAssociation());
+                    log.debug("Deleting AlarmAssociationAndFact from session: {}", associationAndFact.getAlarmAssociation());
                     kieSession.delete(associationAndFact.getFact());
                 }
             });
@@ -545,7 +543,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     @Override
     public void handleDeletedAlarm(int alarmId, String reductionKey) {
         if (!isStarted()) {
-            LOG.debug("Ignoring deleted alarm. Drools session is stopped.");
+            log.debug("Ignoring deleted alarm. Drools session is stopped.");
             return;
         }
 
@@ -558,15 +556,15 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private void handleDeletedAlarmForAtomic(KieSession kieSession, int alarmId, String reductionKey) {
         final AlarmAndFact alarmAndFact = alarmsById.remove(alarmId);
         if (alarmAndFact != null) {
-            LOG.debug("Deleting alarm from session: {}", alarmAndFact.getAlarm());
+            log.debug("Deleting alarm from session: {}", alarmAndFact.getAlarm());
             kieSession.delete(alarmAndFact.getFact());
         }
 
-        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.remove(alarmId);
-        if (acknowledgmentFact != null) {
-            LOG.debug("Deleting ack from session: {}", acknowledgmentFact.getAcknowledgement());
-            kieSession.delete(acknowledgmentFact.getFact());
-        }
+//        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.remove(alarmId);
+//        if (acknowledgmentFact != null) {
+//            log.debug("Deleting ack from session: {}", acknowledgmentFact.getAcknowledgement());
+//            kieSession.delete(acknowledgmentFact.getFact());
+//        }
 
         final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.remove(alarmId);
         if (associationFacts == null) {
@@ -575,7 +573,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         for (Integer association : associationFacts.keySet()) {
             AlarmAssociationAndFact associationFact = associationFacts.get(association);
             if (associationFact != null) {
-                LOG.debug("Deleting association from session: {}", associationFact.getAlarmAssociation());
+                log.debug("Deleting association from session: {}", associationFact.getAlarmAssociation());
                 kieSession.delete(associationFact.getFact());
             }
         }
@@ -586,20 +584,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     @VisibleForTesting
-    OnmsAcknowledgment getAckByAlarmId(Integer id) {
-        return acknowledgementsByAlarmId.get(id).getAcknowledgement();
-    }
-
-    @VisibleForTesting
     public void waitForInitialSeedToBeSubmitted() throws InterruptedException {
         seedSubmittedLatch.await();
     }
-
-    public void setAlarmDao(AlarmDao alarmDao) {
-        this.alarmDao = alarmDao;
-    }
-
-//    public void setSessionUtils(SessionUtils sessionUtils) {
-//        this.sessionUtils = sessionUtils;
-//    }
 }

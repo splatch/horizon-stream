@@ -29,7 +29,7 @@
 package org.opennms.horizon.alarmservice.drools;
 
 import org.kie.api.runtime.rule.FactHandle;
-import org.opennms.horizon.db.model.AlarmAssociation;
+import org.opennms.horizon.alarmservice.db.impl.entity.AlarmAssociation;
 
 public class AlarmAssociationAndFact {
 

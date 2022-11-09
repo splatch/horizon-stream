@@ -1,5 +1,7 @@
 package org.opennms.horizon.alarmservice;
 
+import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
+import org.opennms.horizon.alarmservice.api.AlarmPersister;
 import org.opennms.horizon.alarmservice.drools.AlarmService;
 import org.opennms.horizon.alarmservice.drools.DefaultAlarmService;
 import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;

@@ -10,10 +10,9 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.opennms.horizon.alarms.api.DefaultAlarmEntityListener;
-import org.opennms.horizon.db.model.OnmsAlarm;
-import org.opennms.horizon.db.model.mapper.IAlarmMapper;
-import org.opennms.horizon.shared.dto.event.AlarmDTO;
+import org.opennms.horizon.alarmservice.DefaultAlarmEntityListener;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,14 +26,15 @@ public class NotificationForwarder extends DefaultAlarmEntityListener {
         .maxRate(5).every(Duration.ofSeconds(30))
         .build();
 
-    private IAlarmMapper alarmMapper;
+    //TODO:MMF pullin in mapper
+//    private IAlarmMapper alarmMapper;
 
     private String kafkaBrokers;
     private String notificationKafkaTopic;
 
-    public void setAlarmMapper(IAlarmMapper alarmMapper) {
-        this.alarmMapper = alarmMapper;
-    }
+//    public void setAlarmMapper(IAlarmMapper alarmMapper) {
+//        this.alarmMapper = alarmMapper;
+//    }
 
     public void setKafkaBrokers(String kafkaBrokers) {
         this.kafkaBrokers = kafkaBrokers;
@@ -47,9 +47,9 @@ public class NotificationForwarder extends DefaultAlarmEntityListener {
     private KafkaProducer<String, String> producer;
 
     @Override
-    public void onAlarmCreated(OnmsAlarm alarm) {
-        AlarmDTO alarmDTO = alarmMapper.alarmToAlarmDTO(alarm);
-        forwardAlarm(alarmDTO);
+    public void onAlarmCreated(Alarm alarm) {
+//        AlarmDTO alarmDTO = alarmMapper.alarmToAlarmDTO(alarm);
+//        forwardAlarm(alarmDTO);
     }
 
     private void forwardAlarm(AlarmDTO alarmDTO) {
