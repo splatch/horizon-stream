@@ -6,10 +6,12 @@
   <MetricChips />
   <div/>
 </template>
+
 <script lang="ts" setup>
 import MetricChips from '@/components/Inventory/MetricChips.vue'
 
 const heading = 'Network Inventory'
 </script>
+
 <style lang="scss" scoped>
 </style>

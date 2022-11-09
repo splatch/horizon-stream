@@ -59,4 +59,10 @@ public class IpInterfaceRest {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping(value = "/tenant/{tenantId}")
+    public ResponseEntity<List<IpInterfaceDTO>> getByTenant(@PathVariable String tenantId) {
+        List<IpInterfaceDTO> all = ipInterfaceService.findByTenantId(tenantId);
+        return new ResponseEntity<>(all, HttpStatus.OK);
+    }
 }

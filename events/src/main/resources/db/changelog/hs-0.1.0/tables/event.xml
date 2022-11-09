@@ -33,10 +33,13 @@
             <column name="monitoring_location_id" type="bigint">
             </column>
 
-            <column name="node_id" type="uuid">
+            <column name="node_id" type="bigint">
             </column>
 
             <column name="event_parameters" type="jsonb">
+            </column>
+
+            <column name="event_info" type="bytea">
             </column>
 
         </createTable>

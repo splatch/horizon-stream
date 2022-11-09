@@ -59,4 +59,10 @@ public class NodeRest {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping(value = "/tenant/{tenantId}")
+    public ResponseEntity<List<NodeDTO>> getByTenant(@PathVariable String tenantId) {
+        List<NodeDTO> all = nodeService.findByTenantId(tenantId);
+        return new ResponseEntity<>(all, HttpStatus.OK);
+    }
 }
