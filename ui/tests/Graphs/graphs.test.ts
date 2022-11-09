@@ -48,6 +48,6 @@ test('The downloadMultipleCanvases function runs without errors', () => {
   const spy = vi.spyOn(document, 'createElement')
   spy.mockImplementationOnce(() => mockCanvas)
   const mock = vi.fn(downloadMultipleCanvases)
-  mock(mockCanvas, [mockCanvas])
+  mock(mockCanvas, [mockCanvas] as unknown as HTMLCollectionOf<HTMLCanvasElement>)
   expect(mock).toHaveReturned()
 })
