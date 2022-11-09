@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MonitoringSystemRepository extends JpaRepository<MonitoringSystem, Long> {
-    Optional<MonitoringSystem> findMonitoringSystemBySystemId(String systemID);
+    Optional<MonitoringSystem> findBySystemId(String systemID);
 }

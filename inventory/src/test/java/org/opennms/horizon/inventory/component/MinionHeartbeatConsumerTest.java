@@ -80,30 +80,30 @@ public class MinionHeartbeatConsumerTest {
 
     @Test
     public void testReceiveMsgMonitorSystemExist() {
-        doReturn(Optional.of(testMonitoringSystem)).when(mockMonitoringSystemRepo).findMonitoringSystemBySystemId(systemId);
+        doReturn(Optional.of(testMonitoringSystem)).when(mockMonitoringSystemRepo).findBySystemId(systemId);
         consumer.receiveMessage(heartbeatMessage.toByteArray());
-        verify(mockMonitoringSystemRepo).findMonitoringSystemBySystemId(systemId);
+        verify(mockMonitoringSystemRepo).findBySystemId(systemId);
         verify(mockMonitoringSystemRepo).save(testMonitoringSystem);
     }
 
     @Test
     public void testCreateNewMonitorSystemWithLocationExist() {
-        doReturn(Optional.empty()).when(mockMonitoringSystemRepo).findMonitoringSystemBySystemId(systemId);
-        doReturn(Optional.of(testLocation)).when(mockLocationRepo).findMonitoringLocationByLocation(location);
+        doReturn(Optional.empty()).when(mockMonitoringSystemRepo).findBySystemId(systemId);
+        doReturn(Optional.of(testLocation)).when(mockLocationRepo).findByLocation(location);
         consumer.receiveMessage(heartbeatMessage.toByteArray());
-        verify(mockMonitoringSystemRepo).findMonitoringSystemBySystemId(systemId);
+        verify(mockMonitoringSystemRepo).findBySystemId(systemId);
         verify(mockMonitoringSystemRepo).save(any(MonitoringSystem.class));
-        verify(mockLocationRepo).findMonitoringLocationByLocation(location);
+        verify(mockLocationRepo).findByLocation(location);
     }
 
     @Test
     public void testCreateNewMonitorSystemAndNewLocation() {
-        doReturn(Optional.empty()).when(mockMonitoringSystemRepo).findMonitoringSystemBySystemId(systemId);
-        doReturn(Optional.empty()).when(mockLocationRepo).findMonitoringLocationByLocation(location);
+        doReturn(Optional.empty()).when(mockMonitoringSystemRepo).findBySystemId(systemId);
+        doReturn(Optional.empty()).when(mockLocationRepo).findByLocation(location);
         consumer.receiveMessage(heartbeatMessage.toByteArray());
-        verify(mockMonitoringSystemRepo).findMonitoringSystemBySystemId(systemId);
+        verify(mockMonitoringSystemRepo).findBySystemId(systemId);
         verify(mockMonitoringSystemRepo).save(any(MonitoringSystem.class));
-        verify(mockLocationRepo).findMonitoringLocationByLocation(location);
+        verify(mockLocationRepo).findByLocation(location);
         verify(mockLocationRepo).save(any(MonitoringLocation.class));
     }
 }

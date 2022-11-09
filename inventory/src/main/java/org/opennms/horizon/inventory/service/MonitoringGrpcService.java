@@ -64,7 +64,7 @@ public class MonitoringGrpcService extends MonitoringLocationServiceGrpc.Monitor
 
     @Override
     public void getLocationByName(StringValue request, StreamObserver<MonitoringLocationDTO> responseObserver) {
-        Optional<MonitoringLocation> location = locationRepo.findMonitoringLocationByLocation(request.getValue());
+        Optional<MonitoringLocation> location = locationRepo.findByLocation(request.getValue());
         if(location.isPresent()){
             responseObserver.onNext(mapper.modelToDTO(location.get()));
         } else {

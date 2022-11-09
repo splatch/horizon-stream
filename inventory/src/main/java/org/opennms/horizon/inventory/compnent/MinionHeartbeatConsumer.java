@@ -62,10 +62,10 @@ public class MinionHeartbeatConsumer {
         try {
             HeartbeatMessage message = HeartbeatMessage.parseFrom(data);
             Identity identity = message.getIdentity();
-            log.info("Received heartbeat message for minion with id {} and location {}", identity.getSystemId(), identity.getLocation());
-            Optional<MonitoringSystem> msOp = repository.findMonitoringSystemBySystemId(identity.getSystemId());
+            log.debug("Received heartbeat message for minion with id {} and location {}", identity.getSystemId(), identity.getLocation());
+            Optional<MonitoringSystem> msOp = repository.findBySystemId(identity.getSystemId());
             if(msOp.isEmpty()) {
-                Optional<MonitoringLocation> locationOp = locationRepository.findMonitoringLocationByLocation(identity.getLocation());
+                Optional<MonitoringLocation> locationOp = locationRepository.findByLocation(identity.getLocation());
                 MonitoringLocation location = new MonitoringLocation();
                 if(locationOp.isPresent()) {
                     location = locationOp.get();
@@ -88,7 +88,7 @@ public class MinionHeartbeatConsumer {
                 repository.save(monitoringSystem);
             }
         } catch (InvalidProtocolBufferException e) {
-            throw new RuntimeException(e);
+            log.error("Invalid data from kafka", e);
         }
     }
 }
