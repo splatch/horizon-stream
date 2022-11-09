@@ -1,25 +1,17 @@
 <template>
-  <FeatherChipList label="List of test chips, one is disabled">
+  <FeatherChipList>
     <div v-for="item in items" :key="item.type" class="container">
-      <label :for="item.type">{{ item.type }}</label>
-      <FeatherChip :id="item.type" :class="`bg-status ${item.status}`">
-        {{ item.type === 'status' ? item.status : getHumanReadableDuration(item.timestamp as number, item.timeUnit) }}
-      </FeatherChip>
+      <MetricChip :item="item" />
     </div>
   </FeatherChipList>
 </template>
 
 <script lang="ts" setup>
-import { FeatherChipList, FeatherChip } from '@featherds/chips'
+import { FeatherChipList } from '@featherds/chips'
 import { TimeUnit } from '@/types'
-import { getHumanReadableDuration } from '@/components/utils'
+import { Chip } from '@/types/metric'
+import MetricChip from './MetricChip.vue'
 
-interface Chip {
-type: string,
-timestamp?: number,
-timeUnit?: number,
-status: string
-}
 const items: Chip[] = [
   {
     type: 'latency',
@@ -41,11 +33,6 @@ const items: Chip[] = [
 </script>
 
 <style lang="scss" scoped>
-@use "@/styles/_statusBackground";
-
-label {
-  display: block;
-}
 .container {
   text-align: left;
 }
