@@ -66,7 +66,6 @@ import org.opennms.horizon.db.model.AckAction;
 import org.opennms.horizon.db.model.AlarmAssociation;
 import org.opennms.horizon.db.model.OnmsAcknowledgment;
 import org.opennms.horizon.db.model.OnmsAlarm;
-import org.opennms.horizon.alarmservice.Alarmd;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -78,6 +77,8 @@ import com.codahale.metrics.Meter;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This class maintains the Drools context used to manage the lifecycle of the alarms.
@@ -88,6 +89,7 @@ import com.swrve.ratelimitedlogger.RateLimitedLog;
  *
  * @author jwhite
  */
+@ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
 public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLifecycleListener {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
 
@@ -103,14 +105,11 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     @Autowired
     private AlarmService alarmService;
 
-    @Autowired
-    private AcknowledgmentDao acknowledgmentDao;
+//    @Autowired
+//    private AcknowledgmentDao acknowledgmentDao;
 
-    @Autowired
-    private AlarmTicketerService alarmTicketerService;
-
-    @Autowired
-    private SessionUtils sessionUtils;
+//    @Autowired
+//    private SessionUtils sessionUtils;
 
     @Autowired
     private AlarmDao alarmDao;
@@ -136,10 +135,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     public DroolsAlarmContext(File rulesFolder) {
-        super(rulesFolder, Alarmd.NAME, "DroolsAlarmContext");
+        super(rulesFolder, "TODO:MMF fixme", "DroolsAlarmContext");
         setOnNewKiewSessionCallback(kieSession -> {
             kieSession.setGlobal("alarmService", alarmService);
-            kieSession.insert(alarmTicketerService);
+//            kieSession.insert(alarmTicketerService);
 
             // Rebuild the fact handle maps
             alarmsById.clear();
@@ -196,6 +195,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     @Override
+    @Transactional
     public void onStart() {
         final Thread seedThread = new Thread(() -> {
             // Seed the engine with the current set of alarms asynchronously
@@ -203,7 +203,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             // while we wait on the database (particularly for systems with large amounts of alarms)
             try {
                 preHandleAlarmSnapshot();
-                sessionUtils.withTransaction(()->{
+//                sessionUtils.withTransaction(()->{
                     LOG.info("Loading all alarms to seed Drools context.");
                     final List<OnmsAlarm> allAlarms = alarmDao.findAll();
                     LOG.info("Done loading {} alarms.", allAlarms.size());
@@ -211,7 +211,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                     handleAlarmSnapshot(allAlarms);
                     // Seed was submitted as an atomic action
                     seedSubmittedLatch.countDown();
-                });
+//                });
             } finally {
                 postHandleAlarmSnapshot();
             }
@@ -298,7 +298,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         }
 
         // Retrieve the acks from the database for the set of the alarms we've been given
-        final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(alarms);
+//        final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(alarms);
 
         // Track some stats
         final long numSituations = alarms.stream().filter(OnmsAlarm::isSituation).count();
@@ -364,9 +364,9 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             final Set<OnmsAlarm> alarmsToUpdate = Sets.union(alarmIdsToAdd, alarmIdsToUpdate).stream()
                     .map(alarmsInDbById::get)
                     .collect(Collectors.toSet());
-            for (OnmsAlarm alarm : alarmsToUpdate) {
-                handleNewOrUpdatedAlarmForAtomic(kieSession, alarm, acksByRefId.get(alarm.getId()));
-            }
+//            for (OnmsAlarm alarm : alarmsToUpdate) {
+//                handleNewOrUpdatedAlarmForAtomic(kieSession, alarm, acksByRefId.get(alarm.getId()));
+//            }
 
             stateTracker.resetStateAndStopTrackingAlarms();
             LOG.debug("Done handling snapshot.");
@@ -400,67 +400,67 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         eagerlyInitializeAlarm(alarm);
 
         // Retrieve the acks from the database for the set of the alarms we've been given
-        final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(Collections.singletonList(alarm));
+//        final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(Collections.singletonList(alarm));
 
-        executeAtomicallyWhenTransactionComplete(kieSession -> {
-            handleNewOrUpdatedAlarmForAtomic(kieSession, alarm, acksByRefId.get(alarm.getId()));
-            stateTracker.trackNewOrUpdatedAlarm(alarm.getId(), alarm.getReductionKey());
-        });
+//        executeAtomicallyWhenTransactionComplete(kieSession -> {
+//            handleNewOrUpdatedAlarmForAtomic(kieSession, alarm, acksByRefId.get(alarm.getId()));
+//            stateTracker.trackNewOrUpdatedAlarm(alarm.getId(), alarm.getReductionKey());
+//        });
     }
 
     /**
-     * Fetches an {@link OnmsAcknowledgment ack} via the {@link #acknowledgmentDao ack DAO} for all the given alarms.
+     * Fetches an {@link OnmsAcknowledgment ack} via the {link acknowledgmentDao ack DAO} for all the given alarms.
      * For any alarm for which an ack does not exist, a default ack is generated.
      */
-    private Map<Integer, OnmsAcknowledgment> fetchAcks(Collection<OnmsAlarm> alarms) {
-        if (alarms.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        final Set<OnmsAcknowledgment> acks = new HashSet<>();
-
-        // Update acks depending on if we are interested in one or many alarms
-        if (alarms.size() == 1) {
-            acknowledgmentDao.findLatestAckForRefId(alarms.iterator()
-                    .next()
-                    .getId())
-                    .ifPresent(acks::add);
-        } else {
-            // Calculate the creation time of the earliest alarm
-            final Date earliestAlarm  = alarms.stream()
-                    .map(OnmsAlarm::getFirstEventTime)
-                    .filter(Objects::nonNull)
-                    .min(Comparator.naturalOrder())
-                    .orElseGet(() -> {
-                        // We didn't find any dates - either the set is empty (in which case this function
-                        // wouldn't be called) or all the dates are null (which they shouldn't be.)
-                        // Let's log an error, and return some date for sanity
-                        final LocalDateTime oneMonthAgoLdt = LocalDateTime.now().minusMonths(1);
-                        final Date oneMonthAgo = Date.from(oneMonthAgoLdt.atZone(ZoneId.systemDefault()).toInstant());
-                        LOG.error("Could not find minimum alarm creation time for alarms: {}. Using: {}", alarms, oneMonthAgo);
-                        return oneMonthAgo;
-                    });
-            acks.addAll(acknowledgmentDao.findLatestAcks(earliestAlarm));
-        }
-
-        // Handle all the alarms for which an ack could be found
-        Map<Integer, OnmsAcknowledgment> acksById =
-                acks.stream().collect(Collectors.toMap(OnmsAcknowledgment::getRefId, ack -> ack));
-
-        // Handle all the alarms that no ack could be found for by generating a default ack
-        acksById.putAll(alarms.stream()
-                .filter(alarm -> !acksById.containsKey(alarm.getId()))
-                .collect(Collectors.toMap(OnmsAlarm::getId, alarm -> {
-                    // For the purpose of making rule writing easier, we fake an
-                    // Un-Acknowledgment for Alarms that have never been Acknowledged.
-                    OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DefaultAlarmService.DEFAULT_USER,
-                            alarm.getFirstEventTime());
-                    ack.setAckAction(AckAction.UNACKNOWLEDGE);
-                    ack.setId(0);
-                    return ack;
-                })));
-
-        return acksById;
-    }
+//    private Map<Integer, OnmsAcknowledgment> fetchAcks(Collection<OnmsAlarm> alarms) {
+//        if (alarms.isEmpty()) {
+//            return Collections.emptyMap();
+//        }
+//        final Set<OnmsAcknowledgment> acks = new HashSet<>();
+//
+//        // Update acks depending on if we are interested in one or many alarms
+//        if (alarms.size() == 1) {
+//            acknowledgmentDao.findLatestAckForRefId(alarms.iterator()
+//                    .next()
+//                    .getId())
+//                    .ifPresent(acks::add);
+//        } else {
+//            // Calculate the creation time of the earliest alarm
+//            final Date earliestAlarm  = alarms.stream()
+//                    .map(OnmsAlarm::getFirstEventTime)
+//                    .filter(Objects::nonNull)
+//                    .min(Comparator.naturalOrder())
+//                    .orElseGet(() -> {
+//                        // We didn't find any dates - either the set is empty (in which case this function
+//                        // wouldn't be called) or all the dates are null (which they shouldn't be.)
+//                        // Let's log an error, and return some date for sanity
+//                        final LocalDateTime oneMonthAgoLdt = LocalDateTime.now().minusMonths(1);
+//                        final Date oneMonthAgo = Date.from(oneMonthAgoLdt.atZone(ZoneId.systemDefault()).toInstant());
+//                        LOG.error("Could not find minimum alarm creation time for alarms: {}. Using: {}", alarms, oneMonthAgo);
+//                        return oneMonthAgo;
+//                    });
+//            acks.addAll(acknowledgmentDao.findLatestAcks(earliestAlarm));
+//        }
+//
+//        // Handle all the alarms for which an ack could be found
+//        Map<Integer, OnmsAcknowledgment> acksById =
+//                acks.stream().collect(Collectors.toMap(OnmsAcknowledgment::getRefId, ack -> ack));
+//
+//        // Handle all the alarms that no ack could be found for by generating a default ack
+//        acksById.putAll(alarms.stream()
+//                .filter(alarm -> !acksById.containsKey(alarm.getId()))
+//                .collect(Collectors.toMap(OnmsAlarm::getId, alarm -> {
+//                    // For the purpose of making rule writing easier, we fake an
+//                    // Un-Acknowledgment for Alarms that have never been Acknowledged.
+//                    OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, DefaultAlarmService.DEFAULT_USER,
+//                            alarm.getFirstEventTime());
+//                    ack.setAckAction(AckAction.UNACKNOWLEDGE);
+//                    ack.setId(0);
+//                    return ack;
+//                })));
+//
+//        return acksById;
+//    }
 
     private void eagerlyInitializeAlarm(OnmsAlarm alarm) {
         // Initialize any related objects that are needed for rule execution
@@ -585,14 +585,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         this.alarmService = alarmService;
     }
 
-    public void setAcknowledgmentDao(AcknowledgmentDao acknowledgmentDao) {
-        this.acknowledgmentDao = acknowledgmentDao;
-    }
-
-    public void setAlarmTicketerService(AlarmTicketerService alarmTicketerService) {
-        this.alarmTicketerService = alarmTicketerService;
-    }
-
     @VisibleForTesting
     OnmsAcknowledgment getAckByAlarmId(Integer id) {
         return acknowledgementsByAlarmId.get(id).getAcknowledgement();
@@ -607,7 +599,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         this.alarmDao = alarmDao;
     }
 
-    public void setSessionUtils(SessionUtils sessionUtils) {
-        this.sessionUtils = sessionUtils;
-    }
+//    public void setSessionUtils(SessionUtils sessionUtils) {
+//        this.sessionUtils = sessionUtils;
+//    }
 }

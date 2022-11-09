@@ -99,18 +99,15 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private String m_uei;
 
     /** persistent field */
-    remove
     private OnmsMonitoringSystem m_distPoller;
 
     /** nullable persistent field */
-    remove
     private OnmsNode m_node;
 
     /** nullable persistent field */
     private InetAddress m_ipAddr;
 
     /** nullable persistent field */
-    remove
     private OnmsServiceType m_serviceType;
 
     /** nullable persistent field */
@@ -177,7 +174,6 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private String m_clearKey;
 
     /** persistent field */
-    flatten maybe just store last even serverity, etc. Store what you need.
     private OnmsEvent m_lastEvent;
     
     /** persistent field */

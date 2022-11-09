@@ -34,11 +34,12 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.alarms.db.impl.TroubleTicketState;
-import org.opennms.horizon.alarms.db.impl.dto.AlarmDTO;
-import org.opennms.horizon.alarms.db.impl.dto.MemoDTO;
-import org.opennms.horizon.alarms.db.impl.dto.ReductionKeyMemoDTO;
-import org.opennms.horizon.alarms.db.impl.dto.SeverityDTO;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
+import org.opennms.horizon.alarmservice.model.Severity;
+import org.opennms.horizon.alarmservice.model.TroubleTicketState;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.impl.entity.Memo;
+import org.opennms.horizon.alarmservice.db.impl.entity.ReductionKeyMemo;
 
 import com.google.common.collect.Sets;
 
@@ -48,72 +49,72 @@ public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
     private Set<AlarmEntityListener> listeners = Sets.newConcurrentHashSet();
 
     @Override
-    public void didCreateAlarm(AlarmDTO alarm) {
+    public void didCreateAlarm(Alarm alarm) {
         forEachListener(l -> l.onAlarmCreated(alarm));
     }
 
     @Override
-    public void didUpdateAlarmWithReducedEvent(AlarmDTO alarm) {
+    public void didUpdateAlarmWithReducedEvent(Alarm alarm) {
         forEachListener(l -> l.onAlarmUpdatedWithReducedEvent(alarm));
     }
 
     @Override
-    public void didAcknowledgeAlarm(AlarmDTO alarm, String previousAckUser, Date previousAckTime) {
+    public void didAcknowledgeAlarm(Alarm alarm, String previousAckUser, Date previousAckTime) {
         forEachListener(l -> l.onAlarmAcknowledged(alarm, previousAckUser, previousAckTime));
     }
 
     @Override
-    public void didUnacknowledgeAlarm(AlarmDTO alarm, String previousAckUser, Date previousAckTime) {
+    public void didUnacknowledgeAlarm(Alarm alarm, String previousAckUser, Date previousAckTime) {
         forEachListener(l -> l.onAlarmUnacknowledged(alarm, previousAckUser, previousAckTime));
     }
 
     @Override
-    public void didUpdateAlarmSeverity(AlarmDTO alarm, SeverityDTO previousSeverity) {
+    public void didUpdateAlarmSeverity(Alarm alarm, AlarmSeverity previousSeverity) {
         forEachListener(l -> l.onAlarmSeverityUpdated(alarm, previousSeverity));
     }
 
     @Override
-    public void didArchiveAlarm(AlarmDTO alarm, String previousReductionKey) {
+    public void didArchiveAlarm(Alarm alarm, String previousReductionKey) {
         forEachListener(l -> l.onAlarmArchived(alarm, previousReductionKey));
     }
 
     @Override
-    public void didDeleteAlarm(AlarmDTO alarm) {
+    public void didDeleteAlarm(Alarm alarm) {
         forEachListener(l -> l.onAlarmDeleted(alarm));
     }
 
     @Override
-    public void didUpdateStickyMemo(AlarmDTO alarm, String previousBody, String previousAuthor, Date previousUpdated) {
+    public void didUpdateStickyMemo(Alarm alarm, String previousBody, String previousAuthor, Date previousUpdated) {
         forEachListener(l -> l.onStickyMemoUpdated(alarm, previousBody, previousAuthor, previousUpdated));
     }
 
     @Override
-    public void didUpdateReductionKeyMemo(AlarmDTO alarm, String previousBody, String previousAuthor, Date previousUpdated) {
+    public void didUpdateReductionKeyMemo(Alarm alarm, String previousBody, String previousAuthor, Date previousUpdated) {
         forEachListener(l -> l.onReductionKeyMemoUpdated(alarm, previousBody, previousAuthor, previousUpdated));
     }
 
     @Override
-    public void didDeleteStickyMemo(AlarmDTO alarm, MemoDTO memo) {
+    public void didDeleteStickyMemo(Alarm alarm, Memo memo) {
         forEachListener(l -> l.onStickyMemoDeleted(alarm, memo));
     }
 
     @Override
-    public void didDeleteReductionKeyMemo(AlarmDTO alarm, ReductionKeyMemoDTO memo) {
+    public void didDeleteReductionKeyMemo(Alarm alarm, ReductionKeyMemo memo) {
         forEachListener(l -> l.onReductionKeyMemoDeleted(alarm, memo));
     }
 
     @Override
-    public void didUpdateLastAutomationTime(AlarmDTO alarm, Date previousLastAutomationTime) {
+    public void didUpdateLastAutomationTime(Alarm alarm, Date previousLastAutomationTime) {
         forEachListener(l -> l.onLastAutomationTimeUpdated(alarm, previousLastAutomationTime));
     }
 
     @Override
-    public void didUpdateRelatedAlarms(AlarmDTO alarm, Set<AlarmDTO> previousRelatedAlarms) {
+    public void didUpdateRelatedAlarms(Alarm alarm, Set<Alarm> previousRelatedAlarms) {
         forEachListener(l -> l.onRelatedAlarmsUpdated(alarm, previousRelatedAlarms));
     }
 
     @Override
-    public void didChangeTicketStateForAlarm(AlarmDTO alarm, TroubleTicketState previousState) {
+    public void didChangeTicketStateForAlarm(Alarm alarm, TroubleTicketState previousState) {
         forEachListener(l -> l.onTicketStateChanged(alarm, previousState));
     }
 

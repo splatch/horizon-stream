@@ -32,6 +32,7 @@
       <artifactId>api</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.opennms.horizon.db</groupId>
       <artifactId>dao-api</artifactId>
@@ -40,6 +41,11 @@
       <dependency>
           <groupId>org.opennms.horizon.alarms</groupId>
           <artifactId>alarms-db</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.horizon.alarms</groupId>
+          <artifactId>alarms-api</artifactId>
           <version>${project.version}</version>
       </dependency>
     <dependency>
@@ -112,15 +118,14 @@
           <artifactId>lombok</artifactId>
       </dependency>
   </dependencies>
-
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+    
+<!--    <build>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
 
 </project>

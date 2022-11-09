@@ -1,0 +1,17 @@
+#TODO:MMF where to  actually put this (which module)?
+spring:
+  application:
+    name: horizon-stream-alarms
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgres:5432/alarms
+    username: alarms
+    password: passw0rd
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  liquibase:
+    change-log: db/changelog/changelog.xml

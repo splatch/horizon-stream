@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
 
     <groupId>org.opennms.horizon.alarms</groupId>
-    <name>OpenNMS Horizon :: Alarms</name>
+    <name>OpenNMS Horizon :: Alarms Service</name>
     <artifactId>alarms-micro</artifactId>
 
     <properties>
@@ -23,9 +23,9 @@
 
     <modules>
         <module>alarms-api</module>
+        <module>alarms-db</module>
         <module>alarms-daemon</module>
         <module>alarms-rest</module>
-      <module>alarms-db</module>
     </modules>
 
 </project>

@@ -28,22 +28,12 @@
 
 package org.opennms.horizon.alarmservice.rest;
 
-
-import java.util.Date;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-
 import javax.annotation.security.RolesAllowed;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -55,131 +45,59 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.EnumUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.opennms.horizon.core.lib.SystemProperties;
-import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
-import org.opennms.horizon.db.dao.api.AlarmDao;
-import org.opennms.horizon.db.dao.api.SessionUtils;
-import org.opennms.horizon.db.model.AckAction;
-import org.opennms.horizon.db.model.AckType;
-import org.opennms.horizon.db.model.OnmsAcknowledgment;
-import org.opennms.horizon.db.model.OnmsAlarm;
-import org.opennms.horizon.db.model.TroubleTicketState;
-import org.opennms.horizon.db.model.mapper.AlarmMapper;
-import org.opennms.horizon.shared.dto.event.AlarmAckDTO;
-import org.opennms.horizon.shared.dto.event.AlarmCollectionDTO;
-import org.opennms.horizon.shared.dto.event.AlarmDTO;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+//import org.apache.commons.lang3.EnumUtils;
+//import org.apache.commons.lang3.StringUtils;
+import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.db.api.SessionUtils;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+//import org.opennms.horizon.db.model.TroubleTicketState;
+//import org.opennms.horizon.db.model.mapper.AlarmMapper;
+import org.opennms.horizon.alarmservice.drools.AlarmService;
+import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.support.SecurityHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
+import org.springframework.transaction.annotation.Transactional;
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-/**
- * Basic Web Service using REST for {@link OnmsAlarm} entity, but from Karaf container.
- * ...based of of v2 of the currently existing rest webservice for alarmD
- *
- * @author Mark Bordelon
- */
 @Path("/alarms")
-@RequiredArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Slf4j
 public class AlarmRestServiceImpl implements AlarmRestService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceImpl.class);
+//    private AlarmDao alarmDao;
+//    private AlarmMapper alarmMapper;
+//    private SessionUtils sessionUtils;
+//    private AlarmRepository alarmRepository;
+    private AlarmService alarmService;
 
-    private AlarmDao alarmDao;
-
-    private AlarmMapper m_alarmMapper;
-
-    private AcknowledgmentDao acknowledgmentDao;
-    //private AlarmRepository alarmRepository;
-
-    //private TroubleTicketProxy troubleTicketProxy;
-
-    private SessionUtils sessionUtils;
-
-//========================================
-// Getters and Setters
-//========================================
-
-
-    public void setAlarmDao(AlarmDao alarmDao) {
-        this.alarmDao = alarmDao;
-    }
-
-//    public void setTroubleTicketProxy(TroubleTicketProxy troubleTicketProxy) {
-//        this.troubleTicketProxy = troubleTicketProxy;
-//    }
-
-    public void setSessionUtils(SessionUtils sessionUtils) {
-        this.sessionUtils = sessionUtils;
-    }
-
-    public void setAlarmMapper(AlarmMapper m_alarmMapper) {
-        this.m_alarmMapper = m_alarmMapper;
-    }
-
-    public void setAcknowledgmentDao(AcknowledgmentDao acknowledgmentDao) {
-        this.acknowledgmentDao = acknowledgmentDao;
-    }
-
-//========================================
-//
-//========================================
-
-    protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
-        final CriteriaBuilder builder = alarmDao.getEntityManager().getCriteriaBuilder();
-        CriteriaQuery<OnmsAlarm> criteriaQuery = builder.createQuery(OnmsAlarm.class);
-        Root<OnmsAlarm> alarmRoot = criteriaQuery.from(OnmsAlarm.class);
-        alarmRoot.fetch("lastEvent", JoinType.LEFT);
-
-        // FIXME: OOps
-//        // 1st level JOINs
-//        builder.alias("lastEvent", "lastEvent", JoinType.LEFT_JOIN);
-//        builder.alias("distPoller", Aliases.distPoller.toString(), JoinType.LEFT_JOIN);
-//        builder.alias("node", Aliases.node.toString(), JoinType.LEFT_JOIN);
-//        builder.alias("serviceType", Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
-//
-//        // 2nd level JOINs
-//        builder.alias(Aliases.node.prop("assetRecord"), Aliases.assetRecord.toString(), JoinType.LEFT_JOIN);
-//        // Left joins on a toMany relationship need a join condition so that only one row is returned
-//        builder.alias(Aliases.node.prop("ipInterfaces"), Aliases.ipInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty(Aliases.ipInterface.prop("ipAddress"), Aliases.alarm.prop("ipAddr")), Restrictions.isNull(Aliases.ipInterface.prop("ipAddress"))));
-//        builder.alias(Aliases.node.prop("location"), Aliases.location.toString(), JoinType.LEFT_JOIN);
-//        // Left joins on a toMany relationship need a join condition so that only one row is returned
-//        builder.alias(Aliases.node.prop("snmpInterfaces"), Aliases.snmpInterface.toString(), JoinType.LEFT_JOIN, Restrictions.or(Restrictions.eqProperty(Aliases.snmpInterface.prop("ifIndex"), Aliases.alarm.prop("ifIndex")), Restrictions.isNull(Aliases.snmpInterface.prop("ifIndex"))));
-//
-//        builder.orderBy("lastEventTime").desc(); // order by last event time by default
-
-        return builder;
-    }
-
-    protected Class<OnmsAlarm> getDaoClass() {
-        return OnmsAlarm.class;
+    protected Class<Alarm> getDaoClass() {
+        return Alarm.class;
     }
 
     protected WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
         if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
-        LOG.error(msg);
+        log.error(msg);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
 
-    private boolean isTicketerPluginEnabled() {
-        return SystemProperties.getBooleanWithDefaultAsTrue("opennms.alarmTroubleTicketEnabled");
-    }
-
-    private Response runIfTicketerPluginIsEnabled(Callable<Response> callable) throws Exception {
-        if (!isTicketerPluginEnabled()) {
-            return Response.status(Status.NOT_IMPLEMENTED).entity("AlarmTroubleTicketer is not enabled. Cannot perform operation").build();
-        }
-        Objects.requireNonNull(callable);
-        final Response response = callable.call();
-        return response;
-    }
+//    private boolean isTicketerPluginEnabled() {
+//        return SystemProperties.getBooleanWithDefaultAsTrue("opennms.alarmTroubleTicketEnabled");
+//    }
+//
+//    private Response runIfTicketerPluginIsEnabled(Callable<Response> callable) throws Exception {
+//        if (!isTicketerPluginEnabled()) {
+//            return Response.status(Status.NOT_IMPLEMENTED).entity("AlarmTroubleTicketer is not enabled. Cannot perform operation").build();
+//        }
+//        Objects.requireNonNull(callable);
+//        final Response response = callable.call();
+//        return response;
+//    }
 
 
 //========================================
@@ -197,74 +115,73 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         // replace the next line with @RolesAllowed("")
         //SecurityHelper.assertUserReadCredentials(securityContext);
 
-        return this.sessionUtils.withReadOnlyTransaction(() -> {
+//        return this.sessionUtils.withReadOnlyTransaction(() -> {
             //CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
             //builder.distinct();
 
-            List<OnmsAlarm> matchingAlarms = this.alarmDao.findAll(); //(builder.createQuery());
+            List<AlarmDTO> matchingAlarms = alarmService.getAllAlarms("TODO:MMF blah");
 
-            List<AlarmDTO> dtoAlarmList =
-                    matchingAlarms
-                            .stream()
-                            .map(this.m_alarmMapper::alarmToAlarmDTO)
-                            .collect(Collectors.toList());
+            //TODO:MMF why was this being done?
+//            List<AlarmDTO> dtoAlarmList =
+//                    matchingAlarms
+//                            .stream()
+//                            .map(this.alarmMapper::alarmToAlarmDTO)
+//                            .collect(Collectors.toList());
 
-            AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
-            alarmsCollection.setTotalCount(dtoAlarmList.size());
+            //TODO:MMF do we need to do this????
+//            AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
+//            alarmsCollection.setTotalCount(dtoAlarmList.size());
 
-            return Response.status(Status.OK).entity(alarmsCollection).build();
-        });
+            return Response.status(Status.OK).entity(matchingAlarms).build();
+//        });
 
     }
 
-    @POST
-    @Path("{id}/ack")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String ackAlarm(@PathParam("id") int id, AlarmAckDTO alarmAck) {
-        return sessionUtils.withTransaction(() -> {
-            OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), alarmAck.getUser());
-            acknowledgment.setRefId(id);
-            acknowledgment.setAckAction(AckAction.ACKNOWLEDGE);
-            acknowledgment.setAckType(AckType.ALARM);
-            acknowledgmentDao.processAck(acknowledgment);
+//    @POST
+//    @Path("{id}/ack")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public String ackAlarm(@PathParam("id") int id, AlarmAckDTO alarmAck) {
+//        return sessionUtils.withTransaction(() -> {
+//
+//            updateAlarmTicket(id, alarmAck);
+//
+//            return "acknowledged";
+//        });
+//    }
 
-            updateAlarmTicket(id, alarmAck);
+//    @DELETE
+//    @Path("{id}/ack")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public String unackAlarm(@PathParam("id") int id) {
+//        return sessionUtils.withTransaction(() -> {
+//            OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), "DELETE_USER__TODO_CLEAN_THIS_UP");
+//            acknowledgment.setRefId(id);
+//            acknowledgment.setAckAction(AckAction.UNACKNOWLEDGE);
+//            acknowledgment.setAckType(AckType.ALARM);
+//            acknowledgmentDao.processAck(acknowledgment);
+//
+//            return "unacknowledged";
+//        });
+//    }
 
-            return "acknowledged";
-        });
-    }
-
-    @DELETE
-    @Path("{id}/ack")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String unackAlarm(@PathParam("id") int id) {
-        return sessionUtils.withTransaction(() -> {
-            OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), "DELETE_USER__TODO_CLEAN_THIS_UP");
-            acknowledgment.setRefId(id);
-            acknowledgment.setAckAction(AckAction.UNACKNOWLEDGE);
-            acknowledgment.setAckType(AckType.ALARM);
-            acknowledgmentDao.processAck(acknowledgment);
-
-            return "unacknowledged";
-        });
-    }
-
-    @POST
-    @Path("{id}/clear")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String clearAlarm(@PathParam("id") int id, AlarmAckDTO alarmAck) {
-        return sessionUtils.withTransaction(() -> {
-            OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), alarmAck.getUser());
-            acknowledgment.setRefId(id);
-            acknowledgment.setAckAction(AckAction.CLEAR);
-            acknowledgment.setAckType(AckType.ALARM);
-            acknowledgmentDao.processAck(acknowledgment);
-
-            updateAlarmTicket(id, alarmAck);
-
-            return "acknowledged";
-        });
-    }
+    //TODO:MMF keep this one, don't use acknowledgment, jsut set alarm serverity to cleared.
+    // also clear related alarms
+//    @POST
+//    @Path("{id}/clear")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public String clearAlarm(@PathParam("id") int id, AlarmAckDTO alarmAck) {
+//        return sessionUtils.withTransaction(() -> {
+//            OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), alarmAck.getUser());
+//            acknowledgment.setRefId(id);
+//            acknowledgment.setAckAction(AckAction.CLEAR);
+//            acknowledgment.setAckType(AckType.ALARM);
+//            acknowledgmentDao.processAck(acknowledgment);
+//
+//            updateAlarmTicket(id, alarmAck);
+//
+//            return "acknowledged";
+//        });
+//    }
 
     @PUT
     @Path("{id}/memo")
@@ -273,19 +190,20 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @ApiResponse(
             description = "Update the memo for an Alarm"
     )
+    @Transactional
     public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
         // replace the next two lines with @RolesAllowed("")
         final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
         SecurityHelper.assertUserEditCredentials(securityContext, user);
 
-        return this.sessionUtils.withTransaction(() -> {
+//        return this.sessionUtils.withTransaction(() -> {
             final String body = params.getFirst("body");
             if (body == null) {
                 throw getException(Status.BAD_REQUEST, "Body cannot be null.");
             }
             //alarmRepository.updateStickyMemo(alarmId, body, user); // TODO doing anything??
             return Response.noContent().build();
-        });
+//        });
     }
 
     @PUT
@@ -295,15 +213,16 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @ApiResponse(
             description = "Update the journal for an Alarm"
     )
+    @Transactional
     public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
-        return this.sessionUtils.withTransaction(() -> {
+//        return this.sessionUtils.withTransaction(() -> {
             final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
             // SecurityHelper.assertUserEditCredentials(securityContext, user);
             final String body = params.getFirst("body");
             if (body == null) throw getException(Status.BAD_REQUEST, "Body cannot be null.");
             //alarmRepository.updateReductionKeyMemo(alarmId, body, user); // TODO doing anything??
             return Response.noContent().build();
-        });
+//        });
     }
 
     @DELETE
@@ -312,39 +231,20 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @ApiResponse(
             description = "Remove the memo for an Alarm"
     )
+    //TODO:MMF ask jesse about this
+//    Yes, still need this
     public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
         //SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
         try {
-            return runIfTicketerPluginIsEnabled(() -> {
-                return this.sessionUtils.withTransaction(() -> {
-                   // alarmRepository.removeStickyMemo(alarmId); // TODO doing anything??
-                    return Response.noContent().build();
-                });
-            });
+//            return runIfTicketerPluginIsEnabled(() -> {
+//                return this.sessionUtils.withTransaction(() -> {
+//                   // alarmRepository.removeStickyMemo(alarmId); // TODO doing anything??
+//                    return Response.noContent().build();
+//                });
+//            });
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-//========================================
-// Internals
-//----------------------------------------
-
-    private void updateAlarmTicket(int id, AlarmAckDTO alarmAck) {
-        OnmsAlarm alarm = alarmDao.get(id);
-
-        boolean alarmUpdated = false;
-        if (StringUtils.isNotBlank(alarmAck.getTicketId())) {
-            alarmUpdated = true;
-            alarm.setTTicketId(alarmAck.getTicketId());
-        }
-        if (EnumUtils.isValidEnum(TroubleTicketState.class, alarmAck.getTicketState())) {
-            alarmUpdated = true;
-            alarm.setTTicketState(TroubleTicketState.valueOf(alarmAck.getTicketState()));
-        }
-        if (alarmUpdated) {
-            alarmDao.saveOrUpdate(alarm);
-        }
     }
 }

@@ -30,11 +30,11 @@ package org.opennms.horizon.alarmservice;
 
 import java.util.Date;
 import java.util.Set;
-import org.opennms.horizon.alarms.db.impl.TroubleTicketState;
-import org.opennms.horizon.alarms.db.impl.dto.AlarmDTO;
-import org.opennms.horizon.alarms.db.impl.dto.MemoDTO;
-import org.opennms.horizon.alarms.db.impl.dto.ReductionKeyMemoDTO;
-import org.opennms.horizon.alarms.db.impl.dto.SeverityDTO;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
+import org.opennms.horizon.alarmservice.model.TroubleTicketState;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.impl.entity.Memo;
+import org.opennms.horizon.alarmservice.db.impl.entity.ReductionKeyMemo;
 
 /**
  * This interface provide functions that should be called
@@ -50,32 +50,32 @@ import org.opennms.horizon.alarms.db.impl.dto.SeverityDTO;
  */
 public interface AlarmEntityNotifier {
 
-    void didCreateAlarm(AlarmDTO alarm);
+    void didCreateAlarm(Alarm alarm);
 
-    void didUpdateAlarmWithReducedEvent(AlarmDTO alarm);
+    void didUpdateAlarmWithReducedEvent(Alarm alarm);
 
-    void didAcknowledgeAlarm(AlarmDTO alarm, String previousAckUser, Date previousAckTime);
+    void didAcknowledgeAlarm(Alarm alarm, String previousAckUser, Date previousAckTime);
 
-    void didUnacknowledgeAlarm(AlarmDTO alarm, String previousAckUser, Date previousAckTime);
+    void didUnacknowledgeAlarm(Alarm alarm, String previousAckUser, Date previousAckTime);
 
-    void didUpdateAlarmSeverity(AlarmDTO alarm, SeverityDTO previousSeverity);
+    void didUpdateAlarmSeverity(Alarm alarm, AlarmSeverity previousSeverity);
 
-    void didArchiveAlarm(AlarmDTO alarm, String previousReductionKey);
+    void didArchiveAlarm(Alarm alarm, String previousReductionKey);
 
-    void didDeleteAlarm(AlarmDTO alarm);
+    void didDeleteAlarm(Alarm alarm);
 
-    void didUpdateStickyMemo(AlarmDTO onmsAlarm, String previousBody, String previousAuthor, Date previousUpdated);
+    void didUpdateStickyMemo(Alarm alarm, String previousBody, String previousAuthor, Date previousUpdated);
 
-    void didUpdateReductionKeyMemo(AlarmDTO onmsAlarm, String previousBody, String previousAuthor, Date previousUpdated);
+    void didUpdateReductionKeyMemo(Alarm alarm, String previousBody, String previousAuthor, Date previousUpdated);
 
-    void didDeleteStickyMemo(AlarmDTO onmsAlarm, MemoDTO memo);
+    void didDeleteStickyMemo(Alarm alarm, Memo memo);
 
-    void didDeleteReductionKeyMemo(AlarmDTO onmsAlarm, ReductionKeyMemoDTO memo);
+    void didDeleteReductionKeyMemo(Alarm alarm, ReductionKeyMemo memo);
 
-    void didUpdateLastAutomationTime(AlarmDTO alarm, Date previousLastAutomationTime);
+    void didUpdateLastAutomationTime(Alarm alarm, Date previousLastAutomationTime);
 
-    void didUpdateRelatedAlarms(AlarmDTO alarm, Set<AlarmDTO> previousRelatedAlarms);
+    void didUpdateRelatedAlarms(Alarm alarm, Set<Alarm> previousRelatedAlarms);
 
-    void didChangeTicketStateForAlarm(AlarmDTO alarm, TroubleTicketState previousState);
+    void didChangeTicketStateForAlarm(Alarm alarm, TroubleTicketState previousState);
 
 }

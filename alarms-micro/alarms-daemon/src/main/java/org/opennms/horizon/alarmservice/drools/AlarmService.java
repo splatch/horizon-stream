@@ -30,8 +30,10 @@ package org.opennms.horizon.alarmservice.drools;
 
 import java.util.Date;
 
-import org.opennms.horizon.db.model.OnmsAlarm;
-import org.opennms.horizon.db.model.OnmsSeverity;
+import java.util.List;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.model.AlarmDTO;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.events.xml.Event;
 
 /**
@@ -39,20 +41,21 @@ import org.opennms.horizon.events.xml.Event;
  * Situation rules.
  */
 public interface AlarmService {
+    //TODO:MMF get your story straight on  entities vs DTOs
 
-    void clearAlarm(OnmsAlarm alarm, Date now);
+    void clearAlarm(Alarm alarm, Date now);
 
-    void deleteAlarm(OnmsAlarm alarm);
+    void deleteAlarm(Alarm alarm);
 
-    void unclearAlarm(OnmsAlarm alarm, Date now);
+    void unclearAlarm(Alarm alarm, Date now);
 
-    void escalateAlarm(OnmsAlarm alarm, Date now);
+    void escalateAlarm(Alarm alarm, Date now);
 
-    void acknowledgeAlarm(OnmsAlarm alarm, Date now);
+    void acknowledgeAlarm(Alarm alarm, Date now);
 
-    void unacknowledgeAlarm(OnmsAlarm alarm, Date now);
+    void unacknowledgeAlarm(Alarm alarm, Date now);
 
-    void setSeverity(OnmsAlarm alarm, OnmsSeverity severity, Date now);
+    void setSeverity(Alarm alarm, AlarmSeverity severity, Date now);
 
     void debug(String message, Object... objects);
 
@@ -66,5 +69,7 @@ public interface AlarmService {
      * @param e event to broadcast
      */
     void sendEvent(Event e);
+
+    List<AlarmDTO> getAllAlarms(String tenantId);
 
 }

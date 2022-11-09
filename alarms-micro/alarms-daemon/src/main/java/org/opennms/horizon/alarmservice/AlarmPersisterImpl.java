@@ -40,16 +40,14 @@ import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarms.api.AlarmPersisterExtension;
-import org.opennms.horizon.alarms.db.api.AlarmDao;
-import org.opennms.horizon.alarms.db.impl.dto.AlarmDTO;
-import org.opennms.horizon.alarms.db.impl.dto.SeverityDTO;
+import org.opennms.horizon.alarmservice.db.api.AlarmDao;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.model.Severity;
 import org.opennms.horizon.core.lib.SystemProperties;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.events.conf.xml.LogDestType;
 import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.events.xml.Parm;
-import org.opennms.horizon.events.xml.UpdateField;
-
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -66,7 +64,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     public static final String RELATED_REDUCTION_KEY_PREFIX = "related-reductionKey";
 
-    protected static final Integer NUM_STRIPE_LOCKS = SystemProperties.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
+    protected static final Integer NUM_STRIPE_LOCKS = SystemProperties.getInteger("org.opennms.alarmd.stripe.locks", AlarmDaemon.THREADS * 4);
     protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
     protected static boolean LEGACY_ALARM_STATE = Boolean.getBoolean("org.opennms.alarmd.legacyAlarmState");
 
@@ -85,7 +83,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private boolean m_legacyAlarmState = LEGACY_ALARM_STATE;
 
     @Override
-    public AlarmDTO persist(Event event) {
+    public Alarm persist(Event event) {
         Objects.requireNonNull(event, "Cannot create alarm from null event.");
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
@@ -99,7 +97,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         // We do this to ensure that clears and triggers are processed in the same order
         // as the calls are made
         final Iterable<Lock> locks = lockStripes.bulkGet(getLockKeys(event));
-        final AlarmDTO[] alarm = new AlarmDTO[1];
+        final Alarm[] alarm = new Alarm[1];
         try {
             locks.forEach(Lock::lock);
             // Process the alarm inside a transaction
@@ -114,7 +112,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     //TODO:MMF this should come from kafka event, not DB
-    private AlarmDTO addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
+    private Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
 //        final OnmsEvent persistedEvent = m_eventDao.get(event.getDbid());
 //        if (persistedEvent == null) {
@@ -133,14 +131,14 @@ public class AlarmPersisterImpl implements AlarmPersister {
             didSwapReductionKeyWithClearKey = true;
         }
 
-        AlarmDTO alarm = m_alarmDao.findByReductionKey(key);
+        Alarm alarm = m_alarmDao.findByReductionKey(key);
 
         if (alarm == null && didSwapReductionKeyWithClearKey) {
             // if the clearKey returns null, still need to check the reductionKey
             alarm = m_alarmDao.findByReductionKey(reductionKey);
         }
 
-        if (alarm == null || (m_createNewAlarmIfClearedAlarmExists && SeverityDTO.CLEARED.equals(alarm.getSeverity()))) {
+        if (alarm == null || (m_createNewAlarmIfClearedAlarmExists && Severity.CLEARED.equals(alarm.getSeverity()))) {
             if (log.isDebugEnabled()) {
                 log.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             }
@@ -258,12 +256,12 @@ public class AlarmPersisterImpl implements AlarmPersister {
 //        persistedEvent.setAlarm(alarm);
 //    }
     
-    private void updateRelatedAlarms(AlarmDTO alarm, Event event) {
+    private void updateRelatedAlarms(Alarm alarm, Event event) {
         // Retrieve the related alarms as given by the event parameters
-        final Set<AlarmDTO> relatedAlarms = getRelatedAlarms(event.getParmCollection());
+        final Set<Alarm> relatedAlarms = getRelatedAlarms(event.getParmCollection());
         // Index these by id
-        final Map<Integer, AlarmDTO> relatedAlarmsByIds = relatedAlarms.stream()
-                .collect(Collectors.toMap(AlarmDTO::getId, a -> a));
+        final Map<Integer, Alarm> relatedAlarmsByIds = relatedAlarms.stream()
+                .collect(Collectors.toMap(Alarm::getId, a -> a));
 
         // Build sets of the related alarm ids for easy comparison
         final Set<Integer> relatedAlarmIdsFromEvent = ImmutableSet.copyOf(relatedAlarmsByIds.keySet());
@@ -277,7 +275,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         // Add new alarms that are referenced in the event, but are not already associated
         Sets.difference(relatedAlarmIdsFromEvent, relatedAlarmIdsFromExistingAlarm)
                 .forEach(relatedAlarmIdToAdd -> {
-                    final AlarmDTO related = relatedAlarmsByIds.get(relatedAlarmIdToAdd);
+                    final Alarm related = relatedAlarmsByIds.get(relatedAlarmIdToAdd);
                     if (related != null) {
                         if (!formingCyclicGraph(alarm, related)) {
                             alarm.addRelatedAlarm(related);
@@ -293,21 +291,21 @@ public class AlarmPersisterImpl implements AlarmPersister {
 //        alarm.setSeverity(SeverityDTO.valueOf(persistedEvent.getSeverityLabel()));
 //    }
 
-    private void incrementCounter(AlarmDTO alarm) {
+    private void incrementCounter(Alarm alarm) {
         alarm.setCounter(alarm.getCounter() + 1);
     }
 
-    private boolean isResolvedAlarm(AlarmDTO alarm) {
-        return alarm.getAlarmType() == AlarmDTO.RESOLUTION_TYPE;
+    private boolean isResolvedAlarm(Alarm alarm) {
+        return alarm.getAlarmType() == Alarm.RESOLUTION_TYPE;
     }
 
     private boolean isResolutionEvent(Event event) {
-        return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(AlarmDTO.RESOLUTION_TYPE));
+        return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(Alarm.RESOLUTION_TYPE));
     }
 
           //TODO:MMF refactor
-    private AlarmDTO createNewAlarm(Event event) {
-        AlarmDTO alarm = new AlarmDTO();
+    private Alarm createNewAlarm(Event event) {
+        Alarm alarm = new Alarm();
         // Situations are denoted by the existance of related-reductionKeys
         alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
@@ -337,13 +335,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm;
     }
 
-    private boolean formingCyclicGraph(AlarmDTO situation, AlarmDTO relatedAlarm) {
+    private boolean formingCyclicGraph(Alarm situation, Alarm relatedAlarm) {
 
         return situation.getReductionKey().equals(relatedAlarm.getReductionKey()) ||
                 relatedAlarm.getRelatedAlarms().stream().anyMatch(ra -> formingCyclicGraph(situation, ra));
     }
     
-    private Set<AlarmDTO> getRelatedAlarms(List<Parm> list) {
+    private Set<Alarm> getRelatedAlarms(List<Parm> list) {
         if (list == null || list.isEmpty()) {
             return Collections.emptySet();
         }

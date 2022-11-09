@@ -26,16 +26,16 @@
 <!--  </dependencyManagement>-->
 
   <dependencies>
-    <dependency>
-      <groupId>org.opennms.horizon.alarms</groupId>
-      <artifactId>api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.horizon.db</groupId>
-      <artifactId>dao-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+      <dependency>
+          <groupId>org.opennms.horizon.alarms</groupId>
+          <artifactId>alarms-db</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.horizon.alarms</groupId>
+          <artifactId>alarms-daemon</artifactId>
+          <version>${project.version}</version>
+      </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>javax.ws.rs-api</artifactId>
@@ -44,25 +44,26 @@
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.horizon.core</groupId>
-      <artifactId>rest</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+<!--      //TODO:MMF remove this-->
+<!--    <dependency>-->
+<!--      <groupId>org.opennms.horizon.core</groupId>-->
+<!--      <artifactId>rest</artifactId>-->
+<!--      <version>${project.version}</version>-->
+<!--    </dependency>-->
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.horizon.shared</groupId>
-      <artifactId>dto-model</artifactId>
-      <version>${project.version}</version>
-    </dependency>
+<!--      //TODO:MMF remove-->
+<!--    <dependency>-->
+<!--      <groupId>org.opennms.horizon.shared</groupId>-->
+<!--      <artifactId>dto-model</artifactId>-->
+<!--      <version>${project.version}</version>-->
+<!--    </dependency>-->
       <dependency>
           <groupId>org.projectlombok</groupId>
           <artifactId>lombok</artifactId>
       </dependency>
-
   </dependencies>
 
 </project>

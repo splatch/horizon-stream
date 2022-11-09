@@ -1,26 +1,22 @@
 package org.opennms.horizon.alarmservice.rest;
 
-import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
-import org.opennms.horizon.db.dao.api.AlarmDao;
-import org.opennms.horizon.db.dao.api.SessionUtils;
-//TODO:MMF port this
-import org.opennms.horizon.db.model.mapper.AlarmMapper;
+import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
+//TODO:MMF port this?  YES! Need to seperate entities and dtos
+//import org.opennms.horizon.db.model.mapper.AlarmMapper;
+
+import org.opennms.horizon.alarmservice.drools.AlarmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
 public class AlarmRestServiceConfig {
 
-
-//    @Bean("taskSetIgniteReceiverService")
-//    public AlarmRestService
-//    taskSetIgniteReceiverService(
-//        @Autowired AlarmDao alarmDao,
-//        @Autowired AlarmMapper alarmMapper,
-//        @Autowired AcknowledgmentDao  acknowledgmentDao,
-//        @Autowired SessionUtils sessionUtils
-//    ) {
-//        return new AlarmRestServiceImpl(alarmDao, alarmMapper, acknowledgmentDao, sessionUtils);
-//    }
+    @Bean("alarmRestService")
+    public AlarmRestService alarmRestService (
+        @Autowired AlarmService alarmService) {
+        return new AlarmRestServiceImpl(alarmService);
+    }
 }

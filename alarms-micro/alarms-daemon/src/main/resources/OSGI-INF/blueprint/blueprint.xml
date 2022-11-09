@@ -81,7 +81,7 @@
         <property name="sessionUtils" ref="sessionUtils" />
         <property name="listener" ref="droolsAlarmContext" />
     </bean>
-    <bean id="daemon" class="org.opennms.horizon.alarmservice.Alarmd" init-method="onStart" destroy-method="onStop">
+    <bean id="daemon" class="org.opennms.horizon.alarmservice.AlarmServiceImpl" init-method="onStart" destroy-method="onStop">
         <property name="persister" ref="alarmPersister" />
         <property name="droolsAlarmContext" ref="droolsAlarmContext" />
         <property name="alarmLifecycleListenerManager" ref="alarmLifecycleListenerManager" />

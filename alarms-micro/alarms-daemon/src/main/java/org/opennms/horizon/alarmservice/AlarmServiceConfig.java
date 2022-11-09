@@ -1,11 +1,15 @@
 package org.opennms.horizon.alarmservice;
 
+import org.opennms.horizon.alarmservice.drools.AlarmService;
+import org.opennms.horizon.alarmservice.drools.DefaultAlarmService;
 import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;
 import org.opennms.horizon.events.api.EventForwarder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
 public class AlarmServiceConfig {
 
     @Bean("alarmEntityNotifier")
@@ -28,5 +32,10 @@ public class AlarmServiceConfig {
     @Bean("eventForwarder")
     public EventForwarder eventForwarder() {
         return null;
+    }
+
+    @Bean("alarmService")
+    public AlarmService alarmService() {
+        return new DefaultAlarmService();
     }
 }

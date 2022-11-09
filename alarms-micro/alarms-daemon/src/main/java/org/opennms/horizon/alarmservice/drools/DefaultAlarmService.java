@@ -28,26 +28,27 @@
 
 package org.opennms.horizon.alarmservice.drools;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.opennms.horizon.alarms.api.AlarmEntityNotifier;
-import org.opennms.horizon.db.dao.api.SessionUtils;
+import org.opennms.horizon.alarmservice.AlarmEntityNotifier;
+import org.opennms.horizon.alarmservice.db.api.AlarmDao;
+import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.model.AlarmDTO;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
-import org.opennms.horizon.db.dao.api.AlarmDao;
-import org.opennms.horizon.db.model.AckAction;
-import org.opennms.horizon.db.model.OnmsAcknowledgment;
-import org.opennms.horizon.db.model.OnmsAlarm;
-import org.opennms.horizon.db.model.OnmsSeverity;
 import org.opennms.horizon.events.api.EventForwarder;
 import org.opennms.horizon.events.xml.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class DefaultAlarmService implements AlarmService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAlarmService.class);
@@ -58,138 +59,139 @@ public class DefaultAlarmService implements AlarmService {
     private AlarmDao alarmDao;
 
     @Autowired
-    private AcknowledgmentDao acknowledgmentDao;
-
-    @Autowired
     private AlarmEntityNotifier alarmEntityNotifier;
 
     @Autowired
     private EventForwarder eventForwarder;
 
-    @Autowired
-    private SessionUtils sessionUtils;
+//    @Autowired
+//    private SessionUtils sessionUtils;
 
     @Override
-    public void clearAlarm(OnmsAlarm alarm, Date now) {
-        sessionUtils.withTransaction(() -> {
-            LOG.info("Clearing alarm with id: {} with current severity: {} at: {}", alarm.getId(), alarm.getSeverity(), now);
-            final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
+    @Transactional
+    public void clearAlarm(Alarm alarm, Date now) {
+//        sessionUtils.withTransaction(() -> {
+//            LOG.info("Clearing alarm with id: {} with current severity: {} at: {}", alarm.getId(), alarm.getSeverity(), now);
+            final Alarm alarmInTrans = alarmDao.get(alarm.getId());
             if (alarmInTrans == null) {
                 LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
                 return;
             }
-            final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
-            alarmInTrans.setSeverity(OnmsSeverity.CLEARED);
+            final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
+            alarmInTrans.setSeverity(AlarmSeverity.CLEARED);
             updateAutomationTime(alarmInTrans, now);
             alarmDao.update(alarmInTrans);
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
-        });
+//        });
     }
 
     @Override
-    public void deleteAlarm(OnmsAlarm alarm) {
-        sessionUtils.withTransaction(() -> {
+    public void deleteAlarm(Alarm alarm) {
+//        sessionUtils.withTransaction(() -> {
             LOG.info("Deleting alarm with id: {} with severity: {}", alarm.getId(), alarm.getSeverity());
-            final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
+            final Alarm alarmInTrans = alarmDao.get(alarm.getId());
             if (alarmInTrans == null) {
                 LOG.warn("Alarm disappeared: {}. Skipping delete.", alarm);
                 return;
             }
             // If alarm was in Situation, calculate notifications for the Situation
-            Map<OnmsAlarm, Set<OnmsAlarm>> priorRelatedAlarms = new HashMap<>();
+            Map<Alarm, Set<Alarm>> priorRelatedAlarms = new HashMap<>();
             if (alarmInTrans.isPartOfSituation()) {
-                for (OnmsAlarm situation : alarmInTrans.getRelatedSituations()) {
-                    priorRelatedAlarms.put(situation, new HashSet<OnmsAlarm>(situation.getRelatedAlarms()));
+                for (Alarm situation : alarmInTrans.getRelatedSituations()) {
+                    priorRelatedAlarms.put(situation, new HashSet<Alarm>(situation.getRelatedAlarms()));
                 }
             }
             alarmDao.delete(alarmInTrans);
             // fire notifications after alarm has been deleted
-            for (Entry<OnmsAlarm, Set<OnmsAlarm>> entry : priorRelatedAlarms.entrySet()) {
+            for (Entry<Alarm, Set<Alarm>> entry : priorRelatedAlarms.entrySet()) {
                 alarmEntityNotifier.didUpdateRelatedAlarms(entry.getKey(), entry.getValue());
             }
             alarmEntityNotifier.didDeleteAlarm(alarmInTrans);
-        });
+//        });
     }
 
     @Override
-    public void unclearAlarm(OnmsAlarm alarm, Date now) {
-        sessionUtils.withTransaction(() -> {
+    public void unclearAlarm(Alarm alarm, Date now) {
+//        sessionUtils.withTransaction(() -> {
             LOG.info("Un-clearing alarm with id: {} at: {}", alarm.getId(), now);
-            final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
+            final Alarm alarmInTrans = alarmDao.get(alarm.getId());
             if (alarmInTrans == null) {
                 LOG.warn("Alarm disappeared: {}. Skipping un-clear.", alarm);
                 return;
             }
-            final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
-            alarmInTrans.setSeverity(OnmsSeverity.get(alarmInTrans.getLastEvent().getEventSeverity()));
+            final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
+            //TODO:MMF fix this
+//            alarmInTrans.setSeverity(AlarmSeverity.get(alarmInTrans.getLastEvent().getEventSeverity()));
             updateAutomationTime(alarmInTrans, now);
             alarmDao.update(alarmInTrans);
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
-        });
+//        });
     }
 
     @Override
-    public void escalateAlarm(OnmsAlarm alarm, Date now) {
-        sessionUtils.withTransaction(() -> {
+    public void escalateAlarm(Alarm alarm, Date now) {
+//        sessionUtils.withTransaction(() -> {
             LOG.info("Escalating alarm with id: {} at: {}", alarm.getId(), now);
-            final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
+            final Alarm alarmInTrans = alarmDao.get(alarm.getId());
             if (alarmInTrans == null) {
                 LOG.warn("Alarm disappeared: {}. Skipping escalate.", alarm);
                 return;
             }
-            final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
-            alarmInTrans.setSeverity(OnmsSeverity.get(previousSeverity.getId() + 1));
+            final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
+            alarmInTrans.setSeverity(AlarmSeverity.get(previousSeverity.getId() + 1));
             updateAutomationTime(alarmInTrans, now);
             alarmDao.update(alarmInTrans);
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
-        });
+//        });
     }
 
     @Override
-    public void acknowledgeAlarm(OnmsAlarm alarm, Date now) {
-        sessionUtils.withTransaction(() -> {
-            LOG.info("Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
-            final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
-            if (alarmInTrans == null) {
-                LOG.warn("Alarm disappeared: {}. Skipping ack.", alarm);
-                return;
-            }
-            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
-            ack.setAckAction(AckAction.ACKNOWLEDGE);
-            acknowledgmentDao.processAck(ack);
-        });
+    public void acknowledgeAlarm(Alarm alarm, Date now) {
+    //TODO:MMF set ack on alarm only
+//        sessionUtils.withTransaction(() -> {
+//            LOG.info("Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
+//            final Alarm alarmInTrans = alarmDao.get(alarm.getId());
+//            if (alarmInTrans == null) {
+//                LOG.warn("Alarm disappeared: {}. Skipping ack.", alarm);
+//                return;
+//            }
+//            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
+//            ack.setAckAction(AckAction.ACKNOWLEDGE);
+//            acknowledgmentDao.processAck(ack);
+//        });
     }
 
     @Override
-    public void unacknowledgeAlarm(OnmsAlarm alarm, Date now) {
-        sessionUtils.withTransaction(() -> {
-            LOG.info("Un-Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
-            final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
-            if (alarmInTrans == null) {
-                LOG.warn("Alarm disappeared: {}. Skipping un-ack.", alarm);
-                return;
-            }
-            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
-            ack.setAckAction(AckAction.UNACKNOWLEDGE);
-            acknowledgmentDao.processAck(ack);
-        });
+    public void unacknowledgeAlarm(Alarm alarm, Date now) {
+    //TODO: set ack value on alarm only
+//        sessionUtils.withTransaction(() -> {
+//            LOG.info("Un-Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
+//            final Alarm alarmInTrans = alarmDao.get(alarm.getId());
+//            if (alarmInTrans == null) {
+//                LOG.warn("Alarm disappeared: {}. Skipping un-ack.", alarm);
+//                return;
+//            }
+//            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
+//            ack.setAckAction(AckAction.UNACKNOWLEDGE);
+//            acknowledgmentDao.processAck(ack);
+//        });
     }
 
     @Override
-    public void setSeverity(OnmsAlarm alarm, OnmsSeverity severity, Date now) {
-        sessionUtils.withTransaction(() -> {
+    public void setSeverity(Alarm alarm, AlarmSeverity severity, Date now) {
+//        sessionUtils.withTransaction(() -> {
             LOG.info("Updating severity {} on alarm with id: {}", severity, alarm.getId());
-            final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
+            final Alarm alarmInTrans = alarmDao.get(alarm.getId());
             if (alarmInTrans == null) {
                 LOG.warn("Alarm disappeared: {}. Skipping severity update.", alarm);
                 return;
             }
-            final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
+            final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
             alarmInTrans.setSeverity(severity);
             updateAutomationTime(alarm, now);
             alarmDao.update(alarmInTrans);
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
-        });
+//        });
     }
 
     @Override
@@ -197,7 +199,14 @@ public class DefaultAlarmService implements AlarmService {
         eventForwarder.sendNow(e);
     }
 
-    private static void updateAutomationTime(OnmsAlarm alarm, Date now) {
+    @Override
+    public List<AlarmDTO> getAllAlarms(String tenantId) {
+//        return alarmDao.findAll();
+        //TODO:MMF
+        return null;
+    }
+
+    private static void updateAutomationTime(Alarm alarm, Date now) {
         if (alarm.getFirstAutomationTime() == null) {
             alarm.setFirstAutomationTime(now);
         }
@@ -206,10 +215,6 @@ public class DefaultAlarmService implements AlarmService {
 
     public void setAlarmDao(AlarmDao alarmDao) {
         this.alarmDao = alarmDao;
-    }
-
-    public void setAcknowledgmentDao(AcknowledgmentDao acknowledgmentDao) {
-        this.acknowledgmentDao = acknowledgmentDao;
     }
 
     public void setAlarmEntityNotifier(AlarmEntityNotifier alarmEntityNotifier) {
@@ -232,7 +237,4 @@ public class DefaultAlarmService implements AlarmService {
         this.eventForwarder = eventForwarder;
     }
 
-    public void setSessionUtils(SessionUtils sessionUtils) {
-        this.sessionUtils = sessionUtils;
-    }
 }

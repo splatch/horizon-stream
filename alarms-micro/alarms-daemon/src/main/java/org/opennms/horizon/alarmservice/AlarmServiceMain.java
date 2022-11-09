@@ -9,6 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AlarmServiceMain {
 
     public static void main(String[] args) {
-        SpringApplication.run(Alarmd.class, args);
+        SpringApplication.run(AlarmDaemon.class, args);
     }
 }
