@@ -1,10 +1,7 @@
 package org.opennms.horizon.inventory.model;
 
-import com.vladmihalcea.hibernate.type.basic.Inet;
-import com.vladmihalcea.hibernate.type.basic.PostgreSQLInetType;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
