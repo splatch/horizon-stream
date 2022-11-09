@@ -1,8 +1,20 @@
 <template>
   <ul class="anchor-list">
-    <li v-for="anchor in anchors" :key="anchor.label">
-      <label>{{ anchor.label }}: </label>
-      <a :href="anchor.link">{{ anchor.value }}</a>
+    <li>
+      <label>{{ anchor.profileLabel }}: </label>
+      <a :href="anchor.profileLink">{{ anchor.profileValue }}</a>
+    </li>
+    <li>
+      <label>{{ anchor.locationLabel }}: </label>
+      <a :href="anchor.locationLink">{{ anchor.locationValue }}</a>
+    </li>
+    <li>
+      <label>{{ anchor.ipInterfaceLabel }}: </label>
+      <a :href="anchor.ipInterfaceLink">{{ anchor.ipInterfaceValue }}</a>
+    </li>
+    <li>
+      <label>{{ anchor.tagLabel }}: </label>
+      <a :href="anchor.tagLink">{{ anchor.tagValue }}</a>
     </li>
   </ul>
 </template>
@@ -11,14 +23,23 @@
 import { PropType } from 'vue'
 
 interface Anchor {
-  label: string,
-  value: string | number,
-  link: string
+  profileLabel: string,
+  profileValue: number,
+  profileLink: string,
+  locationLabel: string,
+  locationValue: string,
+  locationLink: string,
+  ipInterfaceLabel: string,
+  ipInterfaceValue: number,
+  ipInterfaceLink: string,
+  tagLabel: string,
+  tagValue: number,
+  tagLink: string,
 }
 
 defineProps({
-  anchors: {
-    type: Array as PropType<Anchor[]>,
+  anchor: {
+    type: Object as PropType<Anchor>,
     required: true
   }
 })

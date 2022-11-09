@@ -3,35 +3,27 @@
   <!-- tabs anchor-->
   <!-- expandable filter: search, select, sorting -->
   <!-- card: title, metric chip, list anchor, actions -->
-  <AnchorList :anchors="anchors" />
+  <AnchorList :anchor="anchor" />
   <div/>
 </template>
 
 <script lang="ts" setup>
 const heading = 'Network Inventory'
 
-const anchors = [
-  {
-    label: 'Monitoring Profile',
-    value: 75,
-    link: '#'
-  },
-  {
-    label: 'Monitoring Location',
-    value: 'DefaultMinion',
-    link: '#'
-  },
-  {
-    label: 'IP Interface',
-    value: 25,
-    link: '#'
-  },
-  {
-    label: 'Tag',
-    value: 100,
-    link: '#'
-  }
-]
+const anchor = {
+  profileLabel: 'Monitoring Profile',
+  profileValue: 75,
+  profileLink: '#',
+  locationLabel: 'Monitoring Location',
+  locationValue: 'DefaultMinion',
+  locationLink: '#',
+  ipInterfaceLabel: 'IP Interface',
+  ipInterfaceValue: 25,
+  ipInterfaceLink: '#',
+  tagLabel: 'Tag',
+  tagValue: 100,
+  tagLink: '#'
+}
 </script>
 
 <style lang="scss" scoped>
