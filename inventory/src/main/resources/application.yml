@@ -15,6 +15,18 @@ spring:
   liquibase:
     change-log: db/changelog/changelog.xml
 
+  kafka:
+    consumer:
+      group-id: "inventory"
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    bootstrap-servers: localhost:59092
+
 grpc:
   server:
     port: 6565
+
+kafka:
+  topics:
+    minion-heartbeat: "heartbeat"

@@ -38,9 +38,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.inventory.InventoryApplication;
-import org.opennms.horizon.inventory.dto.LocationList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
-import org.opennms.horizon.inventory.dto.MonitoringServiceGrpc;
+import org.opennms.horizon.inventory.dto.MonitoringLocationList;
+import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
 import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +88,7 @@ public class GrpcIntegrationTest {
     @Autowired
     private MonitoringLocationMapper mapper;
     private ManagedChannel channel;
-    private MonitoringServiceGrpc.MonitoringServiceBlockingStub serviceStub;
+    private MonitoringLocationServiceGrpc.MonitoringLocationServiceBlockingStub serviceStub;
 
     @BeforeEach
     public void prepareData(){
@@ -105,7 +105,7 @@ public class GrpcIntegrationTest {
         repo.save(mapper.dtoToModel(location2));
             channel = ManagedChannelBuilder.forAddress("localhost", 6767)
                 .usePlaintext().build();
-            serviceStub = MonitoringServiceGrpc.newBlockingStub(channel);
+            serviceStub = MonitoringLocationServiceGrpc.newBlockingStub(channel);
     }
 
     @AfterEach
@@ -116,7 +116,7 @@ public class GrpcIntegrationTest {
 
     @Test
     public void testListLocations () {
-        LocationList locationList = serviceStub.listLocations(Empty.newBuilder().build());
+        MonitoringLocationList locationList = serviceStub.listLocations(Empty.newBuilder().build());
         assertThat(locationList).isNotNull();
         List<MonitoringLocationDTO> list = locationList.getLocationsList();
         assertThat(list.size()).isEqualTo(2);
