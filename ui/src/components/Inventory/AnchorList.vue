@@ -14,7 +14,8 @@
     </li>
     <li>
       <label>{{ label.tag }}: </label>
-      <a :href="sanitizeUrl(anchor.tagLink)">{{ anchor.tagValue }}</a>
+      <!-- <a :href="sanitizeUrl(anchor.tagLink)">{{ anchor.tagValue }}</a> -->
+      <a :href="link">{{ anchor.tagValue }}</a>
     </li>
   </ul>
 </template>
@@ -34,13 +35,13 @@ interface Anchor {
   tagLink: string,
 }
 
-defineProps({
+const props = defineProps({
   anchor: {
     type: Object as PropType<Anchor>,
     required: true
   }
 })
-
+const link = sanitizeUrl(props.anchor.tagLink)
 const label = {
   profile: 'Monitoring Profile',
   location: 'Monitoring Location',
