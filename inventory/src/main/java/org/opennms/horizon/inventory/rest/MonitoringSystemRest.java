@@ -59,4 +59,10 @@ public class MonitoringSystemRest {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping(value = "/tenant/{tenantId}")
+    public ResponseEntity<List<MonitoringSystemDTO>> getByTenant(@PathVariable String tenantId) {
+        List<MonitoringSystemDTO> all = monitoringSystemService.findByTenantId(tenantId);
+        return new ResponseEntity<>(all, HttpStatus.OK);
+    }
 }

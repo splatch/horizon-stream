@@ -1,7 +1,6 @@
 package org.opennms.horizon.inventory.service;
 
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.opennms.horizon.inventory.dto.MonitoredServiceTypeDTO;
 import org.opennms.horizon.inventory.mapper.MonitoredServiceTypeMapper;
 import org.opennms.horizon.inventory.model.MonitoredServiceType;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,5 +40,14 @@ public class MonitoredServiceTypeService {
             dto = Optional.of(mapper.modelToDTO(model.get()));
         }
         return dto;
+    }
+
+    public List<MonitoredServiceTypeDTO> findByTenantId(String tenantId) {
+        UUID tenantUUID = UUID.fromString(tenantId);
+        List<MonitoredServiceType> all = modelRepo.findByTenantId(tenantUUID);
+        return all
+            .stream()
+            .map(mapper::modelToDTO)
+            .collect(Collectors.toList());
     }
 }

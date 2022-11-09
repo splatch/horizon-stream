@@ -59,4 +59,10 @@ public class SnmpInterfaceRest {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping(value = "/tenant/{tenantId}")
+    public ResponseEntity<List<SnmpInterfaceDTO>> getByTenant(@PathVariable String tenantId) {
+        List<SnmpInterfaceDTO> all = snmpInterfaceService.findByTenantId(tenantId);
+        return new ResponseEntity<>(all, HttpStatus.OK);
+    }
 }
