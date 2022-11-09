@@ -11,16 +11,12 @@
 const heading = 'Network Inventory'
 
 const anchor = {
-  profileLabel: 'Monitoring Profile',
   profileValue: 75,
   profileLink: '#',
-  locationLabel: 'Monitoring Location',
   locationValue: 'DefaultMinion',
   locationLink: '#',
-  ipInterfaceLabel: 'IP Interface',
   ipInterfaceValue: 25,
   ipInterfaceLink: '#',
-  tagLabel: 'Tag',
   tagValue: 100,
   tagLink: '#'
 }

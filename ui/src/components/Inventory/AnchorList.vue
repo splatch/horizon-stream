@@ -1,19 +1,19 @@
 <template>
   <ul class="anchor-list">
     <li>
-      <label>{{ anchor.profileLabel }}: </label>
+      <label>{{ label.profile }}: </label>
       <a :href="anchor.profileLink">{{ anchor.profileValue }}</a>
     </li>
     <li>
-      <label>{{ anchor.locationLabel }}: </label>
+      <label>{{ label.location }}: </label>
       <a :href="anchor.locationLink">{{ anchor.locationValue }}</a>
     </li>
     <li>
-      <label>{{ anchor.ipInterfaceLabel }}: </label>
+      <label>{{ label.ipInterface }}: </label>
       <a :href="anchor.ipInterfaceLink">{{ anchor.ipInterfaceValue }}</a>
     </li>
     <li>
-      <label>{{ anchor.tagLabel }}: </label>
+      <label>{{ label.tag }}: </label>
       <a :href="anchor.tagLink">{{ anchor.tagValue }}</a>
     </li>
   </ul>
@@ -23,16 +23,12 @@
 import { PropType } from 'vue'
 
 interface Anchor {
-  profileLabel: string,
   profileValue: number,
   profileLink: string,
-  locationLabel: string,
   locationValue: string,
   locationLink: string,
-  ipInterfaceLabel: string,
   ipInterfaceValue: number,
   ipInterfaceLink: string,
-  tagLabel: string,
   tagValue: number,
   tagLink: string,
 }
@@ -43,6 +39,13 @@ defineProps({
     required: true
   }
 })
+
+const label = {
+  profile: 'Monitoring Profile',
+  location: 'Monitoring Location',
+  ipInterface: 'IP Interface',
+  tag: 'Tag'
+}
 </script>
 
 <style lang="scss" scoped>
