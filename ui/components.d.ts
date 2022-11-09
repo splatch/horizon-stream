@@ -34,6 +34,7 @@ declare module '@vue/runtime-core' {
     FeatherSelect: typeof import('@featherds/select')['FeatherSelect']
     FeatherSnackbar: typeof import('@featherds/snackbar')['FeatherSnackbar']
     FeatherSpinner: typeof import('@featherds/progress')['FeatherSpinner']
+    FeatherTooltip: typeof import('@featherds/tooltip')['FeatherTooltip']
     GridTabs: typeof import('./src/components/Map/GridTabs.vue')['default']
     LeafletMap: typeof import('./src/components/Map/LeafletMap.vue')['default']
     LineGraph: typeof import('./src/components/Graphs/LineGraph.vue')['default']
