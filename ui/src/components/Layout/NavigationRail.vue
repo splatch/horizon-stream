@@ -19,18 +19,20 @@
         </IconTextAnimate>
       </template>
       <template v-slot:nav>
-        <FeatherAppRailNavItem href="/" :icon="Server" title="Appliances" :class="{ selected: isSelected('/') }" />
-        <FeatherAppRailNavItem href="/map" :icon="Pin" title="Map" :class="{ selected: isSelected('/map') }" />
+        <FeatherAppRailNavItem href="/" :icon="Appliances" title="Appliances" :class="{ selected: isSelected('/') }" />
+        <FeatherAppRailNavItem href="/map" :icon="Location" title="Map" :class="{ selected: isSelected('/map') }" />
         <FeatherAppRailNavItem href="/graphs" :icon="Graphs" title="Graphs" :class="{ selected: isSelected('/graphs') }" />
+        <FeatherAppRailNavItem href="/inventory" :icon="Business" title="Inventory" :class="{ selected: isSelected('/inventory') }" />
       </template>
     </FeatherAppRail>
 </template>
 
 <script setup lang=ts>
 import { IconTextAnimate, FeatherAppRailNavItem } from '@featherds/app-rail'
-import Server from '@featherds/icon/hardware/Server'
-import Pin from '@featherds/icon/action/Pin'
+import Appliances from '@featherds/icon/hardware/Appliances'
+import Location from '@featherds/icon/action/Location'
 import Graphs from '@featherds/icon/action/Reporting'
+import Business from '@featherds/icon/action/Business'
 import LogoIcon from '@/assets/OpenNMS-logo-icon.svg'
 import LogoText from '@/assets/OpenNMS-logo-text.svg'
 

@@ -28,15 +28,15 @@
 
 package org.opennms.horizon.inventory.grpc;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.List;
-
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.List;
 
 @Slf4j
 public class GrpcServerManager {

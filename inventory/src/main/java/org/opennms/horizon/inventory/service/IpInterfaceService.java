@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,5 +47,14 @@ public class IpInterfaceService {
             dto = Optional.of(mapper.modelToDTO(model.get()));
         }
         return dto;
+    }
+
+    public List<IpInterfaceDTO> findByTenantId(String tenantId) {
+        UUID tenantUUID = UUID.fromString(tenantId);
+        List<IpInterface> all = modelRepo.findByTenantId(tenantUUID);
+        return all
+            .stream()
+            .map(mapper::modelToDTO)
+            .collect(Collectors.toList());
     }
 }
