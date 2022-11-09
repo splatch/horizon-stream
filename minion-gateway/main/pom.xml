@@ -141,6 +141,7 @@
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
+                    <!-- override skip=false from minion-gateway parent so jib executes here -->
                     <skip>false</skip>
                 </configuration>
             </plugin>
