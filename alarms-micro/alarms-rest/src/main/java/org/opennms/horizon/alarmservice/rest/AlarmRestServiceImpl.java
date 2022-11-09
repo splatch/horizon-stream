@@ -51,8 +51,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 //import org.apache.commons.lang3.EnumUtils;
 //import org.apache.commons.lang3.StringUtils;
-import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
-import org.opennms.horizon.alarmservice.db.api.SessionUtils;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 //import org.opennms.horizon.db.model.TroubleTicketState;
 //import org.opennms.horizon.db.model.mapper.AlarmMapper;

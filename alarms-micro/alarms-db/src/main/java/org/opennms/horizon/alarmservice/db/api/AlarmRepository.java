@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AlarmRepository extends JpaRepository<Alarm, Integer> {
     @Transactional(Transactional.TxType.REQUIRED)
-
     public Alarm findByReductionKey(String reductionKey);
 }

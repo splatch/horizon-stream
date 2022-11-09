@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarms.api.AlarmPersisterExtension;
-import org.opennms.horizon.alarmservice.db.api.AlarmDao;
+import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.Severity;
 import org.opennms.horizon.core.lib.SystemProperties;
@@ -68,7 +68,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
     protected static boolean LEGACY_ALARM_STATE = Boolean.getBoolean("org.opennms.alarmd.legacyAlarmState");
 
-    private AlarmDao m_alarmDao;
+    private AlarmRepository alarmRepository;
 
     private SessionUtils sessionUtils;
 
@@ -131,11 +131,11 @@ public class AlarmPersisterImpl implements AlarmPersister {
             didSwapReductionKeyWithClearKey = true;
         }
 
-        Alarm alarm = m_alarmDao.findByReductionKey(key);
+        Alarm alarm = alarmRepository.findByReductionKey(key);
 
         if (alarm == null && didSwapReductionKeyWithClearKey) {
             // if the clearKey returns null, still need to check the reductionKey
-            alarm = m_alarmDao.findByReductionKey(reductionKey);
+            alarm = alarmRepository.findByReductionKey(reductionKey);
         }
 
         if (alarm == null || (m_createNewAlarmIfClearedAlarmExists && Severity.CLEARED.equals(alarm.getSeverity()))) {
@@ -147,8 +147,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 log.debug("addOrReduceEventAsAlarm: \"archiving\" cleared Alarm for problem: {}; " +
                         "A new alarm will be instantiated to manage the problem.", reductionKey);
                 alarm.archive();
-                m_alarmDao.save(alarm);
-                m_alarmDao.flush();
+                alarmRepository.saveAndFlush(alarm);
 
                 m_alarmEntityNotifier.didArchiveAlarm(alarm, reductionKey);
             }
@@ -164,7 +163,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 //                log.error("An error occurred while invoking the extension callbacks.", ex);
 //            }
 
-            m_alarmDao.save(alarm);
+            alarmRepository.save(alarm);
 //            m_eventDao.saveOrUpdate(persistedEvent);
 
             m_alarmEntityNotifier.didCreateAlarm(alarm);
@@ -181,7 +180,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 //                log.error("An error occurred while invoking the extension callbacks.", ex);
 //            }
 
-            m_alarmDao.update(alarm);
+            alarmRepository.save(alarm);
 //            m_eventDao.update(persistedEvent);
 
 //            if (event.getAlarmData().isAutoClean()) {
@@ -347,7 +346,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
         Set<String> reductionKeys = list.stream().filter(AlarmPersisterImpl::isRelatedReductionKeyWithContent).map(p -> p.getValue().getContent()).collect(Collectors.toSet());
         // Only existing alarms are returned. Reduction Keys for non-existing alarms are dropped.
-        return reductionKeys.stream().map(reductionKey -> m_alarmDao.findByReductionKey(reductionKey)).filter(Objects::nonNull).collect(Collectors.toSet());
+        return reductionKeys.stream().map(reductionKey -> alarmRepository.findByReductionKey(reductionKey)).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     private static boolean isRelatedReductionKeyWithContent(Parm param) {
@@ -388,24 +387,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
     }
 
-
-    /**
-     * <p>setAlarmDao</p>
-     *
-     * @param alarmDao a {@link AlarmDao} object.
-     */
-    public void setAlarmDao(AlarmDao alarmDao) {
-        m_alarmDao = alarmDao;
-    }
-
-    /**
-     * <p>getAlarmDao</p>
-     *
-     * @return a {@link AlarmDao} object.
-     */
-    public AlarmDao getAlarmDao() {
-        return m_alarmDao;
-    }
 
     public AlarmEntityNotifier getAlarmChangeListener() {
         return m_alarmEntityNotifier;
