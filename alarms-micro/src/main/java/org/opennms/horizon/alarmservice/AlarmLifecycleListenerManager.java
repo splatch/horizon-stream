@@ -46,7 +46,7 @@ import org.opennms.horizon.alarmservice.db.impl.entity.Memo;
 import org.opennms.horizon.alarmservice.db.impl.entity.ReductionKeyMemo;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
-import org.opennms.horizon.core.lib.SystemProperties;
+import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -33,7 +33,7 @@ import java.util.List;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.events.xml.Event;
+import org.opennms.horizon.events.proto.Event;
 
 /**
  * This API is intended to provide RHS functionality for Drools Alarmd and

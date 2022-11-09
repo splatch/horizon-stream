@@ -32,16 +32,19 @@
     </dependencyManagement>
 
     <dependencies>
-<!--        //TODO:MMF remove ALL THESE -->
 
         <dependency>
-            <groupId>org.opennms.horizon.events</groupId>
-            <artifactId>api</artifactId>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>events</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--     END    //TODO:MMF remove ALL THESE -->
 
+        <dependency>
+            <groupId>io.dropwizard.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+        </dependency>
 
+        
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

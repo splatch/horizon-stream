@@ -5,7 +5,6 @@ import org.opennms.horizon.alarmservice.api.AlarmPersister;
 import org.opennms.horizon.alarmservice.drools.AlarmService;
 import org.opennms.horizon.alarmservice.drools.DefaultAlarmService;
 import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;
-import org.opennms.horizon.events.api.EventForwarder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -31,10 +30,10 @@ public class AlarmServiceConfig {
     }
 
     //TODO:MMF
-    @Bean("eventForwarder")
-    public EventForwarder eventForwarder() {
-        return null;
-    }
+//    @Bean("eventForwarder")
+//    public EventForwarder eventForwarder() {
+//        return null;
+//    }
 
     @Bean("alarmService")
     public AlarmService alarmService() {

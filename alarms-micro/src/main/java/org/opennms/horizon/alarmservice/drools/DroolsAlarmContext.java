@@ -58,7 +58,7 @@ import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
 import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.impl.entity.AlarmAssociation;
-import org.opennms.horizon.core.lib.SystemProperties;
+import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.springframework.beans.factory.annotation.Autowired;

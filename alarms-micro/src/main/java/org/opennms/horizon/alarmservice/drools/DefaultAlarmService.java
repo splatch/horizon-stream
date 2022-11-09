@@ -41,8 +41,7 @@ import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.events.api.EventForwarder;
-import org.opennms.horizon.events.xml.Event;
+import org.opennms.horizon.events.proto.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,8 +61,8 @@ public class DefaultAlarmService implements AlarmService {
     @Autowired
     private AlarmEntityNotifier alarmEntityNotifier;
 
-    @Autowired
-    private EventForwarder eventForwarder;
+//    @Autowired
+//    private EventForwarder eventForwarder;
 
 //    @Autowired
 //    private SessionUtils sessionUtils;
@@ -202,7 +201,7 @@ public class DefaultAlarmService implements AlarmService {
 
     @Override
     public void sendEvent(Event e) {
-        eventForwarder.sendNow(e);
+//        eventForwarder.sendNow(e);
     }
 
     @Override
@@ -235,8 +234,8 @@ public class DefaultAlarmService implements AlarmService {
         LOG.warn(message, objects);
     }
 
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        this.eventForwarder = eventForwarder;
-    }
+//    public void setEventForwarder(EventForwarder eventForwarder) {
+//        this.eventForwarder = eventForwarder;
+//    }
 
 }

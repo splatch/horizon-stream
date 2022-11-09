@@ -29,7 +29,7 @@
 package org.opennms.horizon.alarmservice.api;
 
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
-import org.opennms.horizon.events.xml.Event;
+import org.opennms.horizon.events.proto.Event;
 
 /**
  * Alarm persisting interface.

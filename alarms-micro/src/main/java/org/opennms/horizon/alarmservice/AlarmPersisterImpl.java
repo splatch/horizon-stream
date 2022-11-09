@@ -34,6 +34,7 @@ import com.google.common.util.concurrent.Striped;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,13 +47,15 @@ import org.opennms.horizon.alarmservice.api.AlarmPersister;
 import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.Severity;
-import org.opennms.horizon.core.lib.SystemProperties;
-import org.opennms.horizon.events.conf.xml.LogDestType;
-import org.opennms.horizon.events.xml.Event;
-import org.opennms.horizon.events.xml.Parm;
+//import org.opennms.horizon.events.conf.xml.LogDestType;
+//import org.opennms.horizon.events.xml.Event;
+import org.opennms.horizon.events.proto.Event;
+//import org.opennms.horizon.events.xml.Parm;
+import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+//TODO:MMF needs a replacement for AlarmData, no longer on protobuf Event. Resolve with Jesse and Gerald.
 @Slf4j
 public class AlarmPersisterImpl implements AlarmPersister {
 
@@ -81,7 +84,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
+//            log.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
         }
 
         // Lock both the reduction and clear keys (if set) using a fair striped lock
@@ -109,11 +112,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
 //            throw new IllegalStateException("Event with id " + event.getDbid() + " was deleted before we could retrieve it and create an alarm.");
 //        }
 
-        final String reductionKey = event.getAlarmData().getReductionKey();
+//        final String reductionKey = event.getAlarmData().getReductionKey();
+        String reductionKey = "blah";
         log.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
 
         String key = reductionKey;
-        String clearKey = event.getAlarmData().getClearKey();
+//        String clearKey = event.getAlarmData().getClearKey();
+        String clearKey = "blah";
 
         boolean didSwapReductionKeyWithClearKey = false;
         if (!m_legacyAlarmState && clearKey != null && isResolutionEvent(event)) {
@@ -229,7 +234,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
     
     private void updateRelatedAlarms(Alarm alarm, Event event) {
         // Retrieve the related alarms as given by the event parameters
-        final Set<Alarm> relatedAlarms = getRelatedAlarms(event.getParmCollection());
+//        final Set<Alarm> relatedAlarms = getRelatedAlarms(event.getParmCollection());
+        final Set<Alarm> relatedAlarms = new HashSet();
         // Index these by id
         final Map<Integer, Alarm> relatedAlarmsByIds = relatedAlarms.stream()
                 .collect(Collectors.toMap(Alarm::getId, a -> a));
@@ -271,16 +277,17 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     private boolean isResolutionEvent(Event event) {
-        return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(Alarm.RESOLUTION_TYPE));
+//        return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(Alarm.RESOLUTION_TYPE));
+        return false;
     }
 
           //TODO:MMF refactor
     private Alarm createNewAlarm(Event event) {
         Alarm alarm = new Alarm();
         // Situations are denoted by the existance of related-reductionKeys
-        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
-        alarm.setAlarmType(event.getAlarmData().getAlarmType());
-        alarm.setClearKey(event.getAlarmData().getClearKey());
+//        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
+//        alarm.setAlarmType(event.getAlarmData().getAlarmType());
+//        alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);
 //        alarm.setDescription(e.getEventDescr());
 //        alarm.setDistPoller(e.getDistPoller());
@@ -293,15 +300,15 @@ public class AlarmPersisterImpl implements AlarmPersister {
 //        alarm.setMouseOverText(e.getEventMouseOverText());
 //        alarm.setNode(e.getNode());
 //        alarm.setOperInstruct(e.getEventOperInstruct());
-        alarm.setReductionKey(event.getAlarmData().getReductionKey());
+//        alarm.setReductionKey(event.getAlarmData().getReductionKey());
 //        alarm.setServiceType(e.getServiceType());
 //        alarm.setSeverity(SeverityDTO.get(e.getEventSeverity()));
 //        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
 //        alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
 //        alarm.setUei(e.getEventUei());
-        if (event.getAlarmData().getManagedObject() != null) {
-            alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
-        }
+//        if (event.getAlarmData().getManagedObject() != null) {
+//            alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
+//        }
 //        e.setAlarm(alarm);
         return alarm;
     }
@@ -312,51 +319,52 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 relatedAlarm.getRelatedAlarms().stream().anyMatch(ra -> formingCyclicGraph(situation, ra));
     }
     
-    private Set<Alarm> getRelatedAlarms(List<Parm> list) {
-        if (list == null || list.isEmpty()) {
-            return Collections.emptySet();
-        }
-        Set<String> reductionKeys = list.stream().filter(AlarmPersisterImpl::isRelatedReductionKeyWithContent).map(p -> p.getValue().getContent()).collect(Collectors.toSet());
-        // Only existing alarms are returned. Reduction Keys for non-existing alarms are dropped.
-        return reductionKeys.stream().map(reductionKey -> alarmRepository.findByReductionKey(reductionKey)).filter(Objects::nonNull).collect(Collectors.toSet());
-    }
+//    private Set<Alarm> getRelatedAlarms(List<Parm> list) {
+//        if (list == null || list.isEmpty()) {
+//            return Collections.emptySet();
+//        }
+//        Set<String> reductionKeys = list.stream().filter(AlarmPersisterImpl::isRelatedReductionKeyWithContent).map(p -> p.getValue().getContent()).collect(Collectors.toSet());
+//        // Only existing alarms are returned. Reduction Keys for non-existing alarms are dropped.
+//        return reductionKeys.stream().map(reductionKey -> alarmRepository.findByReductionKey(reductionKey)).filter(Objects::nonNull).collect(Collectors.toSet());
+//    }
 
-    private static boolean isRelatedReductionKeyWithContent(Parm param) {
-        return param.getParmName() != null
-                // TOOD revisit using equals() when event_parameters table supports multiple params with the same name (see NMS-10214)
-                && param.getParmName().startsWith(RELATED_REDUCTION_KEY_PREFIX)
-                && param.getValue() != null
-                && param.getValue().getContent() != null;
-    }
+//    private static boolean isRelatedReductionKeyWithContent(Parm param) {
+//        return param.getParmName() != null
+//                // TOOD revisit using equals() when event_parameters table supports multiple params with the same name (see NMS-10214)
+//                && param.getParmName().startsWith(RELATED_REDUCTION_KEY_PREFIX)
+//                && param.getValue() != null
+//                && param.getValue().getContent() != null;
+//    }
 
     private static boolean checkEventSanityAndDoWeProcess(final Event event) {
-        if (event.getLogmsg() != null && LogDestType.DONOTPERSIST.toString().equalsIgnoreCase(event.getLogmsg().getDest())) {
-            if (log.isDebugEnabled()) {
-                log.debug("checkEventSanity: uei '{}' marked as '{}'; not processing event.", event.getUei(), LogDestType.DONOTPERSIST);
-            }
-            return false;
-        }
-
-        if (event.getAlarmData() == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("checkEventSanity: uei '{}' has no alarm data; not processing event.", event.getUei());
-            }
-            return false;
-        }
-
-        if (event.getDbid() <= 0) {
-            throw new IllegalArgumentException("Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
-        }
+//        if (event.getLogmsg() != null && LogDestType.DONOTPERSIST.toString().equalsIgnoreCase(event.getLogmsg().getDest())) {
+//            if (log.isDebugEnabled()) {
+//                log.debug("checkEventSanity: uei '{}' marked as '{}'; not processing event.", event.getUei(), LogDestType.DONOTPERSIST);
+//            }
+//            return false;
+//        }
+//
+//        if (event.getAlarmData() == null) {
+//            if (log.isDebugEnabled()) {
+//                log.debug("checkEventSanity: uei '{}' has no alarm data; not processing event.", event.getUei());
+//            }
+//            return false;
+//        }
+//
+//        if (event.getDbid() <= 0) {
+//            throw new IllegalArgumentException("Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
+//        }
 
         return true;
     }
 
     private static Collection<String> getLockKeys(Event event) {
-        if (event.getAlarmData().getClearKey() == null) {
-            return Collections.singletonList(event.getAlarmData().getReductionKey());
-        } else {
-            return Arrays.asList(event.getAlarmData().getReductionKey(), event.getAlarmData().getClearKey());
-        }
+//        if (event.getAlarmData().getClearKey() == null) {
+//            return Collections.singletonList(event.getAlarmData().getReductionKey());
+//        } else {
+//            return Arrays.asList(event.getAlarmData().getReductionKey(), event.getAlarmData().getClearKey());
+//        }
+        return null;
     }
 
 

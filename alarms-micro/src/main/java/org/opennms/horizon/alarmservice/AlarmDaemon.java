@@ -32,13 +32,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.opennms.horizon.alarmservice.api.AlarmPersister;
 import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;
-import org.opennms.horizon.core.lib.SystemProperties;
-import org.opennms.horizon.events.api.DaemonTools;
-import org.opennms.horizon.events.api.EventForwarder;
-import org.opennms.horizon.events.model.IEvent;
-import org.opennms.horizon.events.model.ImmutableEvent;
-import org.opennms.horizon.events.model.ImmutableMapper;
-import org.opennms.horizon.events.xml.Event;
+import org.opennms.horizon.alarmservice.utils.SystemProperties;
+//import org.opennms.horizon.events.api.DaemonTools;
+//import org.opennms.horizon.events.api.EventForwarder;
+//import org.opennms.horizon.events.model.IEvent;
+//import org.opennms.horizon.events.model.ImmutableEvent;
+//import org.opennms.horizon.events.model.ImmutableMapper;
+import org.opennms.horizon.events.proto.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Setter
@@ -60,21 +60,22 @@ public class AlarmDaemon {
     @Autowired
     private DroolsAlarmContext droolsAlarmContext;
 
-    @Autowired
-    private EventForwarder eventForwarder;
+//    @Autowired
+//    private EventForwarder eventForwarder;
 
     public void onEvent(Event e) {
     	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
-            ImmutableEvent immutableEvent = ImmutableMapper.fromMutableEvent(e);
-            handleReloadEvent(immutableEvent);
+//            ImmutableEvent immutableEvent = ImmutableMapper.fromMutableEvent(e);
+//            handleReloadEvent(immutableEvent);
             return;
     	}
     	persister.persist(e);
     }
 
-    private synchronized void handleReloadEvent(IEvent e) {
-        DaemonTools.handleReloadEvent(e, AlarmDaemon.NAME, (event) -> onAlarmReload(), eventForwarder);
-    }
+//    private synchronized void handleReloadEvent(IEvent e) {
+//        //TODO:MMF check on this
+////        DaemonTools.handleReloadEvent(e, AlarmDaemon.NAME, (event) -> onAlarmReload(), eventForwarder);
+//    }
 
     private void onAlarmReload() {
         droolsAlarmContext.reload();
