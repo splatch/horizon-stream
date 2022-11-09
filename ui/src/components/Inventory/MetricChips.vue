@@ -1,5 +1,5 @@
 <template>
-  <FeatherChipList>
+  <FeatherChipList label="List of metric chips">
     <div v-for="item in items" :key="item.type" class="container">
       <MetricChip :item="item" />
     </div>
