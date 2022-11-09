@@ -5,10 +5,10 @@
   <!-- card: title, metric pill, list anchor, actions -->
   <div/>
 </template>
-<script lang="ts" setup>
-import PageHeader from '@/components/Common/PageHeader.vue'
 
+<script lang="ts" setup>
 const heading = 'Network Inventory'
 </script>
+
 <style lang="scss" scoped>
 </style>
