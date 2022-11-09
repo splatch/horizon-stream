@@ -15,6 +15,25 @@ spec:
       labels:
         app: {{ .Values.OpenNMS.Inventory.ServiceName }}
     spec:
+      {{- if .Values.NodeRestrictions.Enabled }}
+      nodeSelector:                                                                                    
+        {{ .Values.NodeRestrictions.Key }}: {{ .Values.NodeRestrictions.Value }}                       
+      tolerations:
+        - effect: "NoSchedule"                                                                         
+          key: "{{ .Values.NodeRestrictions.Key }}"                                                    
+          operator: "Equal"
+          value: {{ .Values.NodeRestrictions.Value }} 
+      affinity: 
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:                                             
+          - weight: 1                                                                                  
+            preference:                                                                                
+              matchExpressions:                                                                        
+              - key: "{{ .Values.NodeRestrictions.Key }}"                                              
+                operator: In
+                values:                                                                                
+                - {{ .Values.NodeRestrictions.Value }}                                                 
+      {{- end }}
       containers:
         - name: {{ .Values.OpenNMS.Inventory.ServiceName }}
           image: {{ .Values.OpenNMS.Inventory.Image }}
@@ -32,6 +51,10 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: inventoryPwd
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.Inventory.Port }}
+            - name: grpc
+              containerPort: {{ .Values.OpenNMS.Inventory.GrpcPort }}

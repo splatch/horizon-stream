@@ -1,9 +1,8 @@
 package org.opennms.horizon.inventory.service;
 
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
-import org.opennms.horizon.inventory.mapper.IPInterfaceMapper;
+import org.opennms.horizon.inventory.mapper.IpInterfaceMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,7 +20,7 @@ public class IpInterfaceService {
     private final IpInterfaceRepository modelRepo;
     private final NodeRepository nodeRepo;
 
-    private final IPInterfaceMapper mapper;
+    private final IpInterfaceMapper mapper;
 
     public IpInterfaceDTO saveIpInterface(IpInterfaceDTO dto) {
         IpInterface model = mapper.dtoToModel(dto);
@@ -47,5 +47,14 @@ public class IpInterfaceService {
             dto = Optional.of(mapper.modelToDTO(model.get()));
         }
         return dto;
+    }
+
+    public List<IpInterfaceDTO> findByTenantId(String tenantId) {
+        UUID tenantUUID = UUID.fromString(tenantId);
+        List<IpInterface> all = modelRepo.findByTenantId(tenantUUID);
+        return all
+            .stream()
+            .map(mapper::modelToDTO)
+            .collect(Collectors.toList());
     }
 }

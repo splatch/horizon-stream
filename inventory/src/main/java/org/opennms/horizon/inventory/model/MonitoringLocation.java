@@ -11,7 +11,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
-// Lombok isn't playing nicely with MapStruct, so generate getters and setters with IDE for now.
+// TODO: Lombok isn't playing nicely with MapStruct, so generate getters and setters with IDE for now.
 //@Getter
 //@Setter
 @RequiredArgsConstructor
