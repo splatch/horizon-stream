@@ -2,27 +2,25 @@
   <ul class="anchor-list">
     <li>
       <label>{{ label.profile }}: </label>
-      <a href="">{{ anchor.profileValue }}</a>
+      <a :href="anchor.profileLink">{{ anchor.profileValue }}</a>
     </li>
     <li>
       <label>{{ label.location }}: </label>
-      <a href="">{{ anchor.locationValue }}</a>
+      <a :href="anchor.locationLink">{{ anchor.locationValue }}</a>
     </li>
     <li>
       <label>{{ label.ipInterface }}: </label>
-      <a href="">{{ anchor.ipInterfaceValue }}</a>
+      <a :href="anchor.ipInterfaceLink">{{ anchor.ipInterfaceValue }}</a>
     </li>
     <li>
       <label>{{ label.tag }}: </label>
-      <!-- <a :href="sanitizeUrl(anchor.tagLink)">{{ anchor.tagValue }}</a> -->
-      <a :href="link">{{ anchor.tagValue }}</a>
+      <a :href="anchor.tagLink">{{ anchor.tagValue }}</a>
     </li>
   </ul>
 </template>
 
 <script lang="ts" setup>
 import { PropType } from 'vue'
-import { sanitizeUrl } from '@braintree/sanitize-url'
 
 interface Anchor {
   profileValue: number,
@@ -35,13 +33,13 @@ interface Anchor {
   tagLink: string,
 }
 
-const props = defineProps({
+defineProps({
   anchor: {
     type: Object as PropType<Anchor>,
     required: true
   }
 })
-const link = sanitizeUrl(props.anchor.tagLink)
+
 const label = {
   profile: 'Monitoring Profile',
   location: 'Monitoring Location',
