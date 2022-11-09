@@ -156,6 +156,7 @@
         </dependency>
     </dependencies>
 
+<!--    //TODO:MMF do we need this? Seems to break the jar-->
     <!--    <build>-->
     <!--        <plugins>-->
     <!--            <plugin>-->

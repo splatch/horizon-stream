@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,14 +28,37 @@
 
 // NOTE: copied from opennms-webapp-api
 
-package org.opennms.horizon.alarmservice.web.rest.support;
-
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
+package org.opennms.horizon.alarmservice.rest.support;
 
 /**
- * <p>MultivaluedMapImpl class.</p>
+ * This enum contains well-known aliases for search terms that should be
+ * reused by different RESTv2 services for consistency.
+ * 
+ * @author Seth
  */
-public class MultivaluedMapImpl extends MultivaluedHashMap<String,String> implements MultivaluedMap<String, String> {
+@Deprecated
+public enum Aliases {
+    alarm,
+    assetRecord,
+    category,
+    distPoller,
+    event,
+    eventParameter,
+    ipInterface,
+    location,
+    memo,
+    monitoredService,
+    node,
+    notification,
+    outage,
+    reductionKeyMemo,
+    serviceType,
+    snmpInterface;
+
+    public String prop(String propertyName) {
+        return new StringBuilder(this.toString())
+            .append(".")
+            .append(propertyName)
+            .toString(); 
+    }
 }

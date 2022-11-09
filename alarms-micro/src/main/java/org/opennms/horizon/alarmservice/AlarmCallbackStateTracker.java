@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.api;
+package org.opennms.horizon.alarmservice;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
+import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
 
 /**
  * This class can be used to help track callbacks issued via the {@link AlarmLifecycleListener}

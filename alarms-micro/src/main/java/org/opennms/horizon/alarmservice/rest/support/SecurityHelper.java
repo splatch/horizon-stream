@@ -28,7 +28,7 @@
 
 // NOTE: copied from opennms-webapp-api
 
-package org.opennms.horizon.alarmservice.web.rest.support;
+package org.opennms.horizon.alarmservice.rest.support;
 
 import javax.ws.rs.core.SecurityContext;
 

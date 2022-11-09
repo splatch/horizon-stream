@@ -56,8 +56,8 @@ import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 //import org.opennms.horizon.db.model.mapper.AlarmMapper;
 import org.opennms.horizon.alarmservice.drools.AlarmService;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
-import org.opennms.horizon.alarmservice.web.rest.support.MultivaluedMapImpl;
-import org.opennms.horizon.alarmservice.web.rest.support.SecurityHelper;
+import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
+import org.opennms.horizon.alarmservice.rest.support.SecurityHelper;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.transaction.annotation.Transactional;
 
