@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;

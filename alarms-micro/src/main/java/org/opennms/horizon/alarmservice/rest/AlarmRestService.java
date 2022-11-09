@@ -28,7 +28,6 @@
 
 package org.opennms.horizon.alarmservice.rest;
 
-
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -42,7 +41,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-
 import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
 
 @Path("/alarms")

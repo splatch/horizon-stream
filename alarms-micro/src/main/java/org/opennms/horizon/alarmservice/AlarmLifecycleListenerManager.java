@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.alarmservice;
 
+import com.google.common.collect.Sets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,6 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
-
 import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
 import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
 import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
@@ -47,11 +47,8 @@ import org.opennms.horizon.alarmservice.db.impl.entity.ReductionKeyMemo;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 import org.opennms.horizon.core.lib.SystemProperties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class AlarmLifecycleListenerManager implements AlarmEntityListener {

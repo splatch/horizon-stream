@@ -30,12 +30,11 @@ package org.opennms.horizon.alarmservice.api;
 
 import java.util.Date;
 import java.util.Set;
-
-import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.impl.entity.Memo;
 import org.opennms.horizon.alarmservice.db.impl.entity.ReductionKeyMemo;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
+import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 
 /**
  * Used to get callbacks when alarm entities are created, updated and/or deleted.

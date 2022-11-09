@@ -28,7 +28,7 @@
 
 package org.opennms.horizon.alarmservice.db.api;
 
-import org.opennms.horizon.alarmservice.db.impl.entity.Entity;
+import org.opennms.horizon.alarmservice.db.impl.entity.BaseEntity;
 import org.opennms.horizon.alarmservice.db.impl.entity.IpInterface;
 
 /**
@@ -36,9 +36,9 @@ import org.opennms.horizon.alarmservice.db.impl.entity.IpInterface;
  */
 public interface EntityVisitor {
     
-	public void visitSnmpInterface(Entity snmpIface);
+	public void visitSnmpInterface(BaseEntity snmpIface);
 
-	public void visitSnmpInterfaceComplete(Entity snmpIface);
+	public void visitSnmpInterfaceComplete(BaseEntity snmpIface);
 
 	public void visitIpInterface(IpInterface iface);
 

@@ -28,6 +28,9 @@
 
 package org.opennms.horizon.alarmservice.drools;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,7 +47,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 import org.drools.core.ClockType;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -65,11 +67,6 @@ import org.kie.internal.io.ResourceFactory;
 import org.opennms.horizon.core.lib.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.codahale.metrics.Gauge;
-//import com.codahale.metrics.JmxReporter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 
 /**
  * This class focuses on providing a Drools context which loads a set of rules

@@ -28,12 +28,16 @@
 
 package org.opennms.horizon.alarmservice.db.impl.entity;
 
+import javax.persistence.Column;
 import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 
 /**
- * <p>Abstract OnmsEntity class.</p>
+ * <p>Abstract Entity class.</p>
  */
-public abstract class Entity {
+public abstract class BaseEntity {
+
+    @Column
+    private String tenantId;
 	
 	/**
 	 * <p>hasNewValue</p>

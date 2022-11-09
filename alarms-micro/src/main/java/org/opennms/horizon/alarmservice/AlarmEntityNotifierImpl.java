@@ -28,21 +28,19 @@
 
 package org.opennms.horizon.alarmservice;
 
+import com.google.common.collect.Sets;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
-import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.impl.entity.Memo;
 import org.opennms.horizon.alarmservice.db.impl.entity.ReductionKeyMemo;
-
-import com.google.common.collect.Sets;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
+import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 
 @Slf4j
 public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {

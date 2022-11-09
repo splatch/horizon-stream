@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -51,12 +52,12 @@ import org.opennms.horizon.alarmservice.utils.AlphaNumeric;
 import org.opennms.horizon.alarmservice.utils.RrdLabelUtils;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 
-@javax.persistence.Entity
+@Entity
 @Table(name = "snmpInterface")
 @Slf4j
 @Data
 @NoArgsConstructor
-public class SnmpInterface extends Entity implements Serializable {
+public class SnmpInterface extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 4688655131862954563L;
 
     @Id

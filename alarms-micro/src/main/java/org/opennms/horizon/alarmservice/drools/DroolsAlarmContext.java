@@ -28,6 +28,11 @@
 
 package org.opennms.horizon.alarmservice.drools;
 
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Sets;
+import com.swrve.ratelimitedlogger.RateLimitedLog;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,34 +49,19 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
-//import org.opennms.horizon.alarms.api.AlarmCallbackStateTracker;
-//import org.opennms.horizon.alarms.api.AlarmLifecycleListener;
 import org.opennms.horizon.alarmservice.AlarmCallbackStateTracker;
 import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
 import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.impl.entity.AlarmAssociation;
 import org.opennms.horizon.core.lib.SystemProperties;
-//import org.opennms.horizon.db.dao.api.AcknowledgmentDao;
-//import org.opennms.horizon.db.dao.api.AlarmDao;
-//import org.opennms.horizon.db.dao.api.SessionUtils;
-//import org.opennms.horizon.db.model.AckAction;
-//import org.opennms.horizon.db.model.AlarmAssociation;
-//import org.opennms.horizon.db.model.OnmsAcknowledgment;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Meter;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Sets;
-import com.swrve.ratelimitedlogger.RateLimitedLog;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.transaction.annotation.Transactional;
 

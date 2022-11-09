@@ -28,12 +28,11 @@
 
 package org.opennms.horizon.alarmservice;
 
+import java.io.File;
 import org.apache.camel.impl.engine.FileStateRepository;
 import org.apache.camel.spi.StateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
 
 public class AlarmKafkaOffsetRepositoryFactory {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmKafkaOffsetRepositoryFactory.class);

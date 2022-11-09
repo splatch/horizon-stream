@@ -41,6 +41,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -59,12 +60,12 @@ import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 import org.opennms.horizon.alarmservice.model.PrimaryType;
 import org.opennms.horizon.alarmservice.utils.InetAddressUtils;
 
-@javax.persistence.Entity
+@Entity
 @Table(name="ipInterface")
 @Getter
 @Setter
 @NoArgsConstructor
-public class IpInterface extends Entity implements Serializable {
+public class IpInterface extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 8463903013592837114L;
 
     @Id

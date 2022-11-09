@@ -1,9 +1,8 @@
 package org.opennms.horizon.alarmservice;
 
-import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
-
 import java.util.Date;
 import java.util.Set;
+import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.impl.entity.Memo;
 import org.opennms.horizon.alarmservice.db.impl.entity.ReductionKeyMemo;

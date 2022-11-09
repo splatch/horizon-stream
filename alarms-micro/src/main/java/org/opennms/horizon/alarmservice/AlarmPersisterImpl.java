@@ -28,6 +28,9 @@
 
 package org.opennms.horizon.alarmservice;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.Striped;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,11 +40,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.api.AlarmPersister;
-import org.opennms.horizon.alarmservice.api.AlarmPersisterExtension;
 import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.Severity;
@@ -49,18 +50,9 @@ import org.opennms.horizon.core.lib.SystemProperties;
 import org.opennms.horizon.events.conf.xml.LogDestType;
 import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.events.xml.Parm;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.Striped;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Singleton to persist AlarmDTOs.
- *
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
- */
 @Slf4j
 public class AlarmPersisterImpl implements AlarmPersister {
 
@@ -70,13 +62,12 @@ public class AlarmPersisterImpl implements AlarmPersister {
     protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
     protected static boolean LEGACY_ALARM_STATE = Boolean.getBoolean("org.opennms.alarmd.legacyAlarmState");
 
+    @Autowired
     private AlarmRepository alarmRepository;
 
     private AlarmEntityNotifier m_alarmEntityNotifier;
 
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
-
-    private final Set<AlarmPersisterExtension> extensions = Sets.newConcurrentHashSet();
 
     private boolean m_createNewAlarmIfClearedAlarmExists = LEGACY_ALARM_STATE == true ? false : NEW_IF_CLEARED;
     
@@ -153,15 +144,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
             alarm = createNewAlarm(event);
 
-            // Trigger extensions, allowing them to mangle the alarm
-//            TODO:MMF
-//            try {
-//                final AlarmDTO alarmCreated = alarm;
-//                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event));
-//            } catch (Exception ex) {
-//                log.error("An error occurred while invoking the extension callbacks.", ex);
-//            }
-
             alarmRepository.save(alarm);
 //            m_eventDao.saveOrUpdate(persistedEvent);
 
@@ -169,15 +151,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         } else {
             log.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getId());
 //            reduceEvent(persistedEvent, alarm, event);
-
-            // Trigger extensions, allowing them to mangle the alarm
-            //TODO:MMF
-//            try {
-//                final AlarmDTO alarmUpdated = alarm;
-//                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmUpdated, event));
-//            } catch (Exception ex) {
-//                log.error("An error occurred while invoking the extension callbacks.", ex);
-//            }
 
             alarmRepository.save(alarm);
 //            m_eventDao.update(persistedEvent);
@@ -393,18 +366,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     public void setAlarmChangeListener(AlarmEntityNotifier alarmEntityNotifier) {
         m_alarmEntityNotifier = alarmEntityNotifier;
-    }
-
-    public void onExtensionRegistered(final AlarmPersisterExtension ext, final Map<String,String> properties) {
-        log.debug("onExtensionRegistered: {} with properties: {}", ext, properties);
-        if (ext==null) { return; }
-        extensions.add(ext);
-    }
-
-    public void onExtensionUnregistered(final AlarmPersisterExtension ext, final Map<String,String> properties) {
-        log.debug("onExtensionUnregistered: {} with properties: {}", ext, properties);
-        if (ext==null) { return; }
-        extensions.remove(ext);
     }
 
     public boolean isCreateNewAlarmIfClearedAlarmExists() {

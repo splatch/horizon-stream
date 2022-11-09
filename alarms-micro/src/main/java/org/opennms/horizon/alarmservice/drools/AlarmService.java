@@ -29,7 +29,6 @@
 package org.opennms.horizon.alarmservice.drools;
 
 import java.util.Date;
-
 import java.util.List;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;

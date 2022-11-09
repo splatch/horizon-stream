@@ -46,6 +46,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import lombok.Data;
+import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 
 @Entity
 @Table(name = "memos")
@@ -53,7 +54,7 @@ import lombok.Data;
 @DiscriminatorColumn(name="type", discriminatorType= DiscriminatorType.STRING)
 @DiscriminatorValue(value="Memo")
 @Data
-public class Memo implements Serializable {
+public class Memo extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 7272348439687562161L;
 
@@ -85,5 +86,10 @@ public class Memo implements Serializable {
     @PrePersist
     private void prePersist() {
         created = new Date();
+    }
+
+    @Override
+    public void visit(EntityVisitor visitor) {
+
     }
 }

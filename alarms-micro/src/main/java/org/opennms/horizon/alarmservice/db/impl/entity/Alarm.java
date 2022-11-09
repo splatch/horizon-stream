@@ -57,6 +57,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
+import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 
@@ -64,7 +65,7 @@ import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 @Table(name="alarms")
 @Data
 @NoArgsConstructor
-public class Alarm implements Serializable {
+public class Alarm extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 7275548439687562161L;
 
     public static final int PROBLEM_TYPE = 1;
@@ -374,4 +375,8 @@ public class Alarm implements Serializable {
         return getLastEventTime();
     }
 
+    @Override
+    public void visit(EntityVisitor visitor) {
+        
+    }
 }

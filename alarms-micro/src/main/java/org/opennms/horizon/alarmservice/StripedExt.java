@@ -28,13 +28,12 @@
 
 package org.opennms.horizon.alarmservice;
 
+import com.google.common.base.Supplier;
+import com.google.common.util.concurrent.Striped;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.google.common.base.Supplier;
-import com.google.common.util.concurrent.Striped;
 
 /**
  * Here we extend {@link com.google.common.util.concurrent.Striped}

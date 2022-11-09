@@ -38,7 +38,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-
+import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 
 /**
  * <p>OnmsServiceType class.</p>
@@ -48,7 +48,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "serviceType")
 @Entity
 @Table(name="service")
-public class ServiceType implements Serializable {
+public class ServiceType extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -459218937667452586L;
 
@@ -153,4 +153,8 @@ public class ServiceType implements Serializable {
         return m_id.intValue();
     }
 
+    @Override
+    public void visit(EntityVisitor visitor) {
+
+    }
 }

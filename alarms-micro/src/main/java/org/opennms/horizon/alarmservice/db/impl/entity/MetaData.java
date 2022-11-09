@@ -34,12 +34,13 @@ import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 
 @Embeddable
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MetaData implements Serializable {
+public class MetaData extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 3529745790145204662L;
 
@@ -49,4 +50,9 @@ public class MetaData implements Serializable {
     private String key;
     @Column(nullable = false)
     private String value;
+
+    @Override
+    public void visit(EntityVisitor visitor) {
+
+    }
 }

@@ -3,6 +3,8 @@ package org.opennms.horizon.alarmservice.notifications;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
+import java.time.Duration;
+import java.util.Properties;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -15,9 +17,6 @@ import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.Duration;
-import java.util.Properties;
 
 public class NotificationForwarder extends DefaultAlarmEntityListener {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationForwarder.class);
