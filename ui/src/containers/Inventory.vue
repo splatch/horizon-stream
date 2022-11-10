@@ -3,7 +3,7 @@
   <!-- tabs anchor-->
   <!-- expandable filter: search, select, sorting -->
   <!-- card: title, metric pill, list anchor, actions -->
-  <div/>
+  <IconActionList />
 </template>
 
 <script lang="ts" setup>
