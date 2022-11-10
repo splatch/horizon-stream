@@ -28,16 +28,9 @@
 
 package org.opennms.horizon.inventory.compnent;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
-
 import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.horizon.grpc.heartbeat.contract.HeartbeatMessage;
-import org.opennms.horizon.inventory.model.MonitoringLocation;
-import org.opennms.horizon.inventory.model.MonitoringSystem;
-import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
-import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
+import org.opennms.horizon.inventory.service.MonitoringSystemService;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -52,43 +45,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @PropertySource("classpath:application.yml")
 public class MinionHeartbeatConsumer {
-    //TODO: this uuid will be in the received message
-    private UUID uuid = new UUID(10, 14);
-    private final MonitoringSystemRepository repository;
-    private final MonitoringLocationRepository locationRepository;
-
+    private final MonitoringSystemService service;
     @KafkaListener(topics = "${kafka.topics.minion-heartbeat}", concurrency = "1")
     public void receiveMessage(byte[] data) {
         try {
             HeartbeatMessage message = HeartbeatMessage.parseFrom(data);
             Identity identity = message.getIdentity();
-            log.debug("Received heartbeat message for minion with id {} and location {}", identity.getSystemId(), identity.getLocation());
-            Optional<MonitoringSystem> msOp = repository.findBySystemId(identity.getSystemId());
-            if(msOp.isEmpty()) {
-                Optional<MonitoringLocation> locationOp = locationRepository.findByLocation(identity.getLocation());
-                MonitoringLocation location = new MonitoringLocation();
-                if(locationOp.isPresent()) {
-                    location = locationOp.get();
-                } else {
-                    location.setLocation(identity.getLocation());
-                    location.setTenantId(uuid);
-                    locationRepository.save(location);
-                }
-                MonitoringSystem monitoringSystem = new MonitoringSystem();
-                monitoringSystem.setSystemId(identity.getSystemId());
-                monitoringSystem.setMonitoringLocation(location);
-                monitoringSystem.setTenantId(location.getTenantId());
-                monitoringSystem.setLastCheckedIn(LocalDateTime.now());
-                monitoringSystem.setLabel(identity.getSystemId().toUpperCase());
-                monitoringSystem.setMonitoringLocationId(location.getId());
-                repository.save(monitoringSystem);
-            } else {
-                MonitoringSystem monitoringSystem = msOp.get();
-                monitoringSystem.setLastCheckedIn(LocalDateTime.now());
-                repository.save(monitoringSystem);
-            }
+            log.debug("Received heartbeat message for minion with id {} and location {}", message.getIdentity().getSystemId(), message.getIdentity().getLocation());
+            service.addMonitoringSystemFromHeartbeat(message);
         } catch (InvalidProtocolBufferException e) {
-            log.error("Invalid data from kafka", e);
+            log.error("Error while parsing heartbeat message", e);
         }
     }
 }

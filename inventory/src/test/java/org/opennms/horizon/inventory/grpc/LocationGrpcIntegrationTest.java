@@ -64,7 +64,7 @@ import io.grpc.protobuf.StatusProto;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = InventoryApplication.class)
 @ContextConfiguration(initializers = {PostgresInitializer.class})
-public class GrpcIntegrationTest {
+public class LocationGrpcIntegrationTest {
     @DynamicPropertySource
     private static void registerDatasourceProperties(DynamicPropertyRegistry registry) {
         registry.add("grpc.server.port", ()->6767);
@@ -94,9 +94,9 @@ public class GrpcIntegrationTest {
             .setTenantId(tenantId)
             .build();
         repo.save(mapper.dtoToModel(location2));
-            channel = ManagedChannelBuilder.forAddress("localhost", 6767)
+        channel = ManagedChannelBuilder.forAddress("localhost", 6767)
                 .usePlaintext().build();
-            serviceStub = MonitoringLocationServiceGrpc.newBlockingStub(channel);
+        serviceStub = MonitoringLocationServiceGrpc.newBlockingStub(channel);
     }
 
     @AfterEach
@@ -120,6 +120,14 @@ public class GrpcIntegrationTest {
     }
 
     @Test
+    public void testListLocationsWithWrongTenantId () {
+        MonitoringLocationList locationList = serviceStub.listLocations(StringValue.of(UUID.randomUUID().toString()));
+        assertThat(locationList).isNotNull();
+        List<MonitoringLocationDTO> list = locationList.getLocationsList();
+        assertThat(list.size()).isEqualTo(0);
+    }
+
+    @Test
     public void testFindLocationByName() {
         GetByLocationRequest request = GetByLocationRequest.newBuilder()
             .setLocation("test-location")
@@ -137,6 +145,17 @@ public class GrpcIntegrationTest {
         GetByLocationRequest request = GetByLocationRequest.newBuilder()
             .setLocation("test-location3")
             .setTenantId(tenantId)
+            .build();
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.getLocationByName(request));
+        Status status = StatusProto.fromThrowable(exception);
+        assertThat(status.getCode()).isEqualTo(Code.NOT_FOUND_VALUE);
+    }
+
+    @Test()
+    public void testFindLocationByNameInvalidTenantId() {
+        GetByLocationRequest request = GetByLocationRequest.newBuilder()
+            .setLocation("test-location")
+            .setTenantId(UUID.randomUUID().toString())
             .build();
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.getLocationByName(request));
         Status status = StatusProto.fromThrowable(exception);

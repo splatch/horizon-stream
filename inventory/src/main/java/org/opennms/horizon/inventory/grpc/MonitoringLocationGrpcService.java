@@ -26,21 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.service;
+package org.opennms.horizon.inventory.grpc;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.opennms.horizon.inventory.dto.GetBySystemIdRequest;
-import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
-import org.opennms.horizon.inventory.dto.MonitoringSystemList;
-import org.opennms.horizon.inventory.dto.MonitoringSystemServiceGrpc;
-import org.opennms.horizon.inventory.mapper.MonitoringSystemMapper;
-import org.opennms.horizon.inventory.model.MonitoringSystem;
-import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
-import org.springframework.stereotype.Service;
+import org.opennms.horizon.inventory.dto.GetByLocationRequest;
+import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
+import org.opennms.horizon.inventory.dto.MonitoringLocationList;
+import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
+import org.opennms.horizon.inventory.service.MonitoringLocationService;
 
 import com.google.protobuf.StringValue;
 import com.google.rpc.Code;
@@ -49,29 +44,30 @@ import com.google.rpc.Status;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-@Service
+@Slf4j
 @RequiredArgsConstructor
-public class MonitoringSystemGrpcService extends MonitoringSystemServiceGrpc.MonitoringSystemServiceImplBase {
-    private final MonitoringSystemRepository repository;
-    private final MonitoringSystemMapper mapper;
+public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc.MonitoringLocationServiceImplBase {
+    private final MonitoringLocationService service;
+
     @Override
-    public void listMonitoringSystem(StringValue tenantId, StreamObserver<MonitoringSystemList> responseObserver) {
-        List<MonitoringSystemDTO> list = repository.findByTenantId(UUID.fromString(tenantId.getValue()))
-            .stream().map(mapper::modelToDTO).collect(Collectors.toList());
-        responseObserver.onNext(MonitoringSystemList.newBuilder().addAllList(list).build());
+    public void listLocations(StringValue tenantId, StreamObserver<MonitoringLocationList> responseObserver) {
+        List<MonitoringLocationDTO> result = service.findByTenantId(tenantId.getValue());
+
+        responseObserver.onNext(MonitoringLocationList.newBuilder().addAllLocations(result).build());
         responseObserver.onCompleted();
     }
 
     @Override
-    public void getMonitoringSystemById(GetBySystemIdRequest request, StreamObserver<MonitoringSystemDTO> responseObserver) {
-        Optional<MonitoringSystem> monitoringSystem = repository.findBySystemIdAndTenantId(request.getSystemId(), UUID.fromString(request.getTenantId()));
-        if(monitoringSystem.isPresent()) {
-            responseObserver.onNext(mapper.modelToDTO(monitoringSystem.get()));
+    public void getLocationByName(GetByLocationRequest request, StreamObserver<MonitoringLocationDTO> responseObserver) {
+        Optional<MonitoringLocationDTO> location = service.findByLocationAndTenantId(request.getLocation(), request.getTenantId());
+        if(location.isPresent()){
+            responseObserver.onNext(location.get());
         } else {
             Status status = Status.newBuilder()
                 .setCode(Code.NOT_FOUND_VALUE)
-                .setMessage("Monitor system with system id: " + request.getSystemId() + " doesn't exist")
+                .setMessage("Location with name: " + request.getLocation() + " doesn't exist")
                 .build();
             responseObserver.onError(StatusProto.toStatusRuntimeException(status));
         }

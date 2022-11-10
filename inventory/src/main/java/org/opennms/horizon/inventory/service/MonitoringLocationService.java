@@ -50,4 +50,8 @@ public class MonitoringLocationService {
             .map(mapper::modelToDTO)
             .collect(Collectors.toList());
     }
+
+    public Optional<MonitoringLocationDTO> findByLocationAndTenantId(String location, String tenantId) {
+        return modelRepo.findByLocationAndTenantId(location, UUID.fromString(tenantId)).map(mapper::modelToDTO);
+    }
 }

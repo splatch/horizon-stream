@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.component;
+package org.opennms.horizon.inventory.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -39,18 +39,19 @@ import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.horizon.grpc.heartbeat.contract.HeartbeatMessage;
-import org.opennms.horizon.inventory.compnent.MinionHeartbeatConsumer;
+import org.opennms.horizon.inventory.mapper.MonitoringSystemMapper;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.model.MonitoringSystem;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
 
-public class MinionHeartbeatConsumerTest {
+public class MonitoringSystemServiceTest {
     private MonitoringLocationRepository mockLocationRepo;
     private MonitoringSystemRepository mockMonitoringSystemRepo;
-    private MinionHeartbeatConsumer consumer;
+    private MonitoringSystemService service;
 
     private MonitoringSystem testMonitoringSystem;
     private MonitoringLocation testLocation;
@@ -63,7 +64,8 @@ public class MinionHeartbeatConsumerTest {
     public void setUP(){
         mockLocationRepo = mock(MonitoringLocationRepository.class);
         mockMonitoringSystemRepo = mock(MonitoringSystemRepository.class);
-        consumer = new MinionHeartbeatConsumer(mockMonitoringSystemRepo, mockLocationRepo);
+        MonitoringSystemMapper mapper = Mappers.getMapper(MonitoringSystemMapper.class);
+        service = new MonitoringSystemService(mockMonitoringSystemRepo, mockLocationRepo, mapper);
         testLocation = new MonitoringLocation();
         testMonitoringSystem = new MonitoringSystem();
         heartbeatMessage = HeartbeatMessage.newBuilder()
@@ -81,7 +83,7 @@ public class MinionHeartbeatConsumerTest {
     @Test
     public void testReceiveMsgMonitorSystemExist() {
         doReturn(Optional.of(testMonitoringSystem)).when(mockMonitoringSystemRepo).findBySystemId(systemId);
-        consumer.receiveMessage(heartbeatMessage.toByteArray());
+        service.addMonitoringSystemFromHeartbeat(heartbeatMessage);
         verify(mockMonitoringSystemRepo).findBySystemId(systemId);
         verify(mockMonitoringSystemRepo).save(testMonitoringSystem);
     }
@@ -90,7 +92,7 @@ public class MinionHeartbeatConsumerTest {
     public void testCreateNewMonitorSystemWithLocationExist() {
         doReturn(Optional.empty()).when(mockMonitoringSystemRepo).findBySystemId(systemId);
         doReturn(Optional.of(testLocation)).when(mockLocationRepo).findByLocation(location);
-        consumer.receiveMessage(heartbeatMessage.toByteArray());
+        service.addMonitoringSystemFromHeartbeat(heartbeatMessage);
         verify(mockMonitoringSystemRepo).findBySystemId(systemId);
         verify(mockMonitoringSystemRepo).save(any(MonitoringSystem.class));
         verify(mockLocationRepo).findByLocation(location);
@@ -100,10 +102,11 @@ public class MinionHeartbeatConsumerTest {
     public void testCreateNewMonitorSystemAndNewLocation() {
         doReturn(Optional.empty()).when(mockMonitoringSystemRepo).findBySystemId(systemId);
         doReturn(Optional.empty()).when(mockLocationRepo).findByLocation(location);
-        consumer.receiveMessage(heartbeatMessage.toByteArray());
+        service.addMonitoringSystemFromHeartbeat(heartbeatMessage);
         verify(mockMonitoringSystemRepo).findBySystemId(systemId);
         verify(mockMonitoringSystemRepo).save(any(MonitoringSystem.class));
         verify(mockLocationRepo).findByLocation(location);
         verify(mockLocationRepo).save(any(MonitoringLocation.class));
     }
+
 }

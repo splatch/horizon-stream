@@ -1,5 +1,13 @@
 package org.opennms.horizon.inventory;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -24,32 +32,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
-import javax.sql.DataSource;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = InventoryApplication.class)
-@Testcontainers
+@ContextConfiguration(initializers = {PostgresInitializer.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ForeignKeyTableIT {
     public static final String SYS_ID = "SYS_ID";
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.5-alpine")
-        .withDatabaseName("inventory").withUsername("inventory")
-        .withPassword("password").withExposedPorts(5432);
 
     @Autowired
     private DataSource dataSource;
@@ -69,14 +60,6 @@ class ForeignKeyTableIT {
     @LocalServerPort
     private Integer port;
 
-    @DynamicPropertySource
-    static void registerDatasourceProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url",
-            () -> String.format("jdbc:postgresql://localhost:%d/%s", postgres.getFirstMappedPort(), postgres.getDatabaseName()));
-        registry.add("spring.datasource.username", () -> postgres.getUsername());
-        registry.add("spring.datasource.password", () -> postgres.getPassword());
-    }
-
     public static long savedNodeId = -1;
     public static long savedIpInterfaceId = -1;
     public static long savedMonitorServiceTypeId = -1;
@@ -84,9 +67,6 @@ class ForeignKeyTableIT {
 
     @BeforeEach
     public void setup() {
-        assertTrue(postgres.isCreated());
-        assertTrue(postgres.isRunning());
-
         if (savedNodeId == -1) {
             NodeDTO dto = postNode("label");
             savedNodeId = dto.getId();
