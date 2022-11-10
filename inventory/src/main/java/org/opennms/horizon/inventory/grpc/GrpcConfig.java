@@ -31,7 +31,7 @@ package org.opennms.horizon.inventory.grpc;
 import lombok.RequiredArgsConstructor;
 import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
-import org.opennms.horizon.inventory.service.MonitoringGrpcService;
+import org.opennms.horizon.inventory.service.MonitoringLocationGrpcService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,12 +49,12 @@ public class GrpcConfig {
     private final MonitoringLocationMapper mapper;
 
     @Bean
-    public MonitoringGrpcService createService() {
-        return new MonitoringGrpcService(locationRepo, mapper);
+    public MonitoringLocationGrpcService createService() {
+        return new MonitoringLocationGrpcService(locationRepo, mapper);
     }
 
     @Bean(destroyMethod = "stopServer")
-    public GrpcServerManager startServer(MonitoringGrpcService service) {
+    public GrpcServerManager startServer(MonitoringLocationGrpcService service) {
         GrpcServerManager manager = new GrpcServerManager(port);
         //for next step with more than one services
         manager.startServer(Collections.singletonList(service));

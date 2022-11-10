@@ -25,31 +25,29 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-import "google/protobuf/wrappers.proto";
+package org.opennms.horizon.inventory;
 
-package opennms.inventory;
-option java_multiple_files = true;
-option java_package = "org.opennms.horizon.inventory.dto";
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.testcontainers.containers.PostgreSQLContainer;
 
-message MonitoringLocationDTO {
-  int64 id = 1;
-  string tenant_id = 2;
-  string location = 3;
-}
+public class PostgresInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-message MonitoringLocationList {
-  repeated MonitoringLocationDTO locations = 1;
-}
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.5-alpine")
+        .withDatabaseName("inventory").withUsername("inventory")
+        .withPassword("password").withExposedPorts(5432);
+    static {
+        postgres.start();
+    }
 
-message GetByLocationRequest {
-  string tenant_id = 1;
-  string location = 2;
-}
-
-service MonitoringLocationService {
-  rpc listLocations(google.protobuf.StringValue) returns (MonitoringLocationList) {};
-  rpc getLocationByName(GetByLocationRequest) returns (MonitoringLocationDTO) {};
+    @Override
+    public void initialize(ConfigurableApplicationContext applicationContext) {
+        TestPropertyValues.of(
+            "spring.datasource.url=" + postgres.getJdbcUrl(),
+            "spring.datasource.username=" + postgres.getUsername(),
+            "spring.datasource.password=" + postgres.getPassword()
+        ).applyTo(applicationContext.getEnvironment());
+    }
 }
