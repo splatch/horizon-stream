@@ -661,7 +661,7 @@ class ForeignKeyTableIT {
             .setSystemId(SYS_ID)
             .setLabel("LABEL")
             .setMonitoringLocationId(savedMonitoringLocationId)
-            .setLastCheckedIn("2022-11-03T14:34:05.542488")
+            .setLastCheckedIn(System.currentTimeMillis())
             .build();
 
         HttpHeaders headers = new HttpHeaders();
@@ -761,7 +761,7 @@ class ForeignKeyTableIT {
             .setSystemId(SYS_ID)
             .setLabel("LABEL")
             .setMonitoringLocationId(Long.MAX_VALUE)
-            .setLastCheckedIn("2022-11-03T14:34:05.542488")
+            .setLastCheckedIn(System.currentTimeMillis())
             .build();
 
         HttpHeaders headers = new HttpHeaders();
@@ -780,7 +780,7 @@ class ForeignKeyTableIT {
             .setSystemId(SYS_ID)
             .setLabel("LABEL")
             .setMonitoringLocationId(savedMonitoringLocationId)
-            .setLastCheckedIn("2022-11-03T14:34:05.542488")
+            .setLastCheckedIn(System.currentTimeMillis())
             .build();
 
         HttpHeaders headers = new HttpHeaders();
