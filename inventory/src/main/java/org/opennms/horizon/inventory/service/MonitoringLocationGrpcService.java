@@ -30,8 +30,10 @@ package org.opennms.horizon.inventory.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.opennms.horizon.inventory.dto.GetByLocationRequest;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
@@ -39,7 +41,6 @@ import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 
-import com.google.protobuf.Empty;
 import com.google.protobuf.StringValue;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
@@ -51,26 +52,27 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class MonitoringGrpcService extends MonitoringLocationServiceGrpc.MonitoringLocationServiceImplBase {
+public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc.MonitoringLocationServiceImplBase {
     private final MonitoringLocationRepository locationRepo;
     private final MonitoringLocationMapper mapper;
 
     @Override
-    public void listLocations(Empty request, StreamObserver<MonitoringLocationList> responseObserver) {
-        List<MonitoringLocationDTO> result = locationRepo.findAll().stream().map(mapper::modelToDTO).collect(Collectors.toList());
+    public void listLocations(StringValue tenantId, StreamObserver<MonitoringLocationList> responseObserver) {
+        List<MonitoringLocationDTO> result = locationRepo.findByTenantId(UUID.fromString(tenantId.getValue()))
+            .stream().map(mapper::modelToDTO).collect(Collectors.toList());
         responseObserver.onNext(MonitoringLocationList.newBuilder().addAllLocations(result).build());
         responseObserver.onCompleted();
     }
 
     @Override
-    public void getLocationByName(StringValue request, StreamObserver<MonitoringLocationDTO> responseObserver) {
-        Optional<MonitoringLocation> location = locationRepo.findByLocation(request.getValue());
+    public void getLocationByName(GetByLocationRequest request, StreamObserver<MonitoringLocationDTO> responseObserver) {
+        Optional<MonitoringLocation> location = locationRepo.findByLocationAndTenantId(request.getLocation(), UUID.fromString(request.getTenantId()));
         if(location.isPresent()){
             responseObserver.onNext(mapper.modelToDTO(location.get()));
         } else {
             Status status = Status.newBuilder()
                 .setCode(Code.NOT_FOUND_VALUE)
-                .setMessage("Location with name: " + request.getValue() + " doesn't exist")
+                .setMessage("Location with name: " + request.getLocation() + " doesn't exist")
                 .build();
             responseObserver.onError(StatusProto.toStatusRuntimeException(status));
         }

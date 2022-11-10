@@ -28,10 +28,12 @@
 syntax = "proto3";
 
 import "google/protobuf/any.proto";
+import "google/protobuf/wrappers.proto";
 
 package opennms.inventory;
 option java_multiple_files = true;
 option java_package = "org.opennms.horizon.inventory.dto";
+
 
 message MonitoringSystemDTO {
   int64 id = 1;
@@ -40,4 +42,18 @@ message MonitoringSystemDTO {
   string label = 4;
   int64 monitoring_location_id = 5;
   string last_checked_in = 6;
+}
+
+message GetBySystemIdRequest {
+  string tenant_id = 1;
+  string system_id = 2;
+}
+
+message MonitoringSystemList {
+  repeated MonitoringSystemDTO list = 1;
+}
+
+service MonitoringSystemService {
+  rpc listMonitoringSystem(google.protobuf.StringValue) returns (MonitoringSystemList) {};
+  rpc getMonitoringSystemById(GetBySystemIdRequest) returns (MonitoringSystemDTO) {};
 }

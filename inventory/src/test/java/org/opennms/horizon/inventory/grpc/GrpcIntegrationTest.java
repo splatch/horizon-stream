@@ -38,6 +38,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.inventory.InventoryApplication;
+import org.opennms.horizon.inventory.PostgresInitializer;
+import org.opennms.horizon.inventory.dto.GetByLocationRequest;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
@@ -45,13 +47,10 @@ import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.google.protobuf.Empty;
 import com.google.protobuf.StringValue;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
@@ -64,24 +63,16 @@ import io.grpc.protobuf.StatusProto;
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = InventoryApplication.class)
-@Testcontainers
+@ContextConfiguration(initializers = {PostgresInitializer.class})
 public class GrpcIntegrationTest {
-    @Container
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.5-alpine")
-        .withDatabaseName("inventory").withUsername("inventory")
-        .withPassword("password").withExposedPorts(5432);
-
     @DynamicPropertySource
     private static void registerDatasourceProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url",
-            () -> String.format("jdbc:postgresql://localhost:%d/%s", postgres.getFirstMappedPort(), postgres.getDatabaseName()));
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("grpc.server.port", ()->6767);
     }
 
     private MonitoringLocationDTO location1;
     private MonitoringLocationDTO location2;
+    private final String tenantId = new UUID(10, 12).toString();
 
     @Autowired
     private MonitoringLocationRepository repo;
@@ -94,13 +85,13 @@ public class GrpcIntegrationTest {
     public void prepareData(){
         location1 = MonitoringLocationDTO.newBuilder()
             .setLocation("test-location")
-            .setTenantId(new UUID(10, 10).toString())
+            .setTenantId(tenantId)
             .build();
         repo.save(mapper.dtoToModel(location1));
 
         location2 = MonitoringLocationDTO.newBuilder()
             .setLocation("test-location2")
-            .setTenantId(new UUID(10, 10).toString())
+            .setTenantId(tenantId)
             .build();
         repo.save(mapper.dtoToModel(location2));
             channel = ManagedChannelBuilder.forAddress("localhost", 6767)
@@ -116,7 +107,7 @@ public class GrpcIntegrationTest {
 
     @Test
     public void testListLocations () {
-        MonitoringLocationList locationList = serviceStub.listLocations(Empty.newBuilder().build());
+        MonitoringLocationList locationList = serviceStub.listLocations(StringValue.of(tenantId));
         assertThat(locationList).isNotNull();
         List<MonitoringLocationDTO> list = locationList.getLocationsList();
         assertThat(list.size()).isEqualTo(2);
@@ -130,7 +121,11 @@ public class GrpcIntegrationTest {
 
     @Test
     public void testFindLocationByName() {
-        MonitoringLocationDTO locationDTO = serviceStub.getLocationByName(StringValue.of("test-location"));
+        GetByLocationRequest request = GetByLocationRequest.newBuilder()
+            .setLocation("test-location")
+            .setTenantId(tenantId)
+            .build();
+        MonitoringLocationDTO locationDTO = serviceStub.getLocationByName(request);
         assertThat(locationDTO).isNotNull();
         assertThat(locationDTO.getId()).isGreaterThan(0L);
         assertThat(locationDTO.getLocation()).isEqualTo(location1.getLocation());
@@ -139,7 +134,11 @@ public class GrpcIntegrationTest {
 
     @Test()
     public void testFindLocationByNameNotFound() {
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.getLocationByName(StringValue.of("test-location3")));
+        GetByLocationRequest request = GetByLocationRequest.newBuilder()
+            .setLocation("test-location3")
+            .setTenantId(tenantId)
+            .build();
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.getLocationByName(request));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.NOT_FOUND_VALUE);
     }

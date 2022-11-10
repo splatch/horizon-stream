@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface MonitoringLocationRepository extends JpaRepository<MonitoringLocation, Long> {
     Optional<MonitoringLocation> findByLocation(String location);
     List<MonitoringLocation> findByTenantId(UUID tenantId);
+    Optional<MonitoringLocation> findByLocationAndTenantId(String location, UUID tenantId);
 }
