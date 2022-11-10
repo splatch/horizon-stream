@@ -1,4 +1,4 @@
-Namespace: skaffold-instance
+Namespace: tilt-instance
 Host: localhost
 Port: 8123
 Protocol: http

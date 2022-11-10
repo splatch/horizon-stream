@@ -26,7 +26,7 @@ RUN /opt/keycloak/bin/kc.sh build
 FROM build as development
 
 USER 0
-RUN microdnf install tar # allows for Skaffold file sync
+RUN microdnf install tar # allows for Tilt live reload
 USER 1000
 
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev"]
