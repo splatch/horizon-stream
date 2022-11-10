@@ -41,7 +41,8 @@ message MonitoringSystemDTO {
   string system_id = 3;
   string label = 4;
   int64 monitoring_location_id = 5;
-  string last_checked_in = 6;
+  //timestamp in msec will convert to data time in the entity
+  int64 last_checked_in = 6;
 }
 
 message MonitoringSystemList {
