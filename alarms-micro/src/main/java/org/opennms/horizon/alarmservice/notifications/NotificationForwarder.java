@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 import java.time.Duration;
 import java.util.Properties;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -15,9 +17,12 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.horizon.alarmservice.DefaultAlarmEntityListener;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
+import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+@Setter
 public class NotificationForwarder extends DefaultAlarmEntityListener {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationForwarder.class);
     private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
@@ -25,15 +30,12 @@ public class NotificationForwarder extends DefaultAlarmEntityListener {
         .maxRate(5).every(Duration.ofSeconds(30))
         .build();
 
-    //TODO:MMF pullin in mapper
-//    private IAlarmMapper alarmMapper;
+    @Autowired
+    private AlarmMapper alarmMapper;
 
     private String kafkaBrokers;
     private String notificationKafkaTopic;
 
-//    public void setAlarmMapper(IAlarmMapper alarmMapper) {
-//        this.alarmMapper = alarmMapper;
-//    }
 
     public void setKafkaBrokers(String kafkaBrokers) {
         this.kafkaBrokers = kafkaBrokers;
@@ -47,8 +49,8 @@ public class NotificationForwarder extends DefaultAlarmEntityListener {
 
     @Override
     public void onAlarmCreated(Alarm alarm) {
-//        AlarmDTO alarmDTO = alarmMapper.alarmToAlarmDTO(alarm);
-//        forwardAlarm(alarmDTO);
+        AlarmDTO alarmDTO = alarmMapper.alarmToAlarmDTO(alarm);
+        forwardAlarm(alarmDTO);
     }
 
     private void forwardAlarm(AlarmDTO alarmDTO) {

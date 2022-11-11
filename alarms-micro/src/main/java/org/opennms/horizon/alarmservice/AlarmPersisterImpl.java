@@ -55,7 +55,6 @@ import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-//TODO:MMF needs a replacement for AlarmData, no longer on protobuf Event. Resolve with Jesse and Gerald.
 @Slf4j
 public class AlarmPersisterImpl implements AlarmPersister {
 
@@ -103,15 +102,11 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm[0];
     }
 
-    //TODO:MMF this should come from kafka event, not DB
     @Transactional
     protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
-//        final OnmsEvent persistedEvent = m_eventDao.get(event.getDbid());
-//        if (persistedEvent == null) {
-//            throw new IllegalStateException("Event with id " + event.getDbid() + " was deleted before we could retrieve it and create an alarm.");
-//        }
 
+        //TODO:MMF
 //        final String reductionKey = event.getAlarmData().getReductionKey();
         String reductionKey = "blah";
         log.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
@@ -281,12 +276,12 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return false;
     }
 
-          //TODO:MMF refactor
+          //TODO:MMF For now just create a minimal event
     private Alarm createNewAlarm(Event event) {
         Alarm alarm = new Alarm();
         // Situations are denoted by the existance of related-reductionKeys
 //        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
-//        alarm.setAlarmType(event.getAlarmData().getAlarmType());
+        alarm.setAlarmType(1);
 //        alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);
 //        alarm.setDescription(e.getEventDescr());
@@ -305,7 +300,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 //        alarm.setSeverity(SeverityDTO.get(e.getEventSeverity()));
 //        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
 //        alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
-//        alarm.setUei(e.getEventUei());
+        alarm.setUei(event.getUei() + event.getNodeId());
 //        if (event.getAlarmData().getManagedObject() != null) {
 //            alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
 //        }

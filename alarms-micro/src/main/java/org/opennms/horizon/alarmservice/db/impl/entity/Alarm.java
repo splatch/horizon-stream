@@ -160,7 +160,6 @@ public class Alarm extends BaseEntity implements Serializable {
     @Column
     private Long lastEventId;
 
-    //TODO:MMF do we realloy need this?
     @Column(name="clear_uei")
     private String clearUEI;
 
@@ -203,10 +202,13 @@ public class Alarm extends BaseEntity implements Serializable {
     @JoinColumn(name="reduction_key", referencedColumnName="reductionkey", updatable=false, insertable=false)
     private ReductionKeyMemo reductionKeyMemo;
 
-    // TODO:MMF need to understand why these next two seem to use the same table
     @OneToMany(mappedBy = "situationAlarm", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<AlarmAssociation> associatedAlarms = new HashSet<>();
 
+    // a situation is an alarm, but an alarm is not necessarily a situation
+    // a situation may contain many alarms
+    // a situation has a set of alarms
+    // if an alarm is part of a situation, related situation will be non-empty
     @ElementCollection
     @JoinTable(name = "alarm_situations", joinColumns = @JoinColumn(name = "related_alarm_id"),
         inverseJoinColumns = @JoinColumn(name = "situation_id"))

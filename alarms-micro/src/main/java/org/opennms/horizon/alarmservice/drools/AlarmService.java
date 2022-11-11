@@ -56,6 +56,8 @@ public interface AlarmService {
 
     void setSeverity(Alarm alarm, AlarmSeverity severity, Date now);
 
+    void setSeverity(Long id, AlarmSeverity severity, Date now);
+
     void debug(String message, Object... objects);
 
     void info(String message, Object... objects);

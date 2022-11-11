@@ -36,11 +36,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
+import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;
 import org.opennms.horizon.events.proto.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +62,9 @@ public class DefaultAlarmService implements AlarmService {
 
     @Autowired
     private AlarmEntityNotifier alarmEntityNotifier;
+
+    @Autowired
+    private AlarmMapper alarmMapper;
 
 //    @Autowired
 //    private EventForwarder eventForwarder;
@@ -151,18 +156,10 @@ public class DefaultAlarmService implements AlarmService {
 
     @Override
     public void acknowledgeAlarm(Alarm alarm, Date now) {
-    //TODO:MMF set ack on alarm only
-//        sessionUtils.withTransaction(() -> {
-//            LOG.info("Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
-//            final Alarm alarmInTrans = alarmDao.get(alarm.getId());
-//            if (alarmInTrans == null) {
-//                LOG.warn("Alarm disappeared: {}. Skipping ack.", alarm);
-//                return;
-//            }
-//            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
-//            ack.setAckAction(AckAction.ACKNOWLEDGE);
-//            acknowledgmentDao.processAck(ack);
-//        });
+        Alarm alarm1 = alarmRepository.getById(alarm.getId());
+        alarm1.setAlarmAckTime(new Date());
+        alarm1.setAlarmAckUser("TODO: need a user!");
+        alarmRepository.save(alarm1);
     }
 
     @Override
@@ -200,15 +197,32 @@ public class DefaultAlarmService implements AlarmService {
     }
 
     @Override
+    public void setSeverity(Long id, AlarmSeverity severity, Date now) {
+        Alarm alarm = alarmRepository.getById(id);
+
+        alarm.setSeverity(severity);
+        // where to set this date?
+//        alarm.set?
+
+        alarmRepository.save(alarm);
+    }
+
+    @Override
     public void sendEvent(Event e) {
 //        eventForwarder.sendNow(e);
     }
 
     @Override
     public List<AlarmDTO> getAllAlarms(String tenantId) {
-//        return alarmDao.findAll();
-        //TODO:MMF
-        return null;
+        List<Alarm> alarms = alarmRepository.findAll();
+
+        List<AlarmDTO> dtoAlarmList =
+            alarms
+                .stream()
+                .map(alarm -> alarmMapper.alarmToAlarmDTO(alarm))
+                .collect(Collectors.toList());
+
+        return dtoAlarmList;
     }
 
     private static void updateAutomationTime(Alarm alarm, Date now) {

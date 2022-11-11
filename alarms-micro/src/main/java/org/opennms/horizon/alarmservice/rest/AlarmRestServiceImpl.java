@@ -29,11 +29,13 @@
 package org.opennms.horizon.alarmservice.rest;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -52,6 +54,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.drools.AlarmService;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
+import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;
 import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
 import org.opennms.horizon.alarmservice.rest.support.SecurityHelper;
 import org.slf4j.helpers.MessageFormatter;
@@ -64,11 +68,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class AlarmRestServiceImpl implements AlarmRestService {
 
-//    private AlarmDao alarmDao;
-//    private AlarmMapper alarmMapper;
-//    private SessionUtils sessionUtils;
-//    private AlarmRepository alarmRepository;
     private AlarmService alarmService;
+    private AlarmMapper alarmMapper;
 
     protected Class<Alarm> getDaoClass() {
         return Alarm.class;
@@ -110,23 +111,13 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         //SecurityHelper.assertUserReadCredentials(securityContext);
 
 //        return this.sessionUtils.withReadOnlyTransaction(() -> {
-            //CriteriaBuilder builder = getCriteriaBuilder(uriInfo);
-            //builder.distinct();
 
-            List<AlarmDTO> matchingAlarms = alarmService.getAllAlarms("TODO:MMF blah");
+            List<AlarmDTO> dtoAlarmList = alarmService.getAllAlarms("TODO:MMF need a tenant id!");
 
-            //TODO:MMF why was this being done?
-//            List<AlarmDTO> dtoAlarmList =
-//                    matchingAlarms
-//                            .stream()
-//                            .map(this.alarmMapper::alarmToAlarmDTO)
-//                            .collect(Collectors.toList());
+            AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
+            alarmsCollection.setTotalCount(dtoAlarmList.size());
 
-            //TODO:MMF do we need to do this????
-//            AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
-//            alarmsCollection.setTotalCount(dtoAlarmList.size());
-
-            return Response.status(Status.OK).entity(matchingAlarms).build();
+            return Response.status(Status.OK).entity(alarmsCollection).build();
 //        });
 
     }
@@ -157,25 +148,16 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 //            return "unacknowledged";
 //        });
 //    }
+    
+    @POST
+    @Path("{id}/clear")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String clearAlarm(@PathParam("id") long id) {
+        alarmService.setSeverity(id, AlarmSeverity.CLEARED, new Date());
 
-    //TODO:MMF keep this one, don't use acknowledgment, jsut set alarm serverity to cleared.
-    // also clear related alarms
-//    @POST
-//    @Path("{id}/clear")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public String clearAlarm(@PathParam("id") int id, AlarmAckDTO alarmAck) {
-//        return sessionUtils.withTransaction(() -> {
-//            OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), alarmAck.getUser());
-//            acknowledgment.setRefId(id);
-//            acknowledgment.setAckAction(AckAction.CLEAR);
-//            acknowledgment.setAckType(AckType.ALARM);
-//            acknowledgmentDao.processAck(acknowledgment);
-//
-//            updateAlarmTicket(id, alarmAck);
-//
-//            return "acknowledged";
-//        });
-//    }
+        //TODO:MMF clear related alarms!
+        return "acknowledged";
+    }
 
     @PUT
     @Path("{id}/memo")
@@ -225,8 +207,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @ApiResponse(
             description = "Remove the memo for an Alarm"
     )
-    //TODO:MMF ask jesse about this
-//    Yes, still need this
+    //TODO:MMF
     public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
         //SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
         try {

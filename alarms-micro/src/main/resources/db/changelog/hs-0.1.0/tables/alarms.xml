@@ -110,7 +110,6 @@
     node, service, reductionkey) -->
             <column name="last_event_id" type="long" />
 
-<!--            TODO:MMF ???-->
 			<!-- Populated if alarm is a resolving alarm and can used to clear problem alarms -->
 			<column name="clear_uei" type="varchar(256)" />
 

@@ -73,6 +73,8 @@ public class AlarmDTO implements Serializable {
     private Date suppressedTime;
     private String alarmAckUser;
     private Date alarmAckTime;
+    private Long lastEventId;
+    private String clearUEI;
     private String clearKey;
     private String managedObjectInstance;
     private String managedObjectType;
