@@ -237,12 +237,12 @@ public class AlarmPersisterImpl implements AlarmPersister {
 //        final Set<Alarm> relatedAlarms = getRelatedAlarms(event.getParmCollection());
         final Set<Alarm> relatedAlarms = new HashSet();
         // Index these by id
-        final Map<Integer, Alarm> relatedAlarmsByIds = relatedAlarms.stream()
+        final Map<Long, Alarm> relatedAlarmsByIds = relatedAlarms.stream()
                 .collect(Collectors.toMap(Alarm::getId, a -> a));
 
         // Build sets of the related alarm ids for easy comparison
-        final Set<Integer> relatedAlarmIdsFromEvent = ImmutableSet.copyOf(relatedAlarmsByIds.keySet());
-        final Set<Integer> relatedAlarmIdsFromExistingAlarm = ImmutableSet.copyOf(alarm.getRelatedAlarmIds());
+        final Set<Long> relatedAlarmIdsFromEvent = ImmutableSet.copyOf(relatedAlarmsByIds.keySet());
+        final Set<Long> relatedAlarmIdsFromExistingAlarm = ImmutableSet.copyOf(alarm.getRelatedAlarmIds());
 
         // Remove alarms that are not referenced in the event -  we treat the event as an
         // authoritative source of the related alarms rather than using the union of the previously known related alarms

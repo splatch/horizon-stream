@@ -106,6 +106,6 @@ public interface AlarmLifecycleListener {
      * @param alarmId id of the alarm that was deleted
      * @param reductionKey reduction key of the alarm that was deleted
      */
-    void handleDeletedAlarm(int alarmId, String reductionKey);
+    void handleDeletedAlarm(long alarmId, String reductionKey);
 
 }

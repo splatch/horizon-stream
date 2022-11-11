@@ -28,7 +28,6 @@
 
 package org.opennms.horizon.alarmservice.db.impl.entity;
 
-import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,27 +35,28 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
+import lombok.Data;
 
 /**
  * <p>OnmsServiceType class.</p>
  *
  * @hibernate.class table="service"
  */
-@XmlRootElement(name = "serviceType")
 @Entity
 @Table(name="service")
+@Data
 public class ServiceType extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -459218937667452586L;
 
-    /** identifier field */
-    private Integer m_id;
+    @Id
+    @Column(name="service_id")
+    @SequenceGenerator(name="serviceTypeSequence", sequenceName="serviceNxtId", allocationSize = 1)
+    @GeneratedValue(generator="serviceTypeSequence")
+    private Long id;
 
-    /** persistent field */
-    private String m_name;
+    @Column(name="service_name", nullable=false, unique=true, length=255)
+    private String name;
 
     /**
      * full constructor
@@ -64,12 +64,12 @@ public class ServiceType extends BaseEntity implements Serializable {
      * @param servicename a {@link String} object.
      */
     public ServiceType(String servicename) {
-        m_name = servicename;
+        name = servicename;
     }
 
-    public ServiceType(Integer id, String servicename) {
-        m_id = id;
-        m_name = servicename;
+    public ServiceType(Long id, String servicename) {
+        this.id = id;
+        this.name = servicename;
     }
 
     /**
@@ -78,67 +78,13 @@ public class ServiceType extends BaseEntity implements Serializable {
     public ServiceType() {
     }
 
-    /**
-     * <p>getId</p>
-     *
-     * @return a {@link Integer} object.
-     */
-    @Id
-    @XmlAttribute(name="id")
-    @Column(name="serviceId")
-    @SequenceGenerator(name="serviceTypeSequence", sequenceName="serviceNxtId", allocationSize = 1)
-    @GeneratedValue(generator="serviceTypeSequence")
-    public Integer getId() {
-        return m_id;
-    }
-
-    /**
-     * <p>setId</p>
-     *
-     * @param serviceid a {@link Integer} object.
-     */
-    public void setId(Integer serviceid) {
-        m_id = serviceid;
-    }
-
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Column(name="serviceName", nullable=false, unique=true, length=255)
-    public String getName() {
-        return m_name;
-    }
-
-    /**
-     * <p>setName</p>
-     *
-     * @param name a {@link String} object.
-     */
-    public void setName(String name) {
-        m_name = name;
-    }
-
-    /**
-     * <p>toString</p>
-     *
-     * @return a {@link String} object.
-     */
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("id", getId())
-            .add("name", getName())
-            .toString();
-    }
 
     /** {@inheritDoc} */
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof ServiceType) {
             ServiceType t = (ServiceType)obj;
-            return m_id.equals(t.m_id);
+            return id.equals(t.id);
         }
         return false;
     }
@@ -150,11 +96,6 @@ public class ServiceType extends BaseEntity implements Serializable {
      */
     @Override
     public int hashCode() {
-        return m_id.intValue();
-    }
-
-    @Override
-    public void visit(EntityVisitor visitor) {
-
+        return id.intValue();
     }
 }

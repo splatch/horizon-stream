@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="mfrazier" id="hs-0.1.0-alarms">
+		<validCheckSum>3:bf2fe2bd84eacb76952e7fb6c7f18f57</validCheckSum>
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="alarms" /></not>
+		</preConditions> 
+
+		<createTable tableName="alarms">
+
+			<!-- Unique identifier -->
+			<column name="alarm_id" type="long">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_alarmid" />
+			</column>
+
+			<!-- A reference to the eventUei that created this alarm. -->
+			<column name="event_uei" type="varchar(256)">
+				<constraints nullable="false" />
+			</column>
+
+<!--			&lt;!&ndash; The distributed poller associated with the event &ndash;&gt;-->
+<!--			<column name="dpname" type="varchar(12)">-->
+<!--				<constraints nullable="false" />-->
+<!--			</column>-->
+
+<!--			&lt;!&ndash; A reference to the node represented by this alarm.  &ndash;&gt;-->
+<!--			<column name="nodeid" type="integer" />-->
+
+			<!-- IP Address of node's interface -->
+			<column name="ip_addr" type="varchar(16)" />
+
+            <!-- Used with nodeID and serviceID to match an event and increment the counter column.
+    Set by configuring the optional alarm-data element in the event configuration-->
+            <column name="reduction_key" type="varchar(256)" />
+
+            <!-- Customizable column designed for use in automations and can be set in the event
+    configuration by configuring the optional alarm-data element. -->
+            <column name="alarm_type" type="integer" />
+
+            <column name="if_index" type="integer" />
+
+            <!-- Incremented by the AlarmWriter instead of inserting a new row when matched node,
+                service, and reductionKey -->
+            <column name="counter" type="integer">
+                <constraints nullable="false" />
+            </column>
+
+<!--			&lt;!&ndash; A reference to the service represented by the alarm. &ndash;&gt;-->
+<!--			<column name="serviceid" type="integer" />-->
+
+
+			<!-- Severity of the Alarm... Initially set by the event can be changed with SQL update. -->
+			<column name="severity" type="integer">
+				<constraints nullable="false" />
+			</column>
+
+            <!-- timestamp of the first event matching this alarm -->
+            <column name="first_event_time" type="TIMESTAMP WITH TIME ZONE" />
+
+            <!-- timestamp of the last event matching this alarm -->
+            <column name="last_event_time" type="TIMESTAMP WITH TIME ZONE" />
+
+			<!-- timestamp of the first automation associated with this alarm -->
+			<column name="first_automation_time" type="TIMESTAMP WITH TIME ZONE" />
+
+			<!--  timestamp of the last automation associated with this alarm -->
+			<column name="last_automation_time" type="TIMESTAMP WITH TIME ZONE" />
+
+			<!-- description from the event -->
+			<column name="description" type="varchar(4000)" />
+
+			<!-- the logmsg from the event -->
+			<column name="log_msg" type="varchar(256)" />
+
+			<!-- the operator instructions from the event -->
+			<column name="oper_instruct" type="varchar(1024)" />
+
+			<!-- helpdesk integration id -->
+			<column name="t_ticket_id" type="varchar(128)" />
+
+			<!--  helpdesk integration state -->
+			<column name="t_ticket_state" type="integer" />
+
+			<!-- flyOverText for the webUI -->
+			<column name="mouse_over_text" type="varchar(64)" />
+
+			<!-- used to suppress display an alarm until timestamp time is reached -->
+			<column name="suppressed_until" type="TIMESTAMP WITH TIME ZONE" />
+
+			<!-- user that suppressed alarm -->
+			<column name="suppressed_user" type="varchar(256)" />
+
+			<!-- time the alarm was suppressed -->
+			<column name="suppressed_time" type="TIMESTAMP WITH TIME ZONE" />
+
+			<!-- user that acknowledged the alarm -->
+			<column name="alarm_ack_user" type="varchar(256)" />
+
+			<!-- time user Ack'd the alarm -->
+			<column name="alarm_ack_time" type="TIMESTAMP WITH TIME ZONE" />
+
+            <!-- A reference to the event table with the ID of the last matching event (typically
+    node, service, reductionkey) -->
+            <column name="last_event_id" type="long" />
+
+<!--            TODO:MMF ???-->
+			<!-- Populated if alarm is a resolving alarm and can used to clear problem alarms -->
+			<column name="clear_uei" type="varchar(256)" />
+
+            <!-- the key that will match an event to clear the alarm -->
+            <column name="clear_key" type="varchar(256)" />
+            
+			<column name="managed_object_instance" type="varchar(512)" />
+
+			<column name="managed_object_type" type="varchar(512)" />
+
+			<column name="application_dn" type="varchar(512)" />
+
+			<column name="oss_primary_key" type="varchar(512)" />
+
+			<column name="x733_alarm_type" type="varchar(31)" />
+
+			<column name="qos_alarm_state" type="varchar(31)" />
+
+            <column name="x733_probable_cause" type="integer" defaultValue="0">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="sticky_memo_id" type="integer">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="reduction_key" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+
+		</createTable>
+
+		<addForeignKeyConstraint constraintName="fk_eventidak2" onDelete="CASCADE"
+			baseTableName="alarms" baseColumnNames="lasteventid"
+			referencedTableName="events" referencedColumnNames="eventid" />
+
+		<createIndex tableName="alarms" indexName="alarm_uei_idx">
+			<column name="eventuei" />
+		</createIndex>
+<!--		<createIndex tableName="alarms" indexName="alarm_nodeid_idx">-->
+<!--			<column name="nodeid" />-->
+<!--		</createIndex>-->
+		<createIndex tableName="alarms" indexName="alarm_reductionkey_idx" unique="true">
+			<column name="reduction_key" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_clearkey_idx">
+			<column name="clear_key" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_reduction2_idx">
+			<column name="alarm_id" />
+			<column name="event_uei" />
+<!--			<column name="dpname" />-->
+<!--			<column name="nodeid" />-->
+			<column name="service_id" />
+			<column name="reduction_key" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_app_dn">
+			<column name="application_dn" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_oss_primary_key">
+			<column name="oss_primary_key" />
+		</createIndex>
+		<createIndex tableName="alarms" indexName="alarm_eventid_idx">
+			<column name="last_event_id" />
+		</createIndex>
+
+	</changeSet>
+
+</databaseChangeLog>

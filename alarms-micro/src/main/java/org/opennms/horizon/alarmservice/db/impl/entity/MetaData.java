@@ -34,7 +34,6 @@ import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 
 @Embeddable
 @Data
@@ -50,9 +49,4 @@ public class MetaData extends BaseEntity implements Serializable {
     private String key;
     @Column(nullable = false)
     private String value;
-
-    @Override
-    public void visit(EntityVisitor visitor) {
-
-    }
 }

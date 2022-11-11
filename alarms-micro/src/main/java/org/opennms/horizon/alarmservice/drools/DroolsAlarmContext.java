@@ -101,11 +101,11 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
 
-    private final Map<Integer, AlarmAndFact> alarmsById = new HashMap<>();
+    private final Map<Long, AlarmAndFact> alarmsById = new HashMap<>();
 
-    private final Map<Integer, AlarmAcknowledgementAndFact> acknowledgementsByAlarmId = new HashMap<>();
+    private final Map<Long, AlarmAcknowledgementAndFact> acknowledgementsByAlarmId = new HashMap<>();
 
-    private final Map<Integer, Map<Integer, AlarmAssociationAndFact>> alarmAssociationById = new HashMap<>();
+    private final Map<Long, Map<Long, AlarmAssociationAndFact>> alarmAssociationById = new HashMap<>();
 
     private final CountDownLatch seedSubmittedLatch = new CountDownLatch(1);
 
@@ -136,9 +136,9 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                     alarmsById.put(alarmInSession.getId(), new AlarmAndFact(alarmInSession, fact));
                 } else if (objForFact instanceof AlarmAssociation) {
                     final AlarmAssociation associationInSession = (AlarmAssociation)objForFact;
-                    final Integer situationId = associationInSession.getSituationAlarm().getId();
-                    final Integer alarmId = associationInSession.getRelatedAlarm().getId();
-                    final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situationId, (sid) -> new HashMap<>());
+                    final Long situationId = associationInSession.getSituationAlarm().getId();
+                    final Long alarmId = associationInSession.getRelatedAlarm().getId();
+                    final Map<Long, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situationId, (sid) -> new HashMap<>());
                     associationFacts.put(alarmId, new AlarmAssociationAndFact(associationInSession, fact));
                 }
             }
@@ -270,7 +270,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         }
 
         log.debug("Handling snapshot for {} alarms.", alarms.size());
-        final Map<Integer, Alarm> alarmsInDbById = alarms.stream()
+        final Map<Long, Alarm> alarmsInDbById = alarms.stream()
                 .filter(a -> a.getId() != null)
                 .collect(Collectors.toMap(Alarm::getId, a -> a));
 
@@ -280,7 +280,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         }
 
         // Retrieve the acks from the database for the set of the alarms we've been given
-//        final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(alarms);
+//        final Map<Long, OnmsAcknowledgment> acksByRefId = fetchAcks(alarms);
 
         // Track some stats
         final long numSituations = alarms.stream().filter(Alarm::isSituation).count();
@@ -288,22 +288,22 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         numSituationsFromLastSnapshot.set(numSituations);
 
         submitOrRun(kieSession -> {
-            final Set<Integer> alarmIdsInDb = alarmsInDbById.keySet();
-            final Set<Integer> alarmIdsInWorkingMem = alarmsById.keySet();
+            final Set<Long> alarmIdsInDb = alarmsInDbById.keySet();
+            final Set<Long> alarmIdsInWorkingMem = alarmsById.keySet();
 
-            final Set<Integer> alarmIdsToAdd = Sets.difference(alarmIdsInDb, alarmIdsInWorkingMem).stream()
+            final Set<Long> alarmIdsToAdd = Sets.difference(alarmIdsInDb, alarmIdsInWorkingMem).stream()
                     // The snapshot contains an alarm which we don't have in working memory.
                     // It is possible that the alarm was in fact deleted some time after the
                     // snapshot was processed. We should only add it, if we did not explicitly
                     // delete the alarm after the snapshot was taken.
                     .filter(alarmId -> !stateTracker.wasAlarmWithIdDeleted(alarmId))
                     .collect(Collectors.toSet());
-            final Set<Integer> alarmIdsToRemove = Sets.difference(alarmIdsInWorkingMem, alarmIdsInDb).stream()
+            final Set<Long> alarmIdsToRemove = Sets.difference(alarmIdsInWorkingMem, alarmIdsInDb).stream()
                     // We have an alarm in working memory that is not contained in the snapshot.
                     // Only remove it from memory if the fact we have dates before the snapshot.
                     .filter(alarmId -> !stateTracker.wasAlarmWithIdUpdated(alarmId))
                     .collect(Collectors.toSet());
-            final Set<Integer> alarmIdsToUpdate = Sets.intersection(alarmIdsInWorkingMem, alarmIdsInDb).stream()
+            final Set<Long> alarmIdsToUpdate = Sets.intersection(alarmIdsInWorkingMem, alarmIdsInDb).stream()
                     // This stream contains the set of all alarms which are both in the snapshot
                     // and in working memory
                     .filter(alarmId -> {
@@ -330,7 +330,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 // When TRACE is enabled, include diagnostic information to help explain why
                 // the alarms are being updated
                 if (log.isTraceEnabled()) {
-                    for (Integer alarmIdToUpdate : alarmIdsToUpdate) {
+                    for (Long alarmIdToUpdate : alarmIdsToUpdate) {
                         log.trace("Updating alarm with id={}. Alarm from DB: {} vs Alarm from memory: {}",
                                 alarmIdToUpdate,
                                 alarmsInDbById.get(alarmIdToUpdate),
@@ -339,7 +339,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 }
             }
 
-            for (Integer alarmIdToRemove : alarmIdsToRemove) {
+            for (Long alarmIdToRemove : alarmIdsToRemove) {
                 handleDeletedAlarmForAtomic(kieSession, alarmIdToRemove, alarmsById.get(alarmIdToRemove).getAlarm().getReductionKey());
             }
 
@@ -381,7 +381,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         eagerlyInitializeAlarm(alarm);
 
         // Retrieve the acks from the database for the set of the alarms we've been given
-//        final Map<Integer, OnmsAcknowledgment> acksByRefId = fetchAcks(Collections.singletonList(alarm));
+//        final Map<Long, OnmsAcknowledgment> acksByRefId = fetchAcks(Collections.singletonList(alarm));
 
 //        executeAtomicallyWhenTransactionComplete(kieSession -> {
 //            handleNewOrUpdatedAlarmForAtomic(kieSession, alarm, acksByRefId.get(alarm.getId()));
@@ -393,7 +393,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
      * Fetches an {link OnmsAcknowledgment ack} via the {link acknowledgmentDao ack DAO} for all the given alarms.
      * For any alarm for which an ack does not exist, a default ack is generated.
      */
-//    private Map<Integer, OnmsAcknowledgment> fetchAcks(Collection<Alarm> alarms) {
+//    private Map<Long, OnmsAcknowledgment> fetchAcks(Collection<Alarm> alarms) {
 //        if (alarms.isEmpty()) {
 //            return Collections.emptyMap();
 //        }
@@ -424,7 +424,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 //        }
 //
 //        // Handle all the alarms for which an ack could be found
-//        Map<Integer, OnmsAcknowledgment> acksById =
+//        Map<Long, OnmsAcknowledgment> acksById =
 //                acks.stream().collect(Collectors.toMap(OnmsAcknowledgment::getRefId, ack -> ack));
 //
 //        // Handle all the alarms that no ack could be found for by generating a default ack
@@ -490,9 +490,9 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
         if (alarm.isSituation()) {
             final Alarm situation = alarm;
-            final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situation.getId(), (sid) -> new HashMap<>());
+            final Map<Long, AlarmAssociationAndFact> associationFacts = alarmAssociationById.computeIfAbsent(situation.getId(), (sid) -> new HashMap<>());
             for (AlarmAssociation association : situation.getAssociatedAlarms()) {
-                Integer alarmId = association.getRelatedAlarm().getId();
+                Long alarmId = association.getRelatedAlarm().getId();
                 AlarmAssociationAndFact associationFact = associationFacts.get(alarmId);
                 if (associationFact == null) {
                     log.debug("Inserting alarm association into session: {}", association);
@@ -506,7 +506,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 }
             }
             // Remove Fact for any Alarms no longer in the Situation
-            Set<Integer> deletedAlarmIds = associationFacts.values().stream()
+            Set<Long> deletedAlarmIds = associationFacts.values().stream()
                     .map(fact -> fact.getAlarmAssociation().getRelatedAlarm().getId())
                     .filter(alarmId -> !situation.getRelatedAlarmIds().contains(alarmId))
                     .collect(Collectors.toSet());
@@ -521,7 +521,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     @Override
-    public void handleDeletedAlarm(int alarmId, String reductionKey) {
+    public void handleDeletedAlarm(long alarmId, String reductionKey) {
         if (!isStarted()) {
             log.debug("Ignoring deleted alarm. Drools session is stopped.");
             return;
@@ -533,7 +533,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         });
     }
 
-    private void handleDeletedAlarmForAtomic(KieSession kieSession, int alarmId, String reductionKey) {
+    private void handleDeletedAlarmForAtomic(KieSession kieSession, long alarmId, String reductionKey) {
         final AlarmAndFact alarmAndFact = alarmsById.remove(alarmId);
         if (alarmAndFact != null) {
             log.debug("Deleting alarm from session: {}", alarmAndFact.getAlarm());
@@ -546,11 +546,11 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 //            kieSession.delete(acknowledgmentFact.getFact());
 //        }
 
-        final Map<Integer, AlarmAssociationAndFact> associationFacts = alarmAssociationById.remove(alarmId);
+        final Map<Long, AlarmAssociationAndFact> associationFacts = alarmAssociationById.remove(alarmId);
         if (associationFacts == null) {
             return;
         }
-        for (Integer association : associationFacts.keySet()) {
+        for (Long association : associationFacts.keySet()) {
             AlarmAssociationAndFact associationFact = associationFacts.get(association);
             if (associationFact != null) {
                 log.debug("Deleting association from session: {}", associationFact.getAlarmAssociation());

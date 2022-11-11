@@ -43,10 +43,10 @@ import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
  */
 public class AlarmCallbackStateTracker {
 
-    private final Set<Integer> alarmsUpdatesById = new HashSet<>();
+    private final Set<Long> alarmsUpdatesById = new HashSet<>();
     private final Set<String> alarmsUpdatesByReductionKey = new HashSet<>();
 
-    private final Set<Integer> deletedAlarmsByAlarmId = new HashSet<>();
+    private final Set<Long> deletedAlarmsByAlarmId = new HashSet<>();
     private final Set<String> deletedAlarmsByReductionKey = new HashSet<>();
 
     private final List<Set<?>> sets = Arrays.asList(alarmsUpdatesById, alarmsUpdatesByReductionKey,
@@ -58,7 +58,7 @@ public class AlarmCallbackStateTracker {
         trackAlarms = true;
     }
 
-    public synchronized void trackNewOrUpdatedAlarm(int alarmId, String reductionKey) {
+    public synchronized void trackNewOrUpdatedAlarm(long alarmId, String reductionKey) {
         if (!trackAlarms) {
             return;
         }
@@ -66,7 +66,7 @@ public class AlarmCallbackStateTracker {
         alarmsUpdatesByReductionKey.add(reductionKey);
     }
 
-    public synchronized void trackDeletedAlarm(int alarmId, String reductionKey) {
+    public synchronized void trackDeletedAlarm(long alarmId, String reductionKey) {
         if (!trackAlarms) {
             return;
         }
@@ -81,11 +81,11 @@ public class AlarmCallbackStateTracker {
 
     // By ID
 
-    public synchronized boolean wasAlarmWithIdUpdated(int alarmId) {
+    public synchronized boolean wasAlarmWithIdUpdated(long alarmId) {
         return alarmsUpdatesById.contains(alarmId);
     }
 
-    public synchronized boolean wasAlarmWithIdDeleted(int alarmId) {
+    public synchronized boolean wasAlarmWithIdDeleted(long alarmId) {
         return deletedAlarmsByAlarmId.contains(alarmId);
     }
 
@@ -99,7 +99,7 @@ public class AlarmCallbackStateTracker {
         return deletedAlarmsByReductionKey.contains(reductionKey);
     }
 
-    public Set<Integer> getUpdatedAlarmIds() {
+    public Set<Long> getUpdatedAlarmIds() {
         return ImmutableSet.copyOf(alarmsUpdatesById);
     }
 }

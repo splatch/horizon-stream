@@ -29,7 +29,6 @@
 package org.opennms.horizon.alarmservice.db.impl.entity;
 
 import javax.persistence.Column;
-import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 
 /**
  * <p>Abstract Entity class.</p>
@@ -49,12 +48,5 @@ public abstract class BaseEntity {
 	protected static boolean hasNewValue(Object newVal, Object existingVal) {
         return newVal != null && !newVal.equals(existingVal);
     }
-
-    /**
-     * <p>visit</p>
-     *
-     * @param visitor a {@link EntityVisitor} object.
-     */
-    public abstract void visit(EntityVisitor visitor);
 
 }

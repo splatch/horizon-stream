@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="mfrazier" id="hs-0.1.0-alarms">
+        <validCheckSum>3:e01c4288c19444d61c6bd149ecf6bde7</validCheckSum>
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="alarm_situations" columnName="id"/>
+            </not>
+        </preConditions>
+
+<!--        //TODO:MMF best practice? for all?-->
+        <dropTable tableName="alarm_situations"/>
+
+        <createTable tableName="alarm_situations">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="situation_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="related_alarm_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mapped_time" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_alarm_situations_situation_id" onDelete="CASCADE"
+            baseTableName="alarm_situations" baseColumnNames="situation_id"
+            referencedTableName="alarms" referencedColumnNames="alarm_id"/>
+        <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" onDelete="CASCADE"
+            baseTableName="alarm_situations" baseColumnNames="related_alarm_id"
+            referencedTableName="alarms" referencedColumnNames="alarm_id"/>
+    </changeSet>
+</databaseChangeLog>

@@ -40,6 +40,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -53,11 +54,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
-import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 
@@ -78,11 +79,10 @@ public class Alarm extends BaseEntity implements Serializable {
     @Id
     @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId", allocationSize = 1)
     @GeneratedValue(generator="alarmSequence")
-    @Column(name="alarmId", nullable=false)
-    //TODO:MMF should this be a Long?
-    private Integer id;
+    @Column(name="alarm_id", nullable=false)
+    private Long id;
 
-    @Column(name="eventUEI", length=256, nullable=false)
+    @Column(name="event_uei", length=256, nullable=false)
     private String uei;
 
     @Column
@@ -158,6 +158,13 @@ public class Alarm extends BaseEntity implements Serializable {
     private Date alarmAckTime;
 
     @Column
+    private Long lastEventId;
+
+    //TODO:MMF do we realloy need this?
+    @Column(name="clear_uei")
+    private String clearUEI;
+
+    @Column
     private String clearKey;
 
     @Column(length=512)
@@ -172,33 +179,37 @@ public class Alarm extends BaseEntity implements Serializable {
     @Column(length=512)
     private String ossPrimaryKey;
 
-    @Column(length=31)
+    @Column(name="x733_alarm_type", length=31)
     private String x733AlarmType;
 
     @Column(length=31)
     private String qosAlarmState;
 
-    @Column(nullable=false)
+    @Column(name="x733_probably_cause", nullable=false)
     private int x733ProbableCause = 0;
 
+//    /TODO:MMF which are snake case and which are camelcase for the java fields
     @ElementCollection
-    @JoinTable(name="alarm_attributes", joinColumns = @JoinColumn(name="alarmId"))
-    @MapKeyColumn(name="attributename")
-    @Column(name="attributeValue", nullable=false)
+    @JoinTable(name="alarm_attributes", joinColumns = @JoinColumn(name="alarm_id"))
+    @MapKeyColumn(name="attribute_name")
+    @Column(name="attribute_value", nullable=false)
     private Map<String, String> details;
 
-    @OneToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="stickymemo")
+    @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name="sticky_memo_id")
     private Memo stickyMemo;
 
-    @ManyToOne
-    @JoinColumn(name="reductionKey", referencedColumnName="reductionkey", updatable=false, insertable=false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="reduction_key", referencedColumnName="reductionkey", updatable=false, insertable=false)
     private ReductionKeyMemo reductionKeyMemo;
+
+    // TODO:MMF need to understand why these next two seem to use the same table
+    @OneToMany(mappedBy = "situationAlarm", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<AlarmAssociation> associatedAlarms = new HashSet<>();
 
-
     @ElementCollection
-    @JoinTable(name = "alarm_situations", joinColumns = @JoinColumn(name = "related_alarm_id"), inverseJoinColumns = @JoinColumn(name = "situation_id"))
+    @JoinTable(name = "alarm_situations", joinColumns = @JoinColumn(name = "related_alarm_id"),
+        inverseJoinColumns = @JoinColumn(name = "situation_id"))
     @Column(name="alarm_id", nullable=false)
     private Set<Alarm> relatedSituations = new HashSet<>();
 
@@ -219,7 +230,7 @@ public class Alarm extends BaseEntity implements Serializable {
      * @param severity a {@link Integer} object.
      * @param firsteventtime a {@link Date} object.
      */
-    public Alarm(Integer alarmid, String eventuei, Integer counter, Integer severity, Date firsteventtime, Date lasteEventTime) {
+    public Alarm(Long alarmid, String eventuei, Integer counter, Integer severity, Date firsteventtime, Date lasteEventTime) {
         this.id = alarmid;
         this.uei = eventuei;
         this.counter = counter;
@@ -311,7 +322,7 @@ public class Alarm extends BaseEntity implements Serializable {
 
     @Transient
     
-    public Set<Integer> getRelatedAlarmIds() {
+    public Set<Long> getRelatedAlarmIds() {
         return getRelatedAlarms().stream()
                 .map(Alarm::getId)
                 .collect(Collectors.toSet());
@@ -350,13 +361,13 @@ public class Alarm extends BaseEntity implements Serializable {
         situation = !associatedAlarms.isEmpty();
     }
 
-    public void removeRelatedAlarmWithId(Integer relatedAlarmId) {
+    public void removeRelatedAlarmWithId(Long relatedAlarmId) {
         associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(relatedAlarmId));
         situation = !associatedAlarms.isEmpty();
     }
 
     @Transient
-    public Set<Integer> getRelatedSituationIds() {
+    public Set<Long> getRelatedSituationIds() {
         return getRelatedSituations().stream()
                 .map(Alarm::getId)
                 .collect(Collectors.toSet());
@@ -373,10 +384,5 @@ public class Alarm extends BaseEntity implements Serializable {
             return getLastAutomationTime();
         }
         return getLastEventTime();
-    }
-
-    @Override
-    public void visit(EntityVisitor visitor) {
-        
     }
 }

@@ -40,7 +40,7 @@ public class ReductionKeyMemo extends Memo {
 
     private static final long serialVersionUID = 7472348439687562161L;
 
-    @Column(name = "reductionkey")
+    @Column
     private String reductionKey;
     
 }

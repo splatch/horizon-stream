@@ -46,7 +46,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import lombok.Data;
-import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 
 @Entity
 @Table(name = "memos")
@@ -59,10 +58,10 @@ public class Memo extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 7272348439687562161L;
 
     @Id
-    @Column(nullable = false)
+    @Column(name="sticky_memo_id", nullable = false)
     @SequenceGenerator(name = "memoSequence", sequenceName = "memoNxtId", allocationSize = 1)
     @GeneratedValue(generator = "memoSequence")
-    private Integer id;
+    private Long id;
 
     @Column
     private String body;
@@ -86,10 +85,5 @@ public class Memo extends BaseEntity implements Serializable {
     @PrePersist
     private void prePersist() {
         created = new Date();
-    }
-
-    @Override
-    public void visit(EntityVisitor visitor) {
-
     }
 }

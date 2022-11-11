@@ -1,0 +1,34 @@
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+
+    <changeSet author="mfrazier" id="1.6.0-alarm_attributes">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="memos" /></not>
+        </preConditions>
+
+        <createTable tableName="memos">
+
+            <!-- the alarm's ID -->
+            <column name="sticky_memo_id" type="java.lang.Long">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="body" type="varchar(63)" />
+
+            <column name="author" type="varchar(255)" />
+
+            <column name="updated" type="TIMESTAMP WITH TIME ZONE" />
+
+            <column name="created" type="TIMESTAMP WITH TIME ZONE" />
+        </createTable>
+
+<!--        //TODO:MMF indexes?-->
+
+    </changeSet>
+
+</databaseChangeLog>

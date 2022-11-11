@@ -46,7 +46,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
-import org.opennms.horizon.alarmservice.db.api.EntityVisitor;
 
 /**
  * <p> Entity to store situations and their associated (related) alarms with other details like mappedTime </p>
@@ -63,7 +62,7 @@ public class AlarmAssociation extends BaseEntity implements Serializable {
     @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId", allocationSize = 1)
     @GeneratedValue(generator="alarmSequence")
     @Column(name="id", nullable=false)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "situation_id")
@@ -111,10 +110,5 @@ public class AlarmAssociation extends BaseEntity implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(situationAlarm, relatedAlarm);
-    }
-
-    @Override
-    public void visit(EntityVisitor visitor) {
-
     }
 }
