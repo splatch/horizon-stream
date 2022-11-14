@@ -41,6 +41,7 @@ import com.google.protobuf.StringValue;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 
+import io.grpc.Context;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -50,17 +51,22 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc.MonitoringLocationServiceImplBase {
     private final MonitoringLocationService service;
+    private final TenantLookup tenantLookup;
 
     @Override
     public void listLocations(Empty request, StreamObserver<MonitoringLocationList> responseObserver) {
-        List<MonitoringLocationDTO> result = service.findByTenantId(InventoryServerInterceptor.TENANT_ID.get());
+        List<MonitoringLocationDTO> result = tenantLookup.lookupTenantId(Context.current())
+            .map(service::findByTenantId)
+            .orElseThrow();
         responseObserver.onNext(MonitoringLocationList.newBuilder().addAllLocations(result).build());
         responseObserver.onCompleted();
     }
 
     @Override
     public void getLocationByName(StringValue locationName, StreamObserver<MonitoringLocationDTO> responseObserver) {
-        Optional<MonitoringLocationDTO> location = service.findByLocationAndTenantId(locationName.getValue(), InventoryServerInterceptor.TENANT_ID.get());
+        Optional<MonitoringLocationDTO> location =tenantLookup.lookupTenantId(Context.current())
+            .map(tenantId -> service.findByLocationAndTenantId(locationName.getValue(), tenantId))
+            .orElseThrow();
         if(location.isPresent()){
             responseObserver.onNext(location.get());
         } else {

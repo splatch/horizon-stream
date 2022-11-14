@@ -41,6 +41,7 @@ import com.google.protobuf.StringValue;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 
+import io.grpc.Context;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -48,16 +49,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MonitoringSystemGrpcService extends MonitoringSystemServiceGrpc.MonitoringSystemServiceImplBase {
     private final MonitoringSystemService service;
+    private final TenantLookup tenantLookup;
     @Override
     public void listMonitoringSystem(Empty request, StreamObserver<MonitoringSystemList> responseObserver) {
-        List<MonitoringSystemDTO> list = service.findByTenantId(InventoryServerInterceptor.TENANT_ID.get());
+        List<MonitoringSystemDTO> list = tenantLookup.lookupTenantId(Context.current())
+            .map(service::findByTenantId)
+            .orElseThrow();
         responseObserver.onNext(MonitoringSystemList.newBuilder().addAllList(list).build());
         responseObserver.onCompleted();
     }
 
     @Override
     public void getMonitoringSystemById(StringValue systemId, StreamObserver<MonitoringSystemDTO> responseObserver) {
-        Optional<MonitoringSystemDTO> monitoringSystem = service.findBySystemId(systemId.getValue(), InventoryServerInterceptor.TENANT_ID.get());
+        Optional<MonitoringSystemDTO> monitoringSystem = tenantLookup.lookupTenantId(Context.current())
+            .map(tenant_id -> service.findBySystemId(systemId.getValue(), tenant_id))
+            .orElseThrow();
         if(monitoringSystem.isPresent()) {
             responseObserver.onNext(monitoringSystem.get());
         } else {

@@ -29,7 +29,6 @@
 package org.opennms.horizon.inventory.grpc;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.opennms.horizon.inventory.service.MonitoringLocationService;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
@@ -48,14 +47,20 @@ public class GrpcConfig {
     @Value("${grpc.server.port:" + DEFAULT_GRPC_PORT +"}")
     private int port;
 
+
     @Bean
-    public MonitoringLocationGrpcService createLocationGrpcService() {
-        return new MonitoringLocationGrpcService(locationService);
+    public TenantLookup createTenantLookup(){
+        return new GrpcTenantLookupImpl();
     }
 
     @Bean
-    public MonitoringSystemGrpcService createSystemGrpcService() {
-        return new MonitoringSystemGrpcService(systemService);
+    public MonitoringLocationGrpcService createLocationGrpcService(TenantLookup tenantLookup) {
+        return new MonitoringLocationGrpcService(locationService, tenantLookup);
+    }
+
+    @Bean
+    public MonitoringSystemGrpcService createSystemGrpcService(TenantLookup tenantLookup) {
+        return new MonitoringSystemGrpcService(systemService, tenantLookup);
     }
 
     @Bean(destroyMethod = "stopServer")
