@@ -45,6 +45,7 @@ import org.opennms.horizon.events.api.EventSubscriptionService;
 import org.opennms.horizon.events.model.IEvent;
 import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 
+import org.opennms.snmp.contract.SnmpDetectorRequest;
 import org.opennms.snmp.contract.SnmpMonitorRequest;
 import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.contract.TaskType;
@@ -135,6 +136,8 @@ public class DeviceMonitorManager implements EventListener {
                 LOG.info("Polling ICMP/SNMP Monitor for IPAddress {}", onmsIpInterface.getIpAddress());
 
                 addPollIcmpTask(locationName, onmsIpInterface.getIpAddress());
+
+                addDetectSnmpTask(locationName, onmsIpInterface.getIpAddress());
                 addPollSnmpTask(locationName, onmsIpInterface.getIpAddress(), onmsNode.getSnmpCommunityString());
             });
 
@@ -181,6 +184,19 @@ public class DeviceMonitorManager implements EventListener {
         SnmpMonitorRequest snmpMonitorRequest = snmpRequestBuilder.build();
 
         taskSetManagerUtil.addSnmpTask(location, inetAddress, "snmp-monitor", TaskType.MONITOR, "SNMPMonitor", "5000", snmpMonitorRequest);
+    }
+
+    private void addDetectSnmpTask(String location, InetAddress inetAddress) {
+
+        SnmpDetectorRequest.Builder snmpRequestBuilder =
+            SnmpDetectorRequest.newBuilder()
+                .setHost(inetAddress.getHostAddress())
+                .setTimeout(18000)
+                .setRetries(2);
+
+        SnmpDetectorRequest snmpDetectorRequest = snmpRequestBuilder.build();
+
+        taskSetManagerUtil.addSnmpTask(location, inetAddress, "snmp-detector", TaskType.DETECTOR, "SNMPDetector", snmpDetectorRequest);
     }
 
     @Override
