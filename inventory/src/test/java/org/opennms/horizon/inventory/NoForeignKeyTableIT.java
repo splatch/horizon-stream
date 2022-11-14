@@ -209,7 +209,7 @@ class NoForeignKeyTableIT {
         String locationName = "testLocation";
         MonitoringLocation location = new MonitoringLocation();
         location.setLocation(locationName);
-        location.setTenantId(new UUID(10, 12));
+        location.setTenantId(new UUID(10, 12).toString());
         MonitoringLocation savedLocation = monitoringLocationRepository.saveAndFlush(location);
         assertNotNull(savedLocation);
         Optional<MonitoringLocation> dbLocation = monitoringLocationRepository.findByLocation(locationName);

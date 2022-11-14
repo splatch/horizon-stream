@@ -44,7 +44,7 @@ abstract class GrpcTestBase {
         registry.add("grpc.server.port", ()->6767);
     }
 
-    protected final UUID tenantId = new UUID(10, 10);
+    protected final String tenantId = new UUID(10, 10).toString();
 
     protected ManagedChannel channel;
 

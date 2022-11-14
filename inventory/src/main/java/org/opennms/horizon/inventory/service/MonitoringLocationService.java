@@ -1,16 +1,16 @@
 package org.opennms.horizon.inventory.service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +43,7 @@ public class MonitoringLocationService {
     }
 
     public List<MonitoringLocationDTO> findByTenantId(String tenantId) {
-        UUID tenantUUID = UUID.fromString(tenantId);
-        List<MonitoringLocation> all = modelRepo.findByTenantId(tenantUUID);
+        List<MonitoringLocation> all = modelRepo.findByTenantId(tenantId);
         return all
             .stream()
             .map(mapper::modelToDTO)
@@ -52,6 +51,6 @@ public class MonitoringLocationService {
     }
 
     public Optional<MonitoringLocationDTO> findByLocationAndTenantId(String location, String tenantId) {
-        return modelRepo.findByLocationAndTenantId(location, UUID.fromString(tenantId)).map(mapper::modelToDTO);
+        return modelRepo.findByLocationAndTenantId(location, tenantId).map(mapper::modelToDTO);
     }
 }
