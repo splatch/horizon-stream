@@ -49,8 +49,7 @@ public class InventoryServerInterceptor implements ServerInterceptor {
         if(tenantId==null){
             log.error("Missing tenant id");
             serverCall.close(Status.UNAUTHENTICATED.withDescription("Missing tenant id"), new Metadata());
-            return new ServerCall.Listener<>() {
-            };
+            return new ServerCall.Listener<>() {};
         }
         Context context = Context.current().withValue(TENANT_ID, tenantId);
         return Contexts.interceptCall(context, serverCall, headers, callHandler);
