@@ -20,7 +20,7 @@ type OpenNMSValues struct {
     UI               ServiceValues          `yaml:"UI"`
     Minion           MinionValues           `yaml:"Minion"`
     MinionGateway    MinionGatewayValues    `yaml:"MinionGateway"`
-    Inventory        ServiceValues          `yaml:"Inventory"`
+    Inventory        InventoryValues        `yaml:"Inventory"`
     Notification     ServiceValues          `yaml:"Notification"`
     MetricsProcessor MetricsProcessorValues `yaml:"MetricsProcessor"`
     Events           ServiceValues          `yaml:"Events"`

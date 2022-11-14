@@ -48,34 +48,11 @@ type OpenNMSReconciler struct {
 }
 
 func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (reconcile.Result, error) {
-	instanceCRD, err := crd.GetInstance(ctx, r.Client, req.NamespacedName)
-	if err != nil && errors.IsNotFound(err) {
-		if instance, ok := r.Instances[req.Name]; ok {
-			r.Log.Info("known instance no longer not exists, forgetting it", "name", instance.Name)
-			delete(r.Instances, instance.Name)
-			return reconcile.Result{}, nil
-		} else {
-			return reconcile.Result{}, nil
-		}
-	} else if err != nil {
-		r.Log.Error(err, "failed to get crd for instance", "name", req.Name)
-		return reconcile.Result{}, err
-	}
-	instance, ok := r.Instances[instanceCRD.Name]
-	if !ok {
-		instance = &Instance{}
-		err := instance.Init(ctx, r.Client, r.DefaultValues, r.StandardHandlers, instanceCRD)
-		if err != nil {
-			log.Fatal(err)
-		}
-		r.Instances[instanceCRD.Name] = instance
-	} else if instance.Deployed && instance.CRD.Spec.DeployOnly {
+	instance, err := r.getInstance(ctx, req)
+	if err != nil { //any error here is fatal
+		log.Fatal(err)
+	} else if instance == nil { //instance doesn't exist or is set to deployOnly
 		return reconcile.Result{RequeueAfter: 30 * time.Second}, nil
-	} else {
-		err := instance.Update(ctx, instanceCRD)
-		if err != nil {
-			log.Fatal(err)
-		}
 	}
 
 	for _, handler := range instance.Handlers {
@@ -139,6 +116,39 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (re
 	r.updateStatus(ctx, &instance.CRD, true, "instance ready")
 	instance.Deployed = true
 	return reconcile.Result{RequeueAfter: 30 * time.Second}, nil
+}
+
+func (r *OpenNMSReconciler) getInstance(ctx context.Context, req ctrl.Request) (*Instance, error) {
+	instanceCRD, err := crd.GetInstance(ctx, r.Client, req.NamespacedName)
+	if err != nil && errors.IsNotFound(err) {
+		if instance, ok := r.Instances[req.Name]; ok {
+			r.Log.Info("known instance no longer not exists, forgetting it", "name", instance.Name)
+			delete(r.Instances, instance.Name)
+		}
+		return nil, nil
+	} else if err != nil {
+		r.Log.Error(err, "failed to get crd for instance", "name", req.Name)
+		return nil, err
+	}
+
+	instance, ok := r.Instances[instanceCRD.Name]
+	if !ok {
+		instance = &Instance{}
+		err := instance.Init(ctx, r.Client, r.DefaultValues, r.StandardHandlers, instanceCRD)
+		if err != nil {
+			return nil, err
+		}
+		r.Instances[instanceCRD.Name] = instance
+	} else if instance.Deployed && instance.CRD.Spec.DeployOnly {
+		// instance is complete, noop
+		return nil, nil
+	} else {
+		err := instance.Update(ctx, instanceCRD)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return instance, nil
 }
 
 func (r *OpenNMSReconciler) getResourceFromCluster(ctx context.Context, resource client.Object) (client.Object, bool) {
