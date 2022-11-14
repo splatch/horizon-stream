@@ -31,11 +31,8 @@ package org.opennms.horizon.alarmservice;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Striped;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -44,11 +41,12 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.api.AlarmPersister;
-import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
-import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.Severity;
 //import org.opennms.horizon.events.conf.xml.LogDestType;
 //import org.opennms.horizon.events.xml.Event;
+import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.events.proto.Event;
 //import org.opennms.horizon.events.xml.Parm;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
@@ -56,6 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@Deprecated
 public class AlarmPersisterImpl implements AlarmPersister {
 
     public static final String RELATED_REDUCTION_KEY_PREFIX = "related-reductionKey";

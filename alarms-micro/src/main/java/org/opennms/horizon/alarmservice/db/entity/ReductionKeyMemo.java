@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.db.impl.entity;
+package org.opennms.horizon.alarmservice.db.entity;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;

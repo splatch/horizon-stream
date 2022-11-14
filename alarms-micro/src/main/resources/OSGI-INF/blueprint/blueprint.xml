@@ -25,7 +25,7 @@
     <reference id="acknowledgmentDao" interface="org.opennms.horizon.db.dao.api.AcknowledgmentDao" />
     <reference id="alarmMapper" interface="org.opennms.horizon.db.model.mapper.IAlarmMapper" />
 
-    <bean id="alarmEntityNotifier" class="org.opennms.horizon.alarmservice.AlarmEntityNotifierImpl"/>
+    <bean id="alarmEntityNotifier" class="org.opennms.horizon.alarmservice.service.AlarmEntityNotifierImpl"/>
     <service interface="org.opennms.horizon.alarms.api.AlarmEntityNotifier" ref="alarmEntityNotifier"/>
     <reference-list id="alarmEntityListeners" interface="org.opennms.horizon.alarms.api.AlarmEntityListener" availability="optional">
         <reference-listener ref="alarmEntityNotifier" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
@@ -39,7 +39,7 @@
     <service interface="org.opennms.horizon.alarms.api.AlarmEntityListener" ref="notificationForwarder" />
 
     <!-- drools integration -->
-    <bean id="defaultAlarmService" class="org.opennms.horizon.alarmservice.drools.DefaultAlarmService">
+    <bean id="defaultAlarmService" class="org.opennms.horizon.alarmservice.service.AlarmServiceImpl">
         <property name="acknowledgmentDao" ref="acknowledgmentDao" />
         <property name="alarmDao" ref="alarmDao" />
         <property name="alarmEntityNotifier" ref="alarmEntityNotifier" />
@@ -76,7 +76,7 @@
     </reference-list>
 
 
-    <bean id="alarmLifecycleListenerManager" class="org.opennms.horizon.alarmservice.AlarmLifecycleListenerManager" init-method="start" destroy-method="stop" >
+    <bean id="alarmLifecycleListenerManager" class="org.opennms.horizon.alarmservice.service.AlarmLifecycleListenerManager" init-method="start" destroy-method="stop" >
         <property name="alarmDao" ref="alarmDao" />
         <property name="sessionUtils" ref="sessionUtils" />
         <property name="listener" ref="droolsAlarmContext" />
@@ -112,7 +112,7 @@
         <property name="usePooledConnection" value="false"/>
     </bean>
 
-    <bean id="offsetRepoFactory" class="org.opennms.horizon.alarmservice.AlarmKafkaOffsetRepositoryFactory">
+    <bean id="offsetRepoFactory" class="org.opennms.horizon.alarmservice.service.AlarmKafkaOffsetRepositoryFactory">
         <argument value="etc/alarm-kafka-offset.dat	"/>
     </bean>
     <bean id="offsetRepo" class="org.apache.camel.spi.StateRepository"

@@ -42,7 +42,7 @@ import org.opennms.horizon.events.proto.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Setter
-//TODO: better name or fix this pattern
+@Deprecated
 public class AlarmDaemon {
 
     public static final String NAME = "alarmd";

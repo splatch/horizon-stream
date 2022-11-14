@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,76 +26,64 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.db.impl.entity;
+package org.opennms.horizon.alarmservice.db.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import lombok.Data;
 
-/**
- * <p>OnmsServiceType class.</p>
- *
- * @hibernate.class table="service"
- */
 @Entity
-@Table(name="service")
+@Table(name = "memos")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="type", discriminatorType= DiscriminatorType.STRING)
+@DiscriminatorValue(value="Memo")
 @Data
-public class ServiceType extends BaseEntity implements Serializable {
+public class Memo extends BaseEntity implements Serializable {
 
-    private static final long serialVersionUID = -459218937667452586L;
+    private static final long serialVersionUID = 7272348439687562161L;
 
     @Id
-    @Column(name="service_id")
-    @SequenceGenerator(name="serviceTypeSequence", sequenceName="serviceNxtId", allocationSize = 1)
-    @GeneratedValue(generator="serviceTypeSequence")
+    @Column(name="sticky_memo_id", nullable = false)
+    @SequenceGenerator(name = "memoSequence", sequenceName = "memoNxtId", allocationSize = 1)
+    @GeneratedValue(generator = "memoSequence")
     private Long id;
 
-    @Column(name="service_name", nullable=false, unique=true, length=255)
-    private String name;
+    @Column
+    private String body;
 
-    /**
-     * full constructor
-     *
-     * @param servicename a {@link String} object.
-     */
-    public ServiceType(String servicename) {
-        name = servicename;
+    @Column
+    private String author;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updated;
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date created;
+    
+    @PreUpdate
+    private void preUpdate() {
+        updated = new Date();
     }
 
-    public ServiceType(Long id, String servicename) {
-        this.id = id;
-        this.name = servicename;
-    }
-
-    /**
-     * default constructor
-     */
-    public ServiceType() {
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj instanceof ServiceType) {
-            ServiceType t = (ServiceType)obj;
-            return id.equals(t.id);
-        }
-        return false;
-    }
-
-    /**
-     * <p>hashCode</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int hashCode() {
-        return id.intValue();
+    @PrePersist
+    private void prePersist() {
+        created = new Date();
     }
 }

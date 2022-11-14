@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.db.impl.utils;
+package org.opennms.horizon.alarmservice.utils;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;

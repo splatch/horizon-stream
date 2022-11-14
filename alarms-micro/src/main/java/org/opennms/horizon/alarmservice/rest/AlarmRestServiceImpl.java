@@ -51,14 +51,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
-import org.opennms.horizon.alarmservice.drools.AlarmService;
+import org.opennms.horizon.alarmservice.db.entity.Alarm;
+import org.opennms.horizon.alarmservice.service.AlarmService;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;
 import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
 import org.opennms.horizon.alarmservice.rest.support.SecurityHelper;
 import org.slf4j.helpers.MessageFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Path("/alarms")
@@ -66,9 +69,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Getter
 @Setter
 @Slf4j
+@Component
+@ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
 public class AlarmRestServiceImpl implements AlarmRestService {
 
+    @Autowired
     private AlarmService alarmService;
+
+    @Autowired
     private AlarmMapper alarmMapper;
 
     protected Class<Alarm> getDaoClass() {

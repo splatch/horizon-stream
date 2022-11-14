@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice;
+package org.opennms.horizon.alarmservice.service;
 
 import com.google.common.collect.Sets;
 import java.util.Date;
@@ -40,10 +40,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
 import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
-import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
-import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
-import org.opennms.horizon.alarmservice.db.impl.entity.Memo;
-import org.opennms.horizon.alarmservice.db.impl.entity.ReductionKeyMemo;
+import org.opennms.horizon.alarmservice.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.db.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.entity.Memo;
+import org.opennms.horizon.alarmservice.db.entity.ReductionKeyMemo;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;

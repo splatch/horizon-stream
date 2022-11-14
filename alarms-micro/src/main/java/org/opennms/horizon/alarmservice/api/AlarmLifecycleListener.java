@@ -29,7 +29,7 @@
 package org.opennms.horizon.alarmservice.api;
 
 import java.util.List;
-import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.entity.Alarm;
 
 /**
  * A simplified version of the {@link AlarmEntityListener} interface with support

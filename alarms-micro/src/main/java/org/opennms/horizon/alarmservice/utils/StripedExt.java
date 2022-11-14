@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice;
+package org.opennms.horizon.alarmservice.utils;
 
 import com.google.common.base.Supplier;
 import com.google.common.util.concurrent.Striped;

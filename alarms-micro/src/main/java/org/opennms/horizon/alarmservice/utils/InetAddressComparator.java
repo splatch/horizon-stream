@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.db.impl.utils;
+package org.opennms.horizon.alarmservice.utils;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;

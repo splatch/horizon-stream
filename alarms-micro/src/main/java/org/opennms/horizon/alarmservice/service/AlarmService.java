@@ -26,11 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.drools;
+package org.opennms.horizon.alarmservice.service;
 
 import java.util.Date;
 import java.util.List;
-import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.events.proto.Event;
@@ -72,5 +72,7 @@ public interface AlarmService {
     void sendEvent(Event e);
 
     List<AlarmDTO> getAllAlarms(String tenantId);
+
+    Alarm process(Event e);
 
 }

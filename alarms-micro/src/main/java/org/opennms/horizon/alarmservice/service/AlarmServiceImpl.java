@@ -26,36 +26,53 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.drools;
+package org.opennms.horizon.alarmservice.service;
 
+import com.google.common.util.concurrent.Striped;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
-import org.opennms.horizon.alarmservice.db.api.AlarmRepository;
-import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
+import org.opennms.horizon.alarmservice.model.Severity;
 import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;
+import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.opennms.horizon.events.proto.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-public class DefaultAlarmService implements AlarmService {
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultAlarmService.class);
+@Slf4j
+@Component
+@ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
+public class AlarmServiceImpl implements AlarmService {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmServiceImpl.class);
+
+    protected static final Integer THREADS = SystemProperties.getInteger("org.opennms.alarmd.threads", 4);
+    protected static final Integer NUM_STRIPE_LOCKS = SystemProperties.getInteger("org.opennms.alarmd.stripe.locks", THREADS * 4);
+    protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
+    protected static boolean LEGACY_ALARM_STATE = Boolean.getBoolean("org.opennms.alarmd.legacyAlarmState");
+
+    private boolean createNewAlarmIfClearedAlarmExists = LEGACY_ALARM_STATE == true ? false : NEW_IF_CLEARED;
 
     protected static final String DEFAULT_USER = "admin";
-
-//    @Autowired
-//    private AlarmDao alarmDao;
 
     @Autowired
     AlarmRepository alarmRepository;
@@ -65,6 +82,10 @@ public class DefaultAlarmService implements AlarmService {
 
     @Autowired
     private AlarmMapper alarmMapper;
+
+    private boolean legacyAlarmState = LEGACY_ALARM_STATE;
+
+    private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
 //    @Autowired
 //    private EventForwarder eventForwarder;
@@ -225,6 +246,93 @@ public class DefaultAlarmService implements AlarmService {
         return dtoAlarmList;
     }
 
+    @Override
+    public Alarm process(Event event) {
+        Objects.requireNonNull(event, "Cannot create alarm from null event.");
+        if (!checkEventSanityAndDoWeProcess(event)) {
+            return null;
+        }
+
+        if (log.isDebugEnabled()) {
+//            log.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
+        }
+
+        // Lock both the reduction and clear keys (if set) using a fair striped lock
+        // We do this to ensure that clears and triggers are processed in the same order
+        // as the calls are made
+        final Iterable<Lock> locks = lockStripes.bulkGet(getLockKeys(event));
+        final Alarm[] alarm = new Alarm[1];
+        try {
+            locks.forEach(Lock::lock);
+
+            alarm[0] = addOrReduceEventAsAlarm(event);
+        } finally {
+            locks.forEach(Lock::unlock);
+        }
+
+        return alarm[0];
+    }
+
+    @Transactional
+    protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
+
+
+        //TODO:MMF
+//        final String reductionKey = event.getAlarmData().getReductionKey();
+        String reductionKey = "blah";
+        log.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
+
+        String key = reductionKey;
+//        String clearKey = event.getAlarmData().getClearKey();
+        String clearKey = "blah";
+
+        boolean didSwapReductionKeyWithClearKey = false;
+        if (!legacyAlarmState && clearKey != null && isResolutionEvent(event)) {
+            key = clearKey;
+            didSwapReductionKeyWithClearKey = true;
+        }
+
+        Alarm alarm = alarmRepository.findByReductionKey(key);
+
+        if (alarm == null && didSwapReductionKeyWithClearKey) {
+            // if the clearKey returns null, still need to check the reductionKey
+            alarm = alarmRepository.findByReductionKey(reductionKey);
+        }
+
+        if (alarm == null || (createNewAlarmIfClearedAlarmExists && Severity.CLEARED.equals(alarm.getSeverity()))) {
+            if (log.isDebugEnabled()) {
+                log.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
+            }
+
+            if (alarm != null) {
+                log.debug("addOrReduceEventAsAlarm: \"archiving\" cleared Alarm for problem: {}; " +
+                    "A new alarm will be instantiated to manage the problem.", reductionKey);
+                alarm.archive();
+                alarmRepository.saveAndFlush(alarm);
+
+                alarmEntityNotifier.didArchiveAlarm(alarm, reductionKey);
+            }
+
+            alarm = createNewAlarm(event);
+
+            alarmRepository.save(alarm);
+
+            alarmEntityNotifier.didCreateAlarm(alarm);
+        } else {
+            log.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getId());
+//            reduceEvent(persistedEvent, alarm, event);
+
+            alarmRepository.save(alarm);
+
+//            if (event.getAlarmData().isAutoClean()) {
+//                m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), persistedEvent);
+//            }
+
+            alarmEntityNotifier.didUpdateAlarmWithReducedEvent(alarm);
+        }
+        return alarm;
+    }
+
     private static void updateAutomationTime(Alarm alarm, Date now) {
         if (alarm.getFirstAutomationTime() == null) {
             alarm.setFirstAutomationTime(now);
@@ -251,5 +359,73 @@ public class DefaultAlarmService implements AlarmService {
 //    public void setEventForwarder(EventForwarder eventForwarder) {
 //        this.eventForwarder = eventForwarder;
 //    }
+
+    private boolean isResolutionEvent(Event event) {
+//        return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(Alarm.RESOLUTION_TYPE));
+        return false;
+    }
+
+    private static boolean checkEventSanityAndDoWeProcess(final Event event) {
+//        if (event.getLogmsg() != null && LogDestType.DONOTPERSIST.toString().equalsIgnoreCase(event.getLogmsg().getDest())) {
+//            if (log.isDebugEnabled()) {
+//                log.debug("checkEventSanity: uei '{}' marked as '{}'; not processing event.", event.getUei(), LogDestType.DONOTPERSIST);
+//            }
+//            return false;
+//        }
+//
+//        if (event.getAlarmData() == null) {
+//            if (log.isDebugEnabled()) {
+//                log.debug("checkEventSanity: uei '{}' has no alarm data; not processing event.", event.getUei());
+//            }
+//            return false;
+//        }
+//
+//        if (event.getDbid() <= 0) {
+//            throw new IllegalArgumentException("Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
+//        }
+
+        return true;
+    }
+
+    private static Collection<String> getLockKeys(Event event) {
+//        if (event.getAlarmData().getClearKey() == null) {
+//            return Collections.singletonList(event.getAlarmData().getReductionKey());
+//        } else {
+//            return Arrays.asList(event.getAlarmData().getReductionKey(), event.getAlarmData().getClearKey());
+//        }
+        return null;
+    }
+
+    //TODO:MMF For now just create a minimal event
+    private Alarm createNewAlarm(Event event) {
+        Alarm alarm = new Alarm();
+        // Situations are denoted by the existance of related-reductionKeys
+//        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
+        alarm.setAlarmType(1);
+//        alarm.setClearKey(event.getAlarmData().getClearKey());
+        alarm.setCounter(1);
+//        alarm.setDescription(e.getEventDescr());
+//        alarm.setDistPoller(e.getDistPoller());
+//        alarm.setFirstEventTime(e.getEventTime());
+//        alarm.setIfIndex(e.getIfIndex());
+//        alarm.setIpAddr(e.getIpAddr());
+//        alarm.setLastEventTime(e.getEventTime());
+//        alarm.setLastEvent(e);
+//        alarm.setLogMsg(e.getEventLogMsg());
+//        alarm.setMouseOverText(e.getEventMouseOverText());
+//        alarm.setNode(e.getNode());
+//        alarm.setOperInstruct(e.getEventOperInstruct());
+//        alarm.setReductionKey(event.getAlarmData().getReductionKey());
+//        alarm.setServiceType(e.getServiceType());
+//        alarm.setSeverity(SeverityDTO.get(e.getEventSeverity()));
+//        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
+//        alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
+        alarm.setUei(event.getUei() + event.getNodeId());
+//        if (event.getAlarmData().getManagedObject() != null) {
+//            alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
+//        }
+//        e.setAlarm(alarm);
+        return alarm;
+    }
 
 }

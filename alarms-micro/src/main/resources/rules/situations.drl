@@ -37,7 +37,8 @@ import org.opennms.horizon.alarmservice.db.impl.entity.AlarmAssociation;
 import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
-import java.util.LinkedList;
+import java.util.LinkedList
+import org.opennms.horizon.alarmservice.db.entity.Alarm;
 
 global org.opennms.horizon.alarmservice.drools.AlarmService alarmService;
 

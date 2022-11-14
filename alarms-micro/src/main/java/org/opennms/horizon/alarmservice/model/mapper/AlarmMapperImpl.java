@@ -29,17 +29,11 @@
 package org.opennms.horizon.alarmservice.model.mapper;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 //import org.opennms.horizon.db.model.AckType;
 //import org.opennms.horizon.db.model.Alarm;
 //import org.opennms.horizon.db.model.OnmsEventParameter;
@@ -48,11 +42,9 @@ import org.mapstruct.Mappings;
 //import org.opennms.horizon.shared.dto.event.AlarmDTO;
 //import org.opennms.horizon.shared.dto.event.AlarmSummaryDTO;
 //import org.opennms.horizon.shared.dto.event.EventParameterDTO;
-import org.mapstruct.factory.Mappers;
-import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper//(componentModel = "spring", uses = {EventMapper.class}, injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public abstract class AlarmMapperImpl implements AlarmMapper {

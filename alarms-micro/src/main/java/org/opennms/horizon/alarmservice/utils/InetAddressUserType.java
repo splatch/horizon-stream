@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.db.impl.utils;
+package org.opennms.horizon.alarmservice.utils;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -37,7 +37,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.StringType;
 import org.hibernate.usertype.UserType;
-import org.opennms.horizon.alarmservice.utils.InetAddressUtils;
 
 public class InetAddressUserType implements UserType {
 

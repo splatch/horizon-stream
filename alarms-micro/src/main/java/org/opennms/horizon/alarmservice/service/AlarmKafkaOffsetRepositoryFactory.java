@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice;
+package org.opennms.horizon.alarmservice.service;
 
 import java.io.File;
 import org.apache.camel.impl.engine.FileStateRepository;

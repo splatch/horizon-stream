@@ -1,9 +1,6 @@
-package org.opennms.horizon.alarmservice;
+package org.opennms.horizon.alarmservice.service;
 
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
-import org.opennms.horizon.alarmservice.api.AlarmPersister;
-import org.opennms.horizon.alarmservice.drools.AlarmService;
-import org.opennms.horizon.alarmservice.drools.DefaultAlarmService;
 import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,11 +15,6 @@ public class AlarmServiceConfig {
         return new AlarmEntityNotifierImpl();
     }
 
-    @Bean("alarmPersister")
-    public AlarmPersister alarmPersister() {
-        return new AlarmPersisterImpl();
-    }
-
     //TODO:MMF
     @Bean("droolsAlarmContext")
     public DroolsAlarmContext droolsAlarmContext() {
@@ -35,8 +27,8 @@ public class AlarmServiceConfig {
 //        return null;
 //    }
 
-    @Bean("alarmService")
-    public AlarmService alarmService() {
-        return new DefaultAlarmService();
-    }
+//    @Bean("alarmService")
+//    public AlarmService alarmService() {
+//        return new AlarmServiceImpl();
+//    }
 }

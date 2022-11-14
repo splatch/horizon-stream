@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.db.impl.entity;
+package org.opennms.horizon.alarmservice.db.entity;
 
 import com.google.common.base.MoreObjects;
 import java.io.Serializable;
@@ -54,7 +54,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlTransient;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
@@ -86,7 +85,7 @@ public class Alarm extends BaseEntity implements Serializable {
     private String uei;
 
     @Column
-    @Type(type= "org.opennms.horizon.alarmservice.db.impl.utils.InetAddressUserType")
+    @Type(type= "org.opennms.horizon.alarmservice.utils.InetAddressUserType")
     private InetAddress ipAddr;
 
     @Column(unique=true)
@@ -102,7 +101,7 @@ public class Alarm extends BaseEntity implements Serializable {
     private Integer counter;
 
     @Column(nullable=false)
-    @Type(type= "org.opennms.horizon.alarmservice.db.impl.entity.SeverityUserType")
+    @Type(type= "org.opennms.horizon.alarmservice.db.entity.SeverityUserType")
     private AlarmSeverity severity = AlarmSeverity.INDETERMINATE;
 
     @Temporal(TemporalType.TIMESTAMP)

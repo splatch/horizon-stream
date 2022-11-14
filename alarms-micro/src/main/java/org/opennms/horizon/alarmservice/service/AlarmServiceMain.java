@@ -1,4 +1,4 @@
-package org.opennms.horizon.alarmservice;
+package org.opennms.horizon.alarmservice.service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
@@ -9,6 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AlarmServiceMain {
 
     public static void main(String[] args) {
-        SpringApplication.run(AlarmDaemon.class, args);
+        SpringApplication.run(AlarmServiceImpl.class, args);
     }
 }
