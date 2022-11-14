@@ -39,6 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class InventoryServerInterceptor implements ServerInterceptor {
+    //TODO will change to Metadata.key.
     private static final Metadata.Key HEADER_KE = Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER);
     public static final Context.Key<String> TENANT_ID = Context.key("tenant-id");
     @Override
@@ -48,7 +49,8 @@ public class InventoryServerInterceptor implements ServerInterceptor {
         if(tenantId==null){
             log.error("Missing tenant id");
             serverCall.close(Status.UNAUTHENTICATED.withDescription("Missing tenant id"), new Metadata());
-            return new ServerCall.Listener<ReqT>() {};
+            return new ServerCall.Listener<>() {
+            };
         }
         Context context = Context.current().withValue(TENANT_ID, tenantId);
         return Contexts.interceptCall(context, serverCall, headers, callHandler);
