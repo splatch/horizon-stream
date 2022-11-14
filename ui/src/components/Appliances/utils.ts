@@ -41,34 +41,40 @@ export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[
 })
 
 /**
- * 
- * @param timestamp 
- * @param timeUnit 
- * @returns 
+ * Translate timestamp to human-readeable duration
+ * @param timestamp seconds/milliseconds
+ * @param timeUnit milliseconds by default
+ * @returns A shorted version (e.g. 28d4h22m16s) 
  */
-export const getHumanReadableDuration = (timestamp: number, timeUnit = TimeUnit.Secs) => {
+export const getHumanReadableDuration = (timestamp: number, timeUnit = TimeUnit.MSecs) => {
   let durationDisplay = '--' // undefined | null
 
   if(![undefined, null].includes(timestamp as any)) {
-    const duration = intervalToDuration({
-      start: new Date(),
-      end: add(new Date(), {seconds: timeUnit === TimeUnit.Secs ? timestamp : timestamp / 1000})
-    })
-      
-    durationDisplay = formatDuration(duration, { format: ['days', 'hours', 'minutes']})
+    const timestampInSecs = timeUnit === TimeUnit.Secs ? timestamp : timestamp / 1000
+    if(Math.abs(timestampInSecs) < 1) {
+      durationDisplay = String(timestamp)
+      if(timestampInSecs !== 0) durationDisplay += 'ms'
+    } else {
+      const duration = intervalToDuration({
+        start: new Date(),
+        end: add(new Date(), { seconds: timestampInSecs })
+      })
+        
+      let durationFormatted = formatDuration(duration, { format: ['days', 'hours', 'minutes', 'seconds']})
+      const re = /(?<s>seconds?)|(?<m>\minutes?)|(?<h>hours?)|(?<d>days?)/gm
+    
+      // replace days/hours/minutes/seconds by d/h/m/s
+      for(let mat of durationFormatted.matchAll(re)) {
+        const { s, m, h, d } = mat.groups as Record<string, string>
+        if(s) durationFormatted = durationFormatted.replace(s, 's')
+        if(m) durationFormatted = durationFormatted.replace(m, 'm')
+        if(h) durationFormatted = durationFormatted.replace(h, 'h')
+        if(d) durationFormatted = durationFormatted.replace(d, 'd')
+      }
+    
+      durationDisplay = durationFormatted.replaceAll(' ', '')
+    }
   }
 
   return durationDisplay
-}
-
-export const formatLatencyDisplay = (latency: any) => {
-  let display = '--' // undefined | null
-
-  if(![undefined, null].includes(latency)) {
-    display = latency
-
-    if(latency !== 0) display += 'ms'
-  }
-
-  return display
 }

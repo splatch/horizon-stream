@@ -74,7 +74,7 @@ elif [ "$1" == "custom-images" ]; then
   echo
   echo ________________Installing Operator________________
   echo
-  helm upgrade -i operator-local ../charts/opennms-operator -f ../install-local-operator-values.yaml --namespace opennms --create-namespace
+  helm upgrade -i operator-local ../charts/opennms-operator -f ../install-local-operator-values-custom-image.yaml --namespace opennms --create-namespace
   if [ $? -ne 0 ]; then exit; fi
 
   echo

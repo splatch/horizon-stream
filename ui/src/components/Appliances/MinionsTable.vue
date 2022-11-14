@@ -30,12 +30,12 @@
             <td>{{ minion.id }}</td>
             <td>
               <div @click="openLatencyGraph(minion.id as string)" :data-metric="minion.icmp_latency" class="bg-status pointer" :class="minion.latencyBgColor" data-test="minion-item-latency">
-                {{ getHumanReadableDuration(minion.icmp_latency, TimeUnit.MSecs) }}
+                {{ getHumanReadableDuration(minion.icmp_latency) }}
               </div>
             </td>
             <td>
               <div @click="openUptimeGraph(minion.id as string)" :data-metric="minion.snmp_uptime" class="bg-status pointer" :class="minion.uptimeBgColor" data-test="minion-item-uptime">
-                {{ getHumanReadableDuration(minion.snmp_uptime) }}
+                {{ getHumanReadableDuration(minion.snmp_uptime, TimeUnit.Secs) }}
               </div>
             </td>
             <td>

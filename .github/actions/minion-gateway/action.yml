@@ -28,13 +28,12 @@ runs:
     - name: global data
       if: ${{ inputs.enable-sonar-scan == 'true' }}
       run: |
-        #cd ${{ inputs.dir-location }}
 
-        mvn -f minion-gateway clean install
-        mvn -f minion-gateway/main jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-minion-gateway:local \
+        mvn -Pcoverage verify jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-minion-gateway:local \
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
 
       shell: bash
+      working-directory: minion-gateway
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         SONAR_TOKEN: ${{ inputs.sonar-token }}
@@ -43,9 +42,8 @@ runs:
     - name: global data
       if: ${{ inputs.enable-sonar-scan == 'false' }}
       run: |
-        #cd ${{ inputs.dir-location }}
 
-        mvn -f minion-gateway clean install
-        mvn -f minion-gateway/main jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-minion-gateway:local
+        mvn verify jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dimage=opennms/horizon-stream-minion-gateway:local
 
+      working-directory: minion-gateway
       shell: bash
