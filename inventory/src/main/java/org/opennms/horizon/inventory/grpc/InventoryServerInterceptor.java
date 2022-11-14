@@ -28,44 +28,29 @@
 
 package org.opennms.horizon.inventory.grpc;
 
-import io.grpc.BindableService;
-import io.grpc.Server;
-import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
-import io.grpc.protobuf.services.ProtoReflectionService;
+import io.grpc.Context;
+import io.grpc.Contexts;
+import io.grpc.Metadata;
+import io.grpc.ServerCall;
+import io.grpc.ServerCallHandler;
+import io.grpc.ServerInterceptor;
+import io.grpc.Status;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.List;
-
 @Slf4j
-public class GrpcServerManager {
-
-    private Server grpcServer;
-    private final int port;
-
-
-    public GrpcServerManager(int port) {
-        this.port = port;
-    }
-
-    public synchronized void startServer(List<BindableService> services) {
-        NettyServerBuilder serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(port))
-            .intercept(new InventoryServerInterceptor())
-            .addService(ProtoReflectionService.newInstance());
-        services.forEach(serverBuilder::addService);
-        grpcServer = serverBuilder.build();
-        try {
-            grpcServer.start();
-            log.info("Inventory gRPC server started at port {}", port);
-        } catch (IOException e) {
-            log.error("Couldn't start inventory gRPC server", e);
+public class InventoryServerInterceptor implements ServerInterceptor {
+    private static final Metadata.Key HEADER_KE = Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER);
+    public static final Context.Key<String> TENANT_ID = Context.key("tenant-id");
+    @Override
+    public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> callHandler) {
+        log.debug("Received metadata: {}", headers);
+        String tenantId = (String)headers.get(HEADER_KE);
+        if(tenantId==null){
+            log.error("Missing tenant id");
+            serverCall.close(Status.UNAUTHENTICATED.withDescription("Missing tenant id"), new Metadata());
+            return new ServerCall.Listener<ReqT>() {};
         }
-    }
-
-    public synchronized void stopServer() {
-        if(grpcServer != null && !grpcServer.isShutdown()) {
-            grpcServer.shutdown();
-        }
+        Context context = Context.current().withValue(TENANT_ID, tenantId);
+        return Contexts.interceptCall(context, serverCall, headers, callHandler);
     }
 }

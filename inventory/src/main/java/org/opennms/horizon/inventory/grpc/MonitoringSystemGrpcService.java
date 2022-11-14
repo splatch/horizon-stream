@@ -31,12 +31,12 @@ package org.opennms.horizon.inventory.grpc;
 import java.util.List;
 import java.util.Optional;
 
-import org.opennms.horizon.inventory.dto.GetBySystemIdRequest;
 import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
 import org.opennms.horizon.inventory.dto.MonitoringSystemList;
 import org.opennms.horizon.inventory.dto.MonitoringSystemServiceGrpc;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
 
+import com.google.protobuf.Empty;
 import com.google.protobuf.StringValue;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
@@ -49,24 +49,26 @@ import lombok.RequiredArgsConstructor;
 public class MonitoringSystemGrpcService extends MonitoringSystemServiceGrpc.MonitoringSystemServiceImplBase {
     private final MonitoringSystemService service;
     @Override
-    public void listMonitoringSystem(StringValue tenantId, StreamObserver<MonitoringSystemList> responseObserver) {
-        List<MonitoringSystemDTO> list = service.findByTenantId(tenantId.getValue());
+    public void listMonitoringSystem(Empty request, StreamObserver<MonitoringSystemList> responseObserver) {
+        List<MonitoringSystemDTO> list = service.findByTenantId(InventoryServerInterceptor.TENANT_ID.get());
         responseObserver.onNext(MonitoringSystemList.newBuilder().addAllList(list).build());
         responseObserver.onCompleted();
     }
 
     @Override
-    public void getMonitoringSystemById(GetBySystemIdRequest request, StreamObserver<MonitoringSystemDTO> responseObserver) {
-        Optional<MonitoringSystemDTO> monitoringSystem = service.findBySystemId(request.getSystemId(), request.getTenantId());
+    public void getMonitoringSystemById(StringValue systemId, StreamObserver<MonitoringSystemDTO> responseObserver) {
+        Optional<MonitoringSystemDTO> monitoringSystem = service.findBySystemId(systemId.getValue(), InventoryServerInterceptor.TENANT_ID.get());
         if(monitoringSystem.isPresent()) {
             responseObserver.onNext(monitoringSystem.get());
         } else {
             Status status = Status.newBuilder()
                 .setCode(Code.NOT_FOUND_VALUE)
-                .setMessage("Monitor system with system id: " + request.getSystemId() + " doesn't exist")
+                .setMessage("Monitor system with system id: " + systemId + " doesn't exist")
                 .build();
             responseObserver.onError(StatusProto.toStatusRuntimeException(status));
         }
         responseObserver.onCompleted();
     }
+
+
 }

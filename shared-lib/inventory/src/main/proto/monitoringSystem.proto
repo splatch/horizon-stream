@@ -27,7 +27,7 @@
  *******************************************************************************/
 syntax = "proto3";
 
-import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
 package opennms.inventory;
@@ -44,16 +44,11 @@ message MonitoringSystemDTO {
   string last_checked_in = 6;
 }
 
-message GetBySystemIdRequest {
-  string tenant_id = 1;
-  string system_id = 2;
-}
-
 message MonitoringSystemList {
   repeated MonitoringSystemDTO list = 1;
 }
 
 service MonitoringSystemService {
-  rpc listMonitoringSystem(google.protobuf.StringValue) returns (MonitoringSystemList) {};
-  rpc getMonitoringSystemById(GetBySystemIdRequest) returns (MonitoringSystemDTO) {};
+  rpc listMonitoringSystem(google.protobuf.Empty) returns (MonitoringSystemList) {};
+  rpc getMonitoringSystemById(google.protobuf.StringValue) returns (MonitoringSystemDTO) {};
 }

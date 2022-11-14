@@ -44,12 +44,7 @@ message MonitoringLocationList {
   repeated MonitoringLocationDTO locations = 1;
 }
 
-message GetByLocationRequest {
-  string tenant_id = 1;
-  string location = 2;
-}
-
 service MonitoringLocationService {
-  rpc listLocations(google.protobuf.StringValue) returns (MonitoringLocationList) {};
-  rpc getLocationByName(GetByLocationRequest) returns (MonitoringLocationDTO) {};
+  rpc listLocations(google.protobuf.Empty) returns (MonitoringLocationList) {};
+  rpc getLocationByName(google.protobuf.StringValue) returns (MonitoringLocationDTO) {};
 }

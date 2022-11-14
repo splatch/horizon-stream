@@ -29,6 +29,7 @@
 package org.opennms.horizon.inventory.grpc;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -38,7 +39,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.inventory.InventoryApplication;
 import org.opennms.horizon.inventory.PostgresInitializer;
-import org.opennms.horizon.inventory.dto.GetBySystemIdRequest;
 import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
 import org.opennms.horizon.inventory.dto.MonitoringSystemList;
 import org.opennms.horizon.inventory.dto.MonitoringSystemServiceGrpc;
@@ -50,34 +50,30 @@ import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
+import com.google.protobuf.Empty;
 import com.google.protobuf.StringValue;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = InventoryApplication.class)
 @ContextConfiguration(initializers = {PostgresInitializer.class})
-public class MonitoringSystemGrpcTest {
-    @DynamicPropertySource
-    private static void registerDatasourceProperties(DynamicPropertyRegistry registry) {
-        registry.add("grpc.server.port", ()->6767);
-    }
+public class MonitoringSystemGrpcTest extends GrpcTestBase {
     @Autowired
     private MonitoringSystemRepository systemRepo;
     @Autowired
     private MonitoringLocationRepository locationRepo;
     @Autowired
     private MonitoringSystemMapper mapper;
-    private final UUID tenantId = new UUID(10, 10);
     private MonitoringSystem system1;
-
-    private ManagedChannel channel;
     private MonitoringSystemServiceGrpc.MonitoringSystemServiceBlockingStub serviceStub;
+
+    private void initStub() {
+        serviceStub = MonitoringSystemServiceGrpc.newBlockingStub(channel);
+    }
 
     @BeforeEach
     public void setup() {
@@ -111,10 +107,6 @@ public class MonitoringSystemGrpcTest {
         systemRepo.save(system1);
         systemRepo.save(system2);
         systemRepo.save(system3);
-
-        channel = ManagedChannelBuilder.forAddress("localhost", 6767)
-            .usePlaintext().build();
-        serviceStub = MonitoringSystemServiceGrpc.newBlockingStub(channel);
     }
 
     @AfterEach
@@ -126,26 +118,52 @@ public class MonitoringSystemGrpcTest {
 
     @Test
     public void testListSystem() {
-        MonitoringSystemList systemList = serviceStub.listMonitoringSystem(StringValue.of(tenantId.toString()));
+        setupGrpc();
+        initStub();
+        MonitoringSystemList systemList = serviceStub.listMonitoringSystem(Empty.newBuilder().build());
         assertThat(systemList).isNotNull();
         assertThat(systemList.getListList().size()).isEqualTo(2);
     }
 
     @Test
     public void testListSystemWithDifferentTenantId() {
-        MonitoringSystemList systemList = serviceStub.listMonitoringSystem(StringValue.of(new UUID(5, 7).toString()));
+        setupGrpcWithDifferentTenantID();
+        initStub();
+        MonitoringSystemList systemList = serviceStub.listMonitoringSystem(Empty.newBuilder().build());
         assertThat(systemList).isNotNull();
         assertThat(systemList.getListList().size()).isEqualTo(0);
     }
 
     @Test
     public void testGetBySystemId() {
-        GetBySystemIdRequest request = GetBySystemIdRequest.newBuilder()
-            .setSystemId(system1.getSystemId())
-            .setTenantId(tenantId.toString())
-            .build();
-        MonitoringSystemDTO systemDTO = serviceStub.getMonitoringSystemById(request);
+        setupGrpc();
+        initStub();
+        MonitoringSystemDTO systemDTO = serviceStub.getMonitoringSystemById(StringValue.of(system1.getSystemId()));
         assertThat(systemDTO).isNotNull();
         assertThat(systemDTO).isEqualTo(mapper.modelToDTO(system1));
+    }
+
+    @Test
+    public void testGetBySystemIdNotExist() {
+        setupGrpc();
+        initStub();
+        StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, ()-> serviceStub.getMonitoringSystemById(StringValue.of("wrong systemId")));
+        assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
+    }
+
+    @Test
+    public void testGetBySystemIdWithWrongTenantId() {
+        setupGrpcWithDifferentTenantID();
+        initStub();
+        StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, ()-> serviceStub.getMonitoringSystemById(StringValue.of(system1.getSystemId())));
+        assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
+    }
+
+    @Test
+    public void testListWithoutTenantId() {
+        setupGrpcWithOutTenantID();
+        initStub();
+        StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, () -> serviceStub.listMonitoringSystem(Empty.newBuilder().build()));
+        assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
     }
 }

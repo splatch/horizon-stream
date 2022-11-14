@@ -31,12 +31,12 @@ package org.opennms.horizon.inventory.grpc;
 import java.util.List;
 import java.util.Optional;
 
-import org.opennms.horizon.inventory.dto.GetByLocationRequest;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
 import org.opennms.horizon.inventory.service.MonitoringLocationService;
 
+import com.google.protobuf.Empty;
 import com.google.protobuf.StringValue;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
@@ -52,22 +52,21 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
     private final MonitoringLocationService service;
 
     @Override
-    public void listLocations(StringValue tenantId, StreamObserver<MonitoringLocationList> responseObserver) {
-        List<MonitoringLocationDTO> result = service.findByTenantId(tenantId.getValue());
-
+    public void listLocations(Empty request, StreamObserver<MonitoringLocationList> responseObserver) {
+        List<MonitoringLocationDTO> result = service.findByTenantId(InventoryServerInterceptor.TENANT_ID.get());
         responseObserver.onNext(MonitoringLocationList.newBuilder().addAllLocations(result).build());
         responseObserver.onCompleted();
     }
 
     @Override
-    public void getLocationByName(GetByLocationRequest request, StreamObserver<MonitoringLocationDTO> responseObserver) {
-        Optional<MonitoringLocationDTO> location = service.findByLocationAndTenantId(request.getLocation(), request.getTenantId());
+    public void getLocationByName(StringValue locationName, StreamObserver<MonitoringLocationDTO> responseObserver) {
+        Optional<MonitoringLocationDTO> location = service.findByLocationAndTenantId(locationName.getValue(), InventoryServerInterceptor.TENANT_ID.get());
         if(location.isPresent()){
             responseObserver.onNext(location.get());
         } else {
             Status status = Status.newBuilder()
                 .setCode(Code.NOT_FOUND_VALUE)
-                .setMessage("Location with name: " + request.getLocation() + " doesn't exist")
+                .setMessage("Location with name: " + locationName.getValue() + " doesn't exist")
                 .build();
             responseObserver.onError(StatusProto.toStatusRuntimeException(status));
         }
