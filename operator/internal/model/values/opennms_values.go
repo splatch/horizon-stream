@@ -44,6 +44,7 @@ type MinionValues struct {
 type MinionGatewayValues struct {
     ServiceValues    `yaml:",inline"`
     GrpcPort         int `yaml:"GrpcPort"`
+    InternalGrpcPort int `yaml:"InternalGrpcPort"`
     IgniteClientPort int `yaml:"IgniteClientPort"`
 }
 
