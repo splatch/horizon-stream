@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.compnent;
+package org.opennms.horizon.inventory.component;
 
 import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.horizon.grpc.heartbeat.contract.HeartbeatMessage;
@@ -50,7 +50,6 @@ public class MinionHeartbeatConsumer {
     public void receiveMessage(byte[] data) {
         try {
             HeartbeatMessage message = HeartbeatMessage.parseFrom(data);
-            Identity identity = message.getIdentity();
             log.debug("Received heartbeat message for minion with id {} and location {}", message.getIdentity().getSystemId(), message.getIdentity().getLocation());
             service.addMonitoringSystemFromHeartbeat(message);
         } catch (InvalidProtocolBufferException e) {

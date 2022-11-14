@@ -73,7 +73,7 @@ public class MonitoringSystemGrpcTest {
     private MonitoringLocationRepository locationRepo;
     @Autowired
     private MonitoringSystemMapper mapper;
-    private UUID tenantId = UUID.randomUUID();
+    private final UUID tenantId = new UUID(10, 10);
     private MonitoringSystem system1;
 
     private ManagedChannel channel;
@@ -103,7 +103,7 @@ public class MonitoringSystemGrpcTest {
 
         MonitoringSystem system3 = new MonitoringSystem();
         system3.setSystemId("test-system-id-3");
-        system3.setTenantId(UUID.randomUUID());
+        system3.setTenantId(new UUID(5, 6));
         system3.setMonitoringLocation(location);
         system3.setLabel("system3");
         system3.setLastCheckedIn(LocalDateTime.now());
@@ -133,7 +133,7 @@ public class MonitoringSystemGrpcTest {
 
     @Test
     public void testListSystemWithDifferentTenantId() {
-        MonitoringSystemList systemList = serviceStub.listMonitoringSystem(StringValue.of(UUID.randomUUID().toString()));
+        MonitoringSystemList systemList = serviceStub.listMonitoringSystem(StringValue.of(new UUID(5, 7).toString()));
         assertThat(systemList).isNotNull();
         assertThat(systemList.getListList().size()).isEqualTo(0);
     }

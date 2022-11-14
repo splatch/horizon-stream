@@ -155,7 +155,7 @@ public class LocationGrpcIntegrationTest {
     public void testFindLocationByNameInvalidTenantId() {
         GetByLocationRequest request = GetByLocationRequest.newBuilder()
             .setLocation("test-location")
-            .setTenantId(UUID.randomUUID().toString())
+            .setTenantId(new UUID(5, 5).toString())
             .build();
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.getLocationByName(request));
         Status status = StatusProto.fromThrowable(exception);

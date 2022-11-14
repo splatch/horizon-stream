@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MonitoringSystemService {
     //TODO: this uuid will be in the received message
-    private UUID uuid = new UUID(10, 14);
+    private final UUID uuid = new UUID(10, 14);
     private final MonitoringSystemRepository modelRepo;
     private final MonitoringLocationRepository locationRepository;
     private final MonitoringSystemMapper mapper;
@@ -77,7 +77,7 @@ public class MonitoringSystemService {
                 location = locationOp.get();
             } else {
                 location.setLocation(identity.getLocation());
-                location.setTenantId(uuid);
+                location.setTenantId(uuid); //TODO hard coded uuid for now and will be replaced with tenant id from the request.
                 locationRepository.save(location);
             }
             MonitoringSystem monitoringSystem = new MonitoringSystem();
