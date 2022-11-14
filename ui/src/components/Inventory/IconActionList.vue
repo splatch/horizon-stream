@@ -1,13 +1,13 @@
 <template>
   <ul class="icon-action-list">
     <li :title="bubbleChartItem.title" class="pointer">
-      <FeatherIcon @click="bubbleChartItem.onBubbleChart" :icon="bubbleChartItem.icon" :title="bubbleChartItem.title" />
+      <FeatherIcon @click="bubbleChartItem.onBubbleChart" :icon="bubbleChart" :title="bubbleChartItem.title" />
     </li>
     <li :title="lineChartItem.title" class="pointer">
-      <FeatherIcon @click="lineChartItem.onLineChart" :icon="lineChartItem.icon" :title="lineChartItem.title" />
+      <FeatherIcon @click="lineChartItem.onLineChart" :icon="multilineChart" :title="lineChartItem.title" data-test="line-chart-icon" />
     </li>
     <li :title="pieChartItem.title" class="pointer">
-      <FeatherIcon @click="pieChartItem.onPieChart" :icon="pieChartItem.icon" :title="pieChartItem.title" />
+      <FeatherIcon @click="pieChartItem.onPieChart" :icon="pieChart" :title="pieChartItem.title" />
     </li>
     <li :title="warningItem.title" class="pointer">
       <FeatherIcon @click="warningItem.onWarning" :icon="warningItem.icon" :title="warningItem.title" />
@@ -19,26 +19,26 @@
 </template>
 
 <script lang="ts" setup>
+import bubbleChart from '@material-design-icons/svg/outlined/bubble_chart.svg'
+import multilineChart from '@material-design-icons/svg/outlined/multiline_chart.svg'
+import pieChart from '@material-design-icons/svg/outlined/pie_chart.svg'
 import Warning from '@featherds/icon/notification/Warning'
 import Delete from '@featherds/icon/action/Delete'
 import { markRaw } from 'vue'
 
 const bubbleChartItem = {
-  icon: markRaw(Warning),
   title: 'Bubble Chart',
   onBubbleChart: () => {
     console.log('bubble chart')
   }
 }
 const lineChartItem = {
-  icon: markRaw(Warning),
   title: 'Line Chart',
   onLineChart: () => {
     console.log('line chart')
   }
 }
 const pieChartItem = {
-  icon: markRaw(Warning),
   title: 'Pie Chart',
   onPieChart: () => {
     console.log('pie chart')
