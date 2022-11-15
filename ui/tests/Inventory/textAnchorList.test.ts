@@ -5,7 +5,20 @@ let wrapper: any
 
 describe('Text anchor list', () => {
   beforeAll(() => {
-    wrapper = mount(TextAnchorList)
+    wrapper = mount(TextAnchorList, {
+      propsData: {
+        anchor: {
+          profileValue: 75,
+          profileLink: '#',
+          locationValue: 'DefaultMinion',
+          locationLink: '#',
+          ipInterfaceValue: 25,
+          ipInterfaceLink: '#',
+          tagValue: 100,
+          tagLink: '#'
+        }
+      }
+    })
   })
   afterAll(() => {
     wrapper.unmount() 

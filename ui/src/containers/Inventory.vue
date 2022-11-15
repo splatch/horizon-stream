@@ -3,7 +3,7 @@
   <!-- tabs anchor-->
   <!-- expandable filter: search, select, sorting -->
   <!-- card: title, metric chip, list anchor, actions -->
-  <AnchorList :anchor="anchor" />
+  <TextAnchorList :anchor="anchor" />
   <div/>
 </template>
 
