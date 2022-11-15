@@ -1,6 +1,10 @@
 package org.opennms.horizon.inventory.service;
 
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.horizon.grpc.heartbeat.contract.HeartbeatMessage;
@@ -12,17 +16,13 @@ import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class MonitoringSystemService {
-    //TODO: this uuid will be in the received message
-    private final UUID uuid = new UUID(10, 14);
+    //TODO: this tenantId will be passed from gRPC request JWT token
+    private final String tenantId = new UUID(10, 14).toString();
     private final MonitoringSystemRepository modelRepo;
     private final MonitoringLocationRepository locationRepository;
     private final MonitoringSystemMapper mapper;
@@ -55,8 +55,7 @@ public class MonitoringSystemService {
     }
 
     public List<MonitoringSystemDTO> findByTenantId(String tenantId) {
-        UUID tenantUUID = UUID.fromString(tenantId);
-        List<MonitoringSystem> all = modelRepo.findByTenantId(tenantUUID);
+        List<MonitoringSystem> all = modelRepo.findByTenantId(tenantId);
         return all
             .stream()
             .map(mapper::modelToDTO)
@@ -64,7 +63,7 @@ public class MonitoringSystemService {
     }
 
     public Optional<MonitoringSystemDTO> findBySystemId(String systemId, String tenantId) {
-        return modelRepo.findBySystemIdAndTenantId(systemId, UUID.fromString(tenantId)).map(mapper::modelToDTO);
+        return modelRepo.findBySystemIdAndTenantId(systemId, tenantId).map(mapper::modelToDTO);
     }
 
     public void addMonitoringSystemFromHeartbeat(HeartbeatMessage message) {
@@ -77,7 +76,7 @@ public class MonitoringSystemService {
                 location = locationOp.get();
             } else {
                 location.setLocation(identity.getLocation());
-                location.setTenantId(uuid); //TODO hard coded uuid for now and will be replaced with tenant id from the request.
+                location.setTenantId(tenantId); //TODO hard coded tenantId for now and will be replaced with tenant id from the request.
                 locationRepository.save(location);
             }
             MonitoringSystem monitoringSystem = new MonitoringSystem();

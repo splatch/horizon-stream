@@ -48,7 +48,7 @@ import org.springframework.test.context.ContextConfiguration;
 @AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 @ContextConfiguration(initializers = {PostgresInitializer.class})
 public class MonitoringLocationRepoTest {
-    private final UUID tenantId = new UUID(10, 10);
+    private final String tenantId = new UUID(10, 10).toString();
     private MonitoringLocation location1, location2, location3;
 
     @Autowired
@@ -66,7 +66,7 @@ public class MonitoringLocationRepoTest {
 
         location3 = new MonitoringLocation();
         location3.setLocation("test-location3");
-        location3.setTenantId(UUID.randomUUID());
+        location3.setTenantId(new UUID(5,6).toString());
 
         repository.save(location1);
         repository.save(location2);
@@ -86,7 +86,7 @@ public class MonitoringLocationRepoTest {
 
     @Test
     public void testFindByRandomTenantId() {
-        List<MonitoringLocation> result = repository.findByTenantId(UUID.randomUUID());
+        List<MonitoringLocation> result = repository.findByTenantId( new UUID(5,7).toString());
         assertThat(result.size()).isEqualTo(0);
     }
 
@@ -116,7 +116,7 @@ public class MonitoringLocationRepoTest {
 
     @Test
     public void testFindByLocationAndRandomTenantId() {
-        Optional<MonitoringLocation> result = repository.findByLocationAndTenantId(location1.getLocation(), UUID.randomUUID());
+        Optional<MonitoringLocation> result = repository.findByLocationAndTenantId(location1.getLocation(), new UUID(5,8).toString());
         assertThat(result.isPresent()).isFalse();
     }
 }

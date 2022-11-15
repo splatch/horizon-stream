@@ -1,6 +1,9 @@
 package org.opennms.horizon.inventory.service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.opennms.horizon.inventory.dto.SnmpInterfaceDTO;
 import org.opennms.horizon.inventory.mapper.SnmpInterfaceMapper;
 import org.opennms.horizon.inventory.model.Node;
@@ -9,10 +12,7 @@ import org.opennms.horizon.inventory.repository.NodeRepository;
 import org.opennms.horizon.inventory.repository.SnmpInterfaceRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +50,7 @@ public class SnmpInterfaceService {
     }
 
     public List<SnmpInterfaceDTO> findByTenantId(String tenantId) {
-        UUID tenantUUID = UUID.fromString(tenantId);
-        List<SnmpInterface> all = modelRepo.findByTenantId(tenantUUID);
+        List<SnmpInterface> all = modelRepo.findByTenantId(tenantId);
         return all
             .stream()
             .map(mapper::modelToDTO)

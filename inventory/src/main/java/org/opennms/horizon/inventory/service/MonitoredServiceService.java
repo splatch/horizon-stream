@@ -1,6 +1,9 @@
 package org.opennms.horizon.inventory.service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.opennms.horizon.inventory.dto.MonitoredServiceDTO;
 import org.opennms.horizon.inventory.mapper.MonitoredServiceMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
@@ -11,10 +14,7 @@ import org.opennms.horizon.inventory.repository.MonitoredServiceRepository;
 import org.opennms.horizon.inventory.repository.MonitoredServiceTypeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -56,8 +56,7 @@ public class MonitoredServiceService {
     }
 
     public List<MonitoredServiceDTO> findByTenantId(String tenantId) {
-        UUID tenantUUID = UUID.fromString(tenantId);
-        List<MonitoredService> all = modelRepo.findByTenantId(tenantUUID);
+        List<MonitoredService> all = modelRepo.findByTenantId(tenantId);
         return all
             .stream()
             .map(mapper::modelToDTO)

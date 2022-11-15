@@ -55,7 +55,7 @@ public class MonitoringSystemRepositoryTest {
     @Autowired
     private MonitoringLocationRepository locationRepository;
 
-    private final UUID tenantId = new UUID(10, 10);
+    private final String tenantId = new UUID(10, 10).toString();
     private MonitoringSystem system1;
     private MonitoringSystem system2;
     private MonitoringSystem system3;
@@ -90,7 +90,7 @@ public class MonitoringSystemRepositoryTest {
         system3.setMonitoringLocation(location);
         system3.setLabel("Test-Minion3");
         system3.setSystemId("test-system-id3");
-        system3.setTenantId(UUID.randomUUID());
+        system3.setTenantId(new UUID(5,6).toString());
 
         systemRepository.save(system1);
         systemRepository.save(system2);
@@ -111,7 +111,7 @@ public class MonitoringSystemRepositoryTest {
 
     @Test
     public void testFindByRandomTenantId(){
-        List<MonitoringSystem> list = systemRepository.findByTenantId(UUID.randomUUID());
+        List<MonitoringSystem> list = systemRepository.findByTenantId(new UUID(5,7).toString());
         assertThat(list.size()).isEqualTo(0);
     }
 
@@ -141,7 +141,7 @@ public class MonitoringSystemRepositoryTest {
 
     @Test
     public void testFindBySystemIdAndRandomTenantId() {
-        Optional<MonitoringSystem> result = systemRepository.findBySystemIdAndTenantId(system1.getSystemId(), UUID.randomUUID());
+        Optional<MonitoringSystem> result = systemRepository.findBySystemIdAndTenantId(system1.getSystemId(), new UUID(5,8).toString());
         assertThat(result.isPresent()).isFalse();
     }
 }

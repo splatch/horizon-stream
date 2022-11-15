@@ -99,7 +99,7 @@ public class MonitoringSystemGrpcTest extends GrpcTestBase {
 
         MonitoringSystem system3 = new MonitoringSystem();
         system3.setSystemId("test-system-id-3");
-        system3.setTenantId(new UUID(5, 6));
+        system3.setTenantId(new UUID(5, 6).toString());
         system3.setMonitoringLocation(location);
         system3.setLabel("system3");
         system3.setLastCheckedIn(LocalDateTime.now());
