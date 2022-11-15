@@ -25,30 +25,16 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-import "google/protobuf/wrappers.proto";
+package org.opennms.horizon.inventory.grpc;
 
-package opennms.inventory;
-option java_multiple_files = true;
-option java_package = "org.opennms.horizon.inventory.dto";
+import java.util.Optional;
 
+import io.grpc.Context;
 
-message MonitoringSystemDTO {
-  int64 id = 1;
-  string tenant_id = 2;
-  string system_id = 3;
-  string label = 4;
-  int64 monitoring_location_id = 5;
-  string last_checked_in = 6;
-}
-
-message MonitoringSystemList {
-  repeated MonitoringSystemDTO list = 1;
-}
-
-service MonitoringSystemService {
-  rpc listMonitoringSystem(google.protobuf.Empty) returns (MonitoringSystemList) {};
-  rpc getMonitoringSystemById(google.protobuf.StringValue) returns (MonitoringSystemDTO) {};
+public class GrpcTenantLookupImpl implements TenantLookup {
+    @Override
+    public Optional<String> lookupTenantId(Context context) {
+        return Optional.ofNullable(InventoryServerInterceptor.TENANT_ID.get());
+    }
 }

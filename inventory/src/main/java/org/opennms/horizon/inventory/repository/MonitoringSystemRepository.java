@@ -12,5 +12,6 @@ import java.util.UUID;
 @Repository
 public interface MonitoringSystemRepository extends JpaRepository<MonitoringSystem, Long> {
     List<MonitoringSystem> findByTenantId(UUID tenantId);
-    Optional<MonitoringSystem> findBySystemId(String systemID);
+    Optional<MonitoringSystem> findBySystemId(String systemId);
+    Optional<MonitoringSystem> findBySystemIdAndTenantId(String systemId, UUID tenantId);
 }
