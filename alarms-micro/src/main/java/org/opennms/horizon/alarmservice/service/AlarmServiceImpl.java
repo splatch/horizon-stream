@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.api.AlarmRepository;

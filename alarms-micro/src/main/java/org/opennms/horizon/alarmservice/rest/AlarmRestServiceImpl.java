@@ -52,7 +52,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
-import org.opennms.horizon.alarmservice.service.AlarmService;
+import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;

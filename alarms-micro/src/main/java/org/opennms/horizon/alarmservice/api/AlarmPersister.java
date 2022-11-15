@@ -37,6 +37,7 @@ import org.opennms.horizon.events.proto.Event;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
  */
+@Deprecated
 public interface AlarmPersister {
 
     Alarm persist(Event event);

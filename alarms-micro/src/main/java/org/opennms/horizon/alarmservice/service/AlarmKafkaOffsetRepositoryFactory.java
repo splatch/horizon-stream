@@ -34,6 +34,7 @@ import org.apache.camel.spi.StateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//TODO:MMF what is this used for? Is this just providing persistence for failover?
 public class AlarmKafkaOffsetRepositoryFactory {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmKafkaOffsetRepositoryFactory.class);
 
