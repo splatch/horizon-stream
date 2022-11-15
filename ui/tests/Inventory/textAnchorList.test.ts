@@ -27,8 +27,4 @@ describe('Text anchor list', () => {
   test('component should have been mounted', () => {
     expect(wrapper).toBeTruthy()
   })
-
-  it.skip('should have a list of text anchor list', async () => {
-    expect(false).toBe(true)   
-  })
 })
