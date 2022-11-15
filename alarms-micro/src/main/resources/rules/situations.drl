@@ -33,14 +33,14 @@ import java.util.List;
 import org.kie.api.time.SessionClock;
 //import org.opennms.horizon.alarmservice.db.impl.entity.OnmsAcknowledgment;
 //import org.opennms.horizon.alarmservice.db.impl.entity.AckAction;
-import org.opennms.horizon.alarmservice.db.impl.entity.AlarmAssociation;
-import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.entity.AlarmAssociation;
+import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 import java.util.LinkedList
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 
-global org.opennms.horizon.alarmservice.drools.AlarmService alarmService;
+global org.opennms.horizon.alarmservice.api.AlarmService alarmService;
 
 declare org.opennms.horizon.alarmservice.db.impl.entity.Alarm
     @role(event)
@@ -85,7 +85,7 @@ rule "SituationHasBeenAcknowledged"
     // The UN-ACK time for that alarm is prior to the Situation ACK
 //    $unAcknowledgment : OnmsAcknowledgment(refId == $unAkedAlarmId, ackAction == AckAction.UNACKNOWLEDGE, ackTime < $situationAck.getAckTime() )
     // The association time of that alarm is before the ACK time on the situation
-    $unAkedRelatedAlarmAssociation : AlarmAssociation(situationAlarm == $situation, $unAcknowledgment.refId == relatedAlarm.getId(), mappedTime < $situationAck.getAckTime() )
+    $unAkedRelatedAlarmAssociation : AlarmAssociation(getSituationAlarmId == $situation, $unAcknowledgment.refId == relatedAlarm.getAlarmId(), mappedTime < $situationAck.getAckTime() )
   then
     Date acknowledgeTime = new Date($sessionClock.getCurrentTime());
     // Acknowledge all of the alarms in one go or we will trigger more rule evaluations

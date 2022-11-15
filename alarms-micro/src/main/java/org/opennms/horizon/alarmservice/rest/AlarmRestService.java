@@ -68,16 +68,6 @@ public interface AlarmRestService {
     @RolesAllowed({"user", "admin"})
     Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params);
 
-/*
-    @POST
-    @Path("{id}/ticket/update") // curl -X PUT http://localhost:8181/cxf/alarmservice/alarms/1/ticket/update
-    public Response updateTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception;
-
-    @POST
-    @Path("{id}/ticket/close") // curl -X PUT http://localhost:8181/cxf/alarmservice/alarms/1/ticket/close
-    public Response closeTicket(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) throws Exception;
-*/
-
     @DELETE
     @Path("{id}/memo") // curl -X DELETE http://localhost:8181/cxf/alarmservice/alarms/1/memo -d 'user=mark&body=not null'
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)

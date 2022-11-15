@@ -51,7 +51,7 @@ public class AlarmDTO implements Serializable {
     public static final String ARCHIVED = "Archived";
 
     private Integer id;
-    private String uei;
+    private String eventUei;
     private InetAddress ipAddr;
     private String reductionKey;
     private Integer alarmType;
@@ -65,8 +65,6 @@ public class AlarmDTO implements Serializable {
     private String description;
     private String logMsg;
     private String operInstruct;
-    private String tTicketId;
-    private TroubleTicketState tTicketState;
     private String mouseOverText;
     private Date suppressedUntil;
     private String suppressedUser;
@@ -74,7 +72,7 @@ public class AlarmDTO implements Serializable {
     private String alarmAckUser;
     private Date alarmAckTime;
     private Long lastEventId;
-    private String clearUEI;
+    private String clearUei;
     private String clearKey;
     private String managedObjectInstance;
     private String managedObjectType;
@@ -104,7 +102,7 @@ public class AlarmDTO implements Serializable {
      */
     public AlarmDTO(Integer alarmid, String eventuei, Integer counter, Integer severity, Date firsteventtime, Date lasteEventTime) {
         this.id = alarmid;
-        this.uei = eventuei;
+        this.eventUei = eventuei;
         this.counter = counter;
         this.severity = AlarmSeverity.get(severity);
         this.firstEventTime = firsteventtime;
@@ -156,7 +154,7 @@ public class AlarmDTO implements Serializable {
     public String toString() {
         return MoreObjects.toStringHelper(this)
             .add("alarmid", getId())
-            .add("uei", getUei())
+            .add("uei", getEventUei())
             .add("severity", getSeverity())
             .add("lastEventTime",getLastEventTime())
             .add("counter", getCounter())

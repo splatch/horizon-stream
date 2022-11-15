@@ -63,6 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
+@Transactional
 public class AlarmServiceImpl implements AlarmService {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmServiceImpl.class);
 
@@ -95,11 +96,10 @@ public class AlarmServiceImpl implements AlarmService {
 //    private SessionUtils sessionUtils;
 
     @Override
-    @Transactional
     public void clearAlarm(Alarm alarm, Date now) {
 //        sessionUtils.withTransaction(() -> {
 //            LOG.info("Clearing alarm with id: {} with current severity: {} at: {}", alarm.getId(), alarm.getSeverity(), now);
-            final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getId());
+            final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
             if (maybeAlarmInTrans.isEmpty()) {
                 LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
                 return;
@@ -116,8 +116,8 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     public void deleteAlarm(Alarm alarm) {
 //        sessionUtils.withTransaction(() -> {
-            LOG.info("Deleting alarm with id: {} with severity: {}", alarm.getId(), alarm.getSeverity());
-        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getId());
+            LOG.info("Deleting alarm with id: {} with severity: {}", alarm.getAlarmId(), alarm.getSeverity());
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
             LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
             return;
@@ -142,8 +142,8 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     public void unclearAlarm(Alarm alarm, Date now) {
 //        sessionUtils.withTransaction(() -> {
-            LOG.info("Un-clearing alarm with id: {} at: {}", alarm.getId(), now);
-        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getId());
+            LOG.info("Un-clearing alarm with id: {} at: {}", alarm.getAlarmId(), now);
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
             LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
             return;
@@ -161,8 +161,8 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     public void escalateAlarm(Alarm alarm, Date now) {
 //        sessionUtils.withTransaction(() -> {
-            LOG.info("Escalating alarm with id: {} at: {}", alarm.getId(), now);
-        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getId());
+            LOG.info("Escalating alarm with id: {} at: {}", alarm.getAlarmId(), now);
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
             LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
             return;
@@ -178,7 +178,7 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     public void acknowledgeAlarm(Alarm alarm, Date now) {
-        Alarm alarm1 = alarmRepository.getById(alarm.getId());
+        Alarm alarm1 = alarmRepository.getById(alarm.getAlarmId());
         alarm1.setAlarmAckTime(new Date());
         alarm1.setAlarmAckUser("TODO: need a user!");
         alarmRepository.save(alarm1);
@@ -203,8 +203,8 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     public void setSeverity(Alarm alarm, AlarmSeverity severity, Date now) {
 //        sessionUtils.withTransaction(() -> {
-            LOG.info("Updating severity {} on alarm with id: {}", severity, alarm.getId());
-        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getId());
+            LOG.info("Updating severity {} on alarm with id: {}", severity, alarm.getAlarmId());
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
             LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
             return;
@@ -274,7 +274,7 @@ public class AlarmServiceImpl implements AlarmService {
         return alarm[0];
     }
 
-    @Transactional
+
     protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
 
@@ -320,7 +320,7 @@ public class AlarmServiceImpl implements AlarmService {
 
             alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
-            log.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getId());
+            log.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getAlarmId());
 //            reduceEvent(persistedEvent, alarm, event);
 
             alarmRepository.save(alarm);
@@ -421,7 +421,7 @@ public class AlarmServiceImpl implements AlarmService {
 //        alarm.setSeverity(SeverityDTO.get(e.getEventSeverity()));
 //        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
 //        alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
-        alarm.setUei(event.getUei() + event.getNodeId());
+        alarm.setEventUei(event.getUei() + event.getNodeId());
 //        if (event.getAlarmData().getManagedObject() != null) {
 //            alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
 //        }

@@ -79,29 +79,11 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @Autowired
     private AlarmMapper alarmMapper;
 
-    protected Class<Alarm> getDaoClass() {
-        return Alarm.class;
-    }
-
     protected WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
         if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
         log.error(msg);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
-
-//    private boolean isTicketerPluginEnabled() {
-//        return SystemProperties.getBooleanWithDefaultAsTrue("opennms.alarmTroubleTicketEnabled");
-//    }
-//
-//    private Response runIfTicketerPluginIsEnabled(Callable<Response> callable) throws Exception {
-//        if (!isTicketerPluginEnabled()) {
-//            return Response.status(Status.NOT_IMPLEMENTED).entity("AlarmTroubleTicketer is not enabled. Cannot perform operation").build();
-//        }
-//        Objects.requireNonNull(callable);
-//        final Response response = callable.call();
-//        return response;
-//    }
-
 
 //========================================
 // Interface
@@ -118,35 +100,28 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         // replace the next line with @RolesAllowed("")
         //SecurityHelper.assertUserReadCredentials(securityContext);
 
-//        return this.sessionUtils.withReadOnlyTransaction(() -> {
-
             List<AlarmDTO> dtoAlarmList = alarmService.getAllAlarms("TODO:MMF need a tenant id!");
 
             AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
             alarmsCollection.setTotalCount(dtoAlarmList.size());
 
             return Response.status(Status.OK).entity(alarmsCollection).build();
-//        });
-
     }
 
 //    @POST
 //    @Path("{id}/ack")
 //    @Produces(MediaType.APPLICATION_JSON)
 //    public String ackAlarm(@PathParam("id") int id, AlarmAckDTO alarmAck) {
-//        return sessionUtils.withTransaction(() -> {
 //
 //            updateAlarmTicket(id, alarmAck);
 //
 //            return "acknowledged";
-//        });
 //    }
 
 //    @DELETE
 //    @Path("{id}/ack")
 //    @Produces(MediaType.APPLICATION_JSON)
 //    public String unackAlarm(@PathParam("id") int id) {
-//        return sessionUtils.withTransaction(() -> {
 //            OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), "DELETE_USER__TODO_CLEAN_THIS_UP");
 //            acknowledgment.setRefId(id);
 //            acknowledgment.setAckAction(AckAction.UNACKNOWLEDGE);
@@ -154,7 +129,6 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 //            acknowledgmentDao.processAck(acknowledgment);
 //
 //            return "unacknowledged";
-//        });
 //    }
     
     @POST
@@ -180,14 +154,12 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
         SecurityHelper.assertUserEditCredentials(securityContext, user);
 
-//        return this.sessionUtils.withTransaction(() -> {
             final String body = params.getFirst("body");
             if (body == null) {
                 throw getException(Status.BAD_REQUEST, "Body cannot be null.");
             }
             //alarmRepository.updateStickyMemo(alarmId, body, user); // TODO doing anything??
             return Response.noContent().build();
-//        });
     }
 
     @PUT
@@ -199,14 +171,12 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     )
     @Transactional
     public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
-//        return this.sessionUtils.withTransaction(() -> {
             final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
             // SecurityHelper.assertUserEditCredentials(securityContext, user);
             final String body = params.getFirst("body");
             if (body == null) throw getException(Status.BAD_REQUEST, "Body cannot be null.");
             //alarmRepository.updateReductionKeyMemo(alarmId, body, user); // TODO doing anything??
             return Response.noContent().build();
-//        });
     }
 
     @DELETE
@@ -220,10 +190,8 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         //SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
         try {
 //            return runIfTicketerPluginIsEnabled(() -> {
-//                return this.sessionUtils.withTransaction(() -> {
 //                   // alarmRepository.removeStickyMemo(alarmId); // TODO doing anything??
 //                    return Response.noContent().build();
-//                });
 //            });
         } catch (Exception e) {
             e.printStackTrace();

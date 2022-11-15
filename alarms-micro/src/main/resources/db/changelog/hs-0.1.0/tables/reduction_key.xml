@@ -10,10 +10,11 @@
 	<changeSet author="mfrazier" id="hs-0.1.0-alarms">
 		<validCheckSum>3:bf2fe2bd84eacb76952e7fb6c7f18f57</validCheckSum>
 		<preConditions onFail="MARK_RAN">
-			<not><tableExists tableName="reductionKey" /></not>
+			<not><tableExists tableName="reduction_key" /></not>
 		</preConditions> 
 
-		<createTable tableName="reductionKey">
+        //TODO:MMF don't need this table at all.
+		<createTable tableName="reduction_key">
 
 			<!-- Unique identifier -->
 			<column name="reduction_key" type="varchar(256)">

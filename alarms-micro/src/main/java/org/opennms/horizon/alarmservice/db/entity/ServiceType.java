@@ -50,13 +50,13 @@ public class ServiceType extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -459218937667452586L;
 
     @Id
-    @Column(name="service_id")
+    @Column
     @SequenceGenerator(name="serviceTypeSequence", sequenceName="serviceNxtId", allocationSize = 1)
     @GeneratedValue(generator="serviceTypeSequence")
-    private Long id;
+    private Long serviceId;
 
-    @Column(name="service_name", nullable=false, unique=true, length=255)
-    private String name;
+    @Column(nullable=false, unique=true, length=255)
+    private String serviceName;
 
     /**
      * full constructor
@@ -64,12 +64,12 @@ public class ServiceType extends BaseEntity implements Serializable {
      * @param servicename a {@link String} object.
      */
     public ServiceType(String servicename) {
-        name = servicename;
+        serviceName = servicename;
     }
 
-    public ServiceType(Long id, String servicename) {
-        this.id = id;
-        this.name = servicename;
+    public ServiceType(Long serviceId, String servicename) {
+        this.serviceId = serviceId;
+        this.serviceName = servicename;
     }
 
     /**
@@ -84,7 +84,7 @@ public class ServiceType extends BaseEntity implements Serializable {
     public boolean equals(final Object obj) {
         if (obj instanceof ServiceType) {
             ServiceType t = (ServiceType)obj;
-            return id.equals(t.id);
+            return serviceId.equals(t.serviceId);
         }
         return false;
     }
@@ -96,6 +96,6 @@ public class ServiceType extends BaseEntity implements Serializable {
      */
     @Override
     public int hashCode() {
-        return id.intValue();
+        return serviceId.intValue();
     }
 }

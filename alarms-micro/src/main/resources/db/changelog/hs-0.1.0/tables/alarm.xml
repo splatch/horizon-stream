@@ -10,10 +10,10 @@
 	<changeSet author="mfrazier" id="hs-0.1.0-alarms">
 		<validCheckSum>3:bf2fe2bd84eacb76952e7fb6c7f18f57</validCheckSum>
 		<preConditions onFail="MARK_RAN">
-			<not><tableExists tableName="alarms" /></not>
+			<not><tableExists tableName="alarm" /></not>
 		</preConditions> 
 
-		<createTable tableName="alarms">
+		<createTable tableName="alarm">
 
 			<!-- Unique identifier -->
 			<column name="alarm_id" type="long">
@@ -81,12 +81,6 @@
 
 			<!-- the operator instructions from the event -->
 			<column name="oper_instruct" type="varchar(1024)" />
-
-			<!-- helpdesk integration id -->
-			<column name="t_ticket_id" type="varchar(128)" />
-
-			<!--  helpdesk integration state -->
-			<column name="t_ticket_state" type="integer" />
 
 			<!-- flyOverText for the webUI -->
 			<column name="mouse_over_text" type="varchar(64)" />

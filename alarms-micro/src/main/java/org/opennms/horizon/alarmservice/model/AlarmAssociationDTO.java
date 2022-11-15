@@ -38,7 +38,7 @@ public class AlarmAssociationDTO implements Serializable {
 
     private static final long serialVersionUID = 4115687014888009683L;
 
-    private Integer id;
+    private Integer alarmAssociationId;
     private AlarmDTO situationAlarm;
     private AlarmDTO relatedAlarm;
     private Date mappedTime;

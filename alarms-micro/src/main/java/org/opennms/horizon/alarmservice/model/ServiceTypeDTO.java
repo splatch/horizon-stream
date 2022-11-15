@@ -40,7 +40,7 @@ public class ServiceTypeDTO implements Serializable {
 
     private static final long serialVersionUID = -459218937667452586L;
 
-    private Integer id;
+    private Integer serviceId;
     private String name;
 
 
@@ -49,14 +49,14 @@ public class ServiceTypeDTO implements Serializable {
     public boolean equals(final Object obj) {
         if (obj instanceof ServiceTypeDTO) {
             ServiceTypeDTO t = (ServiceTypeDTO)obj;
-            return id.equals(t.id);
+            return serviceId.equals(t.getServiceId());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return id.intValue();
+        return serviceId.intValue();
     }
 
 }

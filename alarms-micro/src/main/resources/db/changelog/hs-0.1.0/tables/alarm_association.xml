@@ -11,18 +11,15 @@
         <validCheckSum>3:e01c4288c19444d61c6bd149ecf6bde7</validCheckSum>
         <preConditions onFail="MARK_RAN">
             <not>
-                <columnExists tableName="alarm_situations" columnName="id"/>
+                <columnExists tableName="alarm_association" columnName="alarmAssociationId"/>
             </not>
         </preConditions>
 
-<!--        //TODO:MMF best practice? for all?-->
-        <dropTable tableName="alarm_situations"/>
-
-        <createTable tableName="alarm_situations">
-            <column name="id" type="integer">
+        <createTable tableName="alarm_association">
+            <column name="alarm_association_id" type="integer">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="situation_id" type="integer">
+            <column name="situation_alarm_id" type="integer">
                 <constraints nullable="false"/>
             </column>
             <column name="related_alarm_id" type="integer">
@@ -33,10 +30,10 @@
             </column>
         </createTable>
         <addForeignKeyConstraint constraintName="fk_alarm_situations_situation_id" onDelete="CASCADE"
-            baseTableName="alarm_situations" baseColumnNames="situation_id"
+            baseTableName="alarm_association" baseColumnNames="situation_id"
             referencedTableName="alarms" referencedColumnNames="alarm_id"/>
         <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" onDelete="CASCADE"
-            baseTableName="alarm_situations" baseColumnNames="related_alarm_id"
+            baseTableName="alarm_association" baseColumnNames="related_alarm_id"
             referencedTableName="alarms" referencedColumnNames="alarm_id"/>
     </changeSet>
 </databaseChangeLog>

@@ -51,7 +51,7 @@ import lombok.Setter;
  * <p> Entity to store situations and their associated (related) alarms with other details like mappedTime </p>
  */
 @Entity
-@Table(name = "alarm_situations", uniqueConstraints={@UniqueConstraint(columnNames={"situation_id", "related_alarm_id"})})
+@Table(name = "alarm_association", uniqueConstraints={@UniqueConstraint(columnNames={"situation_id", "related_alarm_id"})})
 @Getter
 @Setter
 public class AlarmAssociation extends BaseEntity implements Serializable {
@@ -61,39 +61,41 @@ public class AlarmAssociation extends BaseEntity implements Serializable {
     @Id
     @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId", allocationSize = 1)
     @GeneratedValue(generator="alarmSequence")
-    @Column(name="id", nullable=false)
-    private Long id;
+    @Column(nullable=false)
+    private Long alarmAssociationId;
 
+    //TODO:MMF rename this "situation_alarm_id"
+    //TODO:MMF ask jesse why this is working like this.
     @ManyToOne
-    @JoinColumn(name = "situation_id")
-    private Alarm situationAlarm;
+    @JoinColumn
+    private Alarm situationAlarmId;
 
     @OneToOne
-    @JoinColumn(name = "related_alarm_id")
-    private Alarm relatedAlarm;
+    @JoinColumn
+    private Alarm relatedAlarmId;
 
-    @Column(name = "mapped_time")
+    @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date mappedTime;
 
     public AlarmAssociation() {
     }
 
-    public AlarmAssociation(Alarm situationAlarm, Alarm relatedAlarm) {
-        this(situationAlarm, relatedAlarm, new Date());
+    public AlarmAssociation(Alarm situationAlarmId, Alarm relatedAlarmId) {
+        this(situationAlarmId, relatedAlarmId, new Date());
     }
 
-    public AlarmAssociation(Alarm situationAlarm, Alarm relatedAlarm, Date mappedTime) {
+    public AlarmAssociation(Alarm situationAlarmId, Alarm relatedAlarmId, Date mappedTime) {
         this.mappedTime = mappedTime;
-        this.situationAlarm = situationAlarm;
-        this.relatedAlarm = relatedAlarm;
+        this.situationAlarmId = situationAlarmId;
+        this.relatedAlarmId = relatedAlarmId;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("situation", getSituationAlarm().getId())
-                .add("alarm", getRelatedAlarm().getId())
+                .add("situation", getSituationAlarmId().getAlarmId())
+                .add("alarm", getRelatedAlarmId().getAlarmId())
                 .add("time", getMappedTime())
                 .toString();
     }
@@ -103,12 +105,12 @@ public class AlarmAssociation extends BaseEntity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AlarmAssociation that = (AlarmAssociation) o;
-        return Objects.equals(situationAlarm, that.situationAlarm) &&
-                Objects.equals(relatedAlarm, that.relatedAlarm);
+        return Objects.equals(situationAlarmId, that.situationAlarmId) &&
+                Objects.equals(relatedAlarmId, that.relatedAlarmId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(situationAlarm, relatedAlarm);
+        return Objects.hash(situationAlarmId, relatedAlarmId);
     }
 }

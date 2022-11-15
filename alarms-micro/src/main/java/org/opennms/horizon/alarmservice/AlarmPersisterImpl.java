@@ -148,7 +148,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
             m_alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
-            log.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getId());
+            log.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getAlarmId());
 //            reduceEvent(persistedEvent, alarm, event);
 
             alarmRepository.save(alarm);
@@ -232,7 +232,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         final Set<Alarm> relatedAlarms = new HashSet();
         // Index these by id
         final Map<Long, Alarm> relatedAlarmsByIds = relatedAlarms.stream()
-                .collect(Collectors.toMap(Alarm::getId, a -> a));
+                .collect(Collectors.toMap(Alarm::getAlarmId, a -> a));
 
         // Build sets of the related alarm ids for easy comparison
         final Set<Long> relatedAlarmIdsFromEvent = ImmutableSet.copyOf(relatedAlarmsByIds.keySet());
@@ -252,7 +252,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
                             alarm.addRelatedAlarm(related);
                         } else {
                             log.warn("Alarm with id '{}' , reductionKey '{}' is not added as related alarm for id '{}' as it is forming cyclic graph ",
-                                    related.getId(), related.getReductionKey(), alarm.getId());
+                                    related.getAlarmId(), related.getReductionKey(), alarm.getAlarmId());
                         }
                     }
                 });
@@ -299,7 +299,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 //        alarm.setSeverity(SeverityDTO.get(e.getEventSeverity()));
 //        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
 //        alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
-        alarm.setUei(event.getUei() + event.getNodeId());
+        alarm.setEventUei(event.getUei() + event.getNodeId());
 //        if (event.getAlarmData().getManagedObject() != null) {
 //            alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
 //        }

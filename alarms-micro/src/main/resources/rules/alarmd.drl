@@ -30,11 +30,11 @@ package org.opennms.netmgt.alarmd.drools;
 
 import java.util.Date;
 import org.kie.api.time.SessionClock;
-import org.opennms.horizon.alarmservice.db.impl.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 
-global org.opennms.horizon.alarmservice.drools.AlarmService alarmService;
+global org.opennms.horizon.alarmservice.api.AlarmService alarmService;
 
 declare org.opennms.horizon.alarmservice.db.impl.entity.Alarm
     @role(event)
@@ -122,76 +122,3 @@ rule "fullGC"
   then
     alarmService.deleteAlarm($alarm);
 end
-
-//rule "createTickets"
-//  enabled false
-//  when
-//    $sessionClock : SessionClock()
-//    $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
-//    $alarm : Alarm(severity.isGreaterThan(AlarmSeverity.CLEARED) &&
-//                       (alarmType == Alarm.PROBLEM_TYPE || alarmType == Alarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
-//                       alarmAckUser == null &&
-//                       TTicketState == null)
-//    not( Alarm( this == $alarm ) over window:time( 15m ) )
-//  then
-//    alarmService.acknowledgeAlarm($alarm, new Date($sessionClock.getCurrentTime()));
-//    $ticketer.createTicket($alarm, new Date($sessionClock.getCurrentTime()));
-//end
-//
-//rule "createCriticalTicket"
-//  enabled false
-//  when
-//    $sessionClock : SessionClock()
-//    $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
-//    $alarm : Alarm(severity == AlarmSeverity.CRITICAL &&
-//                       (alarmType == Alarm.PROBLEM_TYPE || alarmType == Alarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
-//                       alarmAckUser == null &&
-//                       TTicketState == null)
-//    not( Alarm( this == $alarm ) over window:time( 5m ) )
-//  then
-//    alarmService.acknowledgeAlarm($alarm, new Date($sessionClock.getCurrentTime()));
-//    $ticketer.createTicket($alarm, new Date($sessionClock.getCurrentTime()));
-//end
-//
-///*
-//  When changing window times, ensure that they are compatible with other rules.
-//  For example: when window time for updateTickets is less than cleanUp rule,
-//  it may not cleanUp all the alarms that are getting updated with UpdateTickets rule.
-//*/
-//
-//rule "updateTickets"
-//  enabled false
-//  when
-//    $sessionClock : SessionClock()
-//    $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
-//    $alarm : Alarm(severity.isGreaterThan(AlarmSeverity.CLEARED) &&
-//                       (alarmType == Alarm.PROBLEM_TYPE || alarmType == Alarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
-//                       TTicketState != null)
-//    not( Alarm( this == $alarm ) over window:time( 15m ) )
-//  then
-//    $ticketer.updateTicket($alarm, new Date($sessionClock.getCurrentTime()));
-//end
-//
-//rule "closeClearedAlarmTickets"
-//  enabled false
-//  when
-//    $sessionClock : SessionClock()
-//    $ticketer : AlarmTicketerService(isTicketingEnabled() == true)
-//    $alarm : Alarm(severity == AlarmSeverity.CLEARED &&
-//                       TTicketState == TroubleTicketState.OPEN)
-//    not( Alarm( this == $alarm ) over window:time( 15m ) )
-//  then
-//    $ticketer.closeTicket($alarm, new Date($sessionClock.getCurrentTime()));
-//end
-//
-//rule "clearAlarmsForClosedTickets"
-//  enabled false
-//  when
-//    $sessionClock : SessionClock()
-//    AlarmTicketerService(isTicketingEnabled() == true)
-//    $alarm : Alarm(severity.isGreaterThan(AlarmSeverity.CLEARED) &&
-//                       (alarmType == Alarm.PROBLEM_TYPE || alarmType == Alarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
-//                       TTicketState == TroubleTicketState.CLOSED)
-//  then
-//    alarmService.clearAlarm($alarm, new Date($sessionClock.getCurrentTime()));
-//end

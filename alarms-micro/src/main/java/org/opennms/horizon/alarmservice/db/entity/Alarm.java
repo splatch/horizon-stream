@@ -59,10 +59,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 
 @Entity
-@Table(name="alarms")
+@Table(name="alarm")
 @Data
 @NoArgsConstructor
 public class Alarm extends BaseEntity implements Serializable {
@@ -78,11 +77,11 @@ public class Alarm extends BaseEntity implements Serializable {
     @Id
     @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId", allocationSize = 1)
     @GeneratedValue(generator="alarmSequence")
-    @Column(name="alarm_id", nullable=false)
-    private Long id;
+    @Column(nullable=false)
+    private Long alarmId;
 
-    @Column(name="event_uei", length=256, nullable=false)
-    private String uei;
+    @Column(length=256, nullable=false)
+    private String eventUei;
 
     @Column
     @Type(type= "org.opennms.horizon.alarmservice.utils.InetAddressUserType")
@@ -129,12 +128,6 @@ public class Alarm extends BaseEntity implements Serializable {
     @Column
     private String operInstruct;
 
-    @Column(length=128)
-    private String tTicketId;
-
-    @Column
-    private TroubleTicketState tTicketState;
-
     @Column(length=64)
     private String mouseOverText;
 
@@ -159,8 +152,8 @@ public class Alarm extends BaseEntity implements Serializable {
     @Column
     private Long lastEventId;
 
-    @Column(name="clear_uei")
-    private String clearUEI;
+    @Column
+    private String clearUei;
 
     @Column
     private String clearKey;
@@ -195,13 +188,13 @@ public class Alarm extends BaseEntity implements Serializable {
 
     @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="sticky_memo_id")
-    private Memo stickyMemo;
+    private Memo stickyMemoId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reduction_key", referencedColumnName="reductionkey", updatable=false, insertable=false)
+    @JoinColumn(name="reduction_key", referencedColumnName="reduction_key", updatable=false, insertable=false)
     private ReductionKeyMemo reductionKeyMemo;
 
-    @OneToMany(mappedBy = "situationAlarm", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "situationAlarmId", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<AlarmAssociation> associatedAlarms = new HashSet<>();
 
     // a situation is an alarm, but an alarm is not necessarily a situation
@@ -220,7 +213,7 @@ public class Alarm extends BaseEntity implements Serializable {
     @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.RELATED_ALARM_ID=ALARMID)")
     private boolean partOfSituation;
 
-    //TODO: add in whatever is needed form the Event protobuf as individual fields.
+    //TODO:MMF add in whatever is needed form the Event protobuf as individual fields.
 
     /**
      * minimal constructor
@@ -232,8 +225,8 @@ public class Alarm extends BaseEntity implements Serializable {
      * @param firsteventtime a {@link Date} object.
      */
     public Alarm(Long alarmid, String eventuei, Integer counter, Integer severity, Date firsteventtime, Date lasteEventTime) {
-        this.id = alarmid;
-        this.uei = eventuei;
+        this.alarmId = alarmid;
+        this.eventUei = eventuei;
         this.counter = counter;
         this.severity = AlarmSeverity.get(severity);
         this.firstEventTime = firsteventtime;
@@ -287,8 +280,8 @@ public class Alarm extends BaseEntity implements Serializable {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("alarmid", getId())
-            .add("uei", getUei())
+            .add("alarmid", getAlarmId())
+            .add("uei", getEventUei())
             .add("severity", getSeverity())
             .add("lastEventTime",getLastEventTime())
             .add("counter", getCounter())
@@ -301,7 +294,7 @@ public class Alarm extends BaseEntity implements Serializable {
     public void archive() {
         qosAlarmState = ARCHIVED;
         severity = AlarmSeverity.CLEARED;
-        reductionKey = getReductionKey() + ":ID:"+ getId();
+        reductionKey = getReductionKey() + ":ID:"+ getAlarmId();
     }
 
     // Alarms that are archived
@@ -318,19 +311,19 @@ public class Alarm extends BaseEntity implements Serializable {
     @Transient
     
     public Set<Alarm> getRelatedAlarms() {
-        return associatedAlarms.stream().map(AlarmAssociation::getRelatedAlarm).collect(Collectors.toSet());
+        return associatedAlarms.stream().map(AlarmAssociation::getRelatedAlarmId).collect(Collectors.toSet());
     }
 
     @Transient
     
     public Set<Long> getRelatedAlarmIds() {
         return getRelatedAlarms().stream()
-                .map(Alarm::getId)
+                .map(Alarm::getAlarmId)
                 .collect(Collectors.toSet());
     }
 
     
-    @OneToMany(mappedBy = "situationAlarm", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "situationAlarmId", orphanRemoval = true, cascade = CascadeType.ALL)
     public Set<AlarmAssociation> getAssociatedAlarms() {
         return associatedAlarms;
     }
@@ -358,19 +351,19 @@ public class Alarm extends BaseEntity implements Serializable {
     }
 
     public void removeRelatedAlarm(Alarm alarm) {
-        associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(alarm.getId()));
+        associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarmId().getAlarmId().equals(alarm.getAlarmId()));
         situation = !associatedAlarms.isEmpty();
     }
 
     public void removeRelatedAlarmWithId(Long relatedAlarmId) {
-        associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(relatedAlarmId));
+        associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarmId().getAlarmId().equals(relatedAlarmId));
         situation = !associatedAlarms.isEmpty();
     }
 
     @Transient
     public Set<Long> getRelatedSituationIds() {
         return getRelatedSituations().stream()
-                .map(Alarm::getId)
+                .map(Alarm::getAlarmId)
                 .collect(Collectors.toSet());
     }
 

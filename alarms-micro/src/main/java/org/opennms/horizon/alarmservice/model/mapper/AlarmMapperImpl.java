@@ -106,20 +106,6 @@ public abstract class AlarmMapperImpl implements AlarmMapper {
 //        }
     }
 
-    protected Integer mapTicketStateToInt(TroubleTicketState state) {
-        if (state == null) {
-            return null;
-        }
-        return state.getValue();
-    }
-
-    protected TroubleTicketState mapIntToTicketState(Integer value) {
-        return Arrays.stream(TroubleTicketState.values())
-                .filter(s -> Objects.equals(value, s.getValue()))
-                .findFirst()
-                .orElse(null);
-    }
-
 //    public abstract EventParameterDTO eventParameterToEventParameterDTO(OnmsEventParameter eventParameter);
 
 //    @Mappings({

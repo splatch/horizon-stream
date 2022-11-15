@@ -58,7 +58,7 @@ public class Memo extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 7272348439687562161L;
 
     @Id
-    @Column(name="sticky_memo_id", nullable = false)
+    @Column(nullable = false)
     @SequenceGenerator(name = "memoSequence", sequenceName = "memoNxtId", allocationSize = 1)
     @GeneratedValue(generator = "memoSequence")
     private Long id;

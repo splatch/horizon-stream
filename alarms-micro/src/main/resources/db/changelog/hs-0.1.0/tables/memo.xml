@@ -14,7 +14,7 @@
         <createTable tableName="memos">
 
             <!-- the alarm's ID -->
-            <column name="sticky_memo_id" type="java.lang.Long">
+            <column name="id" type="java.lang.Long">
                 <constraints nullable="false" />
             </column>
 
@@ -26,8 +26,6 @@
 
             <column name="created" type="TIMESTAMP WITH TIME ZONE" />
         </createTable>
-
-<!--        //TODO:MMF indexes?-->
 
     </changeSet>
 
