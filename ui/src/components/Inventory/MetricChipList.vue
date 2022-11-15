@@ -1,8 +1,6 @@
 <template>
   <FeatherChipList label="List of metric chips">
-    <div v-for="item in items" :key="item.type" class="container">
-      <MetricChip :item="item" />
-    </div>
+    <MetricChip v-for="item in items" :key="item.type" :item="item" />
   </FeatherChipList>
 </template>
 
@@ -10,7 +8,7 @@
 import { FeatherChipList } from '@featherds/chips'
 import { TimeUnit } from '@/types'
 import { Chip } from '@/types/metric'
-import MetricChip from './MetricChip.vue'
+import MetricChip from '../Common/MetricChip.vue'
 
 const items: Chip[] = [
   {
@@ -33,7 +31,4 @@ const items: Chip[] = [
 </script>
 
 <style lang="scss" scoped>
-.container {
-  text-align: left;
-}
 </style>

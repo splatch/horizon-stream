@@ -5,23 +5,21 @@
     color: var(variables.$primary-text-on-color);
   }
   &.ok,
-  &.UP {
+  &.up {
     background-color: var(variables.$success);
   }
   &.failed,
-  &.DOWN {
+  &.down {
     background-color: var(variables.$error);
   }
-  &.unknown,
-  &.UNKNOWN {
+  &.unknown {
     background-color: grey;
   }
 }
 
 .open-dark {
   .bg-status {
-    &.unknown,
-    &.UNKNOWN {
+    &.unknown {
       .label {
         color: rgb(10, 12, 27);
       }

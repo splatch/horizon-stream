@@ -2,13 +2,13 @@
   <PageHeader :heading="heading" />
   <!-- tabs anchor-->
   <!-- expandable filter: search, select, sorting -->
-  <!-- card: title, metric chips, list anchor, actions -->
-  <MetricChips />
+  <!-- card: title, metric chip list, text anchor list, icon action list -->
+  <MetricChipList />
   <div/>
 </template>
 
 <script lang="ts" setup>
-import MetricChips from '@/components/Inventory/MetricChips.vue'
+import MetricChipList from '@/components/Inventory/MetricChipList.vue'
 
 const heading = 'Network Inventory'
 </script>
