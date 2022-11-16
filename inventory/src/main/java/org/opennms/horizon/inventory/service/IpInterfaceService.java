@@ -18,36 +18,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class IpInterfaceService {
     private final IpInterfaceRepository modelRepo;
-    private final NodeRepository nodeRepo;
 
     private final IpInterfaceMapper mapper;
-
-    public IpInterfaceDTO saveIpInterface(IpInterfaceDTO dto) {
-        IpInterface model = mapper.dtoToModel(dto);
-
-        Node node = nodeRepo.getReferenceById(dto.getNodeId());
-        model.setNode(node);
-
-        IpInterface ret = modelRepo.save(model);
-        return mapper.modelToDTO(ret);
-    }
-
-    public List<IpInterfaceDTO> findAllIpInterfaces() {
-        List<IpInterface> all = modelRepo.findAll();
-        return all
-            .stream()
-            .map(mapper::modelToDTO)
-            .collect(Collectors.toList());
-    }
-
-    public Optional<IpInterfaceDTO> findIpInterface(long id) {
-        Optional<IpInterface> model = modelRepo.findById(id);
-        Optional<IpInterfaceDTO> dto = Optional.empty();
-        if (model.isPresent()) {
-            dto = Optional.of(mapper.modelToDTO(model.get()));
-        }
-        return dto;
-    }
 
     public List<IpInterfaceDTO> findByTenantId(String tenantId) {
         List<IpInterface> all = modelRepo.findByTenantId(tenantId);

@@ -2,7 +2,6 @@ package org.opennms.horizon.inventory.grpc;
 
 import com.google.rpc.Code;
 import com.google.rpc.Status;
-import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import io.grpc.protobuf.StatusProto;
 import org.junit.jupiter.api.AfterEach;
@@ -20,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = InventoryApplication.class)
 @ContextConfiguration(initializers = {PostgresInitializer.class})
-class DeviceGrpcIntegrationTest extends GrpcTestBase {
+class DeviceGrpcIT extends GrpcTestBase {
     private DeviceServiceGrpc.DeviceServiceBlockingStub serviceStub;
 
     @Autowired
