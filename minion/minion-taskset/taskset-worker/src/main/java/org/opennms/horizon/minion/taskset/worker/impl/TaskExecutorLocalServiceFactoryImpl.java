@@ -1,11 +1,12 @@
 package org.opennms.horizon.minion.taskset.worker.impl;
 
+import org.opennms.horizon.minion.plugin.api.registries.DetectorRegistry;
 import org.opennms.horizon.minion.plugin.api.registries.ListenerFactoryRegistry;
 import org.opennms.horizon.minion.plugin.api.registries.MonitorRegistry;
+import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalService;
 import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalServiceFactory;
-import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
 import org.opennms.taskset.contract.TaskDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,8 @@ public class TaskExecutorLocalServiceFactoryImpl implements TaskExecutorLocalSer
     private final OpennmsScheduler scheduler;
     private final TaskExecutionResultProcessor resultProcessor;
     private final ListenerFactoryRegistry listenerFactoryRegistry;
+    private final DetectorRegistry detectorRegistry;
+    private final MonitorRegistry monitorRegistry;
 
 //========================================
 // Constructor
@@ -27,12 +30,16 @@ public class TaskExecutorLocalServiceFactoryImpl implements TaskExecutorLocalSer
     public TaskExecutorLocalServiceFactoryImpl(
         OpennmsScheduler scheduler,
         TaskExecutionResultProcessor resultProcessor,
-        ListenerFactoryRegistry listenerFactoryRegistry
+        ListenerFactoryRegistry listenerFactoryRegistry,
+        DetectorRegistry detectorRegistry,
+        MonitorRegistry monitorRegistry
     ) {
 
         this.scheduler = scheduler;
         this.resultProcessor = resultProcessor;
         this.listenerFactoryRegistry = listenerFactoryRegistry;
+        this.detectorRegistry = detectorRegistry;
+        this.monitorRegistry = monitorRegistry;
     }
 
 //========================================
@@ -40,8 +47,11 @@ public class TaskExecutorLocalServiceFactoryImpl implements TaskExecutorLocalSer
 //----------------------------------------
 
     @Override
-    public TaskExecutorLocalService create(TaskDefinition taskDefinition, MonitorRegistry monitorRegistry) {
+    public TaskExecutorLocalService create(TaskDefinition taskDefinition) {
         switch (taskDefinition.getType()) {
+            case DETECTOR:
+                return new TaskExecutorLocalDetectorServiceImpl(taskDefinition, detectorRegistry, resultProcessor);
+
             case MONITOR:
                 return new TaskExecutorLocalMonitorServiceImpl(scheduler, taskDefinition, resultProcessor, monitorRegistry);
 

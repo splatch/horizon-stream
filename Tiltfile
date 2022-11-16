@@ -47,7 +47,7 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
 k8s_yaml(
     helm(
         'charts/opennms',
-        values=['./skaffold-helm-values.yaml'],
+        values=['./tilt-helm-values.yaml'],
     )
 )
 

@@ -1,7 +1,12 @@
 <template>
-<div class="header">Graphs</div>
+<div class="header">
+  Graphs
+  <FeatherButton text @click="onDownload">
+    Download All
+  </FeatherButton>
+</div>
 
-<div class="graphs-layout">
+<div id="graphs-layout">
   <div class="left-column">
     <LineGraph :graph="minionUptimeResponseTime" />
     <LineGraph :graph="minionUptime" />
@@ -22,6 +27,7 @@
 <script setup lang="ts">
 import { TimeRangeUnit } from '@/types/graphql'
 import { GraphProps } from '@/types/graphs'
+import { downloadMultipleCanvases } from '@/components/Graphs/utils'
 
 const minionUptimeResponseTime: GraphProps = {
   label: 'Minion Uptime and Minion Response Time',
@@ -113,6 +119,12 @@ const goThreads: GraphProps = {
   timeRange: 10,
   timeRangeUnit: TimeRangeUnit.Minute
 }
+
+const onDownload = () => {
+  const page = document.getElementById('graphs-layout') as HTMLElement
+  const canvases = document.getElementsByClassName('canvas') as HTMLCollectionOf<HTMLCanvasElement>
+  downloadMultipleCanvases(page, canvases)
+}
 </script>
   
 <style scoped lang="scss">
@@ -121,19 +133,21 @@ const goThreads: GraphProps = {
 
 .header {
   @include typography.headline3();
-  text-align: center;
+  display: flex;
   padding: 6px;
   background: var(variables.$shade-4);
+  justify-content: space-between;
 }
 
-.graphs-layout {
+#graphs-layout {
   display: flex;
+  gap: 20px;
   
   .left-column, 
   .right-column {
     display: flex;
     flex-direction: column;
-    width: 50%;
+    width: calc(50% - 10px);
   }
 }
 </style>

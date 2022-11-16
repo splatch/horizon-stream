@@ -33,6 +33,13 @@ package opennms.snmp;
 option java_multiple_files = true;
 option java_package = "org.opennms.snmp.contract";
 
+message SnmpDetectorRequest {
+  string host = 1;
+
+  int32 timeout = 2;
+  int32 retries = 3;
+}
+
 message SnmpMonitorRequest {
   string host = 1;
 

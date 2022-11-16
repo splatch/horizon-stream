@@ -2,9 +2,8 @@
   <PageHeader :heading="heading" />
   <!-- tabs anchor-->
   <!-- expandable filter: search, select, sorting -->
-  <!-- card: title, metric chip, list anchor, actions -->
+  <!-- card: title, metric chip list, text anchor list, icon action list -->
   <TextAnchorList :anchor="anchor" />
-  <div/>
 </template>
 
 <script lang="ts" setup>
