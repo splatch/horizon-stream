@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.rest;
+package org.opennms.horizon.alarmservice.api;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;

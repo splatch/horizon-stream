@@ -44,12 +44,9 @@ import org.opennms.horizon.alarmservice.api.AlarmPersister;
 import org.opennms.horizon.alarmservice.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.Severity;
-//import org.opennms.horizon.events.conf.xml.LogDestType;
-//import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.alarmservice.utils.StripedExt;
-import org.opennms.horizon.events.proto.Event;
-//import org.opennms.horizon.events.xml.Parm;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
+import org.opennms.horizon.events.proto.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,7 +102,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
     protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
 
-        //TODO:MMF
 //        final String reductionKey = event.getAlarmData().getReductionKey();
         String reductionKey = "blah";
         log.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
@@ -275,7 +271,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return false;
     }
 
-          //TODO:MMF For now just create a minimal event
     private Alarm createNewAlarm(Event event) {
         Alarm alarm = new Alarm();
         // Situations are denoted by the existance of related-reductionKeys

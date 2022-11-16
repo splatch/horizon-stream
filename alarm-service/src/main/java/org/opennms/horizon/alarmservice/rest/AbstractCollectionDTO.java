@@ -31,7 +31,6 @@ package org.opennms.horizon.alarmservice.rest;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO:MMF really should just re-use this stuff from shared....
 public class AbstractCollectionDTO<T> {
   protected List<T> objects = new ArrayList<>();
   protected Integer totalCount;

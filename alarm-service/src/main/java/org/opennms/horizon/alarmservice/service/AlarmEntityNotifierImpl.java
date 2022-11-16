@@ -41,8 +41,10 @@ import org.opennms.horizon.alarmservice.db.entity.Memo;
 import org.opennms.horizon.alarmservice.db.entity.ReductionKeyMemo;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.TroubleTicketState;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
 
     private Set<AlarmEntityListener> listeners = Sets.newConcurrentHashSet();

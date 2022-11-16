@@ -42,19 +42,17 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.alarmservice.api.AlarmService;
-import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.Severity;
 import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;
+import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.opennms.horizon.events.proto.Event;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
@@ -104,7 +102,19 @@ public class AlarmServiceImpl implements AlarmService {
             alarmInTrans.setSeverity(AlarmSeverity.CLEARED);
             updateAutomationTime(alarmInTrans, now);
             alarmRepository.save(alarmInTrans);
+
+            List<Alarm> associatedAlarms = alarm.getAssociatedAlarms().stream().map(alarmAssociation -> alarmAssociation.getRelatedAlarmId()).collect(
+                Collectors.toList());
+
+            associatedAlarms.forEach(associatedAlarm -> clearAlarm(associatedAlarm, now));
+
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
+    }
+
+    @Override
+    @Transactional
+    public void clearAlarm(Long alarmId, Date now) {
+        clearAlarm(alarmRepository.getById(alarmId), now);
     }
 
     @Override
@@ -143,8 +153,7 @@ public class AlarmServiceImpl implements AlarmService {
         }
         Alarm alarmInTrans = maybeAlarmInTrans.get();
             final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
-            //TODO:MMF fix this
-//            alarmInTrans.setSeverity(AlarmSeverity.get(alarmInTrans.getLastEvent().getEventSeverity()));
+            alarmInTrans.setSeverity(alarmInTrans.getLastEventSeverity());
             updateAutomationTime(alarmInTrans, now);
             alarmRepository.save(alarmInTrans);
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
@@ -262,7 +271,6 @@ public class AlarmServiceImpl implements AlarmService {
 
         return alarm[0];
     }
-
 
     protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
@@ -386,7 +394,6 @@ public class AlarmServiceImpl implements AlarmService {
         return null;
     }
 
-    //TODO:MMF For now just create a minimal event
     private Alarm createNewAlarm(Event event) {
         Alarm alarm = new Alarm();
         // Situations are denoted by the existance of related-reductionKeys

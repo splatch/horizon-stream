@@ -40,9 +40,11 @@ import org.opennms.horizon.events.proto.Event;
  * Situation rules.
  */
 public interface AlarmService {
-    //TODO:MMF get your story straight on  entities vs DTOs
+    //TODO:MMF get the story straight on  entities vs DTOs
 
     void clearAlarm(Alarm alarm, Date now);
+
+    void clearAlarm(Long alarmId, Date now);
 
     void deleteAlarm(Alarm alarm);
 

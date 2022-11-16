@@ -53,17 +53,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
-import org.opennms.horizon.alarmservice.service.AlarmCallbackStateTracker;
 import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
 import org.opennms.horizon.alarmservice.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.AlarmAssociation;
-import org.opennms.horizon.alarmservice.api.AlarmService;
+import org.opennms.horizon.alarmservice.service.AlarmCallbackStateTracker;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -76,6 +77,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author jwhite
  */
 @Slf4j
+@Component
 @ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
 public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLifecycleListener {
 

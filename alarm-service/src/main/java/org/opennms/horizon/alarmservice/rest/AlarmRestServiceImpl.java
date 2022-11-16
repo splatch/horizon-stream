@@ -51,10 +51,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.alarmservice.db.entity.Alarm;
+import org.opennms.horizon.alarmservice.api.AlarmRestService;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
-import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;
 import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
 import org.opennms.horizon.alarmservice.rest.support.SecurityHelper;
@@ -135,9 +134,9 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @Path("{id}/clear")
     @Produces(MediaType.APPLICATION_JSON)
     public String clearAlarm(@PathParam("id") long id) {
-        alarmService.setSeverity(id, AlarmSeverity.CLEARED, new Date());
 
-        //TODO:MMF clear related alarms!
+        alarmService.clearAlarm(id, new Date());
+
         return "acknowledged";
     }
 

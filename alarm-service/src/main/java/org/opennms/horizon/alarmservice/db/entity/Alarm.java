@@ -179,7 +179,10 @@ public class Alarm extends BaseEntity implements Serializable {
     @Column(name="x733_probably_cause", nullable=false)
     private int x733ProbableCause = 0;
 
-//    /TODO:MMF which are snake case and which are camelcase for the java fields
+    //TODO:MMF add in whatever is needed form the Event protobuf as individual fields.
+    @Column
+    private AlarmSeverity lastEventSeverity;
+
     @ElementCollection
     @JoinTable(name="alarm_attributes", joinColumns = @JoinColumn(name="alarm_id"))
     @MapKeyColumn(name="attribute_name")
@@ -212,8 +215,6 @@ public class Alarm extends BaseEntity implements Serializable {
 
     @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.RELATED_ALARM_ID=ALARMID)")
     private boolean partOfSituation;
-
-    //TODO:MMF add in whatever is needed form the Event protobuf as individual fields.
 
     /**
      * minimal constructor

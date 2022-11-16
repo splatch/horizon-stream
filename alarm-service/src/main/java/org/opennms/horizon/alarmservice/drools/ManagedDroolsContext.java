@@ -66,8 +66,6 @@ import org.kie.api.time.SessionClock;
 import org.kie.api.time.SessionPseudoClock;
 import org.kie.internal.io.ResourceFactory;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class focuses on providing a Drools context which loads a set of rules

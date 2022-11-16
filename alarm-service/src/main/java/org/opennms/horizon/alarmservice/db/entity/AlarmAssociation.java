@@ -64,8 +64,6 @@ public class AlarmAssociation extends BaseEntity implements Serializable {
     @Column(nullable=false)
     private Long alarmAssociationId;
 
-    //TODO:MMF rename this "situation_alarm_id"
-    //TODO:MMF ask jesse why this is working like this.
     @ManyToOne
     @JoinColumn
     private Alarm situationAlarmId;

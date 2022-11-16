@@ -88,8 +88,7 @@ public class AlarmDTO implements Serializable {
     private Set<AlarmDTO> relatedSituations = new HashSet<>();
     private boolean situation;
     private boolean partOfSituation;
-
-    //TODO: add in whatever is needed form the Event protobuf as individual fields.
+    private AlarmSeverity lastEventSeverity;
 
     /**
      * minimal constructor

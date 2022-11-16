@@ -31,13 +31,11 @@
 package org.opennms.horizon.alarmservice.rest.support;
 
 import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 
 
 /**
  * <p>MultivaluedMapImpl class.</p>
  */
-@Deprecated
-//TODO:MMF replace with this OTS multi map
-public class MultivaluedMapImpl extends MultivaluedHashMap<String,String> implements MultivaluedMap<String, String> {
+
+public class MultivaluedMapImpl extends MultivaluedHashMap<String,String>  {
 }
