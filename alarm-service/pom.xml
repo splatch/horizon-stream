@@ -11,9 +11,9 @@
         <relativePath>../parent-pom/pom.xml</relativePath>
     </parent>
 
-    <groupId>org.opennms.horizon.alarms</groupId>
-    <name>OpenNMS Horizon :: Alarms Service</name>
-    <artifactId>alarms-micro</artifactId>
+    <groupId>org.opennms.horizon.alarmservice</groupId>
+    <name>OpenNMS Horizon :: Alarm Service</name>
+    <artifactId>alarm-service</artifactId>
 
     <properties>
 

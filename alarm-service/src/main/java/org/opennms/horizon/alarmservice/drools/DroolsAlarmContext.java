@@ -179,7 +179,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             // while we wait on the database (particularly for systems with large amounts of alarms)
             try {
                 preHandleAlarmSnapshot();
-//                sessionUtils.withTransaction(()->{
                     log.info("Loading all alarms to seed Drools context.");
                     final List<Alarm> allAlarms = alarmRepository.findAll();
                     log.info("Done loading {} alarms.", allAlarms.size());
@@ -187,7 +186,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                     handleAlarmSnapshot(allAlarms);
                     // Seed was submitted as an atomic action
                     seedSubmittedLatch.countDown();
-//                });
             } finally {
                 postHandleAlarmSnapshot();
             }

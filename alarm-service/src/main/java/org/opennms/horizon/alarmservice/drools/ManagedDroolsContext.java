@@ -47,6 +47,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.drools.core.ClockType;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -76,8 +77,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author jwhite
  */
+@Slf4j
 public class ManagedDroolsContext {
-    private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
 
     private static final String JMX_DOMAIN_PREFIX = "org.opennms.features.drools.";
 
@@ -129,7 +130,7 @@ public class ManagedDroolsContext {
 
     public synchronized void start() {
         if (started.get()) {
-            LOG.warn("The context for session {} is already started. Ignoring start request.", kSessionName);
+            log.warn("The context for session {} is already started. Ignoring start request.", kSessionName);
             return;
         }
 
@@ -144,7 +145,7 @@ public class ManagedDroolsContext {
 //        try {
 //            metricsReporter.start();
 //        } catch (IllegalArgumentException e) {
-//            LOG.warn("Failed to start metrics reporter. JMX metrics may not be available or accurate for kbase: {}", kbaseName);
+//            log.warn("Failed to start metrics reporter. JMX metrics may not be available or accurate for kbase: {}", kbaseName);
 //        }
     }
 
@@ -191,7 +192,7 @@ public class ManagedDroolsContext {
                         latch.await();
                     }
                 } catch (Exception e) {
-                    LOG.error("Exception occurred while performing liveness check.", e);
+                    log.error("Exception occurred while performing liveness check.", e);
                 }
             }
         }, LIVENESS_CHECK_INTERVAL_MS, LIVENESS_CHECK_INTERVAL_MS);
@@ -204,20 +205,20 @@ public class ManagedDroolsContext {
                 fireThreadId.set(Thread.currentThread().getId());
                 while (started.get()) {
                     try {
-                        LOG.debug("Firing until halt.");
+                        log.debug("Firing until halt.");
                         kieSession.fireUntilHalt();
                     } catch (Exception e) {
                         // If we're supposed to be stopped, ignore the exception
                         if (started.get()) {
-                            LOG.error("Error occurred while firing rules. Waiting 30 seconds before starting to fire again.", e);
+                            log.error("Error occurred while firing rules. Waiting 30 seconds before starting to fire again.", e);
                             try {
                                 Thread.sleep(TimeUnit.SECONDS.toMillis(30));
                             } catch (InterruptedException ex) {
-                                LOG.warn("Interrupted while waiting to start firing rules again. Exiting thread.");
+                                log.warn("Interrupted while waiting to start firing rules again. Exiting thread.");
                                 return;
                             }
                         } else {
-                            LOG.warn("Encountered exception while firing rules, but the engine is stopped. Exiting thread.", e);
+                            log.warn("Encountered exception while firing rules, but the engine is stopped. Exiting thread.", e);
                             return;
                         }
                     }
@@ -230,7 +231,7 @@ public class ManagedDroolsContext {
 
     public synchronized void reload() {
         if (!started.get()) {
-            LOG.warn("The context for session {} is not yet started. Treating reload as a start request", kSessionName);
+            log.warn("The context for session {} is not yet started. Treating reload as a start request", kSessionName);
             start();
             return;
         }
@@ -248,14 +249,14 @@ public class ManagedDroolsContext {
             try {
                 thread.join(TimeUnit.MINUTES.toMillis(2));
             } catch (InterruptedException e) {
-                LOG.warn("Interrupted while waiting for session to halt. Aborting reload request.");
+                log.warn("Interrupted while waiting for session to halt. Aborting reload request.");
                 return;
             }
 
             // The thread should be stopped, but we don't know for sure
             // Let's me a best effort to stop it before we proceed and start another one
             if (thread.isAlive()) {
-                LOG.warn("Thread is still alive! Interrupting.");
+                log.warn("Thread is still alive! Interrupting.");
                 thread.interrupt();
             }
         }
@@ -272,9 +273,9 @@ public class ManagedDroolsContext {
         // Remove the previous module
         if (releaseIdForContainerUsedByKieSession != null) {
             if (KieServices.Factory.get().getRepository().removeKieModule(releaseIdForContainerUsedByKieSession) != null) {
-                LOG.info("Successfully removed previous KIE module with ID: {}.", releaseIdForContainerUsedByKieSession);
+                log.info("Successfully removed previous KIE module with ID: {}.", releaseIdForContainerUsedByKieSession);
             } else {
-                LOG.info("Previous KIE module was with ID: {} was already removed.", releaseIdForContainerUsedByKieSession);
+                log.info("Previous KIE module was with ID: {} was already removed.", releaseIdForContainerUsedByKieSession);
             }
             releaseIdForContainerUsedByKieSession = null;
         }
@@ -302,7 +303,7 @@ public class ManagedDroolsContext {
             kieSessionModel.setClockType(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
         }
 
-        LOG.debug("kmodule.xml: {}", module.toXML());
+        log.debug("kmodule.xml: {}", module.toXML());
         kfs.writeKModuleXML(module.toXML());
         kfs.generateAndWritePomXML(id);
 
@@ -312,7 +313,7 @@ public class ManagedDroolsContext {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        LOG.info("Using rules files: {}", rulesFiles);
+        log.info("Using rules files: {}", rulesFiles);
         for (File file : rulesFiles) {
             kfs.write("src/main/resources/" + file.getName(), ResourceFactory.newFileResource(file));
         }
@@ -328,7 +329,7 @@ public class ManagedDroolsContext {
             throw new RuntimeException("Build Errors:\n" + kb.getResults().toString());
         }
 
-        LOG.info("Successfully built KIE module with ID: {}.", id);
+        log.info("Successfully built KIE module with ID: {}.", id);
         return id;
     }
 
@@ -380,10 +381,10 @@ public class ManagedDroolsContext {
                 final long waitMillis = TimeUnit.MINUTES.toMillis(2);
                 thread.join(waitMillis);
                 if (thread.isAlive()) {
-                    LOG.error("Thread is still alive after waiting for {}ms.", waitMillis);
+                    log.error("Thread is still alive after waiting for {}ms.", waitMillis);
                 }
             } catch (InterruptedException e) {
-                LOG.info("Interrupted while waiting for thread to exit.");
+                log.info("Interrupted while waiting for thread to exit.");
             }
             thread = null;
         }

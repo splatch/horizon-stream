@@ -63,9 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
-@Transactional
 public class AlarmServiceImpl implements AlarmService {
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmServiceImpl.class);
 
     protected static final Integer THREADS = SystemProperties.getInteger("org.opennms.alarmd.threads", 4);
     protected static final Integer NUM_STRIPE_LOCKS = SystemProperties.getInteger("org.opennms.alarmd.stripe.locks", THREADS * 4);
@@ -92,16 +90,13 @@ public class AlarmServiceImpl implements AlarmService {
 //    @Autowired
 //    private EventForwarder eventForwarder;
 
-//    @Autowired
-//    private SessionUtils sessionUtils;
-
     @Override
+    @Transactional
     public void clearAlarm(Alarm alarm, Date now) {
-//        sessionUtils.withTransaction(() -> {
-//            LOG.info("Clearing alarm with id: {} with current severity: {} at: {}", alarm.getId(), alarm.getSeverity(), now);
+            log.info("Clearing alarm with id: {} with current severity: {} at: {}", alarm.getAlarmId(), alarm.getSeverity(), now);
             final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
             if (maybeAlarmInTrans.isEmpty()) {
-                LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
+                log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
                 return;
             }
             Alarm alarmInTrans = maybeAlarmInTrans.get();
@@ -110,16 +105,15 @@ public class AlarmServiceImpl implements AlarmService {
             updateAutomationTime(alarmInTrans, now);
             alarmRepository.save(alarmInTrans);
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
-//        });
     }
 
     @Override
+    @Transactional
     public void deleteAlarm(Alarm alarm) {
-//        sessionUtils.withTransaction(() -> {
-            LOG.info("Deleting alarm with id: {} with severity: {}", alarm.getAlarmId(), alarm.getSeverity());
+            log.info("Deleting alarm with id: {} with severity: {}", alarm.getAlarmId(), alarm.getSeverity());
         final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
-            LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
             return;
         }
         Alarm alarmInTrans = maybeAlarmInTrans.get();
@@ -136,16 +130,15 @@ public class AlarmServiceImpl implements AlarmService {
                 alarmEntityNotifier.didUpdateRelatedAlarms(entry.getKey(), entry.getValue());
             }
             alarmEntityNotifier.didDeleteAlarm(alarmInTrans);
-//        });
     }
 
     @Override
+    @Transactional
     public void unclearAlarm(Alarm alarm, Date now) {
-//        sessionUtils.withTransaction(() -> {
-            LOG.info("Un-clearing alarm with id: {} at: {}", alarm.getAlarmId(), now);
+            log.info("Un-clearing alarm with id: {} at: {}", alarm.getAlarmId(), now);
         final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
-            LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
             return;
         }
         Alarm alarmInTrans = maybeAlarmInTrans.get();
@@ -155,16 +148,15 @@ public class AlarmServiceImpl implements AlarmService {
             updateAutomationTime(alarmInTrans, now);
             alarmRepository.save(alarmInTrans);
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
-//        });
     }
 
     @Override
+    @Transactional
     public void escalateAlarm(Alarm alarm, Date now) {
-//        sessionUtils.withTransaction(() -> {
-            LOG.info("Escalating alarm with id: {} at: {}", alarm.getAlarmId(), now);
+            log.info("Escalating alarm with id: {} at: {}", alarm.getAlarmId(), now);
         final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
-            LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
             return;
         }
         Alarm alarmInTrans = maybeAlarmInTrans.get();
@@ -173,7 +165,6 @@ public class AlarmServiceImpl implements AlarmService {
             updateAutomationTime(alarmInTrans, now);
             alarmRepository.save(alarmInTrans);
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
-//        });
     }
 
     @Override
@@ -185,28 +176,27 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    @Transactional
     public void unacknowledgeAlarm(Alarm alarm, Date now) {
     //TODO: set ack value on alarm only
-//        sessionUtils.withTransaction(() -> {
-//            LOG.info("Un-Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
+//            log.info("Un-Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
 //            final Alarm alarmInTrans = alarmDao.get(alarm.getId());
 //            if (alarmInTrans == null) {
-//                LOG.warn("Alarm disappeared: {}. Skipping un-ack.", alarm);
+//                log.warn("Alarm disappeared: {}. Skipping un-ack.", alarm);
 //                return;
 //            }
 //            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
 //            ack.setAckAction(AckAction.UNACKNOWLEDGE);
 //            acknowledgmentDao.processAck(ack);
-//        });
     }
 
     @Override
+    @Transactional
     public void setSeverity(Alarm alarm, AlarmSeverity severity, Date now) {
-//        sessionUtils.withTransaction(() -> {
-            LOG.info("Updating severity {} on alarm with id: {}", severity, alarm.getAlarmId());
+            log.info("Updating severity {} on alarm with id: {}", severity, alarm.getAlarmId());
         final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
-            LOG.warn("Alarm disappeared: {}. Skipping clear.", alarm);
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
             return;
         }
         Alarm alarmInTrans = maybeAlarmInTrans.get();
@@ -215,7 +205,6 @@ public class AlarmServiceImpl implements AlarmService {
             updateAutomationTime(alarm, now);
             alarmRepository.save(alarmInTrans);
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
-//        });
     }
 
     @Override
@@ -346,15 +335,15 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     public void debug(String message, Object... objects) {
-        LOG.debug(message, objects);
+        log.debug(message, objects);
     }
 
     public void info(String message, Object... objects) {
-        LOG.info(message, objects);
+        log.info(message, objects);
     }
 
     public void warn(String message, Object... objects) {
-        LOG.warn(message, objects);
+        log.warn(message, objects);
     }
 
 //    public void setEventForwarder(EventForwarder eventForwarder) {

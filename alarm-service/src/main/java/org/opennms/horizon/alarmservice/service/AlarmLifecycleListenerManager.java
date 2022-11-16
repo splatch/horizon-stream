@@ -50,6 +50,7 @@ import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class AlarmLifecycleListenerManager implements AlarmEntityListener {
 
@@ -87,6 +88,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
         }
     }
 
+    @Transactional
     protected void doSnapshot() {
         if (listeners.size() < 1) {
             return;
@@ -97,8 +99,6 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
         final AtomicLong systemMillisAfterLoad = new AtomicLong(-1);
         try {
             forEachListener(AlarmLifecycleListener::preHandleAlarmSnapshot);
-            //TODO:MMF
-//            sessionUtils.withTransaction(() -> {
                // Load all of the alarms
                final List<Alarm> allAlarms = alarmRepository.findAll();
                numAlarms.set(allAlarms.size());
@@ -110,8 +110,6 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
                    l.handleAlarmSnapshot(allAlarms);
                    LOG.debug("Done calling listener.");
                });
-//               return null;
-//            });
         } finally {
             if (LOG.isDebugEnabled()) {
                 final long now = System.currentTimeMillis();
