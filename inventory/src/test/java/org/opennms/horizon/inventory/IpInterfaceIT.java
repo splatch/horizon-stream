@@ -14,6 +14,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
+import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,6 @@ import org.springframework.test.context.ContextConfiguration;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = InventoryApplication.class)
 @ContextConfiguration(initializers = {PostgresInitializer.class})
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class IpInterfaceIT {
     @Autowired
     private DataSource dataSource;
@@ -42,10 +42,14 @@ class IpInterfaceIT {
     @LocalServerPort
     private Integer port;
     public static long savedNodeId = -1;
+    public static long savedMonitoringLocationId = -1;
 
     @BeforeEach
     public void setup() {
-        if (savedNodeId == -1) {
+        if (savedMonitoringLocationId == -1) {
+            MonitoringLocationDTO monitoringLocationDTO = postMonitoringLocation("location");
+            savedMonitoringLocationId = monitoringLocationDTO.getId();
+
             NodeDTO dto = postNode("label");
             savedNodeId = dto.getId();
         }
@@ -56,12 +60,34 @@ class IpInterfaceIT {
         ipInterfaceRepository.deleteAll();
     }
 
+    private MonitoringLocationDTO postMonitoringLocation(String location) {
+        UUID tenant = new UUID(10, 12);
+        MonitoringLocationDTO ml = MonitoringLocationDTO.newBuilder()
+            .setLocation(location)
+            .setTenantId(tenant.toString())
+            .build();
+
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<MonitoringLocationDTO> request = new HttpEntity<>(ml, headers);
+
+        ResponseEntity<MonitoringLocationDTO> response = this.testRestTemplate
+            .postForEntity("http://localhost:" + port + "/inventory/locations", request, MonitoringLocationDTO.class);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+
+        MonitoringLocationDTO saved = response.getBody();
+        assertEquals(tenant.toString(), saved.getTenantId());
+        assertEquals(location, saved.getLocation());
+        return saved;
+    }
+
     private NodeDTO postNode(String nodeLabel) {
         UUID tenant = new UUID(10, 12);
         NodeDTO ml = NodeDTO.newBuilder()
             .setNodeLabel(nodeLabel)
             .setTenantId(tenant.toString())
             .setCreateTime("2022-11-03T14:34:05.542488")
+            .setMonitoringLocationId(savedMonitoringLocationId)
             .build();
 
         HttpHeaders headers = new HttpHeaders();
@@ -212,25 +238,6 @@ class IpInterfaceIT {
             .setIpAddress(ipAddress)
             .setTenantId(tenant.toString())
             .setNodeId(Long.MAX_VALUE)
-            .build();
-
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<IpInterfaceDTO> request = new HttpEntity<>(ml, headers);
-
-        ResponseEntity<IpInterfaceDTO> response = this.testRestTemplate
-            .postForEntity("http://localhost:" + port + "/inventory/ipInterfaces", request, IpInterfaceDTO.class);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
-    void testPostBadTenantId() throws Exception {
-        String ipAddress = "127.0.0.1";
-
-        IpInterfaceDTO ml = IpInterfaceDTO.newBuilder()
-            .setIpAddress(ipAddress)
-            .setTenantId("0000")
-            .setNodeId(savedNodeId)
             .build();
 
         HttpHeaders headers = new HttpHeaders();

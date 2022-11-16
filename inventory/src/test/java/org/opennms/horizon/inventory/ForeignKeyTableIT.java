@@ -38,7 +38,6 @@ import org.springframework.test.context.ContextConfiguration;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = InventoryApplication.class)
 @ContextConfiguration(initializers = {PostgresInitializer.class})
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ForeignKeyTableIT {
     public static final String SYS_ID = "SYS_ID";
 
@@ -67,20 +66,18 @@ class ForeignKeyTableIT {
 
     @BeforeEach
     public void setup() {
-        if (savedNodeId == -1) {
-            NodeDTO dto = postNode("label");
-            savedNodeId = dto.getId();
+        if (savedMonitoringLocationId == -1) {
+            MonitoringLocationDTO monitoringLocationDTO = postMonitoringLocation("location2");
+            savedMonitoringLocationId = monitoringLocationDTO.getId();
+
+            NodeDTO nodeDTO = postNode("label");
+            savedNodeId = nodeDTO.getId();
 
             IpInterfaceDTO ipInterfaceDTO = postIpInterface("127.0.0.1");
             savedIpInterfaceId = ipInterfaceDTO.getId();
 
             MonitoredServiceTypeDTO monitoredServiceTypeDTO = postMonitoredServiceTypes("serviceName");
             savedMonitorServiceTypeId = monitoredServiceTypeDTO.getId();
-        }
-
-        if (savedMonitoringLocationId == -1) {
-            MonitoringLocationDTO dto = postMonitoringLocation("location");
-            savedMonitoringLocationId = dto.getId();
         }
     }
 
@@ -118,6 +115,7 @@ class ForeignKeyTableIT {
             .setNodeLabel(nodeLabel)
             .setTenantId(tenant.toString())
             .setCreateTime("2022-11-03T14:34:05.542488")
+            .setMonitoringLocationId(savedMonitoringLocationId)
             .build();
 
         HttpHeaders headers = new HttpHeaders();
@@ -335,23 +333,6 @@ class ForeignKeyTableIT {
     }
 
     @Test
-    void testMonitoredServicePostBadTenantId() throws Exception {
-        MonitoredServiceDTO ml = MonitoredServiceDTO.newBuilder()
-            .setIpInterfaceId(savedIpInterfaceId)
-            .setTenantId("0000")
-            .setMonitoredServiceTypeId(savedMonitorServiceTypeId)
-            .build();
-
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<MonitoredServiceDTO> request = new HttpEntity<>(ml, headers);
-
-        ResponseEntity<MonitoredServiceDTO> response = this.testRestTemplate
-            .postForEntity("http://localhost:" + port + "/inventory/services", request, MonitoredServiceDTO.class);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
     void testMonitoredServiceGetByTenantId() throws Exception {
         UUID firstUUID = new UUID(10, 12);
         UUID secondUUID = new UUID(15, 16);
@@ -520,25 +501,6 @@ class ForeignKeyTableIT {
             .setIpAddress(ipAddress)
             .setTenantId(tenant.toString())
             .setNodeId(Long.MAX_VALUE)
-            .build();
-
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<SnmpInterfaceDTO> request = new HttpEntity<>(ml, headers);
-
-        ResponseEntity<SnmpInterfaceDTO> response = this.testRestTemplate
-            .postForEntity("http://localhost:" + port + "/inventory/snmpInterfaces", request, SnmpInterfaceDTO.class);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
-    void testSnmpInterfacePostBadTenantId() throws Exception {
-        String ipAddress = "127.0.0.1";
-
-        SnmpInterfaceDTO ml = SnmpInterfaceDTO.newBuilder()
-            .setIpAddress(ipAddress)
-            .setTenantId("0000")
-            .setNodeId(savedNodeId)
             .build();
 
         HttpHeaders headers = new HttpHeaders();
@@ -761,25 +723,6 @@ class ForeignKeyTableIT {
             .setSystemId(SYS_ID)
             .setLabel("LABEL")
             .setMonitoringLocationId(Long.MAX_VALUE)
-            .setLastCheckedIn(System.currentTimeMillis())
-            .build();
-
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<MonitoringSystemDTO> request = new HttpEntity<>(ml, headers);
-
-        ResponseEntity<MonitoringSystemDTO> response = this.testRestTemplate
-            .postForEntity("http://localhost:" + port + "/inventory/monitoringSystems", request, MonitoringSystemDTO.class);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
-    void testMonitoringSystemPostBadTenantId() throws Exception {
-        MonitoringSystemDTO ml = MonitoringSystemDTO.newBuilder()
-            .setTenantId("0000")
-            .setSystemId(SYS_ID)
-            .setLabel("LABEL")
-            .setMonitoringLocationId(savedMonitoringLocationId)
             .setLastCheckedIn(System.currentTimeMillis())
             .build();
 
