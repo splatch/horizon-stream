@@ -3,14 +3,22 @@
   <!-- tabs anchor-->
   <!-- expandable filter: search, select, sorting -->
   <!-- card: title, metric chip list, text anchor list, icon action list -->
-  <MetricChipList />
-  <div/>
+  <TextAnchorList :anchor="anchor" />
 </template>
 
 <script lang="ts" setup>
-import MetricChipList from '@/components/Inventory/MetricChipList.vue'
-
 const heading = 'Network Inventory'
+
+const anchor = {
+  profileValue: 75,
+  profileLink: '#',
+  locationValue: 'DefaultMinion',
+  locationLink: '#',
+  ipInterfaceValue: 25,
+  ipInterfaceLink: '#',
+  tagValue: 100,
+  tagLink: '#'
+}
 </script>
 
 <style lang="scss" scoped>
