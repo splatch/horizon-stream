@@ -3,7 +3,7 @@
   <!-- tabs anchor-->
   <!-- expandable filter: search, select, sorting -->
   <!-- card: title, metric chip list, text anchor list, icon action list -->
-  <TextAnchorList :anchor="anchor" />
+  <IconActionList />
 </template>
 
 <script lang="ts" setup>
