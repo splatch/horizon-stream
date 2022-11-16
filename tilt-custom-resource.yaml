@@ -5,7 +5,7 @@ metadata:
 spec:
   allowedUsers: []
   host: onmshs
-  namespace: skaffold-instance
+  namespace: tilt-instance
   core:
     image: opennms/horizon-stream-core
     cpu: "0"

@@ -43,7 +43,7 @@ spec:
           imagePullPolicy: {{ .Values.OpenNMS.Minion.ImagePullPolicy }}
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
           ports:
@@ -51,6 +51,8 @@ spec:
               containerPort: {{ .Values.OpenNMS.MinionGateway.Port }}
             - name: grpc
               containerPort: {{ .Values.OpenNMS.MinionGateway.GrpcPort }}
+            - name: internal-grpc
+              containerPort: {{ .Values.OpenNMS.MinionGateway.InternalGrpcPort }}
             - name: ig-client
               containerPort: {{ .Values.OpenNMS.MinionGateway.IgniteClientPort }}
             - name: ig-cluster

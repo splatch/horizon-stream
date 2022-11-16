@@ -20,7 +20,7 @@ type OpenNMSValues struct {
     UI               ServiceValues          `yaml:"UI"`
     Minion           MinionValues           `yaml:"Minion"`
     MinionGateway    MinionGatewayValues    `yaml:"MinionGateway"`
-    Inventory        ServiceValues          `yaml:"Inventory"`
+    Inventory        InventoryValues        `yaml:"Inventory"`
     Notification     ServiceValues          `yaml:"Notification"`
     MetricsProcessor MetricsProcessorValues `yaml:"MetricsProcessor"`
     Events           ServiceValues          `yaml:"Events"`
@@ -36,19 +36,25 @@ type CoreValues struct {
 }
 
 type MinionValues struct {
-    ServiceValues `yaml:",inline"`
-    SshPort       int `yaml:"SshPort"`
+    ServiceValues     `yaml:",inline"`
+    SshPort           int `yaml:"SshPort"`
     TrapsListenerPort int `yaml:"TrapsListenerPort"`
 }
 
 type MinionGatewayValues struct {
     ServiceValues    `yaml:",inline"`
     GrpcPort         int `yaml:"GrpcPort"`
+    InternalGrpcPort int `yaml:"InternalGrpcPort"`
     IgniteClientPort int `yaml:"IgniteClientPort"`
 }
 
 type MetricsProcessorValues struct {
     ServiceValues `yaml:",inline"`
+}
+
+type InventoryValues struct {
+    ServiceValues `yaml:",inline"`
+    GrpcPort      int `yaml:"GrpcPort"`
 }
 
 type TimeseriesValues struct {
