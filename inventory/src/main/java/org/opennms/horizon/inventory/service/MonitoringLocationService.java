@@ -19,29 +19,6 @@ public class MonitoringLocationService {
 
     private final MonitoringLocationMapper mapper;
 
-    public MonitoringLocationDTO saveMonitoringLocation(MonitoringLocationDTO dto) {
-        MonitoringLocation model = mapper.dtoToModel(dto);
-        MonitoringLocation ret = modelRepo.save(model);
-        return mapper.modelToDTO(ret);
-    }
-
-    public List<MonitoringLocationDTO> findAllMonitoringLocations() {
-        List<MonitoringLocation> all = modelRepo.findAll();
-        return all
-            .stream()
-            .map(mapper::modelToDTO)
-            .collect(Collectors.toList());
-    }
-
-    public Optional<MonitoringLocationDTO> findMonitoringLocation(long id) {
-        Optional<MonitoringLocation> model = modelRepo.findById(id);
-        Optional<MonitoringLocationDTO> dto = Optional.empty();
-        if (model.isPresent()) {
-            dto = Optional.of(mapper.modelToDTO(model.get()));
-        }
-        return dto;
-    }
-
     public List<MonitoringLocationDTO> findByTenantId(String tenantId) {
         List<MonitoringLocation> all = modelRepo.findByTenantId(tenantId);
         return all

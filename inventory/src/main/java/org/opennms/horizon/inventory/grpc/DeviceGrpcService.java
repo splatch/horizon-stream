@@ -28,24 +28,30 @@ public class DeviceGrpcService extends DeviceServiceGrpc.DeviceServiceImplBase {
     @Override
     @Transactional
     public void createDevice(DeviceCreateDTO request, StreamObserver<NodeDTO> responseObserver) {
-        validateInput(request, responseObserver);
+        boolean valid = validateInput(request, responseObserver);
 
-        Optional<String> tenantId = tenantLookup.lookupTenantId(Context.current());
-        Node node = nodeService.createDevice(request, tenantId.get());
+        if (valid) {
+            Optional<String> tenantId = tenantLookup.lookupTenantId(Context.current());
+            Node node = nodeService.createDevice(request, tenantId.orElseThrow());
 
-        responseObserver.onNext(nodeMapper.modelToDTO(node));
-        responseObserver.onCompleted();
+            responseObserver.onNext(nodeMapper.modelToDTO(node));
+            responseObserver.onCompleted();
+        }
     }
 
-    private void validateInput(DeviceCreateDTO request, StreamObserver<NodeDTO> responseObserver) {
+    private boolean validateInput(DeviceCreateDTO request, StreamObserver<NodeDTO> responseObserver) {
+        boolean valid = true;
         // TODO: Check there isn't a node already with same IpInterface and location
         
         if (request.hasManagementIp() && !InetAddresses.isInetAddress(request.getManagementIp())) {
+            valid = false;
             Status status = Status.newBuilder()
                 .setCode(Code.INVALID_ARGUMENT_VALUE)
                 .setMessage("Bad management_ip: " + request.getManagementIp())
                 .build();
             responseObserver.onError(StatusProto.toStatusRuntimeException(status));
         }
+
+        return valid;
     }
 }

@@ -1,15 +1,6 @@
 package org.opennms.horizon.inventory.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.google.common.net.InetAddresses;
-import com.google.rpc.Code;
-import com.google.rpc.Status;
 import com.vladmihalcea.hibernate.type.basic.Inet;
-import io.grpc.protobuf.StatusProto;
-import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
@@ -22,11 +13,9 @@ import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,33 +26,6 @@ public class NodeService {
     private final IpInterfaceRepository ipInterfaceRepository;
 
     private final NodeMapper mapper;
-
-    public NodeDTO saveNode(NodeDTO dto) {
-        Node model = mapper.dtoToModel(dto);
-
-        MonitoringLocation monitoringLocation = monitoringLocationRepository.getReferenceById(dto.getMonitoringLocationId());
-        model.setMonitoringLocation(monitoringLocation);
-
-        Node ret = nodeRepository.save(model);
-        return mapper.modelToDTO(ret);
-    }
-
-    public List<NodeDTO> findAllNodes() {
-        List<Node> all = nodeRepository.findAll();
-        return all
-            .stream()
-            .map(mapper::modelToDTO)
-            .collect(Collectors.toList());
-    }
-
-    public Optional<NodeDTO> findNode(long id) {
-        Optional<Node> model = nodeRepository.findById(id);
-        Optional<NodeDTO> dto = Optional.empty();
-        if (model.isPresent()) {
-            dto = Optional.of(mapper.modelToDTO(model.get()));
-        }
-        return dto;
-    }
 
     public List<NodeDTO> findByTenantId(String tenantId) {
         List<Node> all = nodeRepository.findByTenantId(tenantId);

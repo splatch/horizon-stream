@@ -27,33 +27,6 @@ public class MonitoringSystemService {
     private final MonitoringLocationRepository locationRepository;
     private final MonitoringSystemMapper mapper;
 
-    public MonitoringSystemDTO saveMonitoringSystem(MonitoringSystemDTO dto) {
-        MonitoringSystem model = mapper.dtoToModel(dto);
-
-        MonitoringLocation location = locationRepository.getReferenceById(dto.getMonitoringLocationId());
-        model.setMonitoringLocation(location);
-
-        MonitoringSystem ret = modelRepo.save(model);
-        return mapper.modelToDTO(ret);
-    }
-
-    public List<MonitoringSystemDTO> findAllMonitoringSystems() {
-        List<MonitoringSystem> all = modelRepo.findAll();
-        return all
-            .stream()
-            .map(mapper::modelToDTO)
-            .collect(Collectors.toList());
-    }
-
-    public Optional<MonitoringSystemDTO> findMonitoringSystem(long id) {
-        Optional<MonitoringSystem> model = modelRepo.findById(id);
-        Optional<MonitoringSystemDTO> dto = Optional.empty();
-        if (model.isPresent()) {
-            dto = Optional.of(mapper.modelToDTO(model.get()));
-        }
-        return dto;
-    }
-
     public List<MonitoringSystemDTO> findByTenantId(String tenantId) {
         List<MonitoringSystem> all = modelRepo.findByTenantId(tenantId);
         return all

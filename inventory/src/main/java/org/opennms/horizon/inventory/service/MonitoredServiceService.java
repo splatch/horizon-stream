@@ -20,40 +20,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MonitoredServiceService {
     private final MonitoredServiceRepository modelRepo;
-    private final MonitoredServiceTypeRepository monitoredServiceTypeRepository;
-    private final IpInterfaceRepository ipInterfaceRepository;
 
     private final MonitoredServiceMapper mapper;
-
-    public MonitoredServiceDTO saveMonitoredService(MonitoredServiceDTO dto) {
-        MonitoredService model = mapper.dtoToModel(dto);
-
-        IpInterface ipInterface = ipInterfaceRepository.getReferenceById(dto.getIpInterfaceId());
-        model.setIpInterface(ipInterface);
-
-        MonitoredServiceType monitoredServiceType = monitoredServiceTypeRepository.getReferenceById((dto.getMonitoredServiceTypeId()));
-        model.setMonitoredServiceType(monitoredServiceType);
-
-        MonitoredService ret = modelRepo.save(model);
-        return mapper.modelToDTO(ret);
-    }
-
-    public List<MonitoredServiceDTO> findAllMonitoredServices() {
-        List<MonitoredService> all = modelRepo.findAll();
-        return all
-            .stream()
-            .map(mapper::modelToDTO)
-            .collect(Collectors.toList());
-    }
-
-    public Optional<MonitoredServiceDTO> findMonitoredService(long id) {
-        Optional<MonitoredService> model = modelRepo.findById(id);
-        Optional<MonitoredServiceDTO> dto = Optional.empty();
-        if (model.isPresent()) {
-            dto = Optional.of(mapper.modelToDTO(model.get()));
-        }
-        return dto;
-    }
 
     public List<MonitoredServiceDTO> findByTenantId(String tenantId) {
         List<MonitoredService> all = modelRepo.findByTenantId(tenantId);
