@@ -34,22 +34,36 @@ import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
 import org.opennms.horizon.inventory.dto.DeviceServiceGrpc;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
+import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
 import org.opennms.horizon.inventory.dto.MonitoringSystemServiceGrpc;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
+import com.google.protobuf.StringValue;
 
 import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.Metadata;
+import io.grpc.stub.MetadataUtils;
 
 public class InventoryClient {
     private final ManagedChannel channel;
-    private final MonitoringLocationServiceGrpc.MonitoringLocationServiceBlockingStub locationStub;
-    private final DeviceServiceGrpc.DeviceServiceBlockingStub deviceStub;
-    private final MonitoringSystemServiceGrpc.MonitoringSystemServiceBlockingStub systemStub;
+    private MonitoringLocationServiceGrpc.MonitoringLocationServiceBlockingStub locationStub;
+    private DeviceServiceGrpc.DeviceServiceBlockingStub deviceStub;
+    private MonitoringSystemServiceGrpc.MonitoringSystemServiceBlockingStub systemStub;
 
-    public InventoryClient(ManagedChannel channel) {
-        this.channel = channel;
+    //TODO: hardcoded tenantId will be removed in HS-598
+    private final String tenantId = "4ab6020d-6ee8-4087-afa4-114604fe21e4";
+
+    public InventoryClient(String serverAddress) {
+        channel = ManagedChannelBuilder.forTarget(serverAddress)
+            .keepAliveWithoutCalls(true)
+            .usePlaintext().build();
+        initialStubs();
+    }
+
+    private void initialStubs() {
         locationStub = MonitoringLocationServiceGrpc.newBlockingStub(channel);
         deviceStub = DeviceServiceGrpc.newBlockingStub(channel);
         systemStub = MonitoringSystemServiceGrpc.newBlockingStub(channel);
@@ -61,23 +75,47 @@ public class InventoryClient {
         }
     }
 
+    //TODO: add error handling
     public NodeDTO createNewDevice(DeviceCreateDTO device) {
-        return deviceStub.createDevice(device);
+        Metadata metadata = new Metadata();
+        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).createDevice(device);
     }
 
     public List<NodeDTO> listDevice() {
-        return deviceStub.listDevices(Empty.newBuilder().build()).getDevicesList();
+        Metadata metadata = new Metadata();
+        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listDevices(Empty.newBuilder().build()).getDevicesList();
     }
 
     public NodeDTO getDeviceById(long id) {
-        return deviceStub.getDeviceById(Int64Value.of(id));
+        Metadata metadata = new Metadata();
+        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getDeviceById(Int64Value.of(id));
     }
 
     public List<MonitoringLocationDTO> listLocations() {
-        return locationStub.listLocations(Empty.newBuilder().build()).getLocationsList();
+        Metadata metadata = new Metadata();
+        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        return locationStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listLocations(Empty.newBuilder().build()).getLocationsList();
     }
 
     public MonitoringLocationDTO getLocationById(long id) {
-        return locationStub.getLocationById(Int64Value.of(id));
+        Metadata metadata = new Metadata();
+        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        return locationStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getLocationById(Int64Value.of(id));
     }
+
+    public List<MonitoringSystemDTO> listMonitoringSystems() {
+        Metadata metadata = new Metadata();
+        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        return systemStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listMonitoringSystem(Empty.newBuilder().build()).getListList();
+    }
+
+    public MonitoringSystemDTO getSystemBySystemId(String systemId) {
+        Metadata metadata = new Metadata();
+        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        return systemStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getMonitoringSystemById(StringValue.of(systemId));
+    }
+
 }

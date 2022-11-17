@@ -28,9 +28,11 @@
 
 package org.opennms.horizon.server.service;
 
-import org.opennms.horizon.server.service.gateway.PlatformGateway;
-import org.opennms.horizon.shared.dto.minion.MinionCollectionDTO;
-import org.opennms.horizon.shared.dto.minion.MinionDTO;
+import java.util.stream.Collectors;
+
+import org.opennms.horizon.server.mapper.MinionMapper;
+import org.opennms.horizon.server.model.inventory.Minion;
+import org.opennms.horizon.server.service.grpc.InventoryClient;
 import org.springframework.stereotype.Service;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -38,25 +40,24 @@ import io.leangen.graphql.annotations.GraphQLEnvironment;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
+import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-
+@RequiredArgsConstructor
 @GraphQLApi
 @Service
 public class MinionService {
-    private final PlatformGateway gateway;
+    private final InventoryClient client;
+    private final MinionMapper mapper;
 
-    public MinionService(PlatformGateway gateway) {
-        this.gateway = gateway;
+    @GraphQLQuery
+    public Flux<Minion> listMinions(@GraphQLEnvironment ResolutionEnvironment env) {
+        return Flux.fromIterable(client.listMonitoringSystems().stream().map(mapper::protoToMinion).collect(Collectors.toList()));
     }
 
     @GraphQLQuery
-    public Mono<MinionCollectionDTO> listMinions(@GraphQLEnvironment ResolutionEnvironment env) {//TODO: add search TDO object with pagination as cache key
-        return gateway.get(PlatformGateway.URL_PATH_MINIONS, gateway.getAuthHeader(env), MinionCollectionDTO.class);
-    }
-
-    @GraphQLQuery
-    public Mono<MinionDTO> getMinionById(@GraphQLArgument(name = "id") String id, @GraphQLEnvironment ResolutionEnvironment env) {
-        return gateway.get(String.format(PlatformGateway.URL_PATH_MINIONS_ID, id), gateway.getAuthHeader(env), MinionDTO.class);
+    public Mono<Minion> getMinionById(@GraphQLArgument(name = "id") String id, @GraphQLEnvironment ResolutionEnvironment env) {
+        return Mono.just(mapper.protoToMinion(client.getSystemBySystemId(id)));
     }
 }

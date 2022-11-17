@@ -3,7 +3,6 @@ package org.opennms.horizon.inventory.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.opennms.cloud.grpc.minion.Identity;
@@ -22,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MonitoringSystemService {
     //TODO: this tenantId will be passed from gRPC request JWT token
-    private final String tenantId = new UUID(10, 14).toString();
+    private final String tenantId = "4ab6020d-6ee8-4087-afa4-114604fe21e4";
     private final MonitoringSystemRepository modelRepo;
     private final MonitoringLocationRepository locationRepository;
     private final MonitoringSystemMapper mapper;

@@ -11,7 +11,7 @@ graphql:
     gui:
       enabled: true
     base-packages:
-      - org.opennms.horizon.shared.dto
+      - org.opennms.horizon.server.model.inventory
 
 # keycloak admin client properties
 horizon-stream:

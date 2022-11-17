@@ -35,6 +35,10 @@ public class NodeService {
             .collect(Collectors.toList());
     }
 
+    public Optional<NodeDTO> getByIdAndTenantId(long id, String tenantId){
+        return nodeRepository.findByIdAndTenantId(id, tenantId).map(mapper::modelToDTO);
+    }
+
     private void saveIpInterfaces(DeviceCreateDTO request, Node node, String tenantId) {
         if (request.hasManagementIp()) {
             IpInterface ipInterface = new IpInterface();
@@ -70,6 +74,7 @@ public class NodeService {
         node.setNodeLabel(request.getLabel());
         node.setCreateTime(LocalDateTime.now());
         node.setMonitoringLocation(monitoringLocation);
+        node.setMonitoringLocationId(monitoringLocation.getId());
 
         return nodeRepository.save(node);
     }
@@ -80,14 +85,5 @@ public class NodeService {
         saveIpInterfaces(request, node, tenantId);
 
         return node;
-    }
-
-    //todo for testing
-    public List<NodeDTO> listAllDevices() {
-        return nodeRepository.findAll().stream().map(mapper::modelToDTO).collect(Collectors.toList());
-    }
-
-    public NodeDTO findById(long id) {
-        return nodeRepository.findById(id).map(mapper::modelToDTO).orElseThrow();
     }
 }

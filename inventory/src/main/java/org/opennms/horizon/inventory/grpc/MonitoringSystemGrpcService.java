@@ -75,6 +75,4 @@ public class MonitoringSystemGrpcService extends MonitoringSystemServiceGrpc.Mon
         }
         responseObserver.onCompleted();
     }
-
-
 }

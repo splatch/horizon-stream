@@ -29,19 +29,21 @@
 package org.opennms.horizon.server.mapper;
 
 import org.mapstruct.Mapper;
-import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
-import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
-import org.opennms.horizon.inventory.dto.NodeDTO;
-import org.opennms.horizon.server.model.inventory.Device;
-import org.opennms.horizon.server.model.inventory.DeviceCreate;
-import org.opennms.horizon.server.model.inventory.Location;
-
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
+import org.opennms.horizon.server.model.inventory.Minion;
 
 @Mapper(componentModel = "spring")
-public interface ProtoPojoMapper {
-    Device protoToDevice(NodeDTO nodeDTO);
-    NodeDTO deviceToProto(Device device);
-    DeviceCreateDTO deviceCreateToProto(DeviceCreate request);
-    Location protoToLocation(MonitoringLocationDTO locationDTO);
-    MonitoringLocationDTO locationToProto(Location location);
+public interface MinionMapper {
+    @Mappings({
+        @Mapping(target = "locationId", source = "monitoringLocationId"),
+        @Mapping(target = "lastCheckedTime", source = "lastCheckedIn")
+    })
+    Minion protoToMinion(MonitoringSystemDTO dto);
+    @Mappings({
+        @Mapping(source = "locationId", target = "monitoringLocationId"),
+        @Mapping(source = "lastCheckedTime", target = "lastCheckedIn")
+    })
+    MonitoringSystemDTO minionToProto(Minion minion);
 }

@@ -28,9 +28,11 @@
 
 package org.opennms.horizon.server.service;
 
-import org.opennms.horizon.server.service.gateway.PlatformGateway;
-import org.opennms.horizon.shared.dto.device.LocationCollectionDTO;
-import org.opennms.horizon.shared.dto.device.LocationDTO;
+import java.util.stream.Collectors;
+
+import org.opennms.horizon.server.mapper.LocationMapper;
+import org.opennms.horizon.server.model.inventory.Location;
+import org.opennms.horizon.server.service.grpc.InventoryClient;
 import org.springframework.stereotype.Service;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -38,24 +40,23 @@ import io.leangen.graphql.annotations.GraphQLEnvironment;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
+import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@RequiredArgsConstructor
 @GraphQLApi
 @Service
 public class LocationService {
-    private final PlatformGateway gateway;
-
-    public LocationService(PlatformGateway gateway) {
-        this.gateway = gateway;
-    }
+    private final InventoryClient client;
+    private final LocationMapper mapper;
 
     @GraphQLQuery
-    public Mono<LocationCollectionDTO> listLocations(@GraphQLEnvironment ResolutionEnvironment env) {
-        return gateway.get(PlatformGateway.URL_PATH_LOCATIONS, gateway.getAuthHeader(env), LocationCollectionDTO.class);
+    public Flux<Location> listLocations(@GraphQLEnvironment ResolutionEnvironment env) {
+        return Flux.fromIterable(client.listLocations().stream().map(mapper::protoToLocation).collect(Collectors.toList()));
     }
-
     @GraphQLQuery
-    public Mono<LocationDTO> getLocationById(@GraphQLArgument(name = "id") String id, @GraphQLEnvironment ResolutionEnvironment env) {
-        return gateway.get(PlatformGateway.URL_PATH_LOCATIONS + "/" + id, gateway.getAuthHeader(env), LocationDTO.class);
+    public Mono<Location> getLocationById(@GraphQLArgument(name = "id") long id, @GraphQLEnvironment ResolutionEnvironment env) {
+        return Mono.just(mapper.protoToLocation(client.getLocationById(id)));
     }
 }

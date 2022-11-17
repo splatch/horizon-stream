@@ -29,7 +29,6 @@
 package org.opennms.horizon.inventory.grpc;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
@@ -66,10 +65,10 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
 
     @Override
     public void getLocationByName(StringValue locationName, StreamObserver<MonitoringLocationDTO> responseObserver) {
-        Optional<MonitoringLocationDTO> location =tenantLookup.lookupTenantId(Context.current())
+        Optional<MonitoringLocationDTO> location = tenantLookup.lookupTenantId(Context.current())
             .map(tenantId -> service.findByLocationAndTenantId(locationName.getValue(), tenantId))
             .orElseThrow();
-        if(location.isPresent()){
+        if (location.isPresent()) {
             responseObserver.onNext(location.get());
         } else {
             Status status = Status.newBuilder()
@@ -83,10 +82,12 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
 
     @Override
     public void getLocationById(Int64Value request, StreamObserver<MonitoringLocationDTO> responseObserver) {
-        try{
-            responseObserver.onNext(service.findById(request.getValue()));
+        Optional<MonitoringLocationDTO> location = tenantLookup.lookupTenantId(Context.current())
+            .map(tenantId -> service.getByIdAndTenantId(request.getValue(), tenantId)).orElseThrow();
+        if (location.isPresent()) {
+            responseObserver.onNext(location.get());
             responseObserver.onCompleted();
-        } catch (NoSuchElementException e) {
+        } else {
             Status status = Status.newBuilder()
                 .setCode(Code.NOT_FOUND_VALUE)
                 .setMessage("Location with id: " + request.getValue() + " doesn't exist.").build();
@@ -94,3 +95,4 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
         }
     }
 }
+
