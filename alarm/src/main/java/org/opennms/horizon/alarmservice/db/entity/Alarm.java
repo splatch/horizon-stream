@@ -165,7 +165,7 @@ public class Alarm extends BaseEntity implements Serializable {
     private String managedObjectType;
 
     @Column(length=512)
-    private String applicationDN;
+    private String applicationDn;
 
     @Column(length=512)
     private String ossPrimaryKey;

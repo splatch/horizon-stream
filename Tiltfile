@@ -227,6 +227,12 @@ k8s_resource(
     port_forwards=['21080:9091'],
 )
 
+### Postgres Push Gateway ###
+k8s_resource(
+    'postgres',
+    port_forwards=['25054:5432'],
+)
+
 ### Others ###
 k8s_resource(
     'ingress-nginx-controller',

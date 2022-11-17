@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
     <changeSet author="mfrazier" id="hs-0.1.0-alarms">
-        <validCheckSum>3:e01c4288c19444d61c6bd149ecf6bde7</validCheckSum>
+<!--        <validCheckSum>3:e01c4288c19444d61c6bd149ecf6bde7</validCheckSum>-->
 
         <createTable tableName="alarm_association">
             <column name="alarm_association_id" type="integer">

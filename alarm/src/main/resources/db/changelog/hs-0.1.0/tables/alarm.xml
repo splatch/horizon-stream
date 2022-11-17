@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
 	<changeSet author="mfrazier" id="hs-0.1.0-alarms">
-		<validCheckSum>3:bf2fe2bd84eacb76952e7fb6c7f18f57</validCheckSum>
+<!--		<validCheckSum>8:2adb443baa6de1ad83bea0954a6cf84b</validCheckSum>-->
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="alarm" /></not>
 		</preConditions> 
@@ -14,7 +14,7 @@
 		<createTable tableName="alarm">
 
 			<!-- Unique identifier -->
-			<column name="alarm_id" type="long">
+			<column name="alarm_id" type="bigint">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_alarmid" />
 			</column>
 
@@ -100,7 +100,7 @@
 
             <!-- A reference to the event table with the ID of the last matching event (typically
     node, service, reductionkey) -->
-            <column name="last_event_id" type="long" />
+            <column name="last_event_id" type="bigint" />
 
 			<!-- Populated if alarm is a resolving alarm and can used to clear problem alarms -->
 			<column name="clear_uei" type="varchar(256)" />
@@ -120,6 +120,8 @@
 
 			<column name="qos_alarm_state" type="varchar(31)" />
 
+            <column name="last_event_severity" type="integer" />
+
             <column name="x733_probable_cause" type="integer" defaultValue="0">
                 <constraints nullable="false" />
             </column>
@@ -128,22 +130,11 @@
                 <constraints nullable="false" />
             </column>
 
-            <column name="reduction_key" type="varchar(256)">
-                <constraints nullable="false"/>
-            </column>
-
 		</createTable>
 
-		<addForeignKeyConstraint constraintName="fk_eventidak2" onDelete="CASCADE"
-			baseTableName="alarm" baseColumnNames="lasteventid"
-			referencedTableName="events" referencedColumnNames="eventid" />
-
 		<createIndex tableName="alarm" indexName="alarm_uei_idx">
-			<column name="eventuei" />
+			<column name="event_uei" />
 		</createIndex>
-<!--		<createIndex tableName="alarms" indexName="alarm_nodeid_idx">-->
-<!--			<column name="nodeid" />-->
-<!--		</createIndex>-->
 		<createIndex tableName="alarm" indexName="alarm_reductionkey_idx" unique="true">
 			<column name="reduction_key" />
 		</createIndex>
@@ -155,7 +146,7 @@
 			<column name="event_uei" />
 <!--			<column name="dpname" />-->
 <!--			<column name="nodeid" />-->
-			<column name="service_id" />
+<!--			<column name="service_id" />-->
 			<column name="reduction_key" />
 		</createIndex>
 		<createIndex tableName="alarm" indexName="alarm_app_dn">
