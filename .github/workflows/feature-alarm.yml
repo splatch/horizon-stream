@@ -3,7 +3,7 @@ name: feature-inventory
 on:
   pull_request:
     paths:
-      - 'alarm-service/**'
+      - 'alarm/**'
 
 jobs:
 
@@ -37,7 +37,7 @@ jobs:
         id: action-feature-alarm
         uses: ./.github/actions/alarm
         with:
-          dir-location: 'alarm-service'
+          dir-location: 'alarm'
           enable-sonar-scan: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}

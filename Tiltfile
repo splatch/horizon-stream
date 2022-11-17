@@ -124,7 +124,7 @@ jib_project(
 jib_project(
     'alarm',
     'opennms/horizon-stream-alarm',
-    'alarm-service',
+    'alarm',
     'opennms-alarm',
     port_forwards=['29080:9090', '29050:5005', '29065:6565'],
 )

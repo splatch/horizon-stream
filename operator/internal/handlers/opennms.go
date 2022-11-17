@@ -107,7 +107,7 @@ func (h *OpenNMSHandler) UpdateConfig(values values.TemplateValues) {
     var eventsDeployment appsv1.Deployment
     var eventsService corev1.Service
 
-    yaml.LoadYaml(filepath("opennms/events/events-deployment.yaml"), values, &eventsDeployment)
+//     yaml.LoadYaml(filepath("opennms/events/events-deployment.yaml"), values, &eventsDeployment)
     yaml.LoadYaml(filepath("opennms/events/events-deployment.yaml"), values, &eventsDeployment)
     yaml.LoadYaml(filepath("opennms/events/events-service.yaml"), values, &eventsService)
 

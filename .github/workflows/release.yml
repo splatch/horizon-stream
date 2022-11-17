@@ -121,7 +121,7 @@ jobs:
         id: action-alarm
         uses: ./.github/actions/alarm
         with:
-          dir-location: 'alarm-service'
+          dir-location: 'alarm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 
