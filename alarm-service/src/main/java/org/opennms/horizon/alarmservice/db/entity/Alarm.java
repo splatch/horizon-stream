@@ -193,9 +193,9 @@ public class Alarm extends BaseEntity implements Serializable {
     @JoinColumn(name="sticky_memo_id")
     private Memo stickyMemoId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reduction_key", referencedColumnName="reduction_key", updatable=false, insertable=false)
-    private ReductionKeyMemo reductionKeyMemo;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name="reduction_key", referencedColumnName="reduction_key", updatable=false, insertable=false)
+//    private ReductionKeyMemo reductionKeyMemo;
 
     @OneToMany(mappedBy = "situationAlarmId", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<AlarmAssociation> associatedAlarms = new HashSet<>();
@@ -206,7 +206,7 @@ public class Alarm extends BaseEntity implements Serializable {
     // if an alarm is part of a situation, related situation will be non-empty
     @ElementCollection
     @JoinTable(name = "alarm_situations", joinColumns = @JoinColumn(name = "related_alarm_id"),
-        inverseJoinColumns = @JoinColumn(name = "situation_id"))
+        inverseJoinColumns = @JoinColumn(name = "situation_alarm_id"))
     @Column(name="alarm_id", nullable=false)
     private Set<Alarm> relatedSituations = new HashSet<>();
 

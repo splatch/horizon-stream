@@ -51,7 +51,8 @@ import lombok.Setter;
  * <p> Entity to store situations and their associated (related) alarms with other details like mappedTime </p>
  */
 @Entity
-@Table(name = "alarm_association", uniqueConstraints={@UniqueConstraint(columnNames={"situation_id", "related_alarm_id"})})
+//@Table(name = "alarm_association", uniqueConstraints={@UniqueConstraint(columnNames={"situation_alarm_id", "related_alarm_id"})})
+@Table(name = "alarm_association")
 @Getter
 @Setter
 public class AlarmAssociation extends BaseEntity implements Serializable {

@@ -120,6 +120,15 @@ jib_project(
     port_forwards=['29080:9090', '29050:5005', '29065:6565'],
 )
 
+### Alarm ###
+jib_project(
+    'alarm',
+    'opennms/horizon-stream-alarm',
+    'alarm-service',
+    'opennms-alarm',
+    port_forwards=['29080:9090', '29050:5005', '29065:6565'],
+)
+
 ### Metrics Processor ###
 jib_project(
     'metrics-processor',

@@ -51,10 +51,6 @@
             <artifactId>mapstruct</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.swrve</groupId>
             <artifactId>rate-limited-logger</artifactId>
         </dependency>
@@ -170,6 +166,10 @@
             <artifactId>camel-spring-boot-starter</artifactId>
             <version>${camel.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
     </dependencies>
 
 <!--    //TODO:MMF do we need this? Seems to break the jar-->
@@ -181,5 +181,15 @@
     <!--            </plugin>-->
     <!--        </plugins>-->
     <!--    </build>-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib.version}</version>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>

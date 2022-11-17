@@ -11,7 +11,7 @@
 			<not><tableExists tableName="reduction_key" /></not>
 		</preConditions> 
 
-        //TODO:MMF don't need this table at all.
+<!--        //TODO:MMF don't need this table at all.-->
 		<createTable tableName="reduction_key">
 
 			<!-- Unique identifier -->

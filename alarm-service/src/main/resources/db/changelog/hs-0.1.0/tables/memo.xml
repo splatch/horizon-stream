@@ -6,10 +6,10 @@
 
     <changeSet author="mfrazier" id="1.6.0-alarm_attributes">
         <preConditions onFail="MARK_RAN">
-            <not><tableExists tableName="memos" /></not>
+            <not><tableExists tableName="memo" /></not>
         </preConditions>
 
-        <createTable tableName="memos">
+        <createTable tableName="memo">
 
             <!-- the alarm's ID -->
             <column name="id" type="java.lang.Long">

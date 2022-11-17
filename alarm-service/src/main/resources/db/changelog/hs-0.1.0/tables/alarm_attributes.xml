@@ -27,8 +27,8 @@
 		</createTable>
 
 		<addForeignKeyConstraint constraintName="fk_alarmid1" onDelete="CASCADE"
-			baseTableName="alarm_attributes" baseColumnNames="alarmid"
-			referencedTableName="alarms" referencedColumnNames="alarmid" />
+			baseTableName="alarm_attributes" baseColumnNames="alarm_id"
+			referencedTableName="alarm" referencedColumnNames="alarm_id" />
 
 		<createIndex tableName="alarm_attributes" indexName="alarm_attributes_idx">
 			<column name="alarm_id" />

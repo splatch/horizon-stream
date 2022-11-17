@@ -135,22 +135,22 @@
 		</createTable>
 
 		<addForeignKeyConstraint constraintName="fk_eventidak2" onDelete="CASCADE"
-			baseTableName="alarms" baseColumnNames="lasteventid"
+			baseTableName="alarm" baseColumnNames="lasteventid"
 			referencedTableName="events" referencedColumnNames="eventid" />
 
-		<createIndex tableName="alarms" indexName="alarm_uei_idx">
+		<createIndex tableName="alarm" indexName="alarm_uei_idx">
 			<column name="eventuei" />
 		</createIndex>
 <!--		<createIndex tableName="alarms" indexName="alarm_nodeid_idx">-->
 <!--			<column name="nodeid" />-->
 <!--		</createIndex>-->
-		<createIndex tableName="alarms" indexName="alarm_reductionkey_idx" unique="true">
+		<createIndex tableName="alarm" indexName="alarm_reductionkey_idx" unique="true">
 			<column name="reduction_key" />
 		</createIndex>
-		<createIndex tableName="alarms" indexName="alarm_clearkey_idx">
+		<createIndex tableName="alarm" indexName="alarm_clearkey_idx">
 			<column name="clear_key" />
 		</createIndex>
-		<createIndex tableName="alarms" indexName="alarm_reduction2_idx">
+		<createIndex tableName="alarm" indexName="alarm_reduction2_idx">
 			<column name="alarm_id" />
 			<column name="event_uei" />
 <!--			<column name="dpname" />-->
@@ -158,13 +158,13 @@
 			<column name="service_id" />
 			<column name="reduction_key" />
 		</createIndex>
-		<createIndex tableName="alarms" indexName="alarm_app_dn">
+		<createIndex tableName="alarm" indexName="alarm_app_dn">
 			<column name="application_dn" />
 		</createIndex>
-		<createIndex tableName="alarms" indexName="alarm_oss_primary_key">
+		<createIndex tableName="alarm" indexName="alarm_oss_primary_key">
 			<column name="oss_primary_key" />
 		</createIndex>
-		<createIndex tableName="alarms" indexName="alarm_eventid_idx">
+		<createIndex tableName="alarm" indexName="alarm_eventid_idx">
 			<column name="last_event_id" />
 		</createIndex>
 

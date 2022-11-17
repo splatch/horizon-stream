@@ -41,6 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,15 +55,13 @@ import org.hibernate.Hibernate;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
-import org.opennms.horizon.alarmservice.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.AlarmAssociation;
 import org.opennms.horizon.alarmservice.service.AlarmCallbackStateTracker;
 import org.opennms.horizon.alarmservice.service.AlarmServiceImpl;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
@@ -79,7 +78,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Slf4j
 @Component
-@ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
 public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLifecycleListener {
 
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
@@ -114,11 +112,11 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private final Meter atomicActionsQueued = new Meter();
 
     public DroolsAlarmContext() {
-        this(getDefaultRulesFolder());
+        this(getRulesResourceNames());
     }
 
-    public DroolsAlarmContext(File rulesFolder) {
-        super(rulesFolder, AlarmServiceImpl.ALARM_RULES_NAME, "DroolsAlarmContext");
+    public DroolsAlarmContext(List<String> rulesResourceNames) {
+        super(rulesResourceNames, AlarmServiceImpl.ALARM_RULES_NAME, "DroolsAlarmContext");
         setOnNewKiewSessionCallback(kieSession -> {
             kieSession.setGlobal("alarmService", alarmService);
 
@@ -154,17 +152,21 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         getMetrics().register("atomicActionsQueued", atomicActionsQueued);
     }
 
-    public static File getDefaultRulesFolder() {
-        // FIXME: OOPS: Ugly
-        try {
-            Path rulesFolder = Files.createTempDirectory("rules");
-            Bundle bundle = FrameworkUtil.getBundle(DroolsAlarmContext.class);
-            copy(bundle.getResource("rules/alarmd.drl"), rulesFolder.resolve("alarmd.drl"));
-            copy(bundle.getResource("rules/situations.drl"), rulesFolder.resolve("situations.drl"));
-            return rulesFolder.toFile();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//    public static File getDefaultRulesFolder() {
+//        // FIXME: OOPS: Ugly
+//        try {
+//            Path rulesFolder = Files.createTempDirectory("rules");
+//            Bundle bundle = FrameworkUtil.getBundle(DroolsAlarmContext.class);
+//            copy(bundle.getResource("rules/alarmd.drl"), rulesFolder.resolve("alarmd.drl"));
+//            copy(bundle.getResource("rules/situations.drl"), rulesFolder.resolve("situations.drl"));
+//            return rulesFolder.toFile();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+    public static List<String> getRulesResourceNames() {
+        return Arrays.asList("rules/alarm.drl", "rules/situations.drl");
     }
 
     public static void copy(URL url, final Path target) throws IOException {

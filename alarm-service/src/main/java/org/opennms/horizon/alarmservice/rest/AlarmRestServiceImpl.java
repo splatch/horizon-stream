@@ -69,7 +69,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Setter
 @Slf4j
 @Component
-@ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
 public class AlarmRestServiceImpl implements AlarmRestService {
 
     @Autowired

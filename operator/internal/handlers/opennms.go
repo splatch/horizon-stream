@@ -83,6 +83,13 @@ func (h *OpenNMSHandler) UpdateConfig(values values.TemplateValues) {
 	yaml.LoadYaml(filepath("opennms/inventory/inventory-deployment.yaml"), values, &inventoryDeployment)
 	yaml.LoadYaml(filepath("opennms/inventory/inventory-service.yaml"), values, &inventoryService)
 
+    //alarm
+    var alarmDeployment appsv1.Deployment
+    var alarmService corev1.Service
+
+    yaml.LoadYaml(filepath("opennms/alarm/alarm-deployment.yaml"), values, &alarmDeployment)
+    yaml.LoadYaml(filepath("opennms/alarm/alarm-service.yaml"), values, &alarmService)
+
 	//notification
 	var noteDeployment appsv1.Deployment
 	var noteService corev1.Service
@@ -125,6 +132,8 @@ func (h *OpenNMSHandler) UpdateConfig(values values.TemplateValues) {
 		&minionGatewayDeploy,
 		&inventoryDeployment,
 		&inventoryService,
+        &alarmDeployment,
+        &alarmService,
 	    &eventsDeployment,
         &eventsService,
 		&noteDeployment,

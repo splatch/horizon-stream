@@ -41,15 +41,12 @@ import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
 import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
-import org.opennms.horizon.alarmservice.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.Memo;
 import org.opennms.horizon.alarmservice.db.entity.ReductionKeyMemo;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -45,7 +45,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
-import org.opennms.horizon.alarmservice.api.AlarmRepository;
+import org.opennms.horizon.alarmservice.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;
@@ -57,13 +57,11 @@ import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.opennms.horizon.events.proto.Event;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
-@ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
 public class AlarmServiceImpl implements AlarmService {
 
     protected static final Integer THREADS = SystemProperties.getInteger("org.opennms.alarmd.threads", 4);

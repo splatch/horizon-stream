@@ -7,11 +7,6 @@
 
     <changeSet author="mfrazier" id="hs-0.1.0-alarms">
         <validCheckSum>3:e01c4288c19444d61c6bd149ecf6bde7</validCheckSum>
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <columnExists tableName="alarm_association" columnName="alarmAssociationId"/>
-            </not>
-        </preConditions>
 
         <createTable tableName="alarm_association">
             <column name="alarm_association_id" type="integer">
@@ -28,10 +23,10 @@
             </column>
         </createTable>
         <addForeignKeyConstraint constraintName="fk_alarm_situations_situation_id" onDelete="CASCADE"
-            baseTableName="alarm_association" baseColumnNames="situation_id"
-            referencedTableName="alarms" referencedColumnNames="alarm_id"/>
+            baseTableName="alarm_association" baseColumnNames="situation_alarm_id"
+            referencedTableName="alarm" referencedColumnNames="alarm_id"/>
         <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" onDelete="CASCADE"
             baseTableName="alarm_association" baseColumnNames="related_alarm_id"
-            referencedTableName="alarms" referencedColumnNames="alarm_id"/>
+            referencedTableName="alarm" referencedColumnNames="alarm_id"/>
     </changeSet>
 </databaseChangeLog>
