@@ -25,35 +25,23 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-import "google/protobuf/wrappers.proto";
+package org.opennms.horizon.server.mapper;
 
-package opennms.inventory;
-option java_multiple_files = true;
-option java_package = "org.opennms.horizon.inventory.dto";
+import org.mapstruct.Mapper;
+import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
+import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
+import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.server.model.inventory.Device;
+import org.opennms.horizon.server.model.inventory.DeviceCreate;
+import org.opennms.horizon.server.model.inventory.Location;
 
-message NodeDTO {
-  int64 id = 1;
-  string tenant_id = 2;
-  string node_label = 3;
-  string create_time = 4;
-  int64 monitoring_location_id = 5;
-}
 
-message DeviceCreateDTO {
-  string label = 1;
-  string location = 2;
-  optional string management_ip = 3;
-}
-
-message DeviceList {
-  repeated NodeDTO devices = 1;
-}
-
-service DeviceService {
-  rpc createDevice(DeviceCreateDTO) returns (NodeDTO) {};
-  rpc listDevices(google.protobuf.Empty) returns (DeviceList) {};
-  rpc getDeviceById(google.protobuf.Int64Value) returns (NodeDTO) {};
+@Mapper(componentModel = "spring")
+public interface ProtoPojoMapper {
+    Device protoToDevice(NodeDTO nodeDTO);
+    NodeDTO deviceToProto(Device device);
+    DeviceCreateDTO deviceCreateToProto(DeviceCreate request);
+    Location protoToLocation(MonitoringLocationDTO locationDTO);
+    MonitoringLocationDTO locationToProto(Location location);
 }

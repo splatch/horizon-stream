@@ -20,11 +20,10 @@
 		<lombok.binding.version>0.2.0</lombok.binding.version>
 		<graphql.spqr.version>0.0.6</graphql.spqr.version>
 		<docker.it.network>rest-server-it-network</docker.it.network>
-		<caffeine.cache.version>3.1.0</caffeine.cache.version>
-		<springdoc.openapi.version>1.6.9</springdoc.openapi.version>
-		<horizon.shared.lib.version>0.1.0-SNAPSHOT</horizon.shared.lib.version>
         <sonar.organization>opennms</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <grpc.version>1.43.2</grpc.version>
+        <mapstruct.version>1.5.3.Final</mapstruct.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -59,11 +58,26 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.github.ben-manes.caffeine</groupId>
-			<artifactId>caffeine</artifactId>
-			<version>${caffeine.cache.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-api</artifactId>
+            <version>${grpc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
+            <version>${grpc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>inventory</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -96,6 +110,11 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 					<annotationProcessorPaths>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>

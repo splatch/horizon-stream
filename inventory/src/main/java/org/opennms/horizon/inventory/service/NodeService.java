@@ -81,4 +81,13 @@ public class NodeService {
 
         return node;
     }
+
+    //todo for testing
+    public List<NodeDTO> listAllDevices() {
+        return nodeRepository.findAll().stream().map(mapper::modelToDTO).collect(Collectors.toList());
+    }
+
+    public NodeDTO findById(long id) {
+        return nodeRepository.findById(id).map(mapper::modelToDTO).orElseThrow();
+    }
 }

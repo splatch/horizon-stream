@@ -24,3 +24,7 @@ logging:
   file.path: /var/log/restServer
 
 tsdb.url: http://localhost:59090/api/v1/query
+
+grpc:
+  url:
+    inventory: localhost:29065

@@ -25,35 +25,18 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-import "google/protobuf/wrappers.proto";
+package org.opennms.horizon.server.model.inventory;
 
-package opennms.inventory;
-option java_multiple_files = true;
-option java_package = "org.opennms.horizon.inventory.dto";
+import lombok.Getter;
+import lombok.Setter;
 
-message NodeDTO {
-  int64 id = 1;
-  string tenant_id = 2;
-  string node_label = 3;
-  string create_time = 4;
-  int64 monitoring_location_id = 5;
-}
-
-message DeviceCreateDTO {
-  string label = 1;
-  string location = 2;
-  optional string management_ip = 3;
-}
-
-message DeviceList {
-  repeated NodeDTO devices = 1;
-}
-
-service DeviceService {
-  rpc createDevice(DeviceCreateDTO) returns (NodeDTO) {};
-  rpc listDevices(google.protobuf.Empty) returns (DeviceList) {};
-  rpc getDeviceById(google.protobuf.Int64Value) returns (NodeDTO) {};
+@Getter
+@Setter
+public class Device {
+    private long id;
+    private String tenantId;
+    private String nodeLabel;
+    private String createTime;
+    private long monitoringLocationId;
 }

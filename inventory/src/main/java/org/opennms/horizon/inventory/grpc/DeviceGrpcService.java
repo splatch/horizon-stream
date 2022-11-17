@@ -1,6 +1,8 @@
 package org.opennms.horizon.inventory.grpc;
 
 import com.google.common.net.InetAddresses;
+import com.google.protobuf.Empty;
+import com.google.protobuf.Int64Value;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 import io.grpc.Context;
@@ -9,6 +11,7 @@ import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
+import org.opennms.horizon.inventory.dto.DeviceList;
 import org.opennms.horizon.inventory.dto.DeviceServiceGrpc;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
@@ -16,6 +19,8 @@ import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -36,6 +41,26 @@ public class DeviceGrpcService extends DeviceServiceGrpc.DeviceServiceImplBase {
 
             responseObserver.onNext(nodeMapper.modelToDTO(node));
             responseObserver.onCompleted();
+        }
+    }
+
+    @Override
+    public void listDevices(Empty request, StreamObserver<DeviceList> responseObserver) {
+        List<NodeDTO> list = nodeService.listAllDevices();
+        responseObserver.onNext(DeviceList.newBuilder().addAllDevices(list).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getDeviceById(Int64Value request, StreamObserver<NodeDTO> responseObserver) {
+        try{
+            responseObserver.onNext(nodeService.findById(request.getValue()));
+            responseObserver.onCompleted();
+        } catch (NoSuchElementException e) {
+            Status status = Status.newBuilder()
+                .setCode(Code.NOT_FOUND_VALUE)
+                .setMessage("Device with id: " + request.getValue() + " doesn't exist.").build();
+            responseObserver.onError(StatusProto.toStatusRuntimeException(status));
         }
     }
 

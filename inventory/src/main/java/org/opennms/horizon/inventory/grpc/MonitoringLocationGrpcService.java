@@ -29,6 +29,7 @@
 package org.opennms.horizon.inventory.grpc;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
@@ -37,6 +38,7 @@ import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
 import org.opennms.horizon.inventory.service.MonitoringLocationService;
 
 import com.google.protobuf.Empty;
+import com.google.protobuf.Int64Value;
 import com.google.protobuf.StringValue;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
@@ -77,5 +79,18 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
             responseObserver.onError(StatusProto.toStatusRuntimeException(status));
         }
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getLocationById(Int64Value request, StreamObserver<MonitoringLocationDTO> responseObserver) {
+        try{
+            responseObserver.onNext(service.findById(request.getValue()));
+            responseObserver.onCompleted();
+        } catch (NoSuchElementException e) {
+            Status status = Status.newBuilder()
+                .setCode(Code.NOT_FOUND_VALUE)
+                .setMessage("Location with id: " + request.getValue() + " doesn't exist.").build();
+            responseObserver.onError(StatusProto.toStatusRuntimeException(status));
+        }
     }
 }
