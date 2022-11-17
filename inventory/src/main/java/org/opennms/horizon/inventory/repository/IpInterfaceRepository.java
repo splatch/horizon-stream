@@ -12,6 +12,9 @@ import org.springframework.stereotype.Repository;
 public interface IpInterfaceRepository extends JpaRepository<IpInterface, Long> {
     List<IpInterface> findByTenantId(String tenantId);
 
-    @Query("select ip from IpInterface ip inner join Node n on ip.tenantId = n.tenantId inner join MonitoringLocation ml on n.tenantId = ml.tenantId where ip.ipAddress = ?1 and ml.location = ?2 and ip.tenantId = ?3")
+    @Query("select ip from IpInterface ip" +
+        " inner join Node n on ip.nodeId = n.id" +
+        " inner join MonitoringLocation ml on n.monitoringLocationId = ml.id" +
+        " where ip.ipAddress = ?1 and ml.location = ?2 and ip.tenantId = ?3")
     List<IpInterface> findByIpAddressAndLocationAndTenantId(Inet ipAddress, String location, String tenantId);
 }

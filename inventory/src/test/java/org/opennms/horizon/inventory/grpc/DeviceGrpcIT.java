@@ -117,7 +117,7 @@ class DeviceGrpcIT extends GrpcTestBase {
     }
 
     @Test
-    void testCreateDeviceExistingIpAddressDifferentLocation() throws Exception {
+    void testCreateDeviceExistingIpAddressNewDifferentLocation() throws Exception {
         String location = "location";
         String ip = "127.0.0.1";
         String label = "label";
@@ -128,6 +128,30 @@ class DeviceGrpcIT extends GrpcTestBase {
 
         DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
             .setLocation("different")
+            .setLabel(label)
+            .setManagementIp(ip)
+            .build();
+
+        NodeDTO node = serviceStub.createDevice(createDTO);
+
+        assertEquals(label, node.getNodeLabel());
+    }
+
+    @Test
+    void testCreateDeviceExistingIpAddressInDifferentLocation() throws Exception {
+        String location = "location";
+        String ip = "127.0.0.1";
+        String label = "label";
+        String secondLocation = "loc2";
+        String secondIp = "127.0.0.2";
+
+        setupGrpc();
+        populateTables(location, ip);
+        populateTables(secondLocation, secondIp);
+        initStub();
+
+        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+            .setLocation(secondLocation)
             .setLabel(label)
             .setManagementIp(ip)
             .build();
