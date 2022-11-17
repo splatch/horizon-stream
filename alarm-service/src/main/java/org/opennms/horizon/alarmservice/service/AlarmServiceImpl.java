@@ -41,11 +41,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.api.AlarmRepository;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
+import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.Severity;
@@ -68,6 +71,8 @@ public class AlarmServiceImpl implements AlarmService {
     protected static boolean NEW_IF_CLEARED = Boolean.getBoolean("org.opennms.alarmd.newIfClearedAlarmExists");
     protected static boolean LEGACY_ALARM_STATE = Boolean.getBoolean("org.opennms.alarmd.legacyAlarmState");
 
+    public static final String ALARM_RULES_NAME = "alarm";
+
     private boolean createNewAlarmIfClearedAlarmExists = LEGACY_ALARM_STATE == true ? false : NEW_IF_CLEARED;
 
     protected static final String DEFAULT_USER = "admin";
@@ -81,12 +86,26 @@ public class AlarmServiceImpl implements AlarmService {
     @Autowired
     private AlarmMapper alarmMapper;
 
+    @Autowired
+    private DroolsAlarmContext droolsAlarmContext;
+
     private boolean legacyAlarmState = LEGACY_ALARM_STATE;
 
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
 //    @Autowired
 //    private EventForwarder eventForwarder;
+
+
+    @PostConstruct
+    public void init() {
+        droolsAlarmContext.start();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        droolsAlarmContext.stop();
+    }
 
     @Override
     @Transactional

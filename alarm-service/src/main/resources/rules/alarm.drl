@@ -55,8 +55,8 @@ rule "unclear"
   when
     $sessionClock : SessionClock()
     $trigger : Alarm(alarmType == Alarm.PROBLEM_TYPE,
-                         severity == AlarmSeverity.CLEARED, lastEvent != null,
-                         AlarmSeverity.get(lastEvent.getEventSeverity()).isGreaterThan(AlarmSeverity.CLEARED),
+                         severity == AlarmSeverity.CLEARED,
+                         AlarmSeverity.get(lastEventSeverity).isGreaterThan(AlarmSeverity.CLEARED),
                          lastEventTime > lastAutomationTime)
   then
     alarmService.unclearAlarm($trigger, new Date($sessionClock.getCurrentTime()));
@@ -85,8 +85,7 @@ rule "cleanUp"
   when
     $sessionClock : SessionClock()
     $alarm : Alarm(severity.isLessThanOrEqual(AlarmSeverity.NORMAL) &&
-                       alarmAckTime == null &&
-                       (TTicketState == null || TTicketState == TroubleTicketState.CLOSED || TTicketState == TroubleTicketState.CANCELLED))
+                       (alarmAckTime == null))
     not( Alarm( this == $alarm ) over window:time( 5m ) )
   then
     alarmService.deleteAlarm($alarm);
@@ -96,8 +95,7 @@ rule "fullCleanUp"
   salience 0
   when
     $sessionClock : SessionClock()
-    $alarm : Alarm(severity.isLessThanOrEqual(AlarmSeverity.NORMAL) &&
-                        (TTicketState == null || TTicketState == TroubleTicketState.CLOSED || TTicketState == TroubleTicketState.CANCELLED))
+    $alarm : Alarm(severity.isLessThanOrEqual(AlarmSeverity.NORMAL))
     not( Alarm( this == $alarm ) over window:time( 1d ) )
   then
     alarmService.deleteAlarm($alarm);

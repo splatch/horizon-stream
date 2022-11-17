@@ -8,8 +8,6 @@ import org.opennms.horizon.alarmservice.model.AlarmDTO;
 @Mapper
 public interface AlarmMapper {
 
-    //TODO: should this be the impl?
-
     AlarmMapper INSTANCE = Mappers.getMapper( AlarmMapper.class );
 
     AlarmDTO alarmToAlarmDTO(Alarm alarm);

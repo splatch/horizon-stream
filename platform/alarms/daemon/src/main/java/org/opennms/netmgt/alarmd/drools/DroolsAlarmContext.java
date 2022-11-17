@@ -38,6 +38,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -132,12 +133,15 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private final Meter atomicActionsQueued = new Meter();
 
     public DroolsAlarmContext() {
-        this(getDefaultRulesFolder());
+        this(getRulesResourceNames());
     }
 
-    public DroolsAlarmContext(File rulesFolder) {
-        super(rulesFolder, Alarmd.NAME, "DroolsAlarmContext");
-        setOnNewKiewSessionCallback(kieSession -> {
+//    public DroolsAlarmContext(File rulesFolder) {
+        public DroolsAlarmContext(List<String> rulesResourceNames) {
+//        super(rulesFolder, Alarmd.NAME, "DroolsAlarmContext");
+            super(rulesResourceNames, Alarmd.NAME, "DroolsAlarmContext");
+
+            setOnNewKiewSessionCallback(kieSession -> {
             kieSession.setGlobal("alarmService", alarmService);
             kieSession.insert(alarmTicketerService);
 
@@ -176,17 +180,21 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         getMetrics().register("atomicActionsQueued", atomicActionsQueued);
     }
 
-    public static File getDefaultRulesFolder() {
-        // FIXME: OOPS: Ugly
-        try {
-            Path rulesFolder = Files.createTempDirectory("rules");
-            Bundle bundle = FrameworkUtil.getBundle(DroolsAlarmContext.class);
-            copy(bundle.getResource("rules/alarmd.drl"), rulesFolder.resolve("alarmd.drl"));
-            copy(bundle.getResource("rules/situations.drl"), rulesFolder.resolve("situations.drl"));
-            return rulesFolder.toFile();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//    public static File getDefaultRulesFolder() {
+//        // FIXME: OOPS: Ugly
+//        try {
+//            Path rulesFolder = Files.createTempDirectory("rules");
+//            Bundle bundle = FrameworkUtil.getBundle(DroolsAlarmContext.class);
+//            copy(bundle.getResource("rules/alarmd.drl"), rulesFolder.resolve("alarmd.drl"));
+//            copy(bundle.getResource("rules/situations.drl"), rulesFolder.resolve("situations.drl"));
+//            return rulesFolder.toFile();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+    public static List<String> getRulesResourceNames() {
+        return Arrays.asList("rules/alarm.drl", "rules/situations.drl");
     }
 
     public static void copy(URL url, final Path target) throws IOException {

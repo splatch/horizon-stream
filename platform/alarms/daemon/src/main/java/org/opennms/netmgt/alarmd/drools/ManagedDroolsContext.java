@@ -91,7 +91,7 @@ public class ManagedDroolsContext {
             "org.opennms.netmgt.alarmd.drools.liveness_check_interval_ms", TimeUnit.SECONDS.toMillis(30));
 
     private final MetricRegistry metrics;
-    private final File rulesFolder;
+//    private final File rulesFolder;
     private final String kbaseName;
     private final String kSessionName;
 
@@ -118,9 +118,13 @@ public class ManagedDroolsContext {
     private JmxReporter metricsReporter;
     private java.util.Timer livenessTimer;
     private Timer livenessTimerMetric;
+    private List<String> rulesResourcesNames;
 
-    public ManagedDroolsContext(File rulesFolder, String kbaseName, String kSessionSuffixName) {
-        this.rulesFolder = Objects.requireNonNull(rulesFolder);
+//    public ManagedDroolsContext(File rulesFolder, String kbaseName, String kSessionSuffixName) {
+public ManagedDroolsContext(List<String> rulesResourceNames, String kbaseName, String kSessionSuffixName) {
+
+//    this.rulesFolder = Objects.requireNonNull(rulesFolder);
+        this.rulesResourcesNames = Objects.requireNonNull(rulesResourceNames);
         this.kbaseName = Objects.requireNonNull(kbaseName);
         this.kSessionName = String.format("%s-%s", kbaseName, Objects.requireNonNull(kSessionSuffixName));
         this.metrics = new MetricRegistry();
@@ -309,15 +313,9 @@ public class ManagedDroolsContext {
         kfs.writeKModuleXML(module.toXML());
         kfs.generateAndWritePomXML(id);
 
-        final List<File> rulesFiles;
-        try {
-            rulesFiles = getRulesFiles();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        LOG.info("Using rules files: {}", rulesFiles);
-        for (File file : rulesFiles) {
-            kfs.write("src/main/resources/" + file.getName(), ResourceFactory.newFileResource(file));
+        LOG.info("Using rules files: {}", rulesResourcesNames);
+        for (String file : rulesResourcesNames) {
+            kfs.write("src/main/resources/" + file, ResourceFactory.newInputStreamResource(this.getClass().getResourceAsStream(file)));
         }
 
         // Validate
@@ -335,18 +333,19 @@ public class ManagedDroolsContext {
         return id;
     }
 
-    private List<File> getRulesFiles() throws IOException {
-        final Path droolsRulesRoot = rulesFolder.toPath();
-        if (!droolsRulesRoot.toFile().isDirectory()) {
-            throw new IllegalStateException("Expected to find Drools rules for alarmd in '" + droolsRulesRoot
-                    + "' but the path is not a directory! Aborting.");
-        }
-        return Files.find(droolsRulesRoot, 3, (path, attrs) -> attrs.isRegularFile()
-                && path.toString().endsWith(".drl"))
-                .map(Path::toFile)
-                .sorted(Comparator.naturalOrder())
-                .collect(Collectors.toList());
-    }
+//    @Deprecated
+//    private List<File> getRulesFiles() throws IOException {
+//        final Path droolsRulesRoot = rulesFolder.toPath();
+//        if (!droolsRulesRoot.toFile().isDirectory()) {
+//            throw new IllegalStateException("Expected to find Drools rules for alarmd in '" + droolsRulesRoot
+//                    + "' but the path is not a directory! Aborting.");
+//        }
+//        return Files.find(droolsRulesRoot, 3, (path, attrs) -> attrs.isRegularFile()
+//                && path.toString().endsWith(".drl"))
+//                .map(Path::toFile)
+//                .sorted(Comparator.naturalOrder())
+//                .collect(Collectors.toList());
+//    }
 
     private static ReleaseId generateReleaseId() {
         // final KieServices ks = KieServices.Factory.get();

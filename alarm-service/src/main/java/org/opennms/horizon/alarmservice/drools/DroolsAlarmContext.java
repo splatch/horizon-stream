@@ -59,6 +59,7 @@ import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.AlarmAssociation;
 import org.opennms.horizon.alarmservice.service.AlarmCallbackStateTracker;
+import org.opennms.horizon.alarmservice.service.AlarmServiceImpl;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -117,7 +118,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     public DroolsAlarmContext(File rulesFolder) {
-        super(rulesFolder, "TODO:MMF fixme", "DroolsAlarmContext");
+        super(rulesFolder, AlarmServiceImpl.ALARM_RULES_NAME, "DroolsAlarmContext");
         setOnNewKiewSessionCallback(kieSession -> {
             kieSession.setGlobal("alarmService", alarmService);
 
