@@ -16,28 +16,22 @@ package handlers
 
 import (
 	"github.com/OpenNMS/opennms-operator/internal/model/values"
-	"github.com/OpenNMS/opennms-operator/internal/util/yaml"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type BaseHandler struct {
 	ServiceHandlerObject
 }
 
-func (h *BaseHandler) UpdateConfig(values values.TemplateValues) {
+func (h *BaseHandler) UpdateConfig(values values.TemplateValues) error {
 	var namespace corev1.Namespace
 	var certSecret corev1.Secret
 	var endpointRole rbacv1.Role
 
-	yaml.LoadYaml(filepath("_namespace.yaml"), values, &namespace)
-	yaml.LoadYaml(filepath("cert/cert-secret.yaml"), values, &certSecret)
-	yaml.LoadYaml(filepath("endpoints-role.yaml"), values, &endpointRole)
+	h.AddToTemplates(filepath("_namespace.yaml"), values, &namespace)
+	h.AddToTemplates(filepath("cert/cert-secret.yaml"), values, &certSecret)
+	h.AddToTemplates(filepath("endpoints-role.yaml"), values, &endpointRole)
 
-	h.Config = []client.Object{
-		&namespace,
-		&certSecret,
-		&endpointRole,
-	}
+	return h.LoadTemplates()
 }

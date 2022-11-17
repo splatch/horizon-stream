@@ -18,33 +18,30 @@ import (
 	"github.com/OpenNMS/opennms-operator/config"
 	"github.com/OpenNMS/opennms-operator/internal/model/values"
 	uberConfig "go.uber.org/config"
-	"log"
 )
 
 // GetDefaultValues - get the default Helm/Template values
-func GetDefaultValues(operatorConfig config.OperatorConfig) values.TemplateValues {
-	v := LoadValues(operatorConfig.DefaultOpenNMSValuesFile, operatorConfig.DefaultOperatorValuesFile)
+func GetDefaultValues(operatorConfig config.OperatorConfig) (values.TemplateValues, error) {
+	v, err := LoadValues(operatorConfig.DefaultOpenNMSValuesFile)
 	return values.TemplateValues{
 		Values:  v,
 		Release: values.HelmRelease{},
-	}
+	}, err
 }
 
 // LoadValues - load Helm/Template values from the given files
-func LoadValues(opennmsValues string, operatorValues string) values.Values {
-	combinedYaml, err := uberConfig.NewYAML(
-		// TODO remove after cleaning up yamls
+func LoadValues(opennmsValues string) (values.Values, error) {
+	yaml, err := uberConfig.NewYAML(
 		uberConfig.Permissive(), // this allows for values from the yaml that aren't represented in the Values struct
 		uberConfig.File(opennmsValues),
-		uberConfig.File(operatorValues),
 	)
 	if err != nil {
-		log.Fatalf("error reading yaml from files: %v", err)
+		return values.Values{}, err
 	}
 	var defValues values.Values
-	err = combinedYaml.Get(uberConfig.Root).Populate(&defValues)
+	err = yaml.Get(uberConfig.Root).Populate(&defValues)
 	if err != nil {
-		log.Fatalf("error unmarshalling default values from file: %v", err)
+		return values.Values{}, err
 	}
-	return defValues
+	return defValues, nil
 }

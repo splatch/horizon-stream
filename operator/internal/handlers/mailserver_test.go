@@ -1,3 +1,5 @@
+//go:build unit
+
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,22 +17,15 @@ limitations under the License.
 package handlers
 
 import (
-	"github.com/OpenNMS/opennms-operator/internal/model/values"
-	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-type KafkaHandler struct {
-	ServiceHandlerObject
-}
-
-func (h *KafkaHandler) UpdateConfig(values values.TemplateValues) error {
-
-	var deployment appsv1.Deployment
-	var service corev1.Service
-
-	h.AddToTemplates(filepath("kafka/kafka-service.yaml"), values, &service)
-	h.AddToTemplates(filepath("kafka/kafka-deployment.yaml"), values, &deployment)
-
-	return h.LoadTemplates()
+func TestMailServerUpdateConfig(t *testing.T) {
+	ConfigFilePath = "./../../charts/opennms/templates/"
+	handler := MailServerHandler{}
+	assert.Nil(t, handler.GetConfig(), "config should start as nil")
+	err := handler.UpdateConfig(DefaultTestValues())
+	assert.Nil(t, err)
+	assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
 }

@@ -32,7 +32,6 @@ func (r *OpenNMSReconciler) updateDeployment(ctx context.Context, instance *v1al
 	drD := deployedResource.(*v1.Deployment)
 	if !subsets.SubsetEqual(rD.Spec, drD.Spec) || !subsets.SubsetEqual(rD.Annotations, drD.Annotations) || !subsets.SubsetEqual(rD.Labels, drD.Labels) {
 		r.updateStatus(ctx, instance, false, fmt.Sprintf("updating deployment: %s", resource.GetName()))
-		r.Log.Info("updating deployment for some reason", "name", resource.GetName())
 
 		if err := r.Update(ctx, resource); err != nil {
 			return &reconcile.Result{}, err
@@ -40,10 +39,8 @@ func (r *OpenNMSReconciler) updateDeployment(ctx context.Context, instance *v1al
 		return &reconcile.Result{RequeueAfter: 10 * time.Second}, nil
 	} else {
 		// Determine if the resources are fully created, otherwise wait longer
-		deployment := deployedResource.(*v1.Deployment)
-		if deployment.Status.ReadyReplicas != deployment.Status.Replicas {
-			r.Log.Info("waiting for deployment for some reason", "name", resource.GetName(), "ready", deployment.Status.ReadyReplicas, "wanted", deployment.Status.Replicas)
-			return &reconcile.Result{RequeueAfter: 10 * time.Second}, nil
+		if drD.Status.ReadyReplicas != drD.Status.Replicas {
+			return &reconcile.Result{RequeueAfter: 15 * time.Second}, nil
 		}
 	}
 	return nil, nil
@@ -60,21 +57,20 @@ func (r *OpenNMSReconciler) updateStatefulSet(ctx context.Context, instance *v1a
 		return &reconcile.Result{RequeueAfter: 10 * time.Second}, nil
 	} else {
 		// Determine if the resources are fully created, otherwise wait longer
-		statefulset := deployedResource.(*v1.StatefulSet)
-		if statefulset.Status.ReadyReplicas != statefulset.Status.Replicas {
-			return &reconcile.Result{RequeueAfter: 10 * time.Second}, nil
+		if drSS.Status.ReadyReplicas != drSS.Status.Replicas {
+			return &reconcile.Result{RequeueAfter: 15 * time.Second}, nil
 		}
 	}
 
 	return nil, nil
 }
 
-func (r *OpenNMSReconciler) updateJob(deployedResource client.Object) (*reconcile.Result, error) {
+func (r *OpenNMSReconciler) updateJob(deployedResource client.Object) *reconcile.Result {
 	job := deployedResource.(*batchv1.Job)
 	if job.Status.Succeeded < 1 {
-		return &reconcile.Result{RequeueAfter: 10 * time.Second}, nil
+		return &reconcile.Result{RequeueAfter: 10 * time.Second}
 	}
-	return nil, nil
+	return nil
 }
 
 func (r *OpenNMSReconciler) updateSecret(ctx context.Context, resource client.Object, deployedResource client.Object) (*reconcile.Result, error) {

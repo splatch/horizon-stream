@@ -17,7 +17,6 @@ package main
 import (
 	"github.com/OpenNMS/opennms-operator/config"
 	"github.com/OpenNMS/opennms-operator/internal/handlers"
-	"github.com/OpenNMS/opennms-operator/internal/image"
 	"github.com/OpenNMS/opennms-operator/internal/reconciler"
 	"github.com/OpenNMS/opennms-operator/internal/scheme"
 	"github.com/OpenNMS/opennms-operator/internal/util/values"
@@ -59,11 +58,13 @@ func main() {
 		setupLog.Error(err, "unable to define OpenNMS operator")
 		os.Exit(1)
 	}
-	k8sClient := mgr.GetClient()
 
-	defaultValues := values.GetDefaultValues(operatorConfig)
+	defaultValues, err := values.GetDefaultValues(operatorConfig)
+	if err != nil {
+		setupLog.Error(err, "unable to load default instance values")
+		os.Exit(1)
+	}
 
-	imageChecker := image.NewImageUpdater(k8sClient, operatorConfig.ImageUpdateFreq)
 	if err = (&reconciler.OpenNMSReconciler{
 		Client:        mgr.GetClient(),
 		Log:           logger,
@@ -72,7 +73,6 @@ func main() {
 		Config:        operatorConfig,
 		DefaultValues: defaultValues,
 		Instances:     map[string]*reconciler.Instance{},
-		ImageChecker:  imageChecker,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create OpenNMS controller", "controller", "OpenNMS")
 		os.Exit(1)

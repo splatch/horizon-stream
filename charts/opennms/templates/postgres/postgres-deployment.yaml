@@ -57,7 +57,6 @@ spec:
                   key: adminPwd
           ports:
             - containerPort: 5432
-          {{- if not .Values.TestDeploy }}
           livenessProbe:
             exec:
               command:
@@ -79,7 +78,6 @@ spec:
                 - postgres
             initialDelaySeconds: 10
             periodSeconds: 10
-          {{- end }}
           resources:
             limits:
               cpu: "2"
