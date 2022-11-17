@@ -69,6 +69,6 @@ public interface AlarmEntityListener {
 
     void onRelatedAlarmsUpdated(Alarm alarm, Set<Alarm> previousRelatedAlarms);
 
-    void onTicketStateChanged(Alarm alarm, TroubleTicketState previousState);
+//    void onTicketStateChanged(Alarm alarm, TroubleTicketState previousState);
 
 }

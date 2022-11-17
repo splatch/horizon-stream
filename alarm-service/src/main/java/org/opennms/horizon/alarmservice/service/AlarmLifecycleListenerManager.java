@@ -38,6 +38,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
 import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
 import org.opennms.horizon.alarmservice.api.AlarmRepository;
@@ -52,9 +53,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 public class AlarmLifecycleListenerManager implements AlarmEntityListener {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmLifecycleListenerManager.class);
 
     public static final String ALARM_SNAPSHOT_INTERVAL_MS_SYS_PROP = "org.opennms.alarms.snapshot.sync.ms";
     public static final long ALARM_SNAPSHOT_INTERVAL_MS = SystemProperties.getLong(ALARM_SNAPSHOT_INTERVAL_MS_SYS_PROP, TimeUnit.MINUTES.toMillis(2));
@@ -75,7 +75,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
                 try {
                     doSnapshot();
                 } catch (Exception e) {
-                    LOG.error("Error while performing snapshot update.", e);
+                    log.error("Error while performing snapshot update.", e);
                 }
             }
         }, 0, ALARM_SNAPSHOT_INTERVAL_MS);
@@ -106,14 +106,14 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
                // to load the alarms and how long it took to invoke the callbacks
                systemMillisAfterLoad.set(System.currentTimeMillis());
                forEachListener(l -> {
-                   LOG.debug("Calling handleAlarmSnapshot on listener: {}", l);
+                   log.debug("Calling handleAlarmSnapshot on listener: {}", l);
                    l.handleAlarmSnapshot(allAlarms);
-                   LOG.debug("Done calling listener.");
+                   log.debug("Done calling listener.");
                });
         } finally {
-            if (LOG.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 final long now = System.currentTimeMillis();
-                LOG.debug("Alarm snapshot for {} alarms completed. Spent {}ms loading the alarms. " +
+                log.debug("Alarm snapshot for {} alarms completed. Spent {}ms loading the alarms. " +
                                 "Snapshot processing took a total of of {}ms.",
                         numAlarms.get(),
                         systemMillisAfterLoad.get() - systemMillisBeforeSnapshot,
@@ -192,23 +192,23 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
         onNewOrUpdatedAlarm(alarm);
     }
 
-    @Override
-    public void onTicketStateChanged(Alarm alarm, TroubleTicketState previousState) {
-        onNewOrUpdatedAlarm(alarm);
-    }
+//    @Override
+//    public void onTicketStateChanged(Alarm alarm, TroubleTicketState previousState) {
+//        onNewOrUpdatedAlarm(alarm);
+//    }
 
     private void forEachListener(Consumer<AlarmLifecycleListener> callback) {
         for (AlarmLifecycleListener listener : listeners) {
             try {
                 callback.accept(listener);
             } catch (Exception e) {
-                LOG.error("Error occurred while invoking listener: {}. Skipping.", listener, e);
+                log.error("Error occurred while invoking listener: {}. Skipping.", listener, e);
             }
         }
     }
 
     public void onListenerRegistered(final AlarmLifecycleListener listener, final Map<String,String> properties) {
-        LOG.debug("onListenerRegistered: {} with properties: {}", listener, properties);
+        log.debug("onListenerRegistered: {} with properties: {}", listener, properties);
         if (listener!=null) { listeners.add(listener); }
     }
 
@@ -217,7 +217,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
     }
 
     public void onListenerUnregistered(final AlarmLifecycleListener listener, final Map<String,String> properties) {
-        LOG.debug("onListenerUnregistered: {} with properties: {}", listener, properties);
+        log.debug("onListenerUnregistered: {} with properties: {}", listener, properties);
         if (listener!=null) { listeners.remove(listener); }
     }
 

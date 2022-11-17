@@ -240,7 +240,7 @@ public class AlarmServiceImpl implements AlarmService {
         Alarm alarm = alarmRepository.getById(id);
 
         alarm.setSeverity(severity);
-        // where to set this date?
+        // TODO:MMF where to set this date?
 //        alarm.set?
 
         alarmRepository.save(alarm);
@@ -248,6 +248,7 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     public void sendEvent(Event e) {
+        //TODO:MMF do we still need this?
 //        eventForwarder.sendNow(e);
     }
 

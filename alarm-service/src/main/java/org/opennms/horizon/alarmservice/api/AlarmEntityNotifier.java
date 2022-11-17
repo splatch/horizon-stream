@@ -76,6 +76,6 @@ public interface AlarmEntityNotifier {
 
     void didUpdateRelatedAlarms(Alarm alarm, Set<Alarm> previousRelatedAlarms);
 
-    void didChangeTicketStateForAlarm(Alarm alarm, TroubleTicketState previousState);
+//    void didChangeTicketStateForAlarm(Alarm alarm, TroubleTicketState previousState);
 
 }

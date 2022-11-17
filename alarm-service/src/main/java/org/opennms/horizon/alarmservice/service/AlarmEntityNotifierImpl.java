@@ -114,10 +114,10 @@ public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
         forEachListener(l -> l.onRelatedAlarmsUpdated(alarm, previousRelatedAlarms));
     }
 
-    @Override
-    public void didChangeTicketStateForAlarm(Alarm alarm, TroubleTicketState previousState) {
-        forEachListener(l -> l.onTicketStateChanged(alarm, previousState));
-    }
+//    @Override
+//    public void didChangeTicketStateForAlarm(Alarm alarm, TroubleTicketState previousState) {
+//        forEachListener(l -> l.onTicketStateChanged(alarm, previousState));
+//    }
 
     private void forEachListener(Consumer<AlarmEntityListener> callback) {
         for (AlarmEntityListener listener : listeners) {

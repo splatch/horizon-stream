@@ -75,8 +75,8 @@ public class DefaultAlarmEntityListener implements AlarmEntityListener {
 
     }
 
-    @Override
-    public void onTicketStateChanged(Alarm alarm, TroubleTicketState previousState) {
-
-    }
+//    @Override
+//    public void onTicketStateChanged(Alarm alarm, TroubleTicketState previousState) {
+//
+//    }
 }
