@@ -29,7 +29,7 @@
 package org.opennms.horizon.server.mapper;
 
 import org.mapstruct.Mapper;
-import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
+import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.server.model.inventory.Device;
 import org.opennms.horizon.server.model.inventory.DeviceCreate;
@@ -38,6 +38,5 @@ import org.opennms.horizon.server.model.inventory.DeviceCreate;
 @Mapper(componentModel = "spring")
 public interface DeviceMapper {
     Device protoToDevice(NodeDTO nodeDTO);
-    NodeDTO deviceToProto(Device device);
-    DeviceCreateDTO deviceCreateToProto(DeviceCreate request);
+    NodeCreateDTO deviceCreateToProto(DeviceCreate request);
 }

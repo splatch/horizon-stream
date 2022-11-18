@@ -30,13 +30,13 @@ package org.opennms.horizon.server.service.grpc;
 
 import java.util.List;
 
-import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
-import org.opennms.horizon.inventory.dto.DeviceServiceGrpc;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
 import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
 import org.opennms.horizon.inventory.dto.MonitoringSystemServiceGrpc;
+import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
@@ -50,7 +50,7 @@ import io.grpc.stub.MetadataUtils;
 public class InventoryClient {
     private final ManagedChannel channel;
     private MonitoringLocationServiceGrpc.MonitoringLocationServiceBlockingStub locationStub;
-    private DeviceServiceGrpc.DeviceServiceBlockingStub deviceStub;
+    private NodeServiceGrpc.NodeServiceBlockingStub deviceStub;
     private MonitoringSystemServiceGrpc.MonitoringSystemServiceBlockingStub systemStub;
 
     //TODO: hardcoded tenantId will be removed in HS-598
@@ -65,7 +65,7 @@ public class InventoryClient {
 
     private void initialStubs() {
         locationStub = MonitoringLocationServiceGrpc.newBlockingStub(channel);
-        deviceStub = DeviceServiceGrpc.newBlockingStub(channel);
+        deviceStub = NodeServiceGrpc.newBlockingStub(channel);
         systemStub = MonitoringSystemServiceGrpc.newBlockingStub(channel);
     }
 
@@ -76,22 +76,22 @@ public class InventoryClient {
     }
 
     //TODO: add error handling
-    public NodeDTO createNewDevice(DeviceCreateDTO device) {
+    public NodeDTO createNewDevice(NodeCreateDTO device) {
         Metadata metadata = new Metadata();
         metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
-        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).createDevice(device);
+        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).createNode(device);
     }
 
     public List<NodeDTO> listDevice() {
         Metadata metadata = new Metadata();
         metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
-        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listDevices(Empty.newBuilder().build()).getDevicesList();
+        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listNodes(Empty.newBuilder().build()).getNodesList();
     }
 
     public NodeDTO getDeviceById(long id) {
         Metadata metadata = new Metadata();
         metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
-        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getDeviceById(Int64Value.of(id));
+        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getNodeById(Int64Value.of(id));
     }
 
     public List<MonitoringLocationDTO> listLocations() {
@@ -109,7 +109,7 @@ public class InventoryClient {
     public List<MonitoringSystemDTO> listMonitoringSystems() {
         Metadata metadata = new Metadata();
         metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
-        return systemStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listMonitoringSystem(Empty.newBuilder().build()).getListList();
+        return systemStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listMonitoringSystem(Empty.newBuilder().build()).getSystemsList();
     }
 
     public MonitoringSystemDTO getSystemBySystemId(String systemId) {

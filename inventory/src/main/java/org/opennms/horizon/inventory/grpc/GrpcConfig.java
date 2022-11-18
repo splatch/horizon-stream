@@ -34,11 +34,8 @@ import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.opennms.horizon.inventory.service.MonitoringLocationService;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
 import lombok.RequiredArgsConstructor;
-import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
+
 import org.opennms.horizon.inventory.mapper.NodeMapper;
-import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
-import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
-import org.opennms.horizon.inventory.repository.NodeRepository;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -73,14 +70,14 @@ public class GrpcConfig {
     }
 
     @Bean
-    public DeviceGrpcService createDeviceService(TenantLookup tenantLookup) {
-        return new DeviceGrpcService(nodeService, ipInterfaceService, nodeMapper, tenantLookup);
+    public NodeGrpcService createNodeService(TenantLookup tenantLookup) {
+        return new NodeGrpcService(nodeService, ipInterfaceService, nodeMapper, tenantLookup);
     }
 
     @Bean(destroyMethod = "stopServer")
-    public GrpcServerManager startServer(MonitoringLocationGrpcService locationGrpc, MonitoringSystemGrpcService systemGrpc, DeviceGrpcService deviceGrpcService) {
+    public GrpcServerManager startServer(MonitoringLocationGrpcService locationGrpc, MonitoringSystemGrpcService systemGrpc, NodeGrpcService nodeGrpcService) {
         GrpcServerManager manager = new GrpcServerManager(port);
-        manager.startServer(Arrays.asList(locationGrpc, systemGrpc, deviceGrpcService));
+        manager.startServer(Arrays.asList(locationGrpc, systemGrpc, nodeGrpcService));
         return manager;
     }
 }

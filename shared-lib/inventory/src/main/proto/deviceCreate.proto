@@ -42,18 +42,18 @@ message NodeDTO {
   int64 monitoring_location_id = 5;
 }
 
-message DeviceCreateDTO {
+message NodeCreateDTO {
   string label = 1;
   string location = 2;
   optional string management_ip = 3;
 }
 
-message DeviceList {
-  repeated NodeDTO devices = 1;
+message NodeList {
+  repeated NodeDTO nodes = 1;
 }
 
-service DeviceService {
-  rpc createDevice(DeviceCreateDTO) returns (NodeDTO) {};
-  rpc listDevices(google.protobuf.Empty) returns (DeviceList) {};
-  rpc getDeviceById(google.protobuf.Int64Value) returns (NodeDTO) {};
+service NodeService {
+  rpc createNode(NodeCreateDTO) returns (NodeDTO) {};
+  rpc listNodes(google.protobuf.Empty) returns (NodeList) {};
+  rpc getNodeById(google.protobuf.Int64Value) returns (NodeDTO) {};
 }

@@ -1,18 +1,46 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.horizon.inventory.grpc;
 
-import com.google.rpc.Code;
-import com.google.rpc.Status;
-import com.vladmihalcea.hibernate.type.basic.Inet;
-import io.grpc.StatusRuntimeException;
-import io.grpc.protobuf.StatusProto;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.inventory.InventoryApplication;
 import org.opennms.horizon.inventory.PostgresInitializer;
-import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
-import org.opennms.horizon.inventory.dto.DeviceServiceGrpc;
+import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.model.Node;
@@ -23,17 +51,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.time.LocalDateTime;
+import com.google.rpc.Code;
+import com.google.rpc.Status;
+import com.vladmihalcea.hibernate.type.basic.Inet;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import io.grpc.StatusRuntimeException;
+import io.grpc.protobuf.StatusProto;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = InventoryApplication.class)
 @ContextConfiguration(initializers = {PostgresInitializer.class})
-class DeviceGrpcIT extends GrpcTestBase {
-    private DeviceServiceGrpc.DeviceServiceBlockingStub serviceStub;
+class NodeGrpcIT extends GrpcTestBase {
+    private NodeServiceGrpc.NodeServiceBlockingStub serviceStub;
 
     @Autowired
     private NodeRepository nodeRepository;
@@ -43,7 +73,7 @@ class DeviceGrpcIT extends GrpcTestBase {
     private IpInterfaceRepository ipInterfaceRepository;
 
     public void initStub() {
-        serviceStub = DeviceServiceGrpc.newBlockingStub(channel);
+        serviceStub = NodeServiceGrpc.newBlockingStub(channel);
     }
 
     @AfterEach
@@ -56,25 +86,25 @@ class DeviceGrpcIT extends GrpcTestBase {
     }
 
     @Test
-    void testCreateDevice() throws Exception {
+    void testCreateNode() throws Exception {
         setupGrpc();
         initStub();
 
         String label = "label";
 
-        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+        NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation("location")
             .setLabel(label)
             .setManagementIp("127.0.0.1")
             .build();
 
-        NodeDTO node = serviceStub.createDevice(createDTO);
+        NodeDTO node = serviceStub.createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
     }
 
     @Test
-    void testCreateDeviceExistingIpAddress() throws Exception {
+    void testCreateNodeExistingIpAddress() throws Exception {
         String location = "location";
         String ip = "127.0.0.1";
         String label = "label";
@@ -83,20 +113,20 @@ class DeviceGrpcIT extends GrpcTestBase {
         populateTables(location, ip);
         initStub();
 
-        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+        NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation(location)
             .setLabel(label)
             .setManagementIp(ip)
             .build();
 
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.createDevice(createDTO));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.createNode(createDTO));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.ALREADY_EXISTS_VALUE);
         assertThat(status.getMessage()).isEqualTo("Ip address already exists for location");
     }
 
     @Test
-    void testCreateDeviceExistingIpAddressDifferentTenantId() throws Exception {
+    void testCreateNodeExistingIpAddressDifferentTenantId() throws Exception {
         String location = "location";
         String ip = "127.0.0.1";
         String label = "label";
@@ -105,19 +135,19 @@ class DeviceGrpcIT extends GrpcTestBase {
         populateTables(location, ip);
         initStub();
 
-        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+        NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation(location)
             .setLabel(label)
             .setManagementIp(ip)
             .build();
 
-        NodeDTO node = serviceStub.createDevice(createDTO);
+        NodeDTO node = serviceStub.createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
     }
 
     @Test
-    void testCreateDeviceExistingIpAddressNewDifferentLocation() throws Exception {
+    void testCreateNodeExistingIpAddressNewDifferentLocation() throws Exception {
         String location = "location";
         String ip = "127.0.0.1";
         String label = "label";
@@ -126,19 +156,19 @@ class DeviceGrpcIT extends GrpcTestBase {
         populateTables(location, ip);
         initStub();
 
-        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+        NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation("different")
             .setLabel(label)
             .setManagementIp(ip)
             .build();
 
-        NodeDTO node = serviceStub.createDevice(createDTO);
+        NodeDTO node = serviceStub.createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
     }
 
     @Test
-    void testCreateDeviceExistingIpAddressInDifferentLocation() throws Exception {
+    void testCreateNodeExistingIpAddressInDifferentLocation() throws Exception {
         String location = "location";
         String ip = "127.0.0.1";
         String label = "label";
@@ -150,13 +180,13 @@ class DeviceGrpcIT extends GrpcTestBase {
         populateTables(secondLocation, secondIp);
         initStub();
 
-        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+        NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation(secondLocation)
             .setLabel(label)
             .setManagementIp(ip)
             .build();
 
-        NodeDTO node = serviceStub.createDevice(createDTO);
+        NodeDTO node = serviceStub.createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
     }
@@ -182,38 +212,38 @@ class DeviceGrpcIT extends GrpcTestBase {
     }
 
     @Test
-    void testCreateDeviceMissingTenantId() throws Exception {
+    void testCreateNodeMissingTenantId() throws Exception {
         setupGrpcWithOutTenantID();
         initStub();
 
         String label = "label";
 
-        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+        NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation("location")
             .setLabel(label)
             .setManagementIp("127.0.0.1")
             .build();
 
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.createDevice(createDTO));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.createNode(createDTO));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.UNAUTHENTICATED_VALUE);
         assertThat(status.getMessage()).isEqualTo("Missing tenant id");
     }
 
     @Test
-    void testCreateDeviceBadIPAddress() throws Exception {
+    void testCreateNodeBadIPAddress() throws Exception {
         setupGrpc();
         initStub();
 
         String label = "label";
 
-        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+        NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation("location")
             .setLabel(label)
             .setManagementIp("BAD")
             .build();
 
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.createDevice(createDTO));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.createNode(createDTO));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.INVALID_ARGUMENT_VALUE);
         assertThat(status.getMessage()).isEqualTo("Bad management_ip: BAD");

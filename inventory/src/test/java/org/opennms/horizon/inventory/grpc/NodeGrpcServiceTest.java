@@ -26,102 +26,103 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.service;
+package org.opennms.horizon.inventory.grpc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
+import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
+import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
-import org.opennms.horizon.inventory.model.IpInterface;
-import org.opennms.horizon.inventory.model.MonitoringLocation;
-import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
-import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
-import org.opennms.horizon.inventory.repository.NodeRepository;
+import org.opennms.horizon.inventory.service.IpInterfaceService;
+import org.opennms.horizon.inventory.service.NodeService;
+
+import io.grpc.stub.StreamObserver;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NodeServiceTest {
-
+public class NodeGrpcServiceTest {
     @InjectMocks
+    NodeGrpcService nodeGrpcService;
+
+    @Mock
     NodeService nodeService;
 
     @Mock
-    NodeRepository nodeRepository;
+    IpInterfaceService ipInterfaceService;
 
     @Mock
-    MonitoringLocationRepository monitoringLocationRepository;
+    NodeMapper nodeMapper;
 
     @Mock
-    IpInterfaceRepository ipInterfaceRepository;
-
-    @Mock
-    NodeMapper mapper;
-
-    @AfterEach
-    public void afterTest(){
-        verifyNoMoreInteractions(nodeRepository);
-        verifyNoMoreInteractions(monitoringLocationRepository);
-        verifyNoMoreInteractions(ipInterfaceRepository);
-    }
+    TenantLookup tenantLookup;
 
     @Test
     public void createNode() {
+        doReturn(Optional.of("ANY")).when(tenantLookup).lookupTenantId(any());
+
         NodeCreateDTO nodeCreateDTO = NodeCreateDTO.newBuilder()
             .setLabel("Label")
             .setLocation("loc")
             .setManagementIp("127.0.0.1")
             .build();
-        MonitoringLocation location = new MonitoringLocation();
-        doReturn(location).when(monitoringLocationRepository).save(any(MonitoringLocation.class));
 
-        nodeService.createNode(nodeCreateDTO, "ANY");
+        StreamObserver<NodeDTO> obs = mock(StreamObserver.class);
 
-        verify(ipInterfaceRepository).save(any(IpInterface.class));
-        verify(monitoringLocationRepository).save(any(MonitoringLocation.class));
+        nodeGrpcService.createNode(nodeCreateDTO, obs);
+
+        verify(obs, times(0)).onError(any());
+        verify(obs).onCompleted();
     }
 
     @Test
-    public void createNodeExistingLocation() {
-        String location = "loc";
-        String tenantId = "ANY";
+    public void createNodeBadIp() {
+        doReturn(Optional.of("ANY")).when(tenantLookup).lookupTenantId(any());
 
-        NodeCreateDTO nodeCreateDTO = NodeCreateDTO.newBuilder()
-            .setLabel("Label")
-            .setLocation(location)
-            .setManagementIp("127.0.0.1")
-            .build();
-
-        doReturn(Optional.of(new MonitoringLocation())).when(monitoringLocationRepository).findByLocationAndTenantId(location, tenantId);
-
-        nodeService.createNode(nodeCreateDTO, tenantId);
-
-        verify(ipInterfaceRepository).save(any(IpInterface.class));
-        verify(monitoringLocationRepository, times(0)).save(any(MonitoringLocation.class));
-    }
-
-    @Test
-    public void createNodeNoIp() {
         NodeCreateDTO nodeCreateDTO = NodeCreateDTO.newBuilder()
             .setLabel("Label")
             .setLocation("loc")
+            .setManagementIp("BAD")
             .build();
 
-        MonitoringLocation location = new MonitoringLocation();
-        doReturn(location).when(monitoringLocationRepository).save(any(MonitoringLocation.class));
+        StreamObserver<NodeDTO> obs = mock(StreamObserver.class);
 
-        nodeService.createNode(nodeCreateDTO, "ANY");
+        nodeGrpcService.createNode(nodeCreateDTO, obs);
 
-        verify(ipInterfaceRepository, times(0)).save(any(IpInterface.class));
+        verify(obs).onError(any());
+        verify(obs, times(0)).onCompleted();
+    }
+
+    @Test
+    public void createNodeDuplicateIp() {
+        List<IpInterfaceDTO> interfaces = List.of(IpInterfaceDTO.newBuilder().build());
+
+        doReturn(Optional.of("ANY")).when(tenantLookup).lookupTenantId(any());
+        doReturn(interfaces).when(ipInterfaceService).findByIpAddressAndLocationAndTenantId(any(), any(), any());
+
+        NodeCreateDTO nodeCreateDTO = NodeCreateDTO.newBuilder()
+            .setLabel("Label")
+            .setLocation("loc")
+            .setManagementIp("127.0.0.1")
+            .build();
+
+        StreamObserver<NodeDTO> obs = mock(StreamObserver.class);
+
+        nodeGrpcService.createNode(nodeCreateDTO, obs);
+
+        verify(obs).onError(any());
+        verify(obs, times(0)).onCompleted();
     }
 }
