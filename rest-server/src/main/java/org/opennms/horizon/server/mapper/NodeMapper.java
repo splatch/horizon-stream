@@ -26,15 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.model.inventory;
+package org.opennms.horizon.server.mapper;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.mapstruct.Mapper;
+import org.opennms.horizon.inventory.dto.NodeCreateDTO;
+import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.server.model.inventory.Node;
+import org.opennms.horizon.server.model.inventory.NodeCreate;
 
-@Getter
-@Setter
-public class DeviceCreate {
-    private String label;
-    private String location;
-    private String managementIp;
+
+@Mapper(componentModel = "spring")
+public interface NodeMapper {
+    Node protoToNode(NodeDTO nodeDTO);
+    NodeCreateDTO nodeCreateToProto(NodeCreate request);
 }

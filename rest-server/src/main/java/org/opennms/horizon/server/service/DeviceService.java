@@ -27,45 +27,40 @@
  *******************************************************************************/
 
 package org.opennms.horizon.server.service;
-
-import java.util.stream.Collectors;
-
-import org.opennms.horizon.server.mapper.DeviceMapper;
-import org.opennms.horizon.server.model.inventory.Device;
-import org.opennms.horizon.server.model.inventory.DeviceCreate;
-import org.opennms.horizon.server.service.grpc.InventoryClient;
-import org.springframework.stereotype.Service;
-
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLEnvironment;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
-import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Flux;
+import org.opennms.horizon.server.service.gateway.PlatformGateway;
+import org.opennms.horizon.shared.dto.device.DeviceCollectionDTO;
+import org.opennms.horizon.shared.dto.device.DeviceCreateDTO;
+import org.opennms.horizon.shared.dto.device.DeviceDTO;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-@RequiredArgsConstructor
 @GraphQLApi
 @Service
 public class DeviceService {
-    private final InventoryClient client;
-    private final DeviceMapper mapper;
+    private final PlatformGateway gateway;
+
+    public DeviceService(PlatformGateway gateway) {
+        this.gateway = gateway;
+    }
 
     @GraphQLQuery
-    public Flux<Device> listDevices(@GraphQLEnvironment ResolutionEnvironment env) {
-        return Flux.fromIterable(client.listDevice().stream().map(mapper::protoToDevice).collect(Collectors.toList()));
-  }
+    public Mono<DeviceCollectionDTO> listDevices(@GraphQLEnvironment ResolutionEnvironment env) {
+        return gateway.get(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), DeviceCollectionDTO.class);
+    }
 
-  @GraphQLQuery
-  public Mono<Device> getDeviceById(@GraphQLArgument(name = "id") Long id, @GraphQLEnvironment ResolutionEnvironment env) {
-        return Mono.just(mapper.protoToDevice(client.getDeviceById(id)));
-  }
+    @GraphQLQuery
+    public Mono<DeviceDTO> getDeviceById(@GraphQLArgument(name = "id") Integer id, @GraphQLEnvironment ResolutionEnvironment env) {
+        return gateway.get(PlatformGateway.URL_PATH_DEVICES + "/" + id, gateway.getAuthHeader(env), DeviceDTO.class);
+    }
 
-  @GraphQLMutation
-  public Mono<Device> addDevice(DeviceCreate device, @GraphQLEnvironment ResolutionEnvironment env) {
-        return Mono.just(mapper.protoToDevice(client.createNewDevice(mapper.deviceCreateToProto(device))));
-  }
+    @GraphQLMutation
+    public Mono<Integer> addDevice(DeviceCreateDTO device, @GraphQLEnvironment ResolutionEnvironment env) {
+        return gateway.post(PlatformGateway.URL_PATH_DEVICES, gateway.getAuthHeader(env), device, Integer.class);
+    }
 }
-

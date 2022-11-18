@@ -50,7 +50,7 @@ import io.grpc.stub.MetadataUtils;
 public class InventoryClient {
     private final ManagedChannel channel;
     private MonitoringLocationServiceGrpc.MonitoringLocationServiceBlockingStub locationStub;
-    private NodeServiceGrpc.NodeServiceBlockingStub deviceStub;
+    private NodeServiceGrpc.NodeServiceBlockingStub nodeStub;
     private MonitoringSystemServiceGrpc.MonitoringSystemServiceBlockingStub systemStub;
 
     //TODO: hardcoded tenantId will be removed in HS-598
@@ -65,7 +65,7 @@ public class InventoryClient {
 
     private void initialStubs() {
         locationStub = MonitoringLocationServiceGrpc.newBlockingStub(channel);
-        deviceStub = NodeServiceGrpc.newBlockingStub(channel);
+        nodeStub = NodeServiceGrpc.newBlockingStub(channel);
         systemStub = MonitoringSystemServiceGrpc.newBlockingStub(channel);
     }
 
@@ -76,22 +76,22 @@ public class InventoryClient {
     }
 
     //TODO: add error handling
-    public NodeDTO createNewDevice(NodeCreateDTO device) {
+    public NodeDTO createNewNode(NodeCreateDTO node) {
         Metadata metadata = new Metadata();
         metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
-        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).createNode(device);
+        return nodeStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).createNode(node);
     }
 
-    public List<NodeDTO> listDevice() {
+    public List<NodeDTO> listNodes() {
         Metadata metadata = new Metadata();
         metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
-        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listNodes(Empty.newBuilder().build()).getNodesList();
+        return nodeStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listNodes(Empty.newBuilder().build()).getNodesList();
     }
 
-    public NodeDTO getDeviceById(long id) {
+    public NodeDTO getNodeById(long id) {
         Metadata metadata = new Metadata();
         metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
-        return deviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getNodeById(Int64Value.of(id));
+        return nodeStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getNodeById(Int64Value.of(id));
     }
 
     public List<MonitoringLocationDTO> listLocations() {

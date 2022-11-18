@@ -33,10 +33,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Device {
-    private long id;
-    private String tenantId;
-    private String nodeLabel;
-    private long createTime;
-    private long monitoringLocationId;
+public class NodeCreate {
+    private String label;
+    private String location;
+    private String managementIp;
 }

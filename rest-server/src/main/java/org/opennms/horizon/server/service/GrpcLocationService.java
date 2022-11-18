@@ -28,9 +28,11 @@
 
 package org.opennms.horizon.server.service;
 
-import org.opennms.horizon.server.service.gateway.PlatformGateway;
-import org.opennms.horizon.shared.dto.minion.MinionCollectionDTO;
-import org.opennms.horizon.shared.dto.minion.MinionDTO;
+import java.util.stream.Collectors;
+
+import org.opennms.horizon.server.mapper.LocationMapper;
+import org.opennms.horizon.server.model.inventory.Location;
+import org.opennms.horizon.server.service.grpc.InventoryClient;
 import org.springframework.stereotype.Service;
 
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -38,25 +40,23 @@ import io.leangen.graphql.annotations.GraphQLEnvironment;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
+import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-
+@RequiredArgsConstructor
 @GraphQLApi
 @Service
-public class MinionService {
-    private final PlatformGateway gateway;
-
-    public MinionService(PlatformGateway gateway) {
-        this.gateway = gateway;
-    }
+public class GrpcLocationService {
+    private final InventoryClient client;
+    private final LocationMapper mapper;
 
     @GraphQLQuery
-    public Mono<MinionCollectionDTO> listMinions(@GraphQLEnvironment ResolutionEnvironment env) {//TODO: add search TDO object with pagination as cache key
-        return gateway.get(PlatformGateway.URL_PATH_MINIONS, gateway.getAuthHeader(env), MinionCollectionDTO.class);
+    public Flux<Location> findAllLocations(@GraphQLEnvironment ResolutionEnvironment env) {
+        return Flux.fromIterable(client.listLocations().stream().map(mapper::protoToLocation).collect(Collectors.toList()));
     }
-
     @GraphQLQuery
-    public Mono<MinionDTO> getMinionById(@GraphQLArgument(name = "id") String id, @GraphQLEnvironment ResolutionEnvironment env) {
-        return gateway.get(String.format(PlatformGateway.URL_PATH_MINIONS_ID, id), gateway.getAuthHeader(env), MinionDTO.class);
+    public Mono<Location> findLocationById(@GraphQLArgument(name = "id") long id, @GraphQLEnvironment ResolutionEnvironment env) {
+        return Mono.just(mapper.protoToLocation(client.getLocationById(id)));
     }
 }
