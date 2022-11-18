@@ -38,7 +38,7 @@ message NodeDTO {
   int64 id = 1;
   string tenant_id = 2;
   string node_label = 3;
-  string create_time = 4;
+  int64 create_time = 4;
   int64 monitoring_location_id = 5;
 }
 

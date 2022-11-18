@@ -36,7 +36,7 @@ public class DeviceGrpcService extends DeviceServiceGrpc.DeviceServiceImplBase {
     @Transactional
     public void createDevice(DeviceCreateDTO request, StreamObserver<NodeDTO> responseObserver) {
         Optional<String> tenantId = tenantLookup.lookupTenantId(Context.current());
-        boolean valid = validateInput(request, tenantId.orElseThrow(), responseObserver);
+        boolean valid = tenantId.map(id->validateInput(request, id, responseObserver)).orElseThrow();
 
         if (valid) {
             Node node = nodeService.createDevice(request, tenantId.orElseThrow());

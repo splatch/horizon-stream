@@ -26,17 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.model.inventory;
+package org.opennms.horizon.inventory.mapper;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
-@Getter
-@Setter
-public class Device {
-    private long id;
-    private String tenantId;
-    private String nodeLabel;
-    private long createTime;
-    private long monitoringLocationId;
+public interface DateTimeMapper {
+    default LocalDateTime timeStampToDateTime(long timeStamp) {
+        Instant instant = Instant.ofEpochMilli(timeStamp);
+        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
+
+    default long dateTimeToTimestamp(LocalDateTime dateTime) {
+        return dateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+    }
 }

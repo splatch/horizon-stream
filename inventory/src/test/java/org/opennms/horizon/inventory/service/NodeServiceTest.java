@@ -28,31 +28,27 @@
 
 package org.opennms.horizon.inventory.service;
 
-import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
-import org.mapstruct.factory.Mappers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.opennms.cloud.grpc.minion.Identity;
-import org.opennms.horizon.grpc.heartbeat.contract.HeartbeatMessage;
-import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
-import org.opennms.horizon.inventory.mapper.MonitoringSystemMapper;
-import org.opennms.horizon.inventory.mapper.NodeMapper;
-import org.opennms.horizon.inventory.model.IpInterface;
-import org.opennms.horizon.inventory.model.MonitoringLocation;
-import org.opennms.horizon.inventory.model.MonitoringSystem;
-import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
-import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
-import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
-import org.opennms.horizon.inventory.repository.NodeRepository;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
+import org.opennms.horizon.inventory.mapper.NodeMapper;
+import org.opennms.horizon.inventory.model.IpInterface;
+import org.opennms.horizon.inventory.model.MonitoringLocation;
+import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
+import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
+import org.opennms.horizon.inventory.repository.NodeRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NodeServiceTest {
@@ -72,6 +68,13 @@ public class NodeServiceTest {
     @Mock
     NodeMapper mapper;
 
+    @AfterEach
+    public void afterTest(){
+        verifyNoMoreInteractions(nodeRepository);
+        verifyNoMoreInteractions(monitoringLocationRepository);
+        verifyNoMoreInteractions(ipInterfaceRepository);
+    }
+
     @Test
     public void createDevice() {
         DeviceCreateDTO deviceCreateDTO = DeviceCreateDTO.newBuilder()
@@ -79,6 +82,8 @@ public class NodeServiceTest {
             .setLocation("loc")
             .setManagementIp("127.0.0.1")
             .build();
+        MonitoringLocation location = new MonitoringLocation();
+        doReturn(location).when(monitoringLocationRepository).save(any(MonitoringLocation.class));
 
         nodeService.createDevice(deviceCreateDTO, "ANY");
 
@@ -111,6 +116,9 @@ public class NodeServiceTest {
             .setLabel("Label")
             .setLocation("loc")
             .build();
+
+        MonitoringLocation location = new MonitoringLocation();
+        doReturn(location).when(monitoringLocationRepository).save(any(MonitoringLocation.class));
 
         nodeService.createDevice(deviceCreateDTO, "ANY");
 
