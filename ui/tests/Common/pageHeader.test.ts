@@ -10,7 +10,7 @@ describe('Page header component', () => {
         heading
       }
     })
-    const componentHeading = wrapper.find('.header').text()
+    const componentHeading = wrapper.find('h2').text()
 
     expect(componentHeading).toBe(heading) 
   })
@@ -18,7 +18,7 @@ describe('Page header component', () => {
     const defaultHeading = 'Page Heading'
     
     const wrapper = mount(PageHeader)
-    const componentHeading = wrapper.find('.header').text()
+    const componentHeading = wrapper.find('h2').text()
 
     expect(componentHeading).toBe(defaultHeading) 
   })

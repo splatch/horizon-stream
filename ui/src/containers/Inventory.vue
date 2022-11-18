@@ -1,24 +1,14 @@
 <template>
-  <PageHeader :heading="heading" />
+  <PageHeader :heading="heading" class="mx-l" />
   <!-- tabs anchor-->
   <!-- expandable filter: search, select, sorting -->
   <!-- card: title, metric chip list, text anchor list, icon action list -->
-  <IconActionList />
+  <TabList class="mx-l" />
 </template>
 
 <script lang="ts" setup>
 const heading = 'Network Inventory'
 
-const anchor = {
-  profileValue: 75,
-  profileLink: '#',
-  locationValue: 'DefaultMinion',
-  locationLink: '#',
-  ipInterfaceValue: 25,
-  ipInterfaceLink: '#',
-  tagValue: 100,
-  tagLink: '#'
-}
 </script>
 
 <style lang="scss" scoped>

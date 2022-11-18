@@ -64,8 +64,6 @@ const deleteItem = {
 </script>
 
 <style lang="scss" scoped>
-@use "@featherds/styles/themes/variables";
-
 .icon-action-list {
   list-style-type: none;
   padding: 0;
