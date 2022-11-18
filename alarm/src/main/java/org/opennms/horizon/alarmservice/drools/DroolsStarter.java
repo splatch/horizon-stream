@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,18 +28,25 @@
 
 package org.opennms.horizon.alarmservice.drools;
 
-import org.kie.api.runtime.rule.FactHandle;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-//TODO:MMF rename
-public class AlarmAcknowledgementAndFact {
+@Component
+public class DroolsStarter {
 
-    private FactHandle fact;
+    @Autowired
+    private DroolsAlarmContext droolsAlarmContext;
 
-    public FactHandle getFact() {
-        return fact;
+    @PostConstruct
+    public void init() {
+        droolsAlarmContext.start();
     }
 
-    public void setFact(FactHandle fact) {
-        this.fact = fact;
+    @PreDestroy
+    public void destroy() {
+        droolsAlarmContext.stop();
     }
 }

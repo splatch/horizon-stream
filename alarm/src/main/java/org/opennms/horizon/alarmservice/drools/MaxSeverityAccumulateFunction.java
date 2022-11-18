@@ -35,7 +35,6 @@ import java.io.ObjectOutput;
 import org.drools.core.base.accumulators.AbstractAccumulateFunction;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 
-@Deprecated // ??????
 public class MaxSeverityAccumulateFunction extends AbstractAccumulateFunction<MaxSeverityAccumulateFunction.MaxSeverity> {
 
     protected static class MaxSeverity implements Externalizable {

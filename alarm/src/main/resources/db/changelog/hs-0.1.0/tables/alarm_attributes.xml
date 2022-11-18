@@ -5,19 +5,21 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<changeSet author="mfrazier" id="hs-0.1.0-alarms">
-		<preConditions onFail="MARK_RAN">
-			<not><tableExists tableName="alarm_attributes" /></not>
-		</preConditions> 
+	<changeSet author="mfrazier" id="hs-0.1.0-alarm">
+<!--		<preConditions onFail="MARK_RAN">-->
+<!--			<not><tableExists tableName="alarm_attributes" /></not>-->
+<!--		</preConditions> -->
 
 		<!-- Use this table to add additional custom data about an alarm... somewhat
 			useful with automations and will be viewable/editable in the alarm details WebUI page. -->
 		<createTable tableName="alarm_attributes">
 
-			<!-- the alarm's ID -->
-			<column name="alarm_id" type="integer">
+            <!-- the alarm's ID -->
+			<column name="alarm_id" type="bigint">
 				<constraints nullable="false" />
 			</column>
+
+            <column name="tenant_id" type="bigint"/>
 
 			<!-- The custom attribute name -->
 			<column name="attribute_name" type="varchar(63)" />

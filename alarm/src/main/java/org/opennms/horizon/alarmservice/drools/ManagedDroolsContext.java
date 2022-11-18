@@ -304,7 +304,7 @@ public class ManagedDroolsContext {
         log.info("Using rules files: {}", rulesResourcesNames);
         for (String file : rulesResourcesNames) {
             kfs.write("src/main/resources/" + file,
-                ResourceFactory.newInputStreamResource(this.getClass().getResourceAsStream(file)));
+                ResourceFactory.newInputStreamResource(ManagedDroolsContext.class.getResourceAsStream(file)));
         }
 
         // Validate

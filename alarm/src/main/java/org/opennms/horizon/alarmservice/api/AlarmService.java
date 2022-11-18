@@ -65,15 +65,10 @@ public interface AlarmService {
 
     void warn(String message, Object... objects);
 
-    /**
-     * Asynchronously broadcast the given event.
-     *
-     * @param e event to broadcast
-     */
-    void sendEvent(Event e);
-
     List<AlarmDTO> getAllAlarms(String tenantId);
 
     Alarm process(Event e);
+
+    void removeStickyMemo(long alarmId);
 
 }

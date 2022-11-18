@@ -51,6 +51,7 @@ import lombok.Setter;
  * <p> Entity to store situations and their associated (related) alarms with other details like mappedTime </p>
  */
 @Entity
+//TODO:MMF need to fix this
 //@Table(name = "alarm_association", uniqueConstraints={@UniqueConstraint(columnNames={"situation_alarm_id", "related_alarm_id"})})
 @Table(name = "alarm_association")
 @Getter
@@ -60,22 +61,23 @@ public class AlarmAssociation extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 4115687014888009683L;
 
     @Id
-    @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId", allocationSize = 1)
-    @GeneratedValue(generator="alarmSequence")
+    @SequenceGenerator(name="alarmAssociationSequence", sequenceName="alarmAssociationNxtId", allocationSize = 1)
+    @GeneratedValue(generator="alarmAssociationSequence")
     @Column(nullable=false)
     private Long alarmAssociationId;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name="situation_alarm_id")
     private Alarm situationAlarmId;
 
     @OneToOne
-    @JoinColumn
+    @JoinColumn(name="related_alarm_id")
     private Alarm relatedAlarmId;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date mappedTime;
+
 
     public AlarmAssociation() {
     }

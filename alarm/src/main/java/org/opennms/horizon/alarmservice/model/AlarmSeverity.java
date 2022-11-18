@@ -44,16 +44,16 @@ public enum AlarmSeverity implements Serializable {
     MAJOR(6, "Major", "orange"),
     CRITICAL(7, "Critical", "red");
     
-    private static final Map<Integer, AlarmSeverity> m_idMap;
+    private static final Map<Integer, AlarmSeverity> idMap;
     
     private int id;
     private String label;
     private String color;
 
     static {
-        m_idMap = new HashMap<Integer, AlarmSeverity>(values().length);
+        idMap = new HashMap<Integer, AlarmSeverity>(values().length);
         for (final AlarmSeverity severity : values()) {
-            m_idMap.put(severity.getId(), severity);
+            idMap.put(severity.getId(), severity);
         }
     }
 
@@ -137,8 +137,8 @@ public enum AlarmSeverity implements Serializable {
      * @return a {@link AlarmSeverity} object.
      */
     public static AlarmSeverity get(final int id) {
-        if (m_idMap.containsKey(id)) {
-            return m_idMap.get(id);
+        if (idMap.containsKey(id)) {
+            return idMap.get(id);
         } else {
             throw new IllegalArgumentException("Cannot create OnmsSeverity from unknown ID " + id);
         }
@@ -151,9 +151,9 @@ public enum AlarmSeverity implements Serializable {
      * @return a {@link AlarmSeverity} object.
      */
     public static AlarmSeverity get(final String label) {
-        for (final Integer key : m_idMap.keySet()) {
-            if (m_idMap.get(key).getLabel().equalsIgnoreCase(label)) {
-                return m_idMap.get(key);
+        for (final Integer key : idMap.keySet()) {
+            if (idMap.get(key).getLabel().equalsIgnoreCase(label)) {
+                return idMap.get(key);
             }
         }
         return AlarmSeverity.INDETERMINATE;

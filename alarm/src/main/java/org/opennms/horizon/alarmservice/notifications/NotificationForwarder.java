@@ -15,7 +15,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
-import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;
+import org.opennms.horizon.alarmservice.service.AlarmMapper;
 import org.opennms.horizon.alarmservice.service.DefaultAlarmEntityListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

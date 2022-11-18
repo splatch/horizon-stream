@@ -54,7 +54,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmRestService;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
-import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;
 import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
 import org.opennms.horizon.alarmservice.rest.support.SecurityHelper;
 import org.slf4j.helpers.MessageFormatter;
@@ -73,9 +72,6 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
     @Autowired
     private AlarmService alarmService;
-
-    @Autowired
-    private AlarmMapper alarmMapper;
 
     protected WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
         if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
@@ -132,7 +128,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @POST
     @Path("{id}/clear")
     @Produces(MediaType.APPLICATION_JSON)
-    public String clearAlarm(@PathParam("id") long id) {
+    public String clearAlarm(@PathParam("id") Long id) {
 
         alarmService.clearAlarm(id, new Date());
 
@@ -147,7 +143,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
             description = "Update the memo for an Alarm"
     )
     @Transactional
-    public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+    public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Long alarmId, final MultivaluedMapImpl params) {
         // replace the next two lines with @RolesAllowed("")
         final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
         SecurityHelper.assertUserEditCredentials(securityContext, user);
@@ -168,7 +164,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
             description = "Update the journal for an Alarm"
     )
     @Transactional
-    public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId, final MultivaluedMapImpl params) {
+    public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Long alarmId, final MultivaluedMapImpl params) {
             final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
             // SecurityHelper.assertUserEditCredentials(securityContext, user);
             final String body = params.getFirst("body");
@@ -183,17 +179,10 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @ApiResponse(
             description = "Remove the memo for an Alarm"
     )
-    //TODO:MMF
-    public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Integer alarmId) {
-        //SecurityHelper.assertUserEditCredentials(securityContext, securityContext.getUserPrincipal().getName());
-        try {
-//            return runIfTicketerPluginIsEnabled(() -> {
-//                   // alarmRepository.removeStickyMemo(alarmId); // TODO doing anything??
-//                    return Response.noContent().build();
-//            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Long alarmId) {
+
+        alarmService.removeStickyMemo(alarmId);
+        return Response.ok().build();
+
     }
 }

@@ -41,18 +41,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
-import org.opennms.horizon.alarmservice.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
-import org.opennms.horizon.alarmservice.drools.DroolsAlarmContext;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.Severity;
-import org.opennms.horizon.alarmservice.model.mapper.AlarmMapper;
+import org.opennms.horizon.alarmservice.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.opennms.horizon.events.proto.Event;
@@ -84,26 +80,11 @@ public class AlarmServiceImpl implements AlarmService {
     @Autowired
     private AlarmMapper alarmMapper;
 
-    @Autowired
-    private DroolsAlarmContext droolsAlarmContext;
-
     private boolean legacyAlarmState = LEGACY_ALARM_STATE;
 
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
-//    @Autowired
-//    private EventForwarder eventForwarder;
 
-
-    @PostConstruct
-    public void init() {
-        droolsAlarmContext.start();
-    }
-
-    @PreDestroy
-    public void destroy() {
-        droolsAlarmContext.stop();
-    }
 
     @Override
     @Transactional
@@ -245,12 +226,6 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
-    public void sendEvent(Event e) {
-        //TODO:MMF do we still need this?
-//        eventForwarder.sendNow(e);
-    }
-
-    @Override
     public List<AlarmDTO> getAllAlarms(String tenantId) {
         List<Alarm> alarms = alarmRepository.findAll();
 
@@ -290,10 +265,27 @@ public class AlarmServiceImpl implements AlarmService {
         return alarm[0];
     }
 
+    @Override
+    public void removeStickyMemo(long alarmId) {
+
+        Alarm targetAlarm = alarmRepository.getById(alarmId);
+
+        if (targetAlarm != null) {
+            if (targetAlarm.getStickyMemoId() != null) {
+                //TODO:MMF how do we get the memo from repo through only that one interface?
+                // Will just nulling out the memo (object) field delete it from the memo table?
+                // might need to specify orphan removal on field in the entity
+                targetAlarm.setStickyMemoId(null);
+                alarmRepository.save(targetAlarm);
+            }
+        }
+
+    }
+
     protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
 
-        //TODO:MMF
+        //TODO:MMF - we aren't getting this info on the protobuf even now. Need design guidance.
 //        final String reductionKey = event.getAlarmData().getReductionKey();
         String reductionKey = "blah";
         log.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
@@ -371,10 +363,6 @@ public class AlarmServiceImpl implements AlarmService {
     public void warn(String message, Object... objects) {
         log.warn(message, objects);
     }
-
-//    public void setEventForwarder(EventForwarder eventForwarder) {
-//        this.eventForwarder = eventForwarder;
-//    }
 
     private boolean isResolutionEvent(Event event) {
 //        return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(Alarm.RESOLUTION_TYPE));

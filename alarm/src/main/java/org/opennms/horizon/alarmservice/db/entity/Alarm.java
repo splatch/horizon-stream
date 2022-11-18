@@ -75,7 +75,7 @@ public class Alarm extends BaseEntity implements Serializable {
 
 
     @Id
-    @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId", allocationSize = 1)
+    @SequenceGenerator(name="alarmSequence", sequenceName="alarmNxtId", allocationSize = 1)
     @GeneratedValue(generator="alarmSequence")
     @Column(nullable=false)
     private Long alarmId;
@@ -176,12 +176,14 @@ public class Alarm extends BaseEntity implements Serializable {
     @Column(length=31)
     private String qosAlarmState;
 
-    @Column(name="x733_probably_cause", nullable=false)
+    @Column(name="x733_probable_cause", nullable=false)
     private int x733ProbableCause = 0;
 
-    //TODO:MMF add in whatever is needed form the Event protobuf as individual fields.
+    //TODO:MMF add in whatever is needed from the Event protobuf as individual fields.
     @Column
     private AlarmSeverity lastEventSeverity;
+
+    //========== fields with cross table relationships =========
 
     @ElementCollection
     @JoinTable(name="alarm_attributes", joinColumns = @JoinColumn(name="alarm_id"))
@@ -189,13 +191,10 @@ public class Alarm extends BaseEntity implements Serializable {
     @Column(name="attribute_value", nullable=false)
     private Map<String, String> details;
 
+    // rename to stickyMemo only
     @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="sticky_memo_id")
     private Memo stickyMemoId;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="reduction_key", referencedColumnName="reduction_key", updatable=false, insertable=false)
-//    private ReductionKeyMemo reductionKeyMemo;
 
     @OneToMany(mappedBy = "situationAlarmId", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<AlarmAssociation> associatedAlarms = new HashSet<>();
@@ -205,7 +204,7 @@ public class Alarm extends BaseEntity implements Serializable {
     // a situation has a set of alarms
     // if an alarm is part of a situation, related situation will be non-empty
     @ElementCollection
-    @JoinTable(name = "alarm_situations", joinColumns = @JoinColumn(name = "related_alarm_id"),
+    @JoinTable(name = "alarm_association", joinColumns = @JoinColumn(name = "related_alarm_id"),
         inverseJoinColumns = @JoinColumn(name = "situation_alarm_id"))
     @Column(name="alarm_id", nullable=false)
     private Set<Alarm> relatedSituations = new HashSet<>();

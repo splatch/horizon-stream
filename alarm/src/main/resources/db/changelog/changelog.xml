@@ -9,7 +9,6 @@
     <include file="db/changelog/hs-0.1.0/tables/alarm_attributes.xml"/>
     <include file="db/changelog/hs-0.1.0/tables/alarm_association.xml"/>
     <include file="db/changelog/hs-0.1.0/tables/memo.xml"/>
-<!--    <include file="db/changelog/hs-0.1.0/tables/reduction_key.xml"/>-->
     <include file="db/changelog/hs-0.1.0/tables/service.xml"/>
 
 </databaseChangeLog>

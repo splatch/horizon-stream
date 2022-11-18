@@ -99,8 +99,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     private final Map<Long, AlarmAndFact> alarmsById = new HashMap<>();
 
-    private final Map<Long, AlarmAcknowledgementAndFact> acknowledgementsByAlarmId = new HashMap<>();
-
     private final Map<Long, Map<Long, AlarmAssociationAndFact>> alarmAssociationById = new HashMap<>();
 
     private final CountDownLatch seedSubmittedLatch = new CountDownLatch(1);
@@ -122,7 +120,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
             // Rebuild the fact handle maps
             alarmsById.clear();
-            acknowledgementsByAlarmId.clear();
             alarmAssociationById.clear();
             for (FactHandle fact : kieSession.getFactHandles()) {
                 final Object objForFact = kieSession.getObject(fact);
@@ -166,7 +163,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 //    }
 
     public static List<String> getRulesResourceNames() {
-        return Arrays.asList("rules/alarm.drl", "rules/situations.drl");
+        return Arrays.asList("/rules/alarm.drl", "/rules/situations.drl");
     }
 
     public static void copy(URL url, final Path target) throws IOException {
@@ -379,7 +376,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     private void eagerlyInitializeAlarm(Alarm alarm) {
         // Initialize any related objects that are needed for rule execution
         Hibernate.initialize(alarm.getAssociatedAlarms());
-        //TODO:MMF
 //        if (alarm.getLastEvent() != null) {
 //            // The last event may be null in unit tests
 //            try {
@@ -407,19 +403,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             final FactHandle fact = kieSession.insert(alarm);
             alarmsById.put(alarm.getAlarmId(), new AlarmAndFact(alarm, fact));
         }
-
-        // Ack
-//        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.get(alarm.getId());
-//        if (acknowledgmentFact == null) {
-//            log.debug("Inserting first alarm acknowledgement into session: {}", ack);
-//            final FactHandle fact = kieSession.insert(ack);
-//            acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
-//        } else {
-//            FactHandle fact = acknowledgmentFact.getFact();
-//            log.trace("Updating acknowledgment in session: {}", ack);
-//            kieSession.update(fact, ack);
-//            acknowledgementsByAlarmId.put(alarm.getId(), new AlarmAcknowledgementAndFact(ack, fact));
-//        }
 
         if (alarm.isSituation()) {
             final Alarm situation = alarm;
@@ -472,12 +455,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             log.debug("Deleting alarm from session: {}", alarmAndFact.getAlarm());
             kieSession.delete(alarmAndFact.getFact());
         }
-
-//        final AlarmAcknowledgementAndFact acknowledgmentFact = acknowledgementsByAlarmId.remove(alarmId);
-//        if (acknowledgmentFact != null) {
-//            log.debug("Deleting ack from session: {}", acknowledgmentFact.getAcknowledgement());
-//            kieSession.delete(acknowledgmentFact.getFact());
-//        }
 
         final Map<Long, AlarmAssociationAndFact> associationFacts = alarmAssociationById.remove(alarmId);
         if (associationFacts == null) {
