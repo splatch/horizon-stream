@@ -30,6 +30,7 @@ package org.opennms.horizon.inventory.grpc;
 
 import java.util.Arrays;
 
+import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.opennms.horizon.inventory.service.MonitoringLocationService;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,7 @@ public class GrpcConfig {
     @Value("${grpc.server.port:" + DEFAULT_GRPC_PORT +"}")
     private int port;
     private final NodeService nodeService;
+    private final IpInterfaceService ipInterfaceService;
     private final NodeMapper nodeMapper;
 
 
@@ -72,7 +74,7 @@ public class GrpcConfig {
 
     @Bean
     public DeviceGrpcService createDeviceService(TenantLookup tenantLookup) {
-        return new DeviceGrpcService(nodeService, nodeMapper, tenantLookup);
+        return new DeviceGrpcService(nodeService, ipInterfaceService, nodeMapper, tenantLookup);
     }
 
     @Bean(destroyMethod = "stopServer")

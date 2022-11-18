@@ -25,3 +25,6 @@ export enum TimeUnit {
   Secs,
   MSecs
 }
+
+export declare type fncVoid = () => void;
+export declare type fncArgVoid = (...args: unknown[]) => void;

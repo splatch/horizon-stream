@@ -1,8 +1,8 @@
 <template>
-  <section class="header">{{ props.heading }}</section>
+  <section class="header">{{ heading }}</section>
 </template>
 <script lang="ts" setup>
-const props = defineProps({
+defineProps({
   heading: {
     type: String,
     default: 'Page Heading'

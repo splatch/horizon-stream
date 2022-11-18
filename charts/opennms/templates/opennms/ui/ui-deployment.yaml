@@ -51,8 +51,6 @@ spec:
             requests:
               cpu: "{{ .Values.OpenNMS.UI.Resources.Requests.Cpu }}"
               memory: "{{ .Values.OpenNMS.UI.Resources.Requests.Memory }}"
-          {{- if not .Values.TestDeploy }}
           {{/*  TODO    livenessProbe:*/}}
           {{/*          readinessProbe:*/}}
           {{/*          startupProbe:*/}}
-          {{- end }}

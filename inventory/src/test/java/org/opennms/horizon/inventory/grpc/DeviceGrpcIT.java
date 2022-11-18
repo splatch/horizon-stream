@@ -2,6 +2,7 @@ package org.opennms.horizon.inventory.grpc;
 
 import com.google.rpc.Code;
 import com.google.rpc.Status;
+import com.vladmihalcea.hibernate.type.basic.Inet;
 import io.grpc.StatusRuntimeException;
 import io.grpc.protobuf.StatusProto;
 import org.junit.jupiter.api.AfterEach;
@@ -12,12 +13,17 @@ import org.opennms.horizon.inventory.PostgresInitializer;
 import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
 import org.opennms.horizon.inventory.dto.DeviceServiceGrpc;
 import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.inventory.model.IpInterface;
+import org.opennms.horizon.inventory.model.MonitoringLocation;
+import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -65,6 +71,114 @@ class DeviceGrpcIT extends GrpcTestBase {
         NodeDTO node = serviceStub.createDevice(createDTO);
 
         assertEquals(label, node.getNodeLabel());
+    }
+
+    @Test
+    void testCreateDeviceExistingIpAddress() throws Exception {
+        String location = "location";
+        String ip = "127.0.0.1";
+        String label = "label";
+
+        setupGrpc();
+        populateTables(location, ip);
+        initStub();
+
+        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+            .setLocation(location)
+            .setLabel(label)
+            .setManagementIp(ip)
+            .build();
+
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.createDevice(createDTO));
+        Status status = StatusProto.fromThrowable(exception);
+        assertThat(status.getCode()).isEqualTo(Code.ALREADY_EXISTS_VALUE);
+        assertThat(status.getMessage()).isEqualTo("Ip address already exists for location");
+    }
+
+    @Test
+    void testCreateDeviceExistingIpAddressDifferentTenantId() throws Exception {
+        String location = "location";
+        String ip = "127.0.0.1";
+        String label = "label";
+
+        setupGrpcWithDifferentTenantID();
+        populateTables(location, ip);
+        initStub();
+
+        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+            .setLocation(location)
+            .setLabel(label)
+            .setManagementIp(ip)
+            .build();
+
+        NodeDTO node = serviceStub.createDevice(createDTO);
+
+        assertEquals(label, node.getNodeLabel());
+    }
+
+    @Test
+    void testCreateDeviceExistingIpAddressNewDifferentLocation() throws Exception {
+        String location = "location";
+        String ip = "127.0.0.1";
+        String label = "label";
+
+        setupGrpc();
+        populateTables(location, ip);
+        initStub();
+
+        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+            .setLocation("different")
+            .setLabel(label)
+            .setManagementIp(ip)
+            .build();
+
+        NodeDTO node = serviceStub.createDevice(createDTO);
+
+        assertEquals(label, node.getNodeLabel());
+    }
+
+    @Test
+    void testCreateDeviceExistingIpAddressInDifferentLocation() throws Exception {
+        String location = "location";
+        String ip = "127.0.0.1";
+        String label = "label";
+        String secondLocation = "loc2";
+        String secondIp = "127.0.0.2";
+
+        setupGrpc();
+        populateTables(location, ip);
+        populateTables(secondLocation, secondIp);
+        initStub();
+
+        DeviceCreateDTO createDTO = DeviceCreateDTO.newBuilder()
+            .setLocation(secondLocation)
+            .setLabel(label)
+            .setManagementIp(ip)
+            .build();
+
+        NodeDTO node = serviceStub.createDevice(createDTO);
+
+        assertEquals(label, node.getNodeLabel());
+    }
+
+    private void populateTables(String location, String ip) {
+        MonitoringLocation ml = new MonitoringLocation();
+        ml.setLocation(location);
+        ml.setTenantId(tenantId);
+        MonitoringLocation savedML = monitoringLocationRepository.save(ml);
+
+        Node node = new Node();
+        node.setTenantId(tenantId);
+        node.setNodeLabel("label");
+        node.setMonitoringLocation(savedML);
+        node.setCreateTime(LocalDateTime.now());
+        Node savedNode = nodeRepository.save(node);
+
+        IpInterface ipInterface = new IpInterface();
+        ipInterface.setTenantId(tenantId);
+        ipInterface.setIpAddress(new Inet(ip));
+        ipInterface.setNode(savedNode);
+        IpInterface savedIpInterface = ipInterfaceRepository.save(ipInterface);
     }
 
     @Test

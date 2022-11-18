@@ -1,5 +1,4 @@
 //go:build unit
-// +build unit
 
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,4 +39,8 @@ func TestTemplate(t *testing.T) {
 	res, err = TemplateConfig(testString, v)
 	assert.Nil(t, err)
 	assert.Equal(t, testString, res, "should not encode lessthan symbols")
+}
+
+func TestEmptyDict(t *testing.T) {
+	assert.Equal(t, map[string]interface{}{}, emptyDict())
 }

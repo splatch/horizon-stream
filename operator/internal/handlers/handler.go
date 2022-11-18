@@ -15,46 +15,71 @@ limitations under the License.
 package handlers
 
 import (
-    "github.com/OpenNMS/opennms-operator/internal/model/values"
-    "sigs.k8s.io/controller-runtime/pkg/client"
+	"github.com/OpenNMS/opennms-operator/internal/model/values"
+	"github.com/OpenNMS/opennms-operator/internal/util/yaml"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 var ConfigFilePath = "./charts/opennms/templates/"
-var OperatorFilePath = "./charts/dependencies/config/"
 
 type ServiceHandler interface {
-    //GetConfig - get the config
-    GetConfig() []client.Object
+	//GetConfig - get the config
+	GetConfig() []client.Object
 
-    //UpdateConfig - update k8s config for the service handler
-    UpdateConfig(values values.TemplateValues)
+	//UpdateConfig - update k8s config for the service handler
+	UpdateConfig(values values.TemplateValues) error
 
-    GetDeployed() bool
+	//GetDeployed - get the handler's deployed status
+	GetDeployed() bool
 
-    SetDeployed(tf bool)
+	//SetDeployed - set the handler's deployed status
+	SetDeployed(tf bool)
 }
-
 type ServiceHandlerObject struct {
-    Config   []client.Object
-    Deployed bool
+	Templates []yaml.LoadTemplate
+	Config    []client.Object
+	Deployed  bool
 }
 
 func (o *ServiceHandlerObject) GetConfig() []client.Object {
-    return o.Config
+	return o.Config
 }
 
 func (o *ServiceHandlerObject) GetDeployed() bool {
-    return o.Deployed
+	return o.Deployed
 }
 
 func (o *ServiceHandlerObject) SetDeployed(tf bool) {
-    o.Deployed = tf
+	o.Deployed = tf
+}
+
+// AddToTemplates - add a template to be loaded from YAML
+func (o *ServiceHandlerObject) AddToTemplates(filename string, values values.TemplateValues, decodeInto interface{}) {
+	tmpl := yaml.LoadTemplate{
+		Filename:   filename,
+		Values:     values,
+		DecodeInto: decodeInto,
+	}
+	o.Templates = append(o.Templates, tmpl)
+}
+
+// GetTemplates - get the list of added templates
+func (o *ServiceHandlerObject) GetTemplates() []yaml.LoadTemplate {
+	return o.Templates
+}
+
+// LoadTemplates - load the list of added templates from YAML and template the TemplateValues into them, add to the config list
+func (o *ServiceHandlerObject) LoadTemplates() error {
+	for _, template := range o.GetTemplates() {
+		err := yaml.LoadYaml(template)
+		if err != nil {
+			return err
+		}
+		o.Config = append(o.Config, template.DecodeInto.(client.Object))
+	}
+	return nil
 }
 
 func filepath(filename string) string {
-    return ConfigFilePath + filename
-}
-
-func opfilepath(filename string) string {
-    return OperatorFilePath + filename
+	return ConfigFilePath + filename
 }

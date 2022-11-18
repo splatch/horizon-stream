@@ -3,16 +3,16 @@ import PageHeader from '@/components/Common/PageHeader.vue'
 
 describe('Page header component', () => {
   it('should have the correct prop heading', () => {
-    const propsHeading = 'New Heading'
+    const heading = 'New Heading'
     
     const wrapper = mount(PageHeader, {
       propsData: {
-        heading: propsHeading
+        heading
       }
     })
     const componentHeading = wrapper.find('.header').text()
 
-    expect(componentHeading).toBe(propsHeading) 
+    expect(componentHeading).toBe(heading) 
   })
   it('should have the default heading', () => {
     const defaultHeading = 'Page Heading'

@@ -61,11 +61,9 @@ spec:
               value: "{{ .Values.OpenNMS.Inventory.ServiceName }}:{{ .Values.OpenNMS.Inventory.GrpcPort }}"
           ports:
             - containerPort: {{ .Values.OpenNMS.API.Port }}
-          {{- if not .Values.TestDeploy }}
           {{/*  TODO    livenessProbe:*/}}
           {{/*          readinessProbe:*/}}
           {{/*          startupProbe:*/}}
-          {{- end }}
           resources:
             limits:
               cpu: "{{ .Values.OpenNMS.API.Resources.Limits.Cpu }}"
