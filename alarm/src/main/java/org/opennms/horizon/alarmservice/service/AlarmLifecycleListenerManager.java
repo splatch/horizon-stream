@@ -41,7 +41,7 @@ import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
 import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
-import org.opennms.horizon.alarmservice.repository.AlarmRepository;
+import org.opennms.horizon.alarmservice.db.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.Memo;
 import org.opennms.horizon.alarmservice.db.entity.ReductionKeyMemo;

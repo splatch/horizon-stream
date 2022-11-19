@@ -48,7 +48,7 @@ import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.Severity;
-import org.opennms.horizon.alarmservice.repository.AlarmRepository;
+import org.opennms.horizon.alarmservice.db.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.opennms.horizon.events.proto.Event;

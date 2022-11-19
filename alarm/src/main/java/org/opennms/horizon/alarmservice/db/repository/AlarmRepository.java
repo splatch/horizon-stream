@@ -1,4 +1,4 @@
-package org.opennms.horizon.alarmservice.repository;
+package org.opennms.horizon.alarmservice.db.repository;
 
 import javax.transaction.Transactional;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;

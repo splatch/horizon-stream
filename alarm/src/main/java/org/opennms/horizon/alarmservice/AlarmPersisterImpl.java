@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.api.AlarmPersister;
-import org.opennms.horizon.alarmservice.repository.AlarmRepository;
+import org.opennms.horizon.alarmservice.db.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.Severity;
 import org.opennms.horizon.alarmservice.utils.StripedExt;
