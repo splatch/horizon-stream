@@ -119,7 +119,7 @@ public class MonitoringSystemGrpcTest extends GrpcTestBase {
         initStub();
         MonitoringSystemList systemList = serviceStub.listMonitoringSystem(Empty.newBuilder().build());
         assertThat(systemList).isNotNull();
-        assertThat(systemList.getListList().size()).isEqualTo(2);
+        assertThat(systemList.getSystemsList().size()).isEqualTo(2);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class MonitoringSystemGrpcTest extends GrpcTestBase {
         initStub();
         MonitoringSystemList systemList = serviceStub.listMonitoringSystem(Empty.newBuilder().build());
         assertThat(systemList).isNotNull();
-        assertThat(systemList.getListList().size()).isEqualTo(0);
+        assertThat(systemList.getSystemsList().size()).isEqualTo(0);
     }
 
     @Test

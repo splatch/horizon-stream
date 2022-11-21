@@ -26,33 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.component;
+package org.opennms.horizon.server.service;
 
-import org.opennms.horizon.grpc.heartbeat.contract.HeartbeatMessage;
-import org.opennms.horizon.inventory.service.MonitoringSystemService;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
+import java.util.stream.Collectors;
 
-import com.google.protobuf.InvalidProtocolBufferException;
+import org.opennms.horizon.server.mapper.LocationMapper;
+import org.opennms.horizon.server.model.inventory.Location;
+import org.opennms.horizon.server.service.grpc.InventoryClient;
+import org.springframework.stereotype.Service;
 
+import io.leangen.graphql.annotations.GraphQLArgument;
+import io.leangen.graphql.annotations.GraphQLEnvironment;
+import io.leangen.graphql.annotations.GraphQLQuery;
+import io.leangen.graphql.execution.ResolutionEnvironment;
+import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
-@Component
-@Slf4j
-@PropertySource("classpath:application.yml")
-public class MinionHeartbeatConsumer {
-    private final MonitoringSystemService service;
-    @KafkaListener(topics = "${kafka.topics.minion-heartbeat}", concurrency = "1")
-    public void receiveMessage(byte[] data) {
-        try {
-            HeartbeatMessage message = HeartbeatMessage.parseFrom(data);
-            log.info("Received heartbeat message for minion with id {} and location {}", message.getIdentity().getSystemId(), message.getIdentity().getLocation());
-            service.addMonitoringSystemFromHeartbeat(message);
-        } catch (InvalidProtocolBufferException e) {
-            log.error("Error while parsing heartbeat message", e);
-        }
+@GraphQLApi
+@Service
+public class GrpcLocationService {
+    private final InventoryClient client;
+    private final LocationMapper mapper;
+
+    @GraphQLQuery
+    public Flux<Location> findAllLocations(@GraphQLEnvironment ResolutionEnvironment env) {
+        return Flux.fromIterable(client.listLocations().stream().map(mapper::protoToLocation).collect(Collectors.toList()));
+    }
+    @GraphQLQuery
+    public Mono<Location> findLocationById(@GraphQLArgument(name = "id") long id, @GraphQLEnvironment ResolutionEnvironment env) {
+        return Mono.just(mapper.protoToLocation(client.getLocationById(id)));
     }
 }

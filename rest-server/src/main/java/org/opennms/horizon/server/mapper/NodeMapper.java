@@ -25,35 +25,18 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-import "google/protobuf/wrappers.proto";
+package org.opennms.horizon.server.mapper;
 
-package opennms.inventory;
-option java_multiple_files = true;
-option java_package = "org.opennms.horizon.inventory.dto";
+import org.mapstruct.Mapper;
+import org.opennms.horizon.inventory.dto.NodeCreateDTO;
+import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.server.model.inventory.Node;
+import org.opennms.horizon.server.model.inventory.NodeCreate;
 
-message NodeDTO {
-  int64 id = 1;
-  string tenant_id = 2;
-  string node_label = 3;
-  int64 create_time = 4;
-  int64 monitoring_location_id = 5;
-}
 
-message NodeCreateDTO {
-  string label = 1;
-  string location = 2;
-  optional string management_ip = 3;
-}
-
-message NodeList {
-  repeated NodeDTO nodes = 1;
-}
-
-service NodeService {
-  rpc createNode(NodeCreateDTO) returns (NodeDTO) {};
-  rpc listNodes(google.protobuf.Empty) returns (NodeList) {};
-  rpc getNodeById(google.protobuf.Int64Value) returns (NodeDTO) {};
+@Mapper(componentModel = "spring")
+public interface NodeMapper {
+    Node protoToNode(NodeDTO nodeDTO);
+    NodeCreateDTO nodeCreateToProto(NodeCreate request);
 }

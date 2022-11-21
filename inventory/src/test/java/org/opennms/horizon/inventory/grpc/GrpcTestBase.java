@@ -28,6 +28,12 @@
 
 package org.opennms.horizon.inventory.grpc;
 
+import java.io.IOException;
+import java.util.UUID;
+
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+
 import io.grpc.BindableService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -35,12 +41,6 @@ import io.grpc.Metadata;
 import io.grpc.Server;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.stub.MetadataUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-
-import java.io.IOException;
-import java.util.UUID;
 
 public abstract class GrpcTestBase {
     @DynamicPropertySource

@@ -28,18 +28,14 @@
 
 package org.opennms.horizon.inventory.grpc;
 
-import com.google.common.net.InetAddresses;
-import com.google.rpc.Code;
-import com.google.rpc.Status;
-import io.grpc.Context;
-import io.grpc.protobuf.StatusProto;
-import io.grpc.stub.StreamObserver;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.inventory.dto.DeviceCreateDTO;
-import org.opennms.horizon.inventory.dto.DeviceServiceGrpc;
+import java.util.List;
+import java.util.Optional;
+
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
+import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.inventory.dto.NodeList;
+import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.service.IpInterfaceService;
@@ -47,12 +43,21 @@ import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import com.google.common.net.InetAddresses;
+import com.google.protobuf.Empty;
+import com.google.protobuf.Int64Value;
+import com.google.rpc.Code;
+import com.google.rpc.Status;
+
+import io.grpc.Context;
+import io.grpc.protobuf.StatusProto;
+import io.grpc.stub.StreamObserver;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class DeviceGrpcService extends DeviceServiceGrpc.DeviceServiceImplBase {
+public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
     private final NodeService nodeService;
     private final IpInterfaceService ipInterfaceService;
     private final NodeMapper nodeMapper;
@@ -61,21 +66,44 @@ public class DeviceGrpcService extends DeviceServiceGrpc.DeviceServiceImplBase {
 
     @Override
     @Transactional
-    public void createDevice(DeviceCreateDTO request, StreamObserver<NodeDTO> responseObserver) {
+    public void createNode(NodeCreateDTO request, StreamObserver<NodeDTO> responseObserver) {
         Optional<String> tenantId = tenantLookup.lookupTenantId(Context.current());
-        boolean valid = validateInput(request, tenantId.orElseThrow(), responseObserver);
+        boolean valid = tenantId.map(id->validateInput(request, id, responseObserver)).orElseThrow();
 
         if (valid) {
-            Node node = nodeService.createDevice(request, tenantId.orElseThrow());
+            Node node = nodeService.createNode(request, tenantId.orElseThrow());
 
             taskSetService.sendDetectorTasks(node);
-
             responseObserver.onNext(nodeMapper.modelToDTO(node));
             responseObserver.onCompleted();
         }
     }
 
-    private boolean validateInput(DeviceCreateDTO request, String tenantId, StreamObserver<NodeDTO> responseObserver) {
+    @Override
+    public void listNodes(Empty request, StreamObserver<NodeList> responseObserver) {
+        List<NodeDTO> list = tenantLookup.lookupTenantId(Context.current())
+            .map(nodeService::findByTenantId).orElseThrow();
+        responseObserver.onNext(NodeList.newBuilder().addAllNodes(list).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getNodeById(Int64Value request, StreamObserver<NodeDTO> responseObserver) {
+        Optional<NodeDTO> node = tenantLookup.lookupTenantId(Context.current())
+            .map(tenantId-> nodeService.getByIdAndTenantId(request.getValue(), tenantId))
+            .orElseThrow();
+        if(node.isPresent()){
+            responseObserver.onNext(node.get());
+            responseObserver.onCompleted();
+        } else {
+            Status status = Status.newBuilder()
+                .setCode(Code.NOT_FOUND_VALUE)
+                .setMessage("Node with id: " + request.getValue() + " doesn't exist.").build();
+            responseObserver.onError(StatusProto.toStatusRuntimeException(status));
+        }
+    }
+
+    private boolean validateInput(NodeCreateDTO request, String tenantId, StreamObserver<NodeDTO> responseObserver) {
         boolean valid = true;
 
         if (request.hasManagementIp()) {

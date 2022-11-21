@@ -29,4 +29,8 @@ public class MonitoringLocationService {
     public Optional<MonitoringLocationDTO> findByLocationAndTenantId(String location, String tenantId) {
         return modelRepo.findByLocationAndTenantId(location, tenantId).map(mapper::modelToDTO);
     }
+
+    public Optional<MonitoringLocationDTO> getByIdAndTenantId(long id, String tenantId){
+        return modelRepo.findByIdAndTenantId(id, tenantId).map(mapper::modelToDTO);
+    }
 }
