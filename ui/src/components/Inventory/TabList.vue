@@ -5,7 +5,8 @@
     </template>
     <Filter />
     <FeatherTabPanel v-for="tab in tabs" :key="tab.label">
-      <Card v-for="node in tab.nodes" :key="node.header" :item="node" />
+      <DetectedNodesTabContent v-if="tab.type === NodeDetailContentType.DETECTED" :tab="tab" />
+      <MonitoredNodesTabContent v-else :tab="tab" />
     </FeatherTabPanel>
   </FeatherTabContainer>
 </template>
@@ -17,19 +18,14 @@ import {
   FeatherTabPanel
 } from '@featherds/tabs'
 import Filter from '@/components/Inventory/Filter.vue'
-import Card from '@/components/Inventory/Card.vue'
+import DetectedNodesTabContent from '@/components/Inventory/DetectedNodesTabContent.vue'
+import MonitoredNodesTabContent from '@/components/Inventory/MonitoredNodesTabContent.vue'
+import { NodeDetailContentType } from '@/types'
+import { TabNode } from '@/types/inventory'
 
-interface Node {
-  header: string
-}
-
-interface Tab {
-  label: string,
-  nodes: Node[]
-}
-
-const tabs: Tab[] = [
+const tabs: TabNode[] = [
   {
+    type: NodeDetailContentType.MONITORED,
     label: 'Monitored Nodes',
     nodes: [
       {
@@ -41,6 +37,7 @@ const tabs: Tab[] = [
     ]
   },
   {
+    type: NodeDetailContentType.MONITORED,
     label: 'Unmonitored Nodes',
     nodes: [
       {
@@ -52,6 +49,7 @@ const tabs: Tab[] = [
     ]
   },
   {
+    type: NodeDetailContentType.DETECTED,
     label: 'Detected Nodes',
     nodes: [
       {

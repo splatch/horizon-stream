@@ -1,10 +1,14 @@
 import { mount } from '@vue/test-utils'
 import { FeatherTab } from '@featherds/tabs'
 import TabList from '@/components/Inventory/TabList.vue'
-import Card from '@/components/Inventory/Card.vue'
+import DetectedNodesTabContent from '@/components/Inventory/DetectedNodesTabContent.vue'
+import MonitoredNodesTabContent from '@/components/Inventory/MonitoredNodesTabContent.vue'
+import { NodeDetailContentType } from '@/types'
+import { TabNode } from '@/types/inventory'
 
-const tabs = [
+const tabs: TabNode[] = [
   {
+    type:  NodeDetailContentType.MONITORED,
     label: 'Monitored Nodes',
     nodes: [
       {
@@ -16,6 +20,7 @@ const tabs = [
     ]
   },
   {
+    type:  NodeDetailContentType.MONITORED,
     label: 'Unmonitored Nodes',
     nodes: [
       {
@@ -27,6 +32,7 @@ const tabs = [
     ]
   },
   {
+    type:  NodeDetailContentType.DETECTED,
     label: 'Detected Nodes',
     nodes: [
       {
@@ -58,10 +64,13 @@ describe('Inventory node tab list', () => {
     expect(featherTabs.length).toEqual(tabs.length)
   })
 
-  const expectedNodesLength = tabs.reduce((acc, tab) => acc += tab.nodes.length, 0)
+  it('should have the required tab content components', () => {
+    const expectedDetectedComponents = tabs.filter(({type}) => type === NodeDetailContentType.DETECTED).length
+    const detectedComponents = wrapper.findAllComponents(DetectedNodesTabContent).length
+    expect(expectedDetectedComponents).toEqual(detectedComponents)
 
-  it(`should have ${expectedNodesLength} nodes`, () => {
-    const cards = wrapper.findAllComponents(Card)
-    expect(cards.length).toEqual(expectedNodesLength)
+    const expectedMonitoredComponents = tabs.filter(({type}) => type === NodeDetailContentType.MONITORED).length
+    const monitoredComponents = wrapper.findAllComponents(MonitoredNodesTabContent).length
+    expect(expectedMonitoredComponents).toEqual(monitoredComponents)
   })
 })
