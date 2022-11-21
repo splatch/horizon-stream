@@ -45,10 +45,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.model.Severity;
-import org.opennms.horizon.alarmservice.db.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.opennms.horizon.events.proto.Event;
@@ -83,7 +83,6 @@ public class AlarmServiceImpl implements AlarmService {
     private boolean legacyAlarmState = LEGACY_ALARM_STATE;
 
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
-
 
 
     @Override

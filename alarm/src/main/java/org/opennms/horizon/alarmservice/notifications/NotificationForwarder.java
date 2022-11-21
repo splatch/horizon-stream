@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Setter
+@Deprecated
 public class NotificationForwarder extends DefaultAlarmEntityListener {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationForwarder.class);
     private static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog

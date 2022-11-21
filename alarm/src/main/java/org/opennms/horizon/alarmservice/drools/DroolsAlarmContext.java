@@ -49,15 +49,16 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
-import org.opennms.horizon.alarmservice.db.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.AlarmAssociation;
+import org.opennms.horizon.alarmservice.db.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.service.AlarmCallbackStateTracker;
 import org.opennms.horizon.alarmservice.service.AlarmServiceImpl;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
@@ -76,6 +77,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Slf4j
 @Component
+@Setter
 public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLifecycleListener {
 
     private static final RateLimitedLog RATE_LIMITED_LOGGER = RateLimitedLog
@@ -465,10 +467,6 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
                 kieSession.delete(associationFact.getFact());
             }
         }
-    }
-
-    public void setAlarmService(AlarmService alarmService) {
-        this.alarmService = alarmService;
     }
 
     @VisibleForTesting

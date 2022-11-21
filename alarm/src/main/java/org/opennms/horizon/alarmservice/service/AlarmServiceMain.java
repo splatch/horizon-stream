@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootConfiguration
 @SpringBootApplication
 @ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
-@EnableJpaRepositories(basePackages = "org.opennms.horizon.alarmservice.repository")
+@EnableJpaRepositories(basePackages = "org.opennms.horizon.alarmservice.db.repository")
 @EntityScan(basePackages = "org.opennms.horizon.alarmservice.db.entity")
 public class AlarmServiceMain {
 

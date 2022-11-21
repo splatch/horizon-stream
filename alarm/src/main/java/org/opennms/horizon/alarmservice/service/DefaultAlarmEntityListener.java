@@ -2,17 +2,27 @@ package org.opennms.horizon.alarmservice.service;
 
 import java.util.Date;
 import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.apache.camel.ProducerTemplate;
 import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.Memo;
 import org.opennms.horizon.alarmservice.db.entity.ReductionKeyMemo;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.alarmservice.model.TroubleTicketState;
+import org.opennms.horizon.alarmservice.service.routing.AlarmRouteBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Deprecated
 public class DefaultAlarmEntityListener implements AlarmEntityListener {
+
+    private ProducerTemplate producerTemplate;
+
     @Override
     public void onAlarmCreated(Alarm alarm) {
-
+        producerTemplate.sendBody(alarm);
     }
 
     @Override
@@ -74,9 +84,4 @@ public class DefaultAlarmEntityListener implements AlarmEntityListener {
     public void onRelatedAlarmsUpdated(Alarm alarm, Set<Alarm> previousRelatedAlarms) {
 
     }
-
-//    @Override
-//    public void onTicketStateChanged(Alarm alarm, TroubleTicketState previousState) {
-//
-//    }
 }

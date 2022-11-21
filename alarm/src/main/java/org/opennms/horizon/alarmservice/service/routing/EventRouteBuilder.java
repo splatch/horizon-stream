@@ -1,4 +1,4 @@
-package org.opennms.horizon.alarmservice.service;
+package org.opennms.horizon.alarmservice.service.routing;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.builder.RouteBuilder;

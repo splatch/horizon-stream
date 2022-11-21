@@ -234,7 +234,7 @@ public class ManagedDroolsContext {
         // If this fails, we'll throw an exception and abort the reload
         final ReleaseId releaseId = buildKieModule();
 
-        // The rules we're successfully built and deployed
+        // The rules were successfully built and deployed
 
         // Let's halt the current engine
         started.set(false);
@@ -302,10 +302,13 @@ public class ManagedDroolsContext {
         kfs.generateAndWritePomXML(id);
 
         log.info("Using rules files: {}", rulesResourcesNames);
-        for (String file : rulesResourcesNames) {
-            kfs.write("src/main/resources/" + file,
-                ResourceFactory.newInputStreamResource(ManagedDroolsContext.class.getResourceAsStream(file)));
-        }
+//        for (String file : rulesResourcesNames) {
+//            kfs.write("src/main/resources/" + file,
+//                ResourceFactory.newInputStreamResource(ManagedDroolsContext.class.getResourceAsStream(file)));
+//        }
+
+        rulesResourcesNames.forEach(name -> kfs.write("src/main/resources/" + name,
+            ResourceFactory.newInputStreamResource(ManagedDroolsContext.class.getResourceAsStream(name))));
 
         // Validate
         // final KieBuilder kb = ks.newKieBuilder(kfs);
