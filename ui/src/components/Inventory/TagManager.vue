@@ -5,7 +5,7 @@
         <div class="subtitle">Selected Tags: </div>
         <div class="subtitle">Total: </div>
         <div class="subtitle">|</div>
-        <div class="subtitle">Selected: </div>
+        <div class="subtitle">Selected: {{ selectedTags.length }}</div>
 
         <div class="search-add">
           <!-- Add tag -->
@@ -25,12 +25,24 @@
         </div>
 
       </div>
-      <div class="chips"></div>
+      <div class="chips">
+        <FeatherChipList condensed label="Tags" :key="selectedTags.toString()">
+          <FeatherChip 
+            v-for="tag of tags" 
+            :key="tag" 
+            class="pointer"
+            :class="{ 'selected' : selectedTags.includes(tag) }"
+            @click="selectTag(tag)"
+          >
+            {{ tag }}
+          </FeatherChip>
+        </FeatherChipList>
+      </div>
     </div>
 
     <div class="right">
       <div class="vl"></div>
-      <FeatherRadioGroup vertical :label="'Tag Nodes:'" v-model="selected" class="radio-btns">
+      <FeatherRadioGroup vertical :label="'Tag Nodes:'" v-model="tagNodes" class="radio-btns">
         <FeatherRadio :value="1">All</FeatherRadio>
         <FeatherRadio :value="2">Individual</FeatherRadio>
         <FeatherRadio :value="3">Clear</FeatherRadio>
@@ -45,10 +57,21 @@ import AddIcon from "@featherds/icon/action/AddCircleAlt"
 
 const searchIcon = markRaw(Search)
 const addIcon = markRaw(AddIcon)
-const selected = ref()
+const tagNodes = ref()
 const searchValue = ref()
+const selectedTags = ref<string[]>([])
+
+const tags = computed(() => ['tag1', 'tag2'])
 // import KeyboardArrowDown from '@featherds/icon/navigation/ExpandMore'
 // const downIcon = markRaw(KeyboardArrowDown)
+
+const selectTag = (tag: string) => {
+  if (selectedTags.value.includes(tag)) {
+    selectedTags.value = selectedTags.value.filter(t => t !== tag)
+  } else {
+    selectedTags.value.push(tag)
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -63,20 +86,21 @@ const searchValue = ref()
   background: var(variables.$shade-4);
   margin: 10px 20px 10px 20px;
   border-radius: 3px;
+  padding: 15px;
 
   .left {
     width: 80%;
     display: flex;
     flex-direction: column;
+    padding-right: 15px;
 
     .top {
       display: flex;
       justify-content: space-between;
-      padding: 15px;
 
       .search-add {
         display: flex;
-        gap: 10px;
+        gap: 5px;
         .search {
           width: 200px;
         }
@@ -94,12 +118,12 @@ const searchValue = ref()
     .vl {
       border-left: 1px solid var(variables.$shade-3);
       height: 135px;
-      margin-top: 20px;
+      margin-top: 6px;
       margin-right: 20px;
     }
 
     .radio-btns {
-      margin-top: 15px;
+      // margin-top: 15px;
     }
   }
 }
