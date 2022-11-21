@@ -4,7 +4,8 @@ const mismatchedDirNames: Record<string, string> = {
   'app-bar-link': 'app-bar',
   'checkbox-group': 'checkbox',
   'list-item': 'list',
-  'expansion-panel': 'expansion'
+  'expansion-panel': 'expansion',
+  'radio-group': 'radio'
 }
 
 const getDirectory = (partialComponentName: string): string => {

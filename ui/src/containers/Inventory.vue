@@ -4,6 +4,8 @@
   <!-- expandable filter: search, select, sorting -->
   <!-- card: title, metric chip list, text anchor list, icon action list -->
   <IconActionList />
+
+  <TagManager />
 </template>
 
 <script lang="ts" setup>
