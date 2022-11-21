@@ -2,7 +2,15 @@
   <!-- Search -->
   
   <!-- Node type -->
-  <SelectDropdown :select-type="selectNode" data-test="select-node" />
+  <!-- <SelectDropdown :select-type="nodeType" data-test="select-node" /> -->
+  <FeatherSelect
+    v-model="nodeTypeState"
+    :options="nodeType.options"
+    :text-prop="nodeType.optionText"
+    :label="nodeType.label"
+    @update:modelValue="onNodeTypeSelect"
+    data-test="select-node"
+  />
 
   <!-- Monitoring Location -->
 
@@ -20,10 +28,11 @@ import { ISelectDropdown } from '@/types/select'
 const emits = defineEmits(['selectedItem'])
 
 // Node Type
-const onSelect: fncArgVoid = (selectedItem) => {
+const nodeTypeState = ref(undefined)
+const onNodeTypeSelect: fncArgVoid = (selectedItem: any) => {
   emits('selectedItem', selectedItem)
 }
-const selectNode: ISelectDropdown = {
+const nodeType: ISelectDropdown = {
   label: 'Node Type',
   options: [
     {
@@ -39,8 +48,7 @@ const selectNode: ISelectDropdown = {
       type: 'type3'
     }
   ],
-  optionText: 'type',
-  cb: onSelect
+  optionText: 'type'
 }
 </script>
 
