@@ -66,6 +66,7 @@ public class MonitoringSystemGrpcService extends MonitoringSystemServiceGrpc.Mon
             .orElseThrow();
         if(monitoringSystem.isPresent()) {
             responseObserver.onNext(monitoringSystem.get());
+            responseObserver.onCompleted();
         } else {
             Status status = Status.newBuilder()
                 .setCode(Code.NOT_FOUND_VALUE)
@@ -73,6 +74,5 @@ public class MonitoringSystemGrpcService extends MonitoringSystemServiceGrpc.Mon
                 .build();
             responseObserver.onError(StatusProto.toStatusRuntimeException(status));
         }
-        responseObserver.onCompleted();
     }
 }

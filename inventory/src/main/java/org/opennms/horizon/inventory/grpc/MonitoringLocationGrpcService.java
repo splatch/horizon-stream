@@ -70,6 +70,7 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
             .orElseThrow();
         if (location.isPresent()) {
             responseObserver.onNext(location.get());
+            responseObserver.onCompleted();
         } else {
             Status status = Status.newBuilder()
                 .setCode(Code.NOT_FOUND_VALUE)
@@ -77,7 +78,6 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
                 .build();
             responseObserver.onError(StatusProto.toStatusRuntimeException(status));
         }
-        responseObserver.onCompleted();
     }
 
     @Override
