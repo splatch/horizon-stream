@@ -54,12 +54,12 @@ public class GrpcNodeService {
     private final NodeMapper mapper;
 
     @GraphQLQuery
-    public Flux<Node> listNodes(@GraphQLEnvironment ResolutionEnvironment env) {
+    public Flux<Node> findAllNodes(@GraphQLEnvironment ResolutionEnvironment env) {
         return Flux.fromIterable(client.listNodes().stream().map(mapper::protoToNode).collect(Collectors.toList()));
   }
 
   @GraphQLQuery
-  public Mono<Node> getNodeById(@GraphQLArgument(name = "id") Long id, @GraphQLEnvironment ResolutionEnvironment env) {
+  public Mono<Node> findNodeById(@GraphQLArgument(name = "id") Long id, @GraphQLEnvironment ResolutionEnvironment env) {
         return Mono.just(mapper.protoToNode(client.getNodeById(id)));
   }
 
