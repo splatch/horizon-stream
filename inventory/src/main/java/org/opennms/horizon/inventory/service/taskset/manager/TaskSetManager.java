@@ -26,18 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.repository;
+package org.opennms.horizon.inventory.service.taskset.manager;
 
-import java.util.List;
-import java.util.Optional;
+import org.opennms.taskset.contract.TaskDefinition;
+import org.opennms.taskset.contract.TaskSet;
 
-import org.opennms.horizon.inventory.model.MonitoredServiceType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+public interface TaskSetManager {
 
-@Repository
-public interface MonitoredServiceTypeRepository extends JpaRepository<MonitoredServiceType, Long> {
-    List<MonitoredServiceType> findByTenantId(String tenantId);
+    void addTaskSet(String location, TaskDefinition taskDefinition);
 
-    Optional<MonitoredServiceType> findByTenantIdAndServiceName(String tenantId, String serviceName);
+    TaskSet getTaskSet(String location);
 }
