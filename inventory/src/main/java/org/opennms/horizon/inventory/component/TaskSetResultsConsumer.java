@@ -28,31 +28,37 @@
 
 package org.opennms.horizon.inventory.component;
 
-import org.opennms.horizon.grpc.heartbeat.contract.HeartbeatMessage;
-import org.opennms.horizon.inventory.service.MonitoringSystemService;
-import org.springframework.context.annotation.PropertySource;
+import com.google.protobuf.InvalidProtocolBufferException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.opennms.horizon.inventory.service.taskset.response.DetectorResponseService;
+import org.opennms.taskset.contract.TaskResult;
+import org.opennms.taskset.contract.TaskSetResults;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-@RequiredArgsConstructor
-@Component
 @Slf4j
-@PropertySource("classpath:application.yml")
-public class MinionHeartbeatConsumer {
-    private final MonitoringSystemService service;
-    @KafkaListener(topics = "${kafka.topics.minion-heartbeat}", concurrency = "1")
+@Component
+@RequiredArgsConstructor
+public class TaskSetResultsConsumer {
+    private final DetectorResponseService detectorResponseService;
+
+    @KafkaListener(topics = "${kafka.topics.task-set-results}", concurrency = "1")
     public void receiveMessage(byte[] data) {
         try {
-            HeartbeatMessage message = HeartbeatMessage.parseFrom(data);
-            log.info("Received heartbeat message for minion with id {} and location {}", message.getIdentity().getSystemId(), message.getIdentity().getLocation());
-            service.addMonitoringSystemFromHeartbeat(message);
+            TaskSetResults message = TaskSetResults.parseFrom(data);
+
+            for (TaskResult taskResult : message.getResultsList()) {
+
+                String location = taskResult.getLocation();
+
+                if (taskResult.hasDetectorResponse()) {
+                    detectorResponseService.accept(location, taskResult.getDetectorResponse());
+                }
+            }
+
         } catch (InvalidProtocolBufferException e) {
-            log.error("Error while parsing heartbeat message", e);
+            log.error("Error while parsing task set results", e);
         }
     }
 }

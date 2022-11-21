@@ -31,22 +31,27 @@ package org.opennms.horizon.inventory.grpc;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.inventory.InventoryApplication;
-import org.opennms.horizon.inventory.PostgresInitializer;
+import org.opennms.horizon.inventory.SpringContextTestInitializer;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
+import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
+import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -61,7 +66,7 @@ import io.grpc.protobuf.StatusProto;
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = InventoryApplication.class)
-@ContextConfiguration(initializers = {PostgresInitializer.class})
+@ContextConfiguration(initializers = {SpringContextTestInitializer.class})
 class NodeGrpcIT extends GrpcTestBase {
     private NodeServiceGrpc.NodeServiceBlockingStub serviceStub;
 
@@ -72,8 +77,16 @@ class NodeGrpcIT extends GrpcTestBase {
     @Autowired
     private IpInterfaceRepository ipInterfaceRepository;
 
+    private static TestTaskSetGrpcService testGrpcService;
+
     public void initStub() {
         serviceStub = NodeServiceGrpc.newBlockingStub(channel);
+    }
+
+    @BeforeAll
+    public static void setup() throws IOException {
+        testGrpcService = new TestTaskSetGrpcService();
+        server = startMockServer(TaskSetServiceGrpc.SERVICE_NAME, testGrpcService);
     }
 
     @AfterEach
@@ -82,7 +95,14 @@ class NodeGrpcIT extends GrpcTestBase {
         nodeRepository.deleteAll();
         monitoringLocationRepository.deleteAll();
 
+        testGrpcService.reset();
         channel.shutdown();
+    }
+
+    @AfterAll
+    public static void tearDown() throws InterruptedException {
+        server.shutdownNow();
+        server.awaitTermination();
     }
 
     @Test
@@ -101,6 +121,7 @@ class NodeGrpcIT extends GrpcTestBase {
         NodeDTO node = serviceStub.createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
+        assertEquals(1, testGrpcService.getTimesCalled());
     }
 
     @Test
@@ -123,6 +144,7 @@ class NodeGrpcIT extends GrpcTestBase {
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.ALREADY_EXISTS_VALUE);
         assertThat(status.getMessage()).isEqualTo("Ip address already exists for location");
+        assertEquals(0, testGrpcService.getTimesCalled());
     }
 
     @Test
@@ -144,6 +166,7 @@ class NodeGrpcIT extends GrpcTestBase {
         NodeDTO node = serviceStub.createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
+        assertEquals(1, testGrpcService.getTimesCalled());
     }
 
     @Test
@@ -165,6 +188,7 @@ class NodeGrpcIT extends GrpcTestBase {
         NodeDTO node = serviceStub.createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
+        assertEquals(1, testGrpcService.getTimesCalled());
     }
 
     @Test
@@ -189,6 +213,7 @@ class NodeGrpcIT extends GrpcTestBase {
         NodeDTO node = serviceStub.createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
+        assertEquals(1, testGrpcService.getTimesCalled());
     }
 
     private void populateTables(String location, String ip) {
@@ -228,6 +253,7 @@ class NodeGrpcIT extends GrpcTestBase {
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.UNAUTHENTICATED_VALUE);
         assertThat(status.getMessage()).isEqualTo("Missing tenant id");
+        assertEquals(0, testGrpcService.getTimesCalled());
     }
 
     @Test
@@ -247,5 +273,6 @@ class NodeGrpcIT extends GrpcTestBase {
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.INVALID_ARGUMENT_VALUE);
         assertThat(status.getMessage()).isEqualTo("Bad management_ip: BAD");
+        assertEquals(0, testGrpcService.getTimesCalled());
     }
 }

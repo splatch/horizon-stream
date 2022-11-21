@@ -26,18 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.repository;
+package org.opennms.horizon.inventory.service.taskset.identity;
 
-import java.util.List;
-import java.util.Optional;
+import org.springframework.stereotype.Component;
 
-import org.opennms.horizon.inventory.model.MonitoredServiceType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+@Component
+public class TaskSetIdentityUtil {
+    private static final String IP_LABEL = "ip=";
 
-@Repository
-public interface MonitoredServiceTypeRepository extends JpaRepository<MonitoredServiceType, Long> {
-    List<MonitoredServiceType> findByTenantId(String tenantId);
-
-    Optional<MonitoredServiceType> findByTenantIdAndServiceName(String tenantId, String serviceName);
+    public String identityForIpTask(String ipAddress, String name) {
+        return IP_LABEL + ipAddress + "/" + name;
+    }
 }

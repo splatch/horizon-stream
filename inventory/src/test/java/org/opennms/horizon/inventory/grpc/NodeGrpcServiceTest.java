@@ -34,7 +34,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,12 +42,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
+import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.opennms.horizon.inventory.service.NodeService;
+import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 
 import io.grpc.stub.StreamObserver;
 
@@ -69,6 +69,9 @@ public class NodeGrpcServiceTest {
     @Mock
     TenantLookup tenantLookup;
 
+    @Mock
+    DetectorTaskSetService taskSetService;
+
     @Test
     public void createNode() {
         doReturn(Optional.of("ANY")).when(tenantLookup).lookupTenantId(any());
@@ -85,6 +88,8 @@ public class NodeGrpcServiceTest {
 
         verify(obs, times(0)).onError(any());
         verify(obs).onCompleted();
+
+        verify(taskSetService, times(1)).sendDetectorTasks(any());
     }
 
     @Test
