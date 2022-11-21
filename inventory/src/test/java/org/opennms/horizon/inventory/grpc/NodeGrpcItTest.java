@@ -74,6 +74,8 @@ import io.grpc.stub.MetadataUtils;
 @SpringBootTest
 @ContextConfiguration(initializers = {SpringContextTestInitializer.class})
 class NodeGrpcItTest extends GrpcTestBase {
+    private static final int EXPECTED_TASK_DEF_COUNT_FOR_NEW_LOCATION = 3;
+    private static final int EXPECTED_TASK_DEF_COUNT_WITHOUT_NEW_LOCATION = 2;
     private NodeServiceGrpc.NodeServiceBlockingStub serviceStub;
 
     @Autowired
@@ -125,7 +127,14 @@ class NodeGrpcItTest extends GrpcTestBase {
         NodeDTO node = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
-        assertEquals(1, testGrpcService.getTimesCalled());
+        assertEquals(2, testGrpcService.getTimesCalled());
+
+        org.assertj.core.api.Assertions.assertThat(testGrpcService.getRequests())
+            .hasSize(2)
+            .extracting(PublishTaskSetRequest::getTaskSet)
+            .isNotNull()
+            .extracting(TaskSet::getTaskDefinitionCount)
+            .contains(EXPECTED_TASK_DEF_COUNT_FOR_NEW_LOCATION);
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
@@ -170,7 +179,14 @@ class NodeGrpcItTest extends GrpcTestBase {
         NodeDTO node = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(differentTenantHeader))).createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
-        assertEquals(1, testGrpcService.getTimesCalled());
+        assertEquals(2, testGrpcService.getTimesCalled());
+
+        org.assertj.core.api.Assertions.assertThat(testGrpcService.getRequests())
+            .hasSize(2)
+            .extracting(PublishTaskSetRequest::getTaskSet)
+            .isNotNull()
+            .extracting(TaskSet::getTaskDefinitionCount)
+            .contains(EXPECTED_TASK_DEF_COUNT_FOR_NEW_LOCATION);
         verify(spyInterceptor).verifyAccessToken(differentTenantHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
@@ -192,7 +208,14 @@ class NodeGrpcItTest extends GrpcTestBase {
         NodeDTO node = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
-        assertEquals(1, testGrpcService.getTimesCalled());
+        assertEquals(2, testGrpcService.getTimesCalled());
+
+        org.assertj.core.api.Assertions.assertThat(testGrpcService.getRequests())
+            .hasSize(2)
+            .extracting(PublishTaskSetRequest::getTaskSet)
+            .isNotNull()
+            .extracting(TaskSet::getTaskDefinitionCount)
+            .contains(EXPECTED_TASK_DEF_COUNT_FOR_NEW_LOCATION);
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
@@ -220,6 +243,14 @@ class NodeGrpcItTest extends GrpcTestBase {
         assertEquals(1, testGrpcService.getTimesCalled());
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
+
+        List<PublishTaskSetRequest> grpcRequests = testGrpcService.getRequests();
+        assertEquals(1, grpcRequests.size());
+
+        PublishTaskSetRequest request = grpcRequests.get(0);
+        TaskSet taskSet = request.getTaskSet();
+        assertNotNull(taskSet);
+        assertEquals(EXPECTED_TASK_DEF_COUNT_WITHOUT_NEW_LOCATION, taskSet.getTaskDefinitionCount());
     }
 
     private synchronized void populateTables(String location, String ip) {

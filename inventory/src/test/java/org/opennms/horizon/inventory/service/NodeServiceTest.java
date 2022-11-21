@@ -32,6 +32,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -70,6 +71,9 @@ public class NodeServiceTest {
     IpInterfaceRepository ipInterfaceRepository;
 
     @Mock
+    TrapConfigService trapConfigService;
+
+    @Mock
     NodeMapper mapper;
 
     private final String tenantID = "test-tenant";
@@ -83,18 +87,25 @@ public class NodeServiceTest {
 
     @Test
     public void createNode() {
+        String tenant = "ANY";
+        String location = "loc";
+        MonitoringLocation ml = new MonitoringLocation();
+        ml.setTenantId(tenant);
+        ml.setLocation(location);
+
+        when(monitoringLocationRepository.save(any())).thenReturn(ml);
+
         NodeCreateDTO nodeCreateDTO = NodeCreateDTO.newBuilder()
             .setLabel("Label")
             .setLocation("loc")
             .setManagementIp("127.0.0.1")
             .build();
-        MonitoringLocation location = new MonitoringLocation();
-        doReturn(location).when(monitoringLocationRepository).save(any(MonitoringLocation.class));
 
-        nodeService.createNode(nodeCreateDTO, "ANY");
+        nodeService.createNode(nodeCreateDTO, tenant);
 
         verify(ipInterfaceRepository).save(any(IpInterface.class));
         verify(monitoringLocationRepository).save(any(MonitoringLocation.class));
+        verify(trapConfigService).sendTrapConfigToMinion(tenant, location);
     }
 
     @Test
@@ -114,17 +125,23 @@ public class NodeServiceTest {
 
         verify(ipInterfaceRepository).save(any(IpInterface.class));
         verify(monitoringLocationRepository, times(0)).save(any(MonitoringLocation.class));
+        verify(trapConfigService, times(0)).sendTrapConfigToMinion(any(), any());
     }
 
     @Test
     public void createNodeNoIp() {
+        String tenant = "TENANT";
+        String location = "LOCATION";
+        MonitoringLocation ml = new MonitoringLocation();
+        ml.setTenantId(tenant);
+        ml.setLocation(location);
+
+        when(monitoringLocationRepository.save(any())).thenReturn(ml);
+
         NodeCreateDTO nodeCreateDTO = NodeCreateDTO.newBuilder()
             .setLabel("Label")
             .setLocation("loc")
             .build();
-
-        MonitoringLocation location = new MonitoringLocation();
-        doReturn(location).when(monitoringLocationRepository).save(any(MonitoringLocation.class));
 
         nodeService.createNode(nodeCreateDTO, "ANY");
 

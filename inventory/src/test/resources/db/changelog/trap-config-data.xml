@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="jhutc" id="trap-config-data">
+        <insert tableName="monitoring_location">
+            <column name="location" value="unknown_location"/>
+            <column name="tenant_id" value="00000000-0000-0005-0000-000000000005"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

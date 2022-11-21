@@ -35,6 +35,10 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.util.List;
 
+import com.google.protobuf.Empty;
+import com.google.protobuf.StringValue;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +64,10 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.MetadataUtils;
 
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 @SpringBootTest
 @ContextConfiguration(initializers = {SpringContextTestInitializer.class})
 class LocationGrpcItTest extends GrpcTestBase {
@@ -69,6 +77,7 @@ class LocationGrpcItTest extends GrpcTestBase {
     private MonitoringLocationRepository repo;
 
     private MonitoringLocationServiceGrpc.MonitoringLocationServiceBlockingStub serviceStub;
+
     @BeforeEach
     public void prepareData() throws VerificationException {
         location1 = new MonitoringLocation();
