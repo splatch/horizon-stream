@@ -28,7 +28,6 @@
 
 package org.opennms.horizon.alarmservice.db.entity;
 
-import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Date;
@@ -36,6 +35,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -45,7 +45,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -54,11 +53,15 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
+
+import com.google.common.base.MoreObjects;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="alarm")
@@ -182,6 +185,10 @@ public class Alarm extends BaseEntity implements Serializable {
     //TODO:MMF add in whatever is needed from the Event protobuf as individual fields.
     @Column
     private AlarmSeverity lastEventSeverity;
+
+    public AlarmSeverity getLastEventSeverity() {
+        return lastEventSeverity;
+    }
 
     //========== fields with cross table relationships =========
 

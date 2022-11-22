@@ -40,7 +40,7 @@ import org.opennms.horizon.alarmservice.db.entity.Alarm;
 
 global org.opennms.horizon.alarmservice.api.AlarmService alarmService;
 
-declare org.opennms.horizon.alarmservice.db.impl.entity.Alarm
+declare org.opennms.horizon.alarmservice.db.entity.Alarm
     @role(event)
     @timestamp(lastUpdateTime)
 end

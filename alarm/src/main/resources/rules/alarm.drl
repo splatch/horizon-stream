@@ -36,7 +36,7 @@ import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 
 global org.opennms.horizon.alarmservice.api.AlarmService alarmService;
 
-declare org.opennms.horizon.alarmservice.db.impl.entity.Alarm
+declare org.opennms.horizon.alarmservice.db.entity.Alarm
     @role(event)
     @timestamp(lastUpdateTime)
 end
@@ -56,7 +56,7 @@ rule "unclear"
     $sessionClock : SessionClock()
     $trigger : Alarm(alarmType == Alarm.PROBLEM_TYPE,
                          severity == AlarmSeverity.CLEARED,
-                         AlarmSeverity.get(lastEventSeverity).isGreaterThan(AlarmSeverity.CLEARED),
+                         getLastEventSeverity().isGreaterThan(AlarmSeverity.CLEARED),
                          lastEventTime > lastAutomationTime)
   then
     alarmService.unclearAlarm($trigger, new Date($sessionClock.getCurrentTime()));
