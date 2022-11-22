@@ -9,9 +9,19 @@
 
         <div class="search-add">
           <!-- Add tag -->
-          <FeatherButton icon="Add Tag">
-            <FeatherIcon :icon="addIcon" />
-          </FeatherButton>
+          <div>
+            <FeatherDropdown ref="newTagDropdown">
+              <template v-slot:trigger="{ attrs, on }">
+                <FeatherButton link href="#" icon="Add Tag" v-bind="attrs" v-on="on">
+                  <FeatherIcon :icon="addIcon" />
+                </FeatherButton>
+              </template>
+              <FeatherInput v-model="newTag" label="New tag" class="new-tag-input" />
+              <FeatherButton primary class="new-tag-btn" @click="addTag">
+                Add Tag
+              </FeatherButton>
+            </FeatherDropdown>
+          </div>
 
           <!-- Search tags input -->
           <FeatherInput
@@ -57,6 +67,8 @@ import AddIcon from "@featherds/icon/action/AddCircleAlt"
 
 const searchIcon = markRaw(Search)
 const addIcon = markRaw(AddIcon)
+const newTag = ref()
+const newTagDropdown = ref()
 const tagNodes = ref()
 const searchValue = ref()
 const selectedTags = ref<string[]>([])
@@ -71,6 +83,12 @@ const selectTag = (tag: string) => {
   } else {
     selectedTags.value.push(tag)
   }
+}
+
+const addTag = () => {
+  // send newtag.value
+  newTag.value = '' // clear input
+  newTagDropdown.value.handleClose() // clost dropdown
 }
 </script>
 
@@ -103,6 +121,14 @@ const selectTag = (tag: string) => {
         gap: 5px;
         .search {
           width: 200px;
+        }
+
+        .new-tag-input {
+          margin: 0px 10px 0px 10px;
+          width: 175px;
+        }
+        .new-tag-btn {
+          margin-left: 10px;
         }
       }
     }

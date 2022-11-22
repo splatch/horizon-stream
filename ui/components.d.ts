@@ -27,6 +27,8 @@ declare module '@vue/runtime-core' {
     FeatherChip: typeof import('@featherds/chips')['FeatherChip']
     FeatherChipList: typeof import('@featherds/chips')['FeatherChipList']
     FeatherDialog: typeof import('@featherds/dialog')['FeatherDialog']
+    FeatherDropdown: typeof import('@featherds/dropdown')['FeatherDropdown']
+    FeatherDropdownItem: typeof import('@featherds/dropdown')['FeatherDropdownItem']
     FeatherExpansionPanel: typeof import('@featherds/expansion')['FeatherExpansionPanel']
     FeatherIcon: typeof import('@featherds/icon')['FeatherIcon']
     FeatherInput: typeof import('@featherds/input')['FeatherInput']
