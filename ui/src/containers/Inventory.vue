@@ -1,25 +1,20 @@
 <template>
-  <PageHeader :heading="heading" />
+  <PageHeader :heading="heading" class="mx-l" />
   <!-- tabs anchor-->
   <!-- expandable filter: search, select, sorting -->
+  <Filter @selected-item="onSelectedItem"/>
   <!-- card: title, metric chip list, text anchor list, icon action list -->
-  <IconActionList />
 
   <TagManager />
 </template>
 
 <script lang="ts" setup>
+import { ISelectItemType } from '@featherds/select/src/components/types'
+
 const heading = 'Network Inventory'
 
-const anchor = {
-  profileValue: 75,
-  profileLink: '#',
-  locationValue: 'DefaultMinion',
-  locationLink: '#',
-  ipInterfaceValue: 25,
-  ipInterfaceLink: '#',
-  tagValue: 100,
-  tagLink: '#'
+const onSelectedItem = (selectedItem: ISelectItemType) => {
+  console.log('onSelectedItem',selectedItem)
 }
 </script>
 
