@@ -2,7 +2,6 @@
   <!-- Search -->
   
   <!-- Node type -->
-  <!-- <SelectDropdown :select-type="nodeType" data-test="select-node" /> -->
   <FeatherSelect
     v-model="nodeTypeState"
     :options="nodeType.options"

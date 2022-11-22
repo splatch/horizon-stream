@@ -28,7 +28,7 @@
 syntax = "proto3";
 
 import "google/protobuf/empty.proto";
-import "google/protobuf/any.proto";
+import "google/protobuf/wrappers.proto";
 
 package opennms.inventory;
 option java_multiple_files = true;
@@ -38,16 +38,22 @@ message NodeDTO {
   int64 id = 1;
   string tenant_id = 2;
   string node_label = 3;
-  string create_time = 4;
+  int64 create_time = 4;
   int64 monitoring_location_id = 5;
 }
 
-message DeviceCreateDTO {
+message NodeCreateDTO {
   string label = 1;
   string location = 2;
   optional string management_ip = 3;
 }
 
-service DeviceService {
-  rpc createDevice(DeviceCreateDTO) returns (NodeDTO) {};
+message NodeList {
+  repeated NodeDTO nodes = 1;
+}
+
+service NodeService {
+  rpc createNode(NodeCreateDTO) returns (NodeDTO) {};
+  rpc listNodes(google.protobuf.Empty) returns (NodeList) {};
+  rpc getNodeById(google.protobuf.Int64Value) returns (NodeDTO) {};
 }

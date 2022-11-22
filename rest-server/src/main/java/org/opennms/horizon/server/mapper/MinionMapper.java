@@ -26,28 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory;
+package org.opennms.horizon.server.mapper;
 
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
+import org.opennms.horizon.server.model.inventory.Minion;
 
-public class PostgresInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.5-alpine")
-        .withDatabaseName("inventory").withUsername("inventory")
-        .withPassword("password").withExposedPorts(5432);
-    static {
-        postgres.start();
-    }
-
-    @Override
-    public void initialize(ConfigurableApplicationContext applicationContext) {
-        TestPropertyValues.of(
-            "spring.datasource.url=" + postgres.getJdbcUrl(),
-            "spring.datasource.username=" + postgres.getUsername(),
-            "spring.datasource.password=" + postgres.getPassword()
-        ).applyTo(applicationContext.getEnvironment());
-    }
+@Mapper(componentModel = "spring")
+public interface MinionMapper {
+    @Mappings({
+        @Mapping(target = "locationId", source = "monitoringLocationId"),
+        @Mapping(target = "lastCheckedTime", source = "lastCheckedIn")
+    })
+    Minion protoToMinion(MonitoringSystemDTO dto);
+    @Mappings({
+        @Mapping(source = "locationId", target = "monitoringLocationId"),
+        @Mapping(source = "lastCheckedTime", target = "lastCheckedIn")
+    })
+    MonitoringSystemDTO minionToProto(Minion minion);
 }

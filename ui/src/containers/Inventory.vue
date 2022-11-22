@@ -1,5 +1,5 @@
 <template>
-  <PageHeader :heading="heading" />
+  <PageHeader :heading="heading" class="mx-l" />
   <!-- tabs anchor-->
   <!-- expandable filter: search, select, sorting -->
   <Filter @selected-item="onSelectedItem"/>

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MonitoringSystemService {
     //TODO: this tenantId will be passed from gRPC request JWT token
-    private final String tenantId = new UUID(10, 14).toString();
+    private final String tenantId = "4ab6020d-6ee8-4087-afa4-114604fe21e4";
     private final MonitoringSystemRepository modelRepo;
     private final MonitoringLocationRepository locationRepository;
     private final MonitoringSystemMapper mapper;
