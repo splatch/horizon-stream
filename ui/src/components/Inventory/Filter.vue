@@ -10,6 +10,7 @@
         class="my-autocomplete"
         label="Users"
         type="multi"
+        data-test="search"
       />
     </li>
     <li>
@@ -57,11 +58,19 @@
       />
     </li>
     <!-- Sort / A-Z -->
-    <IconAction :item="sort" asLi/>
-    <IconAction :item="sortAlpha" asLi />
+    <li>
+      <FeatherIcon @click="onSort" :icon="sort?.icon" :title="sort?.title" :viewBox="sort.viewBox" data-test="sort-icon" />
+    </li>
+    <li>
+      <FeatherIcon @click="onSortAlpha" :icon="sortAlpha.icon" :title="sortAlpha.title" :viewBox="sortAlpha.viewBox" data-test="sort-alpha-icon" />
+    </li>
     <!-- Expand/Collapse -->
-    <IconAction v-if="isExpanded" :item="collapse" asLi />
-    <IconAction v-else :item="expand" asLi />    
+    <li v-if="isExpanded">
+      <FeatherIcon @click="isExpanded = !isExpanded" :icon="collapse.icon" :title="collapse.title" :viewBox="collapse.viewBox" data-test="collapse-icon" />
+    </li>
+    <li v-else>
+      <FeatherIcon @click="isExpanded = !isExpanded" :icon="expand.icon" :title="expand.title" :viewBox="expand.viewBox" data-test="expand-icon" />
+    </li>
   </ul>
 </template>
 
@@ -194,29 +203,35 @@ const tagging: ISelectDropdown = {
   optionText: 'type'
 }
 
+const getViewBox = (icon: any) => {
+  const iconProps = icon.render().props
+  return iconProps.viewBox || `0 0 ${iconProps.width} ${iconProps.height}`
+}
 // Sort / A-Z
+const onSort = () => null
 const sort = {
   title: 'Sort',
   icon: Sort,
-  action: () => null
+  viewBox: getViewBox(Sort)
 }
+const onSortAlpha = () => null
 const sortAlpha = {
   title: 'Sort Alpha',
   icon: SortByAlpha,
-  action: () => null
+  viewBox: getViewBox(SortByAlpha)
 }
 
 // Expand/Collapse
-const isExpanded = false
+const isExpanded = ref(false)
 const expand = {
   title: 'Expand',
   icon: KeyboardDoubleArrowDown,
-  action: () => null
+  viewBox: getViewBox(KeyboardDoubleArrowDown)
 }
 const collapse = {
   title: 'Collapse',
   icon: KeyboardDoubleArrowUp,
-  action: () => null
+  viewBox: getViewBox(KeyboardDoubleArrowUp)
 }
 </script>
 
@@ -236,6 +251,14 @@ const collapse = {
       flex-grow: 1;
       text-align: right;
     }
+  }
+}
+
+.feather-icon {
+  font-size: 1.5rem;
+  color: var(variables.$disabled-text-on-surface);
+  &:hover {
+    color: var(variables.$primary-text-on-surface);
   }
 }
 </style>
