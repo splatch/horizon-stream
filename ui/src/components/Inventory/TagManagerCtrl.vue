@@ -1,16 +1,15 @@
 <template>
   <FeatherButton 
     primary
-    data-test="open-tags-btn" 
     @click="store.triggerTagsBox"
   > 
     <template v-slot:icon>
+      Tagging
       <FeatherIcon 
         :icon="store.isTagsOpen ? upIcon : downIcon" 
         aria-hidden="true" 
         focusable="false" 
       />
-      Tagging
     </template>
   </FeatherButton>
 </template>
