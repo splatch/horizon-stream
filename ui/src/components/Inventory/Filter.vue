@@ -1,13 +1,12 @@
 <template>
   <ul class="filter-container">
-    <li>
+    <li class="autocomplete">
       <!-- Search -->
       <FeatherAutocomplete
         v-model="search.value"
         :loading="search.loading"
         :results="search.results"
         @search="search.getItem"
-        class="my-autocomplete"
         label="Users"
         type="multi"
         data-test="search"
@@ -240,8 +239,6 @@ const collapse = {
 
 .filter-container {
   margin: 0 var(variables.$spacing-xl) var(variables.$spacing-l);
-  margin-bottom: var(variables.$spacing-xl);
-  margin-bottom: var(variables.$spacing-xl);
   display: flex;
   flex-flow: row wrap;
   > * {
@@ -254,6 +251,9 @@ const collapse = {
   }
 }
 
+.autocomplete {
+  min-width: 13rem;
+}
 .feather-icon {
   font-size: 1.5rem;
   color: var(variables.$disabled-text-on-surface);
