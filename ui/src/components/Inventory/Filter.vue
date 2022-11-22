@@ -255,6 +255,7 @@ const collapse = {
   min-width: 13rem;
 }
 .feather-icon {
+  margin-top: var(variables.$spacing-xs);
   font-size: 1.5rem;
   color: var(variables.$disabled-text-on-surface);
   &:hover {
