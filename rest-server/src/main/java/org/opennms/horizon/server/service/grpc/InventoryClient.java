@@ -30,6 +30,7 @@ package org.opennms.horizon.server.service.grpc;
 
 import java.util.List;
 
+import org.opennms.horizon.inventory.Constants;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
 import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
@@ -53,9 +54,6 @@ public class InventoryClient {
     private NodeServiceGrpc.NodeServiceBlockingStub nodeStub;
     private MonitoringSystemServiceGrpc.MonitoringSystemServiceBlockingStub systemStub;
 
-    //TODO: hardcoded tenantId will be removed in HS-598
-    private final String tenantId = "4ab6020d-6ee8-4087-afa4-114604fe21e4";
-
     public InventoryClient(String serverAddress) {
         channel = ManagedChannelBuilder.forTarget(serverAddress)
             .keepAliveWithoutCalls(true)
@@ -76,45 +74,45 @@ public class InventoryClient {
     }
 
     //TODO: add error handling
-    public NodeDTO createNewNode(NodeCreateDTO node) {
+    public NodeDTO createNewNode(NodeCreateDTO node, String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
         return nodeStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).createNode(node);
     }
 
-    public List<NodeDTO> listNodes() {
+    public List<NodeDTO> listNodes(String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
         return nodeStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listNodes(Empty.newBuilder().build()).getNodesList();
     }
 
-    public NodeDTO getNodeById(long id) {
+    public NodeDTO getNodeById(long id, String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
         return nodeStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getNodeById(Int64Value.of(id));
     }
 
-    public List<MonitoringLocationDTO> listLocations() {
+    public List<MonitoringLocationDTO> listLocations(String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
         return locationStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listLocations(Empty.newBuilder().build()).getLocationsList();
     }
 
-    public MonitoringLocationDTO getLocationById(long id) {
+    public MonitoringLocationDTO getLocationById(long id, String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
         return locationStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getLocationById(Int64Value.of(id));
     }
 
-    public List<MonitoringSystemDTO> listMonitoringSystems() {
+    public List<MonitoringSystemDTO> listMonitoringSystems(String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
         return systemStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listMonitoringSystem(Empty.newBuilder().build()).getSystemsList();
     }
 
-    public MonitoringSystemDTO getSystemBySystemId(String systemId) {
+    public MonitoringSystemDTO getSystemBySystemId(String systemId, String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
         return systemStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getMonitoringSystemById(StringValue.of(systemId));
     }
 

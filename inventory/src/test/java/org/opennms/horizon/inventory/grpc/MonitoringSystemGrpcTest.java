@@ -30,6 +30,8 @@ package org.opennms.horizon.inventory.grpc;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -37,6 +39,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.keycloak.common.VerificationException;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
 import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
 import org.opennms.horizon.inventory.dto.MonitoringSystemList;
@@ -47,14 +50,17 @@ import org.opennms.horizon.inventory.model.MonitoringSystem;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.StringValue;
 
+import io.grpc.Metadata;
+import io.grpc.ServerCall;
+import io.grpc.ServerCallHandler;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
 @ContextConfiguration(initializers = {SpringContextTestInitializer.class})
@@ -73,7 +79,7 @@ public class MonitoringSystemGrpcTest extends GrpcTestBase {
     }
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws VerificationException {
         MonitoringLocation location = new MonitoringLocation();
             location.setLocation("test-location");
             location.setTenantId(tenantId);
@@ -104,63 +110,76 @@ public class MonitoringSystemGrpcTest extends GrpcTestBase {
         systemRepo.save(system1);
         systemRepo.save(system2);
         systemRepo.save(system3);
+        prepareServer();
     }
 
     @AfterEach
-    public void cleanup() {
-        channel.shutdown();
+    public void cleanup() throws InterruptedException {
         systemRepo.deleteAll();
         locationRepo.deleteAll();
+        afterTest();
     }
 
     @Test
-    public void testListSystem() {
+    public void testListSystem() throws VerificationException {
         setupGrpc();
         initStub();
         MonitoringSystemList systemList = serviceStub.listMonitoringSystem(Empty.newBuilder().build());
         assertThat(systemList).isNotNull();
         assertThat(systemList.getSystemsList().size()).isEqualTo(2);
+        verify(spyInterceptor).verifyAccessToken(authHeader);
+        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test
-    public void testListSystemWithDifferentTenantId() {
+    public void testListSystemWithDifferentTenantId() throws VerificationException {
         setupGrpcWithDifferentTenantID();
         initStub();
         MonitoringSystemList systemList = serviceStub.listMonitoringSystem(Empty.newBuilder().build());
         assertThat(systemList).isNotNull();
         assertThat(systemList.getSystemsList().size()).isEqualTo(0);
+        verify(spyInterceptor).verifyAccessToken(differentTenantHeader);
+        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test
-    public void testGetBySystemId() {
+    public void testGetBySystemId() throws VerificationException {
         setupGrpc();
         initStub();
         MonitoringSystemDTO systemDTO = serviceStub.getMonitoringSystemById(StringValue.of(system1.getSystemId()));
         assertThat(systemDTO).isNotNull();
         assertThat(systemDTO).isEqualTo(mapper.modelToDTO(system1));
+        verify(spyInterceptor).verifyAccessToken(authHeader);
+        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test
-    public void testGetBySystemIdNotExist() {
+    public void testGetBySystemIdNotExist() throws VerificationException {
         setupGrpc();
         initStub();
         StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, ()-> serviceStub.getMonitoringSystemById(StringValue.of("wrong systemId")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
+        verify(spyInterceptor).verifyAccessToken(authHeader);
+        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test
-    public void testGetBySystemIdWithWrongTenantId() {
+    public void testGetBySystemIdWithWrongTenantId() throws VerificationException {
         setupGrpcWithDifferentTenantID();
         initStub();
         StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, ()-> serviceStub.getMonitoringSystemById(StringValue.of(system1.getSystemId())));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
+        verify(spyInterceptor).verifyAccessToken(differentTenantHeader);
+        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test
-    public void testListWithoutTenantId() {
+    public void testListWithoutTenantId() throws VerificationException {
         setupGrpcWithOutTenantID();
         initStub();
         StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, () -> serviceStub.listMonitoringSystem(Empty.newBuilder().build()));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
+        verify(spyInterceptor).verifyAccessToken(headerWithoutTenant);
+        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 }

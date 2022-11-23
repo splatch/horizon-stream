@@ -26,17 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.grpc;
+package org.opennms.horizon.server.utils;
 
-import java.util.Optional;
+import java.util.List;
 
-import org.opennms.horizon.inventory.Constants;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.web.server.ServerWebExchange;
 
-import io.grpc.Context;
+import graphql.GraphQLContext;
+import io.leangen.graphql.execution.ResolutionEnvironment;
+import io.leangen.graphql.spqr.spring.autoconfigure.DefaultGlobalContext;
+import io.leangen.graphql.util.ContextUtils;
 
-public class GrpcTenantLookupImpl implements TenantLookup {
-    @Override
-    public Optional<String> lookupTenantId(Context context) {
-        return Optional.ofNullable(Constants.TENANT_ID_CONTEXT_KEY.get());
+public class ServerHeaderUtil {
+    public String getAuthHeader(ResolutionEnvironment env) {
+        GraphQLContext graphQLContext = env.dataFetchingEnvironment.getContext();
+        DefaultGlobalContext context = (DefaultGlobalContext) ContextUtils.unwrapContext(graphQLContext);
+        ServerWebExchange webExchange = (ServerWebExchange) context.getNativeRequest();
+        ServerHttpRequest request = webExchange.getRequest();
+        List<String> authHeaders = request.getHeaders().get(HttpHeaders.AUTHORIZATION);
+        return authHeaders != null? authHeaders.get(0): null;
     }
 }
