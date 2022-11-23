@@ -64,7 +64,7 @@ import io.grpc.StatusRuntimeException;
 
 @SpringBootTest
 @ContextConfiguration(initializers = {SpringContextTestInitializer.class})
-public class MonitoringSystemGrpcTest extends GrpcTestBase {
+public class MonitoringSystemGrpcItTest extends GrpcTestBase {
     @Autowired
     private MonitoringSystemRepository systemRepo;
     @Autowired
