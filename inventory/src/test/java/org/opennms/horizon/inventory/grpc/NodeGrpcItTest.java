@@ -35,6 +35,7 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -236,16 +237,22 @@ class NodeGrpcItTest extends GrpcTestBase {
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
-    private void populateTables(String location, String ip) {
-        MonitoringLocation ml = new MonitoringLocation();
-        ml.setLocation(location);
-        ml.setTenantId(tenantId);
-        MonitoringLocation savedML = monitoringLocationRepository.save(ml);
+    private synchronized void populateTables(String location, String ip) {
+        Optional<MonitoringLocation> dbL = monitoringLocationRepository.findByLocation(location);
+        MonitoringLocation dBLocation;
+        if(dbL.isEmpty()) {
+            MonitoringLocation ml = new MonitoringLocation();
+            ml.setLocation(location);
+            ml.setTenantId(tenantId);
+            dBLocation = monitoringLocationRepository.save(ml);
+        } else {
+            dBLocation = dbL.get();
+        }
 
         Node node = new Node();
         node.setTenantId(tenantId);
         node.setNodeLabel("label");
-        node.setMonitoringLocation(savedML);
+        node.setMonitoringLocation(dBLocation);
         node.setCreateTime(LocalDateTime.now());
         Node savedNode = nodeRepository.save(node);
 
