@@ -29,7 +29,6 @@ runs:
       if: ${{ inputs.enable-sonar-scan == 'true' }}
       run: |
 
-        mvn clean install
         mvn -Pcoverage verify jib:dockerBuild -Dimage=opennms/horizon-stream-inventory:local \
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
 
@@ -44,7 +43,6 @@ runs:
       if: ${{ inputs.enable-sonar-scan == 'false' }}
       run: |
 
-        mvn clean install
         mvn verify jib:dockerBuild -Dimage=opennms/horizon-stream-inventory:local
 
       working-directory: ${{ inputs.dir-location }}
