@@ -49,7 +49,6 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.Metadata;
 import io.grpc.Server;
 import io.grpc.inprocess.InProcessServerBuilder;
-import io.grpc.stub.MetadataUtils;
 
 public abstract class GrpcTestBase {
     @DynamicPropertySource
@@ -66,6 +65,8 @@ public abstract class GrpcTestBase {
     protected  InventoryServerInterceptor spyInterceptor;
 
     protected void prepareServer() throws VerificationException {
+        channel = ManagedChannelBuilder.forAddress("localhost", 6767)
+                .usePlaintext().build();
         doReturn(Optional.of(tenantId)).when(spyInterceptor).verifyAccessToken(authHeader);
         doReturn(Optional.of("invalid-tenant")).when(spyInterceptor).verifyAccessToken(differentTenantHeader);
         doReturn(Optional.empty()).when(spyInterceptor).verifyAccessToken(headerWithoutTenant);
@@ -79,37 +80,12 @@ public abstract class GrpcTestBase {
         reset(spyInterceptor);
     }
 
+    protected Metadata createAuthHeader(String value) {
+        Metadata headers = new Metadata();
+        headers.put(Constants.AUTHORIZATION_METADATA_KEY, value);
+        return headers;
+    }
     protected static Server server;
-
-
-    protected void setupGrpc() {
-        Metadata metadata = new Metadata();
-        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, authHeader);
-        channel = ManagedChannelBuilder.forAddress("localhost", 6767)
-            .intercept(MetadataUtils.newAttachHeadersInterceptor(metadata))
-            .usePlaintext().build();
-    }
-
-    protected void setupGrpcWithDifferentTenantID() {
-        Metadata metadata = new Metadata();
-        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, differentTenantHeader);
-        channel = ManagedChannelBuilder.forAddress("localhost", 6767)
-            .intercept(MetadataUtils.newAttachHeadersInterceptor(metadata))
-            .usePlaintext().build();
-    }
-
-    protected void setupGrpcWithOutTenantID() {
-        Metadata metadata = new Metadata();
-        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, headerWithoutTenant);
-        channel = ManagedChannelBuilder.forAddress("localhost", 6767)
-            .intercept(MetadataUtils.newAttachHeadersInterceptor(metadata))
-            .usePlaintext().build();
-    }
-
-    protected void setupGrpcWithOutHeader() {
-        channel = ManagedChannelBuilder.forAddress("localhost", 6767)
-            .usePlaintext().build();
-    }
 
     protected static Server startMockServer(String name, BindableService... services) throws IOException {
         InProcessServerBuilder builder = InProcessServerBuilder

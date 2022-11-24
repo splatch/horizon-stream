@@ -69,6 +69,7 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.StatusRuntimeException;
 import io.grpc.protobuf.StatusProto;
+import io.grpc.stub.MetadataUtils;
 
 @SpringBootTest
 @ContextConfiguration(initializers = {SpringContextTestInitializer.class})
@@ -81,13 +82,7 @@ class NodeGrpcItTest extends GrpcTestBase {
     private MonitoringLocationRepository monitoringLocationRepository;
     @Autowired
     private IpInterfaceRepository ipInterfaceRepository;
-
     private static TestTaskSetGrpcService testGrpcService;
-
-    public void initStub() {
-        serviceStub = NodeServiceGrpc.newBlockingStub(channel);
-    }
-
 
     @BeforeAll
     public static void setup() throws IOException {
@@ -104,6 +99,7 @@ class NodeGrpcItTest extends GrpcTestBase {
     @BeforeEach
     public void prepare() throws VerificationException {
         prepareServer();
+        serviceStub = NodeServiceGrpc.newBlockingStub(channel);
     }
 
     @AfterEach
@@ -118,9 +114,6 @@ class NodeGrpcItTest extends GrpcTestBase {
 
     @Test
     void testCreateNode() throws VerificationException {
-        setupGrpc();
-        initStub();
-
         String label = "label";
 
         NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
@@ -129,7 +122,7 @@ class NodeGrpcItTest extends GrpcTestBase {
             .setManagementIp("127.0.0.1")
             .build();
 
-        NodeDTO node = serviceStub.createNode(createDTO);
+        NodeDTO node = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
         assertEquals(1, testGrpcService.getTimesCalled());
@@ -142,10 +135,7 @@ class NodeGrpcItTest extends GrpcTestBase {
         String location = "location";
         String ip = "127.0.0.1";
         String label = "label";
-
-        setupGrpc();
         populateTables(location, ip);
-        initStub();
 
         NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation(location)
@@ -153,7 +143,8 @@ class NodeGrpcItTest extends GrpcTestBase {
             .setManagementIp(ip)
             .build();
 
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () -> serviceStub.createNode(createDTO));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () -> serviceStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).createNode(createDTO));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.ALREADY_EXISTS_VALUE);
         assertThat(status.getMessage()).isEqualTo("Ip address already exists for location");
@@ -168,9 +159,7 @@ class NodeGrpcItTest extends GrpcTestBase {
         String ip = "127.0.0.1";
         String label = "label";
 
-        setupGrpcWithDifferentTenantID();
         populateTables(location, ip);
-        initStub();
 
         NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation(location)
@@ -178,7 +167,7 @@ class NodeGrpcItTest extends GrpcTestBase {
             .setManagementIp(ip)
             .build();
 
-        NodeDTO node = serviceStub.createNode(createDTO);
+        NodeDTO node = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(differentTenantHeader))).createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
         assertEquals(1, testGrpcService.getTimesCalled());
@@ -192,9 +181,7 @@ class NodeGrpcItTest extends GrpcTestBase {
         String ip = "127.0.0.1";
         String label = "label";
 
-        setupGrpc();
         populateTables(location, ip);
-        initStub();
 
         NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation("different")
@@ -202,7 +189,7 @@ class NodeGrpcItTest extends GrpcTestBase {
             .setManagementIp(ip)
             .build();
 
-        NodeDTO node = serviceStub.createNode(createDTO);
+        NodeDTO node = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
         assertEquals(1, testGrpcService.getTimesCalled());
@@ -218,10 +205,8 @@ class NodeGrpcItTest extends GrpcTestBase {
         String secondLocation = "loc2";
         String secondIp = "127.0.0.2";
 
-        setupGrpc();
         populateTables(location, ip);
         populateTables(secondLocation, secondIp);
-        initStub();
 
         NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation(secondLocation)
@@ -229,7 +214,7 @@ class NodeGrpcItTest extends GrpcTestBase {
             .setManagementIp(ip)
             .build();
 
-        NodeDTO node = serviceStub.createNode(createDTO);
+        NodeDTO node = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
         assertEquals(1, testGrpcService.getTimesCalled());
@@ -260,14 +245,11 @@ class NodeGrpcItTest extends GrpcTestBase {
         ipInterface.setTenantId(tenantId);
         ipInterface.setIpAddress(new Inet(ip));
         ipInterface.setNode(savedNode);
-        IpInterface savedIpInterface = ipInterfaceRepository.save(ipInterface);
+        ipInterfaceRepository.save(ipInterface);
     }
 
     @Test
     void testCreateNodeMissingTenantId() throws Exception {
-        setupGrpcWithOutTenantID();
-        initStub();
-
         String label = "label";
 
         NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
@@ -276,7 +258,8 @@ class NodeGrpcItTest extends GrpcTestBase {
             .setManagementIp("127.0.0.1")
             .build();
 
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () -> serviceStub.createNode(createDTO));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () -> serviceStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(headerWithoutTenant))).createNode(createDTO));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.UNAUTHENTICATED_VALUE);
         assertThat(status.getMessage()).isEqualTo("Missing tenant id");
@@ -287,9 +270,6 @@ class NodeGrpcItTest extends GrpcTestBase {
 
     @Test
     void testCreateNodeBadIPAddress() throws Exception {
-        setupGrpc();
-        initStub();
-
         String label = "label";
 
         NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
@@ -298,7 +278,8 @@ class NodeGrpcItTest extends GrpcTestBase {
             .setManagementIp("BAD")
             .build();
 
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () -> serviceStub.createNode(createDTO));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () -> serviceStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).createNode(createDTO));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.INVALID_ARGUMENT_VALUE);
         assertThat(status.getMessage()).isEqualTo("Bad management_ip: BAD");

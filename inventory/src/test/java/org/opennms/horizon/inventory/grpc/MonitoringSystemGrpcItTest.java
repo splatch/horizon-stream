@@ -61,6 +61,7 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
+import io.grpc.stub.MetadataUtils;
 
 @SpringBootTest
 @ContextConfiguration(initializers = {SpringContextTestInitializer.class})
@@ -73,10 +74,6 @@ public class MonitoringSystemGrpcItTest extends GrpcTestBase {
     private MonitoringSystemMapper mapper;
     private MonitoringSystem system1;
     private MonitoringSystemServiceGrpc.MonitoringSystemServiceBlockingStub serviceStub;
-
-    private void initStub() {
-        serviceStub = MonitoringSystemServiceGrpc.newBlockingStub(channel);
-    }
 
     @BeforeEach
     public void setup() throws VerificationException {
@@ -111,6 +108,7 @@ public class MonitoringSystemGrpcItTest extends GrpcTestBase {
         systemRepo.save(system2);
         systemRepo.save(system3);
         prepareServer();
+        serviceStub = MonitoringSystemServiceGrpc.newBlockingStub(channel);
     }
 
     @AfterEach
@@ -122,9 +120,9 @@ public class MonitoringSystemGrpcItTest extends GrpcTestBase {
 
     @Test
     public void testListSystem() throws VerificationException {
-        setupGrpc();
-        initStub();
-        MonitoringSystemList systemList = serviceStub.listMonitoringSystem(Empty.newBuilder().build());
+        MonitoringSystemList systemList = serviceStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
+            .listMonitoringSystem(Empty.newBuilder().build());
         assertThat(systemList).isNotNull();
         assertThat(systemList.getSystemsList().size()).isEqualTo(2);
         verify(spyInterceptor).verifyAccessToken(authHeader);
@@ -133,9 +131,9 @@ public class MonitoringSystemGrpcItTest extends GrpcTestBase {
 
     @Test
     public void testListSystemWithDifferentTenantId() throws VerificationException {
-        setupGrpcWithDifferentTenantID();
-        initStub();
-        MonitoringSystemList systemList = serviceStub.listMonitoringSystem(Empty.newBuilder().build());
+        MonitoringSystemList systemList = serviceStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(differentTenantHeader)))
+            .listMonitoringSystem(Empty.newBuilder().build());
         assertThat(systemList).isNotNull();
         assertThat(systemList.getSystemsList().size()).isEqualTo(0);
         verify(spyInterceptor).verifyAccessToken(differentTenantHeader);
@@ -144,9 +142,9 @@ public class MonitoringSystemGrpcItTest extends GrpcTestBase {
 
     @Test
     public void testGetBySystemId() throws VerificationException {
-        setupGrpc();
-        initStub();
-        MonitoringSystemDTO systemDTO = serviceStub.getMonitoringSystemById(StringValue.of(system1.getSystemId()));
+        MonitoringSystemDTO systemDTO = serviceStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
+            .getMonitoringSystemById(StringValue.of(system1.getSystemId()));
         assertThat(systemDTO).isNotNull();
         assertThat(systemDTO).isEqualTo(mapper.modelToDTO(system1));
         verify(spyInterceptor).verifyAccessToken(authHeader);
@@ -155,9 +153,9 @@ public class MonitoringSystemGrpcItTest extends GrpcTestBase {
 
     @Test
     public void testGetBySystemIdNotExist() throws VerificationException {
-        setupGrpc();
-        initStub();
-        StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, ()-> serviceStub.getMonitoringSystemById(StringValue.of("wrong systemId")));
+        StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, ()-> serviceStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
+            .getMonitoringSystemById(StringValue.of("wrong systemId")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
@@ -165,9 +163,9 @@ public class MonitoringSystemGrpcItTest extends GrpcTestBase {
 
     @Test
     public void testGetBySystemIdWithWrongTenantId() throws VerificationException {
-        setupGrpcWithDifferentTenantID();
-        initStub();
-        StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, ()-> serviceStub.getMonitoringSystemById(StringValue.of(system1.getSystemId())));
+        StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, ()-> serviceStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(differentTenantHeader)))
+            .getMonitoringSystemById(StringValue.of(system1.getSystemId())));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
         verify(spyInterceptor).verifyAccessToken(differentTenantHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
@@ -175,9 +173,9 @@ public class MonitoringSystemGrpcItTest extends GrpcTestBase {
 
     @Test
     public void testListWithoutTenantId() throws VerificationException {
-        setupGrpcWithOutTenantID();
-        initStub();
-        StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, () -> serviceStub.listMonitoringSystem(Empty.newBuilder().build()));
+        StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, () -> serviceStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(headerWithoutTenant)))
+            .listMonitoringSystem(Empty.newBuilder().build()));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
         verify(spyInterceptor).verifyAccessToken(headerWithoutTenant);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
