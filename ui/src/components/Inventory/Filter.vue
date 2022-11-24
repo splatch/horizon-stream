@@ -7,7 +7,7 @@
         :loading="search.loading"
         :results="search.results"
         @search="search.getItem"
-        label="Users"
+        label="Search"
         type="multi"
         data-test="search"
       />
@@ -208,7 +208,7 @@ const collapse = {
 @use "@featherds/styles/themes/variables";
 
 .filter-container {
-  margin-top: var(variables.$spacing-l);
+  margin: var(variables.$spacing-l) 0;
   display: flex;
   flex-flow: row wrap;
   > * {

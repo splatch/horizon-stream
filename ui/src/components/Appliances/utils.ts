@@ -61,10 +61,10 @@ export const getHumanReadableDuration = (timestamp: number, timeUnit = TimeUnit.
       })
         
       let durationFormatted = formatDuration(duration, { format: ['days', 'hours', 'minutes', 'seconds']})
-      const re = /(?<s>seconds?)|(?<m>\minutes?)|(?<h>hours?)|(?<d>days?)/gm
+      const re = /(?<s>seconds?)|(?<m>minutes?)|(?<h>hours?)|(?<d>days?)/gm
     
       // replace days/hours/minutes/seconds by d/h/m/s
-      for(let mat of durationFormatted.matchAll(re)) {
+      for(const mat of durationFormatted.matchAll(re)) {
         const { s, m, h, d } = mat.groups as Record<string, string>
         if(s) durationFormatted = durationFormatted.replace(s, 's')
         if(m) durationFormatted = durationFormatted.replace(m, 'm')

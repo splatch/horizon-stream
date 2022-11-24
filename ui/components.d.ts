@@ -9,7 +9,6 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AddDeviceCtrl: typeof import('./src/components/Appliances/AddDeviceCtrl.vue')['default']
     AlarmsTable: typeof import('./src/components/Alarms/AlarmsTable.vue')['default']
-    Card: typeof import('./src/components/Inventory/Card.vue')['default']
     ContextMenu: typeof import('./src/components/Topology/ContextMenu.vue')['default']
     CtrlHighlightFocusedNodes: typeof import('./src/components/Topology/CtrlHighlightFocusedNodes.vue')['default']
     CtrlLayers: typeof import('./src/components/Topology/CtrlLayers.vue')['default']
@@ -44,6 +43,7 @@ declare module '@vue/runtime-core' {
     FeatherTooltip: typeof import('@featherds/tooltip')['FeatherTooltip']
     Filter: typeof import('./src/components/Inventory/Filter.vue')['default']
     GridTabs: typeof import('./src/components/Map/GridTabs.vue')['default']
+    Icon: typeof import('./src/components/Common/Icon.vue')['default']
     IconAction: typeof import('./src/components/Common/IconAction.vue')['default']
     IconActionList: typeof import('./src/components/Inventory/IconActionList.vue')['default']
     LeafletMap: typeof import('./src/components/Map/LeafletMap.vue')['default']
