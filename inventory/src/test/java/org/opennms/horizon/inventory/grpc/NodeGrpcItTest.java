@@ -153,7 +153,7 @@ class NodeGrpcItTest extends GrpcTestBase {
             .setManagementIp(ip)
             .build();
 
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.createNode(createDTO));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () -> serviceStub.createNode(createDTO));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.ALREADY_EXISTS_VALUE);
         assertThat(status.getMessage()).isEqualTo("Ip address already exists for location");
@@ -276,7 +276,7 @@ class NodeGrpcItTest extends GrpcTestBase {
             .setManagementIp("127.0.0.1")
             .build();
 
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.createNode(createDTO));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () -> serviceStub.createNode(createDTO));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.UNAUTHENTICATED_VALUE);
         assertThat(status.getMessage()).isEqualTo("Missing tenant id");
@@ -298,7 +298,7 @@ class NodeGrpcItTest extends GrpcTestBase {
             .setManagementIp("BAD")
             .build();
 
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.createNode(createDTO));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () -> serviceStub.createNode(createDTO));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.INVALID_ARGUMENT_VALUE);
         assertThat(status.getMessage()).isEqualTo("Bad management_ip: BAD");
