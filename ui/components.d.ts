@@ -7,14 +7,13 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    AddDeviceCtrl: typeof import('./src/components/Appliances/AddDeviceCtrl.vue')['default']
+    AddNodeCtrl: typeof import('./src/components/Appliances/AddNodeCtrl.vue')['default']
     AlarmsTable: typeof import('./src/components/Alarms/AlarmsTable.vue')['default']
     ContextMenu: typeof import('./src/components/Topology/ContextMenu.vue')['default']
     CtrlHighlightFocusedNodes: typeof import('./src/components/Topology/CtrlHighlightFocusedNodes.vue')['default']
     CtrlLayers: typeof import('./src/components/Topology/CtrlLayers.vue')['default']
     CtrlSemanticZoomLevel: typeof import('./src/components/Topology/CtrlSemanticZoomLevel.vue')['default']
     DetectedNodesTabContent: typeof import('./src/components/Inventory/DetectedNodesTabContent.vue')['default']
-    DevicesTable: typeof import('./src/components/Appliances/DevicesTable.vue')['default']
     DeviceWidget: typeof import('./src/components/Widgets/DeviceWidget.vue')['default']
     DrawerBtn: typeof import('./src/components/Topology/DrawerBtn.vue')['default']
     EventsTable: typeof import('./src/components/Events/EventsTable.vue')['default']
@@ -61,6 +60,7 @@ declare module '@vue/runtime-core' {
     MonitoredNodesTabContent: typeof import('./src/components/Inventory/MonitoredNodesTabContent.vue')['default']
     NavigationRail: typeof import('./src/components/Layout/NavigationRail.vue')['default']
     NetworkGraph: typeof import('./src/components/Topology/NetworkGraph.vue')['default']
+    NodesTable: typeof import('./src/components/Appliances/NodesTable.vue')['default']
     NoFocusMsg: typeof import('./src/components/Topology/NoFocusMsg.vue')['default']
     NotificationsCtrl: typeof import('./src/components/Appliances/NotificationsCtrl.vue')['default']
     OptInOutCtrl: typeof import('./src/components/UsageStats/OptInOutCtrl.vue')['default']
