@@ -40,7 +40,6 @@ const item = {
 .tab-content {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
   gap: 1rem;
   > li {
     padding: var(variables.$spacing-l);
