@@ -1,4 +1,4 @@
-import { ExtendedDeviceDTO } from '@/types/device'
+import { ExtendedNode } from '@/types/node'
 import { ExtendedMinionDTO } from '@/types/minion'
 import { add, intervalToDuration, formatDuration } from 'date-fns'
 import { TimeUnit } from '@/types'
@@ -14,7 +14,7 @@ export interface BGColors {
  * @param list 
  * @returns list of items with added metrics background color props
  */
-export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedDeviceDTO[]) => list.map(item => {
+export const formatItemBgColor = (list: ExtendedMinionDTO[] | ExtendedNode[]) => list.map(item => {
   const { icmp_latency: latency, snmp_uptime: uptime, status } = item
   const bg = {
     ok: 'ok',
