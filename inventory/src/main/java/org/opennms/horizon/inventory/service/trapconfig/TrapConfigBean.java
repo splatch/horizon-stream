@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.opennms.sink.traps.contract.SnmpV3User;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -34,7 +33,7 @@ public class TrapConfigBean {
     @JsonProperty("newSuspectOnTrap")
     private Boolean newSuspectOnTrap;
     @JsonProperty("snmpV3Users")
-    private List<Object> snmpV3Users = null;
+    private List<SnmpV3User> snmpV3Users = null;
     @JsonProperty("includeRawMessage")
     private Boolean includeRawMessage;
     @JsonProperty("batchSize")
@@ -79,13 +78,12 @@ public class TrapConfigBean {
     }
 
     @JsonProperty("snmpV3Users")
-    public List<Object> getSnmpV3Users() {
-        // TODO: Change Object to SNMPV3User.
+    public List<SnmpV3User> getSnmpV3Users() {
         return snmpV3Users;
     }
 
     @JsonProperty("snmpV3Users")
-    public void setSnmpV3Users(List<Object> snmpV3Users) {
+    public void setSnmpV3Users(List<SnmpV3User> snmpV3Users) {
         this.snmpV3Users = snmpV3Users;
     }
 

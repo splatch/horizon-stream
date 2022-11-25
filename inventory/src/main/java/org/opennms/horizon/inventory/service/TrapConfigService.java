@@ -59,21 +59,21 @@ public class TrapConfigService {
                 .setBatchSize(config.getBatchSize())
                 .setQueueSize(config.getQueueSize())
                 .setNumThreads(config.getNumThreads()))
-//            .addAllSnmpV3User(mapSnmpV3Users(config))
+            .addAllSnmpV3User(mapSnmpV3Users(config))
             .build();
     }
 
-//    private List<SnmpV3User> mapSnmpV3Users(TrapConfigBean config) {
-//        return config.getSnmpV3Users().stream().map(snmpV3User -> {
-//            return SnmpV3User.newBuilder()
-//                .setEngineId(snmpV3User.getEngineId())
-//                .setAuthPassphrase(snmpV3User.getAuthPassphrase())
-//                .setAuthProtocol(snmpV3User.getAuthProtocol())
-//                .setPrivacyPassphrase(snmpV3User.getPrivacyPassphrase())
-//                .setPrivacyProtocol(snmpV3User.getPrivacyProtocol())
-//                .build();
-//        }).collect(Collectors.toList());
-//    }
+    private List<SnmpV3User> mapSnmpV3Users(TrapConfigBean config) {
+        return config.getSnmpV3Users().stream().map(snmpV3User -> {
+            return SnmpV3User.newBuilder()
+                .setEngineId(snmpV3User.getEngineId())
+                .setAuthPassphrase(snmpV3User.getAuthPassphrase())
+                .setAuthProtocol(snmpV3User.getAuthProtocol())
+                .setPrivacyPassphrase(snmpV3User.getPrivacyPassphrase())
+                .setPrivacyProtocol(snmpV3User.getPrivacyProtocol())
+                .build();
+        }).collect(Collectors.toList());
+    }
 
     private void publishTrapConfig(String location, TrapConfig trapConfig) {
         TaskDefinition taskDefinition = TaskDefinition.newBuilder()
