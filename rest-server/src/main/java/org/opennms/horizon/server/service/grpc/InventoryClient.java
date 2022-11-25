@@ -44,24 +44,18 @@ import com.google.protobuf.Int64Value;
 import com.google.protobuf.StringValue;
 
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.Metadata;
 import io.grpc.stub.MetadataUtils;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class InventoryClient {
     private final ManagedChannel channel;
     private MonitoringLocationServiceGrpc.MonitoringLocationServiceBlockingStub locationStub;
     private NodeServiceGrpc.NodeServiceBlockingStub nodeStub;
     private MonitoringSystemServiceGrpc.MonitoringSystemServiceBlockingStub systemStub;
 
-    public InventoryClient(String serverAddress) {
-        channel = ManagedChannelBuilder.forTarget(serverAddress)
-            .keepAliveWithoutCalls(true)
-            .usePlaintext().build();
-        initialStubs();
-    }
-
-    private void initialStubs() {
+    protected void initialStubs() {
         locationStub = MonitoringLocationServiceGrpc.newBlockingStub(channel);
         nodeStub = NodeServiceGrpc.newBlockingStub(channel);
         systemStub = MonitoringSystemServiceGrpc.newBlockingStub(channel);
@@ -73,7 +67,6 @@ public class InventoryClient {
         }
     }
 
-    //TODO: add error handling
     public NodeDTO createNewNode(NodeCreateDTO node, String accessToken) {
         Metadata metadata = new Metadata();
         metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
