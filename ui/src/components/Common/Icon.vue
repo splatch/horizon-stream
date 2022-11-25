@@ -27,6 +27,6 @@ defineProps({
 
 .feather-icon {
   font-size: 1.5rem;
-  color: var(--feather-primary-text-on-surface);
+  color: var(variables.$secondary-text-on-surface); // TODO: get color from props
 }
 </style>

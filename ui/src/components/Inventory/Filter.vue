@@ -51,19 +51,11 @@
       <TagManager />
     </li>
     <!-- Sort / A-Z -->
-    <li>
-      <FeatherIcon @click="onSort" :icon="sort?.icon" :title="sort?.title" :viewBox="sort.viewBox" data-test="sort-icon" />
-    </li>
-    <li>
-      <FeatherIcon @click="onSortAlpha" :icon="sortAlpha.icon" :title="sortAlpha.title" :viewBox="sortAlpha.viewBox" data-test="sort-alpha-icon" />
-    </li>
+    <IconAction :asLi="true" :item="sort" class="icon-action" />
+    <IconAction :asLi="true" :item="sortAlpha" class="icon-action" />
     <!-- Expand/Collapse -->
-    <li v-if="isExpanded">
-      <FeatherIcon @click="isExpanded = !isExpanded" :icon="collapse.icon" :title="collapse.title" :viewBox="collapse.viewBox" data-test="collapse-icon" />
-    </li>
-    <li v-else>
-      <FeatherIcon @click="isExpanded = !isExpanded" :icon="expand.icon" :title="expand.title" :viewBox="expand.viewBox" data-test="expand-icon" />
-    </li>
+    <IconAction v-if="isFilterOpen" :asLi="true" :item="collapse" class="icon-action" />
+    <IconAction v-else :asLi="true" :item="expand" class="icon-action" />
   </ul>
 </template>
 
@@ -78,8 +70,11 @@ import Sort from '@material-design-icons/svg/outlined/sort.svg'
 import SortByAlpha from '@material-design-icons/svg/outlined/sort_by_alpha.svg'
 import KeyboardDoubleArrowDown from '@material-design-icons/svg/outlined/keyboard_double_arrow_down.svg'
 import KeyboardDoubleArrowUp from '@material-design-icons/svg/outlined/keyboard_double_arrow_up.svg'
+import { useInventoryStore } from '@/store/Views/inventoryStore'
 
 const emits = defineEmits(['selectedItem'])
+
+const inventoryStore = useInventoryStore()
 
 // Search
 const search = {
@@ -172,35 +167,31 @@ const severity: ISelectDropdown = {
   optionText: 'type'
 }
 
-const getViewBox = (icon: any) => {
-  const iconProps = icon.render().props
-  return iconProps.viewBox || `0 0 ${iconProps.width} ${iconProps.height}`
-}
 // Sort / A-Z
 const onSort = () => null
 const sort = {
   title: 'Sort',
   icon: Sort,
-  viewBox: getViewBox(Sort)
+  action: onSort
 }
 const onSortAlpha = () => null
 const sortAlpha = {
   title: 'Sort Alpha',
   icon: SortByAlpha,
-  viewBox: getViewBox(SortByAlpha)
+  action: onSortAlpha
 }
 
 // Expand/Collapse
-const isExpanded = ref(false)
+const isFilterOpen = computed(() => inventoryStore.isFilterOpen)
 const expand = {
   title: 'Expand',
   icon: KeyboardDoubleArrowDown,
-  viewBox: getViewBox(KeyboardDoubleArrowDown)
+  action: inventoryStore.toggleFilter
 }
 const collapse = {
   title: 'Collapse',
   icon: KeyboardDoubleArrowUp,
-  viewBox: getViewBox(KeyboardDoubleArrowUp)
+  action: inventoryStore.toggleFilter
 }
 </script>
 
@@ -224,12 +215,8 @@ const collapse = {
 .autocomplete {
   min-width: 13rem;
 }
-.feather-icon {
+
+.icon-action {
   margin-top: var(variables.$spacing-xs);
-  font-size: 1.5rem;
-  color: var(variables.$disabled-text-on-surface);
-  &:hover {
-    color: var(variables.$primary-text-on-surface);
-  }
 }
 </style>

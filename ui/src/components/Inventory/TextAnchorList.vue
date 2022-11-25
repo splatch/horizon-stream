@@ -2,19 +2,19 @@
   <ul class="anchor-list">
     <li>
       <label>{{ label.profile }}: </label>
-      <a :href="anchor.profileLink">{{ anchor.profileValue }}</a>
+      <a :href="anchor?.profileLink">{{ anchor?.profileValue }}</a>
     </li>
     <li>
       <label>{{ label.location }}: </label>
-      <a :href="anchor.locationLink">{{ anchor.locationValue }}</a>
+      <a :href="anchor?.locationLink">{{ anchor?.locationValue }}</a>
     </li>
     <li>
       <label>{{ label.ipInterface }}: </label>
-      <a :href="anchor.ipInterfaceLink">{{ anchor.ipInterfaceValue }}</a>
+      <a :href="anchor?.ipInterfaceLink">{{ anchor?.ipInterfaceValue }}</a>
     </li>
     <li>
       <label>{{ label.tag }}: </label>
-      <a :href="anchor.tagLink">{{ anchor.tagValue }}</a>
+      <a :href="anchor?.tagLink">{{ anchor?.tagValue }}</a>
     </li>
   </ul>
 </template>

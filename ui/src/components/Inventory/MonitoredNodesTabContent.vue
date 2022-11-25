@@ -1,14 +1,14 @@
 <template>
   <ul class="tab-content">
-    <li v-for="node in tab.nodes" :key="node.id">
+    <li v-for="node in tabContent" :key="node?.id">
       <section class="header">
         <Icon :item="item" data-test="icon" />
-        <h4 data-test="heading">{{ node.name }}</h4>
+        <h4 data-test="heading">{{ node?.label }}</h4>
       </section>
       <section class="node-content">
         <div>
-          <MetricChipList :items="node.metrics" data-test="metric-chip-list" />
-          <TextAnchorList :anchor="node.anchor" data-test="text-anchor-list" />
+          <MetricChipList :metrics="node?.metrics" data-test="metric-chip-list" />
+          <TextAnchorList :anchor="node?.anchor" data-test="text-anchor-list" />
         </div>
         <IconActionList class="icon-action" data-test="icon-action-list" />
       </section>
@@ -22,8 +22,8 @@ import Storage from '@material-design-icons/svg/outlined/storage.svg'
 import { TabNode } from '@/types/inventory'
   
 defineProps({
-  tab: {
-    type: Object as PropType<TabNode>,
+  tabContent: {
+    type: Object, // as PropType<TabNode>,
     required: true
   }
 })
@@ -45,8 +45,7 @@ const item = {
     padding: var(variables.$spacing-l);
     border: 1px solid var(variables.$secondary-text-on-surface); 
     border-radius: 10px;
-    // TODO: set color dynamically
-    border-left: 10px solid var(variables.$secondary-text-on-surface);
+    border-left: 10px solid var(variables.$secondary-text-on-surface); // TODO set color dynamically to the node's status
     > .header {
       margin-bottom: var(variables.$spacing-s);
       display: flex;

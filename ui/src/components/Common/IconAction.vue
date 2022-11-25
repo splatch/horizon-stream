@@ -1,12 +1,13 @@
 <template>
-  <component :is="asLi ? 'li' : 'a'" :title="item.title" class="pointer">
-    <FeatherIcon @click="item.action" :icon="item.icon" :title="item.title" :viewBox="viewBox" />
+  <component :is="asLi ? 'li' : 'div'" :title="item.title" class="pointer">
+    <FeatherIcon @click="item.action" :icon="item.icon" :title="item.title" :viewBox="setViewBox(item.icon)" />
   </component>
 </template>
 
 <script lang="ts" setup>
 import { PropType } from 'vue'
 import { fncVoid } from '@/types'
+import { setViewBox } from '@/components/utils'
 
 interface Item {
   title?: string,
@@ -14,7 +15,7 @@ interface Item {
   action: fncVoid
 }
 
-const props = defineProps({
+defineProps({
   item: {
     type: Object as PropType<Item>,
     required: true
@@ -24,17 +25,6 @@ const props = defineProps({
     default: false
   }
 })
-
-/* Note: 
-    - viewBox: attribute is required to control the icon dimension
-      - @material-design-icons: does not have viewBox prop - need to set it manually on the FeatherIcon component with width/height
-    - css: use font-size to set the icon dimension (recommended), with width and height set to 1em (already set by FeatherIcon component)
-    - svg: icon rendering props
-      - @material-design-icons: only width/height available
-      - @featherds: only viewBox available
- */
-const iconProps = props.item.icon.render().props
-const viewBox = iconProps.viewBox || `0 0 ${iconProps.width} ${iconProps.height}`
 </script>
 
 <style lang="scss" scoped>
@@ -42,9 +32,9 @@ const viewBox = iconProps.viewBox || `0 0 ${iconProps.width} ${iconProps.height}
 
 .feather-icon {
   font-size: 1.5rem;
-  color: var(variables.$disabled-text-on-surface);
+  color: var(variables.$secondary-text-on-surface); // TODO: get color from props
   &:hover {
-    color: var(variables.$primary-text-on-surface);
+    color: var(variables.$disabled-text-on-surface); // TODO: get color from props
   }
 }
 </style>
