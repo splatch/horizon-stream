@@ -29,12 +29,14 @@
 package org.opennms.horizon.alarmservice.db.entity;
 
 import javax.persistence.Column;
+//import org.hibernate.annotations.TenantId;
 
 /**
  * <p>Abstract Entity class.</p>
  */
 public abstract class BaseEntity {
 
+//    @TenantId
     @Column
     private String tenantId;
 	

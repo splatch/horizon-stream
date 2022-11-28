@@ -24,10 +24,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint constraintName="fk_alarm_situations_situation_id" onDelete="CASCADE"
+        <addForeignKeyConstraint constraintName="fk_alarm_association_situation_id" onDelete="CASCADE"
             baseTableName="alarm_association" baseColumnNames="situation_alarm_id"
             referencedTableName="alarm" referencedColumnNames="alarm_id"/>
-        <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" onDelete="CASCADE"
+        <addForeignKeyConstraint constraintName="fk_alarm_association_alarm_id" onDelete="CASCADE"
             baseTableName="alarm_association" baseColumnNames="related_alarm_id"
             referencedTableName="alarm" referencedColumnNames="alarm_id"/>
 

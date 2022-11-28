@@ -216,10 +216,10 @@ public class Alarm extends BaseEntity implements Serializable {
     @Column(name="alarm_id", nullable=false)
     private Set<Alarm> relatedSituations = new HashSet<>();
 
-    @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.SITUATION_ID=ALARMID)")
+    @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_ASSOCIATION S WHERE S.SITUATION_ID=ALARMID)")
     private boolean situation;
 
-    @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_SITUATIONS S WHERE S.RELATED_ALARM_ID=ALARMID)")
+    @Formula(value = "(SELECT COUNT(*)>0 FROM ALARM_ASSOCIATION S WHERE S.RELATED_ALARM_ID=ALARMID)")
     private boolean partOfSituation;
 
     /**
