@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.opennms.horizon.inventory.Constants;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
@@ -82,18 +84,19 @@ public class NodeService {
     }
 
     private MonitoringLocation saveMonitoringLocation(NodeCreateDTO request, String tenantId) {
+        String location = StringUtils.isEmpty(request.getLocation()) ? Constants.DEFAULT_LOCATION: request.getLocation();
         Optional<MonitoringLocation> found =
-            monitoringLocationRepository.findByLocationAndTenantId(request.getLocation(), tenantId);
+            monitoringLocationRepository.findByLocationAndTenantId(location, tenantId);
 
         if (found.isPresent()) {
             return found.get();
         } else {
-            MonitoringLocation location = new MonitoringLocation();
+            MonitoringLocation newLocation = new MonitoringLocation();
 
-            location.setTenantId(tenantId);
-            location.setLocation(request.getLocation());
+            newLocation.setTenantId(tenantId);
+            newLocation.setLocation(location);
 
-            return monitoringLocationRepository.save(location);
+            return monitoringLocationRepository.save(newLocation);
         }
     }
 
