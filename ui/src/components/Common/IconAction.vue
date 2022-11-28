@@ -1,23 +1,19 @@
 <template>
-  <component :is="asLi ? 'li' : 'div'" :title="item.title" class="pointer">
-    <FeatherIcon @click="item.action" :icon="item.icon" :title="item.title" :viewBox="setViewBox(item.icon)" />
+  <component :is="asLi ? 'li' : 'div'" :title="item?.title" >
+    <FeatherIcon @click="item.action" :icon="item.icon" :title="item?.title" :viewBox="setViewBox(item.icon)" class="pointer" />
   </component>
 </template>
 
 <script lang="ts" setup>
 import { PropType } from 'vue'
-import { fncVoid } from '@/types'
+import { IconAction } from '@/types'
 import { setViewBox } from '@/components/utils'
 
-interface Item {
-  title?: string,
-  icon: any,
-  action: fncVoid
-}
+
 
 defineProps({
   item: {
-    type: Object as PropType<Item>,
+    type: Object as PropType<IconAction>,
     required: true
   },
   asLi: {

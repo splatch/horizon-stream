@@ -31,6 +31,10 @@ defineProps({
   }
 })
 
+/**
+ * TODO: with real data
+ * - monitoringLocationId query
+ */
 const label = {
   profile: 'Monitoring Profile',
   location: 'Monitoring Location',
@@ -40,8 +44,4 @@ const label = {
 </script>
 
 <style lang="scss" scoped>
-.anchor-list {
-  list-style: none;
-  padding: 0;
-}
 </style>

@@ -19,11 +19,11 @@
 <script lang="ts" setup>
 import { PropType } from 'vue'
 import Storage from '@material-design-icons/svg/outlined/storage.svg'
-import { TabNode } from '@/types/inventory'
+import { NodeContent } from '@/types/inventory'
   
 defineProps({
   tabContent: {
-    type: Object, // as PropType<TabNode>,
+    type: Object as PropType<NodeContent[]>,
     required: true
   }
 })

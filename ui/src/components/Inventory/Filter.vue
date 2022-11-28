@@ -95,6 +95,7 @@ const search = {
       search.loading = false
     }, 500)}
 }
+
 // Node Type
 const nodeTypeState = ref(undefined)
 const onNodeTypeSelect: fncArgVoid = (selectedItem: any) => {
@@ -182,7 +183,7 @@ const sortAlpha = {
 }
 
 // Expand/Collapse
-const isFilterOpen = computed(() => inventoryStore.isFilterOpen)
+const isFilterOpen = computed<boolean>(() => inventoryStore.isFilterOpen)
 const expand = {
   title: 'Expand',
   icon: KeyboardDoubleArrowDown,

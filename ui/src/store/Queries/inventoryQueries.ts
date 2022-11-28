@@ -1,20 +1,23 @@
 import { useQuery } from 'villus'
 import { defineStore } from 'pinia'
-import { NodesListDocument } from '@/types/graphql'
+import { NodesListDocument, Node } from '@/types/graphql'
+import useSpinner from '@/composables/useSpinner'
 
 export const useInventoryQueries = defineStore('inventoryQueries', () => {
   const nodes = ref({})
   
-  const { data, execute } = useQuery({
+  const { startSpinner, stopSpinner } = useSpinner()
+
+  const { data, isFetching, execute } = useQuery({
     query: NodesListDocument,
     cachePolicy: 'network-only' // always fetch and do not cache
   })
-
-  // const formatNodesMetrics = (data: {nodes, latency, uptime}) => {
-  const formatNodesMetrics = (data) => {
-    return data.nodes?.map((node, i) => ({
+  
+  const formatNodesMetrics = (data: any) => {
+    return data.nodes?.map((node: Node, i: number) => ({
       id: node.id,
       label: node.nodeLabel,
+      // TODO mocked: should be replace with real metrics when avail.
       metrics: [
         {
           type: 'latency',
@@ -40,6 +43,8 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
   }
 
   watchEffect(() => {
+    isFetching.value ? startSpinner() : stopSpinner()
+
     const nodesData = {
       nodes: data.value?.findAllNodes,
       latency: data.value?.nodesLatency,

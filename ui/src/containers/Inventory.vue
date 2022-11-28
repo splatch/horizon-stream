@@ -1,5 +1,5 @@
 <template>
-  <PageHeader :heading="'Network Inventory'" class="header" />
+  <PageHeader :heading="heading" class="header" />
   <FeatherTabContainer class="tab-container">
     <template v-slot:tabs>
       <FeatherTab v-for="tab in tabs" :key="tab.label">{{ tab.label }}</FeatherTab>
@@ -28,29 +28,32 @@ import {
 import Filter from '@/components/Inventory/Filter.vue'
 import DetectedNodesTabContent from '@/components/Inventory/DetectedNodesTabContent.vue'
 import MonitoredNodesTabContent from '@/components/Inventory/MonitoredNodesTabContent.vue'
-import { NodeDetailContentType, TimeUnit } from '@/types'
-import { TabNode } from '@/types/inventory'
+import { TimeUnit } from '@/types'
 import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
+import { NodeContent } from '@/types/inventory'
 
-const unmonitoredContent = [
+const unmonitoredContent: NodeContent[] = [
   {
     id: 1,
     label: 'Unmonitored Node 1',
     metrics: [
       {
         type: 'latency',
+        label: 'Latency',
         timestamp: 9,
         timeUnit: TimeUnit.MSecs,
         status: 'UP'
       },
       {
         type: 'uptime',
+        label: 'Uptime',
         timestamp: 1667930274.660,
         timeUnit: TimeUnit.Secs,
         status: 'DOWN'
       },
       {
         type: 'status',
+        label: 'Status',
         status: 'DOWN'
       }
     ],
@@ -71,18 +74,21 @@ const unmonitoredContent = [
     metrics: [
       {
         type: 'latency',
+        label: 'Latency',
         timestamp: 9,
         timeUnit: TimeUnit.MSecs,
         status: 'UP'
       },
       {
         type: 'uptime',
+        label: 'Uptime',
         timestamp: 1667930274.660,
         timeUnit: TimeUnit.Secs,
         status: 'DOWN'
       },
       {
         type: 'status',
+        label: 'Status',
         status: 'DOWN'
       }
     ],
@@ -98,25 +104,98 @@ const unmonitoredContent = [
     }
   }
 ]
-const detectedContent = [
+const detectedContent: NodeContent[] = [
   {
     id: 1,
     label: 'Detected Node 1',
     metrics: [
       {
         type: 'latency',
+        label: 'Latency',
         timestamp: 9,
         timeUnit: TimeUnit.MSecs,
         status: 'UP'
       },
       {
         type: 'uptime',
+        label: 'Uptime',
         timestamp: 1667930274.660,
         timeUnit: TimeUnit.Secs,
         status: 'DOWN'
       },
       {
         type: 'status',
+        label: 'Status',
+        status: 'DOWN'
+      }
+    ],
+    anchor: {
+      profileValue: 75,
+      profileLink: 'goto',
+      locationValue: 'DefaultMinion',
+      locationLink: 'goto',
+      ipInterfaceValue: 25,
+      ipInterfaceLink: 'goto',
+      tagValue: 100,
+      tagLink: 'goto'
+    }
+  },
+  {
+    id: 2,
+    label: 'Detected Node 2',
+    metrics: [
+      {
+        type: 'latency',
+        label: 'Latency',
+        timestamp: 9,
+        timeUnit: TimeUnit.MSecs,
+        status: 'UP'
+      },
+      {
+        type: 'uptime',
+        label: 'Uptime',
+        timestamp: 1667930274.660,
+        timeUnit: TimeUnit.Secs,
+        status: 'DOWN'
+      },
+      {
+        type: 'status',
+        label: 'Status',
+        status: 'DOWN'
+      }
+    ],
+    anchor: {
+      profileValue: 75,
+      profileLink: 'goto',
+      locationValue: 'DefaultMinion',
+      locationLink: 'goto',
+      ipInterfaceValue: 25,
+      ipInterfaceLink: 'goto',
+      tagValue: 100,
+      tagLink: 'goto'
+    }
+  },
+  {
+    id: 3,
+    label: 'Detected Node 3',
+    metrics: [
+      {
+        type: 'latency',
+        label: 'Latency',
+        timestamp: 9,
+        timeUnit: TimeUnit.MSecs,
+        status: 'UP'
+      },
+      {
+        type: 'uptime',
+        label: 'Uptime',
+        timestamp: 1667930274.660,
+        timeUnit: TimeUnit.Secs,
+        status: 'DOWN'
+      },
+      {
+        type: 'status',
+        label: 'Status',
         status: 'DOWN'
       }
     ],
@@ -134,7 +213,7 @@ const detectedContent = [
 ]
 
 const nodesQueries = useInventoryQueries()
-
+const heading = 'Network Inventory'
 const tabs = [
   {
     label: 'Monitored Nodes'
@@ -146,8 +225,7 @@ const tabs = [
     label: 'Detected Nodes'
   }
 ]
-
-const tabMonitoredContent = computed(() => nodesQueries.nodes)
+const tabMonitoredContent = computed(() => nodesQueries.nodes as NodeContent[])
 const tabUnmonitoredContent = unmonitoredContent
 const tabDetectedContent = detectedContent
 </script>

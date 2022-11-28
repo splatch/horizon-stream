@@ -1,4 +1,4 @@
-export interface Chip {
+interface Chip {
   type: string,
   label: string,
   timestamp?: number,

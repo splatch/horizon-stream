@@ -64,7 +64,6 @@ const deleteItem = {
 
 <style lang="scss" scoped>
 .icon-action-list {
-  list-style-type: none;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
