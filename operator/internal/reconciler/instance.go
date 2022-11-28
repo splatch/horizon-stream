@@ -33,7 +33,7 @@ type Instance struct {
 	Client   client.Client
 }
 
-func (i *Instance) Init(ctx context.Context, k8sClient client.Client, defaultValues values.TemplateValues, handlers []handlers.ServiceHandler, crd v1alpha1.OpenNMS) {
+func (i *Instance) Init(ctx context.Context, k8sClient client.Client, defaultValues values.TemplateValues, handlers []handlers.ServiceHandler, crd v1alpha1.OpenNMS) error {
 	i.Name = crd.Name
 	i.CRD = crd
 	i.Client = k8sClient
@@ -41,20 +41,24 @@ func (i *Instance) Init(ctx context.Context, k8sClient client.Client, defaultVal
 	i.Handlers = handlers
 	i.Deployed = false
 	i.SetValues(ctx)
-	i.updateHandlers()
+	return i.updateHandlers()
 }
 
-func (i *Instance) Update(ctx context.Context, crd v1alpha1.OpenNMS) {
+func (i *Instance) Update(ctx context.Context, crd v1alpha1.OpenNMS) error {
 	if reflect.DeepEqual(i.CRD.Spec, crd.Spec) { //no changes, no work needed
-		return
+		return nil
 	}
 	i.CRD = crd
 	i.SetValues(ctx)
-	i.updateHandlers()
+	return i.updateHandlers()
 }
 
-func (i *Instance) updateHandlers() {
+func (i *Instance) updateHandlers() error {
 	for _, handler := range i.Handlers {
-		handler.UpdateConfig(i.Values)
+		err := handler.UpdateConfig(i.Values)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }

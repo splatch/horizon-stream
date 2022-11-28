@@ -101,7 +101,6 @@ func setCorePasswords(tv values.TemplateValues, creds v1alpha1.Credentials) valu
 	} else {
 		tv.Values.Keycloak.AdminPassword = creds.AdminPassword
 	}
-
 	return tv
 }
 

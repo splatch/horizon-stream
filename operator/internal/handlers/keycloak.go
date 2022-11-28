@@ -16,31 +16,24 @@ package handlers
 
 import (
 	"github.com/OpenNMS/opennms-operator/internal/model/values"
-	"github.com/OpenNMS/opennms-operator/internal/util/yaml"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type KeycloakHandler struct {
 	ServiceHandlerObject
 }
 
-func (h *KeycloakHandler) UpdateConfig(values values.TemplateValues) {
+func (h *KeycloakHandler) UpdateConfig(values values.TemplateValues) error {
 	var initialAdminSecret corev1.Secret
 	var realmConfigmap corev1.ConfigMap
 	var deployment appsv1.Deployment
 	var service corev1.Service
 
-	yaml.LoadYaml(filepath("keycloak/keycloak-initial-cred-secret.yaml"), values, &initialAdminSecret)
-	yaml.LoadYaml(filepath("keycloak/keycloak-realm-configmap.yaml"), values, &realmConfigmap)
-	yaml.LoadYaml(filepath("keycloak/keycloak-deployment.yaml"), values, &deployment)
-	yaml.LoadYaml(filepath("keycloak/keycloak-service.yaml"), values, &service)
+	h.AddToTemplates(filepath("keycloak/keycloak-initial-cred-secret.yaml"), values, &initialAdminSecret)
+	h.AddToTemplates(filepath("keycloak/keycloak-realm-configmap.yaml"), values, &realmConfigmap)
+	h.AddToTemplates(filepath("keycloak/keycloak-deployment.yaml"), values, &deployment)
+	h.AddToTemplates(filepath("keycloak/keycloak-service.yaml"), values, &service)
 
-	h.Config = []client.Object{
-		&initialAdminSecret,
-		&realmConfigmap,
-		&deployment,
-		&service,
-	}
+	return h.LoadTemplates()
 }

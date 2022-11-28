@@ -2,10 +2,15 @@
 
 .bg-status {
   color: var(variables.$primary-text-on-color);
-  &.ok {
+  :deep(.label) {
+    color: var(variables.$primary-text-on-color);
+  }
+  &.ok,
+  &.up {
     background-color: var(variables.$success);
   }
-  &.failed {
+  &.failed,
+  &.down {
     background-color: var(variables.$error);
   }
   &.unknown {
@@ -14,7 +19,11 @@
 }
 
 .open-dark {
-  .bg-status.unknown {
-    color: rgb(10, 12, 27);
+  .bg-status {
+    &.unknown {
+      .label {
+        color: rgb(10, 12, 27);
+      }
+    }
   }
 }

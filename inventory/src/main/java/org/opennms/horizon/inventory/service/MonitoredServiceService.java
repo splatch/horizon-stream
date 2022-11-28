@@ -1,3 +1,31 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
 package org.opennms.horizon.inventory.service;
 
 import lombok.RequiredArgsConstructor;
@@ -6,58 +34,41 @@ import org.opennms.horizon.inventory.mapper.MonitoredServiceMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoredService;
 import org.opennms.horizon.inventory.model.MonitoredServiceType;
-import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoredServiceRepository;
-import org.opennms.horizon.inventory.repository.MonitoredServiceTypeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MonitoredServiceService {
     private final MonitoredServiceRepository modelRepo;
-    private final MonitoredServiceTypeRepository monitoredServiceTypeRepository;
-    private final IpInterfaceRepository ipInterfaceRepository;
 
     private final MonitoredServiceMapper mapper;
 
-    public MonitoredServiceDTO saveMonitoredService(MonitoredServiceDTO dto) {
-        MonitoredService model = mapper.dtoToModel(dto);
+    public void createSingle(MonitoredServiceDTO newMonitoredService,
+                             MonitoredServiceType monitoredServiceType,
+                             IpInterface ipInterface) {
 
-        IpInterface ipInterface = ipInterfaceRepository.getReferenceById(dto.getIpInterfaceId());
-        model.setIpInterface(ipInterface);
+        String tenantId = newMonitoredService.getTenantId();
 
-        MonitoredServiceType monitoredServiceType = monitoredServiceTypeRepository.getReferenceById((dto.getMonitoredServiceTypeId()));
-        model.setMonitoredServiceType(monitoredServiceType);
+        Optional<MonitoredService> monitoredServiceOpt = modelRepo
+            .findByTenantIdTypeAndIpInterface(tenantId, monitoredServiceType, ipInterface);
 
-        MonitoredService ret = modelRepo.save(model);
-        return mapper.modelToDTO(ret);
-    }
+        if (monitoredServiceOpt.isEmpty()) {
 
-    public List<MonitoredServiceDTO> findAllMonitoredServices() {
-        List<MonitoredService> all = modelRepo.findAll();
-        return all
-            .stream()
-            .map(mapper::modelToDTO)
-            .collect(Collectors.toList());
-    }
+            MonitoredService monitoredService = mapper.dtoToModel(newMonitoredService);
+            monitoredService.setIpInterface(ipInterface);
+            monitoredService.setMonitoredServiceType(monitoredServiceType);
 
-    public Optional<MonitoredServiceDTO> findMonitoredService(long id) {
-        Optional<MonitoredService> model = modelRepo.findById(id);
-        Optional<MonitoredServiceDTO> dto = Optional.empty();
-        if (model.isPresent()) {
-            dto = Optional.of(mapper.modelToDTO(model.get()));
+            modelRepo.save(monitoredService);
         }
-        return dto;
     }
 
     public List<MonitoredServiceDTO> findByTenantId(String tenantId) {
-        UUID tenantUUID = UUID.fromString(tenantId);
-        List<MonitoredService> all = modelRepo.findByTenantId(tenantUUID);
+        List<MonitoredService> all = modelRepo.findByTenantId(tenantId);
         return all
             .stream()
             .map(mapper::modelToDTO)

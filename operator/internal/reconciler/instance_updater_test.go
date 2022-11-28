@@ -1,5 +1,4 @@
 //go:build unit
-// +build unit
 
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,9 +103,15 @@ func TestCheckForExistingCoreCreds(t *testing.T) {
 	assert.True(t, resbool, "should return that there are existing creds")
 	assert.Equal(t, adminPwd, res.Values.Keycloak.AdminPassword, "should return the expected admin password values")
 
+	coreSecret.Data["password"] = []byte("")
+	err = k8sClient.Update(ctx, &coreSecret)
+	assert.Nil(t, err)
+	_, resbool = testInstance.CheckForExistingCoreCreds(ctx, testValues, "")
+	assert.False(t, resbool, "should return that no core creds existed when unset")
+
 	adminPglPwd := "testpostgresadminpwd"
 	keycloakPwd := "testpostgreskeycloakpwd"
-    inventoryPwd := "testpostgresinventorypwd"
+	inventoryPwd := "testpostgresinventorypwd"
 	notificationPwd := "testpostgresnotificationpwd"
 	eventsPwd := "testpostgreseventspwd"
 	pgSecret := corev1.Secret{
@@ -118,7 +123,7 @@ func TestCheckForExistingCoreCreds(t *testing.T) {
 			"keycloakPwd":     []byte(keycloakPwd),
 			"inventoryPwd":    []byte(inventoryPwd),
 			"notificationPwd": []byte(notificationPwd),
-		    "eventsPwd":       []byte(eventsPwd),
+			"eventsPwd":       []byte(eventsPwd),
 		},
 	}
 	err = k8sClient.Create(ctx, &pgSecret)
@@ -131,4 +136,45 @@ func TestCheckForExistingCoreCreds(t *testing.T) {
 	assert.Equal(t, inventoryPwd, res.Values.Postgres.InventoryPassword, "should return the postgres expected values")
 	assert.Equal(t, notificationPwd, res.Values.Postgres.NotificationPassword, "should return the postgres expected values")
 	assert.Equal(t, eventsPwd, res.Values.Postgres.EventsPassword, "should return the postgres expected values")
+
+	pgSecret.Data["adminPwd"] = []byte("")
+	err = k8sClient.Update(ctx, &pgSecret)
+	assert.Nil(t, err)
+	res, resbool = testInstance.CheckForExistingPostgresCreds(ctx, testValues, "")
+	assert.False(t, resbool)
+}
+
+func TestSetCorePasswords(t *testing.T) {
+	tv := values.TemplateValues{}
+	creds := v1alpha1.Credentials{}
+
+	res := setCorePasswords(tv, creds)
+	assert.NotEqual(t, "", res.Values.Keycloak.AdminPassword, "should set a password")
+
+	creds.AdminPassword = "1234"
+	res = setCorePasswords(tv, creds)
+	assert.Equal(t, "1234", res.Values.Keycloak.AdminPassword, "should set the existing password")
+}
+
+func TestSetIngressValues(t *testing.T) {
+	tv := values.TemplateValues{
+		Values: values.Values{
+			TLS: values.TLSValues{
+				Enabled: false,
+			},
+			Ingress: values.IngressValues{
+				HttpPort:  123,
+				HttpsPort: 456,
+			},
+		},
+	}
+	res := setIngressValues(tv)
+	assert.Equal(t, 123, res.Values.Port, "port should be set to the http port")
+	assert.Equal(t, "http", res.Values.Protocol, "protocol should be set to http")
+
+	tv.Values.TLS.Enabled = true
+
+	res = setIngressValues(tv)
+	assert.Equal(t, 456, res.Values.Port, "port should be set to the https port")
+	assert.Equal(t, "https", res.Values.Protocol, "protocol should be set to https")
 }

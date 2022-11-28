@@ -44,7 +44,7 @@ spec:
           imagePullPolicy: {{ .Values.OpenNMS.API.ImagePullPolicy }}
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
             - name: SPRING_CACHE_CAFFEINE_SPEC
               value: "maximumSize=10000,expireAfterWrite=60s"
             - name: HORIZON_STREAM_NOTIFICATIONS_URL
@@ -57,13 +57,13 @@ spec:
               value: /api
             - name: GRAPHQL_SPQR_GUI_TARGET_ENDPOINT
               value: /api/graphql
+            - name: GRPC_URL_INVENTORY
+              value: "{{ .Values.OpenNMS.Inventory.ServiceName }}:{{ .Values.OpenNMS.Inventory.GrpcPort }}"
           ports:
             - containerPort: {{ .Values.OpenNMS.API.Port }}
-          {{- if not .Values.TestDeploy }}
           {{/*  TODO    livenessProbe:*/}}
           {{/*          readinessProbe:*/}}
           {{/*          startupProbe:*/}}
-          {{- end }}
           resources:
             limits:
               cpu: "{{ .Values.OpenNMS.API.Resources.Limits.Cpu }}"

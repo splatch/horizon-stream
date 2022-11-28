@@ -5,7 +5,7 @@ import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
 import org.opennms.horizon.inventory.model.MonitoringSystem;
 
 @Mapper(componentModel = "spring")
-public interface MonitoringSystemMapper {
+public interface MonitoringSystemMapper extends DateTimeMapper {
     MonitoringSystem dtoToModel(MonitoringSystemDTO dto);
     MonitoringSystemDTO modelToDTO(MonitoringSystem model);
 }

@@ -15,34 +15,42 @@ limitations under the License.
 package yaml
 
 import (
+	"errors"
+	"fmt"
 	"github.com/OpenNMS/opennms-operator/internal/model/values"
 	"github.com/OpenNMS/opennms-operator/internal/util/template"
 	"k8s.io/apimachinery/pkg/util/yaml"
-	"log"
 	"os"
 	"strings"
 )
 
-// LoadYaml - loads a yaml from the given filename and templates the given values into it
-func LoadYaml(filename string, values values.TemplateValues, decodeInto interface{}) {
+type LoadTemplate struct {
+	Filename   string
+	Values     values.TemplateValues
+	DecodeInto interface{}
+}
+
+// LoadYaml - loads a yaml from the given lt.Filename and templates the given values into it
+func LoadYaml(lt LoadTemplate) error {
 	cache := Cache()
-	file, found := cache.Get(filename)
+	file, found := cache.Get(lt.Filename)
 	if !found {
-		loadedFile, err := loadFromFile(filename)
+		loadedFile, err := loadFromFile(lt.Filename)
 		if err != nil {
-			log.Fatalf("%s: failed to load config: %v", filename, err)
+			return errors.New(fmt.Sprintf("%s: failed to load config: %v", lt.Filename, err))
 		}
-		cache.Set(filename, loadedFile)
+		cache.Set(lt.Filename, loadedFile)
 		file = loadedFile
 	}
-	templatedConfig, err := template.TemplateConfig(file, values)
+	templatedConfig, err := template.TemplateConfig(file, lt.Values)
 	if err != nil {
-		log.Fatalf("%s: failed to template config: %v", filename, err)
+		return errors.New(fmt.Sprintf("%s: failed to template config: %v", lt.Filename, err))
 	}
-	err = decodeIntoObject(templatedConfig, decodeInto)
+	err = decodeIntoObject(templatedConfig, lt.DecodeInto)
 	if err != nil {
-		log.Fatalf("%s: failed to unmarshal config: %v", filename, err)
+		return errors.New(fmt.Sprintf("%s: failed to unmarshal config: %v", lt.Filename, err))
 	}
+	return nil
 }
 
 // decodeIntoObject - decode a given yaml string into a give interface
@@ -51,7 +59,7 @@ func decodeIntoObject(yamlStr string, decodeInto interface{}) error {
 	return yaml.NewYAMLOrJSONDecoder(reader, 4096).Decode(decodeInto)
 }
 
-// loadFromFile - loads a given filename
+// loadFromFile - loads a given lt.Filename
 func loadFromFile(filename string) (string, error) {
 	file, err := os.ReadFile(filename)
 	if err != nil {

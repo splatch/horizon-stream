@@ -51,6 +51,7 @@ public class GrpcServerManager {
 
     public synchronized void startServer(List<BindableService> services) {
         NettyServerBuilder serverBuilder = NettyServerBuilder.forAddress(new InetSocketAddress(port))
+            .intercept(new InventoryServerInterceptor())
             .addService(ProtoReflectionService.newInstance());
         services.forEach(serverBuilder::addService);
         grpcServer = serverBuilder.build();

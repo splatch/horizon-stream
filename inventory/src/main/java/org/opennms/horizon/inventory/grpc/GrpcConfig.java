@@ -28,36 +28,58 @@
 
 package org.opennms.horizon.inventory.grpc;
 
-import lombok.RequiredArgsConstructor;
-import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
-import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
-import org.opennms.horizon.inventory.service.MonitoringGrpcService;
+import java.util.Arrays;
+
+import org.opennms.horizon.inventory.mapper.NodeMapper;
+import org.opennms.horizon.inventory.service.IpInterfaceService;
+import org.opennms.horizon.inventory.service.MonitoringLocationService;
+import org.opennms.horizon.inventory.service.MonitoringSystemService;
+import org.opennms.horizon.inventory.service.NodeService;
+import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Collections;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Configuration
 public class GrpcConfig {
     private static final int DEFAULT_GRPC_PORT = 8990;
-
+    private final MonitoringSystemService systemService;
+    private final MonitoringLocationService locationService;
     @Value("${grpc.server.port:" + DEFAULT_GRPC_PORT +"}")
     private int port;
-    private final MonitoringLocationRepository locationRepo;
-    private final MonitoringLocationMapper mapper;
+    private final NodeService nodeService;
+    private final IpInterfaceService ipInterfaceService;
+    private final NodeMapper nodeMapper;
+    private final DetectorTaskSetService taskSetService;
+
 
     @Bean
-    public MonitoringGrpcService createService() {
-        return new MonitoringGrpcService(locationRepo, mapper);
+    public TenantLookup createTenantLookup(){
+        return new GrpcTenantLookupImpl();
+    }
+
+    @Bean
+    public MonitoringLocationGrpcService createLocationGrpcService(TenantLookup tenantLookup) {
+        return new MonitoringLocationGrpcService(locationService, tenantLookup);
+    }
+
+    @Bean
+    public MonitoringSystemGrpcService createSystemGrpcService(TenantLookup tenantLookup) {
+        return new MonitoringSystemGrpcService(systemService, tenantLookup);
+    }
+
+    @Bean
+    public NodeGrpcService createNodeService(TenantLookup tenantLookup) {
+        return new NodeGrpcService(nodeService, ipInterfaceService, nodeMapper, tenantLookup, taskSetService);
     }
 
     @Bean(destroyMethod = "stopServer")
-    public GrpcServerManager startServer(MonitoringGrpcService service) {
+    public GrpcServerManager startServer(MonitoringLocationGrpcService locationGrpc, MonitoringSystemGrpcService systemGrpc, NodeGrpcService nodeGrpcService) {
         GrpcServerManager manager = new GrpcServerManager(port);
-        //for next step with more than one services
-        manager.startServer(Collections.singletonList(service));
+        manager.startServer(Arrays.asList(locationGrpc, systemGrpc, nodeGrpcService));
         return manager;
     }
 }

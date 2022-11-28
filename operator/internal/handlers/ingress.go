@@ -16,21 +16,19 @@ package handlers
 
 import (
 	"github.com/OpenNMS/opennms-operator/internal/model/values"
-	"github.com/OpenNMS/opennms-operator/internal/util/yaml"
 	adminv1 "k8s.io/api/admissionregistration/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	netv1 "k8s.io/api/networking/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type IngressHandler struct {
 	ServiceHandlerObject
 }
 
-func (h *IngressHandler) UpdateConfig(values values.TemplateValues) {
+func (h *IngressHandler) UpdateConfig(values values.TemplateValues) error {
 
 	//INGRESS CONTROLLER CONFIGS
 	var controllerServiceAccount corev1.ServiceAccount
@@ -44,24 +42,24 @@ func (h *IngressHandler) UpdateConfig(values values.TemplateValues) {
 	var controllerIngressClass netv1.IngressClass
 	var controllerDeployment appsv1.Deployment
 
-	yaml.LoadYaml(filepath("ingress/nginx-controller/controller-serviceaccount.yaml"), values, &controllerServiceAccount)
-	yaml.LoadYaml(filepath("ingress/nginx-controller/controller-clusterrole.yaml"), values, &controllerClusterRole)
-	yaml.LoadYaml(filepath("ingress/nginx-controller/controller-clusterrolebinding.yaml"), values, &controllerClusterRoleBinding)
-	yaml.LoadYaml(filepath("ingress/nginx-controller/controller-role.yaml"), values, &controllerRole)
-	yaml.LoadYaml(filepath("ingress/nginx-controller/controller-rolebinding.yaml"), values, &controllerRoleBinding)
-	yaml.LoadYaml(filepath("ingress/nginx-controller/controller-configmap.yaml"), values, &controllerConfigMap)
-	yaml.LoadYaml(filepath("ingress/nginx-controller/controller-service.yaml"), values, &controllerService)
-	yaml.LoadYaml(filepath("ingress/nginx-controller/controller-service-admission.yaml"), values, &controllerServiceAdmission)
-	yaml.LoadYaml(filepath("ingress/nginx-controller/controller-ingress-class.yaml"), values, &controllerIngressClass)
-	yaml.LoadYaml(filepath("ingress/nginx-controller/controller-deployment.yaml"), values, &controllerDeployment)
+	h.AddToTemplates(filepath("ingress/nginx-controller/controller-serviceaccount.yaml"), values, &controllerServiceAccount)
+	h.AddToTemplates(filepath("ingress/nginx-controller/controller-clusterrole.yaml"), values, &controllerClusterRole)
+	h.AddToTemplates(filepath("ingress/nginx-controller/controller-clusterrolebinding.yaml"), values, &controllerClusterRoleBinding)
+	h.AddToTemplates(filepath("ingress/nginx-controller/controller-role.yaml"), values, &controllerRole)
+	h.AddToTemplates(filepath("ingress/nginx-controller/controller-rolebinding.yaml"), values, &controllerRoleBinding)
+	h.AddToTemplates(filepath("ingress/nginx-controller/controller-configmap.yaml"), values, &controllerConfigMap)
+	h.AddToTemplates(filepath("ingress/nginx-controller/controller-service.yaml"), values, &controllerService)
+	h.AddToTemplates(filepath("ingress/nginx-controller/controller-service-admission.yaml"), values, &controllerServiceAdmission)
+	h.AddToTemplates(filepath("ingress/nginx-controller/controller-ingress-class.yaml"), values, &controllerIngressClass)
+	h.AddToTemplates(filepath("ingress/nginx-controller/controller-deployment.yaml"), values, &controllerDeployment)
 
 	//CUSTOM ERRORS CONFIGS
 	//FIXME Is this even used?
 	var customErrorsDeployment appsv1.Deployment
 	var customErrorsService corev1.Service
 
-	yaml.LoadYaml(filepath("ingress/custom-errors/nginx-errors-deployment.yaml"), values, &customErrorsDeployment)
-	yaml.LoadYaml(filepath("ingress/custom-errors/nginx-errors-service.yaml"), values, &customErrorsService)
+	h.AddToTemplates(filepath("ingress/custom-errors/nginx-errors-deployment.yaml"), values, &customErrorsDeployment)
+	h.AddToTemplates(filepath("ingress/custom-errors/nginx-errors-service.yaml"), values, &customErrorsService)
 
 	//VALIDATING WEBHOOK CONFIGS
 	var validatingWebhook adminv1.ValidatingWebhookConfiguration
@@ -71,51 +69,25 @@ func (h *IngressHandler) UpdateConfig(values values.TemplateValues) {
 	var webhookClusterRole rbacv1.ClusterRole
 	var webhookClusterRoleBinding rbacv1.ClusterRoleBinding
 
-	yaml.LoadYaml(filepath("ingress/validating-webhook/validating-webhook.yaml"), values, &validatingWebhook)
-	yaml.LoadYaml(filepath("ingress/validating-webhook/webhook-serviceaccount.yaml"), values, &webhookServiceAccount)
-	yaml.LoadYaml(filepath("ingress/validating-webhook/webhook-role.yaml"), values, &webhookRole)
-	yaml.LoadYaml(filepath("ingress/validating-webhook/webhook-rolebinding.yaml"), values, &webhookRoleBinding)
-	yaml.LoadYaml(filepath("ingress/validating-webhook/webhook-clusterrole.yaml"), values, &webhookClusterRole)
-	yaml.LoadYaml(filepath("ingress/validating-webhook/webhook-clusterrolebinding.yaml"), values, &webhookClusterRoleBinding)
+	h.AddToTemplates(filepath("ingress/validating-webhook/validating-webhook.yaml"), values, &validatingWebhook)
+	h.AddToTemplates(filepath("ingress/validating-webhook/webhook-serviceaccount.yaml"), values, &webhookServiceAccount)
+	h.AddToTemplates(filepath("ingress/validating-webhook/webhook-role.yaml"), values, &webhookRole)
+	h.AddToTemplates(filepath("ingress/validating-webhook/webhook-rolebinding.yaml"), values, &webhookRoleBinding)
+	h.AddToTemplates(filepath("ingress/validating-webhook/webhook-clusterrole.yaml"), values, &webhookClusterRole)
+	h.AddToTemplates(filepath("ingress/validating-webhook/webhook-clusterrolebinding.yaml"), values, &webhookClusterRoleBinding)
 
 	//JOBS CONFIGS
 	var createSecret batchv1.Job
 	var patchWebhook batchv1.Job
 
-	yaml.LoadYaml(filepath("ingress/jobs/job-createsecret.yaml"), values, &createSecret)
-	yaml.LoadYaml(filepath("ingress/jobs/job-patchwebhook.yaml"), values, &patchWebhook)
+	h.AddToTemplates(filepath("ingress/jobs/job-createsecret.yaml"), values, &createSecret)
+	h.AddToTemplates(filepath("ingress/jobs/job-patchwebhook.yaml"), values, &patchWebhook)
 
 	//INGRESSES
 	var opennmsIngress netv1.Ingress
 
-	yaml.LoadYaml(filepath("ingress/ingresses/opennms-ingress.yaml"), values, &opennmsIngress)
+	h.AddToTemplates(filepath("ingress/ingresses/opennms-ingress.yaml"), values, &opennmsIngress)
 
-	h.Config = []client.Object{
-		&controllerServiceAccount,
-		&controllerClusterRole,
-		&controllerClusterRoleBinding,
-		&controllerRole,
-		&controllerRoleBinding,
-		&controllerConfigMap,
-		&controllerService,
-		&controllerServiceAdmission,
-
-		&customErrorsDeployment,
-		&customErrorsService,
-
-		&webhookServiceAccount,
-		&webhookRole,
-		&webhookRoleBinding,
-		&webhookClusterRole,
-		&webhookClusterRoleBinding,
-
-		&createSecret,
-		&controllerDeployment,
-		&validatingWebhook,
-		&patchWebhook,
-
-		&controllerIngressClass,
-		&opennmsIngress,
-	}
+	return h.LoadTemplates()
 
 }

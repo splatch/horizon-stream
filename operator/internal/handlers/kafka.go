@@ -16,27 +16,21 @@ package handlers
 
 import (
 	"github.com/OpenNMS/opennms-operator/internal/model/values"
-	"github.com/OpenNMS/opennms-operator/internal/util/yaml"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type KafkaHandler struct {
 	ServiceHandlerObject
 }
 
-func (h *KafkaHandler) UpdateConfig(values values.TemplateValues) {
+func (h *KafkaHandler) UpdateConfig(values values.TemplateValues) error {
 
 	var deployment appsv1.Deployment
 	var service corev1.Service
 
-	yaml.LoadYaml(filepath("kafka/kafka-service.yaml"), values, &service)
-	yaml.LoadYaml(filepath("kafka/kafka-deployment.yaml"), values, &deployment)
+	h.AddToTemplates(filepath("kafka/kafka-service.yaml"), values, &service)
+	h.AddToTemplates(filepath("kafka/kafka-deployment.yaml"), values, &deployment)
 
-	h.Config = []client.Object{
-		&service,
-		&deployment,
-	}
-
+	return h.LoadTemplates()
 }

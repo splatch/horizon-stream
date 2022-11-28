@@ -1,7 +1,6 @@
 package org.opennms.horizon.inventory.model;
 
-import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Type;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,23 +11,23 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
-// Lombok isn't playing nicely with MapStruct, so generate getters and setters with IDE for now.
-//@Getter
-//@Setter
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 @RequiredArgsConstructor
 @Entity
+@Getter
+@Setter
 public class MonitoringSystem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NotNull
-    @Type(type="pg-uuid")
     @Column(name = "tenant_id")
-    private UUID tenantId;
+    private String tenantId;
 
     @NotNull
     @Column(name = "system_id")
@@ -46,60 +45,4 @@ public class MonitoringSystem {
     @NotNull
     @Column(name = "last_checked_in", columnDefinition = "TIMESTAMP")
     private LocalDateTime lastCheckedIn;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public UUID getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(UUID tenantId) {
-        this.tenantId = tenantId;
-    }
-
-    public String getSystemId() {
-        return systemId;
-    }
-
-    public void setSystemId(String systemId) {
-        this.systemId = systemId;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public MonitoringLocation getMonitoringLocation() {
-        return monitoringLocation;
-    }
-
-    public void setMonitoringLocation(MonitoringLocation monitoringLocation) {
-        this.monitoringLocation = monitoringLocation;
-    }
-
-    public long getMonitoringLocationId() {
-        return monitoringLocationId;
-    }
-
-    public void setMonitoringLocationId(long monitoringLocationId) {
-        this.monitoringLocationId = monitoringLocationId;
-    }
-
-    public LocalDateTime getLastCheckedIn() {
-        return lastCheckedIn;
-    }
-
-    public void setLastCheckedIn(LocalDateTime lastCheckedIn) {
-        this.lastCheckedIn = lastCheckedIn;
-    }
 }

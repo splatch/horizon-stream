@@ -4,11 +4,10 @@ node_modules
 **/*.tsx~
 **/*.swn
 **/*.swo
-skaffold.yaml
 mock-graphql
 node_modules
 .env.local
 .env.*.local
 
-# only used during development with Skaffold
+# only used during development with Tilt
 !.env.development.local

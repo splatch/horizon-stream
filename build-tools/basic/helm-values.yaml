@@ -1,4 +1,4 @@
-Namespace: skaffold-instance
+Namespace: tilt-instance
 Host: localhost
 TLS:
   Enabled: False

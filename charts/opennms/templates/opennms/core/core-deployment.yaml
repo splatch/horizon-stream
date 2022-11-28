@@ -128,11 +128,9 @@ spec:
               containerPort: {{ .Values.OpenNMS.Core.IgniteClusterPort }}
             - name: ig-discovery
               containerPort: {{ .Values.OpenNMS.Core.IgniteDiscoveryPort }}
-          {{- if not .Values.TestDeploy }}
 {{/*    TODO  livenessProbe:*/}}
 {{/*          readinessProbe:*/}}
 {{/*          startupProbe:*/}}
-          {{- end }}
           resources:
             limits:
               cpu: "{{ .Values.OpenNMS.Core.Resources.Limits.Cpu }}"

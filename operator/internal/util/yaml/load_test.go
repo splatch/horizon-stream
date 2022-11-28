@@ -1,5 +1,4 @@
 //go:build unit
-// +build unit
 
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,13 +39,14 @@ metadata:
 
 func TestLoadYaml(t *testing.T) {
 	writeTestFiles(t)
-	values := values.TemplateValues{
+	val := values.TemplateValues{
 		Release: values.HelmRelease{
 			Namespace: "testNamespace",
 		},
 	}
 	testInterface := v1.Deployment{}
-	LoadYaml(TestFilename, values, &testInterface)
+	err := LoadYaml(LoadTemplate{TestFilename, val, &testInterface})
+	assert.Nil(t, err)
 	assert.Equal(t, "test", testInterface.ObjectMeta.Name, "should have loaded the correct name from the yaml")
 	assert.Equal(t, "testNamespace", testInterface.ObjectMeta.Namespace, "should have templated in the correct provided namespace")
 

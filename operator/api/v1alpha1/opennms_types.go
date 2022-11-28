@@ -34,9 +34,6 @@ type OpenNMSSpec struct {
     // K8s namespace to use
     Namespace string `json:"namespace"`
 
-    // Deploy an instance in a nonoperative testing mode
-    TestDeploy bool `json:"testDeploy,omitempty"` //TODO I don't think this is needed anymore
-
     // Only deploy the instance, do not run recurring updates on it
     DeployOnly bool `json:"deployOnly,omitempty"`
 
@@ -73,13 +70,13 @@ type OpenNMSSpec struct {
     // Defines service values for MetricsProcessor service
     MetricsProcessor BaseServiceResources `json:"metricsProcessor,omitempty"`
 
-	// Defines service values for MetricsProcessor service
-    Events BaseServiceResources `json:"events,omitempty"`
-
     // Defines service values for Postgres
     Postgres BaseServiceResources `json:"postgres,omitempty"`
 
-    // Defines service values for Postgres
+    // Defines service values for Events service
+    Events BaseServiceResources `json:"events,omitempty"`
+
+    // Defines service values for Keycloak
     Keycloak BaseServiceResources `json:"keycloak,omitempty"`
 
     // Defines service values for Grafana
