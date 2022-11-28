@@ -18,9 +18,12 @@ public class EventRouteBuilder extends RouteBuilder {
     private AlarmService alarmService;
 
     @Override
-    public void configure() throws Exception {                 
+    public void configure() throws Exception {
 
-        from("{{event.from}}").id(RECEIVE_EVENT)
+        //TODO:MMF need actual kafka configs and values from ENV vars
+        //            <from uri="kafka:{{kafkaTopic}}?brokers={{kafkaBrokers}}&amp;offsetRepository=#offsetRepo&amp;autoOffsetReset=earliest"/>
+//        from("{{event.from}}").id(RECEIVE_EVENT)
+        from("direct:event").id(RECEIVE_EVENT)
             .unmarshal()
             .protobuf(ProtobufLibrary.Jackson, Event.class)
             .process(exchange -> {

@@ -26,6 +26,9 @@ public class AlarmRouteBuilder extends RouteBuilder {
         from(endpoint).id(NEW_ALARM_ROUTE)
             .marshal().protobuf(ProtobufLibrary.Jackson, Alarm.class)
             .log(LoggingLevel.INFO, "Forwarding alarm to whoever cares")
-            .to("{{alarm.to}}");
+            //TODO:MMF need actual kafka configs and values from ENV vars
+//            .to("{{alarm.to}}");
+            .to("direct:alarmForward");
+
     }
 }
