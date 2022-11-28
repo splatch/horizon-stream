@@ -59,18 +59,23 @@ public class InventoryServerInterceptor implements ServerInterceptor {
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> callHandler) {
         log.debug("Received metadata: {}", headers);
         String authHeader = headers.get(Constants.AUTHORIZATION_METADATA_KEY);
-        try {
-            Optional<String> tenantId = verifyAccessToken(authHeader);
-            Context context = tenantId.map(tnId -> Context.current().withValue(Constants.TENANT_ID_CONTEXT_KEY, tnId)).orElseThrow();
-            return Contexts.interceptCall(context, serverCall, headers, callHandler);
-        } catch (VerificationException e) {
-            log.error("Failed to verify access token", e);
-            serverCall.close(Status.UNAUTHENTICATED.withDescription("Invalid access token"), new Metadata());
-            return new ServerCall.Listener<>() {};
-        }
-        catch (NoSuchElementException e) {
-            serverCall.close(Status.UNAUTHENTICATED.withDescription("Missing tenant id"), new Metadata());
-            return new ServerCall.Listener<>() {};
+        if (!Constants.AUTH_HEADER_SKIP_TOKEN.equals(authHeader)) {
+            try {
+                Optional<String> tenantId = verifyAccessToken(authHeader);
+                Context context = tenantId.map(tnId -> Context.current().withValue(Constants.TENANT_ID_CONTEXT_KEY, tnId)).orElseThrow();
+                return Contexts.interceptCall(context, serverCall, headers, callHandler);
+            } catch (VerificationException e) {
+                log.error("Failed to verify access token", e);
+                serverCall.close(Status.UNAUTHENTICATED.withDescription("Invalid access token"), new Metadata());
+                return new ServerCall.Listener<>() {
+                };
+            } catch (NoSuchElementException e) {
+                serverCall.close(Status.UNAUTHENTICATED.withDescription("Missing tenant id"), new Metadata());
+                return new ServerCall.Listener<>() {
+                };
+            }
+        } else {
+            return callHandler.startCall(serverCall, headers);
         }
     }
 
@@ -85,6 +90,4 @@ public class InventoryServerInterceptor implements ServerInterceptor {
         AccessToken accessToken = verifier.getToken();
         return Optional.ofNullable((String)accessToken.getOtherClaims().get(Constants.TENANT_ID_KEY));
     }
-
-
 }

@@ -29,8 +29,10 @@
 package org.opennms.horizon.server.service.grpc;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.horizon.inventory.Constants;
+import org.opennms.horizon.inventory.dto.IdList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
 import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
@@ -107,6 +109,13 @@ public class InventoryClient {
         Metadata metadata = new Metadata();
         metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
         return systemStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getMonitoringSystemById(StringValue.of(systemId));
+    }
+
+    public List<MonitoringLocationDTO> listLocationsByIds(List<Long> ids) {
+        Metadata metadata = new Metadata();
+        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, Constants.AUTH_HEADER_SKIP_TOKEN);
+        List<Int64Value> idValues = ids.stream().map(id-> Int64Value.newBuilder().setValue(id).build()).collect(Collectors.toList());
+        return locationStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listLocationsByIds(IdList.newBuilder().addAllIds(idValues).build()).getLocationsList();
     }
 
 }
