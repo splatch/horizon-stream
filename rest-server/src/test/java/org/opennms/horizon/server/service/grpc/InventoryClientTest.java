@@ -37,6 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Rule;
@@ -45,6 +46,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.opennms.horizon.inventory.Constants;
+import org.opennms.horizon.inventory.dto.IdList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
@@ -96,6 +98,12 @@ public class InventoryClientTest {
                @Override
                 public void getLocationById(Int64Value request, StreamObserver<MonitoringLocationDTO> responseObserver) {
                     responseObserver.onNext(MonitoringLocationDTO.newBuilder().build());
+                    responseObserver.onCompleted();
+                }
+
+                @Override
+                public void listLocationsByIds(IdList request, StreamObserver<MonitoringLocationList> responseObserver) {
+                    responseObserver.onNext(MonitoringLocationList.newBuilder().build());
                     responseObserver.onCompleted();
                 }
             }));
@@ -164,6 +172,19 @@ public class InventoryClientTest {
         verify(mockLocationService).listLocations(captor.capture(), any());
         assertThat(captor.getValue()).isNotNull();
         assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
+    }
+
+    @Test
+    public void testListLocationsByIds() {
+        List<Long> ids = Arrays.asList(1L, 2L);
+        ArgumentCaptor<IdList> captor = ArgumentCaptor.forClass(IdList.class);
+        List<MonitoringLocationDTO> result = client.listLocationsByIds(ids);
+        assertThat(result.isEmpty()).isTrue();
+        verify(mockLocationService).listLocationsByIds(captor.capture(), any());
+        List<Int64Value> argList = captor.getValue().getIdsList();
+        assertThat(argList.size()).isEqualTo(ids.size());
+        argList.forEach(v -> assertThat(ids.contains(v.getValue())).isTrue());
+        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(Constants.AUTH_HEADER_SKIP_TOKEN);
     }
 
     @Test
