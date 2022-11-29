@@ -98,7 +98,7 @@ public class NodeService {
             newLocation.setLocation(location);
 
             MonitoringLocation saved = monitoringLocationRepository.save(newLocation);
-            trapConfigService.sendTrapConfigToMinion(saved.getTenantId(), saved.getLocation());
+            trapConfigService.sendTrapConfigToMinion(saved.getLocation());
 
             return saved;
         }

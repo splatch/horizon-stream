@@ -31,7 +31,9 @@ package org.opennms.horizon.inventory.grpc;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.keycloak.common.VerificationException;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
 import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.taskset.contract.TaskSet;
@@ -50,6 +52,11 @@ class NodeGrpcStartupIntTest extends GrpcTestBase {
     private static final int EXPECTED_TASK_DEF_COUNT = 1;
 
     private static TestTaskSetGrpcService testGrpcService;
+
+    @BeforeEach
+    public void prepare() throws VerificationException, IOException {
+        prepareServer();
+    }
 
     @BeforeAll
     public static void setup() throws IOException {
@@ -71,8 +78,6 @@ class NodeGrpcStartupIntTest extends GrpcTestBase {
 
     @Test
     void testStartup() throws Exception {
-        setupGrpc();
-
         // TrapConfigService listens for ApplicationReadyEvent and sends the trap config for each location.
         assertEquals(1, testGrpcService.getTimesCalled());
 

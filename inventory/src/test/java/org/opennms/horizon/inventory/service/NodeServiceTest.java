@@ -105,7 +105,7 @@ public class NodeServiceTest {
 
         verify(ipInterfaceRepository).save(any(IpInterface.class));
         verify(monitoringLocationRepository).save(any(MonitoringLocation.class));
-        verify(trapConfigService).sendTrapConfigToMinion(tenant, location);
+        verify(trapConfigService).sendTrapConfigToMinion(location);
     }
 
     @Test
@@ -125,7 +125,7 @@ public class NodeServiceTest {
 
         verify(ipInterfaceRepository).save(any(IpInterface.class));
         verify(monitoringLocationRepository, times(0)).save(any(MonitoringLocation.class));
-        verify(trapConfigService, times(0)).sendTrapConfigToMinion(any(), any());
+        verify(trapConfigService, times(0)).sendTrapConfigToMinion(any());
     }
 
     @Test
