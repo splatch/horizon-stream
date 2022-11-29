@@ -113,11 +113,11 @@ public class InventoryClient {
     }
 
     public List<MonitoringLocationDTO> listLocationsByIds(List<DataLoaderFactory.Key> keys) {
-        String accessToken = keys.stream().map(DataLoaderFactory.Key::getToken).findFirst().get();
-        Metadata metadata = new Metadata();
-        metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
-        List<Int64Value> idValues = keys.stream().map(k->Int64Value.of(k.getId())).collect(Collectors.toList());
-        return locationStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listLocationsByIds(IdList.newBuilder().addAllIds(idValues).build()).getLocationsList();
+        return keys.stream().map(DataLoaderFactory.Key::getToken).findFirst().map(accessToken -> {
+            Metadata metadata = new Metadata();
+            metadata.put(Constants.AUTHORIZATION_METADATA_KEY, accessToken);
+            List<Int64Value> idValues = keys.stream().map(k->Int64Value.of(k.getId())).collect(Collectors.toList());
+            return locationStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listLocationsByIds(IdList.newBuilder().addAllIds(idValues).build()).getLocationsList();
+        }).orElseThrow();
     }
-
 }
