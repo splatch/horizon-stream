@@ -126,7 +126,7 @@ jib_project(
     'opennms/horizon-stream-alarm',
     'alarm',
     'opennms-alarm',
-    port_forwards=['29080:9090', '29050:5005', '29065:6565'],
+    port_forwards=['29080:9090', '29050:5005', '29065:6565',  '29000:8080'],
 )
 
 ### Metrics Processor ###
@@ -231,6 +231,13 @@ k8s_resource(
 k8s_resource(
     'postgres',
     port_forwards=['25054:5432'],
+)
+
+### Kafka ###
+k8s_resource(
+    'onms-kafka',
+    new_name='kafka',
+    port_forwards=['24092:59092'],
 )
 
 ### Others ###

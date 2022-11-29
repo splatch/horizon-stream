@@ -58,15 +58,25 @@ import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
 import org.opennms.horizon.alarmservice.rest.support.SecurityHelper;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-@Path("/alarms")
 @AllArgsConstructor
 @Getter
 @Setter
 @Slf4j
-@Component
+@RestController
+@RequestMapping(path = "/alarms")
 public class AlarmRestServiceImpl implements AlarmRestService {
 
     @Autowired
@@ -82,9 +92,8 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 // Interface
 //========================================
 
-    @GET
-    @Path("list")
-    @Produces(MediaType.APPLICATION_JSON)
+
+    @GetMapping(path = "list", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @RolesAllowed({ "admin" })
     @ApiResponse(
             description = "Retrieve the list of alarms"
@@ -100,49 +109,29 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
             return Response.status(Status.OK).entity(alarmsCollection).build();
     }
-
-//    @POST
-//    @Path("{id}/ack")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public String ackAlarm(@PathParam("id") int id, AlarmAckDTO alarmAck) {
-//
-//            updateAlarmTicket(id, alarmAck);
-//
-//            return "acknowledged";
-//    }
-
-//    @DELETE
-//    @Path("{id}/ack")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public String unackAlarm(@PathParam("id") int id) {
-//            OnmsAcknowledgment acknowledgment = new OnmsAcknowledgment(new Date(), "DELETE_USER__TODO_CLEAN_THIS_UP");
-//            acknowledgment.setRefId(id);
-//            acknowledgment.setAckAction(AckAction.UNACKNOWLEDGE);
-//            acknowledgment.setAckType(AckType.ALARM);
-//            acknowledgmentDao.processAck(acknowledgment);
-//
-//            return "unacknowledged";
-//    }
     
-    @POST
-    @Path("{id}/clear")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String clearAlarm(@PathParam("id") Long id) {
+    @PostMapping(path="{id}/clear", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public String clearAlarm(@PathVariable Long id) {
 
         alarmService.clearAlarm(id, new Date());
 
         return "acknowledged";
     }
 
-    @PUT
-    @Path("{id}/memo")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @PostMapping(path = "ping")
+    @ResponseStatus(HttpStatus.OK)
+    public void ping() {
+        log.info("PING!");
+    }
+
+    @PutMapping(path = "{id}/memo",  consumes = MediaType.APPLICATION_FORM_URLENCODED)
+
     @RolesAllowed({ "admin" })
     @ApiResponse(
             description = "Update the memo for an Alarm"
     )
     @Transactional
-    public Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Long alarmId, final MultivaluedMapImpl params) {
+    public Response updateMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId, final MultivaluedMapImpl params) {
         // replace the next two lines with @RolesAllowed("")
         final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
         SecurityHelper.assertUserEditCredentials(securityContext, user);
@@ -155,15 +144,13 @@ public class AlarmRestServiceImpl implements AlarmRestService {
             return Response.noContent().build();
     }
 
-    @PUT
-    @Path("{id}/journal")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @RolesAllowed({ "admin" })
     @ApiResponse(
             description = "Update the journal for an Alarm"
     )
+    @PutMapping(path = "{id}/journal", consumes = MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Long alarmId, final MultivaluedMapImpl params) {
+    public Response updateJournal(@Context final SecurityContext securityContext, @PathVariable final Long alarmId, final MultivaluedMapImpl params) {
             final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
             // SecurityHelper.assertUserEditCredentials(securityContext, user);
             final String body = params.getFirst("body");
@@ -172,13 +159,12 @@ public class AlarmRestServiceImpl implements AlarmRestService {
             return Response.noContent().build();
     }
 
-    @DELETE
-    @Path("{id}/memo")
     @RolesAllowed({ "admin" })
     @ApiResponse(
-            description = "Remove the memo for an Alarm"
+        description = "Remove the memo for an Alarm"
     )
-    public Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Long alarmId) {
+    @DeleteMapping(path = "{id}/memo")
+    public Response removeMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId) {
 
         alarmService.removeStickyMemo(alarmId);
         return Response.ok().build();
