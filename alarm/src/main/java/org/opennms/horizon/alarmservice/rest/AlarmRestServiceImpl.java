@@ -122,6 +122,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     @ResponseStatus(HttpStatus.OK)
     public void ping() {
         log.info("PING!");
+        alarmService.ping();
     }
 
     @PutMapping(path = "{id}/memo",  consumes = MediaType.APPLICATION_FORM_URLENCODED)

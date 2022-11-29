@@ -40,6 +40,7 @@ import org.opennms.horizon.events.proto.Event;
  * Situation rules.
  */
 public interface AlarmService {
+    void ping();
 
     void clearAlarm(Alarm alarm, Date now);
 

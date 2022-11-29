@@ -53,6 +53,8 @@ import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.opennms.horizon.events.proto.Event;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,6 +86,17 @@ public class AlarmServiceImpl implements AlarmService {
 
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
+
+    @Autowired
+    @Qualifier("kafkaAlarmProducerTemplate")
+    private KafkaTemplate<String, byte[]> kafkaTemplate;
+
+    @Override
+    public void ping() {
+        Event event = Event.newBuilder().setNodeId(10L).setUei("BlahUEI").build();
+        kafkaTemplate.send("events-proto", event.toString().getBytes());
+        log.info("############# Sent event to Kafka");
+    }
 
     @Override
     @Transactional
@@ -239,6 +252,7 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     public Alarm process(Event event) {
+        log.info("########  Received Event, processing");
         Objects.requireNonNull(event, "Cannot create alarm from null event.");
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
@@ -251,14 +265,15 @@ public class AlarmServiceImpl implements AlarmService {
         // Lock both the reduction and clear keys (if set) using a fair striped lock
         // We do this to ensure that clears and triggers are processed in the same order
         // as the calls are made
-        final Iterable<Lock> locks = lockStripes.bulkGet(getLockKeys(event));
+        //TODO:MMF what is this doing?
+//        final Iterable<Lock> locks = lockStripes.bulkGet(getLockKeys(event));
         final Alarm[] alarm = new Alarm[1];
         try {
-            locks.forEach(Lock::lock);
+//            locks.forEach(Lock::lock);
 
             alarm[0] = addOrReduceEventAsAlarm(event);
         } finally {
-            locks.forEach(Lock::unlock);
+//            locks.forEach(Lock::unlock);
         }
 
         return alarm[0];
