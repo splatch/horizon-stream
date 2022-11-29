@@ -32,10 +32,13 @@ import java.util.Date;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.Memo;
 import org.opennms.horizon.alarmservice.db.entity.ReductionKeyMemo;
+import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,7 +56,7 @@ public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
 
     @Autowired
     @Qualifier("kafkaAlarmProducerTemplate")
-    private KafkaTemplate<String, Alarm> kafkaTemplate;
+    private KafkaTemplate<String, byte[]> kafkaTemplate;
 
     @Value("${kafka.topics.new-alarms:" + DEFAULT_ALARMS_TOPIC + "}")
     private String kafkaTopic;
@@ -62,7 +65,8 @@ public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
 
     @Override
     public void didCreateAlarm(Alarm alarm) {
-        kafkaTemplate.send(kafkaTopic, alarm);
+        AlarmDTO alarmDTO =  AlarmMapper.INSTANCE.alarmToAlarmDTO(alarm);
+        kafkaTemplate.send(kafkaTopic, alarmDTO.toString().getBytes());
     }
 
     @Override
