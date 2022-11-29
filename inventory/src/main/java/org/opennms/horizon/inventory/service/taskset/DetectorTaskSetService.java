@@ -102,7 +102,7 @@ public class DetectorTaskSetService {
                         .build());
 
                 taskSetManagerUtil.addTask(location, ipAddress, name,
-                    TaskType.DETECTOR, pluginName, configuration);
+                    TaskType.DETECTOR, pluginName, configuration, node.getId());
                 break;
             }
             case SNMP: {
@@ -113,8 +113,7 @@ public class DetectorTaskSetService {
                         .setRetries(Constants.Snmp.DEFAULT_RETRIES)
                         .build());
 
-                taskSetManagerUtil.addTask(location, ipAddress, name,
-                    TaskType.DETECTOR, pluginName, configuration);
+                taskSetManagerUtil.addTask(location, ipAddress, name, TaskType.DETECTOR, pluginName, configuration, node.getId());
                 break;
             }
             case UNRECOGNIZED: {
@@ -133,6 +132,9 @@ public class DetectorTaskSetService {
         String location = monitoringLocation.getLocation();
         TaskSet taskSet = taskSetManager.getTaskSet(location);
 
+        log.info("Sending task set {}  at location {}", taskSet, location);
         taskSetPublisher.publishTaskSet(location, taskSet);
     }
+
+
 }
