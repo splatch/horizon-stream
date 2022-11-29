@@ -45,7 +45,7 @@ import org.springframework.stereotype.Component;
 public class EventConsumer {
 
     @Autowired
-    AlarmService alarmService;
+    private AlarmService alarmService;
 
     @KafkaListener(topics = "${kafka.topics.alarm-events}", concurrency = "1")
     public void receiveMessage(byte[] data) {
