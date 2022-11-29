@@ -1,18 +1,18 @@
 <template>
   <ul class="anchor-list">
-    <li>
+    <li data-test="profile">
       <label>{{ label.profile }}: </label>
       <a :href="anchor?.profileLink">{{ anchor?.profileValue }}</a>
     </li>
-    <li>
+    <li data-test="location">
       <label>{{ label.location }}: </label>
       <a :href="anchor?.locationLink">{{ anchor?.locationValue }}</a>
     </li>
-    <li>
+    <li data-test="ip-interface">
       <label>{{ label.ipInterface }}: </label>
       <a :href="anchor?.ipInterfaceLink">{{ anchor?.ipInterfaceValue }}</a>
     </li>
-    <li>
+    <li data-test="tag">
       <label>{{ label.tag }}: </label>
       <a :href="anchor?.tagLink">{{ anchor?.tagValue }}</a>
     </li>
@@ -22,7 +22,6 @@
 <script lang="ts" setup>
 import { PropType } from 'vue'
 import { Anchor } from '@/types/inventory'
-
 
 defineProps({
   anchor: {

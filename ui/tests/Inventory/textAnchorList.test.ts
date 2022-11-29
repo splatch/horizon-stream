@@ -6,7 +6,8 @@ let wrapper: any
 describe('Text anchor list', () => {
   beforeAll(() => {
     wrapper = mount(TextAnchorList, {
-      propsData: {
+      shallow: true,
+      props: {
         anchor: {
           profileValue: 75,
           profileLink: '#',
@@ -24,7 +25,13 @@ describe('Text anchor list', () => {
     wrapper.unmount() 
   })
 
-  test('component should have been mounted', () => {
-    expect(wrapper).toBeTruthy()
+  const anchorList = [
+    'profile',
+    'location',
+    'ip-interface',
+    'tag'
+  ]
+  it.each(anchorList)('should have "%s" element', (elem) => {
+    expect(wrapper.get(`[data-test="${elem}"]`).exists()).toBe(true)
   })
 })

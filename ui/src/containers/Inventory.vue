@@ -1,6 +1,6 @@
 <template>
-  <PageHeader :heading="heading" class="header" />
-  <FeatherTabContainer class="tab-container">
+  <PageHeader :heading="heading" class="header" data-test="page-header" />
+  <FeatherTabContainer class="tab-container" data-test="tab-container">
     <template v-slot:tabs>
       <FeatherTab v-for="tab in tabs" :key="tab.label">{{ tab.label }}</FeatherTab>
     </template>
@@ -26,11 +26,11 @@ import {
   FeatherTabPanel
 } from '@featherds/tabs'
 import Filter from '@/components/Inventory/Filter.vue'
-import DetectedNodesTabContent from '@/components/Inventory/DetectedNodesTabContent.vue'
 import MonitoredNodesTabContent from '@/components/Inventory/MonitoredNodesTabContent.vue'
+import DetectedNodesTabContent from '@/components/Inventory/DetectedNodesTabContent.vue'
 import { TimeUnit } from '@/types'
-import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
 import { NodeContent } from '@/types/inventory'
+import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
 
 const unmonitoredContent: NodeContent[] = [
   {

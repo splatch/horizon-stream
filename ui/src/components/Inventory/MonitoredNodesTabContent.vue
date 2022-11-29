@@ -1,8 +1,8 @@
 <template>
-  <ul class="tab-content">
+  <ul>
     <li v-for="node in tabContent" :key="node?.id">
       <section class="header">
-        <Icon :item="item" data-test="icon" />
+        <Icon :icon="icon" data-test="icon" />
         <h4 data-test="heading">{{ node?.label }}</h4>
       </section>
       <section class="node-content">
@@ -20,6 +20,7 @@
 import { PropType } from 'vue'
 import Storage from '@material-design-icons/svg/outlined/storage.svg'
 import { NodeContent } from '@/types/inventory'
+import { IIcon } from '@/types'
   
 defineProps({
   tabContent: {
@@ -28,8 +29,8 @@ defineProps({
   }
 })
 
-const item = {
-  icon: Storage,
+const icon: IIcon = {
+  image: Storage,
   title: 'Node'
 }
 </script>
@@ -37,7 +38,7 @@ const item = {
 <style lang="scss" scoped>
 @use "@featherds/styles/themes/variables";
 
-.tab-content {
+ul {
   display: flex;
   flex-flow: row wrap;
   gap: 1rem;
@@ -57,12 +58,11 @@ const item = {
       }
     }
   }
-}
-
-.node-content {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 2rem;
+  .node-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 2rem;
+  }
 }
 </style>
