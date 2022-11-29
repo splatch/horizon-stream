@@ -59,18 +59,14 @@
 </template>
 
 <script lang="ts" setup>
-import { fncArgVoid } from '@/types'
-import { ISelectDropdown } from '@/types/select'
-import {
-  // FeatherAutocomplete,
-  IAutocompleteItemType
-} from '@featherds/autocomplete'
+import { IAutocompleteItemType } from '@featherds/autocomplete'
 import Sort from '@material-design-icons/svg/outlined/sort.svg'
 import SortByAlpha from '@material-design-icons/svg/outlined/sort_by_alpha.svg'
 import KeyboardDoubleArrowDown from '@material-design-icons/svg/outlined/keyboard_double_arrow_down.svg'
 import KeyboardDoubleArrowUp from '@material-design-icons/svg/outlined/keyboard_double_arrow_up.svg'
+import { ISelectDropdown } from '@/types/select'
+import { fncArgVoid, IIcon } from '@/types'
 import { useInventoryStore } from '@/store/Views/inventoryStore'
-import { IIcon } from '@/types'
 
 const inventoryStore = useInventoryStore()
 
@@ -100,7 +96,6 @@ const onNodeTypeSelect: fncArgVoid = (selectedType: any) => {
   // use store to query new list
 }
 const nodeType: ISelectDropdown = {
-// const nodeType = {
   label: 'Node Type',
   options: [
     {

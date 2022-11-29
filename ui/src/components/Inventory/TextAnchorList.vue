@@ -41,6 +41,3 @@ const label = {
   tag: 'Tag'
 }
 </script>
-
-<style lang="scss" scoped>
-</style>
