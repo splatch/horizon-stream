@@ -29,6 +29,7 @@
 package org.opennms.horizon.server.config;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -84,6 +85,19 @@ public class DataLoaderFactory implements DataLoaderRegistryFactory {
 
         public String getToken() {
             return token;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Key key = (Key) o;
+            return id == key.id && token.equals(key.token);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id, token);
         }
     }
 }
