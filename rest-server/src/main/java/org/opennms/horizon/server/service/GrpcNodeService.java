@@ -77,7 +77,8 @@ public class GrpcNodeService {
 
   @GraphQLQuery
   public CompletableFuture<Location> location(@GraphQLContext Node node, @GraphQLEnvironment  ResolutionEnvironment env) {
-      DataLoader<Long, Location> locationLoader = env.dataFetchingEnvironment.getDataLoader(DataLoaderFactory.DATA_LOADER_LOCATION);
-      return locationLoader.load(node.getMonitoringLocationId());
+      DataLoader<DataLoaderFactory.Key, Location> locationLoader = env.dataFetchingEnvironment.getDataLoader(DataLoaderFactory.DATA_LOADER_LOCATION);
+      DataLoaderFactory.Key key = new DataLoaderFactory.Key(node.getMonitoringLocationId(), headerUtil.getAuthHeader(env));
+      return locationLoader.load(key);
   }
 }

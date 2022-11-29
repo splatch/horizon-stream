@@ -70,7 +70,8 @@ public class GrpcMinionService {
 
     @GraphQLQuery
     public CompletableFuture<Location> location(@GraphQLContext Minion minion, @GraphQLEnvironment ResolutionEnvironment env) {
-        DataLoader<Long, Location> locationDataLoader = env.dataFetchingEnvironment.getDataLoader(DataLoaderFactory.DATA_LOADER_LOCATION);
-        return locationDataLoader.load(minion.getLocationId());
+        DataLoader<DataLoaderFactory.Key, Location> locationDataLoader = env.dataFetchingEnvironment.getDataLoader(DataLoaderFactory.DATA_LOADER_LOCATION);
+        DataLoaderFactory.Key key = new DataLoaderFactory.Key(minion.getLocationId(), headerUtil.getAuthHeader(env));
+        return locationDataLoader.load(key);
     }
 }

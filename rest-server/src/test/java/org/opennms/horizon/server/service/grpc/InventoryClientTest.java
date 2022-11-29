@@ -39,6 +39,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
@@ -57,6 +58,7 @@ import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.NodeList;
 import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
+import org.opennms.horizon.server.config.DataLoaderFactory;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
@@ -176,15 +178,17 @@ public class InventoryClientTest {
 
     @Test
     public void testListLocationsByIds() {
+        String methodName = new Object(){}.getClass().getEnclosingMethod().getName();
         List<Long> ids = Arrays.asList(1L, 2L);
+        List<DataLoaderFactory.Key> keys = ids.stream().map(id -> new DataLoaderFactory.Key(id, accessToken + methodName)).collect(Collectors.toList());
         ArgumentCaptor<IdList> captor = ArgumentCaptor.forClass(IdList.class);
-        List<MonitoringLocationDTO> result = client.listLocationsByIds(ids);
+        List<MonitoringLocationDTO> result = client.listLocationsByIds(keys);
         assertThat(result.isEmpty()).isTrue();
         verify(mockLocationService).listLocationsByIds(captor.capture(), any());
         List<Int64Value> argList = captor.getValue().getIdsList();
-        assertThat(argList.size()).isEqualTo(ids.size());
+        assertThat(argList.size()).isEqualTo(keys.size());
         argList.forEach(v -> assertThat(ids.contains(v.getValue())).isTrue());
-        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(Constants.AUTH_HEADER_SKIP_TOKEN);
+        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
     }
 
     @Test

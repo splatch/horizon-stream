@@ -130,15 +130,16 @@ public class LocationGrpcIntegrationTest {
     }
 
     @Test
-    public void testListLocationsByIds() {
+    public void testListLocationsByIds() throws VerificationException {
         List<Long> ids = Arrays.asList(1L, 2L);
         doReturn(Arrays.asList(location1, location2)).when(mockLocationService).findByLocationIds(ids);
         Metadata headers = new Metadata();
-        headers.put(Constants.AUTHORIZATION_METADATA_KEY, Constants.AUTH_HEADER_SKIP_TOKEN);
+        headers.put(Constants.AUTHORIZATION_METADATA_KEY, authHeader);
         MonitoringLocationList result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(headers)).listLocationsByIds(IdList.newBuilder().addAllIds(ids
             .stream().map(Int64Value::of).collect(Collectors.toList())).build());
         assertThat(result.getLocationsList().size()).isEqualTo(2);
         verify(mockLocationService).findByLocationIds(ids);
+        verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 }

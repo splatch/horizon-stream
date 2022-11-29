@@ -49,19 +49,41 @@ public class DataLoaderFactory implements DataLoaderRegistryFactory {
     public static final String DATA_LOADER_LOCATION = "location";
     private final InventoryClient inventoryClient;
     private final LocationMapper locationMapper;
-    private final BatchLoader<Long, Location> locationBatchLoader = this::locations;
+    private final BatchLoader<Key, Location> locationBatchLoader = this::locations;
 
     @Override
     public DataLoaderRegistry createDataLoaderRegistry() {
-        DataLoader<Long, Location> locationDataLoader = new DataLoader<>(locationBatchLoader);
+        DataLoader<Key, Location> locationDataLoader = new DataLoader<>(locationBatchLoader);
         DataLoaderRegistry loaders = new DataLoaderRegistry();
         loaders.register(DATA_LOADER_LOCATION, locationDataLoader);
         return loaders;
     }
 
-    private CompletableFuture<List<Location>> locations(List<Long> locationIds) {
+    private CompletableFuture<List<Location>> locations(List<Key> locationKeys) {
         return CompletableFuture.completedFuture(
-            inventoryClient.listLocationsByIds(locationIds)
+            inventoryClient.listLocationsByIds(locationKeys)
                 .stream().map(locationMapper::protoToLocation).collect(Collectors.toList()));
+    }
+
+    public static class Key {
+        private long id;
+        private String token;
+
+        public Key(long id, String token) {
+            this.id = id;
+            this.token = token;
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public void setId(long id) {
+            this.id = id;
+        }
+
+        public String getToken() {
+            return token;
+        }
     }
 }
