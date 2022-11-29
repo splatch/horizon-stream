@@ -32,7 +32,11 @@ import org.opennms.horizon.events.persistence.model.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
+    List<Event> findAllByTenantId(String tenantId);
 
+    List<Event> findAllByTenantIdAndNodeId(String tenantId, long nodeId);
 }

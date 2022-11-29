@@ -1,23 +1,20 @@
 package org.opennms.horizon.minion.taskset.worker.impl;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import org.opennms.horizon.minion.plugin.api.registries.MonitorRegistry;
-
-import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
-import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalService;
 import org.opennms.horizon.minion.plugin.api.MonitoredService;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitor;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorManager;
 import org.opennms.horizon.minion.plugin.api.ServiceMonitorResponse;
+import org.opennms.horizon.minion.plugin.api.registries.MonitorRegistry;
 import org.opennms.horizon.minion.scheduler.OpennmsScheduler;
-import org.opennms.horizon.shared.utils.IPAddress;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutionResultProcessor;
+import org.opennms.horizon.minion.taskset.worker.TaskExecutorLocalService;
 import org.opennms.taskset.contract.TaskDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Local implementation of the service to execute a Monitor workflow.  This class runs "locally" only, so it is never
@@ -102,7 +99,7 @@ public class TaskExecutorLocalMonitorServiceImpl implements TaskExecutorLocalSer
             }
             if (monitor != null) {
                 // TBD888: populate host, or stop?
-                MonitoredService monitoredService = configureMonitoredService(null);
+                MonitoredService monitoredService = configureMonitoredService(taskDefinition);
 
                 CompletableFuture<ServiceMonitorResponse> future = monitor.poll(monitoredService, taskDefinition.getConfiguration());
                 future.whenComplete(this::handleExecutionComplete);
@@ -126,21 +123,10 @@ public class TaskExecutorLocalMonitorServiceImpl implements TaskExecutorLocalSer
         }
     }
 
-    private MonitoredService configureMonitoredService(String hostname) throws UnknownHostException {
-        String svcName = "TBD";
-
-        IPAddress ipAddress = lookupIpAddress(hostname);
-
-        MonitoredService result = new GeneralMonitoredService(svcName, hostname, -1, "TBD", "TBD", ipAddress.toInetAddress());
-
-        return result;
+    private MonitoredService configureMonitoredService(TaskDefinition taskDefinition)  {
+        return new GeneralMonitoredService("TBD", "TBD", taskDefinition.getNodeId(), "TBD", "TBD", null);
     }
 
-    private IPAddress lookupIpAddress(String hostname) throws UnknownHostException {
-        InetAddress inetAddress = InetAddress.getByName(hostname);
-
-        return new IPAddress(inetAddress);
-    }
 
     private ServiceMonitor lookupMonitor(TaskDefinition taskDefinition) {
         String pluginName = taskDefinition.getPluginName();

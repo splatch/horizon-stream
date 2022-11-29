@@ -53,6 +53,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class NodeService {
+    private final TrapConfigService trapConfigService;
     private final NodeRepository nodeRepository;
     private final MonitoringLocationRepository monitoringLocationRepository;
     private final IpInterfaceRepository ipInterfaceRepository;
@@ -96,7 +97,10 @@ public class NodeService {
             newLocation.setTenantId(tenantId);
             newLocation.setLocation(location);
 
-            return monitoringLocationRepository.save(newLocation);
+            MonitoringLocation saved = monitoringLocationRepository.save(newLocation);
+            trapConfigService.sendTrapConfigToMinion(saved.getLocation());
+
+            return saved;
         }
     }
 

@@ -45,26 +45,28 @@ public class TaskSetManagerUtil {
     private final TaskSetIdentityUtil taskSetIdentityUtil;
 
     public void addTask(String location, String ipAddress, String name, TaskType taskType,
-                        String pluginName, String schedule, Any configuration) {
+                        String pluginName, String schedule, long nodeId, Any configuration) {
 
         String taskId = taskSetIdentityUtil.identityForIpTask(ipAddress, name);
-        addTaskToTaskSet(location, taskType, pluginName, schedule, configuration, taskId);
+        addTaskToTaskSet(location, taskType, pluginName, schedule, configuration, taskId, nodeId);
     }
 
     public void addTask(String location, String ipAddress, String name, TaskType taskType,
-                        String pluginName, Any configuration) {
+                        String pluginName, Any configuration, long nodeId) {
 
         String taskId = taskSetIdentityUtil.identityForIpTask(ipAddress, name);
-        addTaskToTaskSet(location, taskType, pluginName, null, configuration, taskId);
+        addTaskToTaskSet(location, taskType, pluginName, null, configuration, taskId, nodeId);
     }
 
     private void addTaskToTaskSet(String location, TaskType taskType, String pluginName, String schedule,
-                                  Any configuration, String taskId) {
+                                  Any configuration, String taskId, long nodeId) {
+
 
         TaskDefinition.Builder builder =
             TaskDefinition.newBuilder()
                 .setType(taskType)
                 .setPluginName(pluginName)
+                .setNodeId(nodeId)
                 .setId(taskId);
 
         if (StringUtils.isNotBlank(schedule)) {

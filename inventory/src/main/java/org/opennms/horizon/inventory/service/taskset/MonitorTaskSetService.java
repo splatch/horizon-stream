@@ -51,12 +51,12 @@ public class MonitorTaskSetService {
     private final TaskSetManager taskSetManager;
     private final TaskSetPublisher taskSetPublisher;
 
-    public void sendMonitorTask(String location, MonitorType monitorType, IpInterface ipInterface) {
-        addMonitorTask(location, monitorType, ipInterface);
+    public void sendMonitorTask(String location, MonitorType monitorType, IpInterface ipInterface, long nodeId) {
+        addMonitorTask(location, monitorType, ipInterface, nodeId);
         sendTaskSet(location);
     }
 
-    private void addMonitorTask(String location, MonitorType monitorType, IpInterface ipInterface) {
+    private void addMonitorTask(String location, MonitorType monitorType, IpInterface ipInterface, long nodeId) {
         String monitorTypeValue = monitorType.getValueDescriptor().getName();
         String ipAddress = ipInterface.getIpAddress().getAddress();
 
@@ -76,7 +76,7 @@ public class MonitorTaskSetService {
                         .build());
 
                 taskSetManagerUtil.addTask(location, ipAddress, name,
-                    TaskType.MONITOR, pluginName, Constants.DEFAULT_SCHEDULE, configuration);
+                    TaskType.MONITOR, pluginName, Constants.DEFAULT_SCHEDULE, nodeId, configuration);
                 break;
             }
             case SNMP: {
@@ -87,8 +87,7 @@ public class MonitorTaskSetService {
                         .setRetries(Constants.Snmp.DEFAULT_RETRIES)
                         .build());
 
-                taskSetManagerUtil.addTask(location, ipAddress, name,
-                    TaskType.MONITOR, pluginName, Constants.DEFAULT_SCHEDULE, configuration);
+                taskSetManagerUtil.addTask(location, ipAddress, name, TaskType.MONITOR, pluginName, Constants.DEFAULT_SCHEDULE, nodeId, configuration);
                 break;
             }
             case UNRECOGNIZED: {
@@ -104,6 +103,7 @@ public class MonitorTaskSetService {
 
     private void sendTaskSet(String location) {
         TaskSet taskSet = taskSetManager.getTaskSet(location);
+        log.info("Sending task set {}  at location {}", taskSet, location);
         taskSetPublisher.publishTaskSet(location, taskSet);
     }
 }
