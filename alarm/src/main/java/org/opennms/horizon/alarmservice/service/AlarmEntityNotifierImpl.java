@@ -38,23 +38,31 @@ import org.opennms.horizon.alarmservice.db.entity.Memo;
 import org.opennms.horizon.alarmservice.db.entity.ReductionKeyMemo;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@AllArgsConstructor
+@PropertySource("classpath:application.yaml")
 public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
 
+    public static final String DEFAULT_ALARMS_TOPIC = "new-alarms";
+
     @Autowired
+    @Qualifier("kafkaAlarmProducerTemplate")
     private KafkaTemplate<String, Alarm> kafkaTemplate;
+
+    @Value("${kafka.topics.new-alarms:" + DEFAULT_ALARMS_TOPIC + "}")
+    private String kafkaTopic;
 
 //    private Set<AlarmEntityListener> listeners = Sets.newConcurrentHashSet();
 
     @Override
-    //TODO:MMF need to figure out how to parameterize this topic name
     public void didCreateAlarm(Alarm alarm) {
-        kafkaTemplate.send("new-alarms", alarm);
+        kafkaTemplate.send(kafkaTopic, alarm);
     }
 
     @Override

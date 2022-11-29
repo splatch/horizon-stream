@@ -25,5 +25,5 @@ spring:
 
 kafka:
   topics:
-    alarm-events: "alarm-events"
+    alarm-events: "events-proto"
     new-alarms: "new-alarms"

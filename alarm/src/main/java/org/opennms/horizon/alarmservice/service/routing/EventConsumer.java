@@ -47,7 +47,6 @@ public class EventConsumer {
     @Autowired
     AlarmService alarmService;
 
-    //TODO:MMF figure out what topic the events are actually going to, should be already defined
     @KafkaListener(topics = "${kafka.topics.alarm-events}", concurrency = "1")
     public void receiveMessage(byte[] data) {
         try {
