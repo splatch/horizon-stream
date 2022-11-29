@@ -10,8 +10,6 @@ import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.Memo;
 import org.opennms.horizon.alarmservice.db.entity.ReductionKeyMemo;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.alarmservice.service.routing.AlarmRouteBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @AllArgsConstructor
 @NoArgsConstructor

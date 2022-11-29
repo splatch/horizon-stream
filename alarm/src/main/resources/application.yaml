@@ -14,3 +14,16 @@ spring:
 
   liquibase:
     change-log: db/changelog/changelog.xml
+
+  kafka:
+    consumer:
+      group-id: "alarm"
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    bootstrap-servers: localhost:59092
+
+kafka:
+  topics:
+    alarm-events: "alarm-events"
+    new-alarms: "new-alarms"

@@ -28,21 +28,17 @@
 
 package org.opennms.horizon.alarmservice.service;
 
-import com.google.common.collect.Sets;
 import java.util.Date;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.camel.ProducerTemplate;
-import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.Memo;
 import org.opennms.horizon.alarmservice.db.entity.ReductionKeyMemo;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.alarmservice.model.TroubleTicketState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -50,14 +46,15 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
 
-    private ProducerTemplate producerTemplate;
+    @Autowired
+    private KafkaTemplate<String, Alarm> kafkaTemplate;
 
 //    private Set<AlarmEntityListener> listeners = Sets.newConcurrentHashSet();
 
     @Override
+    //TODO:MMF need to figure out how to parameterize this topic name
     public void didCreateAlarm(Alarm alarm) {
-//        forEachListener(l -> l.onAlarmCreated(alarm));
-        producerTemplate.sendBody(alarm);
+        kafkaTemplate.send("new-alarms", alarm);
     }
 
     @Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,26 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.drools;
+package org.opennms.horizon.alarmservice.service.routing;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import com.google.protobuf.InvalidProtocolBufferException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.opennms.horizon.alarmservice.api.AlarmService;
+import org.opennms.horizon.events.proto.Event;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Component
-public class DroolsStarter {
+@Slf4j
+@PropertySource("classpath:application.yaml")
+public class EventConsumer {
 
     @Autowired
-    private DroolsAlarmContext droolsAlarmContext;
+    AlarmService alarmService;
 
-    @PostConstruct
-    public void init() {
-        droolsAlarmContext.start();
-    }
-
-    @PreDestroy
-    public void destroy() {
-        droolsAlarmContext.stop();
+    //TODO:MMF figure out what topic the events are actually going to, should be already defined
+    @KafkaListener(topics = "${kafka.topics.alarm-events}", concurrency = "1")
+    public void receiveMessage(byte[] data) {
+        try {
+            Event event = Event.parseFrom(data);
+            log.info("Received alarm event message");
+            alarmService.process(event);
+        } catch (InvalidProtocolBufferException e) {
+            log.error("Error while parsing Event message", e);
+        }
     }
 }
