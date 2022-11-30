@@ -102,7 +102,6 @@ public class Alarm extends BaseEntity implements Serializable {
 
     @Column(nullable=false)
     @Enumerated(EnumType.ORDINAL)
-//    @Type(type= "org.opennms.horizon.alarmservice.model.SeverityUserTypeDTO")
     private AlarmSeverity severity = AlarmSeverity.INDETERMINATE;
 
     @Temporal(TemporalType.TIMESTAMP)
