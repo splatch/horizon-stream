@@ -32,14 +32,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -59,7 +51,6 @@ import org.opennms.horizon.alarmservice.rest.support.SecurityHelper;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -118,11 +109,11 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         return "acknowledged";
     }
 
-    @PostMapping(path = "ping")
+    @PostMapping(path = "kick")
     @ResponseStatus(HttpStatus.OK)
-    public void ping() {
-        log.info("PING!");
-        alarmService.ping();
+    public void kick() {
+        log.info("######### KICK!");
+        alarmService.kick();
     }
 
     @PutMapping(path = "{id}/memo",  consumes = MediaType.APPLICATION_FORM_URLENCODED)

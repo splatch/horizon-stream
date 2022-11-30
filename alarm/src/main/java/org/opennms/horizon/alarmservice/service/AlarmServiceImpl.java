@@ -92,7 +92,7 @@ public class AlarmServiceImpl implements AlarmService {
     private KafkaTemplate<String, byte[]> kafkaTemplate;
 
     @Override
-    public void ping() {
+    public void kick() {
         Event event = Event.newBuilder().setNodeId(10L).setUei("BlahUEI").build();
         kafkaTemplate.send("events-proto", event.toByteArray());
         log.info("############# Sent event to Kafka");
