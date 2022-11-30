@@ -52,7 +52,7 @@ public class SeverityUserTypeDTO implements UserType {
     public Object deepCopy(final Object value) throws HibernateException {
         if (value == null) {
             return null;
-        } else if (value instanceof Severity) {
+        } else if (value instanceof AlarmSeverity) {
             // immutable, we can just return the value
             return value;
         } else {

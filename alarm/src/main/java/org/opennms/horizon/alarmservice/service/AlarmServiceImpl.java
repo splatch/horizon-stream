@@ -94,7 +94,7 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     public void ping() {
         Event event = Event.newBuilder().setNodeId(10L).setUei("BlahUEI").build();
-        kafkaTemplate.send("events-proto", event.toString().getBytes());
+        kafkaTemplate.send("events-proto", event.toByteArray());
         log.info("############# Sent event to Kafka");
     }
 
@@ -434,10 +434,13 @@ public class AlarmServiceImpl implements AlarmService {
 //        alarm.setOperInstruct(e.getEventOperInstruct());
 //        alarm.setReductionKey(event.getAlarmData().getReductionKey());
 //        alarm.setServiceType(e.getServiceType());
-//        alarm.setSeverity(SeverityDTO.get(e.getEventSeverity()));
+        alarm.setSeverity(AlarmSeverity.CRITICAL);
 //        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
 //        alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
         alarm.setEventUei(event.getUei() + event.getNodeId());
+        alarm.setX733ProbableCause(1);
+        alarm.setDetails(new HashMap<>());
+        alarm.setRelatedAlarms(new HashSet<>());
 //        if (event.getAlarmData().getManagedObject() != null) {
 //            alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
 //        }
