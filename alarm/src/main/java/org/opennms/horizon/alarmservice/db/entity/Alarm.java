@@ -40,6 +40,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -99,7 +101,8 @@ public class Alarm extends BaseEntity implements Serializable {
     private Integer counter;
 
     @Column(nullable=false)
-    @Type(type= "org.opennms.horizon.alarmservice.model.SeverityUserTypeDTO")
+    @Enumerated(EnumType.ORDINAL)
+//    @Type(type= "org.opennms.horizon.alarmservice.model.SeverityUserTypeDTO")
     private AlarmSeverity severity = AlarmSeverity.INDETERMINATE;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -194,10 +197,9 @@ public class Alarm extends BaseEntity implements Serializable {
     @Column(name="attribute_value", nullable=false)
     private Map<String, String> details;
 
-    // rename to stickyMemo only
     @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name="sticky_memo_id")
-    private Memo stickyMemoId;
+    private Memo stickyMemo;
 
     @OneToMany(mappedBy = "situationAlarmId", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<AlarmAssociation> associatedAlarms = new HashSet<>();

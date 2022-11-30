@@ -285,11 +285,11 @@ public class AlarmServiceImpl implements AlarmService {
         Alarm targetAlarm = alarmRepository.getById(alarmId);
 
         if (targetAlarm != null) {
-            if (targetAlarm.getStickyMemoId() != null) {
+            if (targetAlarm.getStickyMemo() != null) {
                 //TODO:MMF how do we get the memo from repo through only that one interface?
                 // Will just nulling out the memo (object) field delete it from the memo table?
                 // might need to specify orphan removal on field in the entity
-                targetAlarm.setStickyMemoId(null);
+                targetAlarm.setStickyMemo(null);
                 alarmRepository.save(targetAlarm);
             }
         }

@@ -2,19 +2,20 @@ package org.opennms.horizon.alarmservice.service.routing;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -25,10 +26,10 @@ import org.springframework.kafka.core.ProducerFactory;
 @EnableKafka
 public class KafkaConfig {
 
-    @Value("${KAFKA.BOOTSTRAP.SERVERS:kafka:9092}")
+    @Value("${spring.kafka.bootstrap-servers:kafka:9092}")
     private String bootstrapAddress;
 
-    @Value("${KAFKA.CONSUMER.GROUP_ID:alarm}")
+    @Value("${spring.kafka.consumer.group-id:alarm}")
     private String groupId;
 
     @Bean
@@ -82,5 +83,13 @@ public class KafkaConfig {
         @Autowired ProducerFactory<String, byte[]> producerFactory
     ) {
         return new KafkaTemplate<>(producerFactory);
+    }
+
+    @Bean("topicCreator")
+    public NewTopic alarmTopic() {
+        return TopicBuilder.name("alarms")
+            .partitions(10)
+            .replicas(1)
+            .build();
     }
 }

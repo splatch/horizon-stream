@@ -245,8 +245,3 @@ k8s_resource(
     'ingress-nginx-controller',
     port_forwards=['8123:80'],
 )
-
-k8s_resource(
-    'opennms-alarm',
-    port_forwards=['25005:5005'],
-)

@@ -30,10 +30,8 @@ package org.opennms.horizon.alarmservice.service;
 
 import java.util.Date;
 import java.util.Set;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.entity.Memo;
@@ -66,7 +64,7 @@ public class AlarmEntityNotifierImpl implements AlarmEntityNotifier {
     @Override
     public void didCreateAlarm(Alarm alarm) {
         AlarmDTO alarmDTO =  AlarmMapper.INSTANCE.alarmToAlarmDTO(alarm);
-        kafkaTemplate.send(kafkaTopic, alarmDTO.toString().getBytes());
+        kafkaTemplate.send(new ProducerRecord<>(kafkaTopic, alarmDTO.toString().getBytes()));
     }
 
     @Override
