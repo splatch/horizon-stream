@@ -58,13 +58,13 @@ const unmonitoredContent: NodeContent[] = [
       }
     ],
     anchor: {
-      profileValue: 75,
+      profileValue: 70,
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 25,
+      ipInterfaceValue: 20,
       ipInterfaceLink: 'goto',
-      tagValue: 100,
+      tagValue: 10,
       tagLink: 'goto'
     }
   },
@@ -93,13 +93,13 @@ const unmonitoredContent: NodeContent[] = [
       }
     ],
     anchor: {
-      profileValue: 75,
+      profileValue: 30,
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 25,
+      ipInterfaceValue: 69,
       ipInterfaceLink: 'goto',
-      tagValue: 100,
+      tagValue: 49,
       tagLink: 'goto'
     }
   }
@@ -130,13 +130,13 @@ const detectedContent: NodeContent[] = [
       }
     ],
     anchor: {
-      profileValue: 75,
+      profileValue: 40,
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 25,
+      ipInterfaceValue: 59,
       ipInterfaceLink: 'goto',
-      tagValue: 100,
+      tagValue: 20,
       tagLink: 'goto'
     }
   },
@@ -165,13 +165,13 @@ const detectedContent: NodeContent[] = [
       }
     ],
     anchor: {
-      profileValue: 75,
+      profileValue: 53,
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 25,
+      ipInterfaceValue: 29,
       ipInterfaceLink: 'goto',
-      tagValue: 100,
+      tagValue: 60,
       tagLink: 'goto'
     }
   },
@@ -200,13 +200,13 @@ const detectedContent: NodeContent[] = [
       }
     ],
     anchor: {
-      profileValue: 75,
+      profileValue: 40,
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 25,
+      ipInterfaceValue: 28,
       ipInterfaceLink: 'goto',
-      tagValue: 100,
+      tagValue: 62,
       tagLink: 'goto'
     }
   }
