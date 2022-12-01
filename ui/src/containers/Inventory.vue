@@ -5,8 +5,8 @@
       <FeatherTab v-for="tab in tabs" :key="tab.label">{{ tab.label }}</FeatherTab>
     </template>
     <FeatherTabPanel>
-      <Filter v-if="tabMonitoredContent?.length" />
-      <MonitoredNodesTabContent :tabContent="tabMonitoredContent" />
+      <Filter v-if="tabMonitoredContent.length" />
+      <MonitoredNodesTabContent v-if="tabMonitoredContent.length" :tabContent="tabMonitoredContent" />
     </FeatherTabPanel>
     <FeatherTabPanel>
       <Filter v-if="tabUnmonitoredContent?.length" />
@@ -212,7 +212,6 @@ const detectedContent: NodeContent[] = [
   }
 ]
 
-const nodesQueries = useInventoryQueries()
 const heading = 'Network Inventory'
 const tabs = [
   {
@@ -225,7 +224,48 @@ const tabs = [
     label: 'Detected Nodes'
   }
 ]
-const tabMonitoredContent = computed(() => nodesQueries.nodes as NodeContent[])
+
+const inventoryQueries = useInventoryQueries()
+const tabMonitoredContent = computed(() => {
+  const nodes = inventoryQueries.nodes
+  
+  if(!nodes[0]?.label) return []
+
+  return [
+    {
+      id: nodes[0]?.id,
+      label: nodes[0]?.label,
+      metrics: [
+        {
+          ...nodes[0]?.metrics[0]
+        },
+        {
+          type: 'uptime',
+          label: 'Uptime',
+          timestamp: null,
+          timeUnit: null,
+          status: ''
+        },
+        {
+          type: 'status',
+          label: 'Status',
+          status: nodes[0]?.metrics[0].status || ''
+        }
+      ],
+      anchor: {
+        profileValue: '--',
+        profileLink: '',
+        locationValue: nodes[0]?.anchor.locationValue || '',
+        locationLink: '',
+        ipInterfaceValue: nodes[0]?.anchor.ipInterfaceValue || '',
+        ipInterfaceLink: '',
+        tagValue: '--',
+        tagLink: ''
+      }
+    }
+  ]
+})
+
 const tabUnmonitoredContent = unmonitoredContent
 const tabDetectedContent = detectedContent
 </script>

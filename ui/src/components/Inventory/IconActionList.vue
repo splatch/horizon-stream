@@ -1,5 +1,5 @@
 <template>
-  <ul>
+  <ul class="icon-action-list">
     <li @click="onBubbleChart" data-test="bubble-chart"><Icon :icon="bubbleChartIcon" /></li>
     <li @click="onLineChart" data-test="line-chart"><Icon :icon="lineChartIcon" /></li>
     <li @click="onPieChart" data-test="pie-chart"><Icon :icon="pieChartIcon" /></li>
@@ -60,7 +60,7 @@ const deleteIcon: IIcon = {
 <style lang="scss" scoped>
 @use "@featherds/styles/themes/variables";
 
-ul {
+ul.icon-action-list {
   display: flex;
   flex-direction: column;
   justify-content: space-between;

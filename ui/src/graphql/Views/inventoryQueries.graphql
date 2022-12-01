@@ -3,3 +3,7 @@ query NodesList {
   ...NodesLatencyParts
   ...NodesUptimeParts
 }
+
+query NodeLatencyMetric {
+  ...NodeLatencyParts
+}

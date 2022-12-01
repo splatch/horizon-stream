@@ -1,70 +1,80 @@
 import { useQuery } from 'villus'
 import { defineStore } from 'pinia'
-import { NodesListDocument, Node } from '@/types/graphql'
+import { NodesListDocument, NodeLatencyMetricDocument } from '@/types/graphql'
+import { NodeContent } from '@/types/inventory'
 import useSpinner from '@/composables/useSpinner'
-import useSnackbar from '@/composables/useSnackbar'
+import { TimeUnit } from '@/types'
+
+interface NodeCard {
+  id: number,
+  label: string,
+  latency: number,
+  location: string,
+  ipAddress: string
+}
 
 export const useInventoryQueries = defineStore('inventoryQueries', () => {
-  const nodes = ref({})
-  
-  const { startSpinner, stopSpinner } = useSpinner()
-  const { showSnackbar } = useSnackbar()
+  const nodes = ref([])
 
-  const { data, isFetching, execute, error } = useQuery({
+  const { startSpinner, stopSpinner } = useSpinner()
+
+  const { data: nodesData, isFetching: nodesFetching, execute } = useQuery({
     query: NodesListDocument,
     cachePolicy: 'network-only' // always fetch and do not cache
   })
-  
-  const formatNodesMetrics = (data: any) => {
-    return data.nodes?.map((node: Node, i: number) => ({
-      id: node.id,
-      label: node.nodeLabel,
-      // TODO mocked: should be replace with real metrics when avail.
-      metrics: [
-        {
-          type: 'latency',
-          label: 'Latency',
-          timestamp: data.latency[i],
-          timeUnit: null,
-          status: 'DOWN'
-        },
-        {
-          type: 'uptime',
-          label: 'Uptime',
-          timestamp: data.uptime[i],
-          timeUnit: null,
-          status: 'UNKNOWN'
-        },
-        {
-          type: 'status',
-          label: 'Status',
-          status: 'UP'
-        }
-      ]
-    }))
+
+  const getLatency = () => {
+    const { data: latencyData, isFetching: latencyFetching } = useQuery({
+      query: NodeLatencyMetricDocument,
+      cachePolicy: 'network-only' // always fetch and do not cache
+    })
+
+    return {
+      latencyData,
+      latencyFetching
+    }
   }
 
   watchEffect(() => {
-    console.log('error', error)
-    if(error) {
-      stopSpinner()
-      showSnackbar({
-        error: true,
-        msg: 'Unknown issues. Please try again later.'
-      })
-    } else {
-      isFetching.value ? startSpinner() : stopSpinner()
+    nodesFetching.value ? startSpinner() : stopSpinner()
 
-      const nodesData = {
-        nodes: data.value?.findAllNodes,
-        latency: data.value?.nodesLatency,
-        uptime: data.value?.nodesUptime
-      }
-      nodes.value = formatNodesMetrics(nodesData)
+    if(nodesData.value) {
+      // console.log('nodesData',nodesData.value)
+      const { latencyData, latencyFetching } = getLatency()
+
+      watch([latencyData, latencyFetching], (latency) => {
+        const [ data, isFetching ] = latency
+
+        isFetching ? startSpinner() : stopSpinner()
+        
+        if(data && !isFetching) {
+          const node = nodesData.value?.findAllNodes[0]
+          const latencyRes = latency[0].nodeLatency?.data.result[0]
+          const nodeFormatted: NodeContent = {
+            id: node?.id,
+            label: node?.nodeLabel,
+            metrics: [
+              {
+                type: 'latency',
+                label: 'Latency',
+                timestamp: latencyRes?.value[0],
+                timeUnit: TimeUnit.MSecs,
+                status: 'UP'
+              }
+            ],
+            anchor: {
+              locationValue: latencyRes?.metric.location,
+              ipInterfaceValue: latencyRes?.metric.instance
+            }
+          }
+          
+          nodes.value = [nodeFormatted]
+        }
+      })
     }
   })
 
-  return {
+  return { 
     nodes,
     fetch: execute
   }

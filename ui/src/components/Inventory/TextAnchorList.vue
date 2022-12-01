@@ -1,5 +1,5 @@
 <template>
-  <ul class="anchor-list">
+  <ul class="text-anchor-list">
     <li data-test="profile">
       <label>{{ label.profile }}: </label>
       <a :href="anchor?.profileLink">{{ anchor?.profileValue }}</a>
@@ -41,3 +41,11 @@ const label = {
   tag: 'Tag'
 }
 </script>
+
+<style lang="scss" scoped>
+ul.text-anchor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+</style>

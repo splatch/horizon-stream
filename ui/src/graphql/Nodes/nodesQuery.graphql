@@ -2,6 +2,11 @@ fragment NodesParts on Query {
   findAllNodes {
     createTime
     id
+    location {
+      id
+      location
+      tenantId
+    }
     monitoringLocationId
     nodeLabel
     tenantId
