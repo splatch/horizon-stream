@@ -226,7 +226,7 @@ const tabs = [
 ]
 
 const inventoryQueries = useInventoryQueries()
-const tabMonitoredContent = computed(() => {
+const tabMonitoredContent = computed((): NodeContent[] => {
   const nodes = inventoryQueries.nodes
   
   if(!nodes[0]?.label) return []
@@ -243,7 +243,7 @@ const tabMonitoredContent = computed(() => {
           type: 'uptime',
           label: 'Uptime',
           timestamp: null,
-          timeUnit: null,
+          timeUnit: TimeUnit.MSecs,
           status: ''
         },
         {
@@ -253,13 +253,13 @@ const tabMonitoredContent = computed(() => {
         }
       ],
       anchor: {
-        profileValue: '--',
+        profileValue: 0,
         profileLink: '',
         locationValue: nodes[0]?.anchor.locationValue || '',
         locationLink: '',
         managementIpValue: nodes[0]?.anchor.managementIpValue || '',
         managementIpLink: '',
-        tagValue: '--',
+        tagValue: 0,
         tagLink: ''
       }
     }

@@ -1,20 +1,17 @@
 import { useQuery } from 'villus'
 import { defineStore } from 'pinia'
-import { NodesListDocument, NodeLatencyMetricDocument } from '@/types/graphql'
+import { 
+  NodesListDocument,
+  NodeLatencyMetricDocument,
+  Node,
+  TsResult
+} from '@/types/graphql'
 import { NodeContent } from '@/types/inventory'
 import useSpinner from '@/composables/useSpinner'
 import { TimeUnit } from '@/types'
 
-interface NodeCard {
-  id: number,
-  label: string,
-  latency: number,
-  location: string,
-  managementIp: string
-}
-
 export const useInventoryQueries = defineStore('inventoryQueries', () => {
-  const nodes = ref([])
+  const nodes = ref<NodeContent[]>([])
 
   const { startSpinner, stopSpinner } = useSpinner()
 
@@ -39,7 +36,6 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
     nodesFetching.value ? startSpinner() : stopSpinner()
 
     if(nodesData.value) {
-      // console.log('nodesData',nodesData.value)
       const { latencyData, latencyFetching } = getLatency()
 
       watch([latencyData, latencyFetching], (latency) => {
@@ -48,27 +44,31 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
         isFetching ? startSpinner() : stopSpinner()
         
         if(data && !isFetching) {
-          const node = nodesData.value?.findAllNodes[0]
-          const latencyRes = latency[0].nodeLatency?.data.result[0]
+          const node = nodesData.value?.findAllNodes as Node[]
+          
+          const latencyRes = data.nodeLatency?.data?.result as TsResult[]
+          const resValue = latencyRes[0].value as number[]
+          const resMetric = latencyRes[0].metric as Record<string, string>
+
           const nodeFormatted: NodeContent = {
-            id: node?.id,
-            label: node?.nodeLabel,
+            id: node[0].id,
+            label: node[0].nodeLabel,
             metrics: [
               {
                 type: 'latency',
                 label: 'Latency',
-                timestamp: latencyRes?.value[1],
+                timestamp: resValue[1],
                 timeUnit: TimeUnit.MSecs,
                 status: 'UP'
               }
             ],
             anchor: {
-              locationValue: latencyRes?.metric.location || '--',
-              managementIpValue: latencyRes?.metric.instance || '--'
+              locationValue: resMetric.location || '--',
+              managementIpValue: resMetric.instance || '--'
             }
           }
-          
-          nodes.value = [nodeFormatted]
+
+          nodes.value = [ nodeFormatted ]
         }
       })
     }
