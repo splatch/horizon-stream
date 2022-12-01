@@ -1,20 +1,24 @@
 <template>
   <ul class="text-anchor-list">
     <li data-test="profile">
-      <label>{{ label.profile }}: </label>
-      <a :href="anchor?.profileLink">{{ anchor?.profileValue }}</a>
+      <label :for="label.profile">{{ label.profile }}: </label>
+      <a v-if="anchor?.profileLink" :href="anchor?.profileLink" :id="label.profile">{{ anchor?.profileValue }}</a>
+      <span v-else :id="label.profile">{{ anchor?.profileValue }}</span>
     </li>
     <li data-test="location">
-      <label>{{ label.location }}: </label>
-      <a :href="anchor?.locationLink">{{ anchor?.locationValue }}</a>
+      <label :for="label.location">{{ label.location }}: </label>
+      <a v-if="anchor?.locationLink" :href="anchor?.locationLink" :id="label.location">{{ anchor?.locationValue }}</a>
+      <span v-else :id="label.location">{{ anchor?.locationValue }}</span>
     </li>
-    <li data-test="ip-address">
-      <label>{{ label.ipAddress }}: </label>
-      <a :href="anchor?.ipAddressLink">{{ anchor?.ipAddressValue }}</a>
+    <li data-test="management-ip">
+      <label :for="label.managementIp">{{ label.managementIp }}: </label>
+      <a v-if="anchor?.managementIpLink" :href="anchor?.managementIpLink" :id="label.managementIp">{{ anchor?.managementIpValue }}</a>
+      <span v-else :id="(label.managementIp)">{{ anchor?.managementIpValue }}</span>
     </li>
     <li data-test="tag">
-      <label>{{ label.tag }}: </label>
-      <a :href="anchor?.tagLink">{{ anchor?.tagValue }}</a>
+      <label :for="label.tag">{{ label.tag }}: </label>
+      <a v-if="anchor?.tagLink" :href="anchor?.tagLink" :id="label.tag">{{ anchor?.tagValue }}</a>
+      <span v-else :id="label.tag">{{ anchor?.tagValue }}</span>
     </li>
   </ul>
 </template>
@@ -37,7 +41,7 @@ defineProps({
 const label = {
   profile: 'Monitoring Profile',
   location: 'Monitoring Location',
-  ipAddress: 'IP Address',
+  managementIp: 'Management IP',
   tag: 'Tag'
 }
 </script>

@@ -62,8 +62,8 @@ const unmonitoredContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '0.0.0.0',
-      ipAddressLink: 'goto',
+      managementIpValue: '0.0.0.0',
+      managementIpLink: 'goto',
       tagValue: 10,
       tagLink: 'goto'
     }
@@ -97,8 +97,8 @@ const unmonitoredContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '0.0.0.0',
-      ipAddressLink: 'goto',
+      managementIpValue: '0.0.0.0',
+      managementIpLink: 'goto',
       tagValue: 49,
       tagLink: 'goto'
     }
@@ -134,8 +134,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '0.0.0.0',
-      ipAddressLink: 'goto',
+      managementIpValue: '0.0.0.0',
+      managementIpLink: 'goto',
       tagValue: 20,
       tagLink: 'goto'
     }
@@ -169,8 +169,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '0.0.0.0',
-      ipAddressLink: 'goto',
+      managementIpValue: '0.0.0.0',
+      managementIpLink: 'goto',
       tagValue: 60,
       tagLink: 'goto'
     }
@@ -204,8 +204,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '0.0.0.0',
-      ipAddressLink: 'goto',
+      managementIpValue: '0.0.0.0',
+      managementIpLink: 'goto',
       tagValue: 62,
       tagLink: 'goto'
     }
@@ -257,8 +257,8 @@ const tabMonitoredContent = computed(() => {
         profileLink: '',
         locationValue: nodes[0]?.anchor.locationValue || '',
         locationLink: '',
-        ipAddressValue: nodes[0]?.anchor.ipAddressValue || '',
-        ipAddressLink: '',
+        managementIpValue: nodes[0]?.anchor.managementIpValue || '',
+        managementIpLink: '',
         tagValue: '--',
         tagLink: ''
       }

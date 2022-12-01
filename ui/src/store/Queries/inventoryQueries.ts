@@ -10,7 +10,7 @@ interface NodeCard {
   label: string,
   latency: number,
   location: string,
-  ipAddress: string
+  managementIp: string
 }
 
 export const useInventoryQueries = defineStore('inventoryQueries', () => {
@@ -57,14 +57,14 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
               {
                 type: 'latency',
                 label: 'Latency',
-                timestamp: latencyRes?.value[0],
+                timestamp: latencyRes?.value[1],
                 timeUnit: TimeUnit.MSecs,
                 status: 'UP'
               }
             ],
             anchor: {
               locationValue: latencyRes?.metric.location || '--',
-              ipAddressValue: latencyRes?.metric.instance || '--'
+              managementIpValue: latencyRes?.metric.instance || '--'
             }
           }
           
