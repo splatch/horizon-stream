@@ -3,6 +3,7 @@ package org.opennms.horizon.minion.icmp;
 import com.google.protobuf.Any;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.horizon.minion.plugin.api.ServiceDetectorResponse;
 import org.opennms.horizon.shared.icmp.PingerFactory;
 import org.opennms.icmp.contract.IcmpDetectorRequest;
@@ -43,10 +44,10 @@ public class IcmpDetectorTest {
         TestPinger testPinger = new TestPinger();
         testPinger.setHandleResponse(true);
 
-        when(pingerFactory.getInstance(anyInt(), anyBoolean()))
+        when(pingerFactory.getInstance(Mockito.anyInt(), Mockito.anyBoolean()))
             .thenReturn(testPinger);
 
-        CompletableFuture<ServiceDetectorResponse> response = target.detect(testConfig);
+        CompletableFuture<ServiceDetectorResponse> response = target.detect(testConfig, 1);
         ServiceDetectorResponse serviceDetectorResponse = response.get();
 
         assertTrue(serviceDetectorResponse.isServiceDetected());

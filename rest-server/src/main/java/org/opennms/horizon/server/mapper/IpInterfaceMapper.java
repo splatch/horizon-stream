@@ -26,35 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.events;
+package org.opennms.horizon.server.mapper;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.mapstruct.Mapper;
+import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
+import org.opennms.horizon.server.model.inventory.IpInterface;
 
-@SpringBootTest
-public class EventsApplicationTest {
+@Mapper(componentModel = "spring")
+public interface IpInterfaceMapper {
 
-    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.5-alpine")
-        .withDatabaseName("events").withUsername("events")
-        .withPassword("password").withExposedPorts(5432);
-    static {
-        postgres.start();
-    }
-
-    @DynamicPropertySource
-    static void registerDatasourceProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url",
-            () -> String.format("jdbc:postgresql://localhost:%d/%s", postgres.getFirstMappedPort(), postgres.getDatabaseName()));
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
-
-
-    @Test
-    public void testEventsApplicationContextLoading() {
-
-    }
+    IpInterface protoToIpInterface(IpInterfaceDTO nodeDTO);
 }

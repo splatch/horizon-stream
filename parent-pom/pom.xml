@@ -103,7 +103,6 @@
         <testcontainers.version>1.16.3</testcontainers.version>
         <lombok.version>1.18.24</lombok.version>
         <lombok.binding.version>0.2.0</lombok.binding.version>
-        <mockito.version>4.4.0</mockito.version>
         <zjsonpatch.version>0.4.12</zjsonpatch.version>
         <mockito.version>4.8.0</mockito.version>
         <jupiter.version>5.9.0</jupiter.version>
@@ -600,6 +599,11 @@
             <dependency>
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-core</artifactId>
+                <version>${keycloak.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-adapter-core</artifactId>
                 <version>${keycloak.version}</version>
             </dependency>
             <dependency>
