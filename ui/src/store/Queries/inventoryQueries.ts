@@ -63,8 +63,8 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
               }
             ],
             anchor: {
-              locationValue: latencyRes?.metric.location,
-              ipInterfaceValue: latencyRes?.metric.instance
+              locationValue: latencyRes?.metric.location || '--',
+              ipAddressValue: latencyRes?.metric.instance || '--'
             }
           }
           

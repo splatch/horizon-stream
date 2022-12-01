@@ -32,8 +32,8 @@ const tabContent = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 25,
-      ipInterfaceLink: 'goto',
+      ipAddressValue: 25,
+      ipAddressLink: 'goto',
       tagValue: 100,
       tagLink: 'goto'
     }

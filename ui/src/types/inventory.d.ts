@@ -5,8 +5,8 @@ interface Anchor {
   profileLink?: string,
   locationValue?: string,
   locationLink?: string,
-  ipInterfaceValue?: number,
-  ipInterfaceLink?: string,
+  ipAddressValue?: number,
+  ipAddressLink?: string,
   tagValue?: number,
   tagLink?: string,
 }

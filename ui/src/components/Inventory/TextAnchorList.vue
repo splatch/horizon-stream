@@ -8,9 +8,9 @@
       <label>{{ label.location }}: </label>
       <a :href="anchor?.locationLink">{{ anchor?.locationValue }}</a>
     </li>
-    <li data-test="ip-interface">
-      <label>{{ label.ipInterface }}: </label>
-      <a :href="anchor?.ipInterfaceLink">{{ anchor?.ipInterfaceValue }}</a>
+    <li data-test="ip-address">
+      <label>{{ label.ipAddress }}: </label>
+      <a :href="anchor?.ipAddressLink">{{ anchor?.ipAddressValue }}</a>
     </li>
     <li data-test="tag">
       <label>{{ label.tag }}: </label>
@@ -37,7 +37,7 @@ defineProps({
 const label = {
   profile: 'Monitoring Profile',
   location: 'Monitoring Location',
-  ipInterface: 'IP Interface',
+  ipAddress: 'IP Address',
   tag: 'Tag'
 }
 </script>

@@ -62,8 +62,8 @@ const unmonitoredContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 20,
-      ipInterfaceLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 10,
       tagLink: 'goto'
     }
@@ -97,8 +97,8 @@ const unmonitoredContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 69,
-      ipInterfaceLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 49,
       tagLink: 'goto'
     }
@@ -134,8 +134,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 59,
-      ipInterfaceLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 20,
       tagLink: 'goto'
     }
@@ -169,8 +169,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 29,
-      ipInterfaceLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 60,
       tagLink: 'goto'
     }
@@ -204,8 +204,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipInterfaceValue: 28,
-      ipInterfaceLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 62,
       tagLink: 'goto'
     }
@@ -257,8 +257,8 @@ const tabMonitoredContent = computed(() => {
         profileLink: '',
         locationValue: nodes[0]?.anchor.locationValue || '',
         locationLink: '',
-        ipInterfaceValue: nodes[0]?.anchor.ipInterfaceValue || '',
-        ipInterfaceLink: '',
+        ipAddressValue: nodes[0]?.anchor.ipAddressValue || '',
+        ipAddressLink: '',
         tagValue: '--',
         tagLink: ''
       }
