@@ -34,7 +34,7 @@ import javax.persistence.Column;
 /**
  * <p>Abstract Entity class.</p>
  */
-public abstract class BaseEntity {
+public abstract class TenantAwareEntity {
 
 //    @TenantId
     @Column

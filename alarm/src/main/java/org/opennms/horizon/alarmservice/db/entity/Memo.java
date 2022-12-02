@@ -53,7 +53,7 @@ import lombok.Data;
 @DiscriminatorColumn(name="type", discriminatorType= DiscriminatorType.STRING)
 @DiscriminatorValue(value="Memo")
 @Data
-public class Memo extends BaseEntity implements Serializable {
+public class Memo extends TenantAwareEntity implements Serializable {
 
     private static final long serialVersionUID = 7272348439687562161L;
 

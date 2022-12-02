@@ -45,7 +45,7 @@ import lombok.Data;
 @Entity
 @Table(name="service")
 @Data
-public class ServiceType extends BaseEntity implements Serializable {
+public class ServiceType extends TenantAwareEntity implements Serializable {
 
     private static final long serialVersionUID = -459218937667452586L;
 

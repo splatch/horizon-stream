@@ -55,7 +55,7 @@ import lombok.Setter;
 @Table(name = "alarm_association")
 @Getter
 @Setter
-public class AlarmAssociation extends BaseEntity implements Serializable {
+public class AlarmAssociation extends TenantAwareEntity implements Serializable {
 
     private static final long serialVersionUID = 4115687014888009683L;
 

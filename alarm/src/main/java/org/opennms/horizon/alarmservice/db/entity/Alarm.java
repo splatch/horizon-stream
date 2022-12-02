@@ -65,7 +65,7 @@ import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 @Table(name="alarm")
 @Data
 @NoArgsConstructor
-public class Alarm extends BaseEntity implements Serializable {
+public class Alarm extends TenantAwareEntity implements Serializable {
     private static final long serialVersionUID = 7275548439687562161L;
 
     public static final int PROBLEM_TYPE = 1;

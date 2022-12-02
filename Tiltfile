@@ -227,7 +227,7 @@ k8s_resource(
     port_forwards=['21080:9091'],
 )
 
-### Postgres Push Gateway ###
+### Postgres ###
 k8s_resource(
     'postgres',
     port_forwards=['25054:5432'],

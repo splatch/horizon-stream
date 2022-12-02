@@ -1,4 +1,4 @@
-name: feature-inventory
+name: feature-alarm
 
 on:
   pull_request:

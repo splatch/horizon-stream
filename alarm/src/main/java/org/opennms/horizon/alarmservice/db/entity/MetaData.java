@@ -39,7 +39,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MetaData extends BaseEntity implements Serializable {
+public class MetaData extends TenantAwareEntity implements Serializable {
 
     private static final long serialVersionUID = 3529745790145204662L;
 
