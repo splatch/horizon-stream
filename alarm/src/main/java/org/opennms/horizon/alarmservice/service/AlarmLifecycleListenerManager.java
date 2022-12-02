@@ -38,6 +38,8 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityListener;
 import org.opennms.horizon.alarmservice.api.AlarmLifecycleListener;
@@ -62,6 +64,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
     @Autowired
     private AlarmRepository alarmRepository;
 
+    @PostConstruct
     public void start() {
         timer = new Timer("AlarmLifecycleListenerManager");
         // Use a fixed delay instead of a fixed interval so that snapshots are not constantly in progress
@@ -78,6 +81,7 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener {
         }, 0, ALARM_SNAPSHOT_INTERVAL_MS);
     }
 
+    @PreDestroy
     public void stop() {
         if (timer != null) {
             timer.cancel();
