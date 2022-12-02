@@ -1,30 +1,29 @@
 package org.opennms.horizon.core.monitor;
 
-import com.google.common.base.Strings;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.Gauge;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import org.opennms.horizon.db.dao.api.MinionDao;
-import org.opennms.horizon.db.dao.api.MonitoringLocationDao;
 import org.opennms.horizon.db.dao.api.SessionUtils;
 import org.opennms.horizon.db.model.OnmsMinion;
-import org.opennms.horizon.events.api.EventConstants;
 import org.opennms.horizon.events.api.EventListener;
 import org.opennms.horizon.events.api.EventSubscriptionService;
 import org.opennms.horizon.events.model.IEvent;
-import org.opennms.horizon.events.model.IParm;
 import org.opennms.horizon.grpc.echo.contract.EchoRequest;
 import org.opennms.horizon.metrics.api.OnmsMetricsAdapter;
 import org.opennms.horizon.minion.echo.ipc.client.LocationAwareEchoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.Gauge;
 
 public class MinionRpcMonitorManager implements EventListener {
 
@@ -66,12 +65,12 @@ public class MinionRpcMonitorManager implements EventListener {
 
     public void init() {
         eventSubscriptionService.addEventListener(this);
-        List<OnmsMinion> minions = sessionUtils.withReadOnlyTransaction(minionDao::findAll);
+        /*List<OnmsMinion> minions = sessionUtils.withReadOnlyTransaction(minionDao::findAll);
         minionCache.addAll(minions);
         minionCache.forEach(minion -> {
             scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMinionMonitor(minion.getLocation(), minion.getId()),
                 MONITOR_INITIAL_DELAY, MONITOR_PERIOD, TimeUnit.MILLISECONDS);
-        });
+        });*/
     }
 
     public void shutdown() {
@@ -87,7 +86,7 @@ public class MinionRpcMonitorManager implements EventListener {
     @Override
     public void onEvent(IEvent event) {
 
-        if (event.getUei().equals(EventConstants.MONITORING_SYSTEM_ADDED_UEI)) {
+        /*if (event.getUei().equals(EventConstants.MONITORING_SYSTEM_ADDED_UEI)) {
             IParm locationParm = event.getParm(EventConstants.PARAM_MONITORING_SYSTEM_LOCATION);
             String location = locationParm.getValue() != null ? locationParm.getValue().getContent()
                 : MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
@@ -98,8 +97,7 @@ public class MinionRpcMonitorManager implements EventListener {
                 scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> runMinionMonitor(location, systemId),
                     MONITOR_INITIAL_DELAY, MONITOR_PERIOD, TimeUnit.MILLISECONDS);
             }
-        }
-
+        }*/
     }
 
 
