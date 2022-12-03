@@ -2,7 +2,9 @@
   <ul class="text-anchor-list">
     <li data-test="profile">
       <label :for="label.profile">{{ label.profile }}: </label>
-      <a v-if="anchor?.profileLink" :href="anchor?.profileLink" :id="label.profile">{{ anchor?.profileValue }}</a>
+      <a v-if="anchorProps.profileLink" @click="router.push({path: anchorProps.profileLink})" :id="label.profile">{{ anchor?.profileValue }}</a>
+      <!-- <a v-if="anchorProps.profileLink" :href="anchorProps.profileLink" :id="label.profile">{{ anchor?.profileValue }}</a> -->
+      <!-- <a v-if="anchor.profileLink" :href="anchorProps.profileLink" :id="label.profile">{{ anchor?.profileValue }}</a> -->
       <span v-else :id="label.profile">{{ anchor?.profileValue }}</span>
     </li>
     <li data-test="location">
@@ -26,18 +28,33 @@
 <script lang="ts" setup>
 import { PropType } from 'vue'
 import { Anchor } from '@/types/inventory'
+// import { Router } from 'vue-router'
+import router from '@/router'
 
-defineProps({
+const props = defineProps<{
+  anchor: Anchor
+}>()
+/* const props = defineProps({
   anchor: {
     type: Object as PropType<Anchor>,
     required: true
   }
-})
+}) */
 
-/**
- * TODO: with real data
- * - monitoringLocationId query
- */
+const anchorProps = computed(() => ({
+  ...props,
+  // profileLink: props.profileLink
+  profileLink: '/'
+}))
+
+const xss = () => {
+  console.log('XSS!!!')
+  // alert('XSS!!!')
+  // router.replace({ path: '/' })
+  router.push({ path: '/' })
+}
+console.log(router)
+
 const label = {
   profile: 'Monitoring Profile',
   location: 'Monitoring Location',
