@@ -24,7 +24,7 @@ type OpenNMSValues struct {
     Alarm            AlarmValues            `yaml:"Alarm"`
     Notification     ServiceValues          `yaml:"Notification"`
     MetricsProcessor MetricsProcessorValues `yaml:"MetricsProcessor"`
-    Events           ServiceValues          `yaml:"Events"`
+    Events           EventsValues           `yaml:"Events"`
 }
 
 type CoreValues struct {
@@ -59,6 +59,11 @@ type InventoryValues struct {
 }
 
 type AlarmValues struct {
+    ServiceValues `yaml:",inline"`
+    GrpcPort      int `yaml:"GrpcPort"`
+}
+
+type EventsValues struct {
     ServiceValues `yaml:",inline"`
     GrpcPort      int `yaml:"GrpcPort"`
 }

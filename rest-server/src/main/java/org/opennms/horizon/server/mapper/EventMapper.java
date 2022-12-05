@@ -26,16 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.events.grpc.config;
+package org.opennms.horizon.server.mapper;
 
-import io.grpc.Context;
-import org.opennms.horizon.events.Constants;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.opennms.horizon.events.proto.EventDTO;
+import org.opennms.horizon.server.model.events.Event;
 
-import java.util.Optional;
 
-public class GrpcTenantLookupImpl implements TenantLookup {
-    @Override
-    public Optional<String> lookupTenantId(Context context) {
-        return Optional.ofNullable(Constants.TENANT_ID_CONTEXT_KEY.get());
-    }
+@Mapper(componentModel = "spring")
+public interface EventMapper {
+    @Mapping(source = "eventParamsList", target = "eventParams")
+    Event protoToEvent(EventDTO eventDTO);
 }
