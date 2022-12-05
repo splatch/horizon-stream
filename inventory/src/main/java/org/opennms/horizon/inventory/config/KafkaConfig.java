@@ -43,7 +43,7 @@ import org.springframework.kafka.core.ProducerFactory;
 
 @Configuration
 public class KafkaConfig {
-    @Value("${spring.kafka.bootstrap.servers}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String bootStrapServers;
 
     @Bean("byteArrayTemplate")
