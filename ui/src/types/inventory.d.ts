@@ -1,13 +1,13 @@
 import { Chip } from './metric'
 
 interface Anchor {
-  profileValue?: number,
+  profileValue?: number | string,
   profileLink?: string,
   locationValue?: string,
   locationLink?: string,
   managementIpValue?: string,
   managementIpLink?: string,
-  tagValue?: number,
+  tagValue?: number | string,
   tagLink?: string,
 }
 

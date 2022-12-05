@@ -253,13 +253,13 @@ const tabMonitoredContent = computed((): NodeContent[] => {
         }
       ],
       anchor: {
-        profileValue: 0,
+        profileValue: '--',
         profileLink: '',
         locationValue: nodes[0]?.anchor.locationValue || '',
         locationLink: '',
         managementIpValue: nodes[0]?.anchor.managementIpValue || '',
         managementIpLink: '',
-        tagValue: 0,
+        tagValue: '--',
         tagLink: ''
       }
     }

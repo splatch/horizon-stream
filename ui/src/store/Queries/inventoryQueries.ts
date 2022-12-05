@@ -4,7 +4,9 @@ import {
   NodesListDocument,
   NodeLatencyMetricDocument,
   Node,
-  TsResult
+  TsResult,
+  IpInterface,
+  Location
 } from '@/types/graphql'
 import { NodeContent } from '@/types/inventory'
 import useSpinner from '@/composables/useSpinner'
@@ -39,36 +41,41 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
       const { latencyData, latencyFetching } = getLatency()
 
       watch([latencyData, latencyFetching], (latency) => {
-        const [ data, isFetching ] = latency
+        const [ metric, metricFetching ] = latency
 
-        isFetching ? startSpinner() : stopSpinner()
+        metricFetching ? startSpinner() : stopSpinner()
         
-        if(data && !isFetching) {
-          const node = nodesData.value?.findAllNodes as Node[]
+        if(metric && !metricFetching) {
+          const allNodes = nodesData.value?.findAllNodes as Node[]
+          const nodeIpInterfaces = allNodes[0].ipInterfaces as IpInterface[]
+          const nodeLocation = allNodes[0].location as Location
           
-          const latencyRes = data.nodeLatency?.data?.result as TsResult[]
-          const resValue = latencyRes[0].value as number[]
-          const resMetric = latencyRes[0].metric as Record<string, string>
-
-          const nodeFormatted: NodeContent = {
-            id: node[0].id,
-            label: node[0].nodeLabel,
-            metrics: [
-              {
-                type: 'latency',
-                label: 'Latency',
-                timestamp: resValue[1],
-                timeUnit: TimeUnit.MSecs,
-                status: 'UP'
+          const latencyRes = metric.nodeLatency?.data?.result as TsResult[]
+          console.log('latencyRes',latencyRes)
+          
+          if(latencyRes.length) {
+            const latencyResValue = latencyRes[0].value as number[]
+  
+            const nodeFormatted: NodeContent = {
+              id: allNodes[0].id,
+              label: allNodes[0].nodeLabel,
+              metrics: [
+                {
+                  type: 'latency',
+                  label: 'Latency',
+                  timestamp: latencyResValue[1],
+                  timeUnit: TimeUnit.MSecs,
+                  status: 'UP'
+                }
+              ],
+              anchor: {
+                locationValue: nodeLocation.location || '--',
+                managementIpValue: nodeIpInterfaces[0].ipAddress || '--'
               }
-            ],
-            anchor: {
-              locationValue: resMetric.location || '--',
-              managementIpValue: resMetric.instance || '--'
             }
+  
+            nodes.value = [ nodeFormatted ]
           }
-
-          nodes.value = [ nodeFormatted ]
         }
       })
     }
