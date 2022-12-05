@@ -10,12 +10,11 @@ fragment NodesLatencyParts on Query {
   }
 }
 
-# TODO pass id to the query
 fragment NodeLatencyParts on Query {
   nodeLatency: metric(
     name: "response_time_msec", 
     labels: {
-      node_id: 1
+      node_id: $id
     }
   ) {
     status
