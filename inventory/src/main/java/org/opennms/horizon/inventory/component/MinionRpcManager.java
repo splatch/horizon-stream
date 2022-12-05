@@ -41,6 +41,13 @@ import org.opennms.horizon.grpc.echo.contract.EchoRequest;
 import org.opennms.horizon.grpc.echo.contract.EchoResponse;
 import org.opennms.horizon.inventory.model.LightMonitoringSystemDTO;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
+import org.opennms.taskset.contract.MonitorResponse;
+import org.opennms.taskset.contract.MonitorType;
+import org.opennms.taskset.contract.TaskResult;
+import org.opennms.taskset.contract.TaskSetResults;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -48,19 +55,29 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
 public class MinionRpcManager {
+    private static final String DEFAULT_TASK_RESULTS_TOPIC = "task-set.results";
     private final static int DEFAULT_MESSAGE_SIZE = 1024;
     private static final int MONITOR_INITIAL_DELAY = 3_000;
     private static final int MONITOR_PERIOD = 30_000;
     private static final long ECHO_TIMEOUT = 120_000;
     private final MinionRpcClient rpcClient;
     private final MonitoringSystemService service;
+    private final KafkaTemplate<String, byte[]> kafkaTemplate;
+    @Value("${kafka.topics.results:" + DEFAULT_TASK_RESULTS_TOPIC + "}")
+    private String kafkaTopic;
+
+    public MinionRpcManager(MinionRpcClient rpcClient, MonitoringSystemService service,
+                            @Qualifier("byteArrayTemplate") KafkaTemplate<String, byte[]> kafkaTemplate) {
+        this.rpcClient = rpcClient;
+        this.service = service;
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
     private ScheduledThreadPoolExecutor executor;
 
     @PostConstruct
@@ -100,8 +117,28 @@ public class MinionRpcManager {
             EchoResponse echoResponse = response.getPayload().unpack(EchoResponse.class);
             long responseTime = (System.nanoTime() - echoResponse.getTime()) / 1000000;
             log.info("Response time for minion {} is {} msecs", systemId, responseTime);
+            publishResult(systemId, location, responseTime);
         } catch (InvalidProtocolBufferException e) {
             log.error("Unable to parse echo response", e);
         }
+    }
+
+    private void publishResult(String systemId, String location, long responseTime) {
+        MonitorResponse monitorResponse = MonitorResponse.newBuilder()
+            .setStatus("UP")
+            .setResponseTimeMs(responseTime)
+            .setMonitorType(MonitorType.MINION)
+            .setIpAddress(systemId) //for minion only
+            .build();
+        TaskResult result = TaskResult.newBuilder()
+            .setId("monitor-"+systemId)
+            .setSystemId(systemId)
+            .setLocation(location)
+            .setMonitorResponse(monitorResponse)
+            .build();
+        TaskSetResults results = TaskSetResults.newBuilder()
+            .addResults(result)
+            .build();
+        kafkaTemplate.send(kafkaTopic, results.toByteArray());
     }
 }
