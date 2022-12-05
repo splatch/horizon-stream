@@ -35,10 +35,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.opennms.cloud.grpc.minion.RpcRequestProto;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
 import org.opennms.horizon.grpc.echo.contract.EchoRequest;
 import org.opennms.horizon.grpc.echo.contract.EchoResponse;
+import org.opennms.horizon.inventory.Constants;
 import org.opennms.horizon.inventory.model.LightMonitoringSystemDTO;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
 import org.opennms.taskset.contract.MonitorResponse;
@@ -96,9 +99,9 @@ public class MinionRpcManager {
 
     private void startMonitoring(LightMonitoringSystemDTO systemDTO) {
         executor.scheduleAtFixedRate(() -> runRpcMonitor(systemDTO.getSystemId(),
-            systemDTO.getLocation()), MONITOR_INITIAL_DELAY, MONITOR_PERIOD, TimeUnit.MILLISECONDS);
+            systemDTO.getLocation(), systemDTO.getTenantId()), MONITOR_INITIAL_DELAY, MONITOR_PERIOD, TimeUnit.MILLISECONDS);
     }
-    private void runRpcMonitor(String systemId, String location) {
+    private void runRpcMonitor(String systemId, String location, String tenantId) {
         log.info("Sending RPC request for minion {} with location {}", systemId, location);
         EchoRequest echoRequest = EchoRequest.newBuilder()
             .setTime(System.nanoTime())
@@ -117,13 +120,13 @@ public class MinionRpcManager {
             EchoResponse echoResponse = response.getPayload().unpack(EchoResponse.class);
             long responseTime = (System.nanoTime() - echoResponse.getTime()) / 1000000;
             log.info("Response time for minion {} is {} msecs", systemId, responseTime);
-            publishResult(systemId, location, responseTime);
+            publishResult(systemId, location, tenantId, responseTime);
         } catch (InvalidProtocolBufferException e) {
             log.error("Unable to parse echo response", e);
         }
     }
 
-    private void publishResult(String systemId, String location, long responseTime) {
+    private void publishResult(String systemId, String location, String tenantId, long responseTime) {
         MonitorResponse monitorResponse = MonitorResponse.newBuilder()
             .setStatus("UP")
             .setResponseTimeMs(responseTime)
@@ -139,6 +142,8 @@ public class MinionRpcManager {
         TaskSetResults results = TaskSetResults.newBuilder()
             .addResults(result)
             .build();
-        kafkaTemplate.send(kafkaTopic, results.toByteArray());
+        ProducerRecord<String, byte[]> record = new ProducerRecord<>(kafkaTopic, results.toByteArray());
+        record.headers().add(new RecordHeader(Constants.TENANT_ID_KEY, tenantId.getBytes()));
+        kafkaTemplate.send(record);
     }
 }
