@@ -65,7 +65,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class MinionRpcManager {
     private static final String DEFAULT_TASK_RESULTS_TOPIC = "task-set.results";
-    private final static int DEFAULT_MESSAGE_SIZE = 1024;
+    private static final int DEFAULT_MESSAGE_SIZE = 1024;
     private static final int MONITOR_INITIAL_DELAY = 3_000;
     private static final int MONITOR_PERIOD = 30_000;
     private static final long ECHO_TIMEOUT = 120_000;
@@ -145,9 +145,9 @@ public class MinionRpcManager {
         TaskSetResults results = TaskSetResults.newBuilder()
             .addResults(result)
             .build();
-        ProducerRecord<String, byte[]> record = new ProducerRecord<>(kafkaTopic, results.toByteArray());
-        record.headers().add(new RecordHeader(Constants.TENANT_ID_KEY, tenantId.getBytes()));
-        kafkaTemplate.send(record);
+        ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(kafkaTopic, results.toByteArray());
+        producerRecord.headers().add(new RecordHeader(Constants.TENANT_ID_KEY, tenantId.getBytes()));
+        kafkaTemplate.send(producerRecord);
     }
 
     @PreDestroy
