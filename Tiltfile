@@ -120,6 +120,15 @@ jib_project(
     port_forwards=['29080:9090', '29050:5005', '29065:6565'],
 )
 
+### Alarm ###
+jib_project(
+    'alarm',
+    'opennms/horizon-stream-alarm',
+    'alarm',
+    'opennms-alarm',
+    port_forwards=['29080:9090', '29050:5005', '29065:6565',  '29000:8080'],
+)
+
 ### Metrics Processor ###
 jib_project(
     'metrics-processor',
@@ -216,6 +225,19 @@ k8s_resource(
 k8s_resource(
     'prometheus-pushgateway',
     port_forwards=['21080:9091'],
+)
+
+### Postgres ###
+k8s_resource(
+    'postgres',
+    port_forwards=['25054:5432'],
+)
+
+### Kafka ###
+k8s_resource(
+    'onms-kafka',
+    new_name='kafka',
+    port_forwards=['24092:59092'],
 )
 
 ### Others ###
