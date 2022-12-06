@@ -35,12 +35,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -65,7 +66,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-public class MinionRpcManagerTest {
+class MinionRpcManagerTest {
     private MinionRpcManager rpcManager;
     private MinionRpcClient mockClient;
     private MonitoringSystemService mockService;
@@ -98,14 +99,14 @@ public class MinionRpcManagerTest {
     }
 
     @Test
-    public void testStartUp() throws InterruptedException, InvalidProtocolBufferException {
+    void testStartUp() throws InvalidProtocolBufferException {
         List<LightMonitoringSystemDTO> systemList = Arrays.asList(system1, system2);
         ArgumentCaptor<RpcRequestProto> requestCaptor = ArgumentCaptor.forClass(RpcRequestProto.class);
         doReturn(Arrays.asList(system1, system2)).when(mockService).listAllForMonitoring();
         doReturn(rpcResponse).when(mockClient).sendRpcRequest(any(RpcRequestProto.class));
         ArgumentCaptor<ProducerRecord<String, byte[]>> producerCaptor = ArgumentCaptor.forClass(ProducerRecord.class);
         rpcManager.startRpc();
-        TimeUnit.MILLISECONDS.sleep(200); //must bigger than delay
+        await().atMost(Duration.ofMillis(1000)).until(rpcManager::isMonitoringStarted);
         verify(mockService).listAllForMonitoring();
         verify(mockClient, times(2)).sendRpcRequest(requestCaptor.capture());
         List<RpcRequestProto> requests = requestCaptor.getAllValues();
@@ -116,14 +117,14 @@ public class MinionRpcManagerTest {
     }
 
     @Test
-    public void testAddSystem() throws InterruptedException, InvalidProtocolBufferException {
+    void testAddSystem() throws InvalidProtocolBufferException {
         long id = 1L;
         doReturn(Collections.emptyList()).when(mockService).listAllForMonitoring();
         doReturn(Optional.of(system1)).when(mockService).getByIdForMonitoring(id);
         doReturn(rpcResponse).when(mockClient).sendRpcRequest(any(RpcRequestProto.class));
         rpcManager.startRpc();
         rpcManager.addSystem(id);
-        TimeUnit.MILLISECONDS.sleep(200);
+        await().atMost(Duration.ofMillis(1000)).until(rpcManager::isMonitoringStarted);
         ArgumentCaptor<RpcRequestProto> requestCaptor = ArgumentCaptor.forClass(RpcRequestProto.class);
         ArgumentCaptor<ProducerRecord<String, byte[]>> producerCaptor = ArgumentCaptor.forClass(ProducerRecord.class);
         verify(mockService).listAllForMonitoring();
@@ -135,16 +136,16 @@ public class MinionRpcManagerTest {
     }
 
     private void assertProducerRecords(List<LightMonitoringSystemDTO> systems, List<ProducerRecord<String, byte[]>> records) throws InvalidProtocolBufferException {
-        assertThat(records.size()).isEqualTo(systems.size());
+        assertThat(records).asList().hasSameSizeAs(systems);
         for(ProducerRecord<String, byte[]> record : records) {
             TaskSetResults results = TaskSetResults.parseFrom(record.value());
-            assertThat(results.getResultsList().size()).isEqualTo(1);
+            assertThat(results.getResultsList()).asList().hasSize(1);
             TaskResult result = results.getResults(0);
             MonitorResponse response = result.getMonitorResponse();
             assertThat(response.getStatus()).isEqualTo("UP");
             assertThat(response.getMonitorType()).isEqualTo(MonitorType.MINION);
-            assertThat(response.getResponseTimeMs()).isGreaterThan(0);
-            assertThat(System.nanoTime() - response.getResponseTimeMs()).isGreaterThan(0);
+            assertThat(response.getResponseTimeMs()).isPositive();
+            assertThat(System.nanoTime() - response.getResponseTimeMs()).isPositive();
 
             LightMonitoringSystemDTO system = systems.stream().filter(s->s.getSystemId().equals(result.getSystemId())).findFirst().orElseThrow();
             assertThat(result.getId()).isEqualTo("monitor-" + system.getSystemId());
@@ -158,13 +159,13 @@ public class MinionRpcManagerTest {
     }
 
     private void assertRequests(List<LightMonitoringSystemDTO> systemList, List<RpcRequestProto> requests) throws InvalidProtocolBufferException {
-        assertThat(requests.size()).isEqualTo(systemList.size());
+        assertThat(requests).asList().hasSameSizeAs(systemList);
         List<String> systemIds = systemList.stream().map(LightMonitoringSystemDTO::getSystemId).collect(Collectors.toList());
         List<String> locations = systemList.stream().map(LightMonitoringSystemDTO::getLocation).collect(Collectors.toList());
 
         for (RpcRequestProto r :requests) {
-            assertThat(systemIds.contains(r.getSystemId())).isTrue();
-            assertThat(locations.contains(r.getLocation())).isTrue();
+            assertThat(systemIds).asList().contains(r.getSystemId());
+            assertThat(locations).asList().contains(r.getLocation());
             assertThat(r.getModuleId()).isEqualTo("Echo");
             assertThat(r.getRpcId()).isNotNull();
             EchoRequest echoRequest = r.getPayload().unpack(EchoRequest.class);

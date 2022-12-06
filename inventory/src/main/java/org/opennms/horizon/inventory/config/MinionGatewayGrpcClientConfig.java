@@ -1,6 +1,7 @@
 package org.opennms.horizon.inventory.config;
 
 import org.opennms.horizon.inventory.component.MinionRpcClient;
+import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
 import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +35,7 @@ public class MinionGatewayGrpcClientConfig {
         ManagedChannel channel;
 
         if (tlsEnabled) {
-            throw new RuntimeException("TLS NOT YET IMPLEMENTED");
+            throw new InventoryRuntimeException("TLS NOT YET IMPLEMENTED");
         } else {
             channel = channelBuilder.usePlaintext().build();
         }

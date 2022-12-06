@@ -57,7 +57,7 @@ import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.stub.StreamObserver;
 import io.grpc.testing.GrpcCleanupRule;
 
-public class MinionRpcClientTest {
+class MinionRpcClientTest {
     @Rule
     public final GrpcCleanupRule grpcCleanup = new GrpcCleanupRule();
     private MinionRpcClient client;
@@ -100,7 +100,7 @@ public class MinionRpcClientTest {
     }
 
     @Test
-    public void testSentRpcRequest() throws InvalidProtocolBufferException {
+    void testSentRpcRequest() throws InvalidProtocolBufferException {
         EchoRequest echoRequest = EchoRequest.newBuilder().setTime(System.currentTimeMillis()).build();
         RpcRequestProto request = RpcRequestProto.newBuilder()
             .setSystemId("test-system")
@@ -117,6 +117,6 @@ public class MinionRpcClientTest {
         assertThat(response.getRpcId()).isEqualTo(request.getRpcId());
         EchoResponse echoResponse = response.getPayload().unpack(EchoResponse.class);
         assertThat(echoResponse.getTime()).isEqualTo(echoRequest.getTime());
-        assertThat(System.currentTimeMillis() - echoResponse.getTime()).isGreaterThan(0);
+        assertThat(System.currentTimeMillis() - echoResponse.getTime()).isPositive();
     }
 }
