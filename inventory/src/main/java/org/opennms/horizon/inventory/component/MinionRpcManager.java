@@ -34,6 +34,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
@@ -71,6 +72,8 @@ public class MinionRpcManager {
     private final MinionRpcClient rpcClient;
     private final MonitoringSystemService service;
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
+
+    private int initialDelay = MONITOR_INITIAL_DELAY;
     @Value("${kafka.topics.results:" + DEFAULT_TASK_RESULTS_TOPIC + "}")
     private String kafkaTopic;
 
@@ -99,7 +102,7 @@ public class MinionRpcManager {
 
     private void startMonitoring(LightMonitoringSystemDTO systemDTO) {
         executor.scheduleAtFixedRate(() -> runRpcMonitor(systemDTO.getSystemId(),
-            systemDTO.getLocation(), systemDTO.getTenantId()), MONITOR_INITIAL_DELAY, MONITOR_PERIOD, TimeUnit.MILLISECONDS);
+            systemDTO.getLocation(), systemDTO.getTenantId()), initialDelay, MONITOR_PERIOD, TimeUnit.MILLISECONDS);
     }
     private void runRpcMonitor(String systemId, String location, String tenantId) {
         log.info("Sending RPC request for minion {} with location {}", systemId, location);
@@ -145,5 +148,24 @@ public class MinionRpcManager {
         ProducerRecord<String, byte[]> record = new ProducerRecord<>(kafkaTopic, results.toByteArray());
         record.headers().add(new RecordHeader(Constants.TENANT_ID_KEY, tenantId.getBytes()));
         kafkaTemplate.send(record);
+    }
+
+    @PreDestroy
+    public void shutDown() throws InterruptedException {
+        if(executor !=null && !executor.isShutdown()) {
+            executor.shutdown();
+            executor.awaitTermination(1000, TimeUnit.MILLISECONDS);
+        }
+        if(rpcClient != null) {
+            rpcClient.shutdown();
+        }
+    }
+
+    public void setInitialDelay(int initialDelay) {
+        this.initialDelay = initialDelay;
+    }
+
+    public void setKafkaTopic(String kafkaTopic) {
+        this.kafkaTopic = kafkaTopic;
     }
 }
