@@ -17,6 +17,9 @@
 
     <properties>
         <skipITs>false</skipITs>
+        <docker.image.name>opennms/horizon-stream-alarm</docker.image.name>
+        <docker.image.tag>local</docker.image.tag>
+        <skipJib>false</skipJib>
     </properties>
 
     <dependencyManagement>
@@ -211,7 +214,25 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>${jib.version}</version>
+                <configuration>
+                    <skip>${skipJib}</skip>
+                    <to>
+                        <image>${docker.image.name}:${docker.image.tag}</image>
+                    </to>
+                    <container>
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                    </container>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build-docker-image</id>
+<!--                        Must be in package phase before docker runs-->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>dockerBuild</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -241,31 +262,60 @@
                     <showLogs>true</showLogs>
                     <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
                     <images>
-                        <!--                           -->
-                        <!-- MOCK ALARM IMAGE -->
-                        <!--                           -->
                         <image>
-                            <name>mock-alarm-it-image</name>
-                            <alias>alarm</alias>
+                            <name>postgres-it-image</name>
+                            <alias>postgres-host</alias>
                             <build>
-                                <from>opennms/horizon-stream-mock-alarm:local</from>
+                                <!-- POSTGRES VERSION PROPERTY -->
+                                <from>postgres:13.3-alpine</from>
                             </build>
                             <run>
                                 <env>
-                                    <JAVA_TOOL_OPTIONS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005</JAVA_TOOL_OPTIONS>
+                                    <POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD>
                                 </env>
                                 <ports>
-                                    <port>mock-alarm.http.port:8080</port>
-                                    <port>mock-alarm.grpc.port:8990</port>
+                                    <port>postgres-db-port:5432</port>
                                 </ports>
                                 <wait>
-                                    <log>Started AlarmWiremockMain in .* seconds</log>
+                                    <log>(?s)PostgreSQL init process complete; ready for start up..*database system is ready to accept connections</log>
+                                    <time>120000</time>
+                                </wait>
+                                <ports>
+                                    <port>postgresql.port:5432</port>
+                                </ports>
+                                <network>
+                                    <mode>custom</mode>
+                                    <name>alarm-docker-it-network</name>
+                                    <alias>postgres-host</alias>
+                                </network>
+                            </run>
+                        </image>
+
+                        <!--                -->
+                        <!-- KAFKA IMAGE -->
+                        <!--                -->
+                        <image>
+                            <name>kafka-it-image</name>
+                            <alias>kafka</alias>
+                            <build>
+                                <!-- POSTGRES VERSION PROPERTY -->
+                                <from>blacktop/kafka:2.6</from>
+                            </build>
+                            <run>
+                                <env>
+                                    <KAFKA_ADVERTISED_HOST_NAME>kafka-host</KAFKA_ADVERTISED_HOST_NAME>
+                                </env>
+                                <ports>
+                                    <port>kafka.port:9092</port>
+                                </ports>
+                                <wait>
+                                    <log>(?s)started \(kafka.server.KafkaServer\)</log>
                                     <time>120000</time>
                                 </wait>
                                 <network>
                                     <mode>custom</mode>
                                     <name>alarm-docker-it-network</name>
-                                    <alias>alarm</alias>
+                                    <alias>kafka-host</alias>
                                 </network>
                             </run>
                         </image>
@@ -275,46 +325,24 @@
                         <!--                    -->
                         <image>
                             <name>opennms-horizon-application-it-image</name>
-                            <alias>application</alias>
+                            <alias>alarm-application</alias>
                             <build>
-                                <from>opennms/horizon-stream-alarm:${docker.image.tag}</from>
-                                <assembly>
-                                    <user>alarm-poc</user>
-                                    <targetDir>/</targetDir>
-
-                                    <inline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-                                        xsi:schemaLocation="
-                                             http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
-                                             http://maven.apache.org/xsd/assembly-1.1.2.xsd
-                                             ">
-
-                                        <fileSets>
-                                            <fileSet>
-                                                <directory>${project.build.testOutputDirectory}/karaf/etc</directory>
-                                                <outputDirectory>/opt/karaf/etc</outputDirectory>
-                                            </fileSet>
-                                        </fileSets>
-                                    </inline>
-                                </assembly>
+                                <from>${docker.image.name}:${docker.image.tag}</from>
                             </build>
                             <run>
                                 <hostname>test-alarm-001</hostname>
                                 <ports>
-<!--                                    <port>karaf-ssh-port:8101</port>-->
-<!--                                    <port>karaf-http-port:8181</port>-->
+                                    <port>app-http-port:8181</port>
                                     <!--<port>5005:5005</port>-->
                                 </ports>
                                 <env>
-                                    <LOCATION>Default</LOCATION>
                                     <!-- Need to make sure address=* is in the DEBUG OPTS otherwise it listens on the container's localhost only -->
                                     <JAVA_OPTS>-Djava.security.egd=file:/dev/./urandom
                                         -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
                                     </JAVA_OPTS>
-                                    <USE_KUBERNETES>false</USE_KUBERNETES>
                                 </env>
                                 <wait>
-                                    <log>Blueprint bundle org.opennms.horizon.minion.taskset-worker/.* has been started</log>
+                                    <log>Started AlarmServiceMain in .* seconds</log>
                                     <time>300000</time>
                                 </wait>
                                 <network>
@@ -382,16 +410,6 @@
                     <skipITs>${skipITs}</skipITs>
                     <reuseForks>true</reuseForks>
                     <useSystemClassLoader>false</useSystemClassLoader>
-                    <systemProperties>
-                        <property>
-                            <name>mock-alarm.base-url</name>
-                            <value>http://localhost:${mock-alarm.http.port}</value>
-                        </property>
-<!--                        <property>-->
-<!--                            <name>application.base-url</name>-->
-<!--                            <value>http://localhost:${karaf-http-port}</value>-->
-<!--                        </property>-->
-                    </systemProperties>
                 </configuration>
             </plugin>
 
