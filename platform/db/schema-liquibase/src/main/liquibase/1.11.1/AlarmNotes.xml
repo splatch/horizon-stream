@@ -30,6 +30,7 @@
         </addColumn>
 
         <addForeignKeyConstraint baseTableName="alarms" baseColumnNames="stickymemo" constraintName="fk_stickyMemo" referencedTableName="memos" referencedColumnNames="id" onDelete="CASCADE"/>
+
         <rollback>
             <dropSequence sequenceName="memonxtid"/>
             <dropTable tableName="memos"/>
