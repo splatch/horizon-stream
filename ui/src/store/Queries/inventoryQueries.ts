@@ -14,6 +14,8 @@ import { TimeUnit } from '@/types'
 
 export const useInventoryQueries = defineStore('inventoryQueries', () => {
   const nodes = ref<NodeContent[]>([])
+  const allNodes = ref([])
+  const metricsNodes = ref([])
 
   const { startSpinner, stopSpinner } = useSpinner()
 
@@ -22,58 +24,82 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
     cachePolicy: 'network-only' // always fetch and do not cache
   })
 
-  const getLatency = (nodeId: number) => {
-    const { data: latencyData, isFetching: latencyFetching } = useQuery({
+  const fetchNodeMetrics = async (nodeId: number) => {
+    const { data, isFetching } = await useQuery({
       query: NodeLatencyMetricDocument,
       variables: { id: nodeId },
       cachePolicy: 'network-only' // always fetch and do not cache
     })
 
-    return {
-      latencyData,
-      latencyFetching
-    }
+    watchEffect(() => {
+      if(data.value && !isFetching.value) {
+        const res = data.value?.nodeLatency?.data?.result[0]
+        metricsNodes.value.push({
+          id: res.metric.node_id,
+          latency: res.value[1],
+          uptime: res.value[0],
+          status: ''
+        })
+      }
+    })
   }
 
-  watchEffect(() => {
+  const formatNodesData = () => {
+    const getMetric = (nodeId => metricsNodes.value.filter(node => Number(node.id) === nodeId))
+
+    watch(metricsNodes.value, () => {
+      const nodeDetail = allNodes.value.map(node => {
+        const metric = getMetric(node.id)
+        return {
+          id: node.id,
+          label: node.nodeLabel,
+          status: '',
+          metrics: [
+            {
+              type: 'latency',
+              label: 'Latency',
+              timestamp: metric.latency || '--',
+              status: ''
+            },
+            {
+              type: 'uptime',
+              label: 'Uptime',
+              timestamp: metric.uptime || '--',
+              timeUnit: TimeUnit.MSecs,
+              status: ''
+            },
+            {
+              type: 'status',
+              label: 'Status',
+              status: metric.status || '--'
+            }
+          ],
+          anchor: {
+            profileValue: '--',
+            profileLink: '',
+            locationValue: node.location.location || '--',
+            locationLink: '',
+            ipAddressValue: node.ipInterfaces[0].ipAddress || '',
+            ipAddressLink: '',
+            tagValue: '--',
+            tagLink: ''
+          }  
+        }
+      })
+
+      nodes.value = nodeDetail
+    }, {deep: true})
+  }
+
+  watchEffect(async () => {
     nodesFetching.value ? startSpinner() : stopSpinner()
 
     if(nodesData.value && nodesData.value?.findAllNodes?.length) {
-      const { latencyData, latencyFetching } = getLatency(1)
-
-      watch([latencyData, latencyFetching], ([data, isFetching]) => {
-        isFetching ? startSpinner() : stopSpinner()
-        
-        if(data && !isFetching) {
-          const allNodes = nodesData.value?.findAllNodes as Node[]
-          const nodeIpInterfaces = allNodes[0].ipInterfaces as IpInterface[]
-          const nodeLocation = allNodes[0].location as Location
-          
-          const latencyRes = data.nodeLatency?.data?.result as TsResult[]
-          
-          const latencyResValue = latencyRes[0]?.value || []
-  
-          const nodeFormatted: NodeContent = {
-            id: allNodes[0].id,
-            label: allNodes[0].nodeLabel,
-            metrics: [
-              {
-                type: 'latency',
-                label: 'Latency',
-                timestamp: latencyResValue[1],
-                timeUnit: TimeUnit.MSecs,
-                status: 'UP'
-              }
-            ],
-            anchor: {
-              locationValue: nodeLocation.location || '--',
-              managementIpValue: nodeIpInterfaces[0].ipAddress || '--'
-            }
-          }
-  
-          nodes.value = [ nodeFormatted ]
-        }
-      })
+      allNodes.value = nodesData.value.findAllNodes
+      
+      allNodes.value.forEach(node => fetchNodeMetrics(node.id))
+      
+      formatNodesData()
     }
   })
 

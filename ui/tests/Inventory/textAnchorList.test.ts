@@ -13,8 +13,8 @@ describe('Text anchor list', () => {
           profileLink: '#',
           locationValue: 'DefaultMinion',
           locationLink: '#',
-          managementIpValue: '0.0.0.0',
-          managementIpLink: '#',
+          ipAddressValue: '0.0.0.0',
+          ipAddressLink: '#',
           tagValue: 100,
           tagLink: '#'
         }
@@ -28,7 +28,7 @@ describe('Text anchor list', () => {
   const anchorList = [
     'profile',
     'location',
-    'management-ip',
+    'ip-address',
     'tag'
   ]
   it.each(anchorList)('should have "%s" element', (elem) => {

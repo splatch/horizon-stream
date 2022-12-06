@@ -36,6 +36,7 @@ const unmonitoredContent: NodeContent[] = [
   {
     id: 1,
     label: 'Unmonitored Node 1',
+    status: '',
     metrics: [
       {
         type: 'latency',
@@ -62,8 +63,8 @@ const unmonitoredContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      managementIpValue: '0.0.0.0',
-      managementIpLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 10,
       tagLink: 'goto'
     }
@@ -71,6 +72,7 @@ const unmonitoredContent: NodeContent[] = [
   {
     id: 2,
     label: 'Unmonitored Node 2',
+    status: '',
     metrics: [
       {
         type: 'latency',
@@ -97,8 +99,8 @@ const unmonitoredContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      managementIpValue: '0.0.0.0',
-      managementIpLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 49,
       tagLink: 'goto'
     }
@@ -108,6 +110,7 @@ const detectedContent: NodeContent[] = [
   {
     id: 1,
     label: 'Detected Node 1',
+    status: '',
     metrics: [
       {
         type: 'latency',
@@ -134,8 +137,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      managementIpValue: '0.0.0.0',
-      managementIpLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 20,
       tagLink: 'goto'
     }
@@ -143,6 +146,7 @@ const detectedContent: NodeContent[] = [
   {
     id: 2,
     label: 'Detected Node 2',
+    status: '',
     metrics: [
       {
         type: 'latency',
@@ -169,8 +173,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      managementIpValue: '0.0.0.0',
-      managementIpLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 60,
       tagLink: 'goto'
     }
@@ -178,6 +182,7 @@ const detectedContent: NodeContent[] = [
   {
     id: 3,
     label: 'Detected Node 3',
+    status: '',
     metrics: [
       {
         type: 'latency',
@@ -204,8 +209,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      managementIpValue: '0.0.0.0',
-      managementIpLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 62,
       tagLink: 'goto'
     }
@@ -226,45 +231,7 @@ const tabs = [
 ]
 
 const inventoryQueries = useInventoryQueries()
-const tabMonitoredContent = computed((): NodeContent[] => {
-  const nodes = inventoryQueries.nodes
-  
-  if(!nodes[0]?.label) return []
-
-  return [
-    {
-      id: nodes[0]?.id,
-      label: nodes[0]?.label,
-      metrics: [
-        {
-          ...nodes[0]?.metrics[0]
-        },
-        {
-          type: 'uptime',
-          label: 'Uptime',
-          timestamp: null,
-          timeUnit: TimeUnit.MSecs,
-          status: ''
-        },
-        {
-          type: 'status',
-          label: 'Status',
-          status: nodes[0]?.metrics[0].status || ''
-        }
-      ],
-      anchor: {
-        profileValue: '--',
-        profileLink: '',
-        locationValue: nodes[0]?.anchor.locationValue || '',
-        locationLink: '',
-        managementIpValue: nodes[0]?.anchor.managementIpValue || '',
-        managementIpLink: '',
-        tagValue: '--',
-        tagLink: ''
-      }
-    }
-  ]
-})
+const tabMonitoredContent = computed((): NodeContent[] => inventoryQueries.nodes)
 
 const tabUnmonitoredContent = unmonitoredContent
 const tabDetectedContent = detectedContent

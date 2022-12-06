@@ -6,6 +6,7 @@ const tabContent = [
   {
     id: 1,
     label: 'Detected Node 1',
+    status: '',
     metrics: [
       {
         type: 'latency',
@@ -32,8 +33,8 @@ const tabContent = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      managementIpValue: '0.0.0.0',
-      managementIpLink: 'goto',
+      ipAddressValue: '0.0.0.0',
+      ipAddressLink: 'goto',
       tagValue: 100,
       tagLink: 'goto'
     }

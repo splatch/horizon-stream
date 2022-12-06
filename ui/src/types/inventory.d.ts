@@ -5,8 +5,8 @@ interface Anchor {
   profileLink?: string,
   locationValue?: string,
   locationLink?: string,
-  managementIpValue?: string,
-  managementIpLink?: string,
+  ipAddressValue?: string,
+  ipAddressLink?: string,
   tagValue?: number | string,
   tagLink?: string,
 }
@@ -14,6 +14,7 @@ interface Anchor {
 interface NodeContent {
   id: number,
   label: string | undefined,
+  status: string,
   metrics: Chip[],
   anchor: Anchor
 }
