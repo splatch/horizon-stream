@@ -76,7 +76,6 @@ public class MinionRpcManager {
     private int initialDelay = MONITOR_INITIAL_DELAY;
     @Value("${kafka.topics.results:" + DEFAULT_TASK_RESULTS_TOPIC + "}")
     private String kafkaTopic;
-    private boolean monitoringStarted = false;
 
     public MinionRpcManager(MinionRpcClient rpcClient, MonitoringSystemService service,
                             @Qualifier("byteArrayTemplate") KafkaTemplate<String, byte[]> kafkaTemplate) {
@@ -123,9 +122,8 @@ public class MinionRpcManager {
         try {
             EchoResponse echoResponse = response.getPayload().unpack(EchoResponse.class);
             long responseTime = (System.nanoTime() - echoResponse.getTime()) / 1000000;
-            log.info("Response time for minion {} is {} msecs", systemId, responseTime);
             publishResult(systemId, location, tenantId, responseTime);
-            monitoringStarted = true;
+            log.info("Response time for minion {} is {} msecs", systemId, responseTime);
         } catch (InvalidProtocolBufferException e) {
             log.error("Unable to parse echo response", e);
         }
@@ -161,17 +159,5 @@ public class MinionRpcManager {
         if(rpcClient != null) {
             rpcClient.shutdown();
         }
-    }
-
-    protected void setInitialDelay(int initialDelay) {
-        this.initialDelay = initialDelay;
-    }
-
-    protected void setKafkaTopic(String kafkaTopic) {
-        this.kafkaTopic = kafkaTopic;
-    }
-
-    protected boolean isMonitoringStarted() {
-        return monitoringStarted;
     }
 }

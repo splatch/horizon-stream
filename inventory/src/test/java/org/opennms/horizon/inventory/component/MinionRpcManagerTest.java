@@ -62,9 +62,12 @@ import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskResult;
 import org.opennms.taskset.contract.TaskSetResults;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
+
+import nl.altindag.log.LogCaptor;
 
 class MinionRpcManagerTest {
     private MinionRpcManager rpcManager;
@@ -74,15 +77,17 @@ class MinionRpcManagerTest {
 
     private LightMonitoringSystemDTO system1, system2;
     private RpcResponseProto rpcResponse;
+    private LogCaptor logCaptor;
 
     @BeforeEach
     public void prepare() {
+        logCaptor = LogCaptor.forClass(MinionRpcManager.class);
         mockClient = mock(MinionRpcClient.class);
         mockService = mock(MonitoringSystemService.class);
         mockTemplate = mock(KafkaTemplate.class);
         rpcManager = new MinionRpcManager(mockClient, mockService, mockTemplate);
-        rpcManager.setInitialDelay(0);
-        rpcManager.setKafkaTopic("test-topic");
+        ReflectionTestUtils.setField(rpcManager, "initialDelay", 0);
+        ReflectionTestUtils.setField(rpcManager, "kafkaTopic", "test-topic");
         system1 = new LightMonitoringSystemDTO("test-system1", "test-tenant1", "test-location1");
         system2 = new LightMonitoringSystemDTO("test-system2", "test-tenant2", "test-location2");
         EchoResponse echoResponse = EchoResponse.newBuilder().setTime(System.nanoTime()).build();
@@ -106,7 +111,8 @@ class MinionRpcManagerTest {
         doReturn(rpcResponse).when(mockClient).sendRpcRequest(any(RpcRequestProto.class));
         ArgumentCaptor<ProducerRecord<String, byte[]>> producerCaptor = ArgumentCaptor.forClass(ProducerRecord.class);
         rpcManager.startRpc();
-        await().atMost(Duration.ofMillis(1000)).until(rpcManager::isMonitoringStarted);
+        await().atMost(Duration.ofMillis(1000)).until(() ->
+            logCaptor.getInfoLogs().stream().anyMatch(l->l.startsWith("Response time for minion")));
         verify(mockService).listAllForMonitoring();
         verify(mockClient, times(2)).sendRpcRequest(requestCaptor.capture());
         List<RpcRequestProto> requests = requestCaptor.getAllValues();
@@ -124,7 +130,8 @@ class MinionRpcManagerTest {
         doReturn(rpcResponse).when(mockClient).sendRpcRequest(any(RpcRequestProto.class));
         rpcManager.startRpc();
         rpcManager.addSystem(id);
-        await().atMost(Duration.ofMillis(1000)).until(rpcManager::isMonitoringStarted);
+        await().atMost(Duration.ofMillis(1000)).until(() ->
+            logCaptor.getInfoLogs().stream().anyMatch(l -> l.startsWith("Response time for minion")));
         ArgumentCaptor<RpcRequestProto> requestCaptor = ArgumentCaptor.forClass(RpcRequestProto.class);
         ArgumentCaptor<ProducerRecord<String, byte[]>> producerCaptor = ArgumentCaptor.forClass(ProducerRecord.class);
         verify(mockService).listAllForMonitoring();
@@ -169,8 +176,8 @@ class MinionRpcManagerTest {
             assertThat(r.getModuleId()).isEqualTo("Echo");
             assertThat(r.getRpcId()).isNotNull();
             EchoRequest echoRequest = r.getPayload().unpack(EchoRequest.class);
-            assertThat(echoRequest.getTime()).isGreaterThan(0);
-            assertThat(System.nanoTime() - echoRequest.getTime()).isGreaterThan(0);
+            assertThat(echoRequest.getTime()).isPositive();
+            assertThat(System.nanoTime() - echoRequest.getTime()).isPositive();
         }
     }
 }
