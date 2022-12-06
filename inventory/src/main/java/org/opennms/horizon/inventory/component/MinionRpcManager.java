@@ -43,7 +43,7 @@ import org.opennms.cloud.grpc.minion.RpcResponseProto;
 import org.opennms.horizon.grpc.echo.contract.EchoRequest;
 import org.opennms.horizon.grpc.echo.contract.EchoResponse;
 import org.opennms.horizon.inventory.Constants;
-import org.opennms.horizon.inventory.model.LightMonitoringSystemDTO;
+import org.opennms.horizon.inventory.model.MonitoringSystemBean;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
 import org.opennms.taskset.contract.MonitorResponse;
 import org.opennms.taskset.contract.MonitorType;
@@ -68,7 +68,7 @@ public class MinionRpcManager {
     private static final int DEFAULT_MESSAGE_SIZE = 1024;
     private static final int MONITOR_INITIAL_DELAY = 3_000;
     private static final int MONITOR_PERIOD = 30_000;
-    private static final long ECHO_TIMEOUT = 120_000;
+    private static final long ECHO_TIMEOUT = 30_000;
     private final MinionRpcClient rpcClient;
     private final MonitoringSystemService service;
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
@@ -100,7 +100,7 @@ public class MinionRpcManager {
         service.getByIdForMonitoring(id).ifPresent(this::startMonitoring);
     }
 
-    private void startMonitoring(LightMonitoringSystemDTO systemDTO) {
+    private void startMonitoring(MonitoringSystemBean systemDTO) {
         executor.scheduleAtFixedRate(() -> runRpcMonitor(systemDTO.getSystemId(),
             systemDTO.getLocation(), systemDTO.getTenantId()), initialDelay, MONITOR_PERIOD, TimeUnit.MILLISECONDS);
     }

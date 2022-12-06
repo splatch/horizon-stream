@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class LightMonitoringSystemDTO {
+public class MonitoringSystemBean {
     private final String systemId;
     private final String tenantId;
     private final String location;

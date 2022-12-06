@@ -30,8 +30,8 @@ public class MinionRpcMonitorManager implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(MinionRpcMonitorManager.class);
     private final static int DEFAULT_MESSAGE_SIZE = 1024;
     private static final String[] LABEL_NAMES = {"instance", "location"};
-    private static final int MONITOR_INITIAL_DELAY = 3_000;
-    private static final int MONITOR_PERIOD = 30_000;
+//    private static final int MONITOR_INITIAL_DELAY = 3_000;
+//    private static final int MONITOR_PERIOD = 30_000;
     private static final long ECHO_TIMEOUT = 120_000;
 
     private final CollectorRegistry collectorRegistry = new CollectorRegistry();

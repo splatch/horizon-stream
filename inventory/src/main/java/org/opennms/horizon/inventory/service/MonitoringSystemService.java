@@ -10,7 +10,7 @@ import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.horizon.grpc.heartbeat.contract.HeartbeatMessage;
 import org.opennms.horizon.inventory.dto.MonitoringSystemDTO;
 import org.opennms.horizon.inventory.mapper.MonitoringSystemMapper;
-import org.opennms.horizon.inventory.model.LightMonitoringSystemDTO;
+import org.opennms.horizon.inventory.model.MonitoringSystemBean;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.model.MonitoringSystem;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
@@ -71,14 +71,14 @@ public class MonitoringSystemService {
 
     //For inventory internal use only
     @Transactional
-    public List<LightMonitoringSystemDTO> listAllForMonitoring() {
-        List<LightMonitoringSystemDTO> list = new ArrayList<>();
-        modelRepo.findAll().forEach(s->list.add(new LightMonitoringSystemDTO(s.getSystemId(), s.getTenantId(), s.getMonitoringLocation().getLocation())));
+    public List<MonitoringSystemBean> listAllForMonitoring() {
+        List<MonitoringSystemBean> list = new ArrayList<>();
+        modelRepo.findAll().forEach(s->list.add(new MonitoringSystemBean(s.getSystemId(), s.getTenantId(), s.getMonitoringLocation().getLocation())));
         return list;
     }
 
     @Transactional
-    public Optional<LightMonitoringSystemDTO> getByIdForMonitoring(long id) {
-        return modelRepo.findById(id).map(s->new LightMonitoringSystemDTO(s.getSystemId(), s.getTenantId(), s.getMonitoringLocation().getLocation()));
+    public Optional<MonitoringSystemBean> getByIdForMonitoring(long id) {
+        return modelRepo.findById(id).map(s->new MonitoringSystemBean(s.getSystemId(), s.getTenantId(), s.getMonitoringLocation().getLocation()));
     }
 }
