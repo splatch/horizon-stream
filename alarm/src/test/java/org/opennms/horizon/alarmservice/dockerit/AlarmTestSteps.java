@@ -36,7 +36,6 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.opennms.horizon.testtool.miniongateway.wiremock.client.RetryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +55,6 @@ public class AlarmTestSteps {
 
     private Logger log = DEFAULT_LOGGER;
 
-    private RetryUtils retryUtils; // TODO: this belongs in a better shared place
 
     //
     // Test Configuration
@@ -68,16 +66,6 @@ public class AlarmTestSteps {
     //
     private Response restAssuredResponse;
     private Response rememberedRestAssuredResponse;
-    private JsonPath parsedJsonResponse;
-
-//========================================
-// Constructor
-//========================================
-
-    public AlarmTestSteps(RetryUtils retryUtils) {
-        this.retryUtils = retryUtils;
-    }
-
 
 //========================================
 // Gherkin Rules
@@ -90,37 +78,14 @@ public class AlarmTestSteps {
         log.info("Using BASE URL {}", applicationBaseUrl);
     }
 
-    @Then("Send GET request to application at path {string}")
-    public void sendGETRequestToApplicationAtPath(String path) throws Exception {
-        commonSendGetRequestToApplication(path);
+    @Then("Send POST request to application at path {string}")
+    public void sendPOSTRequestToApplicationAtPath(String path) throws Exception {
+        commonSendPOSTRequestToApplication(path);
     }
 
     @Then("Remember response body for later comparison")
     public void rememberResponseBodyForLaterComparison() {
         rememberedRestAssuredResponse = restAssuredResponse;
-    }
-
-    @Then("Send GET request to application at path {string} until response changes with timeout {int}ms")
-    public void sendGETRequestToApplicationAtPathUntilResponseChangesWithTimeoutMs(String path, int timeoutMs) throws InterruptedException {
-        retryUtils.retry(
-            () -> retryableSendGetRequestToApplication(path),
-            (newResponse) -> checkResponseChanged((Response) newResponse),
-            5,
-            timeoutMs,
-            false
-        );
-    }
-
-    @Then("^parse the JSON response$")
-    public void parseTheJsonResponse() {
-        parsedJsonResponse = JsonPath.from((this.restAssuredResponse.getBody().asString()));
-    }
-
-    @Then("^verify JSON path expressions match$")
-    public void verifyJsonPathExpressionsMatch(List<String> pathExpressions) {
-        for (String onePathExpression : pathExpressions) {
-            verifyJsonPathExpressionMatch(parsedJsonResponse, onePathExpression);
-        }
     }
 
 //========================================
@@ -130,11 +95,6 @@ public class AlarmTestSteps {
     @Then("^DEBUG dump the response body$")
     public void debugDumpTheResponseBody() {
         this.log.info("RESPONSE BODY = {}", restAssuredResponse.getBody().asString());
-    }
-
-    @Then("delay {int}ms")
-    public void delayMs(int ms) throws Exception {
-        Thread.sleep(ms);
     }
 
 //========================================
@@ -149,40 +109,7 @@ public class AlarmTestSteps {
             );
     }
 
-    private void verifyJsonPathExpressionMatch(JsonPath jsonPath, String pathExpression) {
-        String[] parts = pathExpression.split(" == ", 2);
-
-        if (parts.length == 2) {
-            // Expression and value to match - evaluate as a string and compare
-            String actualValue = jsonPath.getString(parts[0]);
-            String actualTrimmed;
-
-            if (actualValue != null) {
-                actualTrimmed = actualValue.trim();
-            }  else {
-                actualTrimmed = null;
-            }
-
-            String expectedTrimmed = parts[1].trim();
-
-            assertEquals("matching to JSON path " + parts[0], expectedTrimmed, actualTrimmed);
-        } else {
-            // Just an expression - evaluate as a boolean
-            assertTrue("verifying JSON path expression " + pathExpression, jsonPath.getBoolean(pathExpression));
-        }
-    }
-
-    private Response retryableSendGetRequestToApplication(String path) {
-        try {
-            commonSendGetRequestToApplication(path);
-        } catch (MalformedURLException muExc) {
-            throw new RuntimeException(muExc);
-        }
-
-        return restAssuredResponse;
-    }
-
-    private void commonSendGetRequestToApplication(String path) throws MalformedURLException {
+    private void commonSendPOSTRequestToApplication(String path) throws MalformedURLException {
         URL requestUrl = new URL(new URL(this.applicationBaseUrl), path);
 
         RestAssuredConfig restAssuredConfig = this.createRestAssuredTestConfig();
@@ -194,34 +121,8 @@ public class AlarmTestSteps {
 
         restAssuredResponse =
             requestSpecification
-                .get(requestUrl)
+                .post(requestUrl)
                 .thenReturn()
         ;
-    }
-
-    private boolean checkResponseChanged(Response newResponse) {
-        if (rememberedRestAssuredResponse == null) {
-            if (newResponse == null) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        if (newResponse == null) {
-            return true;
-        }
-
-        if (newResponse.getStatusCode() != rememberedRestAssuredResponse.getStatusCode()) {
-            log.info("STATUS CODE CHANGE: {} -> {}", rememberedRestAssuredResponse.getStatusCode(), newResponse.getStatusCode());
-            return true;
-        }
-
-        if (! Objects.equals(newResponse.getBody().asString(), rememberedRestAssuredResponse.getBody().asString())) {
-            log.info("BODY CHANGE: {} -> {}", rememberedRestAssuredResponse.getBody().asString(), newResponse.getBody().asString());
-            return true;
-        }
-
-        return false;
     }
 }
