@@ -62,7 +62,7 @@ type OpenNMSSpec struct {
     Inventory BaseServiceResources `json:"inventory,omitempty"`
 
     // Defines service values for Alarm service
-    Inventory BaseServiceResources `json:"alarm,omitempty"`
+    Alarm BaseServiceResources `json:"alarm,omitempty"`
 
     // Defines service values for Notification service
     Notification BaseServiceResources `json:"notification,omitempty"`
