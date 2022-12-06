@@ -216,6 +216,9 @@
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
                     <skip>${skipJib}</skip>
+                    <from>
+                        <image>openjdk:11</image>
+                    </from>
                     <to>
                         <image>${docker.image.name}:${docker.image.tag}</image>
                     </to>
@@ -264,10 +267,26 @@
                     <images>
                         <image>
                             <name>postgres-it-image</name>
-                            <alias>postgres-host</alias>
+                            <alias>postgres</alias>
                             <build>
                                 <!-- POSTGRES VERSION PROPERTY -->
                                 <from>postgres:13.3-alpine</from>
+                                <assembly>
+                                    <targetDir>/</targetDir>
+                                    <inline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+                                        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+                                        <files>
+                                            <file>
+                                                <source>
+                                                    ./target/test-classes/db-init.sql
+                                                </source>
+                                                <destName>db-init.sql</destName>
+                                                <outputDirectory>/docker-entrypoint-initdb.d</outputDirectory>
+                                            </file>
+                                        </files>
+                                    </inline>
+                                </assembly>
                             </build>
                             <run>
                                 <env>
@@ -286,7 +305,7 @@
                                 <network>
                                     <mode>custom</mode>
                                     <name>alarm-docker-it-network</name>
-                                    <alias>postgres-host</alias>
+                                    <alias>postgres</alias>
                                 </network>
                             </run>
                         </image>
