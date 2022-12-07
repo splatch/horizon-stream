@@ -81,7 +81,7 @@ func (i *Instance) CheckForExistingPostgresCreds(ctx context.Context, v values.T
 	notificationPwd := string(credSecret.Data["notificationPwd"])
 	grafanaPwd := string(credSecret.Data["grafanaPwd"])
 	eventsPwd := string(credSecret.Data["eventsPwd"])
-	if adminPwd == "" || keycloakPwd == "" || inventoryPwd == "" || alarmPwd == "" || notificationPwd == "" || eventsPwd == "" {
+	if adminPwd == "" || keycloakPwd == "" || inventoryPwd == "" || alarmPwd == "" || notificationPwd == "" || grafanaPwd == "" || eventsPwd == "" {
 		return v, false
 	}
 	v.Values.Postgres.AdminPassword = adminPwd
