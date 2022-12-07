@@ -355,7 +355,7 @@
                             <run>
                                 <hostname>test-alarm-001</hostname>
                                 <ports>
-                                    <port>app-http-port:8181</port>
+                                    <port>app-http-port:8080</port>
                                     <!--<port>5005:5005</port>-->
                                 </ports>
                                 <env>
@@ -434,6 +434,13 @@
                     <skipITs>${skipITs}</skipITs>
                     <reuseForks>true</reuseForks>
                     <useSystemClassLoader>false</useSystemClassLoader>
+                <systemProperties>
+                    <property>
+                        <name>application.base-url</name>
+<!--                        <value>http://localhost:${karaf-http-port}</value>-->
+                        <value>http://localhost:${app-http-port}</value>
+                    </property>
+                </systemProperties>
                 </configuration>
             </plugin>
 

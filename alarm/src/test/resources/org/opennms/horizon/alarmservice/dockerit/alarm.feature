@@ -1,9 +1,8 @@
 Feature: Alarm Service Basic Functionality
 
-#  Background: Configure base URLs
-#    Given MOCK Minion Gateway Base URL in system property "mock-miniongateway.base-url"
-#    Given Application Base URL in system property "application.base-url"
-#
+  Background: Configure base URLs
+    Given Application Base URL in system property "application.base-url"
+
   Scenario: Verify when an event is received from Kafka, a new Alarm is created
     Then Send POST request to application at path "/alarms/kick"
     Then DEBUG dump the response body

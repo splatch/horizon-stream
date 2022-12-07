@@ -36,6 +36,7 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,14 +48,10 @@ import java.util.Objects;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 public class AlarmTestSteps {
 
     public static final int DEFAULT_HTTP_SOCKET_TIMEOUT = 15_000;
-
-    private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(AlarmTestSteps.class);
-
-    private Logger log = DEFAULT_LOGGER;
-
 
     //
     // Test Configuration
