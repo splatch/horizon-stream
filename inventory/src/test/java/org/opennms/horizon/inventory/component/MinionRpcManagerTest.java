@@ -150,7 +150,7 @@ class MinionRpcManagerTest {
             TaskResult result = results.getResults(0);
             MonitorResponse response = result.getMonitorResponse();
             assertThat(response.getStatus()).isEqualTo("UP");
-            assertThat(response.getMonitorType()).isEqualTo(MonitorType.MINION);
+            assertThat(response.getMonitorType()).isEqualTo(MonitorType.ECHO);
             assertThat(response.getResponseTimeMs()).isPositive();
             assertThat(System.nanoTime() - response.getResponseTimeMs()).isPositive();
 

@@ -133,7 +133,7 @@ public class MinionRpcManager {
         MonitorResponse monitorResponse = MonitorResponse.newBuilder()
             .setStatus("UP")
             .setResponseTimeMs(responseTime)
-            .setMonitorType(MonitorType.MINION)
+            .setMonitorType(MonitorType.ECHO)
             .setIpAddress(systemId) //for minion only
             .build();
         TaskResult result = TaskResult.newBuilder()
