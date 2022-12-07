@@ -21,6 +21,7 @@ declare module '@vue/runtime-core' {
     FeatherAppBar: typeof import('@featherds/app-bar')['FeatherAppBar']
     FeatherAppLayout: typeof import('@featherds/app-layout')['FeatherAppLayout']
     FeatherAppRail: typeof import('@featherds/app-rail')['FeatherAppRail']
+    FeatherAutocomplete: typeof import('@featherds/autocomplete')['FeatherAutocomplete']
     FeatherButton: typeof import('@featherds/button')['FeatherButton']
     FeatherCheckbox: typeof import('@featherds/checkbox')['FeatherCheckbox']
     FeatherCheckboxGroup: typeof import('@featherds/checkbox')['FeatherCheckboxGroup']
