@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Cucumber.class)
 @CucumberOptions(
-    glue = {"org.opennms.horizon.dockerit"},
+    glue = {"org.opennms.horizon.alarmservice.dockerit"},
     plugin = {"json:target/cucumber-report.json", "html:target/cucumber.html", "pretty"}
     )
 public class CucumberRunnerIT {

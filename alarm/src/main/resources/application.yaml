@@ -28,7 +28,7 @@ spring:
       client-id: "alarm-service"
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
-    bootstrap-servers: localhost:59092
+    bootstrap-servers: localhost:9092
 
 kafka:
   topics:
