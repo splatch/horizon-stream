@@ -10,7 +10,6 @@ export const useInventoryStore = defineStore('inventoryStore', {
       this.isTagsOpen = !this.isTagsOpen
     },
     toggleFilter() {
-      console.log(this.isFilterOpen)
       this.isFilterOpen = !this.isFilterOpen
     }
   }

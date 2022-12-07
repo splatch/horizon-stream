@@ -8,14 +8,14 @@
       <Filter v-if="tabMonitoredContent.length" />
       <MonitoredNodesTabContent v-if="tabMonitoredContent.length" :tabContent="tabMonitoredContent" />
     </FeatherTabPanel>
-    <FeatherTabPanel>
+    <!-- <FeatherTabPanel>
       <Filter v-if="tabUnmonitoredContent.length" />
       <MonitoredNodesTabContent :tabContent="tabUnmonitoredContent" />
-    </FeatherTabPanel>
-    <FeatherTabPanel>
+    </FeatherTabPanel> -->
+    <!-- <FeatherTabPanel>
       <Filter v-if="tabDetectedContent.length" />
       <DetectedNodesTabContent :tabContent="tabDetectedContent" />
-    </FeatherTabPanel>
+    </FeatherTabPanel> -->
   </FeatherTabContainer>
 </template>
 
@@ -27,12 +27,12 @@ import {
 } from '@featherds/tabs'
 import Filter from '@/components/Inventory/Filter.vue'
 import MonitoredNodesTabContent from '@/components/Inventory/MonitoredNodesTabContent.vue'
-import DetectedNodesTabContent from '@/components/Inventory/DetectedNodesTabContent.vue'
-import { TimeUnit } from '@/types'
+// import DetectedNodesTabContent from '@/components/Inventory/DetectedNodesTabContent.vue'
+// import { TimeUnit } from '@/types'
 import { NodeContent } from '@/types/inventory'
 import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
 
-const unmonitoredContent: NodeContent[] = [
+/* const unmonitoredContent: NodeContent[] = [
   {
     id: 1,
     label: 'Unmonitored Node 1',
@@ -63,8 +63,8 @@ const unmonitoredContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'Default',
       locationLink: 'goto',
-      ipAddressValue: '0.0.0.0',
-      ipAddressLink: 'goto',
+      managementIpValue: '0.0.0.0',
+      managementIpLink: 'goto',
       tagValue: 10,
       tagLink: 'goto'
     }
@@ -99,14 +99,14 @@ const unmonitoredContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '0.0.0.0',
-      ipAddressLink: 'goto',
+      managementIpValue: '0.0.0.0',
+      managementIpLink: 'goto',
       tagValue: 49,
       tagLink: 'goto'
     }
   }
-]
-const detectedContent: NodeContent[] = [
+] */
+/* const detectedContent: NodeContent[] = [
   {
     id: 1,
     label: 'Detected Node 1',
@@ -137,8 +137,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '10.0.0.1',
-      ipAddressLink: 'goto',
+      managementIpValue: '10.0.0.1',
+      managementIpLink: 'goto',
       tagValue: 20,
       tagLink: 'goto'
     }
@@ -173,8 +173,8 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '0.0.0.0',
-      ipAddressLink: 'goto',
+      managementIpValue: '0.0.0.0',
+      managementIpLink: 'goto',
       tagValue: 60,
       tagLink: 'goto'
     }
@@ -209,13 +209,13 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '11.1.1.1',
-      ipAddressLink: 'goto',
+      managementIpValue: '11.1.1.1',
+      managementIpLink: 'goto',
       tagValue: 62,
       tagLink: 'goto'
     }
   }
-]
+] */
 
 const heading = 'Network Inventory'
 const tabs = [
@@ -227,8 +227,8 @@ const tabs = [
 const inventoryQueries = useInventoryQueries()
 const tabMonitoredContent = computed((): NodeContent[] => inventoryQueries.nodes)
 
-const tabUnmonitoredContent = unmonitoredContent
-const tabDetectedContent = detectedContent
+// const tabUnmonitoredContent = unmonitoredContent
+// const tabDetectedContent = detectedContent
 </script>
 
 <style lang="scss" scoped>

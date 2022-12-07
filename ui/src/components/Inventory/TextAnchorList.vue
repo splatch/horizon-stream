@@ -10,10 +10,10 @@
       <a v-if="anchor.locationLink" @click="goto(anchor.locationLink)" :id="label.location">{{ anchor?.locationValue }}</a>
       <span v-else :id="label.location">{{ anchor.locationValue }}</span>
     </li>
-    <li data-test="ip-address">
-      <label :for="label.ipAddress">{{ label.ipAddress }}: </label>
-      <a v-if="anchor.ipAddressLink" @click="goto(anchor.ipAddressLink)" :id="label.ipAddress">{{ anchor.ipAddressValue }}</a>
-      <span v-else :id="(label.ipAddress)">{{ anchor.ipAddressValue }}</span>
+    <li data-test="management-ip">
+      <label :for="label.managementIp">{{ label.managementIp }}: </label>
+      <a v-if="anchor.managementIpLink" @click="goto(anchor.managementIpLink)" :id="label.managementIp">{{ anchor.managementIpValue }}</a>
+      <span v-else :id="(label.managementIp)">{{ anchor.managementIpValue }}</span>
     </li>
     <li data-test="tag">
       <label :for="label.tag">{{ label.tag }}: </label>
@@ -42,7 +42,7 @@ const goto = (path: string | undefined) => {
 const label = {
   profile: 'Monitoring Profile',
   location: 'Monitoring Location',
-  ipAddress: 'IP Address',
+  managementIp: 'Management IP',
   tag: 'Tag'
 }
 </script>

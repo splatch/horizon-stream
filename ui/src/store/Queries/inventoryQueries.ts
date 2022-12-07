@@ -71,8 +71,8 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
               profileLink: '',
               locationValue: nodeLocation || '--',
               locationLink: '',
-              ipAddressValue: ipAddress || '',
-              ipAddressLink: '',
+              managementIpValue: ipAddress || '',
+              managementIpLink: '',
               tagValue: '--',
               tagLink: ''
             }  
