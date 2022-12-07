@@ -7,10 +7,9 @@
         <groupId>org.opennms.horizon</groupId>
         <artifactId>horizon-parent</artifactId>
         <version>0.1.0-SNAPSHOT</version>
-        <relativePath/>
+        <relativePath>../../parent-pom</relativePath>
     </parent>
 
-    <artifactId>docker-it</artifactId>
     <name>OpenNMS Horizon :: Docker IT</name>
     <description>
         Docker build-time, Black Box, System Integration Tests for the OpenNMS Horizon project.
@@ -20,6 +19,8 @@
 
         Uses a mock of the Minion Gateway (GRPC server).
     </description>
+
+    <artifactId>docker-it</artifactId>
 
     <properties>
         <docker.image.tag>local</docker.image.tag>
