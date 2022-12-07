@@ -265,6 +265,10 @@
                     <showLogs>true</showLogs>
                     <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
                     <images>
+
+                        <!--                -->
+                        <!-- POSTGRES IMAGE -->
+                        <!--                -->
                         <image>
                             <name>postgres-it-image</name>
                             <alias>postgres</alias>
@@ -340,7 +344,7 @@
                         </image>
 
                         <!--                    -->
-                        <!-- APPLICATION IMAGE  -->
+                        <!-- ALARM APPLICATION IMAGE  -->
                         <!--                    -->
                         <image>
                             <name>opennms-horizon-application-it-image</name>
