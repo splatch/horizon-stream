@@ -16,7 +16,7 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
   const nodes = ref<NodeContent[]>([])
   const allNodes = ref([])
   const metricsNodes = ref([])
-
+  
   const { startSpinner, stopSpinner } = useSpinner()
 
   const { data: nodesData, isFetching: nodesFetching, execute } = useQuery({
@@ -25,70 +25,11 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
   })
 
   const fetchNodeMetrics = async (nodeId: number) => {
-    const { data, isFetching } = await useQuery({
+    return await useQuery({
       query: NodeLatencyMetricDocument,
       variables: { id: nodeId },
       cachePolicy: 'network-only' // always fetch and do not cache
     })
-
-    watchEffect(() => {
-      if(data.value && !isFetching.value) {
-        const res = data.value?.nodeLatency?.data?.result[0]
-        metricsNodes.value.push({
-          id: res.metric.node_id,
-          latency: res.value[1],
-          uptime: res.value[0],
-          status: ''
-        })
-      }
-    })
-  }
-
-  const formatNodesData = () => {
-    const getMetric = (nodeId => metricsNodes.value.filter(node => Number(node.id) === nodeId))
-
-    watch(metricsNodes.value, () => {
-      const nodeDetail = allNodes.value.map(node => {
-        const metric = getMetric(node.id)
-        return {
-          id: node.id,
-          label: node.nodeLabel,
-          status: '',
-          metrics: [
-            {
-              type: 'latency',
-              label: 'Latency',
-              timestamp: metric.latency || '--',
-              status: ''
-            },
-            {
-              type: 'uptime',
-              label: 'Uptime',
-              timestamp: metric.uptime || '--',
-              timeUnit: TimeUnit.MSecs,
-              status: ''
-            },
-            {
-              type: 'status',
-              label: 'Status',
-              status: metric.status || '--'
-            }
-          ],
-          anchor: {
-            profileValue: '--',
-            profileLink: '',
-            locationValue: node.location.location || '--',
-            locationLink: '',
-            ipAddressValue: node.ipInterfaces[0].ipAddress || '',
-            ipAddressLink: '',
-            tagValue: '--',
-            tagLink: ''
-          }  
-        }
-      })
-
-      nodes.value = nodeDetail
-    }, {deep: true})
   }
 
   watchEffect(async () => {
@@ -96,10 +37,52 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
 
     if(nodesData.value && nodesData.value?.findAllNodes?.length) {
       allNodes.value = nodesData.value.findAllNodes
-      
-      allNodes.value.forEach(node => fetchNodeMetrics(node.id))
-      
-      formatNodesData()
+
+      allNodes.value.forEach(async (node) => {
+        const {data, isFetching} = await fetchNodeMetrics(node.id)
+
+        if(data && !isFetching.value) {
+          const res = data.value.nodeLatency.data.result[0]
+        
+          metricsNodes.value.push({
+            id: node.id,
+            label: node.nodeLabel,
+            status: '',
+            metrics: [
+              {
+                type: 'latency',
+                label: 'Latency',
+                timestamp: res.value[1] || '--',
+                status: ''
+              },
+              {
+                type: 'uptime',
+                label: 'Uptime',
+                timestamp: res.value[0] || '--',
+                timeUnit: TimeUnit.MSecs,
+                status: ''
+              },
+              {
+                type: 'status',
+                label: 'Status',
+                status: res.metric.status || '--'
+              }
+            ],
+            anchor: {
+              profileValue: '--',
+              profileLink: '',
+              locationValue: node.location.location || '--',
+              locationLink: '',
+              ipAddressValue: node.ipInterfaces[0].ipAddress || '',
+              ipAddressLink: '',
+              tagValue: '--',
+              tagLink: ''
+            }  
+          })
+        }
+      })
+
+      nodes.value = metricsNodes.value
     }
   })
 

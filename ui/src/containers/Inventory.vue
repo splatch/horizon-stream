@@ -9,11 +9,11 @@
       <MonitoredNodesTabContent v-if="tabMonitoredContent.length" :tabContent="tabMonitoredContent" />
     </FeatherTabPanel>
     <FeatherTabPanel>
-      <Filter v-if="tabUnmonitoredContent?.length" />
+      <Filter v-if="tabUnmonitoredContent.length" />
       <MonitoredNodesTabContent :tabContent="tabUnmonitoredContent" />
     </FeatherTabPanel>
     <FeatherTabPanel>
-      <Filter v-if="tabDetectedContent?.length" />
+      <Filter v-if="tabDetectedContent.length" />
       <DetectedNodesTabContent :tabContent="tabDetectedContent" />
     </FeatherTabPanel>
   </FeatherTabContainer>
@@ -219,15 +219,9 @@ const detectedContent: NodeContent[] = [
 
 const heading = 'Network Inventory'
 const tabs = [
-  {
-    label: 'Monitored Nodes'
-  },
-  {
-    label: 'Umonitored Nodes'
-  },
-  {
-    label: 'Detected Nodes'
-  }
+  { label: 'Monitored Nodes' },
+  { label: 'Umonitored Nodes' },
+  { label: 'Detected Nodes' }
 ]
 
 const inventoryQueries = useInventoryQueries()
