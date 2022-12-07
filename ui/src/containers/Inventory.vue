@@ -50,7 +50,7 @@ const unmonitoredContent: NodeContent[] = [
         label: 'Uptime',
         timestamp: 1667930274.660,
         timeUnit: TimeUnit.Secs,
-        status: 'DOWN'
+        status: '--'
       },
       {
         type: 'status',
@@ -61,7 +61,7 @@ const unmonitoredContent: NodeContent[] = [
     anchor: {
       profileValue: 70,
       profileLink: 'goto',
-      locationValue: 'DefaultMinion',
+      locationValue: 'Default',
       locationLink: 'goto',
       ipAddressValue: '0.0.0.0',
       ipAddressLink: 'goto',
@@ -77,7 +77,7 @@ const unmonitoredContent: NodeContent[] = [
       {
         type: 'latency',
         label: 'Latency',
-        timestamp: 9,
+        timestamp: 89,
         timeUnit: TimeUnit.MSecs,
         status: 'UP'
       },
@@ -91,7 +91,7 @@ const unmonitoredContent: NodeContent[] = [
       {
         type: 'status',
         label: 'Status',
-        status: 'DOWN'
+        status: '--'
       }
     ],
     anchor: {
@@ -115,16 +115,16 @@ const detectedContent: NodeContent[] = [
       {
         type: 'latency',
         label: 'Latency',
-        timestamp: 9,
+        timestamp: '--',
         timeUnit: TimeUnit.MSecs,
-        status: 'UP'
+        status: '--'
       },
       {
         type: 'uptime',
         label: 'Uptime',
         timestamp: 1667930274.660,
         timeUnit: TimeUnit.Secs,
-        status: 'DOWN'
+        status: 'UP'
       },
       {
         type: 'status',
@@ -137,7 +137,7 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '0.0.0.0',
+      ipAddressValue: '10.0.0.1',
       ipAddressLink: 'goto',
       tagValue: 20,
       tagLink: 'goto'
@@ -151,21 +151,21 @@ const detectedContent: NodeContent[] = [
       {
         type: 'latency',
         label: 'Latency',
-        timestamp: 9,
+        timestamp: 50,
         timeUnit: TimeUnit.MSecs,
-        status: 'UP'
+        status: 'DOWN'
       },
       {
         type: 'uptime',
         label: 'Uptime',
         timestamp: 1667930274.660,
         timeUnit: TimeUnit.Secs,
-        status: 'DOWN'
+        status: 'UP'
       },
       {
         type: 'status',
         label: 'Status',
-        status: 'DOWN'
+        status: '--'
       }
     ],
     anchor: {
@@ -187,7 +187,7 @@ const detectedContent: NodeContent[] = [
       {
         type: 'latency',
         label: 'Latency',
-        timestamp: 9,
+        timestamp: 19,
         timeUnit: TimeUnit.MSecs,
         status: 'UP'
       },
@@ -196,12 +196,12 @@ const detectedContent: NodeContent[] = [
         label: 'Uptime',
         timestamp: 1667930274.660,
         timeUnit: TimeUnit.Secs,
-        status: 'DOWN'
+        status: '--'
       },
       {
         type: 'status',
         label: 'Status',
-        status: 'DOWN'
+        status: '--'
       }
     ],
     anchor: {
@@ -209,7 +209,7 @@ const detectedContent: NodeContent[] = [
       profileLink: 'goto',
       locationValue: 'DefaultMinion',
       locationLink: 'goto',
-      ipAddressValue: '0.0.0.0',
+      ipAddressValue: '11.1.1.1',
       ipAddressLink: 'goto',
       tagValue: 62,
       tagLink: 'goto'

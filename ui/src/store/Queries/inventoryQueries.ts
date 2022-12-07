@@ -13,7 +13,6 @@ import { TimeUnit } from '@/types'
 
 export const useInventoryQueries = defineStore('inventoryQueries', () => {
   const nodes = ref<NodeContent[]>([])
-  const metricsNodes = ref<NodeContent[]>([])
   
   const { startSpinner, stopSpinner } = useSpinner()
 
@@ -36,16 +35,16 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
     const allNodes = nodesData.value?.findAllNodes
 
     if(allNodes?.length) {
-      allNodes.forEach(async ({id, nodeLabel, location, ipInterfaces}) => {
-        const {data, isFetching} = await fetchNodeMetrics(id)
+      allNodes.forEach(async ({ id, nodeLabel, location, ipInterfaces }) => {
+        const { data, isFetching } = await fetchNodeMetrics(id)
 
         if(data.value && !isFetching.value) {
-          const [{metric, value}] = data.value.nodeLatency?.data?.result as TsResult[]
+          const [{ metric, value }] = data.value.nodeLatency?.data?.result as TsResult[]
           const [uptime, latency] = value as number[]
-          const {location: nodeLocation} = location as Location
-          const [{ipAddress}] = ipInterfaces as IpInterface[]
+          const { location: nodeLocation } = location as Location
+          const [{ ipAddress }] = ipInterfaces as IpInterface[]
         
-          metricsNodes.value.push({
+          nodes.value.push({
             id: id,
             label: nodeLabel,
             status: '',
@@ -82,8 +81,6 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
           })
         }
       })
-
-      nodes.value = metricsNodes.value
     }
   })
 
