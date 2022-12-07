@@ -9,7 +9,7 @@
     </div>
     <div class="feather-row">
       <div class="feather-col-12">
-        <table>
+        <table aria-label="Alarms Table">
           <thead>
             <tr>
               <th>Severity</th>
