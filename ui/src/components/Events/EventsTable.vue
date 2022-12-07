@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="container">
-      <table class="data-table" summary="Events" data-test="data-table">
+      <table class="data-table" aria-label="Events Table" data-test="data-table">
         <thead>
           <tr>
             <th scope="col">ID</th>
