@@ -21,15 +21,13 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
     cachePolicy: 'network-only' // always fetch and do not cache
   })
 
-  const fetchNodeMetrics = async (nodeId: number) => {
-    return await useQuery({
-      query: NodeLatencyMetricDocument,
-      variables: { id: nodeId },
-      cachePolicy: 'network-only' // always fetch and do not cache
-    })
-  }
-
-  watchEffect(async () => {
+  const fetchNodeMetrics = (nodeId: number) => useQuery({
+    query: NodeLatencyMetricDocument,
+    variables: { id: nodeId },
+    cachePolicy: 'network-only' // always fetch and do not cache
+  })
+  
+  watchEffect(() => {
     nodesFetching.value ? startSpinner() : stopSpinner()
 
     const allNodes = nodesData.value?.findAllNodes
