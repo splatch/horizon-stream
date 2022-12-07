@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 import { 
   NodesListDocument,
   NodeLatencyMetricDocument,
-  Node,
   TsResult,
   IpInterface,
   Location
@@ -14,8 +13,7 @@ import { TimeUnit } from '@/types'
 
 export const useInventoryQueries = defineStore('inventoryQueries', () => {
   const nodes = ref<NodeContent[]>([])
-  const allNodes = ref([])
-  const metricsNodes = ref([])
+  const metricsNodes = ref<NodeContent[]>([])
   
   const { startSpinner, stopSpinner } = useSpinner()
 
@@ -35,45 +33,48 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
   watchEffect(async () => {
     nodesFetching.value ? startSpinner() : stopSpinner()
 
-    if(nodesData.value && nodesData.value?.findAllNodes?.length) {
-      allNodes.value = nodesData.value.findAllNodes
+    const allNodes = nodesData.value?.findAllNodes
 
-      allNodes.value.forEach(async (node) => {
-        const {data, isFetching} = await fetchNodeMetrics(node.id)
+    if(allNodes?.length) {
+      allNodes.forEach(async ({id, nodeLabel, location, ipInterfaces}) => {
+        const {data, isFetching} = await fetchNodeMetrics(id)
 
-        if(data && !isFetching.value) {
-          const res = data.value.nodeLatency.data.result[0]
+        if(data.value && !isFetching.value) {
+          const [{metric, value}] = data.value.nodeLatency?.data?.result as TsResult[]
+          const [uptime, latency] = value as number[]
+          const {location: nodeLocation} = location as Location
+          const [{ipAddress}] = ipInterfaces as IpInterface[]
         
           metricsNodes.value.push({
-            id: node.id,
-            label: node.nodeLabel,
+            id: id,
+            label: nodeLabel,
             status: '',
             metrics: [
               {
                 type: 'latency',
                 label: 'Latency',
-                timestamp: res.value[1] || '--',
+                timestamp: latency || '--',
                 status: ''
               },
               {
                 type: 'uptime',
                 label: 'Uptime',
-                timestamp: res.value[0] || '--',
+                timestamp: uptime || '--',
                 timeUnit: TimeUnit.MSecs,
                 status: ''
               },
               {
                 type: 'status',
                 label: 'Status',
-                status: res.metric.status || '--'
+                status: metric.status || '--'
               }
             ],
             anchor: {
               profileValue: '--',
               profileLink: '',
-              locationValue: node.location.location || '--',
+              locationValue: nodeLocation || '--',
               locationLink: '',
-              ipAddressValue: node.ipInterfaces[0].ipAddress || '',
+              ipAddressValue: ipAddress || '',
               ipAddressLink: '',
               tagValue: '--',
               tagLink: ''
