@@ -36,7 +36,11 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +62,10 @@ public class AlarmTestSteps {
     //
     private String applicationBaseUrl;
 
+    private String kafaBootstrapServers;
+
+    Producer<String, String> producer;
+
     //
     // Test Runtime Data
     //
@@ -70,14 +78,63 @@ public class AlarmTestSteps {
 
     @Given("Application Base URL in system property {string}")
     public void applicationBaseURLInSystemProperty(String systemProperty) {
-        applicationBaseUrl = System.getProperty(systemProperty);
+        this.applicationBaseUrl = System.getProperty(systemProperty);
 
-        log.info("Using BASE URL {}", applicationBaseUrl);
+        log.info("Using BASE URL {}", this.applicationBaseUrl);
+    }
+
+    @Given("Kafka Boot Servers in system property {string}")
+    public void kafkaBootstrapServersInSystemProperty(String systemProperty) {
+        this.kafaBootstrapServers = System.getProperty(systemProperty);
+
+        log.info("################### Kafka Boostrap-servers {}", this.kafaBootstrapServers);
+    }
+    
+    @Given("Kafka producer is setup")
+    public void setupKafkaProducer() {
+
+        // create instance for properties to access producer configs
+        Properties props = new Properties();
+
+        //Assign localhost id
+        props.put("bootstrap.servers", this.kafaBootstrapServers);
+
+        //Set acknowledgements for producer requests.
+        props.put("acks","all");
+
+        //If the request fails, the producer can automatically retry,
+        props.put("retries", 0);
+
+        //Specify buffer size in config
+        props.put("batch.size", 16384);
+
+        //Reduce the no of requests less than 0
+        props.put("linger.ms", 1);
+
+        //The buffer.memory controls the total amount of memory available to the producer for buffering.
+        props.put("buffer.memory", 33554432);
+
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        producer = new KafkaProducer<String, String>(props);
+
     }
 
     @Then("Send POST request to application at path {string}")
     public void sendPOSTRequestToApplicationAtPath(String path) throws Exception {
         commonSendPOSTRequestToApplication(path);
+    }
+
+    @Then("Send message to Kafka at topic {string}")
+    public void sendMessageToKafkaAtTopic(String topic) throws Exception {
+        producer.send(new ProducerRecord<String, String>(topic, "blah"));
+    }
+
+    @Then("delay")
+    public void delay() throws InterruptedException{
+        Thread.sleep(6000);
     }
 
     @Then("Remember response body for later comparison")

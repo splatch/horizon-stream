@@ -440,6 +440,10 @@
 <!--                        <value>http://localhost:${karaf-http-port}</value>-->
                         <value>http://localhost:${app-http-port}</value>
                     </property>
+                    <property>
+                        <name>kafka.bootstrap-servers</name>
+                        <value>localhost:${kafka.port}</value>
+                    </property>
                 </systemProperties>
                 </configuration>
             </plugin>
