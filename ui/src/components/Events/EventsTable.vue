@@ -31,7 +31,7 @@
       </div>
     </div>
     <div class="container">
-      <table class="tl1 tl2 tc3 tc4 tc5 data-table" summary="Events" data-test="data-table">
+      <table class="tl1 tl2 tc3 tc4 tc5 data-table" data-test="data-table">
         <thead>
           <tr>
             <th scope="col" data-test="col-id">ID</th>

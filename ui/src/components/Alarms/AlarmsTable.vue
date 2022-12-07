@@ -9,7 +9,7 @@
     </div>
     <div class="feather-row">
       <div class="feather-col-12">
-        <table summary="Alarms">
+        <table>
           <thead>
             <tr>
               <th>Severity</th>

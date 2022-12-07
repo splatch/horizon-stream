@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <table class="tl1 tl2 tl3 data-table" summary="Nodes">
+    <table class="tl1 tl2 tl3 data-table">
       <thead>
         <tr>
           <FeatherSortHeader
