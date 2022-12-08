@@ -327,6 +327,10 @@
                             <run>
                                 <env>
                                     <KAFKA_ADVERTISED_HOST_NAME>kafka-host</KAFKA_ADVERTISED_HOST_NAME>
+                                    <KAFKA_LISTENERS>CLIENT://kafka-host:9092,LOCALCLIENT://localhost:59092</KAFKA_LISTENERS>
+                                    <KAFKA_ADVERTISED_LISTENERS>CLIENT://kafka-host:9092,LOCALCLIENT://localhost:59092</KAFKA_ADVERTISED_LISTENERS>
+                                    <KAFKA_LISTENER_SECURITY_PROTOCOL_MAP>CLIENT:PLAINTEXT,LOCALCLIENT:PLAINTEXT</KAFKA_LISTENER_SECURITY_PROTOCOL_MAP>
+                                    <KAFKA_INTER_BROKER_LISTENER_NAME>CLIENT</KAFKA_INTER_BROKER_LISTENER_NAME>
                                 </env>
                                 <ports>
                                     <port>kafka.port:9092</port>
