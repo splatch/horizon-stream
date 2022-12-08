@@ -1,9 +1,15 @@
-import { MinionDto } from '@/types/graphql'
+import { Minion } from '@/types/graphql'
 
-const mockData: MinionDto | undefined = {
-  'id': 'minion-01',
-  'status': 'UP',
-  'location': 'Default',
-  'lastUpdated': '2022-09-09T12:17:09.497Z'
+const mockData: Minion = {
+  id: 'minion-01',
+  label: 'minionlabel',
+  location: {
+    location: 'default',
+    id: 1
+  },
+  lastCheckedTime: '2022-09-09T12:17:09.497Z',
+  systemId: '123',
+  locationId: 1
 }
-export const minionFixture = (mockMinion = mockData, props: Partial<MinionDto> = {}): MinionDto => ({ ...mockMinion, ...props })
+
+export const minionFixture = (mockMinion = mockData, props: Partial<Minion> = {}): Minion => ({ ...mockMinion, ...props })

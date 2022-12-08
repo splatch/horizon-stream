@@ -19,15 +19,13 @@ describe('Appliances queries', () =>{
       useQuery: vi.fn().mockImplementation(() => ({
         data: {
           value: {
-            listMinions: {
-              minions: [ minionFixture() ]
-            },
+            findAllMinions: [ minionFixture() ],
             minionLatency: minionLatencyFixture(),
             minionUptime: minionUptimeFixture(),
             findAllNodes:  [ nodeFixture() ],
             deviceLatency: deviceLatencyFixture(),
             deviceUptime: deviceUptimeFixture(),
-            listLocations: locationsFixture()
+            findAllLocations: locationsFixture()
           }
         } 
       }))
@@ -36,9 +34,14 @@ describe('Appliances queries', () =>{
     const expectedAppliancesMinions = [
       {
         id: 'minion-01',
-        status: 'UP',
-        location: 'Default',
-        lastUpdated: '2022-09-09T12:17:09.497Z',
+        label: 'minionlabel',
+        location: {
+          location: 'default',
+          id: 1
+        },
+        lastCheckedTime: '2022-09-09T12:17:09.497Z',
+        systemId: '123',
+        locationId: 1,
         icmp_latency: 2,
         snmp_uptime: 97419
       }

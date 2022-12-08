@@ -23,7 +23,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     }
     
     const addMetricsToMinions = (data: Ref<ListMinionsForTableQuery | null>)=> {
-      const minions = data.value?.listMinions?.minions as ExtendedMinionDTO[] || []
+      const minions = data.value?.findAllMinions as ExtendedMinionDTO[] || []
       const minionLatencies = data.value?.minionLatency?.data?.result || []
       const minionUptimes = data.value?.minionUptime?.data?.result || []
     
@@ -95,7 +95,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       tableNodes.value = addMetricsToNodes(minionsAndNodes)
     })
 
-    const locations = computed(() => minionsAndNodes.value?.listLocations?.locations?.map((item, index) => ({ id: index, name: item.locationName })) || [])
+    const locations = computed(() => minionsAndNodes.value?.findAllLocations || [])
     
     return {
       tableMinions,
