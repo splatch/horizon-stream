@@ -28,6 +28,9 @@
 
 package org.opennms.horizon.alarmservice.dockerit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.RestAssured;
@@ -36,21 +39,14 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-import java.util.Objects;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @Slf4j
 public class AlarmTestSteps {
@@ -71,6 +67,7 @@ public class AlarmTestSteps {
     //
     private Response restAssuredResponse;
     private Response rememberedRestAssuredResponse;
+    private JsonPath parsedJsonResponse;
 
 //========================================
 // Gherkin Rules
@@ -87,7 +84,7 @@ public class AlarmTestSteps {
     public void kafkaBootstrapServersInSystemProperty(String systemProperty) {
         this.kafaBootstrapServers = System.getProperty(systemProperty);
 
-        log.info("################### Kafka Boostrap-servers {}", this.kafaBootstrapServers);
+        log.info("######### Kafka Boostrap-servers {}", this.kafaBootstrapServers);
     }
     
     @Given("Kafka producer is setup")
@@ -129,12 +126,36 @@ public class AlarmTestSteps {
 
     @Then("Send message to Kafka at topic {string}")
     public void sendMessageToKafkaAtTopic(String topic) throws Exception {
+        log.info("####### sending event DIRECTLY to Kafka");
         producer.send(new ProducerRecord<String, String>(topic, "blah"));
+        log.info("####### DIRECT event sent");
     }
 
     @Then("delay")
     public void delay() throws InterruptedException{
-        Thread.sleep(6000);
+        Thread.sleep(20000);
+    }
+
+//    @Then("delay {int}ms")
+//    public void delayMs(int ms) throws Exception {
+//        Thread.sleep(ms);
+//    }
+
+    @Then("Send GET request to application at path {string}")
+    public void sendGETRequestToApplicationAtPath(String path) throws Exception {
+        commonSendGetRequestToApplication(path);
+    }
+
+    @Then("^parse the JSON response$")
+    public void parseTheJsonResponse() {
+        parsedJsonResponse = JsonPath.from((this.restAssuredResponse.getBody().asString()));
+    }
+
+    @Then("^verify JSON path expressions match$")
+    public void verifyJsonPathExpressionsMatch(List<String> pathExpressions) {
+        for (String onePathExpression : pathExpressions) {
+            verifyJsonPathExpressionMatch(parsedJsonResponse, onePathExpression);
+        }
     }
 
     @Then("Remember response body for later comparison")
@@ -148,13 +169,52 @@ public class AlarmTestSteps {
 
     @Then("^DEBUG dump the response body$")
     public void debugDumpTheResponseBody() {
-        this.log.info("RESPONSE BODY = {}", restAssuredResponse.getBody().asString());
+        log.info("RESPONSE BODY = {}", restAssuredResponse.getBody().asString());
     }
 
 //========================================
 // Internals
 //----------------------------------------
 
+    private void verifyJsonPathExpressionMatch(JsonPath jsonPath, String pathExpression) {
+        String[] parts = pathExpression.split(" == ", 2);
+
+        if (parts.length == 2) {
+            // Expression and value to match - evaluate as a string and compare
+            String actualValue = jsonPath.getString(parts[0]);
+            String actualTrimmed;
+
+            if (actualValue != null) {
+                actualTrimmed = actualValue.trim();
+            }  else {
+                actualTrimmed = null;
+            }
+
+            String expectedTrimmed = parts[1].trim();
+
+            assertEquals("matching to JSON path " + parts[0], expectedTrimmed, actualTrimmed);
+        } else {
+            // Just an expression - evaluate as a boolean
+            assertTrue("verifying JSON path expression " + pathExpression, jsonPath.getBoolean(pathExpression));
+        }
+    }
+
+    private void commonSendGetRequestToApplication(String path) throws MalformedURLException {
+        URL requestUrl = new URL(new URL(this.applicationBaseUrl), path);
+
+        RestAssuredConfig restAssuredConfig = this.createRestAssuredTestConfig();
+
+        RequestSpecification requestSpecification =
+            RestAssured
+                .given()
+                .config(restAssuredConfig);
+
+        restAssuredResponse =
+            requestSpecification
+                .get(requestUrl)
+                .thenReturn()
+        ;
+    }
     private RestAssuredConfig createRestAssuredTestConfig() {
         return RestAssuredConfig.config()
             .httpClient(HttpClientConfig.httpClientConfig()

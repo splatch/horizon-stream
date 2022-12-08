@@ -28,48 +28,42 @@
 
 package org.opennms.horizon.alarmservice.api;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+import org.opennms.horizon.alarmservice.rest.AlarmCollectionDTO;
 import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
+import org.springframework.http.ResponseEntity;
 
-@Path("/alarms")
+//@Path("/alarms")
 public interface AlarmRestService {
 
-    @GET
-    @Path("list") // curl -X GET http://localhost:8181/cxf/alarmservice/alarms/list
-    @Produces(MediaType.APPLICATION_JSON)
-    @RolesAllowed({"user", "admin"})
-    Response getAlarms(@Context final SecurityContext securityContext, final UriInfo uriInfo);
+//    @GET
+//    @Path("list") // curl -X GET http://localhost:8181/cxf/alarmservice/alarms/list
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @RolesAllowed({"user", "admin"})
+    ResponseEntity<AlarmCollectionDTO> getAlarms(/*@Context final SecurityContext securityContext, final UriInfo uriInfo*/);
 
 
-    @PUT
-    @Path("{id}/memo") // curl -X PUT http://localhost:8181/cxf/alarmservice/alarms/1/memo -d 'user=mark&body=not null'
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @RolesAllowed({"user", "admin"})
+//    @PUT
+//    @Path("{id}/memo") // curl -X PUT http://localhost:8181/cxf/alarmservice/alarms/1/memo -d 'user=mark&body=not null'
+//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+//    @RolesAllowed({"user", "admin"})
     Response updateMemo(@Context final SecurityContext securityContext, @PathParam("id") final Long alarmId, final MultivaluedMapImpl params);
 
 
-    @PUT
-    @Path("{id}/journal") // curl -X PUT http://localhost:8181/cxf/alarmservice/alarms/1/journal -d 'user=mark&body=not null'
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @RolesAllowed({"user", "admin"})
+//    @PUT
+//    @Path("{id}/journal") // curl -X PUT http://localhost:8181/cxf/alarmservice/alarms/1/journal -d 'user=mark&body=not null'
+//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+//    @RolesAllowed({"user", "admin"})
     Response updateJournal(@Context final SecurityContext securityContext, @PathParam("id") final Long alarmId, final MultivaluedMapImpl params);
 
-    @DELETE
-    @Path("{id}/memo") // curl -X DELETE http://localhost:8181/cxf/alarmservice/alarms/1/memo -d 'user=mark&body=not null'
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @RolesAllowed({"admin"})
+//    @DELETE
+//    @Path("{id}/memo") // curl -X DELETE http://localhost:8181/cxf/alarmservice/alarms/1/memo -d 'user=mark&body=not null'
+//    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+//    @RolesAllowed({"admin"})
     Response removeMemo(@Context final SecurityContext securityContext, @PathParam("id") final Long alarmId);
 
 }

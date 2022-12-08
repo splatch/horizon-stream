@@ -29,6 +29,7 @@
 package org.opennms.horizon.alarmservice.rest;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
@@ -51,6 +52,7 @@ import org.opennms.horizon.alarmservice.rest.support.SecurityHelper;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -85,20 +87,21 @@ public class AlarmRestServiceImpl implements AlarmRestService {
 
 
     @GetMapping(path = "list", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    @RolesAllowed({ "admin" })
+//    @RolesAllowed({ "admin" })
     @ApiResponse(
             description = "Retrieve the list of alarms"
     )
-    public Response getAlarms(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo) {
+    public ResponseEntity<AlarmCollectionDTO> getAlarms(/*@Context final SecurityContext securityContext, @Context final UriInfo uriInfo*/) {
         // replace the next line with @RolesAllowed("")
         //SecurityHelper.assertUserReadCredentials(securityContext);
 
+        log.info("################################ HELOOOOOOOOO!");
             List<AlarmDTO> dtoAlarmList = alarmService.getAllAlarms("TODO:MMF need a tenant id!");
 
             AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
             alarmsCollection.setTotalCount(dtoAlarmList.size());
 
-            return Response.status(Status.OK).entity(alarmsCollection).build();
+            return ResponseEntity.ok(alarmsCollection);
     }
     
     @PostMapping(path="{id}/clear", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
