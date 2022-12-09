@@ -49,7 +49,7 @@ const pieChartIcon: IIcon = {
 
 const onWarning = () => {
   router.push({ 
-    name: 'Nodes', 
+    name: 'Node', 
     params: { id: props.node.id } 
   })
 }
