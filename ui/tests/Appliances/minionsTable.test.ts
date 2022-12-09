@@ -112,15 +112,6 @@ describe('MinionsTable.vue', () => {
             snmp_uptime: undefined,
             status: 'DOWN',
             location: 'default'
-          },
-          {
-            id: '4',
-            date: 'date4',
-            label: 'minion4',
-            icmp_latency: null,
-            snmp_uptime: null,
-            status: 'DOWN',
-            location: 'default'
           }
         ] 
         setAppliancesStore({minions: computed(() => minionsItems)})
@@ -146,7 +137,6 @@ describe('MinionsTable.vue', () => {
         const expectedValueBackground = [
           ['10', 'ok'],
           ['-10', 'failed'],
-          [undefined, 'unknown'],
           [undefined, 'unknown']
         ]
         expect(latencies).toStrictEqual(expectedValueBackground)
@@ -159,7 +149,6 @@ describe('MinionsTable.vue', () => {
         const expectedValueBackground = [
           ['10', 'ok'],
           ['-10', 'failed'],
-          [undefined, 'unknown'],
           [undefined, 'unknown']
         ]
         expect(uptimes).toStrictEqual(expectedValueBackground)

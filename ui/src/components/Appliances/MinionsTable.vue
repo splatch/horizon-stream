@@ -64,7 +64,7 @@
 import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import { ExtendedMinionDTOWithBGColors } from '@/types/minion'
+import { ExtendedMinionWithBGColors } from '@/types/minion'
 import { ComputedRef } from 'vue'
 import { formatItemBgColor } from './utils'
 import { getHumanReadableDuration } from '@/components/utils'
@@ -76,7 +76,7 @@ defineProps<{widgetProps?: WidgetProps}>()
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useAppliancesQueries()
-const listMinionsWithBgColor: ComputedRef<ExtendedMinionDTOWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableMinions))
+const listMinionsWithBgColor: ComputedRef<ExtendedMinionWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableMinions))
 
 const graphProps = ref({} as GraphProps)
 const modal = ref({
