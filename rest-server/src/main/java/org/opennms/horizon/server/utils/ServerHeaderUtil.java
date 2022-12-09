@@ -28,8 +28,10 @@
 
 package org.opennms.horizon.server.utils;
 
+import com.nimbusds.jwt.SignedJWT;
 import java.util.List;
 
+import java.util.Optional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
@@ -40,6 +42,9 @@ import io.leangen.graphql.spqr.spring.autoconfigure.DefaultGlobalContext;
 import io.leangen.graphql.util.ContextUtils;
 
 public class ServerHeaderUtil {
+
+    private static final String DEFAULT_TENANT = "opennms-prime";
+
     public String getAuthHeader(ResolutionEnvironment env) {
         GraphQLContext graphQLContext = env.dataFetchingEnvironment.getContext();
         DefaultGlobalContext context = (DefaultGlobalContext) ContextUtils.unwrapContext(graphQLContext);
@@ -47,5 +52,16 @@ public class ServerHeaderUtil {
         ServerHttpRequest request = webExchange.getRequest();
         List<String> authHeaders = request.getHeaders().get(HttpHeaders.AUTHORIZATION);
         return authHeaders != null? authHeaders.get(0): null;
+    }
+
+    public String extractTenant(ResolutionEnvironment env) {
+        String header = getAuthHeader(env);
+        try {
+            SignedJWT jwt = SignedJWT.parse(header);
+            return Optional.ofNullable(jwt.getJWTClaimsSet().getStringClaim("tenant"))
+                .orElse(DEFAULT_TENANT);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not extract tenant information", e);
+        }
     }
 }
