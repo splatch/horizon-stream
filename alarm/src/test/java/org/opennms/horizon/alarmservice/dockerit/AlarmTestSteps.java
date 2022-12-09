@@ -31,6 +31,8 @@ package org.opennms.horizon.alarmservice.dockerit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.RestAssured;
@@ -39,6 +41,11 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import lombok.extern.slf4j.Slf4j;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -47,6 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.opennms.horizon.events.proto.Event;
 
 @Slf4j
 public class AlarmTestSteps {
@@ -57,10 +65,7 @@ public class AlarmTestSteps {
     // Test Configuration
     //
     private String applicationBaseUrl;
-
-    private String kafaBootstrapServers;
-
-    Producer<String, String> producer;
+    private String kafkaRestBaseUrl;
 
     //
     // Test Runtime Data
@@ -80,43 +85,11 @@ public class AlarmTestSteps {
         log.info("Using BASE URL {}", this.applicationBaseUrl);
     }
 
-    @Given("Kafka Boot Servers in system property {string}")
-    public void kafkaBootstrapServersInSystemProperty(String systemProperty) {
-        this.kafaBootstrapServers = System.getProperty(systemProperty);
+    @Given("Kafka Rest Server URL in system property {string}")
+    public void kafkaRestServerURLInSystemProperty(String systemProperty) {
+        this.kafkaRestBaseUrl = System.getProperty(systemProperty);
 
-        log.info("######### Kafka Boostrap-servers {}", this.kafaBootstrapServers);
-    }
-    
-    @Given("Kafka producer is setup")
-    public void setupKafkaProducer() {
-
-        // create instance for properties to access producer configs
-        Properties props = new Properties();
-
-        //Assign localhost id
-        props.put("bootstrap.servers", this.kafaBootstrapServers);
-
-        //Set acknowledgements for producer requests.
-        props.put("acks","all");
-
-        //If the request fails, the producer can automatically retry,
-        props.put("retries", 0);
-
-        //Specify buffer size in config
-        props.put("batch.size", 16384);
-
-        //Reduce the no of requests less than 0
-        props.put("linger.ms", 1);
-
-        //The buffer.memory controls the total amount of memory available to the producer for buffering.
-        props.put("buffer.memory", 33554432);
-
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
-        producer = new KafkaProducer<String, String>(props);
-
+        log.info("Using KAFKA REST BASE URL {}", this.kafkaRestBaseUrl);
     }
 
     @Then("Send POST request to application at path {string}")
@@ -126,14 +99,41 @@ public class AlarmTestSteps {
 
     @Then("Send message to Kafka at topic {string}")
     public void sendMessageToKafkaAtTopic(String topic) throws Exception {
-        log.info("####### sending event DIRECTLY to Kafka");
-        producer.send(new ProducerRecord<String, String>(topic, "blah"));
-        log.info("####### DIRECT event sent");
+        URL requestUrl = new URL(new URL(this.kafkaRestBaseUrl), "/topics/" + topic);
+
+        RestAssuredConfig restAssuredConfig = this.createRestAssuredTestConfig();
+
+        RequestSpecification requestSpecification =
+            RestAssured
+                .given()
+                .config(restAssuredConfig);
+
+        Event event = Event.newBuilder().setNodeId(10L).setUei("BlahUEI").build();
+        
+        String body = formatKafkaRestProducerMessageBody(event.toByteArray());
+
+        requestSpecification =
+            requestSpecification
+                .body(body)
+                .header("Content-Type", "application/vnd.kafka.binary.v2+json")
+                .header("Accept", "application/vnd.kafka.v2+json")
+                ;
+
+        restAssuredResponse =
+            requestSpecification
+                .post(requestUrl)
+                .thenReturn()
+        ;
     }
 
     @Then("delay")
     public void delay() throws InterruptedException{
-        Thread.sleep(20000);
+        Thread.sleep(5000);
+    }
+
+    @Then("Verify the HTTP response code is {int}")
+    public void verifyTheHTTPResponseCodeIs(int expectedStatusCode) {
+        assertEquals(expectedStatusCode, restAssuredResponse.getStatusCode());
     }
 
 //    @Then("delay {int}ms")
@@ -238,5 +238,41 @@ public class AlarmTestSteps {
                 .post(requestUrl)
                 .thenReturn()
         ;
+    }
+
+    private String formatKafkaRestProducerMessageBody(byte[] payload) throws JsonProcessingException {
+        KafkaRestRecord record = new KafkaRestRecord();
+
+        byte[] encoded = Base64.getEncoder().encode(payload);
+        record.setValue(new String(encoded, StandardCharsets.UTF_8));
+
+        KafkaRestProducerRequest request = new KafkaRestProducerRequest();
+        request.setRecords(new KafkaRestRecord[] { record });
+
+        return new ObjectMapper().writeValueAsString(request);
+    }
+
+    private static class KafkaRestProducerRequest {
+        private KafkaRestRecord[] records;
+
+        public KafkaRestRecord[] getRecords() {
+            return records;
+        }
+
+        public void setRecords(KafkaRestRecord[] records) {
+            this.records = records;
+        }
+    }
+
+    private static class KafkaRestRecord {
+        private String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 }

@@ -86,18 +86,6 @@ public class AlarmServiceImpl implements AlarmService {
 
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
-
-    @Autowired
-    @Qualifier("kafkaAlarmProducerTemplate")
-    private KafkaTemplate<String, byte[]> kafkaTemplate;
-
-    @Override
-    public void kick() {
-        Event event = Event.newBuilder().setNodeId(10L).setUei("BlahUEI").build();
-        kafkaTemplate.send("events-proto", event.toByteArray());
-        log.info("############# Sent event to Kafka");
-    }
-
     @Override
     @Transactional
     public void clearAlarm(Alarm alarm, Date now) {

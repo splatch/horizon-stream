@@ -109,13 +109,6 @@ public class AlarmRestServiceImpl  {
         return ResponseEntity.ok("acknowledged");
     }
 
-    @PostMapping(path = "kick")
-    @ResponseStatus(HttpStatus.OK)
-    public void kick() {
-        log.info("######### KICK!");
-        alarmService.kick();
-    }
-
     @PutMapping(path = "{id}/memo",  consumes = MediaType.APPLICATION_FORM_URLENCODED)
 
     @RolesAllowed({ "admin" })
