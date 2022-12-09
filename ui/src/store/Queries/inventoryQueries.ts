@@ -38,7 +38,7 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
 
         if(data.value && !isFetching.value) {
           const [res] = data.value.nodeLatency?.data?.result as TsResult[]
-          const [uptime, latency] = res?.value || [] as number[] | string[] | undefined[]
+          const [, latency] = res?.value || [] as number[] | string[] | undefined[]
           const { location: nodeLocation } = location as Location
           const [{ ipAddress }] = ipInterfaces as IpInterface[]
         
@@ -51,13 +51,6 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
                 type: 'latency',
                 label: 'Latency',
                 timestamp: latency,
-                status: ''
-              },
-              {
-                type: 'uptime',
-                label: 'Uptime',
-                timestamp: uptime,
-                timeUnit: TimeUnit.MSecs,
                 status: ''
               },
               {
