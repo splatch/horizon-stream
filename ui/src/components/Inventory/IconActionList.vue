@@ -1,7 +1,7 @@
 <template>
   <ul class="icon-action-list">
     <li @click="onBubbleChart" data-test="bubble-chart"><Icon :icon="bubbleChartIcon" /></li>
-    <li @click="onLineChart" data-test="line-chart"><Icon :icon="lineChartIcon" /></li>
+    <li @click="onLineChart" data-test="line-chart" class="pointer"><Icon :icon="lineChartIcon" /></li>
     <li @click="onPieChart" data-test="pie-chart"><Icon :icon="pieChartIcon" /></li>
     <li @click="onWarning" data-test="warning"><Icon :icon="warningIcon" /></li>
     <li @click="onDelete" data-test="delete"><Icon :icon="deleteIcon" /></li>
@@ -15,6 +15,10 @@ import PieChart from '@material-design-icons/svg/outlined/pie_chart.svg'
 import Warning from '@featherds/icon/notification/Warning'
 import Delete from '@featherds/icon/action/Delete'
 import { IIcon } from '@/types'
+import { NodeContent } from '@/types/inventory'
+
+const router = useRouter()
+const props = defineProps<{ node: NodeContent}>()
 
 const onBubbleChart = () => {
   console.log('bubble chart')
@@ -25,7 +29,10 @@ const bubbleChartIcon: IIcon = {
 }
 
 const onLineChart = () => {
-  console.log('line chart')
+  router.push({ 
+    name: 'Graphs', 
+    params: { id: props.node.id } 
+  })
 }
 const lineChartIcon: IIcon = {
   image: MultilineChart,

@@ -10,7 +10,7 @@
           <MetricChipList :metrics="node?.metrics" data-test="metric-chip-list" />
           <TextAnchorList :anchor="node.anchor" data-test="text-anchor-list" />
         </div>
-        <IconActionList class="icon-action" data-test="icon-action-list" />
+        <IconActionList :node="node" class="icon-action" data-test="icon-action-list" />
       </section>
     </li>
   </ul>
