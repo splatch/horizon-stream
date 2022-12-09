@@ -91,7 +91,7 @@ const openLatencyGraph = (id: string) => {
   }
   graphProps.value = {
     label: 'Minion Latency',
-    metrics: ['minion_response_time_msec'], // TODO: might be different once BE avail
+    metrics: ['response_time_msec'],
     monitor: '', // 'ICMP',
     // id, // not yet implemented in BE
     // instance: id, // not yet implemented in BE
