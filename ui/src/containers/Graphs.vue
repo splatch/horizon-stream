@@ -31,7 +31,7 @@ import { downloadMultipleCanvases } from '@/components/Graphs/utils'
 
 const minionUptimeResponseTime: GraphProps = {
   label: 'Minion Uptime and Minion Response Time',
-  metrics: ['minion_uptime_sec', 'minion_response_time_msec'],
+  metrics: ['minion_uptime_sec', 'response_time_msec'],
   monitor: '',
   // id: 0,
   // instance: '',
@@ -49,7 +49,7 @@ const minionUptime: GraphProps = {
 }
 const minionResponseTime: GraphProps = {
   label: 'Minion Response Time',
-  metrics: ['minion_response_time_msec'],
+  metrics: ['response_time_msec'],
   monitor: '',
   // id: 0,
   // instance: '',
