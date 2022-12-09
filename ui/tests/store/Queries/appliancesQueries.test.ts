@@ -14,7 +14,7 @@ describe('Appliances queries', () =>{
     vi.restoreAllMocks()
   })
 
-  it.skip('fetched minions, nodes, metrics and locations', () => {
+  it('fetched minions, nodes, metrics and locations', () => {
     vi.mock('villus', () => ({
       useQuery: vi.fn().mockImplementation(() => ({
         data: {
@@ -27,6 +27,9 @@ describe('Appliances queries', () =>{
             deviceUptime: deviceUptimeFixture(),
             findAllLocations: locationsFixture()
           }
+        },
+        isFetching: {
+          value: false
         } 
       }))
     }))
@@ -35,15 +38,13 @@ describe('Appliances queries', () =>{
       {
         id: 'minion-01',
         label: 'minionlabel',
+        lastCheckedTime: 1670542388,
         location: {
           location: 'default',
           id: 1
         },
-        lastCheckedTime: 1670542388,
         systemId: 'opennms-minion-8d6f5f64f-4l4wh',
-        locationId: 1,
-        icmp_latency: 2,
-        snmp_uptime: 97419
+        locationId: 1 // TODO: this should be removed once Minion type updated
       }
     ]
 

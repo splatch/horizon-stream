@@ -9,7 +9,7 @@ import {
   ListMinionMetricsDocument,
   TsResult
 } from '@/types/graphql'
-import { ExtendedMinionDTO } from '@/types/minion'
+import { ExtendedMinion } from '@/types/minion'
 import { ExtendedNode } from '@/types/node'
 import { Ref } from 'vue'
 
@@ -37,11 +37,11 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     })
     
     const addMetricsToMinions = (resp: Ref<ListMinionsForTableQuery | null>)=> {
-      const minions = resp.value?.findAllMinions as ExtendedMinionDTO[] || []
-
+      const minions = resp.value?.findAllMinions as ExtendedMinion[] || []
+      
       minions.forEach(async (minion) => {
         const { data, isFetching } = await fetchMinionMetrics(minion.systemId as string)
-
+        
         if (data.value && !isFetching.value) {
           const [{ value }] = data.value.minionLatency?.data?.result as TsResult[]
           const [, val] = value as number[]
