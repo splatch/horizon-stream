@@ -29,6 +29,8 @@
 package org.opennms.horizon.events.traps;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+
+import org.opennms.horizon.events.EventConstants;
 import org.opennms.horizon.events.api.EventConfDao;
 import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.events.xml.Events;
@@ -112,9 +114,27 @@ public class TrapsConsumer {
             // Send them to kafka
             eventForwarder.sendEvents(eventLogProto, tenantId);
 
+            eventLogProto.getEventList().stream()
+                .filter(e->e.getNodeId()<=0)
+                .forEach(e ->{
+                    sendNewSuspectEvent(e, tenantId);
+                    LOG.info("Sent new suspect event for interface {}", e.getIpAddress());
+                });
+
         } catch (InvalidProtocolBufferException e) {
             LOG.error("Error while parsing traps ", e);
         }
+    }
+
+    private void sendNewSuspectEvent(org.opennms.horizon.events.proto.Event event, String tenantId) {
+        var newEvent = org.opennms.horizon.events.proto.Event.newBuilder()
+            .setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
+            .setIpAddress(event.getIpAddress())
+            .setLocation(event.getLocation())
+            .setEventInfo(event.getEventInfo())
+            .addAllEventParams(event.getEventParamsList())
+            .build();
+        eventForwarder.sendInternalEvents(newEvent, tenantId);
     }
 
     private EventLog convertToProtoEvents(Log eventLog) {

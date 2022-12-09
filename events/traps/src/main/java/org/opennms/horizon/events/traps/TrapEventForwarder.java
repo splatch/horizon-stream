@@ -30,6 +30,7 @@ package org.opennms.horizon.events.traps;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.opennms.horizon.events.proto.Event;
 import org.opennms.horizon.events.proto.EventLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +50,15 @@ public class TrapEventForwarder {
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
 
     private final String kafkaTopic;
+    private final String internalTopic;
 
     @Autowired
     public TrapEventForwarder(KafkaTemplate<String, byte[]> kafkaTemplate,
-                              @Value("${kafka.events-topic}") String kafkaTopic) {
+                              @Value("${kafka.events-topic}") String kafkaTopic,
+                              @Value("${kafka.internal-topic}") String internalEventsTopic) {
         this.kafkaTemplate = kafkaTemplate;
         this.kafkaTopic = kafkaTopic;
+        this.internalTopic = internalEventsTopic;
     }
 
     public void sendEvents(EventLog eventLog, String tenantId) {
@@ -62,5 +66,12 @@ public class TrapEventForwarder {
         var producerRecord = new ProducerRecord<String, byte[]>(kafkaTopic, eventLog.toByteArray());
         producerRecord.headers().add(new RecordHeader(TENANT_ID, tenantId.getBytes(StandardCharsets.UTF_8)));
         kafkaTemplate.send(producerRecord);
+    }
+
+    public void sendInternalEvents(Event event, String tenantId) {
+        LOG.info("Sending event for new node with interface {} with location {}", event.getIpAddress(), event.getLocation());
+        var record = new ProducerRecord<String, byte[]>(internalTopic, event.toByteArray());
+        record.headers().add(new RecordHeader(TENANT_ID, tenantId.getBytes(StandardCharsets.UTF_8)));
+        kafkaTemplate.send(record);
     }
 }

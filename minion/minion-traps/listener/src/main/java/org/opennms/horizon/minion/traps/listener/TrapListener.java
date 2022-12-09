@@ -227,6 +227,7 @@ public class TrapListener implements TrapNotificationListener, Listener {
         }
 
         TrapDTO.Builder trapDTOBuilder = TrapDTO.newBuilder()
+            .setTrapAddress(InetAddressUtils.str(trapInfo.getAgentAddress()))
             .setAgentAddress(InetAddressUtils.str(trapInfo.getAgentAddress()))
             .setCommunity(trapInfo.getCommunity())
             .setVersion(trapInfo.getVersion())

@@ -131,6 +131,7 @@ public class EventFactory {
         return false;
     }
 
+    //TODO: we don't need this here. Get node id in the inventory is much easier.
     private Optional<Integer> resolveNodeId(String location, InetAddress trapAddress, String tenantId) {
         // TODO: Query inventory service for node id
         return Optional.empty();

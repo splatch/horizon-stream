@@ -51,6 +51,7 @@ import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
 public class MonitoringSystemServiceTest {
     private MonitoringLocationRepository mockLocationRepo;
     private MonitoringSystemRepository mockMonitoringSystemRepo;
+    private TrapConfigService mockTrapConfigService;
     private MonitoringSystemService service;
 
     private MonitoringSystem testMonitoringSystem;
@@ -66,8 +67,9 @@ public class MonitoringSystemServiceTest {
     public void setUP(){
         mockLocationRepo = mock(MonitoringLocationRepository.class);
         mockMonitoringSystemRepo = mock(MonitoringSystemRepository.class);
+        mockTrapConfigService = mock(TrapConfigService.class);
         MonitoringSystemMapper mapper = Mappers.getMapper(MonitoringSystemMapper.class);
-        service = new MonitoringSystemService(mockMonitoringSystemRepo, mockLocationRepo, mapper);
+        service = new MonitoringSystemService(mockMonitoringSystemRepo, mockLocationRepo, mapper, mockTrapConfigService);
         testLocation = new MonitoringLocation();
         testMonitoringSystem = new MonitoringSystem();
         heartbeatMessage = HeartbeatMessage.newBuilder()
@@ -80,6 +82,7 @@ public class MonitoringSystemServiceTest {
     public void postTest() {
         verifyNoMoreInteractions(mockLocationRepo);
         verifyNoMoreInteractions(mockMonitoringSystemRepo);
+        verifyNoMoreInteractions(mockTrapConfigService);
     }
 
     @Test
@@ -104,11 +107,13 @@ public class MonitoringSystemServiceTest {
     void testCreateNewMonitorSystemAndNewLocation() {
         doReturn(Optional.empty()).when(mockMonitoringSystemRepo).findBySystemId(systemId);
         doReturn(Optional.empty()).when(mockLocationRepo).findByLocation(location);
+        doReturn(testLocation).when(mockLocationRepo).save(any(MonitoringLocation.class));
         service.addMonitoringSystemFromHeartbeat(heartbeatMessage, tenantId);
         verify(mockMonitoringSystemRepo).findBySystemId(systemId);
         verify(mockMonitoringSystemRepo).save(any(MonitoringSystem.class));
         verify(mockLocationRepo).findByLocation(location);
         verify(mockLocationRepo).save(any(MonitoringLocation.class));
+        verify(mockTrapConfigService).sendTrapConfigToMinion(testLocation.getTenantId(), testLocation.getLocation());
     }
 
 }
