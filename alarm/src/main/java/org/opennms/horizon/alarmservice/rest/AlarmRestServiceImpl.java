@@ -29,7 +29,6 @@
 package org.opennms.horizon.alarmservice.rest;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
@@ -39,12 +38,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.alarmservice.api.AlarmRestService;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
@@ -70,7 +67,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping(path = "/alarms")
-public class AlarmRestServiceImpl implements AlarmRestService {
+public class AlarmRestServiceImpl  {
 
     @Autowired
     private AlarmService alarmService;
@@ -105,11 +102,11 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     }
     
     @PostMapping(path="{id}/clear", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public String clearAlarm(@PathVariable Long id) {
+    public ResponseEntity<String> clearAlarm(@PathVariable Long id) {
 
         alarmService.clearAlarm(id, new Date());
 
-        return "acknowledged";
+        return ResponseEntity.ok("acknowledged");
     }
 
     @PostMapping(path = "kick")
@@ -126,7 +123,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
             description = "Update the memo for an Alarm"
     )
     @Transactional
-    public Response updateMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId, final MultivaluedMapImpl params) {
+    public ResponseEntity updateMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId, final MultivaluedMapImpl params) {
         // replace the next two lines with @RolesAllowed("")
         final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
         SecurityHelper.assertUserEditCredentials(securityContext, user);
@@ -136,7 +133,7 @@ public class AlarmRestServiceImpl implements AlarmRestService {
                 throw getException(Status.BAD_REQUEST, "Body cannot be null.");
             }
             //alarmRepository.updateStickyMemo(alarmId, body, user); // TODO doing anything??
-            return Response.noContent().build();
+            return ResponseEntity.noContent().build();
     }
 
     @RolesAllowed({ "admin" })
@@ -145,13 +142,13 @@ public class AlarmRestServiceImpl implements AlarmRestService {
     )
     @PutMapping(path = "{id}/journal", consumes = MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateJournal(@Context final SecurityContext securityContext, @PathVariable final Long alarmId, final MultivaluedMapImpl params) {
+    public ResponseEntity updateJournal(@Context final SecurityContext securityContext, @PathVariable final Long alarmId, final MultivaluedMapImpl params) {
             final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
             // SecurityHelper.assertUserEditCredentials(securityContext, user);
             final String body = params.getFirst("body");
             if (body == null) throw getException(Status.BAD_REQUEST, "Body cannot be null.");
             //alarmRepository.updateReductionKeyMemo(alarmId, body, user); // TODO doing anything??
-            return Response.noContent().build();
+            return ResponseEntity.noContent().build();
     }
 
     @RolesAllowed({ "admin" })
@@ -159,10 +156,10 @@ public class AlarmRestServiceImpl implements AlarmRestService {
         description = "Remove the memo for an Alarm"
     )
     @DeleteMapping(path = "{id}/memo")
-    public Response removeMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId) {
+    public ResponseEntity removeMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId) {
 
         alarmService.removeStickyMemo(alarmId);
-        return Response.ok().build();
+        return ResponseEntity.ok().build();
 
     }
 }
