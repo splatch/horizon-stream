@@ -146,6 +146,12 @@ public class AlarmTestSteps {
         commonSendGetRequestToApplication(path);
     }
 
+    @Then("Send DELETE request to application at path {string}")
+    public void sendDELETERequestToApplicationAtPath(String path) throws Exception {
+        log.info("####### sending POST to clear alarm {}", lastAlarmId);
+        commonSendDELETERequestToApplication(path+"/"+lastAlarmId);
+    }
+
     @Then("^parse the JSON response$")
     public void parseTheJsonResponse() {
         parsedJsonResponse = JsonPath.from((this.restAssuredResponse.getBody().asString()));
@@ -161,6 +167,14 @@ public class AlarmTestSteps {
     @Then("Remember response body for later comparison")
     public void rememberResponseBodyForLaterComparison() {
         rememberedRestAssuredResponse = restAssuredResponse;
+    }
+
+    //TODO:MMF need a better way to determine this. FOr now just assuming the first one.
+    private Long lastAlarmId;
+
+    @Then("Remember alarm id")
+    public void rememberAlarmId() {
+        this.lastAlarmId = 1L;
     }
 
 //========================================
@@ -236,6 +250,23 @@ public class AlarmTestSteps {
         restAssuredResponse =
             requestSpecification
                 .post(requestUrl)
+                .thenReturn()
+        ;
+    }
+
+    private void commonSendDELETERequestToApplication(String path) throws MalformedURLException {
+        URL requestUrl = new URL(new URL(this.applicationBaseUrl), path);
+
+        RestAssuredConfig restAssuredConfig = this.createRestAssuredTestConfig();
+
+        RequestSpecification requestSpecification =
+            RestAssured
+                .given()
+                .config(restAssuredConfig);
+
+        restAssuredResponse =
+            requestSpecification
+                .delete(requestUrl)
                 .thenReturn()
         ;
     }

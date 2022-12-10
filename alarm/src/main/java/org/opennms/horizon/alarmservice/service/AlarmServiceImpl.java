@@ -118,14 +118,23 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     @Transactional
     public void deleteAlarm(Alarm alarm) {
-            log.info("Deleting alarm with id: {} with severity: {}", alarm.getAlarmId(), alarm.getSeverity());
-        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
+        this.deleteAlarm(alarm.getAlarmId());
+    }
+
+    @Override
+    @Transactional
+    public void deleteAlarm(Long id) {
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(id);
+
         if (maybeAlarmInTrans.isEmpty()) {
-            log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
+            log.warn("Alarm with Id {}  disappeared. Skipping clear.", id);
             return;
         }
         Alarm alarmInTrans = maybeAlarmInTrans.get();
-            // If alarm was in Situation, calculate notifications for the Situation
+
+        log.info("Deleting alarm with id: {} with severity: {}", alarmInTrans.getAlarmId(), alarmInTrans.getSeverity());
+
+        // If alarm was in Situation, calculate notifications for the Situation
             Map<Alarm, Set<Alarm>> priorRelatedAlarms = new HashMap<>();
             if (alarmInTrans.isPartOfSituation()) {
                 for (Alarm situation : alarmInTrans.getRelatedSituations()) {

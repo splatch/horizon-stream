@@ -98,13 +98,24 @@ public class AlarmRestServiceImpl  {
             AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
             alarmsCollection.setTotalCount(dtoAlarmList.size());
 
+            log.info("################### found {} alarms", dtoAlarmList.size());
             return ResponseEntity.ok(alarmsCollection);
     }
     
-    @PostMapping(path="{id}/clear", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    @PostMapping(path="/clear/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> clearAlarm(@PathVariable Long id) {
 
+        log.info("######### got a CLEAR request! {}", id);
         alarmService.clearAlarm(id, new Date());
+
+        return ResponseEntity.ok("acknowledged");
+    }
+
+    @DeleteMapping(path="/delete/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deleteAlarm(@PathVariable Long id) {
+
+        log.info("######### got a DELETE request! {}", id);
+        alarmService.deleteAlarm(id);
 
         return ResponseEntity.ok("acknowledged");
     }

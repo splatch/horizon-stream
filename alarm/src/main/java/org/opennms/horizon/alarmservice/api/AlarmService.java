@@ -45,6 +45,8 @@ public interface AlarmService {
 
     void clearAlarm(Long alarmId, Date now);
 
+    void deleteAlarm(Long id);
+
     void deleteAlarm(Alarm alarm);
 
     void unclearAlarm(Alarm alarm, Date now);

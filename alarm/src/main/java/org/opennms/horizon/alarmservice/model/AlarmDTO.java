@@ -50,7 +50,7 @@ public class AlarmDTO implements Serializable {
 
     public static final String ARCHIVED = "Archived";
 
-    private Integer id;
+    private Long alarmId;
     private String eventUei;
     private InetAddress ipAddr;
     private String reductionKey;
@@ -99,8 +99,8 @@ public class AlarmDTO implements Serializable {
      * @param severity a {@link Integer} object.
      * @param firsteventtime a {@link Date} object.
      */
-    public AlarmDTO(Integer alarmid, String eventuei, Integer counter, Integer severity, Date firsteventtime, Date lasteEventTime) {
-        this.id = alarmid;
+    public AlarmDTO(Long alarmid, String eventuei, Integer counter, Integer severity, Date firsteventtime, Date lasteEventTime) {
+        this.alarmId = alarmid;
         this.eventUei = eventuei;
         this.counter = counter;
         this.severity = AlarmSeverity.get(severity);
@@ -152,7 +152,7 @@ public class AlarmDTO implements Serializable {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("alarmid", getId())
+            .add("alarmid", getAlarmId())
             .add("uei", getEventUei())
             .add("severity", getSeverity())
             .add("lastEventTime",getLastEventTime())
@@ -166,7 +166,7 @@ public class AlarmDTO implements Serializable {
     public void archive() {
         qosAlarmState = ARCHIVED;
         severity = AlarmSeverity.CLEARED;
-        reductionKey = getReductionKey() + ":ID:"+ getId();
+        reductionKey = getReductionKey() + ":ID:"+ getAlarmId();
     }
 
     // Alarms that are archived
@@ -183,9 +183,9 @@ public class AlarmDTO implements Serializable {
         return associatedAlarms.stream().map(AlarmAssociationDTO::getRelatedAlarm).collect(Collectors.toSet());
     }
     
-    public Set<Integer> getRelatedAlarmIds() {
+    public Set<Long> getRelatedAlarmIds() {
         return getRelatedAlarms().stream()
-                .map(AlarmDTO::getId)
+                .map(AlarmDTO::getAlarmId)
                 .collect(Collectors.toSet());
     }
 
@@ -216,18 +216,18 @@ public class AlarmDTO implements Serializable {
     }
 
     public void removeRelatedAlarm(AlarmDTO alarm) {
-        associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(alarm.getId()));
+        associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getAlarmId().equals(alarm.getAlarmId()));
         situation = !associatedAlarms.isEmpty();
     }
 
     public void removeRelatedAlarmWithId(Integer relatedAlarmId) {
-        associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getId().equals(relatedAlarmId));
+        associatedAlarms.removeIf(associatedAlarm -> associatedAlarm.getRelatedAlarm().getAlarmId().equals(relatedAlarmId));
         situation = !associatedAlarms.isEmpty();
     }
 
-    public Set<Integer> getRelatedSituationIds() {
+    public Set<Long> getRelatedSituationIds() {
         return getRelatedSituations().stream()
-                .map(AlarmDTO::getId)
+                .map(AlarmDTO::getAlarmId)
                 .collect(Collectors.toSet());
     }
 
