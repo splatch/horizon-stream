@@ -2,10 +2,8 @@ package org.opennms.horizon.inventory.config;
 
 import org.opennms.horizon.inventory.component.MinionRpcClient;
 import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
-import org.opennms.horizon.inventory.grpc.TenantIdClientInterceptor;
 import org.opennms.horizon.inventory.grpc.TenantLookup;
 import org.opennms.horizon.inventory.service.taskset.publisher.GrpcTaskSetPublisher;
-import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +15,8 @@ import org.springframework.context.annotation.Lazy;
 
 @Configuration
 public class MinionGatewayGrpcClientConfig {
+
+    public static final String MINION_GATEWAY_GRPC_CHANNEL = "minion-gateway";
 
     @Value("${grpc.client.minion-gateway.host:localhost}")
     private String host;
@@ -30,7 +30,7 @@ public class MinionGatewayGrpcClientConfig {
     @Value("${grpc.client.minion-gateway.maxMessageSize:10485760}")
     private int maxMessageSize;
 
-    @Bean(name = "minion-gateway")
+    @Bean(name = MINION_GATEWAY_GRPC_CHANNEL)
     public ManagedChannel createGrpcChannel() {
         NettyChannelBuilder channelBuilder = NettyChannelBuilder.forAddress(host, port)
             .keepAliveWithoutCalls(true)
@@ -46,13 +46,13 @@ public class MinionGatewayGrpcClientConfig {
         return channel;
     }
 
-    @Bean(initMethod = "init")
-    public GrpcTaskSetPublisher taskSetPublisher(@Qualifier("minion-gateway") ManagedChannel channel, @Lazy TenantLookup tenantLookup) {
+    @Bean(initMethod = "init", name = GrpcTaskSetPublisher.TASK_SET_PUBLISH_BEAN_NAME)
+    public GrpcTaskSetPublisher taskSetPublisher(@Qualifier(MINION_GATEWAY_GRPC_CHANNEL) ManagedChannel channel, @Lazy TenantLookup tenantLookup) {
         return new GrpcTaskSetPublisher(channel, tenantLookup);
     }
 
     @Bean(initMethod = "init", destroyMethod = "shutdown")
-    public MinionRpcClient createMinionRpcClient(@Qualifier("minion-gateway") ManagedChannel channel, TenantLookup tenantLookup) {
+    public MinionRpcClient createMinionRpcClient(@Qualifier(MINION_GATEWAY_GRPC_CHANNEL) ManagedChannel channel, TenantLookup tenantLookup) {
         return new MinionRpcClient(channel, tenantLookup);
     }
 }

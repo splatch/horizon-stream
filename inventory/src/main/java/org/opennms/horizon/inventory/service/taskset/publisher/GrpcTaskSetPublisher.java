@@ -43,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GrpcTaskSetPublisher implements TaskSetPublisher {
+
+    public static final String TASK_SET_PUBLISH_BEAN_NAME = "taskSetServiceBlockingStub";
     private static final Logger log = LoggerFactory.getLogger(GrpcTaskSetPublisher.class);
     private final ManagedChannel channel;
     private final TenantLookup tenantLookup;

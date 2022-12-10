@@ -89,7 +89,7 @@ public class PrometheusTSDBServiceImpl {
         String queryString = name;
         String filterStr = labels.entrySet().stream()
             .map(entry -> entry.getKey() + "=\"" + entry.getValue() + "\"")
-            .reduce("", (left, right) -> left + "," + right);
+            .reduce((left, right) -> left + "," + right).orElse("");
         queryString += '{' + filterStr + '}';
         return String.format(QUERY_TEMPLATE, queryString);
     }
