@@ -2,6 +2,9 @@ package org.opennms.horizon.inventory.config;
 
 import org.opennms.horizon.inventory.component.MinionRpcClient;
 import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
+import org.opennms.horizon.inventory.grpc.TenantIdClientInterceptor;
+import org.opennms.horizon.inventory.grpc.TenantLookup;
+import org.opennms.horizon.inventory.service.taskset.publisher.GrpcTaskSetPublisher;
 import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 import io.grpc.ManagedChannel;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import org.springframework.context.annotation.Lazy;
 
 @Configuration
 public class MinionGatewayGrpcClientConfig {
@@ -42,13 +46,13 @@ public class MinionGatewayGrpcClientConfig {
         return channel;
     }
 
-    @Bean
-    public TaskSetServiceGrpc.TaskSetServiceBlockingStub taskSetServiceBlockingStub(@Qualifier("minion-gateway") ManagedChannel channel) {
-        return TaskSetServiceGrpc.newBlockingStub(channel);
+    @Bean(initMethod = "init")
+    public GrpcTaskSetPublisher taskSetPublisher(@Qualifier("minion-gateway") ManagedChannel channel, @Lazy TenantLookup tenantLookup) {
+        return new GrpcTaskSetPublisher(channel, tenantLookup);
     }
 
     @Bean(initMethod = "init", destroyMethod = "shutdown")
-    public MinionRpcClient createMinionRpcClient(@Qualifier("minion-gateway") ManagedChannel channel) {
-        return new MinionRpcClient(channel);
+    public MinionRpcClient createMinionRpcClient(@Qualifier("minion-gateway") ManagedChannel channel, TenantLookup tenantLookup) {
+        return new MinionRpcClient(channel, tenantLookup);
     }
 }
