@@ -29,7 +29,8 @@ export enum TimeUnit {
 export declare type fncVoid = () => void;
 export declare type fncArgVoid = (...args: unknown[]) => void;
 
-export enum NodeDetailContentType {
-  MONITORED,
-  DETECTED
+export interface IIcon {
+  image: any,
+  title?: string
+  tooltip?: string
 }

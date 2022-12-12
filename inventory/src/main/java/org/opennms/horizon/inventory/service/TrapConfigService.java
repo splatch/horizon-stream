@@ -30,6 +30,7 @@ package org.opennms.horizon.inventory.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.Any;
 import lombok.RequiredArgsConstructor;
+import org.opennms.horizon.inventory.dto.MonitoringLocation;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.service.taskset.manager.TaskSetManager;
 import org.opennms.horizon.inventory.service.trapconfig.TrapConfigBean;
@@ -37,6 +38,7 @@ import org.opennms.sink.traps.contract.ListenerConfig;
 import org.opennms.sink.traps.contract.SnmpV3User;
 import org.opennms.sink.traps.contract.TrapConfig;
 import org.opennms.taskset.contract.TaskDefinition;
+import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.contract.TaskType;
 import org.opennms.taskset.service.api.TaskSetPublisher;
 import org.slf4j.Logger;
@@ -64,14 +66,14 @@ public class TrapConfigService {
         List<MonitoringLocationDTO> allLocations = monitoringLocationService.findAll();
 
         for(MonitoringLocationDTO dto : allLocations) {
-            sendTrapConfigToMinion(dto.getLocation());
+            sendTrapConfigToMinion(dto.getTenantId(), dto.getLocation());
         }
     }
 
-    public void sendTrapConfigToMinion(String location) {
+    public void sendTrapConfigToMinion(String tenantId, String location) {
         TrapConfigBean trapConfigBean = readTrapConfig();
         TrapConfig trapConfig = mapBeanToProto(trapConfigBean);
-        publishTrapConfig(location, trapConfig);
+        publishTrapConfig(tenantId, location, trapConfig);
     }
 
     private TrapConfig mapBeanToProto(TrapConfigBean config) {
@@ -102,7 +104,7 @@ public class TrapConfigService {
         }).collect(Collectors.toList());
     }
 
-    private void publishTrapConfig(String location, TrapConfig trapConfig) {
+    private void publishTrapConfig(String tenantId, String location, TrapConfig trapConfig) {
         TaskDefinition taskDefinition = TaskDefinition.newBuilder()
             .setId("traps-config")
             .setPluginName("trapd.listener.config")
@@ -110,8 +112,10 @@ public class TrapConfigService {
             .setConfiguration(Any.pack(trapConfig))
             .build();
 
-        taskSetManager.addTaskSet(location, taskDefinition);
-        taskSetPublisher.publishTaskSet(location, taskSetManager.getTaskSet(location));
+        taskSetManager.addTaskSet(tenantId, location, taskDefinition);
+
+        TaskSet taskSet = taskSetManager.getTaskSet(tenantId, location);
+        taskSetPublisher.publishTaskSet(tenantId, location, taskSet);
     }
 
     private TrapConfigBean readTrapConfig() {

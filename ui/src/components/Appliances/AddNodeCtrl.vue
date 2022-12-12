@@ -26,7 +26,7 @@
         name="locationOptions"
         v-model="locationOption"
         :options="applianceQueries.locations"
-        text-prop="name"
+        text-prop="location"
         @update:modelValue="selectLocation"
         label="Location"
       />
@@ -99,7 +99,7 @@ const defaultDevice: DeviceCreateDtoInput = {
   // latitude: undefined,
   // longitude: undefined,
   // monitoringArea: undefined,
-  managementIp: undefined,
+  managementIp: undefined
   // port: undefined,
   // snmpCommunityString: undefined
 }
