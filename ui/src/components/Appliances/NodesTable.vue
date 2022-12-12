@@ -47,7 +47,6 @@
           </div>
           <div />
           <MetricChip :metric="{timestamp: node.latency?.timestamp, label: 'ICMP Latency'}" @click="openLatencyGraph(node.id as string)" :data-metric="node.latency?.timestamp" class="bg-status pointer" data-test="node-item-latency" />
-          <!-- <MetricChip :metric="{timestamp: node.uptime?.timestamp, label: 'SNMP Uptime'}" @click="openUptimeGraph(node.id as string)" :data-metric="node.uptime?.timestamp" class="bg-status pointer" data-test="node-item-uptime" /> -->
           <MetricChip :metric="{label: 'Status'}" class="bg-status pointer" data-test="node-item-status" />
         </div>
       </TransitionGroup>
@@ -103,21 +102,7 @@ const openLatencyGraph = (id: string) => {
     label: 'Device Latency',
     metrics: ['response_time_msec'], // TODO: might be different once BE avail
     monitor: 'ICMP',
-    // id, // not yet implemented in BE
-    timeRange: 10,
-    timeRangeUnit: TimeRangeUnit.Minute
-  }
-}
-const openUptimeGraph = (id: string) => {
-  modal.value = {
-    ...modal.value,
-    isVisible: true
-  }
-  graphProps.value = {
-    label: 'Device Uptime',
-    metrics: ['device_uptime_sec'], // TODO: might be different once BE avail
-    monitor: 'ICMP',
-    // id, // not yet implemented in BE
+    nodeId: id,
     timeRange: 10,
     timeRangeUnit: TimeRangeUnit.Minute
   }

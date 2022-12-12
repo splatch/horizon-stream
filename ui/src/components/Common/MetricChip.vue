@@ -1,5 +1,5 @@
 <template>
-  <component :is="tag" :title="propsData.label" class="container pointer" data-test="propsData-chip">
+  <component :is="tag" :title="propsData.label" class="container" data-test="propsData-chip">
     <label v-if="propsData.label" :for="propsData.label">{{ propsData.label }}</label>
     <FeatherChip :id="propsData.label" :class="`bg-status ${propsData.status}`" data-test="chip">
       {{ propsData.text }}
