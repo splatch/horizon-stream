@@ -33,10 +33,8 @@ import java.util.Optional;
 
 import org.opennms.horizon.events.proto.Event;
 import org.opennms.horizon.inventory.Constants;
-import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.model.Node;
-import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 import org.springframework.context.annotation.PropertySource;
@@ -55,9 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @PropertySource("classpath:application.yml")
 public class InternalEventsConsumer {
-
     private final NodeService nodeService;
-    private final IpInterfaceService ipInterfaceService;
     private final DetectorTaskSetService detectorService;
 
     @KafkaListener(topics = "${kafka.topics.internal-events}", concurrency = "1")
@@ -65,21 +61,14 @@ public class InternalEventsConsumer {
         try {
             var event = Event.parseFrom(data);
             var tenantId = Optional.ofNullable(headers.get(Constants.TENANT_ID_KEY)).map(obj->new String((byte[])obj)).orElse(Constants.DEFAULT_TENANT_ID);
-            log.debug("Received event message with interface: {}, location: {} and tenant: {}", event.getIpAddress(),
-                event.getLocation(), tenantId);
-            Optional<IpInterfaceDTO> ipInterface = ipInterfaceService.findByIpAddressAndLocationAndTenantId(event.getIpAddress(), event.getLocation(), tenantId);
-            if(ipInterface.isPresent()) {
-                log.debug("The ip address {} at location {} with tenant {} already exists", event.getIpAddress(), event.getLocation(), tenantId);
-            } else {
-                log.info("Creating new node from trap event with IP {} and location {} ", event.getIpAddress(), event.getLocation());
-                NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
-                    .setLocation(event.getLocation())
-                    .setManagementIp(event.getIpAddress())
-                    .setLabel("trap-" + event.getIpAddress())
-                    .build();
-                Node newNode = nodeService.createNode(createDTO, tenantId);
-                detectorService.sendDetectorTasks(newNode);
-            }
+            log.debug("Create new node from event with interface: {}, location: {} and tenant: {}", event.getIpAddress(), event.getLocation(), tenantId);
+            NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
+                .setLocation(event.getLocation())
+                .setManagementIp(event.getIpAddress())
+                .setLabel("trap-" + event.getIpAddress())
+                .build();
+            Node newNode = nodeService.createNode(createDTO, tenantId);
+            detectorService.sendDetectorTasks(newNode);
         } catch (InvalidProtocolBufferException e) {
             log.error("Error while parsing event message", e);
         }
