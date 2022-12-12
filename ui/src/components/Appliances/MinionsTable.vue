@@ -32,7 +32,8 @@
             <td>{{ minion.id }}</td>
             <MetricChip tag="td" :metric="{timestamp: minion.latency?.timestamp}" @click="openLatencyGraph(minion.id as string)" :data-metric="minion.latency?.timestamp" class="bg-status pointer" data-test="minion-item-latency" />
             <!-- <MetricChip tag="td" :metric="{timestamp: minion.uptime?.timestamp}" @click="openUptimeGraph(minion.id as string)" :data-metric="minion.uptime?.timestamp" class="bg-status pointer" data-test="minion-item-uptime" /> -->
-            <MetricChip tag="td" :metric="{status: 'UP'}" class="bg-status pointer" data-test="minion-item-status" />
+            <MetricChip tag="td" :metric="{}" class="bg-status pointer" data-test="minion-item-status" />
+            <!-- <MetricChip tag="td" :metric="{status: 'UP'}" class="bg-status pointer" data-test="minion-item-status" /> -->
           </tr>
         </TransitionGroup>
       </table>

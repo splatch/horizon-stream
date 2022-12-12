@@ -45,8 +45,9 @@
                 </div>
               </div>
           </div>
+          <div />
           <MetricChip :metric="{timestamp: node.latency?.timestamp, label: 'ICMP Latency'}" @click="openLatencyGraph(node.id as string)" :data-metric="node.latency?.timestamp" class="bg-status pointer" data-test="node-item-latency" />
-          <MetricChip :metric="{timestamp: node.uptime?.timestamp, label: 'SNMP Uptime'}" @click="openUptimeGraph(node.id as string)" :data-metric="node.uptime?.timestamp" class="bg-status pointer" data-test="node-item-uptime" />
+          <!-- <MetricChip :metric="{timestamp: node.uptime?.timestamp, label: 'SNMP Uptime'}" @click="openUptimeGraph(node.id as string)" :data-metric="node.uptime?.timestamp" class="bg-status pointer" data-test="node-item-uptime" /> -->
           <MetricChip :metric="{label: 'Status'}" class="bg-status pointer" data-test="node-item-status" />
         </div>
       </TransitionGroup>
