@@ -55,7 +55,7 @@ import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 
 @ExtendWith(MockitoExtension.class)
-public class InternalEventsConsumerTest {
+class InternalEventsConsumerTest {
 
     @Mock
     private NodeService nodeService;
@@ -87,7 +87,7 @@ public class InternalEventsConsumerTest {
     }
 
     @Test
-    public void testEventCreateNewNode() {
+    void testEventCreateNewNode() {
         doReturn(node).when(nodeService).createNode(any(NodeCreateDTO.class), eq(tenantId));
         ArgumentCaptor<NodeCreateDTO> argumentCaptor = ArgumentCaptor.forClass(NodeCreateDTO.class);
         consumer.receiveTrapEvent(event.toByteArray(), headers);
