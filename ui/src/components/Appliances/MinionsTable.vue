@@ -26,25 +26,13 @@
           </tr>
         </thead>
         <TransitionGroup name="data-table" tag="tbody">
-          <tr v-for="(minion, index) in listMinionsWithBgColor" :key="(minion.id as string)" :data-index="index" data-test="minion-item">
+          <tr v-for="(minion, index) in minionsTable" :key="(minion.id as string)" :data-index="index" data-test="minion-item">
             <td>{{ minion.label }}</td>
             <td v-date>{{ minion.lastCheckedTime }}</td>
             <td>{{ minion.id }}</td>
-            <td>
-              <div @click="openLatencyGraph(minion.id as string)" :data-metric="minion.icmp_latency" class="bg-status pointer" :class="minion.latencyBgColor" data-test="minion-item-latency">
-                {{ getHumanReadableDuration(minion.icmp_latency) }}
-              </div>
-            </td>
-            <td>
-              <div @click="openUptimeGraph(minion.id as string)" :data-metric="minion.snmp_uptime" class="bg-status pointer" :class="minion.uptimeBgColor" data-test="minion-item-uptime">
-                {{ getHumanReadableDuration(minion.snmp_uptime, TimeUnit.Secs) }}
-              </div>
-            </td>
-            <td>
-              <div class="bg-status" :class="minion.statusBgColor" data-test="minion-item-status">
-                {{ minion.status || '--'}} 
-              </div>
-            </td>
+            <MetricChip tag="td" :metric="{timestamp: minion.latency?.timestamp}" @click="openLatencyGraph(minion.id as string)" :data-metric="minion.latency?.timestamp" class="bg-status pointer" data-test="minion-item-latency" />
+            <MetricChip tag="td" :metric="{timestamp: minion.uptime?.timestamp}" @click="openUptimeGraph(minion.id as string)" :data-metric="minion.uptime?.timestamp" class="bg-status pointer" data-test="minion-item-uptime" />
+            <MetricChip tag="td" :metric="{status: 'UP'}" @click="openLatencyGraph(minion.id as string)" class="bg-status pointer" data-test="minion-item-status" />
           </tr>
         </TransitionGroup>
       </table>
@@ -64,19 +52,16 @@
 import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import { ExtendedMinionWithBGColors } from '@/types/minion'
-import { ComputedRef } from 'vue'
-import { formatItemBgColor } from './utils'
-import { getHumanReadableDuration } from '@/components/utils'
-import { WidgetProps, TimeUnit } from '@/types'
+import { WidgetProps} from '@/types'
 import { GraphProps } from '@/types/graphs'
 import { TimeRangeUnit } from '@/types/graphql'
+import MetricChip from '../Common/MetricChip.vue'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useAppliancesQueries()
-const listMinionsWithBgColor: ComputedRef<ExtendedMinionWithBGColors[]> = computed<any[]>(() => formatItemBgColor(applianceQueries.tableMinions))
+const minionsTable = computed<any[]>(() => applianceQueries.tableMinions)
 
 const graphProps = ref({} as GraphProps)
 const modal = ref({
@@ -144,6 +129,7 @@ const openUptimeGraph = (id: string) => {
     }
     td {
       white-space: nowrap;
+      display: table-cell;
       div {
         border-radius: 5px;
         padding: 0px 5px 0px 5px;

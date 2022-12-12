@@ -4,21 +4,23 @@ import {
   ListNodesForTableDocument, 
   ListMinionsForTableDocument, 
   ListMinionsAndDevicesForTablesDocument, 
-  ListMinionsForTableQuery, 
   ListNodesForTableQuery,
   ListMinionMetricsDocument,
-  TsResult
+  TsResult,
+  Minion
 } from '@/types/graphql'
 import { ExtendedMinion } from '@/types/minion'
 import { ExtendedNode } from '@/types/node'
 import { Ref } from 'vue'
+import useSpinner from '@/composables/useSpinner'
 
 export const useAppliancesQueries = defineStore('appliancesQueries', {
   state: () => {
     const tableNodes = ref()
-    const tableMinions = ref()
+    const tableMinions = ref<ExtendedMinion[]>([])
     
-    // fetch appliance minions table data
+    const { startSpinner, stopSpinner } = useSpinner()
+
     const fetchMinionsForTable = () => {
       const { data: minionsData } = useQuery({
         query: ListMinionsForTableDocument,
@@ -36,24 +38,24 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       cachePolicy: 'network-only'
     })
     
-    const addMetricsToMinions = (resp: Ref<ListMinionsForTableQuery | null>)=> {
-      const minions = resp.value?.findAllMinions as ExtendedMinion[] || []
-      
-      minions.forEach(async (minion) => {
+    const addMetricsToMinions = ((allMinions: Minion[]) => {
+      allMinions.forEach(async minion => {
         const { data, isFetching } = await fetchMinionMetrics(minion.systemId as string)
-        
-        if (data.value && !isFetching.value) {
+
+        if(data.value && !isFetching.value) {
           const [{ value }] = data.value.minionLatency?.data?.result as TsResult[]
           const [, val] = value as number[]
 
-          minion.icmp_latency = val
+          tableMinions.value.push({
+            ...minion,
+            latency: {
+              timestamp: val
+            }
+          })
         }
       })
+    })
     
-      return minions
-    }
-    
-    // fetch appliance nodes table data
     const fetchNodesForTable = () => {
       const { data: nodesData } = useQuery({
         query: ListNodesForTableDocument,
@@ -92,13 +94,20 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     }
 
     // minions AND nodes table
-    const { data: minionsAndNodes, execute } = useQuery({
+    const { data: minionsAndNodes, execute, isFetching } = useQuery({
       query: ListMinionsAndDevicesForTablesDocument,
       cachePolicy: 'network-only'
     })
 
     watchEffect(() => {
-      tableMinions.value = addMetricsToMinions(minionsAndNodes)
+      isFetching.value ? startSpinner() : stopSpinner()
+
+      const allMinions = minionsAndNodes.value?.findAllMinions as ExtendedMinion[]
+
+      if(allMinions?.length) {
+        addMetricsToMinions(allMinions)
+      }
+
       tableNodes.value = addMetricsToNodes(minionsAndNodes)
     })
 

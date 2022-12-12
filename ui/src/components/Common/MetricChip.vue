@@ -1,8 +1,8 @@
 <template>
-  <component :is="asLi ? 'li' : 'div'" :title="metric.label" class="container pointer" data-test="metric-chip">
-    <label :for="metric.type">{{ metric.type }}</label>
-    <FeatherChip :id="metric.type" :class="`bg-status ${itemBgColor}`" data-test="chip">
-      {{ itemText }}
+  <component :is="tag" :title="propsData.label" class="container pointer" data-test="propsData-chip">
+    <label v-if="propsData.label" :for="propsData.label">{{ propsData.label }}</label>
+    <FeatherChip :id="propsData.label" :class="`bg-status ${propsData.status}`" data-test="chip">
+      {{ propsData.text }}
     </FeatherChip>
   </component>
 </template>
@@ -18,21 +18,27 @@ const props = defineProps({
     type: Object as PropType<Chip>,
     required: true
   },
-  asLi: {
-    type: Boolean,
-    default: false
+  tag: {
+    type: String,
+    default: 'div'
   }
 })
 
-const itemBgColor = props.metric.status?.toLowerCase() || 'unknown'
-
-const itemText = computed(() => {
-  let txt = '--'
-
-  if(props.metric.type === 'status' && props.metric.status) txt = props.metric.status 
-  else if(!props.metric?.timestamp !== undefined) txt = getHumanReadableDuration(props.metric?.timestamp as number, props.metric?.timeUnit)
+const propsData = computed(() => {
+  let chip = {
+    label: props.metric.label,
+    text: props.metric.status || '--',
+    status: props.metric.status?.toLocaleLowerCase() || 'unknown'
+  }
   
-  return txt
+  if('timestamp' in props.metric) {
+    chip = {
+      ...chip,
+      text: getHumanReadableDuration(props.metric?.timestamp as number)
+    }
+  }
+
+  return chip
 })
 </script>
 
@@ -40,11 +46,16 @@ const itemText = computed(() => {
 @use "@/styles/_statusBackground";
 
 .container {
-  text-align: center;
+  text-align: center !important;
+  box-shadow: none !important;
 }
 
 label {
   display: block;
   text-transform: capitalize;
+}
+
+.chip {
+  margin: 0;
 }
 </style>
