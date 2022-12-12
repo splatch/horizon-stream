@@ -84,20 +84,25 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     })
     
     const addMetricsToNodes = (allNodes: Node[]) => {
+      tableNodes.value = [] // reset
+
       allNodes.forEach(async node => {
         const { data, isFetching } = await fetchNodeMetrics(node.id as string)
+        const result = data.value?.nodeLatency?.data?.result
 
-        if(data.value && !isFetching.value) {
-          const [{ value }] = data.value.nodeLatency?.data?.result as TsResult[]
-          const [, val] = value as number[]
+        if(!isFetching.value) {
+          if(result?.length) {
+            const [{ value }] = result as TsResult[]
+            const [, val] = value as number[]
 
-          tableNodes.value.push({
-            ...node,
-            latency: {
-              timestamp: val
-            }
-          })
-        }
+            tableNodes.value.push({
+              ...node,
+              latency: {
+                timestamp: val
+              }
+            })
+          } else tableNodes.value.push(node)
+        } 
       })
     }
     

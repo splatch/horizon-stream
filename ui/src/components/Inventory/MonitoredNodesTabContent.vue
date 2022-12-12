@@ -7,7 +7,9 @@
       </section>
       <section class="node-content">
         <div>
-          <MetricChipList :metrics="node?.metrics" data-test="metric-chip-list" />
+          <FeatherChipList label="List of metric chips" data-test="metric-chip-list">
+            <MetricChip v-for="metric in node?.metrics" :key="metric?.type" :metric="metric" />
+          </FeatherChipList>
           <TextAnchorList :anchor="node?.anchor" data-test="text-anchor-list" />
         </div>
         <IconActionList :node="node" class="icon-action" data-test="icon-action-list" />
@@ -64,5 +66,10 @@ ul {
     justify-content: space-between;
     gap: 2rem;
   }
+}
+
+.chip-list {
+  margin: 0 0 var(variables.$spacing-s);
+  gap: 1rem;
 }
 </style>
