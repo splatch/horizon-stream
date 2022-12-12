@@ -100,7 +100,7 @@ const openLatencyGraph = (id: string) => {
   }
   graphProps.value = {
     label: 'Device Latency',
-    metrics: ['response_time_msec'], // TODO: might be different once BE avail
+    metrics: ['response_time_msec'],
     monitor: 'ICMP',
     nodeId: id,
     timeRange: 10,
