@@ -21,7 +21,7 @@
             <th scope="col" data-test="col-date">Time</th>
             <th scope="col" data-test="col-minion">Id</th>
             <th scope="col" data-test="col-latency">Latency</th>
-            <th scope="col" data-test="col-uptime">Uptime</th>
+            <!-- <th scope="col" data-test="col-uptime">Uptime</th> -->
             <th scope="col" data-test="col-status">Status</th>
           </tr>
         </thead>
@@ -31,8 +31,8 @@
             <td v-date>{{ minion.lastCheckedTime }}</td>
             <td>{{ minion.id }}</td>
             <MetricChip tag="td" :metric="{timestamp: minion.latency?.timestamp}" @click="openLatencyGraph(minion.id as string)" :data-metric="minion.latency?.timestamp" class="bg-status pointer" data-test="minion-item-latency" />
-            <MetricChip tag="td" :metric="{timestamp: minion.uptime?.timestamp}" @click="openUptimeGraph(minion.id as string)" :data-metric="minion.uptime?.timestamp" class="bg-status pointer" data-test="minion-item-uptime" />
-            <MetricChip tag="td" :metric="{status: 'UP'}" @click="openLatencyGraph(minion.id as string)" class="bg-status pointer" data-test="minion-item-status" />
+            <!-- <MetricChip tag="td" :metric="{timestamp: minion.uptime?.timestamp}" @click="openUptimeGraph(minion.id as string)" :data-metric="minion.uptime?.timestamp" class="bg-status pointer" data-test="minion-item-uptime" /> -->
+            <MetricChip tag="td" :metric="{status: 'UP'}" class="bg-status pointer" data-test="minion-item-status" />
           </tr>
         </TransitionGroup>
       </table>
@@ -54,6 +54,7 @@ import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import { WidgetProps} from '@/types'
 import { GraphProps } from '@/types/graphs'
+import { ExtendedMinion } from '@/types/minion'
 import { TimeRangeUnit } from '@/types/graphql'
 import MetricChip from '../Common/MetricChip.vue'
 
@@ -61,7 +62,7 @@ defineProps<{widgetProps?: WidgetProps}>()
 
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useAppliancesQueries()
-const minionsTable = computed<any[]>(() => applianceQueries.tableMinions)
+const minionsTable = computed<ExtendedMinion[]>(() => applianceQueries.tableMinions)
 
 const graphProps = ref({} as GraphProps)
 const modal = ref({

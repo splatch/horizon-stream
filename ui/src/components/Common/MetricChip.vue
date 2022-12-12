@@ -37,12 +37,13 @@ const propsData = computed(() => {
       text: getHumanReadableDuration(props.metric?.timestamp as number)
     }
   }
-
+  // console.log('chip',chip)
   return chip
 })
 </script>
 
 <style lang="scss" scoped>
+@use "@featherds/styles/themes/variables";
 @use "@/styles/_statusBackground";
 
 .container {
@@ -53,6 +54,7 @@ const propsData = computed(() => {
 label {
   display: block;
   text-transform: capitalize;
+  color: var(variables.$primary-text-on-surface);
 }
 
 .chip {
