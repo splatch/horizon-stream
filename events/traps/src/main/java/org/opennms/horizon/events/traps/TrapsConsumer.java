@@ -114,9 +114,7 @@ public class TrapsConsumer {
             // Send them to kafka
             eventForwarder.sendEvents(eventLogProto, tenantId);
 
-            eventLogProto.getEventList().stream()
-                .filter(e->e.getNodeId()<=0)
-                .forEach(e ->{
+            eventLogProto.getEventList().forEach(e ->{
                     sendNewSuspectEvent(e, tenantId);
                     LOG.info("Sent new suspect event for interface {}", e.getIpAddress());
                 });
