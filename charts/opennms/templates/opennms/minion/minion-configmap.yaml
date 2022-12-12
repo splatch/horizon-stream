@@ -13,3 +13,17 @@ data:
   opennms-minion-identity: |
     id=${env:HOSTNAME:-UNKNOWN}
     location=${env:LOCATION:-Default}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opennms-config
+  namespace: {{ .Release.Namespace }}
+data:
+  useKafka: |
+    useSeda=false
+    useKafka=true
+    useActiveMq=false
+  karafUsers: |
+    admin=admin,_g_:admingroup
+    _g_\:admingroup=group,admin,manager,viewer,systembundles,ssh
