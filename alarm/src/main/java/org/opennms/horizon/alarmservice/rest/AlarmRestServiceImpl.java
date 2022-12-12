@@ -92,20 +92,18 @@ public class AlarmRestServiceImpl  {
         // replace the next line with @RolesAllowed("")
         //SecurityHelper.assertUserReadCredentials(securityContext);
 
-        log.info("################################ HELOOOOOOOOO!");
             List<AlarmDTO> dtoAlarmList = alarmService.getAllAlarms("TODO:MMF need a tenant id!");
 
             AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
             alarmsCollection.setTotalCount(dtoAlarmList.size());
 
-            log.info("################### found {} alarms", dtoAlarmList.size());
+            log.info("######## found {} alarms", dtoAlarmList.size());
             return ResponseEntity.ok(alarmsCollection);
     }
     
     @PostMapping(path="/clear/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> clearAlarm(@PathVariable Long id) {
 
-        log.info("######### got a CLEAR request! {}", id);
         alarmService.clearAlarm(id, new Date());
 
         return ResponseEntity.ok("acknowledged");
@@ -114,7 +112,6 @@ public class AlarmRestServiceImpl  {
     @DeleteMapping(path="/delete/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteAlarm(@PathVariable Long id) {
 
-        log.info("######### got a DELETE request! {}", id);
         alarmService.deleteAlarm(id);
 
         return ResponseEntity.ok("acknowledged");
