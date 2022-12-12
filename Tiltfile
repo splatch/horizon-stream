@@ -161,7 +161,7 @@ jib_project(
     'opennms/horizon-stream-alarm',
     'alarm',
     'opennms-alarm',
-    port_forwards=['31080:9090', '31050:5005', '31065:6565',  '31000:8080'],
+    port_forwards=['32080:9090', '32050:5005', '32065:6565',  '32000:8080'],
 )
 
 ### Metrics Processor ###
@@ -200,22 +200,6 @@ jib_project(
     'opennms-minion-gateway-grpc-proxy',
     submodule='main',
     port_forwards=['31089:8990', '31050:5005'],
-)
-
-### Core ###
-custom_build(
-    'opennms/horizon-stream-core',
-    'mvn install -Pbuild-docker-images-enabled -DskipTests -Ddocker.image=$EXPECTED_REF -f platform',
-    deps=['./platform'],
-    ignore=['**/target', '**/dependency-reduced-pom.xml'],
-)
-
-k8s_resource(
-    'opennms-core',
-    new_name='core',
-    port_forwards=['11022:8101', '11080:8181', '11050:5005'],
-    labels=['core'],
-    trigger_mode=TRIGGER_MODE_MANUAL,
 )
 
 ### Minion ###
