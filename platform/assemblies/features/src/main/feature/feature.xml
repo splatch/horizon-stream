@@ -144,6 +144,7 @@
         <feature>jackson</feature>
 
         <bundle>mvn:org.opennms.horizon.shared/protobuf/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared.snmp/proto/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.shared/task-set-service-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon/task-set-client/${project.version}</bundle>
     </feature>
@@ -361,6 +362,7 @@
         <feature>protobuf</feature>
 
         <bundle>mvn:org.opennms.horizon.shared/protobuf/${project.version}</bundle>
+        <bundle>mvn:org.opennms.horizon.shared.snmp/proto/${project.version}</bundle>
         <bundle>mvn:org.opennms.horizon.shared/task-set-service-api/${project.version}</bundle>
     </feature>
 
