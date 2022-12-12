@@ -29,7 +29,6 @@
 package org.opennms.horizon.server.config;
 
 import org.opennms.horizon.server.service.gateway.NotificationGateway;
-import org.opennms.horizon.server.service.gateway.PlatformGateway;
 import org.opennms.horizon.server.service.grpc.EventsClient;
 import org.opennms.horizon.server.service.grpc.InventoryClient;
 import org.opennms.horizon.server.utils.JWTValidator;
@@ -46,8 +45,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 public class ConfigurationUtil {
-    @Value("${horizon-stream.core.url}")
-    private String platformUrl;
     @Value("${horizon-stream.notifications.url}")
     private String notificationsUrl;
     @Value("${grpc.url.inventory}")
@@ -59,11 +56,6 @@ public class ConfigurationUtil {
     @Bean
     public ServerHeaderUtil createHeaderUtil(JWTValidator validator) {
         return new ServerHeaderUtil(validator);
-    }
-
-    @Bean
-    public PlatformGateway createGateway(ServerHeaderUtil util) {
-        return new PlatformGateway(platformUrl, util);
     }
 
     @Bean

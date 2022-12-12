@@ -1,7 +1,5 @@
 # keycloak admin client properties
 horizon-stream:
-  core:
-    url: http://localhost:8181
   notifications:
     url: http://localhost:15080
 
