@@ -28,14 +28,22 @@
 
 package org.opennms.horizon.tsdata;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.base.Strings;
+import com.google.protobuf.Any;
+import org.opennms.horizon.snmp.api.SnmpResponseMetric;
+import org.opennms.horizon.snmp.api.SnmpValueType;
 import org.opennms.horizon.tsdata.metrics.MetricsPushAdapter;
+import org.opennms.taskset.contract.CollectorResponse;
 import org.opennms.taskset.contract.DetectorResponse;
 import org.opennms.taskset.contract.MonitorResponse;
+import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskResult;
 import org.opennms.taskset.contract.TaskSetResults;
 import org.springframework.context.annotation.PropertySource;
@@ -59,6 +67,7 @@ public class TSDataProcessor {
     private static final String METRICS_NAME_RESPONSE = "response_time";
 
     private static final String[] MONITOR_METRICS_LABEL_NAMES = {
+        "tenant_id",
         "instance",
         "location",
         "system_id",
@@ -75,6 +84,7 @@ public class TSDataProcessor {
     //headers for future use.
     @KafkaListener(topics = "${kafka.topics}", concurrency = "1")
     public void consume(@Payload byte[] data, @Headers Map<String, Object> headers) {
+        String tenantId = getTenantId(headers);
         try {
             TaskSetResults results = TaskSetResults.parseFrom(data);
             results.getResultsList().forEach(result -> CompletableFuture.supplyAsync(() -> {
@@ -82,11 +92,13 @@ public class TSDataProcessor {
                     if (result != null) {
                         log.info("Processing task set result {}", result);
                         if (result.hasMonitorResponse()) {
-                            processMonitorResponse(result);
+                            processMonitorResponse(tenantId, result);
                         } else if (result.hasDetectorResponse()) {
                             DetectorResponse detectorResponse = result.getDetectorResponse();
                             // TBD: how to process?
                             log.info("Have detector response: task-id={}; detected={}", result.getId(), detectorResponse.getDetected());
+                        } else if(result.hasCollectorResponse()) {
+                            processCollectorResponse(tenantId, result);
                         }
                     } else {
                         log.warn("Task result appears to be missing the echo response details with results {}", results);
@@ -102,43 +114,99 @@ public class TSDataProcessor {
         }
     }
 
-    private void processMonitorResponse(TaskResult result) {
+    private void processMonitorResponse(String tenantId, TaskResult result) {
         MonitorResponse response = result.getMonitorResponse();
-        String[] labelValues = {response.getIpAddress(), result.getLocation(), result.getSystemId(), response.getMonitorType().name(), String.valueOf(response.getNodeId())};
-        Gauge gauge = getGaugeFromName(METRICS_NAME_RESPONSE, true);
+        String[] labelValues = {tenantId, response.getIpAddress(), result.getLocation(), result.getSystemId(), response.getMonitorType().name(), String.valueOf(response.getNodeId())};
+        Gauge gauge = getGaugeFrom(METRICS_NAME_RESPONSE, "Monitor round trip response time", METRICS_UNIT_MS);
         gauge.labels(labelValues).set(response.getResponseTimeMs());
         Map<String, String> labels = new HashMap<>();
         for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
             labels.put(MONITOR_METRICS_LABEL_NAMES[i], labelValues[i]);
         }
 
-        if (response.getMetricsMap() != null) {
-            response.getMetricsMap().forEach((k, v) -> {
-                Gauge extGauge = getGaugeFromName(METRICS_NAME_PREFIX_MONITOR + k, false);
-                extGauge.labels(labelValues).set(v);
-            });
-        }
+        response.getMetricsMap().forEach((k, v) -> {
+            Gauge extGauge = getGaugeFrom(METRICS_NAME_PREFIX_MONITOR + k, null, null);
+            extGauge.labels(labelValues).set(v);
+        });
+
         pushAdapter.pushMetrics(collectorRegistry, labels);
     }
 
-    private Gauge getGaugeFromName(String name, boolean withDesc) {
+    private Gauge getGaugeFrom(String name, String description, String unit) {
         return gauges.compute(name, (key, gauge) -> {
             if (gauge != null) {
                 return gauge;
             }
-            if (withDesc) {
-                return Gauge.build()
-                    .name(name)
-                    .help("Monitor round trip response time")
-                    .unit(METRICS_UNIT_MS)
-                    .labelNames(MONITOR_METRICS_LABEL_NAMES)
-                    .register(collectorRegistry);
+            var builder = Gauge.build().name(name).labelNames(TSDataProcessor.MONITOR_METRICS_LABEL_NAMES);
+
+            if (!Strings.isNullOrEmpty(description)) {
+                builder.help(description);
             }
-            return Gauge.build()
-                .name(name)
-                .unit(METRICS_UNIT_MS)
-                .labelNames(MONITOR_METRICS_LABEL_NAMES)
-                .register(collectorRegistry);
+            if (!Strings.isNullOrEmpty(unit)) {
+                builder.unit(unit);
+            }
+
+            return builder.register(collectorRegistry);
         });
     }
+
+    private void processCollectorResponse(String tenantId, TaskResult result) {
+        CollectorResponse response = result.getCollectorResponse();
+        String[] labelValues = {tenantId, response.getIpAddress(), result.getLocation(), result.getSystemId(),
+            response.getMonitorType().name(), String.valueOf(response.getNodeId())};
+        if (response.hasResult() && response.getMonitorType().equals(MonitorType.SNMP)) {
+            Any collectorMetric = response.getResult();
+            try {
+                var snmpResponse = collectorMetric.unpack(SnmpResponseMetric.class);
+                snmpResponse.getResultsList().forEach((snmpResult) -> {
+                    String metricName = snmpResult.getAlias();
+                    String description = metricName + " with oid " + snmpResult.getBase();
+                    int type = snmpResult.getValue().getTypeValue();
+                    switch (type) {
+                        case SnmpValueType.INT32_VALUE:
+                            Gauge int32Value = getGaugeFrom(metricName, description, null);
+                            int32Value.labels(labelValues).set(snmpResult.getValue().getSint64());
+                            break;
+                        case SnmpValueType.COUNTER32_VALUE:
+                            // TODO: Can't set a counter through prometheus API, may be possible with remote write
+                        case SnmpValueType.TIMETICKS_VALUE:
+                        case SnmpValueType.GAUGE32_VALUE:
+                            Gauge uint64Value = getGaugeFrom(metricName, description, null);
+                            uint64Value.labels(labelValues).set(snmpResult.getValue().getUint64());
+                            break;
+                        case SnmpValueType.COUNTER64_VALUE:
+                            double metric = new BigInteger(snmpResult.getValue().getBytes().toByteArray()).doubleValue();
+                            Gauge gauge = getGaugeFrom(metricName, description, null);
+                            gauge.labels(labelValues).set(metric);
+                            break;
+                    }
+
+                });
+            } catch (InvalidProtocolBufferException e) {
+                log.warn("Exception while parsing protobuf ", e);
+
+            }
+        }
+        Map<String, String> labels = new HashMap<>();
+        for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
+            labels.put(MONITOR_METRICS_LABEL_NAMES[i], labelValues[i]);
+        }
+        pushAdapter.pushMetrics(collectorRegistry, labels);
+
+    }
+
+    private String getTenantId(Map<String, Object> headers) {
+        return Optional.ofNullable(headers.get("tenant-id"))
+            .map(tenantId -> {
+                if (tenantId instanceof byte[]) {
+                    return new String((byte[]) tenantId);
+                }
+                if (tenantId instanceof String) {
+                    return (String) tenantId;
+                }
+                return "" + tenantId;
+            })
+            .orElseThrow(() -> new RuntimeException("Could not determine tenant id"));
+    }
+
 }

@@ -7,6 +7,11 @@ horizon-stream:
 
 tsdb.url: http://localhost:59090/api/v1/query
 
+keycloak:
+  url: http://onms-keycloak:8080/auth
+  realm: opennms
+  signatureAlgorithm: RS256
+
 grpc:
   url:
     inventory: localhost:29065

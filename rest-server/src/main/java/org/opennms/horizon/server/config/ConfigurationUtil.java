@@ -32,6 +32,7 @@ import org.opennms.horizon.server.service.gateway.NotificationGateway;
 import org.opennms.horizon.server.service.gateway.PlatformGateway;
 import org.opennms.horizon.server.service.grpc.EventsClient;
 import org.opennms.horizon.server.service.grpc.InventoryClient;
+import org.opennms.horizon.server.utils.JWTValidator;
 import org.opennms.horizon.server.utils.ServerHeaderUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,8 +57,8 @@ public class ConfigurationUtil {
     private String eventsGrpcAddress;
 
     @Bean
-    public ServerHeaderUtil createHeaderUtil() {
-        return new ServerHeaderUtil();
+    public ServerHeaderUtil createHeaderUtil(JWTValidator validator) {
+        return new ServerHeaderUtil(validator);
     }
 
     @Bean
