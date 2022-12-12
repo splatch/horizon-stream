@@ -3,7 +3,6 @@ package org.opennms.horizon.server;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
-import org.opennms.horizon.server.service.DataChoicesService;
 import org.opennms.horizon.server.service.GrpcEventService;
 import org.opennms.horizon.server.service.GrpcLocationService;
 import org.opennms.horizon.server.service.GrpcMinionService;
@@ -16,8 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class RestServerApplicationTests {
     @Autowired
     private NotificationsService notificationsService;
-    @Autowired
-    private DataChoicesService dataChoicesService;
     @Autowired
     private GrpcMinionService grpcMinionService;
     @Autowired
@@ -34,9 +31,6 @@ class RestServerApplicationTests {
         assertNotNull(grpcLocationService);
         assertNotNull(grpcEventService);
         assertNotNull(grpcNodeService);
-
-        //will be removed
-        assertNotNull(dataChoicesService);
 	}
 
 }
