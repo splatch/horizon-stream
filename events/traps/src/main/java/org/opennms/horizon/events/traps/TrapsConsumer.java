@@ -32,6 +32,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.opennms.horizon.events.EventConstants;
 import org.opennms.horizon.events.api.EventConfDao;
+import org.opennms.horizon.events.grpc.client.InventoryClient;
 import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.events.xml.Events;
 import org.opennms.horizon.events.xml.Log;
@@ -74,12 +75,15 @@ public class TrapsConsumer {
     private final SnmpHelper snmpHelper;
 
     private final TrapEventForwarder eventForwarder;
+    private final InventoryClient inventoryClient;
 
     @Autowired
-    public TrapsConsumer(EventConfDao eventConfDao, SnmpHelper snmpHelper, TrapEventForwarder eventForwarder) {
+    public TrapsConsumer(EventConfDao eventConfDao, SnmpHelper snmpHelper,
+                         TrapEventForwarder eventForwarder, InventoryClient inventoryClient) {
         this.eventConfDao = eventConfDao;
         this.snmpHelper = snmpHelper;
         this.eventForwarder = eventForwarder;
+        this.inventoryClient = inventoryClient;
     }
 
     private EventFactory eventFactory;
@@ -87,7 +91,7 @@ public class TrapsConsumer {
 
     @PostConstruct
     public void init() {
-        eventFactory = new EventFactory(eventConfDao, snmpHelper);
+        eventFactory = new EventFactory(eventConfDao, snmpHelper, inventoryClient);
     }
 
 
