@@ -91,14 +91,12 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       allNodes.forEach(async node => {
         const { data, isFetching } = await fetchNodeMetrics(node.id as number)
         const latencyResult = data.value?.nodeLatency?.data?.result
-        // TODO: Uncomment once nodeStatus api stable
-        // const status = data.value?.nodeStatus?.status
+        const status = data.value?.nodeStatus?.status
 
         if(!isFetching.value) {
           let tableNode: ExtendedNode = {
-            ...node
-            // TODO: Uncomment once nodeStatus api stable
-            // status
+            ...node,
+            status
           }
 
           if(latencyResult?.length) {
