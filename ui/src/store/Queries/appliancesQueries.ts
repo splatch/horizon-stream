@@ -46,17 +46,19 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     const addMetricsToMinions = ((allMinions: Minion[]) => {
       allMinions.forEach(async minion => {
         const { data, isFetching } = await fetchMinionMetrics(minion.systemId as string)
-
-        if(data.value && !isFetching.value) {
-          const [{ value }] = data.value.minionLatency?.data?.result as TsResult[]
-          const [, val] = value as number[]
-
-          tableMinions.value.push({
-            ...minion,
-            latency: {
-              timestamp: val
-            }
-          })
+        const result = data.value?.minionLatency?.data?.result
+        if(!isFetching.value) {
+          if(result?.length) {
+            const [{ value }] = data.value?.minionLatency?.data?.result as TsResult[]
+            const [, val] = value as number[]
+  
+            tableMinions.value.push({
+              ...minion,
+              latency: {
+                timestamp: val
+              }
+            })
+          } else tableMinions.value.push(minion)
         }
       })
     })
