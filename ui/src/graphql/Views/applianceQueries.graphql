@@ -31,8 +31,6 @@ fragment LocationsParts on Query {
 
 query ListNodesForTable {
   ...NodesTableParts
-  ...DeviceUptimeParts
-  ...DeviceLatencyParts
 }
 
 query ListMinionsForTable {
@@ -43,8 +41,9 @@ query ListMinionMetrics($instance: String) {
   ...MinionLatencyParts
 }
 
-query ListNodeMetrics($id: String) {
+query ListNodeMetrics($id: Long!) {
   ...NodeLatencyParts
+  ...NodeStatusParts
 }
 
 query ListMinionsAndDevicesForTables {
