@@ -47,6 +47,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.opennms.horizon.alarmservice.model.AlarmDTO;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.rest.AlarmCollectionDTO;
 import org.opennms.horizon.events.proto.Event;
 
@@ -94,7 +96,9 @@ public class AlarmTestSteps {
 
     @Then("Send POST request to clear alarm at path {string}")
     public void sendPOSTRequestToClearAlarmAtPath(String path) throws Exception {
-        commonSendPOSTRequestToApplication(path+"/1");
+        AlarmCollectionDTO alarmCollectionDTO = rememberedRestAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId());
     }
 
     @Then("Send message to Kafka at topic {string}")
@@ -166,14 +170,10 @@ public class AlarmTestSteps {
 
     @Then("Verify alarm was cleared")
     public void verifyAlarmWasCleared() {
-        String jsonStr = rememberedRestAssuredResponse.getBody().asString();
 
-        log.info("############ json is {}", jsonStr);
-
-//        AlarmCollectionDTO alarmCollectionDTO = rememberedRestAssuredResponse.getBody().as(AlarmCollectionDTO.class);
-//        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
-//        assertEquals(Severity.CLEARED, alarmDTO.getSeverity());
-        assertTrue(jsonStr.contains("\"severity\":\"CLEARED\""));
+        AlarmCollectionDTO alarmCollectionDTO = rememberedRestAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        assertEquals(AlarmSeverity.CLEARED, alarmDTO.getSeverity());
     }
 
     @Then("Remember response body for later comparison")
@@ -184,7 +184,9 @@ public class AlarmTestSteps {
     //TODO:MMF need a better way to determine this. For now just assuming the second one.
     @Then("Remember alarm id")
     public void rememberAlarmId() {
-        this.lastAlarmId = 2L;
+        AlarmCollectionDTO alarmCollectionDTO = rememberedRestAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        this.lastAlarmId = alarmDTO.getAlarmId();
     }
 
 //========================================

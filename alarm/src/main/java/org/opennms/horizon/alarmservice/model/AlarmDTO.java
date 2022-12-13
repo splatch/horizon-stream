@@ -29,6 +29,7 @@
 package org.opennms.horizon.alarmservice.model;
 
 import com.google.common.base.MoreObjects;
+import java.beans.Transient;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Date;
@@ -124,6 +125,7 @@ public class AlarmDTO implements Serializable {
         this.severity = AlarmSeverity.get(severity);
     }
 
+    @Transient
     public boolean isAcknowledged() {
         return getAlarmAckUser() != null;
     }
@@ -170,6 +172,7 @@ public class AlarmDTO implements Serializable {
     }
 
     // Alarms that are archived
+    @Transient
     public boolean isArchived() {
         return ARCHIVED.equals(qosAlarmState);
     }
@@ -236,6 +239,7 @@ public class AlarmDTO implements Serializable {
         partOfSituation = !relatedSituations.isEmpty();
     }
 
+    @Transient
     public Date getLastUpdateTime() {
         if (getLastAutomationTime() != null && getLastAutomationTime().compareTo(getLastEventTime()) > 0) {
             return getLastAutomationTime();

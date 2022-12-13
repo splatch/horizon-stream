@@ -9,6 +9,7 @@ Feature: Alarm Service Basic Functionality
     Then Verify the HTTP response code is 200
     Then delay
     Then Send GET request to application at path "/alarms/list"
+    Then Remember response body for later comparison
     Then DEBUG dump the response body
     Then parse the JSON response
     Then Verify JSON path expressions match
@@ -19,18 +20,28 @@ Feature: Alarm Service Basic Functionality
     Then Verify the HTTP response code is 200
     Then delay
     Then Send GET request to application at path "/alarms/list"
+    Then Remember response body for later comparison
+    Then DEBUG dump the response body
     Then parse the JSON response
     Then Verify JSON path expressions match
-      | totalCount == 2 |
+      | totalCount == 1 |
     Then Remember alarm id
     Then Send DELETE request to application at path "/alarms/delete"
     Then Verify the HTTP response code is 200
     Then Send GET request to application at path "/alarms/list"
+    Then Remember response body for later comparison
+    Then DEBUG dump the response body
     Then parse the JSON response
     Then Verify JSON path expressions match
-      | totalCount == 1 |
+      | totalCount == 0 |
 
   Scenario: Verify alarm can be cleared
+    Then Send message to Kafka at topic "events-proto"
+    Then Verify the HTTP response code is 200
+    Then delay
+    Then Send GET request to application at path "/alarms/list"
+    Then Remember response body for later comparison
+    Then DEBUG dump the response body
     Then Send POST request to clear alarm at path "/alarms/clear"
     Then Verify the HTTP response code is 200
     Then Send GET request to application at path "/alarms/list"

@@ -251,13 +251,8 @@ public class AlarmServiceImpl implements AlarmService {
     public Alarm process(Event event) {
         log.info("########  Received Event, processing");
         Objects.requireNonNull(event, "Cannot create alarm from null event.");
-        if (!checkEventSanityAndDoWeProcess(event)) {
-            return null;
-        }
 
-        if (log.isDebugEnabled()) {
-//            log.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
-        }
+        log.debug("process: {}; nodeid: {}; ipaddr: {}", event.getUei(), event.getNodeId(), event.getIpAddress());
 
         // Lock both the reduction and clear keys (if set) using a fair striped lock
         // We do this to ensure that clears and triggers are processed in the same order
@@ -295,15 +290,11 @@ public class AlarmServiceImpl implements AlarmService {
 
     protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
-
-        //TODO:MMF - we aren't getting this info on the protobuf even now. Need design guidance.
-//        final String reductionKey = event.getAlarmData().getReductionKey();
-        String reductionKey = "blah";
+        String reductionKey = String.format("%s:%s:%s", event.getUei(), event.getNodeId(), "TODO:Need tenant id");
         log.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
 
         String key = reductionKey;
-//        String clearKey = event.getAlarmData().getClearKey();
-        String clearKey = "blah";
+        String clearKey = reductionKey;
 
         boolean didSwapReductionKeyWithClearKey = false;
         if (!legacyAlarmState && clearKey != null && isResolutionEvent(event)) {
@@ -332,7 +323,7 @@ public class AlarmServiceImpl implements AlarmService {
                 alarmEntityNotifier.didArchiveAlarm(alarm, reductionKey);
             }
 
-            alarm = createNewAlarm(event);
+            alarm = createNewAlarm(event, reductionKey);
 
             alarmRepository.save(alarm);
 
@@ -380,28 +371,6 @@ public class AlarmServiceImpl implements AlarmService {
         return false;
     }
 
-    private static boolean checkEventSanityAndDoWeProcess(final Event event) {
-//        if (event.getLogmsg() != null && LogDestType.DONOTPERSIST.toString().equalsIgnoreCase(event.getLogmsg().getDest())) {
-//            if (log.isDebugEnabled()) {
-//                log.debug("checkEventSanity: uei '{}' marked as '{}'; not processing event.", event.getUei(), LogDestType.DONOTPERSIST);
-//            }
-//            return false;
-//        }
-//
-//        if (event.getAlarmData() == null) {
-//            if (log.isDebugEnabled()) {
-//                log.debug("checkEventSanity: uei '{}' has no alarm data; not processing event.", event.getUei());
-//            }
-//            return false;
-//        }
-//
-//        if (event.getDbid() <= 0) {
-//            throw new IllegalArgumentException("Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
-//        }
-
-        return true;
-    }
-
     private static Collection<String> getLockKeys(Event event) {
 //        if (event.getAlarmData().getClearKey() == null) {
 //            return Collections.singletonList(event.getAlarmData().getReductionKey());
@@ -411,12 +380,12 @@ public class AlarmServiceImpl implements AlarmService {
         return null;
     }
 
-    private Alarm createNewAlarm(Event event) {
+    private Alarm createNewAlarm(Event event, String reductionKey) {
         Alarm alarm = new Alarm();
         // Situations are denoted by the existance of related-reductionKeys
 //        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
         alarm.setAlarmType(1);
-//        alarm.setClearKey(event.getAlarmData().getClearKey());
+        alarm.setClearKey(reductionKey);
         alarm.setCounter(1);
 //        alarm.setDescription(e.getEventDescr());
 //        alarm.setDistPoller(e.getDistPoller());
@@ -431,7 +400,7 @@ public class AlarmServiceImpl implements AlarmService {
 //        alarm.setMouseOverText(e.getEventMouseOverText());
 //        alarm.setNode(e.getNode());
 //        alarm.setOperInstruct(e.getEventOperInstruct());
-//        alarm.setReductionKey(event.getAlarmData().getReductionKey());
+        alarm.setReductionKey(reductionKey);
 //        alarm.setServiceType(e.getServiceType());
         alarm.setSeverity(AlarmSeverity.CRITICAL);
 //        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set

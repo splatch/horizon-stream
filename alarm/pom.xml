@@ -467,16 +467,20 @@
                     <skipITs>${skipITs}</skipITs>
                     <reuseForks>true</reuseForks>
                     <useSystemClassLoader>false</useSystemClassLoader>
-                <systemProperties>
-                    <property>
-                        <name>application.base-url</name>
-                        <value>http://localhost:${app-http-port}</value>
-                    </property>
-                    <property>
-                        <name>kafka-rest.url</name>
-                        <value>http://localhost:${kafka-rest.port}</value>
-                    </property>
-                </systemProperties>
+<!--                    ##########################-->
+<!--                    ### this is REQUIRED so that the the ITTests have access to the project classes!-->
+<!--                    ##########################-->
+                    <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+                    <systemProperties>
+                        <property>
+                            <name>application.base-url</name>
+                            <value>http://localhost:${app-http-port}</value>
+                        </property>
+                        <property>
+                            <name>kafka-rest.url</name>
+                            <value>http://localhost:${kafka-rest.port}</value>
+                        </property>
+                    </systemProperties>
                 </configuration>
             </plugin>
 
