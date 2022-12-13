@@ -62,7 +62,7 @@
             <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>events</artifactId>
             <version>${project.version}</version>
