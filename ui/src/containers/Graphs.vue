@@ -47,7 +47,7 @@ const bytesIn = computed<GraphProps>(() => {
   return {
     label: 'Bytes Inbound',
     metrics: ['ifInOctets'],
-    monitor: 'ICMP',
+    monitor: 'SNMP',
     nodeId: route.params.id as string,
     instance: instance.value,
     timeRange: 10,
@@ -59,7 +59,7 @@ const bytesOut = computed<GraphProps>(() => {
   return {
     label: 'Bytes Inbound',
     metrics: ['ifOutOctets'],
-    monitor: 'ICMP',
+    monitor: 'SNMP',
     nodeId: route.params.id as string,
     instance: instance.value,
     timeRange: 10,
@@ -71,7 +71,7 @@ const bytesInOut = computed<GraphProps>(() => {
   return {
     label: 'Bytes Inbound / Outbound',
     metrics: ['ifInOctets', 'ifOutOctets'],
-    monitor: 'ICMP',
+    monitor: 'SNMP',
     nodeId: route.params.id as string,
     instance: instance.value,
     timeRange: 10,
@@ -83,7 +83,7 @@ const hcIn = computed<GraphProps>(() => {
   return {
     label: 'ifHCInOctets',
     metrics: ['ifHCInOctets'],
-    monitor: 'ICMP',
+    monitor: 'SNMP',
     nodeId: route.params.id as string,
     instance: instance.value,
     timeRange: 10,
@@ -95,7 +95,7 @@ const hcOut = computed<GraphProps>(() => {
   return {
     label: 'ifHCOutOctets',
     metrics: ['ifHCInOctets'],
-    monitor: 'ICMP',
+    monitor: 'SNMP',
     nodeId: route.params.id as string,
     instance: instance.value,
     timeRange: 10,
