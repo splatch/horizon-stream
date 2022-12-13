@@ -27,17 +27,23 @@ const props = defineProps({
 const propsData = computed(() => {
   let chip = {
     label: props.metric.label,
-    text: props.metric.status || '--',
-    status: props.metric.status?.toLocaleLowerCase() || 'unknown'
+    text: props.metric.status ? 'UP' : 'DOWN',
+    status: props.metric.status ? 'up' : 'down'
   }
   
   if('timestamp' in props.metric) {
+    const status = 
+      props.metric.timestamp === undefined 
+        ? 'unknown' : props.metric?.timestamp && props.metric?.timestamp >= 0
+          ? 'up' : 'down'
+
     chip = {
       ...chip,
-      text: getHumanReadableDuration(props.metric?.timestamp as number)
+      text: getHumanReadableDuration(props.metric?.timestamp as number),
+      status
     }
   }
-  // console.log('chip',chip)
+
   return chip
 })
 </script>

@@ -30,7 +30,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       watchEffect(() => {
         isFetching.value ? startSpinner() : stopSpinner()
 
-        const allMinions = minionsData.value?.findAllMinions as ExtendedMinion[]
+        const allMinions = minionsData.value?.findAllMinions as Minion[]
         if(allMinions?.length) {
           addMetricsToMinions(allMinions)
         }
@@ -72,7 +72,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       watchEffect(() => {
         isFetching.value ? startSpinner() : stopSpinner()
         
-        const allNodes = nodesData.value?.findAllNodes as ExtendedNode[]
+        const allNodes = nodesData.value?.findAllNodes as Node[]
         if(allNodes?.length) {
           addMetricsToNodes(allNodes)
         }
@@ -117,12 +117,12 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     watchEffect(() => {
       isFetching.value ? startSpinner() : stopSpinner()
 
-      const allMinions = minionsAndNodes.value?.findAllMinions as ExtendedMinion[]
+      const allMinions = minionsAndNodes.value?.findAllMinions as Minion[]
       if(allMinions?.length) {
         addMetricsToMinions(allMinions)
       }
 
-      const allNodes = minionsAndNodes.value?.findAllNodes as ExtendedNode[]
+      const allNodes = minionsAndNodes.value?.findAllNodes as Node[]
       if(allNodes?.length) {
         addMetricsToNodes(allNodes)
       }
