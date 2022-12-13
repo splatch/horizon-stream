@@ -29,6 +29,7 @@ grpc:
 kafka:
   traps-topic: "traps"
   events-topic: "events-proto"
+  internal-topic: "internal-event"
 
 keycloak:
   realm: opennms

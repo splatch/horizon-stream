@@ -26,6 +26,7 @@ public class MonitoringSystemService {
     private final MonitoringSystemRepository modelRepo;
     private final MonitoringLocationRepository locationRepository;
     private final MonitoringSystemMapper mapper;
+    private final TrapConfigService trapConfigService;
 
     public List<MonitoringSystemDTO> findByTenantId(String tenantId) {
         List<MonitoringSystem> all = modelRepo.findByTenantId(tenantId);
@@ -50,7 +51,9 @@ public class MonitoringSystemService {
             } else {
                 location.setLocation(identity.getLocation());
                 location.setTenantId(tenantId);
-                locationRepository.save(location);
+                var newLocation = locationRepository.save(location);
+                trapConfigService.sendTrapConfigToMinion(newLocation.getTenantId(), newLocation.getLocation());
+
             }
             MonitoringSystem monitoringSystem = new MonitoringSystem();
             monitoringSystem.setSystemId(identity.getSystemId());

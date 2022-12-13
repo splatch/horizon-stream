@@ -28,7 +28,7 @@
 
 package org.opennms.horizon.inventory.service;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -39,7 +39,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -54,6 +53,7 @@ import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
 public class MonitoringSystemServiceTest {
     private MonitoringLocationRepository mockLocationRepo;
     private MonitoringSystemRepository mockMonitoringSystemRepo;
+    private TrapConfigService mockTrapConfigService;
     private MonitoringSystemService service;
 
     private MonitoringSystem testMonitoringSystem;
@@ -69,9 +69,9 @@ public class MonitoringSystemServiceTest {
     public void setUP(){
         mockLocationRepo = mock(MonitoringLocationRepository.class);
         mockMonitoringSystemRepo = mock(MonitoringSystemRepository.class);
+        mockTrapConfigService = mock(TrapConfigService.class);
         MonitoringSystemMapper mapper = Mappers.getMapper(MonitoringSystemMapper.class);
-
-        service = new MonitoringSystemService(mockMonitoringSystemRepo, mockLocationRepo, mapper);
+        service = new MonitoringSystemService(mockMonitoringSystemRepo, mockLocationRepo, mapper, mockTrapConfigService);
         testLocation = new MonitoringLocation();
         testMonitoringSystem = new MonitoringSystem();
         testMonitoringSystem.setLastCheckedIn(LocalDateTime.now());
@@ -88,6 +88,7 @@ public class MonitoringSystemServiceTest {
     public void postTest() {
         verifyNoMoreInteractions(mockLocationRepo);
         verifyNoMoreInteractions(mockMonitoringSystemRepo);
+        verifyNoMoreInteractions(mockTrapConfigService);
     }
 
     @Test
@@ -112,19 +113,21 @@ public class MonitoringSystemServiceTest {
     void testCreateNewMonitorSystemAndNewLocation() {
         doReturn(Optional.empty()).when(mockMonitoringSystemRepo).findBySystemId(systemId);
         doReturn(Optional.empty()).when(mockLocationRepo).findByLocation(location);
+        doReturn(testLocation).when(mockLocationRepo).save(any(MonitoringLocation.class));
         service.addMonitoringSystemFromHeartbeat(heartbeatMessage, tenantId);
         verify(mockMonitoringSystemRepo).findBySystemId(systemId);
         verify(mockMonitoringSystemRepo).save(any(MonitoringSystem.class));
         verify(mockLocationRepo).findByLocation(location);
         verify(mockLocationRepo).save(any(MonitoringLocation.class));
+        verify(mockTrapConfigService).sendTrapConfigToMinion(testLocation.getTenantId(), testLocation.getLocation());
     }
 
     @Test
     void testFindBySystemIdWithStatus() {
         doReturn(Optional.of(testMonitoringSystem)).when(mockMonitoringSystemRepo).findBySystemIdAndTenantId(systemId, tenantId);
         var result = service.findBySystemId(systemId, tenantId);
-        assertTrue(result.isPresent());
-        assertTrue(result.get().getStatus());
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get().getStatus()).isTrue();
         verify(mockMonitoringSystemRepo).findBySystemIdAndTenantId(systemId, tenantId);
     }
 
