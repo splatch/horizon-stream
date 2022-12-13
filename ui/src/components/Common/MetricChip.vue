@@ -1,8 +1,8 @@
 <template>
   <component :is="tag" :title="propsData.label" class="container" data-test="propsData-chip">
     <label v-if="propsData.label" :for="propsData.label">{{ propsData.label }}</label>
-    <FeatherChip :id="propsData.label" :class="`bg-status ${propsData.status}`" data-test="chip">
-      {{ propsData.text }}
+    <FeatherChip :id="propsData.label" :class="`bg-status ${propsData.bgColor}`" data-test="chip">
+      {{ propsData.value }}
     </FeatherChip>
   </component>
 </template>
@@ -27,17 +27,24 @@ const props = defineProps({
 const propsData = computed(() => {
   let chip = {
     label: props.metric.label,
-    text: props.metric.status || '--',
-    status: props.metric.status?.toLocaleLowerCase() || 'unknown'
+    value: props.metric.status || '--',
+    bgColor: props.metric.status || 'unknown'
   }
   
   if('timestamp' in props.metric) {
+    let bgColor = 'unknown'
+
+    if(props.metric.timestamp !== undefined) {
+      bgColor = props.metric.timestamp >= 0 ? 'up' : 'down'
+    }
+    
     chip = {
       ...chip,
-      text: getHumanReadableDuration(props.metric?.timestamp as number)
+      value: getHumanReadableDuration(props.metric.timestamp as number),
+      bgColor
     }
   }
-  // console.log('chip',chip)
+
   return chip
 })
 </script>

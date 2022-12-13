@@ -30,7 +30,7 @@
             <td v-date>{{ minion.lastCheckedTime }}</td>
             <td>{{ minion.id }}</td>
             <MetricChip tag="td" :metric="{timestamp: minion.latency?.timestamp}" @click="openLatencyGraph(minion.id as string)" :data-metric="minion.latency?.timestamp" class="bg-status" data-test="minion-item-latency" />
-            <MetricChip tag="td" :metric="{}" class="bg-status" data-test="minion-item-status" />
+            <MetricChip tag="td" :metric="{status: minion.status}" class="bg-status" data-test="minion-item-status" />
           </tr>
         </TransitionGroup>
       </table>
@@ -76,24 +76,8 @@ const openLatencyGraph = (id: string) => {
   graphProps.value = {
     label: 'Minion Latency',
     metrics: ['response_time_msec'],
-    monitor: '', // 'ICMP',
-    // id, // not yet implemented in BE
-    // instance: id, // not yet implemented in BE
-    timeRange: 10,
-    timeRangeUnit: TimeRangeUnit.Minute
-  }
-}
-const openUptimeGraph = (id: string) => {
-  modal.value = {
-    ...modal.value,
-    isVisible: true
-  }
-  graphProps.value = {
-    label: 'Minion Uptime',
-    metrics: ['minion_uptime_sec'], // TODO: might be different once BE avail
-    monitor: '', // 'ICMP',
-    // id, // not yet implemented in BE
-    // instance: id, // not yet implemented in BE
+    monitor: 'ICMP',
+    nodeId: id,
     timeRange: 10,
     timeRangeUnit: TimeRangeUnit.Minute
   }

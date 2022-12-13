@@ -55,15 +55,15 @@ public class TaskSetResultsConsumer {
     @KafkaListener(topics = "${kafka.topics.task-set-results}", concurrency = "1")
     public void receiveMessage(@Payload byte[] data, @Headers Map<String, Object> headers) {
         try {
+            String tenantId = getTenantId(headers);
             TaskSetResults message = TaskSetResults.parseFrom(data);
 
             for (TaskResult taskResult : message.getResultsList()) {
 
                 String location = taskResult.getLocation();
-
+                log.info("Received taskset results from minion with tenant id: {}; location: {}", tenantId, location);
                 if (taskResult.hasDetectorResponse()) {
 
-                    String tenantId = getTenantId(headers);
                     DetectorResponse response = taskResult.getDetectorResponse();
 
                     detectorResponseService.accept(tenantId, location, response);

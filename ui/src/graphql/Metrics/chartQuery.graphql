@@ -12,7 +12,6 @@ fragment ChartTimeSeriesMetric on Query {
     name: $name
     labels: {
       monitor: $monitor
-      instance: $instance  
       node_id: $nodeId
     }
     timeRange: $timeRange

@@ -56,8 +56,8 @@ public class MinionHeartbeatConsumer {
     public void receiveMessage(@Payload byte[] data, @Headers Map<String, Object> headers) {
         try {
             HeartbeatMessage message = HeartbeatMessage.parseFrom(data);
-            log.info("Received heartbeat message for minion with id {} and location {}", message.getIdentity().getSystemId(), message.getIdentity().getLocation());
             String tenantId = Optional.ofNullable(headers.get(GlobalConstants.TENANT_ID_KEY)).map(o -> new String((byte[])o)).orElse(GlobalConstants.DEFAULT_TENANT_ID);
+            log.info("Received heartbeat message for minion with tenant id: {}; id: {}; location: {}", tenantId, message.getIdentity().getSystemId(), message.getIdentity().getLocation());
             Optional<Long> newCreatedId = service.addMonitoringSystemFromHeartbeat(message, tenantId);
             newCreatedId.ifPresent(minionRpc::addSystem);
         } catch (InvalidProtocolBufferException e) {

@@ -93,12 +93,14 @@ public class TSDataProcessor {
                     if (result != null) {
                         log.info("Processing task set result {}", result);
                         if (result.hasMonitorResponse()) {
+                            log.info("Have monitor response, tenant-id: {}; task-id={};", tenantId, result.getId());
                             processMonitorResponse(tenantId, result);
                         } else if (result.hasDetectorResponse()) {
                             DetectorResponse detectorResponse = result.getDetectorResponse();
                             // TBD: how to process?
-                            log.info("Have detector response: task-id={}; detected={}", result.getId(), detectorResponse.getDetected());
+                            log.info("Have detector response, tenant-id: {}; task-id={}; detected={}", tenantId, result.getId(), detectorResponse.getDetected());
                         } else if(result.hasCollectorResponse()) {
+                            log.info("Have collector response, tenant-id: {}; task-id={};", tenantId, result.getId());
                             processCollectorResponse(tenantId, result);
                         }
                     } else {
