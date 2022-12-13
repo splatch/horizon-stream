@@ -31,7 +31,7 @@ package org.opennms.minion.icmp.jni6;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.horizon.shared.utils.InetAddressUtils;
@@ -100,32 +100,29 @@ public abstract class Ping {
         }
 
         String host = argv[0];
-        short icmpId = (short) new Random().nextInt(Short.MAX_VALUE);
+        short icmpId = (short) new SecureRandom().nextInt(Short.MAX_VALUE);
 
         ICMPv6Socket m_socket = null;
 
         try {
             m_socket = new ICMPv6Socket(icmpId);
         } catch (UnsatisfiedLinkError e) {
-            System.err.println("UnsatisfiedLinkError while creating an "
-                    + "IcmpSocket.  Most likely failed to load "
-                    + "libjicmp.so.  Try setting the property "
-                    + "'opennms.library.jicmp' to point at the "
-                    + "full path name of the libjicmp.so shared "
-                    + "library "
-                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
-            e.printStackTrace();
+            LOG.error("UnsatisfiedLinkError while creating an "
+                + "IcmpSocket.  Most likely failed to load "
+                + "libjicmp.so.  Try setting the property "
+                + "'opennms.library.jicmp' to point at the "
+                + "full path name of the libjicmp.so shared "
+                + "library "
+                + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')", e);
             System.exit(1);
         } catch (NoClassDefFoundError e) {
-            System.err.println("NoClassDefFoundError while creating an "
-                    + "IcmpSocket.  Most likely failed to load "
-                    + "libjicmp.so.");
-            e.printStackTrace();
+            LOG.error("NoClassDefFoundError while creating an "
+                + "IcmpSocket.  Most likely failed to load "
+                + "libjicmp.so.", e);
             System.exit(1);
         } catch (IOException e) {
-            System.err.println("IOException while creating an "
-                    + "IcmpSocket.");
-            e.printStackTrace();
+            LOG.error("IOException while creating an "
+                + "IcmpSocket.", e);
             System.exit(1);
         }
 
@@ -133,9 +130,8 @@ public abstract class Ping {
         try {
             addr = InetAddress.getByName(host);
         } catch (java.net.UnknownHostException e) {
-            System.err.println("UnknownHostException when looking up "
-                    + host + ".");
-            e.printStackTrace();
+            LOG.error("UnknownHostException when looking up "
+                + host + ".", e);
             System.exit(1);
         }
 
@@ -161,8 +157,7 @@ public abstract class Ping {
             try {
                 m_socket.send(sendPkt);
             } catch (IOException e) {
-                System.err.println("IOException received when sending packet.");
-                e.printStackTrace();
+                LOG.error("IOException received when sending packet.", e);
                 System.exit(1);
             }
             try {
