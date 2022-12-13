@@ -57,7 +57,7 @@ const bytesIn = computed<GraphProps>(() => {
 
 const bytesOut = computed<GraphProps>(() => {
   return {
-    label: 'Bytes Inbound',
+    label: 'Bytes Outbound',
     metrics: ['ifOutOctets'],
     monitor: 'SNMP',
     nodeId: route.params.id as string,
