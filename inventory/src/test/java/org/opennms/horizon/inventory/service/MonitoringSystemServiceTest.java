@@ -34,6 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
@@ -72,6 +73,10 @@ public class MonitoringSystemServiceTest {
         service = new MonitoringSystemService(mockMonitoringSystemRepo, mockLocationRepo, mapper, mockTrapConfigService);
         testLocation = new MonitoringLocation();
         testMonitoringSystem = new MonitoringSystem();
+        testMonitoringSystem.setLastCheckedIn(LocalDateTime.now());
+        testMonitoringSystem.setTenantId(tenantId);
+        testMonitoringSystem.setSystemId(systemId);
+        testMonitoringSystem.setLabel(systemId);
         heartbeatMessage = HeartbeatMessage.newBuilder()
             .setIdentity(Identity.newBuilder()
                 .setLocation(location)
@@ -114,6 +119,15 @@ public class MonitoringSystemServiceTest {
         verify(mockLocationRepo).findByLocation(location);
         verify(mockLocationRepo).save(any(MonitoringLocation.class));
         verify(mockTrapConfigService).sendTrapConfigToMinion(testLocation.getTenantId(), testLocation.getLocation());
+    }
+
+    @Test
+    void testFindBySystemIdWithStatus() {
+        doReturn(Optional.of(testMonitoringSystem)).when(mockMonitoringSystemRepo).findBySystemIdAndTenantId(systemId, tenantId);
+        var result = service.findBySystemId(systemId, tenantId);
+        (result.isPresent());
+        assertTrue(result.get().getStatus());
+        verify(mockMonitoringSystemRepo).findBySystemIdAndTenantId(systemId, tenantId);
     }
 
 }
