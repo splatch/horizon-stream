@@ -10,12 +10,12 @@
   <div class="left-column" v-if="store.fetchIsDone">
     <LineGraph :graph="nodeLatency" />
     <LineGraph :graph="bytesOut" />
-    <LineGraph :graph="hcIn" />
+    <LineGraph :graph="hcOut" />
   </div>
   <div class="right-column">
+    <LineGraph :graph="hcIn" />
     <LineGraph :graph="bytesIn" />
     <LineGraph :graph="bytesInOut" />
-    <LineGraph :graph="hcOut" />
   </div>
 </div>
 </template>
