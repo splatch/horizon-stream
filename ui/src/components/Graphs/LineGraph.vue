@@ -32,6 +32,7 @@ import { PropType } from 'vue'
 import { formatTimestamp, downloadCanvas } from './utils'
 import { GraphProps } from '@/types/graphs'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
+import { format } from 'd3'
 
 // Chart.register(zoomPlugin) disable zoom until phase 2
 
@@ -43,6 +44,8 @@ const props = defineProps({
     type: Object as PropType<GraphProps>
   }
 })
+
+const yAxisFormatter = format('.3s')
 
 let chart: any = {}
 
@@ -74,6 +77,7 @@ const options = computed<ChartOptions>(() => ({
         text: props.graph.label
       } as TitleOptions,
       ticks: {
+        callback: (value) => yAxisFormatter(value as number),
         maxTicksLimit: 8
       },
       stacked: false
@@ -101,7 +105,10 @@ const dataSets = computed(() => {
   return graphs.dataSets.value.map((data: any ,i) => ({
     label: data.metric.__name__,
     data: data.values.map((val: any) => val[1]),
-    backgroundColor: bgColor[i]
+    backgroundColor: bgColor[i],
+    borderColor: bgColor[i],
+    hitRadius: 5,
+    hoverRadius: 6,
   }))
 })
 
@@ -147,6 +154,7 @@ onMounted(async () => {
 <style scoped lang="scss">
 .container {
   position: relative;
+  margin-right: 10px;
 }
 .canvas-wrapper {
   display: block;

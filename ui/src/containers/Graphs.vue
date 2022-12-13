@@ -9,9 +9,13 @@
 <div id="graphs-layout">
   <div class="left-column" v-if="store.fetchIsDone">
     <LineGraph :graph="nodeLatency" />
+    <LineGraph :graph="bytesOut" />
+    <LineGraph :graph="hcOut" />
   </div>
   <div class="right-column">
-    <LineGraph :graph="bits" />
+    <LineGraph :graph="hcIn" />
+    <LineGraph :graph="bytesIn" />
+    <LineGraph :graph="bytesInOut" />
   </div>
 </div>
 </template>
@@ -39,11 +43,11 @@ const nodeLatency = computed<GraphProps>(() => {
   }
 })
 
-const bits = computed<GraphProps>(() => {
+const bytesIn = computed<GraphProps>(() => {
   return {
-    label: 'Bytes In / Out',
-    metrics: ['ifInOctets', 'ifOutOctets '],
-    monitor: 'ICMP',
+    label: 'Bytes Inbound',
+    metrics: ['ifInOctets'],
+    monitor: 'SNMP',
     nodeId: route.params.id as string,
     instance: instance.value,
     timeRange: 10,
@@ -51,6 +55,53 @@ const bits = computed<GraphProps>(() => {
   }
 })
 
+const bytesOut = computed<GraphProps>(() => {
+  return {
+    label: 'Bytes Outbound',
+    metrics: ['ifOutOctets'],
+    monitor: 'SNMP',
+    nodeId: route.params.id as string,
+    instance: instance.value,
+    timeRange: 10,
+    timeRangeUnit: TimeRangeUnit.Minute
+  }
+})
+
+const bytesInOut = computed<GraphProps>(() => {
+  return {
+    label: 'Bytes Inbound / Outbound',
+    metrics: ['ifInOctets', 'ifOutOctets'],
+    monitor: 'SNMP',
+    nodeId: route.params.id as string,
+    instance: instance.value,
+    timeRange: 10,
+    timeRangeUnit: TimeRangeUnit.Minute
+  }
+})
+
+const hcIn = computed<GraphProps>(() => {
+  return {
+    label: 'ifHCInOctets',
+    metrics: ['ifHCInOctets'],
+    monitor: 'SNMP',
+    nodeId: route.params.id as string,
+    instance: instance.value,
+    timeRange: 10,
+    timeRangeUnit: TimeRangeUnit.Minute
+  }
+})
+
+const hcOut = computed<GraphProps>(() => {
+  return {
+    label: 'ifHCOutOctets',
+    metrics: ['ifHCInOctets'],
+    monitor: 'SNMP',
+    nodeId: route.params.id as string,
+    instance: instance.value,
+    timeRange: 10,
+    timeRangeUnit: TimeRangeUnit.Minute
+  }
+})
 
 const onDownload = () => {
   const page = document.getElementById('graphs-layout') as HTMLElement
