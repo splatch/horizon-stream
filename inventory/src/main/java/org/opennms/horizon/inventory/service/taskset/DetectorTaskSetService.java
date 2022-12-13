@@ -62,14 +62,10 @@ public class DetectorTaskSetService {
 
     @Transactional
     public void sendDetectorTasks(Node node) {
-
-        List<IpInterface> ipInterfaces =
-            ipInterfaceRepository.findByNodeId(node.getId());
-
+        List<IpInterface> ipInterfaces = node.getIpInterfaces().isEmpty()? ipInterfaceRepository.findByNodeId(node.getId()) : node.getIpInterfaces();
         for (MonitorType monitorType : DETECTOR_MONITOR_TYPES) {
             addDetectorTasks(node, ipInterfaces, monitorType);
         }
-
         sendTaskSet(node);
     }
 
@@ -140,6 +136,4 @@ public class DetectorTaskSetService {
         log.info("Sending task set: task-set={}; location={}; tenant-id={}", taskSet, location, tenantId);
         taskSetPublisher.publishTaskSet(tenantId, location, taskSet);
     }
-
-
 }

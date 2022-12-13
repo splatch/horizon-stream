@@ -30,12 +30,15 @@ package org.opennms.horizon.inventory.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
@@ -61,6 +64,7 @@ public class NodeService {
     private final IpInterfaceRepository ipInterfaceRepository;
 
     private final NodeMapper mapper;
+    private final MonitoringLocationMapper locationMapper;
 
     @Transactional(readOnly = true)
     public List<NodeDTO> findByTenantId(String tenantId) {
@@ -125,5 +129,10 @@ public class NodeService {
         saveIpInterfaces(request, node, tenantId);
 
         return node;
+    }
+
+    @Transactional
+    public Map<NodeDTO, MonitoringLocationDTO> listAllNodeForMonitoring() {
+        return nodeRepository.findAll().stream().collect(Collectors.toMap(mapper::modelToDTO, n-> locationMapper.modelToDTO(n.getMonitoringLocation())));
     }
 }

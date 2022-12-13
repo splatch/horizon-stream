@@ -56,14 +56,14 @@ import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 import org.opennms.horizon.shared.constants.GlobalConstants;
 
 @ExtendWith(MockitoExtension.class)
-class InternalEventsConsumerTest {
+class NodeMonitoringManagerTest {
 
     @Mock
     private NodeService nodeService;
     @Mock
     private DetectorTaskSetService detectorService;
     @InjectMocks
-    private InternalEventsConsumer consumer;
+    private NodeMonitoringManager consumer;
 
     private final String tenantId = "test-tenant";
     private Event event;
