@@ -43,11 +43,12 @@ public class TaskSetTwinMessageProcessor implements BiConsumer<Identity, StreamO
 
     @Override
     public void accept(Identity minionHeader, StreamObserver<CloudToMinionMessage> cloudToMinionMessageStreamObserver) {
-        log.info("Have Message to send to Minion: system-id={}, location={}",
+        String tenantId = tenantIDGrpcServerInterceptor.readCurrentContextTenantId();
+        log.info("Have Message to send to Minion: tenant-id: {}; system-id={}, location={}",
+            tenantId,
             minionHeader.getSystemId(),
             minionHeader.getLocation());
 
-        String tenantId = tenantIDGrpcServerInterceptor.readCurrentContextTenantId();
         IpcIdentity identity = new ConnectionIdentity(minionHeader);
         forwarder.addListener(tenantId, minionHeader.getLocation(), new ForwardingTaskListener(tenantId, identity, twinPublisher, forwarder));
         streamObserver.accept(identity, cloudToMinionMessageStreamObserver);
