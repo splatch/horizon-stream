@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.nio.charset.StandardCharsets;
@@ -72,6 +73,7 @@ class InternalEventsConsumerTest {
     @BeforeEach
     public void prepare(){
         event = Event.newBuilder()
+            .setUei(InternalEventsConsumer.NEW_SUSPECT_INTERFACE_EVENT_UEI)
             .setLocation("test-location")
             .setIpAddress("127.0.0.1")
             .build();
@@ -87,7 +89,7 @@ class InternalEventsConsumerTest {
     }
 
     @Test
-    void testEventCreateNewNode() {
+    void testReceiveEventAndCreateNewNode() {
         doReturn(node).when(nodeService).createNode(any(NodeCreateDTO.class), eq(tenantId));
         ArgumentCaptor<NodeCreateDTO> argumentCaptor = ArgumentCaptor.forClass(NodeCreateDTO.class);
         consumer.receiveTrapEvent(event.toByteArray(), headers);
@@ -97,5 +99,14 @@ class InternalEventsConsumerTest {
         assertThat(createDTO.getManagementIp()).isEqualTo(event.getIpAddress());
         assertThat(createDTO.getLabel()).endsWith(event.getIpAddress());
         verify(detectorService).sendDetectorTasks(any(Node.class));
+    }
+
+    @Test
+    void testReceiveEventWithDifferentUEI() {
+        var anotherEvent = Event.newBuilder()
+                .setUei("something else").build();
+        consumer.receiveTrapEvent(anotherEvent.toByteArray(), headers);
+        verifyNoInteractions(detectorService);
+        verifyNoInteractions(nodeService);
     }
 }

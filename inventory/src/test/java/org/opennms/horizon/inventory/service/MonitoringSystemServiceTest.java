@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.inventory.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -125,8 +126,8 @@ public class MonitoringSystemServiceTest {
     void testFindBySystemIdWithStatus() {
         doReturn(Optional.of(testMonitoringSystem)).when(mockMonitoringSystemRepo).findBySystemIdAndTenantId(systemId, tenantId);
         var result = service.findBySystemId(systemId, tenantId);
-        (result.isPresent());
-        assertTrue(result.get().getStatus());
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get().getStatus()).isTrue();
         verify(mockMonitoringSystemRepo).findBySystemIdAndTenantId(systemId, tenantId);
     }
 

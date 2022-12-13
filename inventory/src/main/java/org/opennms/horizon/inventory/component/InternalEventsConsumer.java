@@ -53,6 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @PropertySource("classpath:application.yml")
 public class InternalEventsConsumer {
+    protected static final String NEW_SUSPECT_INTERFACE_EVENT_UEI = "uei.opennms.org/internal/discovery/newSuspect";
     private final NodeService nodeService;
     private final DetectorTaskSetService detectorService;
 
@@ -60,15 +61,17 @@ public class InternalEventsConsumer {
     public void receiveTrapEvent(@Payload byte[] data, @Headers Map<String, Object> headers) {
         try {
             var event = Event.parseFrom(data);
-            var tenantId = Optional.ofNullable(headers.get(Constants.TENANT_ID_KEY)).map(obj->new String((byte[])obj)).orElse(Constants.DEFAULT_TENANT_ID);
-            log.debug("Create new node from event with interface: {}, location: {} and tenant: {}", event.getIpAddress(), event.getLocation(), tenantId);
-            NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
-                .setLocation(event.getLocation())
-                .setManagementIp(event.getIpAddress())
-                .setLabel("trap-" + event.getIpAddress())
-                .build();
-            Node newNode = nodeService.createNode(createDTO, tenantId);
-            detectorService.sendDetectorTasks(newNode);
+            if(event.getUei().equals(NEW_SUSPECT_INTERFACE_EVENT_UEI)) {
+                var tenantId = Optional.ofNullable(headers.get(Constants.TENANT_ID_KEY)).map(obj -> new String((byte[]) obj)).orElse(Constants.DEFAULT_TENANT_ID);
+                log.debug("Create new node from event with interface: {}, location: {} and tenant: {}", event.getIpAddress(), event.getLocation(), tenantId);
+                NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
+                    .setLocation(event.getLocation())
+                    .setManagementIp(event.getIpAddress())
+                    .setLabel("trap-" + event.getIpAddress())
+                    .build();
+                Node newNode = nodeService.createNode(createDTO, tenantId);
+                detectorService.sendDetectorTasks(newNode);
+            }
         } catch (InvalidProtocolBufferException e) {
             log.error("Error while parsing event message", e);
         }
