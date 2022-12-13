@@ -11,7 +11,7 @@ Feature: Alarm Service Basic Functionality
     Then Send GET request to application at path "/alarms/list"
     Then DEBUG dump the response body
     Then parse the JSON response
-    Then verify JSON path expressions match
+    Then Verify JSON path expressions match
       | totalCount == 1 |
 
   Scenario: Verify alarm can be deleted
@@ -20,13 +20,20 @@ Feature: Alarm Service Basic Functionality
     Then delay
     Then Send GET request to application at path "/alarms/list"
     Then parse the JSON response
-    Then verify JSON path expressions match
+    Then Verify JSON path expressions match
       | totalCount == 2 |
     Then Remember alarm id
     Then Send DELETE request to application at path "/alarms/delete"
     Then Verify the HTTP response code is 200
     Then Send GET request to application at path "/alarms/list"
     Then parse the JSON response
-    Then verify JSON path expressions match
+    Then Verify JSON path expressions match
       | totalCount == 1 |
+
+  Scenario: Verify alarm can be cleared
+    Then Send POST request to clear alarm at path "/alarms/clear"
+    Then Verify the HTTP response code is 200
+    Then Send GET request to application at path "/alarms/list"
+    Then Remember response body for later comparison
+    Then Verify alarm was cleared
 

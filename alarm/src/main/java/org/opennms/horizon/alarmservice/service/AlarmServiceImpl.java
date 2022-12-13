@@ -423,7 +423,9 @@ public class AlarmServiceImpl implements AlarmService {
 //        alarm.setFirstEventTime(e.getEventTime());
 //        alarm.setIfIndex(e.getIfIndex());
 //        alarm.setIpAddr(e.getIpAddr());
-//        alarm.setLastEventTime(e.getEventTime());
+        Date now = new Date();
+        alarm.setLastEventTime(now);
+        alarm.setLastAutomationTime(now);
 //        alarm.setLastEvent(e);
 //        alarm.setLogMsg(e.getEventLogMsg());
 //        alarm.setMouseOverText(e.getEventMouseOverText());

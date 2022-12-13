@@ -41,19 +41,13 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import lombok.extern.slf4j.Slf4j;
-
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
-import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.opennms.horizon.alarmservice.rest.AlarmCollectionDTO;
 import org.opennms.horizon.events.proto.Event;
 
 @Slf4j
@@ -73,6 +67,7 @@ public class AlarmTestSteps {
     private Response restAssuredResponse;
     private Response rememberedRestAssuredResponse;
     private JsonPath parsedJsonResponse;
+    private Long lastAlarmId;
 
 //========================================
 // Gherkin Rules
@@ -95,6 +90,11 @@ public class AlarmTestSteps {
     @Then("Send POST request to application at path {string}")
     public void sendPOSTRequestToApplicationAtPath(String path) throws Exception {
         commonSendPOSTRequestToApplication(path);
+    }
+
+    @Then("Send POST request to clear alarm at path {string}")
+    public void sendPOSTRequestToClearAlarmAtPath(String path) throws Exception {
+        commonSendPOSTRequestToApplication(path+"/1");
     }
 
     @Then("Send message to Kafka at topic {string}")
@@ -157,11 +157,23 @@ public class AlarmTestSteps {
         parsedJsonResponse = JsonPath.from((this.restAssuredResponse.getBody().asString()));
     }
 
-    @Then("^verify JSON path expressions match$")
+    @Then("Verify JSON path expressions match$")
     public void verifyJsonPathExpressionsMatch(List<String> pathExpressions) {
         for (String onePathExpression : pathExpressions) {
             verifyJsonPathExpressionMatch(parsedJsonResponse, onePathExpression);
         }
+    }
+
+    @Then("Verify alarm was cleared")
+    public void verifyAlarmWasCleared() {
+        String jsonStr = rememberedRestAssuredResponse.getBody().asString();
+
+        log.info("############ json is {}", jsonStr);
+
+//        AlarmCollectionDTO alarmCollectionDTO = rememberedRestAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+//        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+//        assertEquals(Severity.CLEARED, alarmDTO.getSeverity());
+        assertTrue(jsonStr.contains("\"severity\":\"CLEARED\""));
     }
 
     @Then("Remember response body for later comparison")
@@ -169,12 +181,10 @@ public class AlarmTestSteps {
         rememberedRestAssuredResponse = restAssuredResponse;
     }
 
-    //TODO:MMF need a better way to determine this. FOr now just assuming the first one.
-    private Long lastAlarmId;
-
+    //TODO:MMF need a better way to determine this. For now just assuming the second one.
     @Then("Remember alarm id")
     public void rememberAlarmId() {
-        this.lastAlarmId = 1L;
+        this.lastAlarmId = 2L;
     }
 
 //========================================
