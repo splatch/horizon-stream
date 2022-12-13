@@ -26,21 +26,6 @@ type OpenNMSHandler struct {
 }
 
 func (h *OpenNMSHandler) UpdateConfig(values values.TemplateValues) error {
-	//core
-	var configMap corev1.ConfigMap
-	var coreSA corev1.ServiceAccount
-	var coreRB rbacv1.RoleBinding
-	var coreService corev1.Service
-	var coreIgniteService corev1.Service
-	var coreDeployment appsv1.Deployment
-
-	h.AddToTemplates(filepath("opennms/core/core-configmap.yaml"), values, &configMap)
-	h.AddToTemplates(filepath("opennms/core/core-serviceaccount.yaml"), values, &coreSA)
-	h.AddToTemplates(filepath("opennms/core/core-rolebinding.yaml"), values, &coreRB)
-	h.AddToTemplates(filepath("opennms/core/core-service.yaml"), values, &coreService)
-	h.AddToTemplates(filepath("opennms/core/core-ignite-service.yaml"), values, &coreIgniteService)
-	h.AddToTemplates(filepath("opennms/core/core-deployment.yaml"), values, &coreDeployment)
-
 	//api
 	var apiService corev1.Service
 	var apiDeployment appsv1.Deployment
