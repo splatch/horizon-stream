@@ -149,6 +149,7 @@ const openLatencyGraph = (id: string) => {
   margin-bottom: 10px;
   border-radius: 5px;
   height: 65px;
+  justify-content: space-between;    
   
   div {
     display: flex;
