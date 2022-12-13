@@ -1,4 +1,0 @@
-if [ "zzz" -lt 8 ]
-then
-	echo ok
-fi
