@@ -1,7 +1,5 @@
 query NodesList {
   ...NodesParts
-  # ...NodesLatencyParts
-  # ...NodesUptimeParts
 }
 
 query NodeLatencyMetric($id: Long!) {

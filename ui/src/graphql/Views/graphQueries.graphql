@@ -6,7 +6,6 @@ query GetTimeSeriesMetric(
   $name: String!, 
   $monitor: String,
   $nodeId: String,
-  $instance: String,
   $timeRange: Int!,
   $timeRangeUnit: TimeRangeUnit!
 ) {

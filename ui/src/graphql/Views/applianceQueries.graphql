@@ -1,4 +1,4 @@
-fragment NodeTableParts on Query {
+fragment NodesTableParts on Query {
   findAllNodes {
     id
     nodeLabel
@@ -17,6 +17,7 @@ fragment MinionsTableParts on Query {
       id
       location
     }
+    status
     systemId
   }
 }
@@ -29,9 +30,7 @@ fragment LocationsParts on Query {
 }
 
 query ListNodesForTable {
-  ...NodeTableParts
-  ...DeviceUptimeParts
-  ...DeviceLatencyParts
+  ...NodesTableParts
 }
 
 query ListMinionsForTable {
@@ -42,14 +41,13 @@ query ListMinionMetrics($instance: String) {
   ...MinionLatencyParts
 }
 
-query ListNodeMetrics($id: String) {
+query ListNodeMetrics($id: Long!) {
   ...NodeLatencyParts
+  ...NodeStatusParts
 }
 
 query ListMinionsAndDevicesForTables {
-  ...NodeTableParts
-  ...DeviceUptimeParts
-  ...DeviceLatencyParts
+  ...NodesTableParts
   ...MinionsTableParts
   ...LocationsParts
 }

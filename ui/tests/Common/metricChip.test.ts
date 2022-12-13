@@ -55,7 +55,7 @@ describe('Metric chip', () => {
     expect(label).toEqual(metric.label)
 
     const component = wrapper.getComponent('[data-test="chip"]')
-    expect(component.classes().includes(metric.status?.toLowerCase())).toBe(true)
+    expect(component.classes().includes(metric.status)).toBe(true)
     expect(component.text()).toEqual(metric.status)
   })
 })
