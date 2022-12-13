@@ -33,9 +33,6 @@ func ConvertCRDToValues(crd v1alpha1.OpenNMS, defaultValues values.TemplateValue
 
 	v.Ingress = setPorts(spec, v.Ingress)
 
-	//ONMS Core
-	v.OpenNMS = getCoreValues(spec, v.OpenNMS)
-
 	//ONMS API
 	v.OpenNMS = getAPIValues(spec, v.OpenNMS)
 
@@ -48,8 +45,8 @@ func ConvertCRDToValues(crd v1alpha1.OpenNMS, defaultValues values.TemplateValue
 	//ONMS Inventory
 	v.OpenNMS = getInventoryValues(spec, v.OpenNMS)
 
-    //ONMS Alarm
-    v.OpenNMS = getAlarmValues(spec, v.OpenNMS)
+	//ONMS Alarm
+	v.OpenNMS = getAlarmValues(spec, v.OpenNMS)
 
 	//ONMS Notification
 	v.OpenNMS = getNotificationValues(spec, v.OpenNMS)
@@ -57,11 +54,11 @@ func ConvertCRDToValues(crd v1alpha1.OpenNMS, defaultValues values.TemplateValue
 	//ONMS Metrics Processor
 	v.OpenNMS = getMetricsProcessorValues(spec, v.OpenNMS)
 
-    //ONMS Events Processor
-    v.OpenNMS = getEventsValues(spec, v.OpenNMS)
+	//ONMS Events Processor
+	v.OpenNMS = getEventsValues(spec, v.OpenNMS)
 
-    //Keycloak
-    v.Keycloak = getKeycloakValues(spec, v.Keycloak)
+	//Keycloak
+	v.Keycloak = getKeycloakValues(spec, v.Keycloak)
 
 	//Grafana
 	v.Grafana = getGrafanaValues(spec, v.Grafana)
@@ -73,25 +70,6 @@ func ConvertCRDToValues(crd v1alpha1.OpenNMS, defaultValues values.TemplateValue
 	templateValues.Release = r
 
 	return templateValues
-}
-
-// getCoreValues - get ONMS core values from the crd
-func getCoreValues(spec v1alpha1.OpenNMSSpec, v values.OpenNMSValues) values.OpenNMSValues {
-	if spec.Core.Image != "" {
-		v.Core.Image = spec.Core.Image
-	}
-	if spec.Core.CPU != "" {
-		v.Core.Resources.Requests.Cpu = spec.Core.CPU
-		v.Core.Resources.Limits.Cpu = spec.Core.CPU
-	}
-	if spec.Core.MEM != "" {
-		v.Core.Resources.Requests.Memory = spec.Core.MEM
-		v.Core.Resources.Limits.Memory = spec.Core.MEM
-	}
-	if spec.Core.Disk != "" {
-		v.Core.VolumeSize = spec.Core.Disk
-	}
-	return v
 }
 
 // getAPIValues - get ONMS API values from the crd
@@ -244,21 +222,21 @@ func getMetricsProcessorValues(spec v1alpha1.OpenNMSSpec, v values.OpenNMSValues
 
 // getEventsValues - get ONMS Events values from the crd
 func getEventsValues(spec v1alpha1.OpenNMSSpec, v values.OpenNMSValues) values.OpenNMSValues {
-    if spec.Events.Image != "" {
-        v.Events.Image = spec.Events.Image
-    }
-    if spec.Events.CPU != "" {
-        v.Events.Resources.Requests.Cpu = spec.Events.CPU
-        v.Events.Resources.Limits.Cpu = spec.Events.CPU
-    }
-    if spec.Events.MEM != "" {
-        v.Events.Resources.Requests.Memory = spec.Events.MEM
-        v.Events.Resources.Limits.Memory = spec.Events.MEM
-    }
-    if spec.Events.Disk != "" {
-        v.Events.VolumeSize = spec.Events.Disk
-    }
-    return v
+	if spec.Events.Image != "" {
+		v.Events.Image = spec.Events.Image
+	}
+	if spec.Events.CPU != "" {
+		v.Events.Resources.Requests.Cpu = spec.Events.CPU
+		v.Events.Resources.Limits.Cpu = spec.Events.CPU
+	}
+	if spec.Events.MEM != "" {
+		v.Events.Resources.Requests.Memory = spec.Events.MEM
+		v.Events.Resources.Limits.Memory = spec.Events.MEM
+	}
+	if spec.Events.Disk != "" {
+		v.Events.VolumeSize = spec.Events.Disk
+	}
+	return v
 }
 
 // getKeycloakValues - get Keycloak values from the crd

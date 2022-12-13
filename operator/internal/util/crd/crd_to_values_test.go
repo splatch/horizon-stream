@@ -37,33 +37,6 @@ func TestConvertCRDToValues(t *testing.T) {
 	assert.Equal(t, crd.Spec.Host, res.Values.Host, "should pull the correct value")
 }
 
-func TestGetCoreValues(t *testing.T) {
-	spec := v1alpha1.OpenNMSSpec{
-		Core: v1alpha1.BaseServiceResources{
-			Image: "image",
-			CPU:   "testcpu",
-			MEM:   "testmem",
-			Disk:  "testdisk",
-		},
-	}
-
-	v := values.OpenNMSValues{}
-
-	v = getCoreValues(spec, v)
-
-	assert.Equal(t, spec.Core.Image, v.Core.Image, "should set the image correctly")
-	assert.Equal(t, spec.Core.CPU, v.Core.Resources.Requests.Cpu, "should pull the correct value")
-	assert.Equal(t, spec.Core.MEM, v.Core.Resources.Requests.Memory, "should pull the correct value")
-	assert.Equal(t, spec.Core.Disk, v.Core.VolumeSize, "should pull the correct value")
-
-	v = getCoreValues(v1alpha1.OpenNMSSpec{}, v)
-
-	assert.Equal(t, "image", v.Core.Image, "value should remain unchanged when spec is unset")
-	assert.Equal(t, "testcpu", v.Core.Resources.Requests.Cpu, "value should remain unchanged when spec is unset")
-	assert.Equal(t, "testmem", v.Core.Resources.Requests.Memory, "value should remain unchanged when spec is unset")
-	assert.Equal(t, "testdisk", v.Core.VolumeSize, "value should remain unchanged when spec is unset")
-}
-
 func TestGetAPIValues(t *testing.T) {
 	spec := v1alpha1.OpenNMSSpec{
 		API: v1alpha1.BaseServiceResources{
