@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.horizon.inventory.Constants;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
@@ -44,12 +43,13 @@ import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
+import org.opennms.horizon.shared.constants.GlobalConstants;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.vladmihalcea.hibernate.type.basic.Inet;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -88,7 +88,7 @@ public class NodeService {
     }
 
     private MonitoringLocation saveMonitoringLocation(NodeCreateDTO request, String tenantId) {
-        String location = StringUtils.isEmpty(request.getLocation()) ? Constants.DEFAULT_LOCATION: request.getLocation();
+        String location = StringUtils.isEmpty(request.getLocation()) ? GlobalConstants.DEFAULT_LOCATION: request.getLocation();
         Optional<MonitoringLocation> found =
             monitoringLocationRepository.findByLocationAndTenantId(location, tenantId);
 

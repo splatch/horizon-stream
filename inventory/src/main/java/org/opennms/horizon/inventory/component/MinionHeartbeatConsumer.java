@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.opennms.horizon.grpc.heartbeat.contract.HeartbeatMessage;
-import org.opennms.horizon.inventory.Constants;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
+import org.opennms.horizon.shared.constants.GlobalConstants;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
@@ -57,7 +57,7 @@ public class MinionHeartbeatConsumer {
         try {
             HeartbeatMessage message = HeartbeatMessage.parseFrom(data);
             log.info("Received heartbeat message for minion with id {} and location {}", message.getIdentity().getSystemId(), message.getIdentity().getLocation());
-            String tenantId = Optional.ofNullable(headers.get(Constants.TENANT_ID_KEY)).map(o -> new String((byte[])o)).orElse(Constants.DEFAULT_TENANT_ID);
+            String tenantId = Optional.ofNullable(headers.get(GlobalConstants.TENANT_ID_KEY)).map(o -> new String((byte[])o)).orElse(GlobalConstants.DEFAULT_TENANT_ID);
             Optional<Long> newCreatedId = service.addMonitoringSystemFromHeartbeat(message, tenantId);
             newCreatedId.ifPresent(minionRpc::addSystem);
         } catch (InvalidProtocolBufferException e) {

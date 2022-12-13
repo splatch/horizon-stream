@@ -41,6 +41,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.Duration;
 import java.util.function.Supplier;
 
+import org.opennms.horizon.shared.constants.GlobalConstants;
+
 // TODO: distinguish non-multi-tenant deployments of this code and skip?
 @Slf4j
 public class TenantIDGrpcServerInterceptor implements ServerInterceptor {
@@ -55,21 +57,18 @@ public class TenantIDGrpcServerInterceptor implements ServerInterceptor {
             .every(Duration.ofMinutes(1))
             .build();
 
-    //TODO will change to JWT token
-    private static final Metadata.Key HEADER_KEY = Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER);
-
     /**
      * GRPC uses Context.Key objects to read the context (there are no direct methods on the context itself).  Define
      *  the Context.Key here for reuse.
      */
     @Getter
-    private static final Context.Key<String> contextTenantId = Context.key("tenant-id");
+    private static final Context.Key<String> contextTenantId = GlobalConstants.TENANT_ID_CONTEXT_KEY;
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> callHandler) {
         // Read the tenant id out of the headers
         log.debug("Received metadata: {}", headers);
-        String tenantId = commonReadContextTenantId(() -> headers.get(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER)));
+        String tenantId = commonReadContextTenantId(() -> headers.get(GlobalConstants.TENANT_ID_REQUEST_KEY));
         // TBD888: restore this logic when tenant ID is reliably received from the Minion upstream flow
         // if (tenantId == null) {
         //     //

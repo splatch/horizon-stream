@@ -28,11 +28,11 @@
 
 package org.opennms.horizon.inventory.component;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.inventory.Constants;
+import java.util.Map;
+import java.util.Optional;
+
 import org.opennms.horizon.inventory.service.taskset.response.DetectorResponseService;
+import org.opennms.horizon.shared.constants.GlobalConstants;
 import org.opennms.taskset.contract.DetectorResponse;
 import org.opennms.taskset.contract.TaskResult;
 import org.opennms.taskset.contract.TaskSetResults;
@@ -41,8 +41,10 @@ import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-import java.util.Optional;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -74,7 +76,7 @@ public class TaskSetResultsConsumer {
     }
 
     private String getTenantId(Map<String, Object> headers) {
-        return Optional.ofNullable(headers.get(Constants.TENANT_ID_KEY))
-            .map(o -> new String((byte[]) o)).orElse(Constants.DEFAULT_TENANT_ID);
+        return Optional.ofNullable(headers.get(GlobalConstants.TENANT_ID_KEY))
+            .map(o -> new String((byte[]) o)).orElse(GlobalConstants.DEFAULT_TENANT_ID);
     }
 }

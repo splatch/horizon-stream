@@ -49,11 +49,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opennms.horizon.events.proto.Event;
-import org.opennms.horizon.inventory.Constants;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
+import org.opennms.horizon.shared.constants.GlobalConstants;
 
 @ExtendWith(MockitoExtension.class)
 class InternalEventsConsumerTest {
@@ -73,12 +73,12 @@ class InternalEventsConsumerTest {
     @BeforeEach
     public void prepare(){
         event = Event.newBuilder()
-            .setUei(InternalEventsConsumer.NEW_SUSPECT_INTERFACE_EVENT_UEI)
+            .setUei(GlobalConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
             .setLocation("test-location")
             .setIpAddress("127.0.0.1")
             .build();
         headers = new HashMap<>();
-        headers.put(Constants.TENANT_ID_KEY, tenantId.getBytes(StandardCharsets.UTF_8));
+        headers.put(GlobalConstants.TENANT_ID_KEY, tenantId.getBytes(StandardCharsets.UTF_8));
         node = new Node();
     }
 
