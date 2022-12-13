@@ -41,7 +41,7 @@ const nodeLatency = computed<GraphProps>(() => {
 
 const bits = computed<GraphProps>(() => {
   return {
-    label: 'Bits In / Out',
+    label: 'Bytes In / Out',
     metrics: ['ifInOctets', 'ifOutOctets '],
     monitor: 'ICMP',
     nodeId: route.params.id as string,
