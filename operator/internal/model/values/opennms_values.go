@@ -15,7 +15,6 @@ limitations under the License.
 package values
 
 type OpenNMSValues struct {
-	Core                   CoreValues             `yaml:"Core"`
 	API                    ServiceValues          `yaml:"API"`
 	UI                     ServiceValues          `yaml:"UI"`
 	Minion                 MinionValues           `yaml:"Minion"`
@@ -26,15 +25,6 @@ type OpenNMSValues struct {
 	Notification           ServiceValues          `yaml:"Notification"`
 	MetricsProcessor       MetricsProcessorValues `yaml:"MetricsProcessor"`
 	Events                 EventsValues           `yaml:"Events"`
-}
-
-type CoreValues struct {
-	ServiceValues       `yaml:",inline"`
-	HttpPort            int `yaml:"HttpPort"`
-	SshPort             int `yaml:"SshPort"`
-	GrpcPort            int `yaml:"GrpcPort"`
-	IgniteClusterPort   int `yaml:"IgniteClusterPort"`
-	IgniteDiscoveryPort int `yaml:"IgniteDiscoveryPort"`
 }
 
 type MinionValues struct {
