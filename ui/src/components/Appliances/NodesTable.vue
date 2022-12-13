@@ -47,7 +47,8 @@
           </div>
           <div />
           <MetricChip :metric="{timestamp: node.latency?.timestamp, label: 'ICMP Latency'}" @click="openLatencyGraph(node.id as string)" :data-metric="node.latency?.timestamp" class="bg-status pointer" data-test="node-item-latency" />
-          <MetricChip :metric="{label: 'Status', status: node.status}" class="bg-status" data-test="node-item-status" />
+          <!-- TODO: Uncomment once nodeStatus api stable -->
+          <!-- <MetricChip :metric="{label: 'Status', status: node.status}" class="bg-status" data-test="node-item-status" /> -->
         </div>
       </TransitionGroup>
     </div>
@@ -149,6 +150,7 @@ const openLatencyGraph = (id: string) => {
   margin-bottom: 10px;
   border-radius: 5px;
   height: 65px;
+  justify-content: space-between;    
   
   div {
     display: flex;
