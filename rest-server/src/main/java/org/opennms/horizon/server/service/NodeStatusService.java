@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.server.service;
 
+import io.leangen.graphql.execution.ResolutionEnvironment;
 import lombok.RequiredArgsConstructor;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
@@ -35,6 +36,7 @@ import org.opennms.horizon.server.model.TSResult;
 import org.opennms.horizon.server.model.TimeRangeUnit;
 import org.opennms.horizon.server.model.TimeSeriesQueryResult;
 import org.opennms.horizon.server.service.grpc.InventoryClient;
+import org.opennms.horizon.server.utils.ServerHeaderUtil;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -59,22 +61,23 @@ public class NodeStatusService {
     private static final long TIMEOUT_IN_SECONDS = 30L;
     private final InventoryClient client;
     private final PrometheusTSDBServiceImpl prometheusTSDBService;
+    private final ServerHeaderUtil headerUtil;
 
-    public boolean getNodeStatus(long id, String monitorType, String accessToken) {
-        NodeDTO node = client.getNodeById(id, accessToken);
+    public boolean getNodeStatus(long id, String monitorType, ResolutionEnvironment env) {
+        NodeDTO node = client.getNodeById(id, headerUtil.getAuthHeader(env));
 
         if (node.getIpInterfacesCount() > 0) {
 
             IpInterfaceDTO ipInterface = node.getIpInterfaces(0);
-            return getNodeStatusByInterface(id, monitorType, ipInterface);
+            return getNodeStatusByInterface(id, monitorType, ipInterface, env);
         }
         return false;
     }
 
-    private boolean getNodeStatusByInterface(long id, String monitorType, IpInterfaceDTO ipInterface) {
+    private boolean getNodeStatusByInterface(long id, String monitorType, IpInterfaceDTO ipInterface, ResolutionEnvironment env) {
         String ipAddress = ipInterface.getIpAddress();
 
-        TimeSeriesQueryResult result = getStatusMetric(id, ipAddress, monitorType);
+        TimeSeriesQueryResult result = getStatusMetric(id, ipAddress, monitorType, env);
         if (isNull(result)) {
             return false;
         }
@@ -90,14 +93,14 @@ public class NodeStatusService {
         return !isEmpty(values);
     }
 
-    private TimeSeriesQueryResult getStatusMetric(long id, String ipAddress, String monitorType) {
+    private TimeSeriesQueryResult getStatusMetric(long id, String ipAddress, String monitorType, ResolutionEnvironment env) {
         Map<String, String> labels = new HashMap<>();
         labels.put(NODE_ID_KEY, String.valueOf(id));
         labels.put(MONITOR_KEY, monitorType);
         labels.put(INSTANCE_KEY, ipAddress);
 
         Mono<TimeSeriesQueryResult> result = prometheusTSDBService
-            .getMetric(RESPONSE_TIME_METRIC, labels, TIME_RANGE_IN_SECONDS, TimeRangeUnit.SECOND);
+            .getMetric(env, RESPONSE_TIME_METRIC, labels, TIME_RANGE_IN_SECONDS, TimeRangeUnit.SECOND);
         try {
             return result.toFuture().get(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
