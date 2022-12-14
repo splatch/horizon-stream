@@ -238,6 +238,11 @@ public class Alarm extends TenantAwareEntity implements Serializable {
     }
 
     @Transient
+    public void incrementCount() {
+        counter = counter++;
+    }
+
+    @Transient
     public String getSeverityLabel() {
         return this.severity.name();
     }

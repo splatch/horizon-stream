@@ -143,7 +143,7 @@ public class AlarmRestServiceImpl  {
         return ResponseEntity.ok(alarmService.setSeverity(id, AlarmSeverity.get(ord), new Date()));
     }
 
-    @PutMapping(path = "{id}/memo",  consumes = MediaType.APPLICATION_FORM_URLENCODED)
+    @PutMapping(path = "memo/{id}",  consumes = MediaType.APPLICATION_FORM_URLENCODED)
 
     @RolesAllowed({ "admin" })
     @ApiResponse(
@@ -167,7 +167,7 @@ public class AlarmRestServiceImpl  {
     @ApiResponse(
             description = "Update the journal for an Alarm"
     )
-    @PutMapping(path = "{id}/journal", consumes = MediaType.APPLICATION_FORM_URLENCODED)
+    @PutMapping(path = "journal/{id}", consumes = MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
     public ResponseEntity updateJournal(@Context final SecurityContext securityContext, @PathVariable final Long alarmId, final MultivaluedMapImpl params) {
             final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
@@ -182,7 +182,8 @@ public class AlarmRestServiceImpl  {
     @ApiResponse(
         description = "Remove the memo for an Alarm"
     )
-    @DeleteMapping(path = "{id}/memo")
+
+    @DeleteMapping(path = "memo/{id}")
     public ResponseEntity removeMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId) {
 
         alarmService.removeStickyMemo(alarmId);

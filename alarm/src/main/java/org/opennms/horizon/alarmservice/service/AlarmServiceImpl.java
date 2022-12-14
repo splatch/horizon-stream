@@ -337,7 +337,7 @@ public class AlarmServiceImpl implements AlarmService {
         log.info("########  Received Event, processing");
         Objects.requireNonNull(event, "Cannot create alarm from null event.");
 
-        log.debug("process: {}; nodeid: {}; ipaddr: {}", event.getUei(), event.getNodeId(), event.getIpAddress());
+        log.debug("############## process: {}; nodeid: {}; ipaddr: {}", event.getUei(), event.getNodeId(), event.getIpAddress());
 
         // Lock both the reduction and clear keys (if set) using a fair striped lock
         // We do this to ensure that clears and triggers are processed in the same order
@@ -348,6 +348,7 @@ public class AlarmServiceImpl implements AlarmService {
         try {
 //            locks.forEach(Lock::lock);
 
+            log.info("############## checking for reductionkey");
             alarm[0] = addOrReduceEventAsAlarm(event);
         } finally {
 //            locks.forEach(Lock::unlock);
@@ -381,37 +382,12 @@ public class AlarmServiceImpl implements AlarmService {
     protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
         String reductionKey = String.format("%s:%s:%s", event.getUei(), event.getNodeId(), "TODO:Need tenant id");
-        log.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
+        log.debug("############## addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
 
-        String key = reductionKey;
-        String clearKey = reductionKey;
+        Alarm alarm = alarmRepository.findByReductionKey(reductionKey);
 
-        boolean didSwapReductionKeyWithClearKey = false;
-        if (!legacyAlarmState && clearKey != null && isResolutionEvent(event)) {
-            key = clearKey;
-            didSwapReductionKeyWithClearKey = true;
-        }
-
-        Alarm alarm = alarmRepository.findByReductionKey(key);
-
-        if (alarm == null && didSwapReductionKeyWithClearKey) {
-            // if the clearKey returns null, still need to check the reductionKey
-            alarm = alarmRepository.findByReductionKey(reductionKey);
-        }
-
-        if (alarm == null || (createNewAlarmIfClearedAlarmExists && Severity.CLEARED.equals(alarm.getSeverity()))) {
-            if (log.isDebugEnabled()) {
-                log.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
-            }
-
-            if (alarm != null) {
-                log.debug("addOrReduceEventAsAlarm: \"archiving\" cleared Alarm for problem: {}; " +
-                    "A new alarm will be instantiated to manage the problem.", reductionKey);
-                alarm.archive();
-                alarmRepository.saveAndFlush(alarm);
-
-                alarmEntityNotifier.didArchiveAlarm(alarm, reductionKey);
-            }
+        if (alarm == null ) {
+            log.debug("############## addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
 
             alarm = createNewAlarm(event, reductionKey);
 
@@ -419,14 +395,10 @@ public class AlarmServiceImpl implements AlarmService {
 
             alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
-            log.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getAlarmId());
-//            reduceEvent(persistedEvent, alarm, event);
+            log.debug("############## addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getAlarmId());
 
+            alarm.incrementCount();
             alarmRepository.save(alarm);
-
-//            if (event.getAlarmData().isAutoClean()) {
-//                m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), persistedEvent);
-//            }
 
             alarmEntityNotifier.didUpdateAlarmWithReducedEvent(alarm);
         }
@@ -444,10 +416,6 @@ public class AlarmServiceImpl implements AlarmService {
         this.alarmEntityNotifier = alarmEntityNotifier;
     }
 
-    private boolean isResolutionEvent(Event event) {
-//        return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(Alarm.RESOLUTION_TYPE));
-        return false;
-    }
 
     private static Collection<String> getLockKeys(Event event) {
 //        if (event.getAlarmData().getClearKey() == null) {
