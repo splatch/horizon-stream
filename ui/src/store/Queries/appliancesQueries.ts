@@ -13,6 +13,7 @@ import {
 import { ExtendedMinion } from '@/types/minion'
 import { ExtendedNode } from '@/types/node'
 import useSpinner from '@/composables/useSpinner'
+import { Monitor } from '@/types'
 
 export const useAppliancesQueries = defineStore('appliancesQueries', {
   state: () => {
@@ -39,7 +40,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
 
     const fetchMinionMetrics = (instance: string) => useQuery({
       query: ListMinionMetricsDocument,
-      variables: { instance },
+      variables: { instance, monitor: Monitor.ECHO },
       cachePolicy: 'network-only'
     })
     
@@ -79,9 +80,9 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       })
     }
 
-    const fetchNodeMetrics = (id: number) => useQuery({
+    const fetchNodeMetrics = (id: number, instance: string) => useQuery({
       query: ListNodeMetricsDocument,
-      variables: { id },
+      variables: { id, instance, monitor: Monitor.ICMP },
       cachePolicy: 'network-only'
     })
     
@@ -89,7 +90,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       tableNodes.value = [] // reset
 
       allNodes.forEach(async node => {
-        const { data, isFetching } = await fetchNodeMetrics(node.id as number)
+        const { data, isFetching } = await fetchNodeMetrics(node.id as number, node.ipInterfaces?.[0].ipAddress as string) // currently only 1 interface per node
         const latencyResult = data.value?.nodeLatency?.data?.result
         const status = data.value?.nodeStatus?.status
 

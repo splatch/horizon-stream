@@ -1,23 +1,18 @@
 <template>
-<div class="header">
-  Graphs
-  <FeatherButton text @click="onDownload">
-    Download All
-  </FeatherButton>
-</div>
-
-<div id="graphs-layout">
-  <div class="left-column" v-if="store.fetchIsDone">
+  <div class="header-container">
+    <PageHeader heading="Graphs" class="header" data-test="page-header" />
+    <FeatherButton text @click="onDownload" class="btn-download">
+      Download All
+    </FeatherButton>
+  </div>
+  <div id="graphs-container" v-if="store.fetchIsDone">
     <LineGraph :graph="nodeLatency" />
+    <LineGraph :graph="bytesInOut" />
+    <LineGraph :graph="bytesIn" />
     <LineGraph :graph="bytesOut" />
+    <LineGraph :graph="hcIn" />
     <LineGraph :graph="hcOut" />
   </div>
-  <div class="right-column">
-    <LineGraph :graph="hcIn" />
-    <LineGraph :graph="bytesIn" />
-    <LineGraph :graph="bytesInOut" />
-  </div>
-</div>
 </template>
   
 <script setup lang="ts">
@@ -94,7 +89,7 @@ const hcIn = computed<GraphProps>(() => {
 const hcOut = computed<GraphProps>(() => {
   return {
     label: 'ifHCOutOctets',
-    metrics: ['ifHCInOctets'],
+    metrics: ['ifHCOutOctets'],
     monitor: 'SNMP',
     nodeId: route.params.id as string,
     instance: instance.value,
@@ -104,7 +99,7 @@ const hcOut = computed<GraphProps>(() => {
 })
 
 const onDownload = () => {
-  const page = document.getElementById('graphs-layout') as HTMLElement
+  const page = document.getElementById('graphs-container') as HTMLElement
   const canvases = document.getElementsByClassName('canvas') as HTMLCollectionOf<HTMLCanvasElement>
   downloadMultipleCanvases(page, canvases)
 }
@@ -117,26 +112,24 @@ onMounted(async () => {
   
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";
-@use "@featherds/styles/mixins/typography";
 
-.header {
-  @include typography.headline3();
+.header-container {
   display: flex;
-  padding: 6px;
-  background: var(variables.$shade-4);
+  flex-direction: row;
   justify-content: space-between;
+  margin: var(variables.$spacing-xl) var(variables.$spacing-l);
+  
+  :deep(.spacing) {
+    margin: 0;
+  }
 }
 
-#graphs-layout {
+#graphs-container {
   display: flex;
-  gap: 20px;
-  
-  .left-column, 
-  .right-column {
-    display: flex;
-    flex-direction: column;
-    width: calc(50% - 10px);
-  }
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin: var(variables.$spacing-xl) var(variables.$spacing-l);
 }
 </style>
   
