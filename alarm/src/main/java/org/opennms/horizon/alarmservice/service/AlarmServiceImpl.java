@@ -357,20 +357,25 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
-    public void removeStickyMemo(long alarmId) {
-
-        Alarm targetAlarm = alarmRepository.getById(alarmId);
-
-        if (targetAlarm != null) {
-            if (targetAlarm.getStickyMemo() != null) {
-                //TODO:MMF how do we get the memo from repo through only that one interface?
-                // Will just nulling out the memo (object) field delete it from the memo table?
-                // might need to specify orphan removal on field in the entity
-                targetAlarm.setStickyMemo(null);
-                alarmRepository.save(targetAlarm);
-            }
+    public AlarmDTO removeStickyMemo(long alarmId) {
+        log.info("Removing sticky memo on alarm with id: {}", alarmId);
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarmId);
+        if (maybeAlarmInTrans.isEmpty()) {
+            log.warn("Alarm disappeared: {}. Skipping sticky memo removal.", alarmId);
+            return null;
         }
 
+        Alarm targetAlarm = maybeAlarmInTrans.get();
+
+        if (targetAlarm.getStickyMemo() != null) {
+            //TODO:MMF how do we get the memo from repo through only that one interface?
+            // Will just nulling out the memo (object) field delete it from the memo table?
+            // might need to specify orphan removal on field in the entity
+            targetAlarm.setStickyMemo(null);
+            alarmRepository.save(targetAlarm);
+        }
+
+        return alarmMapper.alarmToAlarmDTO(targetAlarm);
     }
 
     protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
@@ -439,18 +444,6 @@ public class AlarmServiceImpl implements AlarmService {
         this.alarmEntityNotifier = alarmEntityNotifier;
     }
 
-    public void debug(String message, Object... objects) {
-        log.debug(message, objects);
-    }
-
-    public void info(String message, Object... objects) {
-        log.info(message, objects);
-    }
-
-    public void warn(String message, Object... objects) {
-        log.warn(message, objects);
-    }
-
     private boolean isResolutionEvent(Event event) {
 //        return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(Alarm.RESOLUTION_TYPE));
         return false;
@@ -466,40 +459,47 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     private Alarm createNewAlarm(Event event, String reductionKey) {
+        Date now = new Date();
         Alarm alarm = new Alarm();
-        // Situations are denoted by the existance of related-reductionKeys
-//        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
+
         alarm.setAlarmType(1);
         alarm.setClearKey(reductionKey);
         alarm.setCounter(1);
+        alarm.setLastEventTime(now);
+        alarm.setLastAutomationTime(now);
+        //TODO:MMF can we pull this from event parameters?
+        alarm.setSeverity(AlarmSeverity.CRITICAL);
+        alarm.setLastEventSeverity(alarm.getSeverity());
+        alarm.setReductionKey(reductionKey);
+        alarm.setEventUei(event.getUei() + event.getNodeId());
+        alarm.setX733ProbableCause(1);
+        alarm.setDetails(new HashMap<>());
+        alarm.setRelatedAlarms(new HashSet<>());
+
+        // Situations are denoted by the existance of related-reductionKeys
+//        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()), event.getTime());
+
 //        alarm.setDescription(e.getEventDescr());
 //        alarm.setDistPoller(e.getDistPoller());
 //        alarm.setFirstEventTime(e.getEventTime());
 //        alarm.setIfIndex(e.getIfIndex());
 //        alarm.setIpAddr(e.getIpAddr());
-        Date now = new Date();
-        alarm.setLastEventTime(now);
-        alarm.setLastAutomationTime(now);
-        //TODO:MMF can we pull this from event parameters?
-        alarm.setLastEventSeverity(AlarmSeverity.CRITICAL);
-        alarm.setSeverity(AlarmSeverity.CRITICAL);
+
 //        alarm.setLastEvent(e);
 //        alarm.setLogMsg(e.getEventLogMsg());
 //        alarm.setMouseOverText(e.getEventMouseOverText());
 //        alarm.setNode(e.getNode());
 //        alarm.setOperInstruct(e.getEventOperInstruct());
-        alarm.setReductionKey(reductionKey);
+
 //        alarm.setServiceType(e.getServiceType());
 //        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
 //        alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
-        alarm.setEventUei(event.getUei() + event.getNodeId());
-        alarm.setX733ProbableCause(1);
-        alarm.setDetails(new HashMap<>());
-        alarm.setRelatedAlarms(new HashSet<>());
+
 //        if (event.getAlarmData().getManagedObject() != null) {
 //            alarm.setManagedObjectType(event.getAlarmData().getManagedObject().getType());
 //        }
 //        e.setAlarm(alarm);
+        
         return alarm;
     }
 

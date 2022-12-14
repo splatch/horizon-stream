@@ -34,7 +34,6 @@ import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.events.proto.Event;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This API is intended to provide RHS functionality for Drools Alarmd and
@@ -68,18 +67,12 @@ public interface AlarmService {
 
     AlarmDTO setSeverity(Alarm alarm, AlarmSeverity severity, Date now);
 
-    abstract AlarmDTO setSeverity(Long alarmId, AlarmSeverity severity, Date now);
-
-    void debug(String message, Object... objects);
-
-    void info(String message, Object... objects);
-
-    void warn(String message, Object... objects);
+    AlarmDTO setSeverity(Long alarmId, AlarmSeverity severity, Date now);
 
     List<AlarmDTO> getAllAlarms(String tenantId);
 
     AlarmDTO process(Event e);
 
-    void removeStickyMemo(long alarmId);
+    AlarmDTO removeStickyMemo(long alarmId);
 
 }
