@@ -67,7 +67,6 @@ public class AlarmTestSteps {
     // Test Runtime Data
     //
     private Response restAssuredResponse;
-    private Response rememberedRestAssuredResponse;
     private JsonPath parsedJsonResponse;
     private Long lastAlarmId;
 
@@ -96,7 +95,7 @@ public class AlarmTestSteps {
 
     @Then("Send POST request to clear alarm at path {string}")
     public void sendPOSTRequestToClearAlarmAtPath(String path) throws Exception {
-        AlarmCollectionDTO alarmCollectionDTO = rememberedRestAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
         AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
         commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId());
     }
@@ -171,20 +170,15 @@ public class AlarmTestSteps {
     @Then("Verify alarm was cleared")
     public void verifyAlarmWasCleared() {
 
-        AlarmCollectionDTO alarmCollectionDTO = rememberedRestAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
         AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
         assertEquals(AlarmSeverity.CLEARED, alarmDTO.getSeverity());
-    }
-
-    @Then("Remember response body for later comparison")
-    public void rememberResponseBodyForLaterComparison() {
-        rememberedRestAssuredResponse = restAssuredResponse;
     }
 
     //TODO:MMF need a better way to determine this. For now just assuming the second one.
     @Then("Remember alarm id")
     public void rememberAlarmId() {
-        AlarmCollectionDTO alarmCollectionDTO = rememberedRestAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
         AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
         this.lastAlarmId = alarmDTO.getAlarmId();
     }
@@ -262,8 +256,7 @@ public class AlarmTestSteps {
         restAssuredResponse =
             requestSpecification
                 .post(requestUrl)
-                .thenReturn()
-        ;
+                .thenReturn();
     }
 
     private void commonSendDELETERequestToApplication(String path) throws MalformedURLException {
@@ -279,8 +272,7 @@ public class AlarmTestSteps {
         restAssuredResponse =
             requestSpecification
                 .delete(requestUrl)
-                .thenReturn()
-        ;
+                .thenReturn();
     }
 
     private String formatKafkaRestProducerMessageBody(byte[] payload) throws JsonProcessingException {
