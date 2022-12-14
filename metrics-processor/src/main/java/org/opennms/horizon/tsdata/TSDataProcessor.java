@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.snmp.api.SnmpResponseMetric;
 import org.opennms.horizon.snmp.api.SnmpValueType;
 import org.opennms.horizon.tsdata.metrics.MetricsPushAdapter;
@@ -199,7 +199,7 @@ public class TSDataProcessor {
     }
 
     private String getTenantId(Map<String, Object> headers) {
-        return Optional.ofNullable(headers.get(GlobalConstants.TENANT_ID_KEY))
+        return Optional.ofNullable(headers.get(GrpcConstants.TENANT_ID_KEY))
             .map(tenantId -> {
                 if (tenantId instanceof byte[]) {
                     return new String((byte[]) tenantId);

@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opennms.horizon.inventory.service.taskset.response.DetectorResponseService;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.taskset.contract.DetectorResponse;
 import org.opennms.taskset.contract.TaskResult;
 import org.opennms.taskset.contract.TaskSetResults;
@@ -43,7 +43,7 @@ public class TaskSetResultsConsumerTest {
             .addResults(taskResult).build();
 
         Map<String, Object> headers = new HashMap<>();
-        headers.put(GlobalConstants.TENANT_ID_KEY, TEST_TENANT_ID.getBytes());
+        headers.put(GrpcConstants.TENANT_ID_KEY, TEST_TENANT_ID.getBytes());
 
         consumer.receiveMessage(results.toByteArray(), headers);
 

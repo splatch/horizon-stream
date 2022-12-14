@@ -33,7 +33,7 @@ import java.util.List;
 
 import java.util.Optional;
 
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
@@ -80,8 +80,8 @@ public class ServerHeaderUtil {
     private static String parseHeader(String header) {
         try {
             SignedJWT jwt = SignedJWT.parse(header.substring(7));
-            return Optional.ofNullable(jwt.getJWTClaimsSet().getStringClaim(GlobalConstants.TENANT_ID_KEY))
-                .orElse(GlobalConstants.DEFAULT_TENANT_ID);
+            return Optional.ofNullable(jwt.getJWTClaimsSet().getStringClaim(GrpcConstants.TENANT_ID_KEY))
+                .orElse(GrpcConstants.DEFAULT_TENANT_ID);
         } catch (Exception e) {
             throw new RuntimeException("Could not extract tenant information", e);
         }

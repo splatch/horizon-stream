@@ -41,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.Duration;
 import java.util.function.Supplier;
 
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 
 // TODO: distinguish non-multi-tenant deployments of this code and skip?
 @Slf4j
@@ -62,13 +62,13 @@ public class TenantIDGrpcServerInterceptor implements ServerInterceptor {
      *  the Context.Key here for reuse.
      */
     @Getter
-    private static final Context.Key<String> contextTenantId = GlobalConstants.TENANT_ID_CONTEXT_KEY;
+    private static final Context.Key<String> contextTenantId = GrpcConstants.TENANT_ID_CONTEXT_KEY;
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> callHandler) {
         // Read the tenant id out of the headers
         log.debug("Received metadata: {}", headers);
-        String tenantId = commonReadContextTenantId(() -> headers.get(GlobalConstants.TENANT_ID_REQUEST_KEY));
+        String tenantId = commonReadContextTenantId(() -> headers.get(GrpcConstants.TENANT_ID_REQUEST_KEY));
         // TBD888: restore this logic when tenant ID is reliably received from the Minion upstream flow
         // if (tenantId == null) {
         //     //

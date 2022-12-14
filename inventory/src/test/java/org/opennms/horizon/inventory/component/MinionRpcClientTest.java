@@ -49,7 +49,7 @@ import org.opennms.cloud.grpc.minion.RpcRequestServiceGrpc;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
 import org.opennms.horizon.grpc.echo.contract.EchoRequest;
 import org.opennms.horizon.grpc.echo.contract.EchoResponse;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import com.google.protobuf.Any;
 
@@ -92,7 +92,7 @@ class MinionRpcClientTest {
             .addService(mockRequestService)
             .directExecutor().build().start());
         ManagedChannel channel = grpcCleanup.register(InProcessChannelBuilder.forName(MinionRpcClientTest.class.getName()).directExecutor().build());
-        client = new MinionRpcClient(channel, (ctx) -> Optional.ofNullable(GlobalConstants.TENANT_ID_CONTEXT_KEY.get()));
+        client = new MinionRpcClient(channel, (ctx) -> Optional.ofNullable(GrpcConstants.TENANT_ID_CONTEXT_KEY.get()));
         client.init();
     }
 

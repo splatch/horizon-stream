@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.opennms.horizon.events.proto.EventDTO;
 import org.opennms.horizon.events.proto.EventServiceGrpc;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
@@ -32,13 +32,13 @@ public class EventsClient {
 
     public List<EventDTO> listEvents(String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(GlobalConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return eventsStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listEvents(Empty.newBuilder().build()).getEventsList();
     }
 
     public List<EventDTO> getEventsByNodeId(long nodeId, String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(GlobalConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return eventsStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getEventsByNodeId(Int64Value.of(nodeId)).getEventsList();
     }
 }

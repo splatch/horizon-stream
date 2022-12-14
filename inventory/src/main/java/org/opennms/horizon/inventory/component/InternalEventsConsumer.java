@@ -36,7 +36,8 @@ import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
+import org.opennms.horizon.shared.events.EventConstants;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
@@ -60,8 +61,8 @@ public class InternalEventsConsumer {
     public void receiveTrapEvent(@Payload byte[] data, @Headers Map<String, Object> headers) {
         try {
             var event = Event.parseFrom(data);
-            if(event.getUei().equals(GlobalConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)) {
-                var tenantId = Optional.ofNullable(headers.get(GlobalConstants.TENANT_ID_KEY)).map(obj -> new String((byte[]) obj)).orElse(GlobalConstants.DEFAULT_TENANT_ID);
+            if(event.getUei().equals(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)) {
+                var tenantId = Optional.ofNullable(headers.get(GrpcConstants.TENANT_ID_KEY)).map(obj -> new String((byte[]) obj)).orElse(GrpcConstants.DEFAULT_TENANT_ID);
                 log.debug("Create new node from event with interface: {}, location: {} and tenant: {}", event.getIpAddress(), event.getLocation(), tenantId);
                 NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
                     .setLocation(event.getLocation())

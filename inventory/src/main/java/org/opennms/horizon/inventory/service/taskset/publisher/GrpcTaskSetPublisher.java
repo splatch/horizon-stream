@@ -30,7 +30,7 @@ package org.opennms.horizon.inventory.service.taskset.publisher;
 
 import org.opennms.horizon.inventory.grpc.TenantIdClientInterceptor;
 import org.opennms.horizon.inventory.grpc.TenantLookup;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.service.api.TaskSetPublisher;
 import org.opennms.taskset.service.contract.PublishTaskSetRequest;
@@ -71,7 +71,7 @@ public class GrpcTaskSetPublisher implements TaskSetPublisher {
                     .setTaskSet(taskSet)
                     .build();
 
-            PublishTaskSetResponse response = Context.current().withValue(GlobalConstants.TENANT_ID_CONTEXT_KEY, tenantId).call(() ->
+            PublishTaskSetResponse response = Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).call(() ->
                 taskSetServiceStub.publishTaskSet(request)
             );
 

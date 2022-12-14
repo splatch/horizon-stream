@@ -38,7 +38,7 @@ import org.keycloak.adapters.rotation.AdapterTokenVerifier;
 import org.keycloak.common.VerificationException;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.util.TokenUtil;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import io.grpc.Context;
 import io.grpc.Contexts;
@@ -59,10 +59,10 @@ public class EventServerInterceptor implements ServerInterceptor {
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> callHandler) {
         log.debug("Received metadata: {}", headers);
-        String authHeader = headers.get(GlobalConstants.AUTHORIZATION_METADATA_KEY);
+        String authHeader = headers.get(GrpcConstants.AUTHORIZATION_METADATA_KEY);
         try {
             Optional<String> tenantId = verifyAccessToken(authHeader);
-            Context context = tenantId.map(tnId -> Context.current().withValue(GlobalConstants.TENANT_ID_CONTEXT_KEY, tnId)).orElseThrow();
+            Context context = tenantId.map(tnId -> Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tnId)).orElseThrow();
             return Contexts.interceptCall(context, serverCall, headers, callHandler);
         } catch (VerificationException e) {
             log.error("Failed to verify access token", e);
@@ -85,6 +85,6 @@ public class EventServerInterceptor implements ServerInterceptor {
         verifier.withChecks(TokenVerifier.SUBJECT_EXISTS_CHECK, new TokenVerifier.TokenTypeCheck(TokenUtil.TOKEN_TYPE_BEARER), TokenVerifier.IS_ACTIVE);
         verifier.verify();
         AccessToken accessToken = verifier.getToken();
-        return Optional.ofNullable((String) accessToken.getOtherClaims().get(GlobalConstants.TENANT_ID_KEY));
+        return Optional.ofNullable((String) accessToken.getOtherClaims().get(GrpcConstants.TENANT_ID_KEY));
     }
 }

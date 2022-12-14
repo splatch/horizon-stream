@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.opennms.horizon.inventory.service.taskset.response.DetectorResponseService;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.taskset.contract.DetectorResponse;
 import org.opennms.taskset.contract.TaskResult;
 import org.opennms.taskset.contract.TaskSetResults;
@@ -76,7 +76,7 @@ public class TaskSetResultsConsumer {
     }
 
     private String getTenantId(Map<String, Object> headers) {
-        return Optional.ofNullable(headers.get(GlobalConstants.TENANT_ID_KEY))
-            .map(o -> new String((byte[]) o)).orElse(GlobalConstants.DEFAULT_TENANT_ID);
+        return Optional.ofNullable(headers.get(GrpcConstants.TENANT_ID_KEY))
+            .map(o -> new String((byte[]) o)).orElse(GrpcConstants.DEFAULT_TENANT_ID);
     }
 }

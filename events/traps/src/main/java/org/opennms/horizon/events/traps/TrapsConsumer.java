@@ -44,7 +44,7 @@ import org.opennms.horizon.events.proto.EventParameter;
 import org.opennms.horizon.events.proto.SnmpInfo;
 import org.opennms.horizon.grpc.traps.contract.TrapDTO;
 import org.opennms.horizon.grpc.traps.contract.TrapLogDTO;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.shared.snmp.SnmpHelper;
 import org.opennms.horizon.shared.snmp.traps.TrapdInstrumentation;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
@@ -195,7 +195,7 @@ public class TrapsConsumer {
     }
 
     private Optional<String> getTenantId(Map<String, Object> headers) {
-        Object tenantId = headers.get(GlobalConstants.TENANT_ID_KEY);
+        Object tenantId = headers.get(GrpcConstants.TENANT_ID_KEY);
         //TODO: remove this once tenant is coming from minion gateway
         if (tenantId == null) {
             return Optional.of("opennms-prime");

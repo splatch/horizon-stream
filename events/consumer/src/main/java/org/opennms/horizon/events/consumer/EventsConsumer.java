@@ -35,7 +35,7 @@ import org.opennms.horizon.events.persistence.model.EventParameter;
 import org.opennms.horizon.events.persistence.model.EventParameters;
 import org.opennms.horizon.events.persistence.repository.EventRepository;
 import org.opennms.horizon.events.proto.EventLog;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,7 +115,7 @@ public class EventsConsumer {
 
 
     private Optional<String> getTenantId(Map<String, Object> headers) {
-        Object tenantId = headers.get(GlobalConstants.TENANT_ID_KEY);
+        Object tenantId = headers.get(GrpcConstants.TENANT_ID_KEY);
         if (tenantId instanceof byte[]) {
             return Optional.of(new String((byte[]) tenantId));
         }

@@ -43,7 +43,7 @@ import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -98,7 +98,7 @@ public class NodeService {
     }
 
     private MonitoringLocation saveMonitoringLocation(NodeCreateDTO request, String tenantId) {
-        String location = StringUtils.isEmpty(request.getLocation()) ? GlobalConstants.DEFAULT_LOCATION: request.getLocation();
+        String location = StringUtils.isEmpty(request.getLocation()) ? GrpcConstants.DEFAULT_LOCATION: request.getLocation();
         Optional<MonitoringLocation> found =
             monitoringLocationRepository.findByLocationAndTenantId(location, tenantId);
 

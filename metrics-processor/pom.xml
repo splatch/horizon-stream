@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
-            <artifactId>common-constants</artifactId>
+            <artifactId>grpc-common-constants</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
