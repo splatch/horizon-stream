@@ -149,7 +149,7 @@ onMounted(async () => {
 })
 </script>
 
-// TODO: make theme switching works in graphs
+<!-- TODO: make theme switching works in graphs -->
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";
 
@@ -166,8 +166,8 @@ onMounted(async () => {
 
   .download-icon {
     position: absolute;
-    right: 10px;
-    top: 30px;
+    right: 15px;
+    top: 19px;
 
     svg {
       font-size: 15px;
