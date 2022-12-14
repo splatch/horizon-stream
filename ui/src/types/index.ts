@@ -34,3 +34,9 @@ export interface IIcon {
   title?: string
   tooltip?: string
 }
+
+export const enum Monitor {
+  ICMP = 'ICMP',
+  SNMP = 'SNMP',
+  ECHO = 'ECHO'
+}

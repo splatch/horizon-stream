@@ -3,6 +3,8 @@ fragment NodeLatencyParts on Query {
     name: "response_time_msec", 
     labels: {
       node_id: $id
+      monitor: $monitor
+      instance: $instance
     }
   ) {
     status
