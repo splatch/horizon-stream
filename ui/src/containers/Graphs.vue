@@ -5,7 +5,7 @@
       Download All
     </FeatherButton>
   </div>
-  <div id="graphs-container">
+  <div id="graphs-container" v-if="store.fetchIsDone">
     <LineGraph :graph="nodeLatency" />
     <LineGraph :graph="bytesInOut" />
     <LineGraph :graph="bytesIn" />

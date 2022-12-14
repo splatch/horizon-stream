@@ -154,6 +154,7 @@ onMounted(async () => {
 @use "@featherds/styles/themes/variables";
 
 .container {
+  position: relative;
   width: 30%;
   min-width: 400px;
   border: 1px solid var(variables.$secondary-text-on-surface);
