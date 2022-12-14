@@ -109,6 +109,14 @@ public class AlarmRestServiceImpl  {
         return ResponseEntity.ok("acknowledged");
     }
 
+    @PostMapping(path="/unclear/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> unClearAlarm(@PathVariable Long id) {
+
+        alarmService.unclearAlarm(id, new Date());
+
+        return ResponseEntity.ok("acknowledged");
+    }
+
     @DeleteMapping(path="/delete/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteAlarm(@PathVariable Long id) {
 

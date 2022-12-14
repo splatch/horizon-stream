@@ -175,6 +175,14 @@ public class AlarmTestSteps {
         assertEquals(AlarmSeverity.CLEARED, alarmDTO.getSeverity());
     }
 
+    @Then("Verify alarm was uncleared")
+    public void verifyAlarmWasUncleared() {
+
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        assertEquals(alarmDTO.getLastEventSeverity(), alarmDTO.getSeverity());
+    }
+
     //TODO:MMF need a better way to determine this. For now just assuming the second one.
     @Then("Remember alarm id")
     public void rememberAlarmId() {

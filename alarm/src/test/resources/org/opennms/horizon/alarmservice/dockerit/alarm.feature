@@ -40,4 +40,8 @@ Feature: Alarm Service Basic Functionality
     Then Verify the HTTP response code is 200
     Then Send GET request to application at path "/alarms/list"
     Then Verify alarm was cleared
+    Then Send POST request to clear alarm at path "/alarms/unclear"
+    Then Verify the HTTP response code is 200
+    Then Send GET request to application at path "/alarms/list"
+    Then Verify alarm was uncleared
 

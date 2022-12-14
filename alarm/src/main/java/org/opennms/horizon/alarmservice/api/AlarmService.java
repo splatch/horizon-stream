@@ -34,6 +34,7 @@ import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.events.proto.Event;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This API is intended to provide RHS functionality for Drools Alarmd and

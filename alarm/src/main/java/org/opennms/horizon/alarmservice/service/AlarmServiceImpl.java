@@ -53,8 +53,6 @@ import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.opennms.horizon.events.proto.Event;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -158,12 +156,28 @@ public class AlarmServiceImpl implements AlarmService {
             log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
             return;
         }
+        doAlarmUnclear(now, maybeAlarmInTrans);
+    }
+
+    @Override
+    @Transactional
+    public void unclearAlarm(Long alarmId, Date now) {
+        log.info("Un-clearing alarm with id: {} at: {}", alarmId, now);
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarmId);
+        if (maybeAlarmInTrans.isEmpty()) {
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarmId);
+            return;
+        }
+        doAlarmUnclear(now, maybeAlarmInTrans);
+    }
+
+    private void doAlarmUnclear(Date now, Optional<Alarm> maybeAlarmInTrans) {
         Alarm alarmInTrans = maybeAlarmInTrans.get();
-            final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
-            alarmInTrans.setSeverity(alarmInTrans.getLastEventSeverity());
-            updateAutomationTime(alarmInTrans, now);
-            alarmRepository.save(alarmInTrans);
-            alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
+        final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
+        alarmInTrans.setSeverity(alarmInTrans.getLastEventSeverity());
+        updateAutomationTime(alarmInTrans, now);
+        alarmRepository.save(alarmInTrans);
+        alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
     }
 
     @Override
@@ -395,6 +409,9 @@ public class AlarmServiceImpl implements AlarmService {
         Date now = new Date();
         alarm.setLastEventTime(now);
         alarm.setLastAutomationTime(now);
+        //TODO:MMF can we pull this from event parameters?
+        alarm.setLastEventSeverity(AlarmSeverity.CRITICAL);
+        alarm.setSeverity(AlarmSeverity.CRITICAL);
 //        alarm.setLastEvent(e);
 //        alarm.setLogMsg(e.getEventLogMsg());
 //        alarm.setMouseOverText(e.getEventMouseOverText());
@@ -402,7 +419,6 @@ public class AlarmServiceImpl implements AlarmService {
 //        alarm.setOperInstruct(e.getEventOperInstruct());
         alarm.setReductionKey(reductionKey);
 //        alarm.setServiceType(e.getServiceType());
-        alarm.setSeverity(AlarmSeverity.CRITICAL);
 //        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
 //        alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
         alarm.setEventUei(event.getUei() + event.getNodeId());
