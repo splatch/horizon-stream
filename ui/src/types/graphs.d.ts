@@ -4,8 +4,8 @@ type DataSets = TsResult[][]
 
 interface MetricArgs {
   name: string
-  monitor: string // ICMP
-  instance?: string
+  monitor: string
+  instance: string
   nodeId?: string
   timeRange: number
   timeRangeUnit: TimeRangeUnit
@@ -14,9 +14,10 @@ interface MetricArgs {
 interface GraphProps {
   label: string
   metrics: string[]
-  monitor: string // ICMP
+  monitor: string
   nodeId?: string
-  instance?: string
+  instance: string
+  systemId?: string
   timeRange: number
   timeRangeUnit: TimeRangeUnit
 }

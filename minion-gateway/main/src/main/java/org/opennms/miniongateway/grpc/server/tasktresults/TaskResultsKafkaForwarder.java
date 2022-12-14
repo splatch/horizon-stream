@@ -56,10 +56,9 @@ public class TaskResultsKafkaForwarder implements MessageConsumer<Message, Messa
 
     @Override
     public void handleMessage(Message messageLog) {
-        logger.debug("Received results; sending to Kafka: kafka-topic={}, message={}", kafkaTopic, messageLog);
-
         // Retrieve the Tenant ID from the TenantID GRPC Interceptor
         String tenantId = tenantIDGrpcInterceptor.readCurrentContextTenantId();
+        logger.debug("Received results; sending to Kafka: tenant-id: {}; kafka-topic={}; message={}", tenantId, kafkaTopic, messageLog);
         byte[] rawContent = messageLog.toByteArray();
 
         ProducerRecord<String, byte[]> producerRecord = formatProducerRecord(rawContent, tenantId);

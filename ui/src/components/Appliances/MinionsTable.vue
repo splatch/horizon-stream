@@ -29,7 +29,7 @@
             <td>{{ minion.label }}</td>
             <td v-date>{{ minion.lastCheckedTime }}</td>
             <td>{{ minion.id }}</td>
-            <MetricChip tag="td" :metric="{timestamp: minion.latency?.timestamp}" @click="openLatencyGraph(minion.id as string)" :data-metric="minion.latency?.timestamp" class="bg-status" data-test="minion-item-latency" />
+            <MetricChip tag="td" :metric="{timestamp: minion.latency?.timestamp}" :data-metric="minion.latency?.timestamp" class="bg-status" data-test="minion-item-latency" />
             <MetricChip tag="td" :metric="{status: minion.status}" class="bg-status" data-test="minion-item-status" />
           </tr>
         </TransitionGroup>
@@ -50,7 +50,7 @@
 import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import { WidgetProps} from '@/types'
+import { Monitor, WidgetProps} from '@/types'
 import { GraphProps } from '@/types/graphs'
 import { ExtendedMinion } from '@/types/minion'
 import { TimeRangeUnit } from '@/types/graphql'
@@ -68,7 +68,8 @@ const modal = ref({
   title: '',
   hideTitle: true
 })
-const openLatencyGraph = (id: string) => {
+
+const openLatencyGraph = (minion: ExtendedMinion) => {
   modal.value = {
     ...modal.value,
     isVisible: true
@@ -76,8 +77,9 @@ const openLatencyGraph = (id: string) => {
   graphProps.value = {
     label: 'Minion Latency',
     metrics: ['response_time_msec'],
-    monitor: 'ICMP',
-    nodeId: id,
+    monitor: Monitor.ECHO,
+    nodeId: minion.id,
+    instance: minion.systemId as string, // for minions, can use systemId for instance
     timeRange: 10,
     timeRangeUnit: TimeRangeUnit.Minute
   }

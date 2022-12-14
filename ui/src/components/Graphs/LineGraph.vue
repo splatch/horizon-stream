@@ -1,7 +1,6 @@
 <template>
-  <div class="container">
+  <div v-if="graphs.dataSets.value.length" class="container">
       <div class="canvas-wrapper">
-
         <FeatherTooltip
           title="Download to PDF"
           v-slot="{ attrs, on }"
@@ -12,12 +11,10 @@
             icon="Download" 
             class="download-icon" 
             @click="onDownload" 
-            v-if="graphs.dataSets.value.length"
           >
             <FeatherIcon :icon="DownloadFile" />
           </FeatherButton>
         </FeatherTooltip>
-
         <canvas class="canvas" :id="`${graph.label}`"></canvas>
       </div>
   </div>
@@ -91,7 +88,7 @@ const options = computed<ChartOptions>(() => ({
 }))
 
 const xAxisLabels = computed(() => {
-  const graphsDataSetsValues = graphs.dataSets.value[0].values as any
+  const graphsDataSetsValues = graphs.dataSets.value[0]?.values as any || [] as any
   
   const totalLabels = graphsDataSetsValues.map((val: any) => {
     return formatTimestamp(val[0], 'minutes')
@@ -101,14 +98,14 @@ const xAxisLabels = computed(() => {
 })
 
 const dataSets = computed(() => {
-  const bgColor = ['green', 'blue'] // TODO: better solution to set bg color in regards to FeatherDS theme switching
+  const bgColor = ['green', 'blue'] // TODO: find solution to set bg color, in regards to FeatherDS theme switching
   return graphs.dataSets.value.map((data: any ,i) => ({
     label: data.metric.__name__,
     data: data.values.map((val: any) => val[1]),
     backgroundColor: bgColor[i],
     borderColor: bgColor[i],
     hitRadius: 5,
-    hoverRadius: 6,
+    hoverRadius: 6
   }))
 })
 
@@ -125,13 +122,15 @@ const render = async (update?: boolean) => {
       chart.data = chartData.value
       chart.update()
     } else {
-      const ctx: any = document.getElementById(`${props.graph.label}`)
-      chart = new Chart(ctx, {
-        type: 'line',
-        data: chartData.value,
-        options: options.value,
-        plugins: []
-      })
+      if(chartData.value.datasets.length) {
+        const ctx: any = document.getElementById(`${props.graph.label}`)
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: chartData.value,
+          options: options.value,
+          plugins: []
+        })
+      }
     }
   } catch (error) {
     console.log(error)
@@ -150,21 +149,25 @@ onMounted(async () => {
 })
 </script>
 
-// TODO: make theme switching works in graphs
+<!-- TODO: make theme switching works in graphs -->
 <style scoped lang="scss">
+@use "@featherds/styles/themes/variables";
+
 .container {
   position: relative;
-  margin-right: 10px;
+  width: 30%;
+  min-width: 400px;
+  border: 1px solid var(variables.$secondary-text-on-surface);
+  border-radius: 10px;
+  padding: var(variables.$spacing-l) var(variables.$spacing-l);
 }
 .canvas-wrapper {
-  display: block;
   height: 300px;
-  position: relative;
 
   .download-icon {
     position: absolute;
-    right: 10px;
-    top: 30px;
+    right: 15px;
+    top: 19px;
 
     svg {
       font-size: 15px;
