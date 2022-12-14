@@ -188,19 +188,37 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
-    public void escalateAlarm(Alarm alarm, Date now) {
+    public AlarmDTO escalateAlarm(Alarm alarm, Date now) {
             log.info("Escalating alarm with id: {} at: {}", alarm.getAlarmId(), now);
         final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
             log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
-            return;
+            return null;
         }
+        return doEscalateAlarm(now, maybeAlarmInTrans);
+    }
+
+    @Override
+    @Transactional
+    public AlarmDTO escalateAlarm(Long alarmId, Date now) {
+        log.info("Escalating alarm with id: {} at: {}", alarmId, now);
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarmId);
+        if (maybeAlarmInTrans.isEmpty()) {
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarmId);
+            return null;
+        }
+        return doEscalateAlarm(now, maybeAlarmInTrans);
+    }
+
+    private AlarmDTO doEscalateAlarm(Date now, Optional<Alarm> maybeAlarmInTrans) {
         Alarm alarmInTrans = maybeAlarmInTrans.get();
-            final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
-            alarmInTrans.setSeverity(AlarmSeverity.get(previousSeverity.getId() + 1));
-            updateAutomationTime(alarmInTrans, now);
-            alarmRepository.save(alarmInTrans);
-            alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
+        final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
+        alarmInTrans.setSeverity(AlarmSeverity.escalate(previousSeverity));
+        updateAutomationTime(alarmInTrans, now);
+        alarmRepository.save(alarmInTrans);
+        alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
+
+        return alarmMapper.alarmToAlarmDTO(alarmInTrans);
     }
 
     @Override
@@ -269,30 +287,36 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
-    public void setSeverity(Alarm alarm, AlarmSeverity severity, Date now) {
+    public AlarmDTO setSeverity(Alarm alarm, AlarmSeverity severity, Date now) {
             log.info("Updating severity {} on alarm with id: {}", severity, alarm.getAlarmId());
         final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
             log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
-            return;
+            return null;
         }
-        Alarm alarmInTrans = maybeAlarmInTrans.get();
-            final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
-            alarmInTrans.setSeverity(severity);
-            updateAutomationTime(alarm, now);
-            alarmRepository.save(alarmInTrans);
-            alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
+        return doSetSeverity(severity, now, maybeAlarmInTrans.get());
     }
 
     @Override
-    public void setSeverity(Long id, AlarmSeverity severity, Date now) {
-        Alarm alarm = alarmRepository.getById(id);
+    @Transactional
+    public AlarmDTO setSeverity(Long alarmId, AlarmSeverity severity, Date now) {
+        log.info("Updating severity to {} on alarm with id: {}", severity, alarmId);
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarmId);
+        if (maybeAlarmInTrans.isEmpty()) {
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarmId);
+            return null;
+        }
+        return doSetSeverity(severity, now, maybeAlarmInTrans.get());
+    }
 
-        alarm.setSeverity(severity);
-        // TODO:MMF where to set this date?
-//        alarm.set?
+    private AlarmDTO doSetSeverity(AlarmSeverity severity, Date now, Alarm alarmInTrans) {
+        final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
+        alarmInTrans.setSeverity(severity);
+        updateAutomationTime(alarmInTrans, now);
+        alarmRepository.save(alarmInTrans);
+        alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
 
-        alarmRepository.save(alarm);
+        return alarmMapper.alarmToAlarmDTO(alarmInTrans);
     }
 
     @Override

@@ -54,20 +54,21 @@ public interface AlarmService {
 
     AlarmDTO unclearAlarm(Long alarmId, Date now);
 
-    void escalateAlarm(Alarm alarm, Date now);
+    AlarmDTO escalateAlarm(Alarm alarm, Date now);
+
+    AlarmDTO escalateAlarm(Long alarmId, Date now);
 
     AlarmDTO acknowledgeAlarm(Alarm alarm, Date now, String userId);
 
     AlarmDTO acknowledgeAlarm(Long alarmId, Date now, String userId);
 
-    @Transactional
     AlarmDTO unAcknowledgeAlarm(Long alarmId, Date now);
 
     AlarmDTO unAcknowledgeAlarm(Alarm alarm, Date now);
 
-    void setSeverity(Alarm alarm, AlarmSeverity severity, Date now);
+    AlarmDTO setSeverity(Alarm alarm, AlarmSeverity severity, Date now);
 
-    void setSeverity(Long id, AlarmSeverity severity, Date now);
+    abstract AlarmDTO setSeverity(Long alarmId, AlarmSeverity severity, Date now);
 
     void debug(String message, Object... objects);
 

@@ -44,6 +44,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
+import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
 import org.opennms.horizon.alarmservice.rest.support.SecurityHelper;
 import org.slf4j.helpers.MessageFormatter;
@@ -124,11 +125,22 @@ public class AlarmRestServiceImpl  {
     }
 
     @DeleteMapping(path="/delete/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> deleteAlarm(@PathVariable Long id) {
+    public ResponseEntity<AlarmDTO> deleteAlarm(@PathVariable Long id) {
 
-        alarmService.deleteAlarm(id);
+        return ResponseEntity.ok(alarmService.deleteAlarm(id));
+    }
 
-        return ResponseEntity.ok("acknowledged");
+    @PostMapping(path="/escalate/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AlarmDTO> escalateAlarm(@PathVariable Long id) {
+
+        return ResponseEntity.ok(alarmService.escalateAlarm(id, new Date()));
+    }
+
+    @PostMapping(path="/severity/{id}/{ord}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    //TODO:MMF not sure passing ordinal in is the right way to do this
+    public ResponseEntity<AlarmDTO> escalateAlarm(@PathVariable Long id, @PathVariable int ord) {
+
+        return ResponseEntity.ok(alarmService.setSeverity(id, AlarmSeverity.get(ord), new Date()));
     }
 
     @PutMapping(path = "{id}/memo",  consumes = MediaType.APPLICATION_FORM_URLENCODED)

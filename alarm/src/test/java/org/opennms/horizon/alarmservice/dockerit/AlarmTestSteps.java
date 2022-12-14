@@ -116,6 +116,20 @@ public class AlarmTestSteps {
         commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId());
     }
 
+    @Then("Send POST request to set alarm severity at path {string}")
+    public void sendPOSTRequestToSetAlarmSeverityAtPath(String path) throws Exception {
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId()+"/1");
+    }
+
+    @Then("Send POST request to escalate alarm severity at path {string}")
+    public void sendPOSTRequestToEscalateAlarmSeverityAtPath(String path) throws Exception {
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId());
+    }
+
     @Then("Send message to Kafka at topic {string}")
     public void sendMessageToKafkaAtTopic(String topic) throws Exception {
         URL requestUrl = new URL(new URL(this.kafkaRestBaseUrl), "/topics/" + topic);
@@ -207,6 +221,14 @@ public class AlarmTestSteps {
         AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
         assertNull(alarmDTO.getAlarmAckTime());
         assertNull(alarmDTO.getAlarmAckUser());
+    }
+
+    @Then("Verify alarm severity was escalated")
+    public void verifyAlarmWasEscalated() {
+
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        assertTrue(alarmDTO.getSeverity().isGreaterThan(AlarmSeverity.INDETERMINATE));
     }
 
     @Then("Verify alarm was uncleared")

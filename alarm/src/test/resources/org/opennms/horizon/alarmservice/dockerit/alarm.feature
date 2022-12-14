@@ -60,3 +60,18 @@ Feature: Alarm Service Basic Functionality
     Then Send GET request to application at path "/alarms/list"
     Then Verify alarm was unacknowledged
 
+  Scenario: Verify alarm severity can be set and escalated
+    Then Send message to Kafka at topic "events-proto"
+    Then Verify the HTTP response code is 200
+    Then delay
+    Then Send GET request to application at path "/alarms/list"
+    Then DEBUG dump the response body
+    Then Send POST request to set alarm severity at path "/alarms/severity"
+    Then Verify the HTTP response code is 200
+    Then Send GET request to application at path "/alarms/list"
+#    Then Verify alarm was acknowledged
+    Then Send POST request to escalate alarm severity at path "/alarms/escalate"
+    Then Verify the HTTP response code is 200
+    Then Send GET request to application at path "/alarms/list"
+    Then Verify alarm severity was escalated
+
