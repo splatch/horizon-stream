@@ -28,19 +28,13 @@
 
 package org.opennms.horizon.inventory.component;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
 import org.opennms.horizon.events.proto.Event;
-import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
-import org.opennms.horizon.inventory.dto.NodeDTO;
-import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
-import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
@@ -63,18 +57,10 @@ import lombok.extern.slf4j.Slf4j;
 public class NodeMonitoringManager {
     private final NodeService nodeService;
     private final DetectorTaskSetService detectorService;
-    private final NodeMapper nodeMapper;
-    private final MonitoringLocationMapper locationMapper;
 
     @PostConstruct
     public void startMonitorTasks() {
-        Map<NodeDTO, MonitoringLocationDTO> nodeMap = nodeService.listAllNodeForMonitoring();
-        List<Node> nodeList = nodeMap.entrySet().stream().map(e -> {
-           Node node = nodeMapper.dtoToModel(e.getKey());
-           node.setMonitoringLocation(locationMapper.dtoToModel(e.getValue()));
-           return node;
-        }).collect(Collectors.toList());
-        nodeList.forEach(detectorService::sendDetectorTasks);
+        detectorService.sendDetectorTaskForNodes(nodeService.listAllNodeForMonitoring());
     }
 
     @KafkaListener(topics = "${kafka.topics.internal-events}", concurrency = "1")

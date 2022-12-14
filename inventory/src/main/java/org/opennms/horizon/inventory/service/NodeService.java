@@ -29,16 +29,16 @@
 package org.opennms.horizon.inventory.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
-import org.opennms.horizon.inventory.mapper.MonitoringLocationMapper;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
@@ -64,7 +64,6 @@ public class NodeService {
     private final IpInterfaceRepository ipInterfaceRepository;
 
     private final NodeMapper mapper;
-    private final MonitoringLocationMapper locationMapper;
 
     @Transactional(readOnly = true)
     public List<NodeDTO> findByTenantId(String tenantId) {
@@ -132,7 +131,13 @@ public class NodeService {
     }
 
     @Transactional
-    public Map<NodeDTO, MonitoringLocationDTO> listAllNodeForMonitoring() {
-        return nodeRepository.findAll().stream().collect(Collectors.toMap(mapper::modelToDTO, n-> locationMapper.modelToDTO(n.getMonitoringLocation())));
+    public Map<String, Map<String, List<NodeDTO>>> listAllNodeForMonitoring() {
+        Map<String, Map<String, List<NodeDTO>>> nodesByTenantLocation = new HashMap<>();
+        nodeRepository.findAll().forEach(node -> {
+            Map<String, List<NodeDTO>> nodeByLocation = nodesByTenantLocation.computeIfAbsent(node.getTenantId(), (tenantId) -> new HashMap<>());
+            List<NodeDTO> nodeList = nodeByLocation.computeIfAbsent(node.getMonitoringLocation().getLocation(), location-> new ArrayList<>());
+            nodeList.add(mapper.modelToDTO(node));
+        });
+        return nodesByTenantLocation;
     }
 }
