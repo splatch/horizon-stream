@@ -1,31 +1,11 @@
 <template>
-  <!-- <div class="header">
-    Graphs
-    <FeatherButton text @click="onDownload">
-      Download All
-    </FeatherButton>
-  </div> -->
   <div class="header-container">
     <PageHeader heading="Graphs" class="header" data-test="page-header" />
     <FeatherButton text @click="onDownload" class="btn-download">
       Download All
     </FeatherButton>
   </div>
-
-  <!-- <div id="graphs-layout">
-    <div class="left-column" v-if="store.fetchIsDone">
-      <LineGraph :graph="nodeLatency" />
-      <LineGraph :graph="bytesIn" />
-      <LineGraph :graph="hcIn" />
-    </div>
-    <div class="right-column">
-      <LineGraph :graph="bytesInOut" />
-      <LineGraph :graph="bytesOut" />
-      <LineGraph :graph="hcOut" />
-    </div>
-  </div> -->
-
-  <div class="graphs-container">
+  <div id="graphs-container">
     <LineGraph :graph="nodeLatency" />
     <LineGraph :graph="bytesInOut" />
     <LineGraph :graph="bytesIn" />
@@ -119,7 +99,7 @@ const hcOut = computed<GraphProps>(() => {
 })
 
 const onDownload = () => {
-  const page = document.getElementById('graphs-layout') as HTMLElement
+  const page = document.getElementById('graphs-container') as HTMLElement
   const canvases = document.getElementsByClassName('canvas') as HTMLCollectionOf<HTMLCanvasElement>
   downloadMultipleCanvases(page, canvases)
 }
@@ -132,7 +112,6 @@ onMounted(async () => {
   
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";
-// @use "@featherds/styles/mixins/typography";
 
 .header-container {
   display: flex;
@@ -145,16 +124,12 @@ onMounted(async () => {
   }
 }
 
-#graphs-layout {
+#graphs-container {
   display: flex;
-  gap: 20px;
-  
-  .left-column, 
-  .right-column {
-    display: flex;
-    flex-direction: column;
-    width: calc(50% - 10px);
-  }
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin: var(variables.$spacing-xl) var(variables.$spacing-l);
 }
 </style>
   
