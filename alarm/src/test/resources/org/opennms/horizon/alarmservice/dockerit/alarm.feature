@@ -45,3 +45,18 @@ Feature: Alarm Service Basic Functionality
     Then Send GET request to application at path "/alarms/list"
     Then Verify alarm was uncleared
 
+  Scenario: Verify alarm can be acknowledged and unacknowledged
+    Then Send message to Kafka at topic "events-proto"
+    Then Verify the HTTP response code is 200
+    Then delay
+    Then Send GET request to application at path "/alarms/list"
+    Then DEBUG dump the response body
+    Then Send POST request to acknowledge alarm at path "/alarms/ack"
+    Then Verify the HTTP response code is 200
+    Then Send GET request to application at path "/alarms/list"
+    Then Verify alarm was acknowledged
+    Then Send POST request to unacknowledge alarm at path "/alarms/unAck"
+    Then Verify the HTTP response code is 200
+    Then Send GET request to application at path "/alarms/list"
+    Then Verify alarm was unacknowledged
+

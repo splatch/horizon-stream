@@ -48,7 +48,6 @@ import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
 import org.opennms.horizon.alarmservice.rest.support.SecurityHelper;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MimeTypeUtils;
@@ -58,7 +57,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
@@ -102,19 +100,27 @@ public class AlarmRestServiceImpl  {
     }
     
     @PostMapping(path="/clear/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> clearAlarm(@PathVariable Long id) {
+    public ResponseEntity<AlarmDTO> clearAlarm(@PathVariable Long id) {
 
-        alarmService.clearAlarm(id, new Date());
-
-        return ResponseEntity.ok("acknowledged");
+        return ResponseEntity.ok(alarmService.clearAlarm(id, new Date()));
     }
 
     @PostMapping(path="/unclear/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> unClearAlarm(@PathVariable Long id) {
+    public ResponseEntity<AlarmDTO> unClearAlarm(@PathVariable Long id) {
 
-        alarmService.unclearAlarm(id, new Date());
+        return ResponseEntity.ok(alarmService.unclearAlarm(id, new Date()));
+    }
 
-        return ResponseEntity.ok("acknowledged");
+    @PostMapping(path="/ack/{id}/{userId}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AlarmDTO> acknowledgeAlarm(@PathVariable Long id, @PathVariable String userId) {
+
+        return ResponseEntity.ok(alarmService.acknowledgeAlarm(id, new Date(), userId));
+    }
+
+    @PostMapping(path="/unAck/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AlarmDTO> acknowledgeAlarm(@PathVariable Long id) {
+
+        return ResponseEntity.ok(alarmService.unAcknowledgeAlarm(id, new Date()));
     }
 
     @DeleteMapping(path="/delete/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)

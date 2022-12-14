@@ -86,12 +86,12 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
-    public void clearAlarm(Alarm alarm, Date now) {
+    public AlarmDTO clearAlarm(Alarm alarm, Date now) {
             log.info("Clearing alarm with id: {} with current severity: {} at: {}", alarm.getAlarmId(), alarm.getSeverity(), now);
             final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
             if (maybeAlarmInTrans.isEmpty()) {
                 log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
-                return;
+                return null;
             }
             Alarm alarmInTrans = maybeAlarmInTrans.get();
             final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
@@ -105,28 +105,30 @@ public class AlarmServiceImpl implements AlarmService {
             associatedAlarms.forEach(associatedAlarm -> clearAlarm(associatedAlarm, now));
 
             alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
+
+            return alarmMapper.alarmToAlarmDTO(alarmInTrans);
     }
 
     @Override
     @Transactional
-    public void clearAlarm(Long alarmId, Date now) {
-        clearAlarm(alarmRepository.getById(alarmId), now);
+    public AlarmDTO clearAlarm(Long alarmId, Date now) {
+        return clearAlarm(alarmRepository.getById(alarmId), now);
     }
 
     @Override
     @Transactional
-    public void deleteAlarm(Alarm alarm) {
-        this.deleteAlarm(alarm.getAlarmId());
+    public AlarmDTO deleteAlarm(Alarm alarm) {
+        return deleteAlarm(alarm.getAlarmId());
     }
 
     @Override
     @Transactional
-    public void deleteAlarm(Long id) {
+    public AlarmDTO deleteAlarm(Long id) {
         final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(id);
 
         if (maybeAlarmInTrans.isEmpty()) {
             log.warn("Alarm with Id {}  disappeared. Skipping clear.", id);
-            return;
+            return null;
         }
         Alarm alarmInTrans = maybeAlarmInTrans.get();
 
@@ -145,39 +147,43 @@ public class AlarmServiceImpl implements AlarmService {
                 alarmEntityNotifier.didUpdateRelatedAlarms(entry.getKey(), entry.getValue());
             }
             alarmEntityNotifier.didDeleteAlarm(alarmInTrans);
+
+            return alarmMapper.alarmToAlarmDTO(alarmInTrans);
     }
 
     @Override
     @Transactional
-    public void unclearAlarm(Alarm alarm, Date now) {
+    public AlarmDTO unclearAlarm(Alarm alarm, Date now) {
             log.info("Un-clearing alarm with id: {} at: {}", alarm.getAlarmId(), now);
         final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
         if (maybeAlarmInTrans.isEmpty()) {
             log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
-            return;
+            return null;
         }
-        doAlarmUnclear(now, maybeAlarmInTrans);
+        return doAlarmUnclear(now, maybeAlarmInTrans.get());
     }
 
     @Override
     @Transactional
-    public void unclearAlarm(Long alarmId, Date now) {
+    public AlarmDTO unclearAlarm(Long alarmId, Date now) {
         log.info("Un-clearing alarm with id: {} at: {}", alarmId, now);
         final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarmId);
         if (maybeAlarmInTrans.isEmpty()) {
             log.warn("Alarm disappeared: {}. Skipping clear.", alarmId);
-            return;
+            return null;
         }
-        doAlarmUnclear(now, maybeAlarmInTrans);
+        return doAlarmUnclear(now, maybeAlarmInTrans.get());
     }
 
-    private void doAlarmUnclear(Date now, Optional<Alarm> maybeAlarmInTrans) {
-        Alarm alarmInTrans = maybeAlarmInTrans.get();
-        final AlarmSeverity previousSeverity = alarmInTrans.getSeverity();
-        alarmInTrans.setSeverity(alarmInTrans.getLastEventSeverity());
-        updateAutomationTime(alarmInTrans, now);
-        alarmRepository.save(alarmInTrans);
-        alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
+    private AlarmDTO doAlarmUnclear(Date now, Alarm alarm) {
+        final AlarmSeverity previousSeverity = alarm.getSeverity();
+        alarm.setSeverity(alarm.getLastEventSeverity());
+        updateAutomationTime(alarm, now);
+        alarmRepository.save(alarm);
+        alarmEntityNotifier.didUpdateAlarmSeverity(alarm, previousSeverity);
+
+        return alarmMapper.alarmToAlarmDTO(alarm);
+
     }
 
     @Override
@@ -198,26 +204,67 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
-    public void acknowledgeAlarm(Alarm alarm, Date now) {
-        Alarm alarm1 = alarmRepository.getById(alarm.getAlarmId());
-        alarm1.setAlarmAckTime(new Date());
-        alarm1.setAlarmAckUser("TODO: need a user!");
-        alarmRepository.save(alarm1);
+    @Transactional
+    public AlarmDTO acknowledgeAlarm(Alarm alarm, Date now, String userId) {
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
+        if (maybeAlarmInTrans.isEmpty()) {
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
+            return null;
+        }
+
+        return doAcknowledgeAlarm(userId, maybeAlarmInTrans.get());
     }
 
     @Override
     @Transactional
-    public void unacknowledgeAlarm(Alarm alarm, Date now) {
-    //TODO: set ack value on alarm only
-//            log.info("Un-Acknowledging alarm with id: {} @ {}", alarm.getId(), now);
-//            final Alarm alarmInTrans = alarmDao.get(alarm.getId());
-//            if (alarmInTrans == null) {
-//                log.warn("Alarm disappeared: {}. Skipping un-ack.", alarm);
-//                return;
-//            }
-//            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarmInTrans, DEFAULT_USER, now);
-//            ack.setAckAction(AckAction.UNACKNOWLEDGE);
-//            acknowledgmentDao.processAck(ack);
+    public AlarmDTO acknowledgeAlarm(Long alarmId, Date now, String userId) {
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarmId);
+        if (maybeAlarmInTrans.isEmpty()) {
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarmId);
+            return null;
+        }
+
+        return doAcknowledgeAlarm(userId, maybeAlarmInTrans.get());
+    }
+
+    private AlarmDTO doAcknowledgeAlarm(String userId, Alarm alarm) {
+        alarm.setAlarmAckTime(new Date());
+        alarm.setAlarmAckUser(userId);
+        alarmRepository.save(alarm);
+
+        return alarmMapper.alarmToAlarmDTO(alarm);
+    }
+
+    @Override
+    @Transactional
+    public AlarmDTO unAcknowledgeAlarm(Long alarmId, Date now) {
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarmId);
+        if (maybeAlarmInTrans.isEmpty()) {
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarmId);
+            return null;
+        }
+
+        return doUnacknowledgeAlarm(maybeAlarmInTrans.get());
+    }
+
+    @Override
+    @Transactional
+    public AlarmDTO unAcknowledgeAlarm(Alarm alarm, Date now) {
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarm.getAlarmId());
+        if (maybeAlarmInTrans.isEmpty()) {
+            log.warn("Alarm disappeared: {}. Skipping clear.", alarm);
+            return null;
+        }
+
+        return doUnacknowledgeAlarm(maybeAlarmInTrans.get());
+    }
+
+    private AlarmDTO doUnacknowledgeAlarm(Alarm alarm) {
+        alarm.setAlarmAckTime(null);
+        alarm.setAlarmAckUser(null);
+        alarmRepository.save(alarm);
+
+        return alarmMapper.alarmToAlarmDTO(alarm);
     }
 
     @Override
@@ -262,7 +309,7 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
-    public Alarm process(Event event) {
+    public AlarmDTO process(Event event) {
         log.info("########  Received Event, processing");
         Objects.requireNonNull(event, "Cannot create alarm from null event.");
 
@@ -282,7 +329,7 @@ public class AlarmServiceImpl implements AlarmService {
 //            locks.forEach(Lock::unlock);
         }
 
-        return alarm[0];
+        return alarmMapper.alarmToAlarmDTO(alarm[0]);
     }
 
     @Override

@@ -42,21 +42,28 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public interface AlarmService {
 
-    void clearAlarm(Alarm alarm, Date now);
+    AlarmDTO clearAlarm(Alarm alarm, Date now);
 
-    void clearAlarm(Long alarmId, Date now);
+    AlarmDTO clearAlarm(Long alarmId, Date now);
 
-    void deleteAlarm(Long id);
+    AlarmDTO deleteAlarm(Long id);
 
-    void deleteAlarm(Alarm alarm);
+    AlarmDTO deleteAlarm(Alarm alarm);
 
-    void unclearAlarm(Alarm alarm, Date now);
+    AlarmDTO unclearAlarm(Alarm alarm, Date now);
+
+    AlarmDTO unclearAlarm(Long alarmId, Date now);
 
     void escalateAlarm(Alarm alarm, Date now);
 
-    void acknowledgeAlarm(Alarm alarm, Date now);
+    AlarmDTO acknowledgeAlarm(Alarm alarm, Date now, String userId);
 
-    void unacknowledgeAlarm(Alarm alarm, Date now);
+    AlarmDTO acknowledgeAlarm(Long alarmId, Date now, String userId);
+
+    @Transactional
+    AlarmDTO unAcknowledgeAlarm(Long alarmId, Date now);
+
+    AlarmDTO unAcknowledgeAlarm(Alarm alarm, Date now);
 
     void setSeverity(Alarm alarm, AlarmSeverity severity, Date now);
 
@@ -70,7 +77,7 @@ public interface AlarmService {
 
     List<AlarmDTO> getAllAlarms(String tenantId);
 
-    Alarm process(Event e);
+    AlarmDTO process(Event e);
 
     void removeStickyMemo(long alarmId);
 

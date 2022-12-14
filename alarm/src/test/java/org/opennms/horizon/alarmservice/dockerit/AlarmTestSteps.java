@@ -29,6 +29,8 @@
 package org.opennms.horizon.alarmservice.dockerit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -95,6 +97,20 @@ public class AlarmTestSteps {
 
     @Then("Send POST request to clear alarm at path {string}")
     public void sendPOSTRequestToClearAlarmAtPath(String path) throws Exception {
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId());
+    }
+
+    @Then("Send POST request to acknowledge alarm at path {string}")
+    public void sendPOSTRequestToAckAlarmAtPath(String path) throws Exception {
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId()+"/blahUserId");
+    }
+
+    @Then("Send POST request to unacknowledge alarm at path {string}")
+    public void sendPOSTRequestToUnAckAlarmAtPath(String path) throws Exception {
         AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
         AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
         commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId());
@@ -173,6 +189,24 @@ public class AlarmTestSteps {
         AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
         AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
         assertEquals(AlarmSeverity.CLEARED, alarmDTO.getSeverity());
+    }
+
+    @Then("Verify alarm was acknowledged")
+    public void verifyAlarmWasAcked() {
+
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        assertNotNull(alarmDTO.getAlarmAckTime());
+        assertNotNull(alarmDTO.getAlarmAckUser());
+    }
+
+    @Then("Verify alarm was unacknowledged")
+    public void verifyAlarmWasUnAcked() {
+
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        assertNull(alarmDTO.getAlarmAckTime());
+        assertNull(alarmDTO.getAlarmAckUser());
     }
 
     @Then("Verify alarm was uncleared")
