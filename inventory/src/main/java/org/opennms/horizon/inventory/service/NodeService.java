@@ -47,15 +47,12 @@ import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
 import org.opennms.horizon.shared.constants.GrpcConstants;
-import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.vladmihalcea.hibernate.type.basic.Inet;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -65,7 +62,6 @@ public class NodeService {
     private final NodeRepository nodeRepository;
     private final MonitoringLocationRepository monitoringLocationRepository;
     private final IpInterfaceRepository ipInterfaceRepository;
-    private final DetectorTaskSetService detectorTaskSetService;
 
     private final NodeMapper mapper;
 
@@ -80,12 +76,6 @@ public class NodeService {
     @Transactional(readOnly = true)
     public Optional<NodeDTO> getByIdAndTenantId(long id, String tenantId){
         return nodeRepository.findByIdAndTenantId(id, tenantId).map(mapper::modelToDTO);
-    }
-
-    @EventListener(ApplicationReadyEvent.class)
-    @Transactional
-    public void sendTaskSetsAfterStartup() {
-        nodeRepository.findAll().forEach((detectorTaskSetService::sendDetectorTasks));
     }
 
     private void saveIpInterfaces(NodeCreateDTO request, Node node, String tenantId) {

@@ -31,8 +31,6 @@ package org.opennms.horizon.inventory.component;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
 import org.opennms.horizon.events.proto.Event;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
@@ -41,7 +39,9 @@ import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.shared.events.EventConstants;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.event.EventListener;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -58,7 +58,7 @@ public class NodeMonitoringManager {
     private final NodeService nodeService;
     private final DetectorTaskSetService detectorService;
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void startMonitorTasks() {
         detectorService.sendDetectorTaskForNodes(nodeService.listAllNodeForMonitoring());
     }
