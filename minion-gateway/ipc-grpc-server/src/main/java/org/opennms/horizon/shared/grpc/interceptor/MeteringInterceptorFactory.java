@@ -16,7 +16,7 @@ public class MeteringInterceptorFactory implements InterceptorFactory {
   @Override
   public BindableService create(BindableService service) {
     ServerServiceDefinition definition = ServerInterceptors.intercept(
-      ServerInterceptors.useInputStreamMessages(service.bindService()), new MeteringServerInterceptor(metricRegistry)
+      ServerInterceptors.useInputStreamMessages(service.bindService())/*, new MeteringServerInterceptor(metricRegistry)*/
     );
     return new BindableService() {
       @Override

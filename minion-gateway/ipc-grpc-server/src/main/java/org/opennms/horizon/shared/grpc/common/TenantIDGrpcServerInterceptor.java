@@ -35,21 +35,18 @@ import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
+import io.grpc.Status;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.util.function.Supplier;
 
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 
 // TODO: distinguish non-multi-tenant deployments of this code and skip?
 @Slf4j
 public class TenantIDGrpcServerInterceptor implements ServerInterceptor {
-
-    // TODO / TBD888 : REMOVE default tenant id code
-    public static final String DEFAULT_TENANT_ID = "opennms-prime";
-
     private static final RateLimitedLog usingDefaultTenantIdLog =
         RateLimitedLog
             .withRateLimit(log)
@@ -62,23 +59,22 @@ public class TenantIDGrpcServerInterceptor implements ServerInterceptor {
      *  the Context.Key here for reuse.
      */
     @Getter
-    private static final Context.Key<String> contextTenantId = GlobalConstants.TENANT_ID_CONTEXT_KEY;
+    private static final Context.Key<String> contextTenantId = GrpcConstants.TENANT_ID_CONTEXT_KEY;
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> callHandler) {
         // Read the tenant id out of the headers
         log.debug("Received metadata: {}", headers);
-        String tenantId = commonReadContextTenantId(() -> headers.get(GlobalConstants.TENANT_ID_REQUEST_KEY));
-        // TBD888: restore this logic when tenant ID is reliably received from the Minion upstream flow
-        // if (tenantId == null) {
-        //     //
-        //     // FAILED
-        //     //
-        //     log.error("Missing tenant id");
-        //
-        //     serverCall.close(Status.UNAUTHENTICATED.withDescription("Missing tenant id"), new Metadata());
-        //     return new ServerCall.Listener<>() {};
-        // }
+        String tenantId = commonReadContextTenantId(() -> headers.get(GrpcConstants.TENANT_ID_REQUEST_KEY));
+         if (tenantId == null) {
+             //
+             // FAILED
+             //
+             log.error("Missing tenant id");
+
+             serverCall.close(Status.UNAUTHENTICATED.withDescription("Missing tenant id"), new Metadata());
+             return new ServerCall.Listener<>() {};
+         }
 
         // Write the tenant ID to the current GRPC context
         Context context = Context.current().withValue(TenantIDGrpcServerInterceptor.contextTenantId, tenantId);
@@ -98,14 +94,6 @@ public class TenantIDGrpcServerInterceptor implements ServerInterceptor {
 //----------------------------------------
 
     private String commonReadContextTenantId(Supplier<String> readTenantIdOp) {
-        String result = readTenantIdOp.get();
-
-        // TODO / TBD888: REMOVE THIS ONCE RECEIVED PROPERLY FROM THE MINION
-        if (result == null) {
-            usingDefaultTenantIdLog.warn("!!! USING DEFAULT TENANT ID !!!");
-            result = DEFAULT_TENANT_ID;
-        }
-
-        return result;
+        return readTenantIdOp.get();
     }
 }

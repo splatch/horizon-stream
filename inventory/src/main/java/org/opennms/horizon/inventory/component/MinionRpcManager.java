@@ -44,7 +44,7 @@ import org.opennms.horizon.grpc.echo.contract.EchoRequest;
 import org.opennms.horizon.grpc.echo.contract.EchoResponse;
 import org.opennms.horizon.inventory.model.MonitoringSystemBean;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.taskset.contract.MonitorResponse;
 import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskResult;
@@ -155,7 +155,7 @@ public class MinionRpcManager {
             .addResults(result)
             .build();
         ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(kafkaTopic, results.toByteArray());
-        producerRecord.headers().add(new RecordHeader(GlobalConstants.TENANT_ID_KEY, tenantId.getBytes()));
+        producerRecord.headers().add(new RecordHeader(GrpcConstants.TENANT_ID_KEY, tenantId.getBytes()));
         kafkaTemplate.send(producerRecord);
     }
 

@@ -53,7 +53,8 @@ import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
+import org.opennms.horizon.shared.events.EventConstants;
 
 @ExtendWith(MockitoExtension.class)
 class NodeMonitoringManagerTest {
@@ -73,12 +74,12 @@ class NodeMonitoringManagerTest {
     @BeforeEach
     public void prepare(){
         event = Event.newBuilder()
-            .setUei(GlobalConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
+            .setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
             .setLocation("test-location")
             .setIpAddress("127.0.0.1")
             .build();
         headers = new HashMap<>();
-        headers.put(GlobalConstants.TENANT_ID_KEY, tenantId.getBytes(StandardCharsets.UTF_8));
+        headers.put(GrpcConstants.TENANT_ID_KEY, tenantId.getBytes(StandardCharsets.UTF_8));
         node = new Node();
     }
 

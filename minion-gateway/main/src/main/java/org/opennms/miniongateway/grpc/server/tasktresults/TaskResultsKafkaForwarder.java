@@ -5,7 +5,7 @@ import com.swrve.ratelimitedlogger.RateLimitedLog;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.shared.grpc.common.TenantIDGrpcServerInterceptor;
 import org.opennms.horizon.shared.ipc.sink.api.MessageConsumer;
 import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
@@ -56,10 +56,9 @@ public class TaskResultsKafkaForwarder implements MessageConsumer<Message, Messa
 
     @Override
     public void handleMessage(Message messageLog) {
-        logger.debug("Received results; sending to Kafka: kafka-topic={}, message={}", kafkaTopic, messageLog);
-
         // Retrieve the Tenant ID from the TenantID GRPC Interceptor
         String tenantId = tenantIDGrpcInterceptor.readCurrentContextTenantId();
+        logger.debug("Received results; sending to Kafka: tenant-id: {}; kafka-topic={}; message={}", tenantId, kafkaTopic, messageLog);
         byte[] rawContent = messageLog.toByteArray();
 
         ProducerRecord<String, byte[]> producerRecord = formatProducerRecord(rawContent, tenantId);
@@ -80,7 +79,7 @@ public class TaskResultsKafkaForwarder implements MessageConsumer<Message, Messa
      */
     private ProducerRecord<String, byte[]> formatProducerRecord(byte[] rawContent, String tenantId) {
         List<Header> headers = new LinkedList<>();
-        headers.add(new RecordHeader(GlobalConstants.TENANT_ID_KEY, tenantId.getBytes(StandardCharsets.UTF_8)));
+        headers.add(new RecordHeader(GrpcConstants.TENANT_ID_KEY, tenantId.getBytes(StandardCharsets.UTF_8)));
 
         return new ProducerRecord<String, byte[]>(
             kafkaTopic,

@@ -60,7 +60,7 @@ import org.opennms.horizon.grpc.echo.contract.EchoRequest;
 import org.opennms.horizon.grpc.echo.contract.EchoResponse;
 import org.opennms.horizon.inventory.model.MonitoringSystemBean;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.taskset.contract.MonitorResponse;
 import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskResult;
@@ -169,7 +169,7 @@ class MinionRpcManagerTest {
             assertThat(result.getLocation()).isEqualTo(system.getLocation());
             assertThat(response.getIpAddress()).isEqualTo(system.getSystemId());
             Header[] headers = record.headers().toArray();
-            Header tenantHeader = Arrays.stream(headers).filter(h->h.key().equals(GlobalConstants.TENANT_ID_KEY)).findFirst().orElseThrow();
+            Header tenantHeader = Arrays.stream(headers).filter(h->h.key().equals(GrpcConstants.TENANT_ID_KEY)).findFirst().orElseThrow();
             assertThat(new String(tenantHeader.value())).isEqualTo(system.getTenantId());
         }
     }

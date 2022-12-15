@@ -27,7 +27,7 @@
  *******************************************************************************/
 package org.opennms.horizon.inventory.grpc;
 
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
@@ -54,7 +54,7 @@ public class TenantIdClientInterceptor implements ClientInterceptor {
                 String tenantId = tenantLookup.lookupTenantId(Context.current())
                     .orElseThrow(() -> new IllegalArgumentException("Tenant id is not specified"));
 
-                headers.put(GlobalConstants.TENANT_ID_REQUEST_KEY, tenantId);
+                headers.put(GrpcConstants.TENANT_ID_REQUEST_KEY, tenantId);
                 super.start(responseListener, headers);
             }
         };

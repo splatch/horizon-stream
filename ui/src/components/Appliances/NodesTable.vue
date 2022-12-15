@@ -46,7 +46,7 @@
               </div>
           </div>
           <div />
-          <MetricChip :metric="{timestamp: node.latency?.timestamp, label: 'ICMP Latency'}" @click="openLatencyGraph(node.id as string)" :data-metric="node.latency?.timestamp" class="bg-status pointer" data-test="node-item-latency" />
+          <MetricChip :metric="{timestamp: node.latency?.timestamp, label: 'ICMP Latency'}" @click="openLatencyGraph(node)" :data-metric="node.latency?.timestamp" class="bg-status pointer" data-test="node-item-latency" />
           <MetricChip :metric="{label: 'Status', status: node.status}" class="bg-status" data-test="node-item-status" />
         </div>
       </TransitionGroup>
@@ -93,7 +93,7 @@ const modal = ref({
   title: '',
   hideTitle: true
 })
-const openLatencyGraph = (id: string) => {
+const openLatencyGraph = (node: ExtendedNode) => {
   modal.value = {
     ...modal.value,
     isVisible: true
@@ -102,7 +102,8 @@ const openLatencyGraph = (id: string) => {
     label: 'Device Latency',
     metrics: ['response_time_msec'],
     monitor: 'ICMP',
-    nodeId: id,
+    nodeId: node.id,
+    instance: node.ipInterfaces?.[0].ipAddress as string, // currently 1 interface per node
     timeRange: 10,
     timeRangeUnit: TimeRangeUnit.Minute
   }

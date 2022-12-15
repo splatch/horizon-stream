@@ -41,7 +41,7 @@ import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
 import org.opennms.horizon.server.config.DataLoaderFactory;
-import org.opennms.horizon.shared.constants.GlobalConstants;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
@@ -73,50 +73,50 @@ public class InventoryClient {
 
     public NodeDTO createNewNode(NodeCreateDTO node, String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(GlobalConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return nodeStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).createNode(node);
     }
 
     public List<NodeDTO> listNodes(String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(GlobalConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return nodeStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listNodes(Empty.newBuilder().build()).getNodesList();
     }
 
     public NodeDTO getNodeById(long id, String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(GlobalConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return nodeStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getNodeById(Int64Value.of(id));
     }
 
     public List<MonitoringLocationDTO> listLocations(String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(GlobalConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return locationStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listLocations(Empty.newBuilder().build()).getLocationsList();
     }
 
     public MonitoringLocationDTO getLocationById(long id, String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(GlobalConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return locationStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getLocationById(Int64Value.of(id));
     }
 
     public List<MonitoringSystemDTO> listMonitoringSystems(String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(GlobalConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return systemStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listMonitoringSystem(Empty.newBuilder().build()).getSystemsList();
     }
 
     public MonitoringSystemDTO getSystemBySystemId(String systemId, String accessToken) {
         Metadata metadata = new Metadata();
-        metadata.put(GlobalConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return systemStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getMonitoringSystemById(StringValue.of(systemId));
     }
 
     public List<MonitoringLocationDTO> listLocationsByIds(List<DataLoaderFactory.Key> keys) {
         return keys.stream().map(DataLoaderFactory.Key::getToken).findFirst().map(accessToken -> {
             Metadata metadata = new Metadata();
-            metadata.put(GlobalConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+            metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
             List<Int64Value> idValues = keys.stream().map(k->Int64Value.of(k.getId())).collect(Collectors.toList());
             return locationStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).listLocationsByIds(IdList.newBuilder().addAllIds(idValues).build()).getLocationsList();
         }).orElseThrow();

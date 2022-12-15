@@ -145,14 +145,16 @@ const cancel = () => {
 const locationOption = ref()
 // sets location val in the payload
 const selectLocation = () => {
-  if (locationOption.value?.name) {
-    node.location = locationOption.value.name
+  if (locationOption.value?.location) {
+    node.location = locationOption.value.location
   }
 }
 // sets default location when locations available
 watchEffect(() => { 
-  locationOption.value = applianceQueries.locations[0]
-  selectLocation()
+  if (!node.location) {
+    locationOption.value = applianceQueries.locations[0]
+    selectLocation()
+  }
 })
 </script>
 
