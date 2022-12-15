@@ -73,7 +73,7 @@ public class InternalEventsConsumer {
                 detectorService.sendDetectorTasks(newNode);
             }
         } catch (Exception e) {
-            log.error("Error happened during processing kafka message: ", e);
+            log.error("Error while processing a kafka message for the event: ", e);
         }
     }
 }
