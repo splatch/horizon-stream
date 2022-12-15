@@ -44,7 +44,7 @@ import io.leangen.graphql.spqr.spring.autoconfigure.DefaultGlobalContext;
 import io.leangen.graphql.util.ContextUtils;
 
 public class ServerHeaderUtil {
-    private JWTValidator validator;
+    private final JWTValidator validator;
 
     public ServerHeaderUtil(JWTValidator validator) {
         this.validator = validator;
@@ -81,7 +81,7 @@ public class ServerHeaderUtil {
         try {
             SignedJWT jwt = SignedJWT.parse(header.substring(7));
             return Optional.ofNullable(jwt.getJWTClaimsSet().getStringClaim(GrpcConstants.TENANT_ID_KEY))
-                .orElse(GrpcConstants.DEFAULT_TENANT_ID);
+                .orElseThrow();
         } catch (Exception e) {
             throw new RuntimeException("Could not extract tenant information", e);
         }

@@ -31,6 +31,7 @@ package org.opennms.horizon.inventory.component;
 import java.util.Map;
 import java.util.Optional;
 
+import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
 import org.opennms.horizon.inventory.service.taskset.response.DetectorResponseService;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.taskset.contract.DetectorResponse;
@@ -40,8 +41,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,14 +68,13 @@ public class TaskSetResultsConsumer {
                     detectorResponseService.accept(tenantId, location, response);
                 }
             }
-
-        } catch (InvalidProtocolBufferException e) {
-            log.error("Error while parsing task set results", e);
+        } catch (Exception e) {
+            log.error("Error happened during processing kafka message: ", e);
         }
     }
 
     private String getTenantId(Map<String, Object> headers) {
         return Optional.ofNullable(headers.get(GrpcConstants.TENANT_ID_KEY))
-            .map(o -> new String((byte[]) o)).orElse(GrpcConstants.DEFAULT_TENANT_ID);
+            .map(o -> new String((byte[]) o)).orElseThrow(()-> new InventoryRuntimeException("Missing tenant id"));
     }
 }

@@ -33,6 +33,7 @@ import java.util.Optional;
 
 import org.opennms.horizon.events.proto.Event;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
+import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
@@ -43,8 +44,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +61,8 @@ public class InternalEventsConsumer {
         try {
             var event = Event.parseFrom(data);
             if(event.getUei().equals(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)) {
-                var tenantId = Optional.ofNullable(headers.get(GrpcConstants.TENANT_ID_KEY)).map(obj -> new String((byte[]) obj)).orElse(GrpcConstants.DEFAULT_TENANT_ID);
+                var tenantId = Optional.ofNullable(headers.get(GrpcConstants.TENANT_ID_KEY)).map(obj -> new String((byte[]) obj)).orElseThrow(() ->
+                    new InventoryRuntimeException("Missing tenant id"));
                 log.debug("Create new node from event with interface: {}, location: {} and tenant: {}", event.getIpAddress(), event.getLocation(), tenantId);
                 NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
                     .setLocation(event.getLocation())
@@ -72,8 +72,8 @@ public class InternalEventsConsumer {
                 Node newNode = nodeService.createNode(createDTO, tenantId);
                 detectorService.sendDetectorTasks(newNode);
             }
-        } catch (InvalidProtocolBufferException e) {
-            log.error("Error while parsing event message", e);
+        } catch (Exception e) {
+            log.error("Error happened during processing kafka message: ", e);
         }
     }
 }
