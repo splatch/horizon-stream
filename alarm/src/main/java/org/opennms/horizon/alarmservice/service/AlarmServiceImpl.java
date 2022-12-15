@@ -381,13 +381,13 @@ public class AlarmServiceImpl implements AlarmService {
 
     protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
-        String reductionKey = String.format("%s:%s:%s", event.getUei(), event.getNodeId(), "TODO:Need tenant id");
-        log.debug("############## addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
+        String reductionKey = String.format("%s:%d:%s", event.getUei(), event.getNodeId(), "TODO:Need tenant id");
+        log.info("############## addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
 
         Alarm alarm = alarmRepository.findByReductionKey(reductionKey);
 
         if (alarm == null ) {
-            log.debug("############## addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
+            log.info("############## addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
 
             alarm = createNewAlarm(event, reductionKey);
 
@@ -395,8 +395,9 @@ public class AlarmServiceImpl implements AlarmService {
 
             alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
-            log.debug("############## addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getAlarmId());
-
+            log.info("############## addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getAlarmId());
+            log.info("#### dumping associated alarm count");
+            log.info("#### associated alarm count {}", alarm.getAssociatedAlarms().size());
             alarm.incrementCount();
             alarmRepository.save(alarm);
 
