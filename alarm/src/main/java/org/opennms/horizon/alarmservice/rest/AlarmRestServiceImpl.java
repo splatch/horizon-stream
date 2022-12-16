@@ -96,7 +96,6 @@ public class AlarmRestServiceImpl  {
             AlarmCollectionDTO alarmsCollection = new AlarmCollectionDTO(dtoAlarmList);
             alarmsCollection.setTotalCount(dtoAlarmList.size());
 
-            log.info("######## found {} alarms", dtoAlarmList.size());
             return ResponseEntity.ok(alarmsCollection);
     }
     

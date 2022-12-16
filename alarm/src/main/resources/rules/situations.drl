@@ -34,7 +34,6 @@ import org.kie.api.time.SessionClock;
 import org.opennms.horizon.alarmservice.db.entity.AlarmAssociation;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.alarmservice.model.TroubleTicketState;
 import java.util.LinkedList
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
 

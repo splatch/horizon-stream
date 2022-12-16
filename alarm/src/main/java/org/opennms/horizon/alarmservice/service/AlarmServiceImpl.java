@@ -48,7 +48,6 @@ import org.opennms.horizon.alarmservice.db.entity.Alarm;
 import org.opennms.horizon.alarmservice.db.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
-import org.opennms.horizon.alarmservice.model.Severity;
 import org.opennms.horizon.alarmservice.utils.StripedExt;
 import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.opennms.horizon.events.proto.Event;
@@ -337,27 +336,13 @@ public class AlarmServiceImpl implements AlarmService {
     @Override
     @Transactional
     public AlarmDTO process(Event event) {
-        log.info("########  Received Event, processing");
         Objects.requireNonNull(event, "Cannot create alarm from null event.");
 
-        log.debug("############## process: {}; nodeid: {}; ipaddr: {}", event.getUei(), event.getNodeId(), event.getIpAddress());
+        log.debug("Processing Event: {}; nodeid: {}; ipaddr: {}", event.getUei(), event.getNodeId(), event.getIpAddress());
 
-        // Lock both the reduction and clear keys (if set) using a fair striped lock
-        // We do this to ensure that clears and triggers are processed in the same order
-        // as the calls are made
-        //TODO:MMF what is this doing?
-//        final Iterable<Lock> locks = lockStripes.bulkGet(getLockKeys(event));
-        final Alarm[] alarm = new Alarm[1];
-        try {
-//            locks.forEach(Lock::lock);
+        Alarm alarm  = addOrReduceEventAsAlarm(event);
 
-            log.info("############## checking for reductionkey");
-            alarm[0] = addOrReduceEventAsAlarm(event);
-        } finally {
-//            locks.forEach(Lock::unlock);
-        }
-
-        return alarmMapper.alarmToAlarmDTO(alarm[0]);
+        return alarmMapper.alarmToAlarmDTO(alarm);
     }
 
     @Override
@@ -392,7 +377,6 @@ public class AlarmServiceImpl implements AlarmService {
         Alarm alarm = alarmRepository.findByReductionKey(reductionKey);
 
         if (alarm == null) {
-
 //            log.debug("looking for existing clear key: {}", get clear key);
 //            alarm = alarmRepository.findByReductionKey(reductionKey);
         }
@@ -425,16 +409,6 @@ public class AlarmServiceImpl implements AlarmService {
 
     public void setAlarmEntityNotifier(AlarmEntityNotifier alarmEntityNotifier) {
         this.alarmEntityNotifier = alarmEntityNotifier;
-    }
-
-
-    private static Collection<String> getLockKeys(Event event) {
-//        if (event.getAlarmData().getClearKey() == null) {
-//            return Collections.singletonList(event.getAlarmData().getReductionKey());
-//        } else {
-//            return Arrays.asList(event.getAlarmData().getReductionKey(), event.getAlarmData().getClearKey());
-//        }
-        return null;
     }
 
     private Alarm createNewAlarm(Event event, String reductionKey) {
