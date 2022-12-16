@@ -45,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmEntityNotifier;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.alarmservice.db.entity.Alarm;
+import org.opennms.horizon.alarmservice.db.entity.Memo;
 import org.opennms.horizon.alarmservice.db.repository.AlarmRepository;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
@@ -362,6 +363,32 @@ public class AlarmServiceImpl implements AlarmService {
             // Will just nulling out the memo (object) field delete it from the memo table?
             // might need to specify orphan removal on field in the entity
             targetAlarm.setStickyMemo(null);
+            alarmRepository.save(targetAlarm);
+        }
+
+        return alarmMapper.alarmToAlarmDTO(targetAlarm);
+    }
+
+    @Override
+    public AlarmDTO updateStickyMemo(Long alarmId, String body) {
+        log.info("Updating sticky memo on alarm with id: {}", alarmId);
+        final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarmId);
+        if (maybeAlarmInTrans.isEmpty()) {
+            log.warn("Alarm disappeared: {}. Skipping sticky memo removal.", alarmId);
+            return null;
+        }
+
+        Alarm targetAlarm = maybeAlarmInTrans.get();
+
+        if (targetAlarm.getStickyMemo() != null) {
+            //TODO:MMF how do we get the memo from repo through only that one interface?
+            // Will just nulling out the memo (object) field delete it from the memo table?
+            // might need to specify orphan removal on field in the entity
+            Memo memo = new Memo();
+            memo.setBody(body);
+            memo.setUpdated(new Date());
+            memo.setCreated(new Date());
+            targetAlarm.setStickyMemo(memo);
             alarmRepository.save(targetAlarm);
         }
 

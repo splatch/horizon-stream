@@ -75,4 +75,6 @@ public interface AlarmService {
 
     AlarmDTO removeStickyMemo(long alarmId);
 
+    AlarmDTO updateStickyMemo(Long alarmId, String body);
+
 }

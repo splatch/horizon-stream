@@ -144,21 +144,18 @@ public class AlarmRestServiceImpl  {
 
     @PutMapping(path = "memo/{id}",  consumes = MediaType.APPLICATION_FORM_URLENCODED)
 
-    @RolesAllowed({ "admin" })
-    @ApiResponse(
-            description = "Update the memo for an Alarm"
-    )
+//    @RolesAllowed({ "admin" })
     @Transactional
     public ResponseEntity updateMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId, final MultivaluedMapImpl params) {
         // replace the next two lines with @RolesAllowed("")
-        final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
-        SecurityHelper.assertUserEditCredentials(securityContext, user);
+//        final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
+//        SecurityHelper.assertUserEditCredentials(securityContext, user);
 
             final String body = params.getFirst("body");
             if (body == null) {
                 throw getException(Status.BAD_REQUEST, "Body cannot be null.");
             }
-            //alarmRepository.updateStickyMemo(alarmId, body, user); // TODO doing anything??
+            alarmService.updateStickyMemo(alarmId, body);
             return ResponseEntity.noContent().build();
     }
 

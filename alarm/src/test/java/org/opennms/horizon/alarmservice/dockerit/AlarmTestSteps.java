@@ -102,6 +102,13 @@ public class AlarmTestSteps {
         commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId());
     }
 
+    @Then("Send POST request to add memo at path {string}")
+    public void sendPOSTRequestToAddMemoAtPath(String path) throws Exception {
+        AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
+        AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
+        commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId());
+    }
+
     @Then("Send POST request to acknowledge alarm at path {string}")
     public void sendPOSTRequestToAckAlarmAtPath(String path) throws Exception {
         AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
@@ -182,6 +189,12 @@ public class AlarmTestSteps {
     @Then("Send DELETE request to application at path {string}")
     public void sendDELETERequestToApplicationAtPath(String path) throws Exception {
         log.info("####### sending POST to clear alarm {}", lastAlarmId);
+        commonSendDELETERequestToApplication(path+"/"+lastAlarmId);
+    }
+
+    @Then("Send DELETE request to remove memo at path {string}")
+    public void sendDELETERequestToRemoveMemoAtPath(String path) throws Exception {
+        log.info("####### sending POST to remove memo {}", lastAlarmId);
         commonSendDELETERequestToApplication(path+"/"+lastAlarmId);
     }
 
