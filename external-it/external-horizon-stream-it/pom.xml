@@ -11,7 +11,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <name>External IT :: Horizon</name>
+    <name>OpenNMS Horizon Stream :: External IT</name>
     <description>
         A Spring Boot based application that runs E2E tests against a fully deployed Horizon Stream cluster.
 

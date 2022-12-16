@@ -11,7 +11,7 @@
         <relativePath>../parent-pom</relativePath>
     </parent>
 
-    <name>OpenNMS Horizon :: Inventory</name>
+    <name>OpenNMS Horizon Stream :: Inventory</name>
     <description>
         A microservice responsible for tracking the state of the network and how to monitor devices.
     </description>

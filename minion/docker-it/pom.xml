@@ -10,7 +10,7 @@
         <relativePath>../../parent-pom</relativePath>
     </parent>
 
-    <name>OpenNMS Horizon :: Docker IT</name>
+    <name>OpenNMS Horizon Stream :: Docker IT</name>
     <description>
         Docker build-time, Black Box, System Integration Tests for the OpenNMS Horizon project.
 

@@ -11,7 +11,7 @@
         <relativePath>../parent-pom</relativePath>
     </parent>
 
-    <name>OpenNMS Horizon :: Notifications</name>
+    <name>OpenNMS Horizon Stream :: Notifications</name>
     <description>A microservice responsible for generating notifications from alarms.</description>
 
 	<artifactId>notifications</artifactId>

@@ -10,7 +10,7 @@
         <relativePath>../parent-pom</relativePath>
 	</parent>
 
-    <name>OpenNMS Horizon :: BFF</name>
+    <name>OpenNMS Horizon Stream :: BFF</name>
     <description>
         A microservice that provides a GraphQL API for the Vue.js frontend.
 

@@ -10,7 +10,7 @@
         <relativePath>../parent-pom</relativePath>
 	</parent>
 
-    <name>OpenNMS Horizon :: Metrics Processor</name>
+    <name>OpenNMS Horizon Stream :: Metrics Processor</name>
     <description>
         A microservice responsible for processing device metrics.
     </description>
