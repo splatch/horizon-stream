@@ -1,8 +1,8 @@
 <template>
-  <component :is="asLi ? 'li' : 'div'" :title="metric.label" class="container pointer" data-test="metric-chip">
-    <label :for="metric.type">{{ metric.type }}</label>
-    <FeatherChip :id="metric.type" :class="`bg-status ${itemBgColor}`" data-test="chip">
-      {{ itemText }}
+  <component :is="tag" :title="propsData.label" class="container" data-test="propsData-chip">
+    <label v-if="propsData.label" :for="propsData.label">{{ propsData.label }}</label>
+    <FeatherChip :id="propsData.label" :class="`bg-status ${propsData.bgColor}`" data-test="chip">
+      {{ propsData.value }}
     </FeatherChip>
   </component>
 </template>
@@ -18,33 +18,53 @@ const props = defineProps({
     type: Object as PropType<Chip>,
     required: true
   },
-  asLi: {
-    type: Boolean,
-    default: false
+  tag: {
+    type: String,
+    default: 'div'
   }
 })
 
-const itemBgColor = props.metric.status?.toLowerCase() || 'unknown'
-
-const itemText = computed(() => {
-  let txt = '--'
-
-  if(props.metric.type === 'status' && props.metric.status) txt = props.metric.status 
-  else if(!props.metric?.timestamp !== undefined) txt = getHumanReadableDuration(props.metric?.timestamp as number, props.metric?.timeUnit)
+const propsData = computed(() => {
+  let chip = {
+    label: props.metric.label,
+    value: props.metric.status || '--',
+    bgColor: props.metric.status || 'unknown'
+  }
   
-  return txt
+  if('timestamp' in props.metric) {
+    let bgColor = 'unknown'
+
+    if(props.metric.timestamp !== undefined) {
+      bgColor = props.metric.timestamp >= 0 ? 'up' : 'down'
+    }
+    
+    chip = {
+      ...chip,
+      value: getHumanReadableDuration(props.metric.timestamp as number),
+      bgColor
+    }
+  }
+
+  return chip
 })
 </script>
 
 <style lang="scss" scoped>
+@use "@featherds/styles/themes/variables";
 @use "@/styles/_statusBackground";
 
 .container {
-  text-align: center;
+  text-align: center !important;
+  box-shadow: none !important;
 }
 
 label {
   display: block;
   text-transform: capitalize;
+  color: var(variables.$primary-text-on-surface);
+}
+
+.chip {
+  margin: 0;
 }
 </style>

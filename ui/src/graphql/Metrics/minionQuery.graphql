@@ -8,6 +8,7 @@ fragment MinionLatencyParts on Query {
   minionLatency: metric(
     name: "response_time_msec", 
     labels: {
+      monitor: $monitor
       instance: $instance
     }
   ) {

@@ -86,14 +86,14 @@ import { useNodeMutations } from '@/store/Mutations/nodeMutations'
 import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
 import useModal from '@/composables/useModal'
 import useSnackbar from '@/composables/useSnackbar'
-import { DeviceCreateDtoInput } from '@/types/graphql'
+import { NodeCreateInput } from '@/types/graphql'
 
 const { showSnackbar } = useSnackbar()
 const { openModal, closeModal, isVisible } = useModal()
 const nodeMutations = useNodeMutations()
 const applianceQueries = useAppliancesQueries()
 
-const defaultDevice: DeviceCreateDtoInput = { 
+const defaultDevice: NodeCreateInput = { 
   label: undefined,
   location: undefined,
   // latitude: undefined,
@@ -145,14 +145,16 @@ const cancel = () => {
 const locationOption = ref()
 // sets location val in the payload
 const selectLocation = () => {
-  if (locationOption.value?.name) {
-    node.location = locationOption.value.name
+  if (locationOption.value?.location) {
+    node.location = locationOption.value.location
   }
 }
 // sets default location when locations available
 watchEffect(() => { 
-  locationOption.value = applianceQueries.locations[0]
-  selectLocation()
+  if (!node.location) {
+    locationOption.value = applianceQueries.locations[0]
+    selectLocation()
+  }
 })
 </script>
 

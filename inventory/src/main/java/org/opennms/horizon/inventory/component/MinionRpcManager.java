@@ -42,9 +42,9 @@ import org.opennms.cloud.grpc.minion.RpcRequestProto;
 import org.opennms.cloud.grpc.minion.RpcResponseProto;
 import org.opennms.horizon.grpc.echo.contract.EchoRequest;
 import org.opennms.horizon.grpc.echo.contract.EchoResponse;
-import org.opennms.horizon.inventory.Constants;
 import org.opennms.horizon.inventory.model.MonitoringSystemBean;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.taskset.contract.MonitorResponse;
 import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskResult;
@@ -118,15 +118,24 @@ public class MinionRpcManager {
             .setRpcId(UUID.randomUUID().toString())
             .setPayload(Any.pack(echoRequest))
             .build();
-        RpcResponseProto response = rpcClient.sendRpcRequest(request);
-        try {
-            EchoResponse echoResponse = response.getPayload().unpack(EchoResponse.class);
-            long responseTime = (System.nanoTime() - echoResponse.getTime()) / 1000000;
-            publishResult(systemId, location, tenantId, responseTime);
-            log.info("Response time for minion {} is {} msecs", systemId, responseTime);
-        } catch (InvalidProtocolBufferException e) {
-            log.error("Unable to parse echo response", e);
-        }
+        rpcClient.sendRpcRequest(tenantId, request).thenApply(RpcResponseProto::getPayload)
+            .thenApply(payload -> {
+                try {
+                    return payload.unpack(EchoResponse.class);
+                } catch (InvalidProtocolBufferException e) {
+                    throw new RuntimeException(e);
+                }
+            })
+            .whenComplete((echoResponse, error) -> {
+                if (error != null) {
+                    log.error("Unable to complete echo request", error);
+                    return;
+                }
+                long responseTime = (System.nanoTime() - echoResponse.getTime()) / 1000000;
+                publishResult(systemId, location, tenantId, responseTime);
+                log.info("Response time for minion {} is {} msecs", systemId, responseTime);
+            }
+        );
     }
 
     private void publishResult(String systemId, String location, String tenantId, long responseTime) {
@@ -146,7 +155,7 @@ public class MinionRpcManager {
             .addResults(result)
             .build();
         ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(kafkaTopic, results.toByteArray());
-        producerRecord.headers().add(new RecordHeader(Constants.TENANT_ID_KEY, tenantId.getBytes()));
+        producerRecord.headers().add(new RecordHeader(GrpcConstants.TENANT_ID_KEY, tenantId.getBytes()));
         kafkaTemplate.send(producerRecord);
     }
 

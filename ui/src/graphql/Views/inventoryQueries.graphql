@@ -1,9 +1,8 @@
 query NodesList {
   ...NodesParts
-  # ...NodesLatencyParts
-  # ...NodesUptimeParts
 }
 
-query NodeLatencyMetric($id: Long!) {
+query NodeLatencyMetric($id: Long!, $monitor: String!, $instance: String!) {
   ...NodeLatencyParts
+  ...NodeStatusParts
 }

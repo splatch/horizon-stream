@@ -39,7 +39,7 @@ public class TaskExecutionResultProcessorImpl implements TaskExecutionResultProc
 
     @Override
     public void queueSendResult(String id, ServiceDetectorResponse response) {
-        log.debug("O-POLL STATUS: detected={}; reason={}", response.isServiceDetected(), response.getReason());
+        log.info("O-Detect STATUS: detected={}; ipaddress ={}", response.isServiceDetected(), response.getIpAddress());
 
         TaskSetResults taskSetResults = formatTaskSetResults(id, response);
 

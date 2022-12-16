@@ -42,7 +42,17 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>grpc-common-constants</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>events</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>inventory</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

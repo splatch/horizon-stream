@@ -4,9 +4,6 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgres:5432/events
-    username: events
-    password: OpenNMS
 
   liquibase:
     change-log: classpath:db/changelog/changelog.xml
@@ -22,10 +19,14 @@ spring:
 grpc:
   server:
     port: 6565
+  url:
+    inventory: localhost:29065
+
 
 kafka:
   traps-topic: "traps"
   events-topic: "events-proto"
+  internal-topic: "internal-event"
 
 keycloak:
   realm: opennms

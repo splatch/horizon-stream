@@ -1,10 +1,7 @@
-import { BGColors } from '@/components/Appliances/utils'
 import { Node } from './graphql'
+import { Chip } from './metric'
 
 interface ExtendedNode extends Node {
-  icmp_latency: number
-  snmp_uptime: number
-  status: string
+  latency?: Chip
+  status?: string | undefined
 }
-
-interface ExtendedNodeWithBGColors extends ExtendedNode, BGColors {}

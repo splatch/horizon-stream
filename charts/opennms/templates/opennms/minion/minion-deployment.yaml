@@ -16,7 +16,6 @@ spec:
         app: {{ .Values.OpenNMS.Minion.ServiceName }}
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/opaque-ports: "{{ .Values.OpenNMS.Core.IgniteClusterPort }},{{ .Values.OpenNMS.Core.IgniteDiscoveryPort }}"
     spec:
       serviceAccountName: {{ .Values.OpenNMS.Minion.ServiceName }}-sa
       {{- if .Values.NodeRestrictions.Enabled }}
@@ -39,9 +38,6 @@ spec:
                 - {{ .Values.NodeRestrictions.Value }}                                                 
       {{- end }}
       volumes:
-        - name: config-volume
-          configMap:
-            name: opennms-config
         - name: minion-config-volume
           configMap:
             name: minion-config 
@@ -65,7 +61,7 @@ spec:
               value: "{{ .Values.OpenNMS.Minion.ServiceName }}"
             - name: JAVA_TOOL_OPTIONS
               value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # FIXME: Permanent debug port, enable only for dev mode
-            - name: LOCATION
+            - name: MINION_LOCATION
               value: "Default"
             - name: IGNITE_UPDATE_NOTIFIER # Disable Ignite version lookups
               value: "false"
@@ -84,9 +80,9 @@ spec:
             - name: minion-config-volume
               mountPath: "/opt/karaf/etc/org.opennms.identity.cfg"
               subPath: "opennms-minion-identity"
-            - name: config-volume
+            - name: minion-config-volume
               mountPath: "/opt/horizon-stream/etc/users.properties"
-              subPath: "data"
+              subPath: "karafUsers"
               readOnly: true
           resources:
             limits:

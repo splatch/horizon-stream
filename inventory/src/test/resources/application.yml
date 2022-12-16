@@ -32,6 +32,7 @@ kafka:
   topics:
     minion-heartbeat: "heartbeat"
     task-set-results: "task-set.results"
+    internal-events: "internal-event"
 
 keycloak:
   realm: opennms
