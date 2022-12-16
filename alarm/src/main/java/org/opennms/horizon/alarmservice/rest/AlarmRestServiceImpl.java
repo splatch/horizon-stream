@@ -57,6 +57,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -142,11 +143,11 @@ public class AlarmRestServiceImpl  {
         return ResponseEntity.ok(alarmService.setSeverity(id, AlarmSeverity.get(ord), new Date()));
     }
 
-    @PutMapping(path = "memo/{id}",  consumes = MediaType.APPLICATION_FORM_URLENCODED)
+    @PutMapping(path = "memo/{alarmId}",  consumes = MediaType.APPLICATION_JSON)
 
 //    @RolesAllowed({ "admin" })
     @Transactional
-    public ResponseEntity updateMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId, final MultivaluedMapImpl params) {
+    public ResponseEntity updateMemo(/*@Context final SecurityContext securityContext,*/ @PathVariable final Long alarmId, @RequestBody final MultivaluedMapImpl params) {
         // replace the next two lines with @RolesAllowed("")
 //        final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
 //        SecurityHelper.assertUserEditCredentials(securityContext, user);
@@ -155,8 +156,8 @@ public class AlarmRestServiceImpl  {
             if (body == null) {
                 throw getException(Status.BAD_REQUEST, "Body cannot be null.");
             }
-            alarmService.updateStickyMemo(alarmId, body);
-            return ResponseEntity.noContent().build();
+            
+            return ResponseEntity.ok(alarmService.updateStickyMemo(alarmId, body));
     }
 
     @RolesAllowed({ "admin" })
@@ -179,11 +180,11 @@ public class AlarmRestServiceImpl  {
         description = "Remove the memo for an Alarm"
     )
 
-    @DeleteMapping(path = "memo/{id}")
+    @DeleteMapping(path = "removeMemo/{alarmId}")
     public ResponseEntity removeMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId) {
 
-        alarmService.removeStickyMemo(alarmId);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(alarmService.removeStickyMemo(alarmId));
 
     }
 }

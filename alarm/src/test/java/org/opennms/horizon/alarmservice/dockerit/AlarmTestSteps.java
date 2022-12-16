@@ -35,11 +35,13 @@ import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -48,10 +50,12 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import javax.ws.rs.core.MediaType;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.model.AlarmDTO;
 import org.opennms.horizon.alarmservice.model.AlarmSeverity;
 import org.opennms.horizon.alarmservice.rest.AlarmCollectionDTO;
+import org.opennms.horizon.alarmservice.rest.support.MultivaluedMapImpl;
 import org.opennms.horizon.events.proto.Event;
 
 @Slf4j
@@ -106,7 +110,9 @@ public class AlarmTestSteps {
     public void sendPOSTRequestToAddMemoAtPath(String path) throws Exception {
         AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
         AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
-        commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId());
+        MultivaluedMapImpl multiValuedMap = new MultivaluedMapImpl();
+        multiValuedMap.putSingle("body", "blahNobody");
+        commonSendPUTRequestWithBodyToApplication(path+"/"+ alarmDTO.getAlarmId(), multiValuedMap);
     }
 
     @Then("Send POST request to acknowledge alarm at path {string}")
@@ -252,7 +258,6 @@ public class AlarmTestSteps {
         assertEquals(alarmDTO.getLastEventSeverity(), alarmDTO.getSeverity());
     }
 
-    //TODO:MMF need a better way to determine this. For now just assuming the second one.
     @Then("Remember alarm id")
     public void rememberAlarmId() {
         AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
@@ -333,6 +338,24 @@ public class AlarmTestSteps {
         restAssuredResponse =
             requestSpecification
                 .post(requestUrl)
+                .thenReturn();
+    }
+
+    private void commonSendPUTRequestWithBodyToApplication(String path, MultivaluedMapImpl body) throws MalformedURLException {
+        URL requestUrl = new URL(new URL(this.applicationBaseUrl), path);
+
+        RestAssuredConfig restAssuredConfig = this.createRestAssuredTestConfig();
+
+        RequestSpecification requestSpecification =
+            RestAssured
+                .given()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new Gson().toJson(body))
+                .config(restAssuredConfig);
+
+        restAssuredResponse =
+            requestSpecification
+                .put(requestUrl)
                 .thenReturn();
     }
 

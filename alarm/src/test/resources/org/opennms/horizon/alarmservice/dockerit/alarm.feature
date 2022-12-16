@@ -104,6 +104,10 @@ Feature: Alarm Service Basic Functionality
       | totalCount == 1 |
     Then Send POST request to add memo at path "/alarms/memo"
     Then Verify the HTTP response code is 200
-    Then Send DELETE request to remove memo at path "/alarms/memo"
+    Then Send GET request to application at path "/alarms/list"
+    Then DEBUG dump the response body
+    Then Remember alarm id
+#    Then parse the JSON response
+    Then Send DELETE request to remove memo at path "/alarms/removeMemo"
     Then Verify the HTTP response code is 200
 
