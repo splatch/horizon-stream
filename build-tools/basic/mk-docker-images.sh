@@ -17,12 +17,6 @@ set -e
 time {
 	echo ""
 	echo "==="
-	echo "=== PLATFORM IMAGE"
-	echo "==="
-	mvn -f platform/assemblies/docker install -Pbuild-docker-images-enabled -DskipTests -Ddocker.image=opennms/horizon-stream-core:local-basic -Ddocker.skipPush=true
-
-	echo ""
-	echo "==="
 	echo "=== MINION IMAGE"
 	echo "==="
 	mvn -f minion/docker-assembly install -Pbuild-docker-images-enabled -DskipTests -Ddocker.image=opennms/horizon-stream-minion:local-basic -Ddocker.skipPush=true
