@@ -84,10 +84,6 @@ public class Alarm extends TenantAwareEntity implements Serializable {
     @Column(length=256, nullable=false)
     private String eventUei;
 
-    @Column
-    @Type(type= "org.opennms.horizon.alarmservice.utils.InetAddressUserType")
-    private InetAddress ipAddr;
-
     @Column(unique=true)
     private String reductionKey;
 

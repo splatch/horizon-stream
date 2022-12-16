@@ -53,7 +53,6 @@ public class AlarmDTO implements Serializable {
 
     private Long alarmId;
     private String eventUei;
-    private InetAddress ipAddr;
     private String reductionKey;
     private Integer alarmType;
     private Integer ifIndex;
