@@ -54,10 +54,12 @@ import org.opennms.horizon.alarmservice.utils.SystemProperties;
 import org.opennms.horizon.events.proto.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Component
+@Service
+@Transactional(readOnly = true)
 public class AlarmServiceImpl implements AlarmService {
 
     protected static final Integer THREADS = SystemProperties.getInteger("org.opennms.alarmd.threads", 4);
@@ -333,6 +335,7 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    @Transactional
     public AlarmDTO process(Event event) {
         log.info("########  Received Event, processing");
         Objects.requireNonNull(event, "Cannot create alarm from null event.");
@@ -358,6 +361,7 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    @Transactional
     public AlarmDTO removeStickyMemo(long alarmId) {
         log.info("Removing sticky memo on alarm with id: {}", alarmId);
         final Optional<Alarm> maybeAlarmInTrans = alarmRepository.findById(alarmId);

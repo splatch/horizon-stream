@@ -200,7 +200,7 @@ public class Alarm extends TenantAwareEntity implements Serializable {
     @JoinColumn(name="sticky_memo_id")
     private Memo stickyMemo;
 
-    @OneToMany(mappedBy = "situationAlarmId", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "situationAlarmId", orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<AlarmAssociation> associatedAlarms = new HashSet<>();
 
     // a situation is an alarm, but an alarm is not necessarily a situation
