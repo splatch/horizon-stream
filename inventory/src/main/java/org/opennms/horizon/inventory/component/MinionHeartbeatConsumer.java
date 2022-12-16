@@ -61,7 +61,7 @@ public class MinionHeartbeatConsumer {
             Optional<Long> newCreatedId = service.addMonitoringSystemFromHeartbeat(message, tenantId);
             newCreatedId.ifPresent(minionRpc::addSystem);
         } catch (Exception e) {
-            log.error("Error happened during processing kafka message: ", e);
+            log.error("Error while processing heartbeat message: ", e);
         }
     }
 }

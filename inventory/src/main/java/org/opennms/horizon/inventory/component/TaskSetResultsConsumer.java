@@ -69,7 +69,7 @@ public class TaskSetResultsConsumer {
                 }
             }
         } catch (Exception e) {
-            log.error("Error happened during processing kafka message: ", e);
+            log.error("Error while processing kafka message for TaskResults: ", e);
         }
     }
 
