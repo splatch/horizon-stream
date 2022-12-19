@@ -391,21 +391,23 @@ public class AlarmServiceImpl implements AlarmService {
 
     protected Alarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
 
-        String reductionKey = String.format("%s:%d:%s", event.getUei(), event.getNodeId(), "TODO:Need tenant id");
-        log.debug("looking for existing reduction key: {}", reductionKey);
+//        String reductionKey = String.format("%s:%d:%s", event.getUei(), event.getNodeId(), "TODO:Need tenant id");
+        String reductionKey = event.getAlarmData().getReductionKey();
+        String clearKey = event.getAlarmData().getClearKey();
 
-        //TODO:MMF pull in PR that adds clearkey to event, use clearkey FIRST
-        Alarm alarm = alarmRepository.findByReductionKey(reductionKey);
+        log.debug("Looking for existing clearKey: {}", clearKey);
+
+        Alarm alarm = alarmRepository.findByReductionKey(clearKey);
 
         if (alarm == null) {
-//            log.debug("looking for existing clear key: {}", get clear key);
-//            alarm = alarmRepository.findByReductionKey(reductionKey);
+            log.debug("looking for existing reductionKey: {}", reductionKey);
+            alarm = alarmRepository.findByReductionKey(reductionKey);
         }
 
         if (alarm == null ) {
             log.debug("reductionKey or clearKey not found, instantiating new alarm");
 
-            alarm = createNewAlarm(event, reductionKey);
+            alarm = createNewAlarm(event);
 
             alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
@@ -432,19 +434,19 @@ public class AlarmServiceImpl implements AlarmService {
         this.alarmEntityNotifier = alarmEntityNotifier;
     }
 
-    private Alarm createNewAlarm(Event event, String reductionKey) {
+    private Alarm createNewAlarm(Event event) {
         Date now = new Date();
         Alarm alarm = new Alarm();
 
         alarm.setAlarmType(1);
-        alarm.setClearKey(reductionKey);
+        alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);
         alarm.setLastEventTime(now);
         alarm.setLastAutomationTime(now);
-        //TODO:MMF can we pull this from event parameters?
-        alarm.setSeverity(AlarmSeverity.CRITICAL);
+        //TODO:Not sure this is a robust mapping. Maybe merge the two enums?
+        alarm.setSeverity(AlarmSeverity.get(event.getEventSeverity().getNumber()));
         alarm.setLastEventSeverity(alarm.getSeverity());
-        alarm.setReductionKey(reductionKey);
+        alarm.setReductionKey(event.getAlarmData().getReductionKey());
         alarm.setEventUei(event.getUei() + event.getNodeId());
         alarm.setX733ProbableCause(1);
         alarm.setDetails(new HashMap<>());
