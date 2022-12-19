@@ -359,9 +359,6 @@ public class AlarmServiceImpl implements AlarmService {
         Alarm targetAlarm = maybeAlarmInTrans.get();
 
         if (targetAlarm.getStickyMemo() != null) {
-            //TODO:MMF how do we get the memo from repo through only that one interface?
-            // Will just nulling out the memo (object) field delete it from the memo table?
-            // might need to specify orphan removal on field in the entity
             targetAlarm.setStickyMemo(null);
             alarmRepository.save(targetAlarm);
         }
@@ -380,10 +377,7 @@ public class AlarmServiceImpl implements AlarmService {
 
         Alarm targetAlarm = maybeAlarmInTrans.get();
 
-        if (targetAlarm.getStickyMemo() != null) {
-            //TODO:MMF how do we get the memo from repo through only that one interface?
-            // Will just nulling out the memo (object) field delete it from the memo table?
-            // might need to specify orphan removal on field in the entity
+        if (targetAlarm.getStickyMemo() == null) {
             Memo memo = new Memo();
             memo.setBody(body);
             memo.setUpdated(new Date());

@@ -106,8 +106,8 @@ public class AlarmTestSteps {
         commonSendPOSTRequestToApplication(path+"/"+ alarmDTO.getAlarmId());
     }
 
-    @Then("Send POST request to add memo at path {string}")
-    public void sendPOSTRequestToAddMemoAtPath(String path) throws Exception {
+    @Then("Send PUT request to add memo at path {string}")
+    public void sendPUTRequestToAddMemoAtPath(String path) throws Exception {
         AlarmCollectionDTO alarmCollectionDTO = restAssuredResponse.getBody().as(AlarmCollectionDTO.class);
         AlarmDTO alarmDTO = alarmCollectionDTO.getAlarms().get(0);
         MultivaluedMapImpl multiValuedMap = new MultivaluedMapImpl();

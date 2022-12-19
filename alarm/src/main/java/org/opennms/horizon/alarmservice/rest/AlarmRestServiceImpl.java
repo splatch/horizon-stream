@@ -143,8 +143,7 @@ public class AlarmRestServiceImpl  {
         return ResponseEntity.ok(alarmService.setSeverity(id, AlarmSeverity.get(ord), new Date()));
     }
 
-    @PutMapping(path = "memo/{alarmId}",  consumes = MediaType.APPLICATION_JSON)
-
+    @PutMapping(path = "memo/{alarmId}",  consumes = MediaType.APPLICATION_JSON, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 //    @RolesAllowed({ "admin" })
     @Transactional
     public ResponseEntity updateMemo(/*@Context final SecurityContext securityContext,*/ @PathVariable final Long alarmId, @RequestBody final MultivaluedMapImpl params) {
@@ -156,7 +155,7 @@ public class AlarmRestServiceImpl  {
             if (body == null) {
                 throw getException(Status.BAD_REQUEST, "Body cannot be null.");
             }
-            
+
             return ResponseEntity.ok(alarmService.updateStickyMemo(alarmId, body));
     }
 
@@ -164,7 +163,7 @@ public class AlarmRestServiceImpl  {
     @ApiResponse(
             description = "Update the journal for an Alarm"
     )
-    @PutMapping(path = "journal/{id}", consumes = MediaType.APPLICATION_FORM_URLENCODED)
+    @PutMapping(path = "journal/{id}", consumes = MediaType.APPLICATION_FORM_URLENCODED, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
     @Transactional
     public ResponseEntity updateJournal(@Context final SecurityContext securityContext, @PathVariable final Long alarmId, final MultivaluedMapImpl params) {
             final String user = params.containsKey("user") ? params.getFirst("user") : securityContext.getUserPrincipal().getName();
@@ -175,14 +174,13 @@ public class AlarmRestServiceImpl  {
             return ResponseEntity.noContent().build();
     }
 
-    @RolesAllowed({ "admin" })
+//    @RolesAllowed({ "admin" })
     @ApiResponse(
         description = "Remove the memo for an Alarm"
     )
 
-    @DeleteMapping(path = "removeMemo/{alarmId}")
-    public ResponseEntity removeMemo(@Context final SecurityContext securityContext, @PathVariable final Long alarmId) {
-
+    @DeleteMapping(path = "removeMemo/{alarmId}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+    public ResponseEntity removeMemo(/*@Context final SecurityContext securityContext, */@PathVariable final Long alarmId) {
 
         return ResponseEntity.ok(alarmService.removeStickyMemo(alarmId));
 
