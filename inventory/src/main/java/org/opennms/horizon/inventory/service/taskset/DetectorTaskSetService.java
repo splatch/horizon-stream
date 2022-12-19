@@ -28,8 +28,12 @@
 
 package org.opennms.horizon.inventory.service.taskset;
 
-import com.google.protobuf.Any;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Map;
+
+import javax.transaction.Transactional;
+
+import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.model.Node;
@@ -46,8 +50,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
-import java.util.List;
+import com.google.protobuf.Any;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -69,25 +74,27 @@ public class DetectorTaskSetService {
         for (MonitorType monitorType : DETECTOR_MONITOR_TYPES) {
             addDetectorTasks(node, ipInterfaces, monitorType);
         }
-
         sendTaskSet(node);
+    }
+
+    public void sendDetectorTaskForNodes(Map<String, Map<String, List<NodeDTO>>> nodeListMap) {
+        for(MonitorType monitorType: DETECTOR_MONITOR_TYPES) {
+            nodeListMap.forEach((tenantId, locationNodes) -> locationNodes.forEach((location, nodes)->
+                nodes.forEach(node -> node.getIpInterfacesList().forEach(ip ->
+                    addDetectorTask(node.getId(), tenantId, ip.getIpAddress(), location, monitorType)))));
+        }
+        nodeListMap.forEach((tenantId, locationMap) -> locationMap.forEach((location, node) -> sendTaskSet(tenantId, location)));
     }
 
     private void addDetectorTasks(Node node, List<IpInterface> ipInterfaces, MonitorType monitorType) {
         for (IpInterface ipInterface : ipInterfaces) {
-            addDetectorTask(node, ipInterface, monitorType);
+            addDetectorTask(node.getId(), node.getTenantId(), ipInterface.getIpAddress().getAddress(),
+                node.getMonitoringLocation().getLocation(), monitorType);
         }
     }
 
-    private void addDetectorTask(Node node, IpInterface ipInterface, MonitorType monitorType) {
-        String tenantId = node.getTenantId();
-
-        String ipAddress = ipInterface.getIpAddress().getAddress();
-        MonitoringLocation monitoringLocation = node.getMonitoringLocation();
-        String location = monitoringLocation.getLocation();
-
+    private void addDetectorTask(long nodeId, String tenantId, String ipAddress, String location, MonitorType monitorType) {
         String monitorTypeValue = monitorType.getValueDescriptor().getName();
-
         String name = String.format("%s-detector", monitorTypeValue.toLowerCase());
         String pluginName = String.format("%sDetector", monitorTypeValue);
 
@@ -104,7 +111,7 @@ public class DetectorTaskSetService {
                         .build());
 
                 taskSetManagerUtil.addTask(tenantId, location, ipAddress, name,
-                    TaskType.DETECTOR, pluginName, configuration, node.getId());
+                    TaskType.DETECTOR, pluginName, configuration, nodeId);
                 break;
             }
             case SNMP: {
@@ -116,7 +123,7 @@ public class DetectorTaskSetService {
                         .build());
 
                 taskSetManagerUtil.addTask(tenantId, location, ipAddress, name,
-                    TaskType.DETECTOR, pluginName, configuration, node.getId());
+                    TaskType.DETECTOR, pluginName, configuration, nodeId);
                 break;
             }
             case UNRECOGNIZED: {
@@ -132,14 +139,14 @@ public class DetectorTaskSetService {
 
     private void sendTaskSet(Node node) {
         String tenantId = node.getTenantId();
-
         MonitoringLocation monitoringLocation = node.getMonitoringLocation();
         String location = monitoringLocation.getLocation();
-        TaskSet taskSet = taskSetManager.getTaskSet(tenantId, location);
-
-        log.info("Sending task set: task-set={}; location={}; tenant-id={}", taskSet, location, tenantId);
-        taskSetPublisher.publishTaskSet(tenantId, location, taskSet);
+        sendTaskSet(tenantId, location);
     }
 
-
+    private void sendTaskSet(String tenantId, String location) {
+        TaskSet taskSet = taskSetManager.getTaskSet(tenantId, location);
+        log.info("Sending task set: task-set={}; location={}; tenant-id={}  ", taskSet, location, tenantId);
+        taskSetPublisher.publishTaskSet(tenantId, location, taskSet);
+    }
 }

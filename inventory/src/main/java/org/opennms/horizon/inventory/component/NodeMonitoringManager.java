@@ -39,7 +39,9 @@ import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.shared.events.EventConstants;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.event.EventListener;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -52,9 +54,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @PropertySource("classpath:application.yml")
-public class InternalEventsConsumer {
+public class NodeMonitoringManager {
     private final NodeService nodeService;
     private final DetectorTaskSetService detectorService;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void startMonitorTasks() {
+        detectorService.sendDetectorTaskForNodes(nodeService.listAllNodeForMonitoring());
+    }
 
     @KafkaListener(topics = "${kafka.topics.internal-events}", concurrency = "1")
     public void receiveTrapEvent(@Payload byte[] data, @Headers Map<String, Object> headers) {
