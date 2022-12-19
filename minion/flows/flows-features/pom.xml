@@ -8,7 +8,7 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.opennms.horizon.minion.flows</groupId>
+    <!--<groupId>org.opennms.horizon.minion.flows</groupId> -->
     <artifactId>flows-features</artifactId>
     <packaging>feature</packaging>
 
@@ -16,11 +16,6 @@
     <name>OpenNms Horizon :: Minion :: Flows :: Features</name>
 
     <dependencies>
-        <dependency>
-            <groupId>org.opennms.horizon.minion.flows</groupId>
-            <artifactId>listener</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.opennms.horizon.minion.flows</groupId>
             <artifactId>parser</artifactId>

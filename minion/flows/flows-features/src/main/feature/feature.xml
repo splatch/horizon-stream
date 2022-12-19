@@ -4,13 +4,14 @@
     <feature name="flows">
         <feature dependency="true">aries-blueprint</feature>
         <feature dependency="true">shell</feature>
-        <bundle>mvn:org.opennms.horizon.minion.flows/listener/${project.version}</bundle>
-        <bundle>mvn:org.opennms.horizon.minion.flows/parser/${project.version}</bundle>
-        <bundle dependency="true">mvn:com.google.guava/guava/${guava.version}</bundle>
-        <bundle dependency="true">mvn:com.google.guava/failureaccess/1.0.1</bundle>
-        <feature>grpc-ratelimitter</feature>
-        <feature>internal-grpc-metrics</feature>
-        <feature>grpc-protobuf</feature>
+         <bundle>mvn:org.opennms.horizon.minion/parser/${project.version}</bundle>
+         <bundle dependency="true">mvn:com.google.guava/guava/${guava.version}</bundle>
+         <bundle dependency="true">mvn:com.google.guava/failureaccess/1.0.1</bundle>
+         <feature>grpc-ratelimitter</feature>
+         <feature>internal-grpc-metrics</feature>
+         <feature>grpc-protobuf</feature>
+         <feature>internal-grpc-opentracing</feature>
+        <bundle>mvn:com.google.protobuf/protobuf-java/4.0.0-rc-2</bundle>
         <bundle>mvn:io.netty/netty-all/${netty4.version}</bundle>
         <bundle>mvn:io.netty/netty-buffer/${netty4.version}</bundle>
         <bundle>mvn:io.netty/netty-common/${netty4.version}</bundle>

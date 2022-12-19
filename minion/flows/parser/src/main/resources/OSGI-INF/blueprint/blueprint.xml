@@ -4,61 +4,93 @@
     xsi:schemaLocation="
                 http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
-    <bean id="identity" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.IdentityImpl" />
-    <bean id="dnsResolver" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.DnsResolverImpl" />
-    <bean id="eventForwarder" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.xml.event.EventForwarderImpl" />
-    <bean id="telemetryRegistry" class="org.opennms.netmgt.telemetry.listeners.factory.TelemetryRegistryImpl" />
-
+    <reference id="messageDispatcherFactory" interface="parser.MessageDispatcherFactory" availability="mandatory" />
+    <bean id="identity" class="parser.factory.IdentityImpl" />
+    <bean id="dnsResolver" class="parser.factory.DnsResolverImpl" />
+    <bean id="eventForwarder" class="parser.xml.event.EventForwarderImpl" />
+    <bean id="telemetryRegistry" class="parser.TelemetryRegistryImpl" >
+        <argument ref="netflow9UdpParserFactory" />
+        <argument ref="messageDispatcherFactory" />
+        <argument ref="sinkModule"/>
+    </bean>
+    <bean id="sinkModule" class="parser.TelemetrySinkModule" />
 
     <!-- Netflow 5 UDP Parser Factory -->
-    <bean id="netflow5UdpParserFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.Netflow5UdpParserFactory">
+    <bean id="netflow5UdpParserFactory" class="parser.factory.Netflow5UdpParserFactory">
         <argument ref="telemetryRegistry" />
         <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
     </bean>
-    <service ref="netflow5UdpParserFactory" interface="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.ParserFactory">
+    <service ref="netflow5UdpParserFactory" interface="parser.factory.ParserFactory">
         <service-properties>
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
 
     <!-- Netflow 9 UDP Parser Factory -->
-    <bean id="netflow9UdpParserFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.Netflow9UdpParserFactory">
+    <bean id="netflow9UdpParserFactory" class="parser.factory.Netflow9UdpParserFactory">
         <argument ref="telemetryRegistry" />
         <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
     </bean>
-    <service ref="netflow9UdpParserFactory" interface="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.ParserFactory">
+    <service ref="netflow9UdpParserFactory" interface="parser.factory.ParserFactory">
         <service-properties>
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
 
     <!-- IPFIX TCP Parser Factory -->
-    <bean id="ipfixTcpParserFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.IpfixTcpParserFactory">
+    <bean id="ipfixTcpParserFactory" class="parser.factory.IpfixTcpParserFactory">
         <argument ref="telemetryRegistry" />
         <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
     </bean>
-    <service ref="ipfixTcpParserFactory" interface="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.ParserFactory">
+    <service ref="ipfixTcpParserFactory" interface="parser.factory.ParserFactory">
         <service-properties>
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
 
     <!-- IPFIX UDP Parser Factory -->
-    <bean id="ipfixUdpParserFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.IpfixUdpParserFactory">
+    <bean id="ipfixUdpParserFactory" class="parser.factory.IpfixUdpParserFactory">
         <argument ref="telemetryRegistry" />
         <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
     </bean>
-    <service ref="ipfixUdpParserFactory" interface="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.ParserFactory">
+    <service ref="ipfixUdpParserFactory" interface="parser.factory.ParserFactory">
         <service-properties>
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
+
+    <bean id="listenerDefinition" class="listeners.factory.ListenerDefinitionImpl" />
+
+    <!-- TCP Listener Factory -->
+    <bean id="tcpListenerFactory" class="listeners.factory.TcpListenerFactory">
+        <argument ref="telemetryRegistry" />
+    </bean>
+    <service ref="tcpListenerFactory" interface="listeners.factory.ListenerFactory">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+    <!-- UDP Listener Factory -->
+    <bean id="udpListenerFactory" class="listeners.factory.UdpListenerFactory">
+        <argument ref="telemetryRegistry" />
+    </bean>
+    <service ref="udpListenerFactory" interface="listeners.factory.ListenerFactory">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+    <bean id="configManager" class="parser.ConfigManager">
+        <argument ref="udpListenerFactory" />
+        <argument ref="listenerDefinition" />
+    </bean>
 </blueprint>
