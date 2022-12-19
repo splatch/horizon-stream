@@ -265,7 +265,9 @@ public class MinionGatewayTestSteps {
         minionServiceStub = CloudServiceGrpc.newStub(cloudRpcManagedChannel);
         minionRpcStream =
             minionServiceStub
-                .withInterceptors(prepareGrpcHeaderInterceptor())
+                .withInterceptors(
+                    prepareGrpcHeaderInterceptor()
+                )
                 .cloudToMinionRPC(testCloudServiceRpcRequestHandler)
         ;
 
@@ -295,7 +297,9 @@ public class MinionGatewayTestSteps {
 
         minionServiceStub = CloudServiceGrpc.newStub(cloudRpcManagedChannel);
         minionServiceStub
-            .withInterceptors(prepareGrpcHeaderInterceptor())
+            .withInterceptors(
+                prepareGrpcHeaderInterceptor()
+            )
             .cloudToMinionMessages(identity, testCloudToMinionMessageHandler)
         ;
     }
@@ -311,7 +315,9 @@ public class MinionGatewayTestSteps {
         minionServiceStub = CloudServiceGrpc.newStub(cloudRpcManagedChannel);
         minionToCloudMessageStream =
             minionServiceStub
-                .withInterceptors(prepareGrpcHeaderInterceptor())
+                .withInterceptors(
+                    prepareGrpcHeaderInterceptor()
+                )
                 .minionToCloudMessages(testEmptyMessageHandler)
         ;
     }
@@ -442,6 +448,12 @@ public class MinionGatewayTestSteps {
             systemId -> assertTrue("expecting exception message to contain systemId=" + systemId, rpcException.getMessage().contains("systemId=" + systemId)));
     }
 
+    @Then("verify RPC exception indicates missing tenant id")
+    public void verifyRPCExceptionIndicatesMissingTenantId() {
+        LOG.info("RPC exception message: {}", rpcException.getMessage());
+
+        assertTrue(rpcException.getMessage().contains("Missing tenant id"));
+    }
 
     @Then("verify RPC request was received by test rpc request server with timeout {int}ms")
     public void verifyRPCRequestWasReceivedByTestRpcRequestServerWithTimeout(int timeout) throws InterruptedException {
@@ -552,7 +564,14 @@ public class MinionGatewayTestSteps {
         rpcException = null;
         try {
             RpcRequestProto msg = rpcRequestProtoBuilder.build();
-            ListenableFuture<RpcResponseProto> future = stub.request(msg);
+
+            ListenableFuture<RpcResponseProto> future =
+                stub
+                    .withInterceptors(
+                        prepareGrpcHeaderInterceptor()
+                    )
+                    .request(msg);
+
             rpcResponseProto = future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (Exception exc) {
             rpcException = exc;
@@ -587,12 +606,11 @@ public class MinionGatewayTestSteps {
 
             rpcException = null;
             try {
-                Metadata headers = new Metadata();
-                headers.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), "opennms-prime");
-
                 ListenableFuture<PublishTaskSetResponse> future =
                     taskSetServiceStub
-                        .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(headers))
+                        .withInterceptors(
+                            prepareGrpcHeaderInterceptor()
+                        )
                         .publishTaskSet(publishTaskSetRequest)
                 ;
 
@@ -635,7 +653,14 @@ public class MinionGatewayTestSteps {
 
         rpcException = null;
         try {
-            ListenableFuture<RpcResponseProto> future = minionToCloudRpcStub.minionToCloudRPC(twinRegistrationRequest);
+            ListenableFuture<RpcResponseProto> future =
+                minionToCloudRpcStub
+                    .withInterceptors(
+                        prepareGrpcHeaderInterceptor()
+                    )
+                    .minionToCloudRPC(twinRegistrationRequest)
+                ;
+
             rpcResponseProto = future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (Exception exc) {
             rpcException = exc;
