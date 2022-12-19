@@ -22,7 +22,7 @@
         <feature>snmp-plugins</feature>
         <feature>snmp-rpc</feature>
         <feature>minion-traps</feature>
-        <feature>flows</feature>
+        <feature>minion-flows</feature>
     </feature>
 
 

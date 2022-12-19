@@ -66,9 +66,9 @@
             <type>xml</type>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.minion.flows</groupId>
+            <groupId>org.opennms.horizon.minion</groupId>
             <artifactId>flows-features</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>

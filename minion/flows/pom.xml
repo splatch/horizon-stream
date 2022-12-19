@@ -9,13 +9,13 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>flows</artifactId>
+    <artifactId>minion-flows</artifactId>
     <name>OpenNMS Horizon :: Minion :: Flows</name>
     <packaging>pom</packaging>
 
     <modules>
-        <module>flows-features</module>
         <module>parser</module>
+        <module>features</module>
     </modules>
 
 </project>

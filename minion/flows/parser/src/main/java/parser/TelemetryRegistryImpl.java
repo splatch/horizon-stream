@@ -33,6 +33,7 @@ import listeners.factory.AsyncDispatcher;
 import listeners.factory.ParserDefinition;
 import listeners.factory.TelemetryMessage;
 import listeners.factory.TelemetryRegistry;
+import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 import parser.factory.Netflow9UdpParserFactory;
 
 public class TelemetryRegistryImpl implements TelemetryRegistry {
@@ -61,14 +62,15 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
 
     @Override
     public AsyncDispatcher<TelemetryMessage> getDispatcher(String queueName) {
-        final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
         // TODO: asyncDispatcher create
         /*  Class: ListenerManager in opennms project
         *   // Create dispatcher
+        final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
                         final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
                         final String queueName = Objects.requireNonNull(parserDef.getQueueName());
                         telemetryRegistry.registerDispatcher(queueName, dispatcher);
-        * */
         return dispatcher;
+        * */
+        return null;
     }
 }
