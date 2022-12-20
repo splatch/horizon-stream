@@ -34,3 +34,4 @@ mvn clean install -f inventory
 mvn clean install -f notifications
 mvn clean install -f metrics-processor
 mvn clean install -f events
+mvn clean install -f datachoices
