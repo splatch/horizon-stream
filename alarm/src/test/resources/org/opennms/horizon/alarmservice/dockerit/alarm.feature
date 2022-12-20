@@ -7,6 +7,7 @@ Feature: Alarm Service Basic Functionality
   Scenario: Verify when an event is received from Kafka, a new Alarm is created
     Then Send message to Kafka at topic "events-proto"
     Then Verify the HTTP response code is 200
+    Then delay
     Then Send GET request to application at path "/alarms/list"
     Then DEBUG dump the response body
     Then parse the JSON response
@@ -16,6 +17,7 @@ Feature: Alarm Service Basic Functionality
   Scenario: Verify alarm can be deleted
     Then Send message to Kafka at topic "events-proto"
     Then Verify the HTTP response code is 200
+    Then delay
     Then Send GET request to application at path "/alarms/list"
     Then DEBUG dump the response body
     Then parse the JSON response
