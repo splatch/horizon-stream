@@ -35,7 +35,4 @@ package listeners.factory;
  */
 public interface Message {
 
-    public static final String SINK_METRIC_PRODUCER_DOMAIN = "org.opennms.core.ipc.sink.producer";
-
-    public static final String SINK_METRIC_CONSUMER_DOMAIN = "org.opennms.core.ipc.sink.consumer";
 }

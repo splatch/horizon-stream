@@ -35,9 +35,10 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
-import listeners.factory.AsyncDispatcher;
 import listeners.factory.TelemetryMessage;
+import listeners.factory.UdpListenerMessage;
 import parser.event.Event;
 import parser.event.EventForwarder;
 import parser.event.Log;
@@ -107,9 +108,9 @@ public class ClockSkewTest {
         }
     };
 
-    private final ParserBase parserBase = new ParserBaseExt(Protocol.NETFLOW5, "name", new AsyncDispatcher<TelemetryMessage>() {
+    private final ParserBase parserBase = new ParserBaseExt(Protocol.NETFLOW5, "name", new AsyncDispatcher<>() {
         @Override
-        public CompletableFuture<DispatchStatus> send(TelemetryMessage message) {
+        public CompletableFuture<DispatchStatus> send(UdpListenerMessage message) {
             return null;
         }
 
@@ -171,7 +172,7 @@ public class ClockSkewTest {
 
     private static class ParserBaseExt extends ParserBase {
 
-        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, EventForwarder eventForwarder, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
+        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<UdpListenerMessage> dispatcher, EventForwarder eventForwarder, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
             super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
         }
 

@@ -30,11 +30,13 @@ package parser.factory;
 
 import java.util.Objects;
 
+import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
+
 import listeners.Parser;
-import listeners.factory.AsyncDispatcher;
 import listeners.factory.ParserDefinition;
 import listeners.factory.TelemetryMessage;
 import listeners.factory.TelemetryRegistry;
+import listeners.factory.UdpListenerMessage;
 import parser.Netflow9UdpParser;
 import parser.event.EventForwarder;
 
@@ -59,7 +61,7 @@ public class Netflow9UdpParserFactory implements ParserFactory {
 
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
-        final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
+        final AsyncDispatcher<UdpListenerMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
         return new Netflow9UdpParser(parserDefinition.getFullName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
     }
 }

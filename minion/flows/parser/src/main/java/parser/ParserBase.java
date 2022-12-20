@@ -46,6 +46,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,8 +62,8 @@ import com.google.common.collect.Lists;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 import listeners.Parser;
-import listeners.factory.AsyncDispatcher;
 import listeners.factory.TelemetryMessage;
+import listeners.factory.UdpListenerMessage;
 import parser.event.EventBuilder;
 import parser.event.EventForwarder;
 import parser.factory.DnsResolver;
@@ -97,7 +98,7 @@ public abstract class ParserBase implements Parser {
 
     private final String name;
 
-    private final AsyncDispatcher<TelemetryMessage> dispatcher;
+    private final AsyncDispatcher<UdpListenerMessage> dispatcher;
 
     private final EventForwarder eventForwarder;
 
@@ -145,7 +146,7 @@ public abstract class ParserBase implements Parser {
 
     public ParserBase(final Protocol protocol,
                       final String name,
-                      final AsyncDispatcher<TelemetryMessage> dispatcher,
+                      final AsyncDispatcher<UdpListenerMessage> dispatcher,
                       final EventForwarder eventForwarder,
                       final Identity identity,
                       final DnsResolver dnsResolver,
@@ -361,7 +362,7 @@ public abstract class ParserBase implements Parser {
                         }
 
                         // Build the message to dispatch
-                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, ByteBuffer.wrap(flowMessage.build().toByteArray()));
+                        final UdpListenerMessage msg = new UdpListenerMessage(remoteAddress, ByteBuffer.wrap(flowMessage.build().toByteArray()));
 
                         // Dispatch
                         dispatcher.send(msg).whenComplete((b, exx) -> {

@@ -29,6 +29,8 @@
 package listeners.factory;
 
 
+import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
+
 import listeners.Parser;
 
 import com.codahale.metrics.MetricRegistry;
@@ -38,5 +40,5 @@ public interface TelemetryRegistry {
 
     MetricRegistry getMetricRegistry();
 
-    AsyncDispatcher<TelemetryMessage> getDispatcher(String queueName);
+    AsyncDispatcher<UdpListenerMessage> getDispatcher(String queueName);
 }

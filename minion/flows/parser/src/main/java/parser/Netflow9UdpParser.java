@@ -34,6 +34,8 @@ import static listeners.utils.BufferUtils.uint16;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
+import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
+
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
@@ -41,8 +43,8 @@ import com.google.common.base.Objects;
 import io.netty.buffer.ByteBuf;
 import listeners.Dispatchable;
 import listeners.UdpParser;
-import listeners.factory.AsyncDispatcher;
 import listeners.factory.TelemetryMessage;
+import listeners.factory.UdpListenerMessage;
 import parser.event.EventForwarder;
 import parser.factory.DnsResolver;
 import parser.factory.Identity;
@@ -58,7 +60,7 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
     private final Netflow9MessageBuilder messageBuilder = new Netflow9MessageBuilder();
 
     public Netflow9UdpParser(final String name,
-                             final AsyncDispatcher<TelemetryMessage> dispatcher,
+                             final AsyncDispatcher<UdpListenerMessage> dispatcher,
                              final EventForwarder eventForwarder,
                              final Identity identity,
                              final DnsResolver dnsResolver,

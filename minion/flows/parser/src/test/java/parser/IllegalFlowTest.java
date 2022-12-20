@@ -47,9 +47,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
+
 import listeners.UdpListener;
-import listeners.factory.AsyncDispatcher;
 import listeners.factory.TelemetryMessage;
+import listeners.factory.UdpListenerMessage;
 import parser.event.Event;
 import parser.event.EventForwarder;
 import parser.event.Log;
@@ -107,9 +109,9 @@ public class IllegalFlowTest {
 
         // setting up nf9 parser
 
-        final Netflow9UdpParser parser = new Netflow9UdpParser("FLOW", new AsyncDispatcher<TelemetryMessage>() {
+        final Netflow9UdpParser parser = new Netflow9UdpParser("FLOW", new AsyncDispatcher<>() {
             @Override
-            public CompletableFuture<AsyncDispatcher.DispatchStatus> send(TelemetryMessage message) {
+            public CompletableFuture<AsyncDispatcher.DispatchStatus> send(UdpListenerMessage message) {
                 messagesSent.incrementAndGet();
                 return CompletableFuture.completedFuture(DispatchStatus.DISPATCHED);
             }

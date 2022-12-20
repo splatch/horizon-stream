@@ -32,13 +32,15 @@ import static listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
 
+import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
+
 import com.codahale.metrics.MetricRegistry;
 
 import io.netty.buffer.ByteBuf;
 import listeners.Dispatchable;
 import listeners.UdpParser;
-import listeners.factory.AsyncDispatcher;
 import listeners.factory.TelemetryMessage;
+import listeners.factory.UdpListenerMessage;
 import listeners.utils.BufferUtils;
 import parser.event.EventForwarder;
 import parser.factory.DnsResolver;
@@ -55,7 +57,7 @@ public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispa
     private final Netflow5MessageBuilder messageBuilder = new Netflow5MessageBuilder();
 
     public Netflow5UdpParser(final String name,
-                             final AsyncDispatcher<TelemetryMessage> dispatcher,
+                             final AsyncDispatcher<UdpListenerMessage> dispatcher,
                              final EventForwarder eventForwarder,
                              final Identity identity,
                              final DnsResolver dnsResolver,

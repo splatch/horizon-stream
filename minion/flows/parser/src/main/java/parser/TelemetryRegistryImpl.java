@@ -26,14 +26,15 @@ package parser; /***************************************************************
  *     http://www.opennms.com/
  *******************************************************************************/
 
+import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
+import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
+
 import com.codahale.metrics.MetricRegistry;
 
 import listeners.Parser;
-import listeners.factory.AsyncDispatcher;
 import listeners.factory.ParserDefinition;
-import listeners.factory.TelemetryMessage;
 import listeners.factory.TelemetryRegistry;
-import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
+import listeners.factory.UdpListenerMessage;
 import parser.factory.Netflow9UdpParserFactory;
 
 public class TelemetryRegistryImpl implements TelemetryRegistry {
@@ -42,12 +43,12 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
 
     private final MessageDispatcherFactory messageDispatcherFactory;
 
-    private final SinkModule sinkModule;
+    private final UdpListenerModule udpListenerModule;
 
-    public TelemetryRegistryImpl(Netflow9UdpParserFactory netflow9UdpParserFactory, MessageDispatcherFactory messageDispatcherFactory, SinkModule sinkModule) {
+    public TelemetryRegistryImpl(Netflow9UdpParserFactory netflow9UdpParserFactory, MessageDispatcherFactory messageDispatcherFactory, UdpListenerModule udpListenerModule) {
         this.netflow9UdpParserFactory = netflow9UdpParserFactory;
         this.messageDispatcherFactory = messageDispatcherFactory;
-        this.sinkModule = sinkModule;
+        this.udpListenerModule = udpListenerModule;
     }
 
     @Override
@@ -61,16 +62,13 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     }
 
     @Override
-    public AsyncDispatcher<TelemetryMessage> getDispatcher(String queueName) {
+    public AsyncDispatcher<UdpListenerMessage> getDispatcher(String queueName) {
         // TODO: asyncDispatcher create
-        /*  Class: ListenerManager in opennms project
-        *   // Create dispatcher
-        final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
-                        final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
-                        final String queueName = Objects.requireNonNull(parserDef.getQueueName());
-                        telemetryRegistry.registerDispatcher(queueName, dispatcher);
+        /*  Class: ListenerManager in opennms project */
+        // TODO: look into HeartBeatProducer:
+        // dispatcher = messageDispatcherFactory.createSyncDispatcher(new HeartbeatModule());
+
+        final AsyncDispatcher<UdpListenerMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(udpListenerModule);
         return dispatcher;
-        * */
-        return null;
     }
 }
