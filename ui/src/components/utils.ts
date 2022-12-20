@@ -1,4 +1,4 @@
-import { add, intervalToDuration, formatDuration } from 'date-fns'
+import { add, intervalToDuration } from 'date-fns'
 import { TimeUnit } from '@/types'
 
 /**
