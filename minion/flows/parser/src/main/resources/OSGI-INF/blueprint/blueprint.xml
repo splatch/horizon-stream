@@ -7,7 +7,6 @@
     <reference id="messageDispatcherFactory" interface="org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory" availability="mandatory" />
     <bean id="identity" class="parser.factory.IdentityImpl" />
     <bean id="dnsResolver" class="parser.factory.DnsResolverImpl" />
-    <bean id="eventForwarder" class="parser.event.EventForwarderImpl" />
     <bean id="telemetryRegistry" class="parser.TelemetryRegistryImpl" >
         <argument ref="netflow9UdpParserFactory" />
         <argument ref="messageDispatcherFactory" />
@@ -18,7 +17,6 @@
     <!-- Netflow 5 UDP Parser Factory -->
     <bean id="netflow5UdpParserFactory" class="parser.factory.Netflow5UdpParserFactory">
         <argument ref="telemetryRegistry" />
-        <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
     </bean>
@@ -31,7 +29,6 @@
     <!-- Netflow 9 UDP Parser Factory -->
     <bean id="netflow9UdpParserFactory" class="parser.factory.Netflow9UdpParserFactory">
         <argument ref="telemetryRegistry" />
-        <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
     </bean>
@@ -44,7 +41,6 @@
     <!-- IPFIX TCP Parser Factory -->
     <bean id="ipfixTcpParserFactory" class="parser.factory.IpfixTcpParserFactory">
         <argument ref="telemetryRegistry" />
-        <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
     </bean>
@@ -57,7 +53,6 @@
     <!-- IPFIX UDP Parser Factory -->
     <bean id="ipfixUdpParserFactory" class="parser.factory.IpfixUdpParserFactory">
         <argument ref="telemetryRegistry" />
-        <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
     </bean>

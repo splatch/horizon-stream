@@ -45,7 +45,6 @@ import com.codahale.metrics.MetricRegistry;
 import io.netty.buffer.ByteBuf;
 import listeners.UdpParser;
 import listeners.factory.UdpListenerMessage;
-import parser.event.EventForwarder;
 import parser.factory.DnsResolver;
 import parser.factory.Identity;
 import parser.ie.RecordProvider;
@@ -66,11 +65,11 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
     public UdpParserBase(final Protocol protocol,
                          final String name,
                          final AsyncDispatcher<UdpListenerMessage> dispatcher,
-                         final EventForwarder eventForwarder,
+                        // final EventForwarder eventForwarder,
                          final Identity identity,
                          final DnsResolver dnsResolver,
                          final MetricRegistry metricRegistry) {
-        super(protocol, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(protocol, name, dispatcher, identity, dnsResolver, metricRegistry);
 
         this.packetsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "packetsReceived"));
         this.parserErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "parserErrors"));

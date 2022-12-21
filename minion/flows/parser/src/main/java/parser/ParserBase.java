@@ -33,7 +33,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -54,7 +53,6 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -62,10 +60,7 @@ import com.google.common.collect.Lists;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 import listeners.Parser;
-import listeners.factory.TelemetryMessage;
 import listeners.factory.UdpListenerMessage;
-import parser.event.EventBuilder;
-import parser.event.EventForwarder;
 import parser.factory.DnsResolver;
 import parser.factory.Identity;
 import parser.flowmessage.FlowMessage;
@@ -100,7 +95,7 @@ public abstract class ParserBase implements Parser {
 
     private final AsyncDispatcher<UdpListenerMessage> dispatcher;
 
-    private final EventForwarder eventForwarder;
+   // private final EventForwarder eventForwarder;
 
     private final Identity identity;
 
@@ -147,14 +142,14 @@ public abstract class ParserBase implements Parser {
     public ParserBase(final Protocol protocol,
                       final String name,
                       final AsyncDispatcher<UdpListenerMessage> dispatcher,
-                      final EventForwarder eventForwarder,
+                    //  final EventForwarder eventForwarder,
                       final Identity identity,
                       final DnsResolver dnsResolver,
                       final MetricRegistry metricRegistry) {
         this.protocol = Objects.requireNonNull(protocol);
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
-        this.eventForwarder = Objects.requireNonNull(eventForwarder);
+       // this.eventForwarder = Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         Objects.requireNonNull(metricRegistry);
@@ -342,7 +337,7 @@ public abstract class ParserBase implements Parser {
                             if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getIllegalFlowEventRate()) {
                                 illegalFlowEventCache.put(session.getRemoteAddress(), Optional.of(Instant.now()));
 
-                                eventForwarder.sendNow(new EventBuilder()
+                              /*  eventForwarder.sendNow(new EventBuilder()
                                         .setUei(ILLEGAL_FLOW_EVENT_UEI)
                                         .setTime(new Date())
                                         .setSource(getName())
@@ -353,7 +348,7 @@ public abstract class ParserBase implements Parser {
                                         .setParam("cause", Joiner.on('\n').join(corrections))
                                         .setParam("protocol", protocol.name())
                                         .setParam("illegalFlowEventRate", (int) getIllegalFlowEventRate())
-                                        .getEvent());
+                                        .getEvent()); */
 
                                 for (final String correction : corrections) {
                                     LOG.warn("Illegal flow detected from exporter {}: \n{}", session.getRemoteAddress().getAddress(), correction);
@@ -424,7 +419,7 @@ public abstract class ParserBase implements Parser {
                 if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getClockSkewEventRate()) {
                     clockSkewEventCache.put(remoteAddress, Optional.of(Instant.now()));
 
-                    eventForwarder.sendNow(new EventBuilder()
+                   /* eventForwarder.sendNow(new EventBuilder()
                             .setUei(CLOCK_SKEW_EVENT_UEI)
                             .setTime(new Date())
                             .setSource(getName())
@@ -435,7 +430,7 @@ public abstract class ParserBase implements Parser {
                             .setParam("delta", (int) deltaMs)
                             .setParam("clockSkewEventRate", (int) getClockSkewEventRate())
                             .setParam("maxClockSkew", (int) getMaxClockSkew())
-                            .getEvent());
+                            .getEvent()); */
                 }
 
             }

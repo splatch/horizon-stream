@@ -42,9 +42,7 @@ import com.google.common.collect.Sets;
 
 import io.netty.buffer.ByteBuf;
 import listeners.TcpParser;
-import listeners.factory.TelemetryMessage;
 import listeners.factory.UdpListenerMessage;
-import parser.event.EventForwarder;
 import parser.factory.DnsResolver;
 import parser.factory.Identity;
 import parser.ipfix.proto.Header;
@@ -61,11 +59,10 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
 
     public IpfixTcpParser(final String name,
                           final AsyncDispatcher<UdpListenerMessage> dispatcher,
-                          final EventForwarder eventForwarder,
                           final Identity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
-        super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(Protocol.IPFIX, name, dispatcher, identity, dnsResolver, metricRegistry);
     }
 
     @Override

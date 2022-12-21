@@ -34,22 +34,18 @@ import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import listeners.Parser;
 import listeners.factory.ParserDefinition;
-import listeners.factory.TelemetryMessage;
 import listeners.factory.TelemetryRegistry;
 import listeners.factory.UdpListenerMessage;
 import parser.IpfixTcpParser;
-import parser.event.EventForwarder;
 
 public class IpfixTcpParserFactory implements ParserFactory {
 
     private final TelemetryRegistry telemetryRegistry;
-    private final EventForwarder eventForwarder;
     private final Identity identity;
     private final DnsResolver dnsResolver;
 
-    public IpfixTcpParserFactory(final TelemetryRegistry telemetryRegistry, final EventForwarder eventForwarder, final Identity identity, final DnsResolver dnsResolver) {
+    public IpfixTcpParserFactory(final TelemetryRegistry telemetryRegistry, final Identity identity, final DnsResolver dnsResolver) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
-        this.eventForwarder =  Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
     }
@@ -62,6 +58,6 @@ public class IpfixTcpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<UdpListenerMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new IpfixTcpParser(parserDefinition.getFullName(), dispatcher, eventForwarder, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
+        return new IpfixTcpParser(parserDefinition.getFullName(), dispatcher, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
     }
 }

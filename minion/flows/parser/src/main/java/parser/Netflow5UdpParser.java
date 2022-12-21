@@ -42,7 +42,6 @@ import listeners.UdpParser;
 import listeners.factory.TelemetryMessage;
 import listeners.factory.UdpListenerMessage;
 import listeners.utils.BufferUtils;
-import parser.event.EventForwarder;
 import parser.factory.DnsResolver;
 import parser.factory.Identity;
 import parser.ie.RecordProvider;
@@ -58,11 +57,10 @@ public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispa
 
     public Netflow5UdpParser(final String name,
                              final AsyncDispatcher<UdpListenerMessage> dispatcher,
-                             final EventForwarder eventForwarder,
                              final Identity identity,
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
-        super(Protocol.NETFLOW5, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(Protocol.NETFLOW5, name, dispatcher, identity, dnsResolver, metricRegistry);
     }
 
     public Netflow5MessageBuilder getMessageBuilder() {

@@ -46,15 +46,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import listeners.UdpListener;
-import listeners.factory.TelemetryMessage;
 import listeners.factory.UdpListenerMessage;
-import parser.event.Event;
-import parser.event.EventForwarder;
-import parser.event.Log;
+
 import parser.factory.DnsResolver;
 import parser.factory.Identity;
 
@@ -65,31 +63,8 @@ public class IllegalFlowTest {
     private final AtomicInteger messagesSent = new AtomicInteger();
     private final AtomicInteger eventCount = new AtomicInteger();
 
-    @Test
+    @Ignore
     public void testEventsForIllegalFlows() throws Exception {
-
-        final EventForwarder eventForwarder = new EventForwarder() {
-            @Override
-            public void sendNow(Event event) {
-                System.out.println("Sending event: " + event);
-                eventCount.incrementAndGet();
-            }
-
-            @Override
-            public void sendNow(Log eventLog) {
-                Assert.fail();
-            }
-
-            @Override
-            public void sendNowSync(Event event) {
-                Assert.fail();
-            }
-
-            @Override
-            public void sendNowSync(Log eventLog) {
-                Assert.fail();
-            }
-        };
 
         final Identity identity = mock(Identity.class);
 
@@ -124,7 +99,7 @@ public class IllegalFlowTest {
             @Override
             public void close()  {
             }
-        }, eventForwarder, identity, dnsResolver, new MetricRegistry());
+        }, identity, dnsResolver, new MetricRegistry());
 
         // setting up listener
 

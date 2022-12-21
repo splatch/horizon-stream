@@ -43,9 +43,7 @@ import com.google.common.base.Objects;
 import io.netty.buffer.ByteBuf;
 import listeners.Dispatchable;
 import listeners.UdpParser;
-import listeners.factory.TelemetryMessage;
 import listeners.factory.UdpListenerMessage;
-import parser.event.EventForwarder;
 import parser.factory.DnsResolver;
 import parser.factory.Identity;
 import parser.ie.RecordProvider;
@@ -61,11 +59,10 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
 
     public IpfixUdpParser(final String name,
                           final AsyncDispatcher<UdpListenerMessage> dispatcher,
-                          final EventForwarder eventForwarder,
                           final Identity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
-        super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        super(Protocol.IPFIX, name, dispatcher, identity, dnsResolver, metricRegistry);
     }
 
     public IpFixMessageBuilder getMessageBuilder() {
