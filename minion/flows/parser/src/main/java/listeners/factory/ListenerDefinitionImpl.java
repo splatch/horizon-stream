@@ -29,6 +29,7 @@
 package listeners.factory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,16 +43,16 @@ public class ListenerDefinitionImpl implements ListenerDefinition {
 
     @Override
     public String getName() {
-        return null;
+        return "UDPListener";
     }
 
     @Override
     public String getClassName() {
-        return null;
+        return ListenerDefinitionImpl.class.getName();
     }
 
     @Override
     public Map<String, String> getParameterMap() {
-        return null;
+        return new HashMap<>();
     }
 }

@@ -31,23 +31,30 @@ package parser.factory;
 import java.util.Objects;
 
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
+import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
+
+import com.codahale.metrics.MetricRegistry;
 
 import listeners.Parser;
 import listeners.factory.ParserDefinition;
 import listeners.factory.TelemetryRegistry;
 import listeners.factory.UdpListenerMessage;
 import parser.Netflow9UdpParser;
+import parser.UdpListenerModule;
 
 public class Netflow9UdpParserFactory implements ParserFactory {
 
-    private final TelemetryRegistry telemetryRegistry;
     private final Identity identity;
     private final DnsResolver dnsResolver;
+    private final MessageDispatcherFactory messageDispatcherFactory;
+    private final UdpListenerModule udpListenerModule;
 
-    public Netflow9UdpParserFactory(final TelemetryRegistry telemetryRegistry,  final Identity identity, final DnsResolver dnsResolver) {
-        this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
+    public Netflow9UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory,
+                                    final Identity identity, final DnsResolver dnsResolver, UdpListenerModule udpListenerModule) {
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
+        this.messageDispatcherFactory = Objects.requireNonNull(messageDispatcherFactory);
+        this.udpListenerModule = Objects.requireNonNull(udpListenerModule);
     }
 
     @Override
@@ -56,8 +63,8 @@ public class Netflow9UdpParserFactory implements ParserFactory {
     }
 
     @Override
-    public Parser createBean(ParserDefinition parserDefinition) {
-        final AsyncDispatcher<UdpListenerMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new Netflow9UdpParser(parserDefinition.getFullName(), dispatcher, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
+    public Parser createBean(final ParserDefinition parserDefinition) {
+        final AsyncDispatcher<UdpListenerMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(udpListenerModule);
+        return new Netflow9UdpParser(parserDefinition.getFullName(), dispatcher, identity, dnsResolver, new MetricRegistry());
     }
 }

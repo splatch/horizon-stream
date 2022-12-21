@@ -4,85 +4,33 @@
     xsi:schemaLocation="
                 http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
-    <reference id="messageDispatcherFactory" interface="org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory" availability="mandatory" />
+    <reference id="messageDispatcherFactory" interface="org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory"/>
     <bean id="identity" class="parser.factory.IdentityImpl" />
     <bean id="dnsResolver" class="parser.factory.DnsResolverImpl" />
     <bean id="telemetryRegistry" class="parser.TelemetryRegistryImpl" >
         <argument ref="netflow9UdpParserFactory" />
         <argument ref="messageDispatcherFactory" />
-        <argument ref="sinkModule"/>
+        <argument ref="udpListenerModule"/>
     </bean>
-    <bean id="sinkModule" class="parser.TelemetrySinkModule" />
+    <bean id="udpListenerModule" class="parser.UdpListenerModule" />
 
-    <!-- Netflow 5 UDP Parser Factory -->
-    <bean id="netflow5UdpParserFactory" class="parser.factory.Netflow5UdpParserFactory">
-        <argument ref="telemetryRegistry" />
-        <argument ref="identity" />
-        <argument ref="dnsResolver" />
-    </bean>
-    <service ref="netflow5UdpParserFactory" interface="parser.factory.ParserFactory">
-        <service-properties>
-            <entry key="registration.export" value="true" />
-        </service-properties>
-    </service>
 
     <!-- Netflow 9 UDP Parser Factory -->
     <bean id="netflow9UdpParserFactory" class="parser.factory.Netflow9UdpParserFactory">
-        <argument ref="telemetryRegistry" />
+        <argument ref="messageDispatcherFactory" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
+        <argument ref="udpListenerModule" />
     </bean>
     <service ref="netflow9UdpParserFactory" interface="parser.factory.ParserFactory">
-        <service-properties>
-            <entry key="registration.export" value="true" />
-        </service-properties>
-    </service>
-
-    <!-- IPFIX TCP Parser Factory -->
-    <bean id="ipfixTcpParserFactory" class="parser.factory.IpfixTcpParserFactory">
-        <argument ref="telemetryRegistry" />
-        <argument ref="identity" />
-        <argument ref="dnsResolver" />
-    </bean>
-    <service ref="ipfixTcpParserFactory" interface="parser.factory.ParserFactory">
-        <service-properties>
-            <entry key="registration.export" value="true" />
-        </service-properties>
-    </service>
-
-    <!-- IPFIX UDP Parser Factory -->
-    <bean id="ipfixUdpParserFactory" class="parser.factory.IpfixUdpParserFactory">
-        <argument ref="telemetryRegistry" />
-        <argument ref="identity" />
-        <argument ref="dnsResolver" />
-    </bean>
-    <service ref="ipfixUdpParserFactory" interface="parser.factory.ParserFactory">
-        <service-properties>
-            <entry key="registration.export" value="true" />
-        </service-properties>
-    </service>
-
-    <bean id="listenerDefinition" class="listeners.factory.ListenerDefinitionImpl" />
-
-    <!-- TCP Listener Factory -->
-    <bean id="tcpListenerFactory" class="listeners.factory.TcpListenerFactory">
-        <argument ref="telemetryRegistry" />
-    </bean>
-    <service ref="tcpListenerFactory" interface="listeners.factory.ListenerFactory">
-        <service-properties>
-            <entry key="registration.export" value="true" />
-        </service-properties>
     </service>
 
     <!-- UDP Listener Factory -->
     <bean id="udpListenerFactory" class="listeners.factory.UdpListenerFactory">
         <argument ref="telemetryRegistry" />
     </bean>
-    <service ref="udpListenerFactory" interface="listeners.factory.ListenerFactory">
-        <service-properties>
-            <entry key="registration.export" value="true" />
-        </service-properties>
-    </service>
+
+    <bean id="listenerDefinition" class="listeners.factory.ListenerDefinitionImpl" />
 
     <bean id="configManager" class="parser.ConfigManager">
         <argument ref="udpListenerFactory" />

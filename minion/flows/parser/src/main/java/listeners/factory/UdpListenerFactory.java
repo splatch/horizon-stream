@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.codahale.metrics.MetricRegistry;
+
 import listeners.Listener;
 import listeners.Parser;
 import listeners.UdpListener;
@@ -54,7 +56,7 @@ public class UdpListenerFactory implements ListenerFactory {
     public Listener createBean(ListenerDefinition listenerDefinition) {
         // Ensure each defined parser is of type UdpParser
         final List<Parser> parsers = listenerDefinition.getParsers().stream()
-                .map(parserDefinition -> telemetryRegistry.getParser(parserDefinition))
+                .map(telemetryRegistry::getParser)
                 .collect(Collectors.toList());
         final List<Parser> udpParsers = parsers.stream()
                 .filter(p -> p instanceof UdpParser)
@@ -62,6 +64,6 @@ public class UdpListenerFactory implements ListenerFactory {
         if (parsers.size() != udpParsers.size()) {
             throw new IllegalArgumentException("Each parser must be of type UdpParser but was not: " + parsers);
         }
-        return new UdpListener(listenerDefinition.getName(), udpParsers, telemetryRegistry.getMetricRegistry());
+        return new UdpListener(listenerDefinition.getName(), udpParsers, new MetricRegistry());
     }
 }

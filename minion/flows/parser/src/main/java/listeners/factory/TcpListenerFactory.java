@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.codahale.metrics.MetricRegistry;
+
 import listeners.Listener;
 import listeners.TcpListener;
 import listeners.TcpParser;
@@ -65,6 +67,6 @@ public class TcpListenerFactory implements ListenerFactory {
         if (parser.size() != listenerDefinition.getParsers().size()) {
             throw new IllegalArgumentException("Each parser must be of type TcpParser but was not.");
         }
-        return new TcpListener(listenerDefinition.getName(), parser.iterator().next(), telemetryRegistry.getMetricRegistry());
+        return new TcpListener(listenerDefinition.getName(), parser.iterator().next(), new MetricRegistry());
     }
 }
