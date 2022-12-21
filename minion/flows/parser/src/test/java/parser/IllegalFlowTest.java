@@ -45,9 +45,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Assert;
 import org.junit.Ignore;
-import org.junit.Test;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import listeners.UdpListener;

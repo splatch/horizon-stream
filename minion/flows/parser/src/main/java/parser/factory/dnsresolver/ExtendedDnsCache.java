@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2019 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,22 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package parser.factory;
+package parser.factory.dnsresolver;
 
-import java.net.InetAddress;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import io.netty.channel.EventLoop;
+import io.netty.handler.codec.dns.DnsPtrRecord;
+import io.netty.resolver.dns.DnsCache;
 
-import parser.factory.DnsResolver;
+/**
+ * An extended {@link DnsCache} with support for storing PTR records
+ * from reverse lookups.
+ */
+public interface ExtendedDnsCache extends DnsCache {
 
-public class DnsResolverImpl implements DnsResolver {
-    @Override
-    public CompletableFuture<Optional<InetAddress>> lookup(String hostname) {
-        return null;
-    }
+    ExtendedDnsCacheEntry cache(String hostname, DnsPtrRecord ptrRecord, EventLoop loop);
 
-    @Override
-    public CompletableFuture<Optional<String>> reverseLookup(InetAddress inetAddress) {
-        return null;
-    }
 }

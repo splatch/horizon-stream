@@ -6,7 +6,16 @@
 
     <reference id="messageDispatcherFactory" interface="org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory"/>
     <bean id="identity" class="parser.factory.IdentityImpl" />
-    <bean id="dnsResolver" class="parser.factory.DnsResolverImpl" />
+    <bean id="dnsResolver" class="parser.factory.dnsresolver.NettyDnsResolver" init-method="init" destroy-method="destroy">
+        <argument index="0" ref="metricRegistry"/>
+    </bean>
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="metricRegistry" interface="com.codahale.metrics.MetricSet">
+        <service-properties>
+            <entry key="name" value="Netty DNS Resolver" />
+            <entry key="description" value="Netty DNS resolution metrics" />
+        </service-properties>
+    </service>
     <bean id="telemetryRegistry" class="parser.TelemetryRegistryImpl" >
         <argument ref="netflow9UdpParserFactory" />
         <argument ref="messageDispatcherFactory" />

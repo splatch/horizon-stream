@@ -37,7 +37,6 @@ import com.codahale.metrics.MetricRegistry;
 
 import listeners.Parser;
 import listeners.factory.ParserDefinition;
-import listeners.factory.TelemetryRegistry;
 import listeners.factory.UdpListenerMessage;
 import parser.Netflow9UdpParser;
 import parser.UdpListenerModule;

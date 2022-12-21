@@ -58,6 +58,49 @@
           <artifactId>netty-buffer</artifactId>
       </dependency>
       <dependency>
+          <groupId>io.github.resilience4j</groupId>
+          <artifactId>resilience4j-bulkhead</artifactId>
+          <version>0.17.0</version>
+      </dependency>
+      <dependency>
+          <groupId>io.github.resilience4j</groupId>
+          <artifactId>resilience4j-core</artifactId>
+          <version>0.17.0</version>
+      </dependency>
+      <dependency>
+          <groupId>io.github.resilience4j</groupId>
+          <artifactId>resilience4j-circuitbreaker</artifactId>
+          <version>0.17.0</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.dnsjava</artifactId>
+          <version>3.5.2_1</version>
+      </dependency>
+
+      <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.jsr305</artifactId>
+      <version>3.0.2_1</version>
+      <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>io.vavr</groupId>
+          <artifactId>vavr</artifactId>
+          <version>0.10.0</version>
+      </dependency>
+      <dependency>
+          <groupId>io.vavr</groupId>
+          <artifactId>vavr-match</artifactId>
+          <version>0.10.4</version>
+      </dependency>
+      <dependency>
+          <groupId>com.github.ben-manes.caffeine</groupId>
+          <artifactId>caffeine</artifactId>
+          <version>3.1.2</version>
+      </dependency>
+
+      <dependency>
           <groupId>io.dropwizard.metrics</groupId>
           <artifactId>metrics-core</artifactId>
       </dependency>

@@ -39,7 +39,6 @@ import com.codahale.metrics.MetricRegistry;
 import io.netty.buffer.ByteBuf;
 import listeners.Dispatchable;
 import listeners.UdpParser;
-import listeners.factory.TelemetryMessage;
 import listeners.factory.UdpListenerMessage;
 import listeners.utils.BufferUtils;
 import parser.factory.DnsResolver;

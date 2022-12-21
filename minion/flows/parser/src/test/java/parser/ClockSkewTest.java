@@ -35,7 +35,6 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Test;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import listeners.factory.UdpListenerMessage;
