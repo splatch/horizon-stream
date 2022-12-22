@@ -95,8 +95,6 @@ public abstract class ParserBase implements Parser {
 
     private final AsyncDispatcher<UdpListenerMessage> dispatcher;
 
-   // private final EventForwarder eventForwarder;
-
     private final Identity identity;
 
     private final DnsResolver dnsResolver;
@@ -142,14 +140,12 @@ public abstract class ParserBase implements Parser {
     public ParserBase(final Protocol protocol,
                       final String name,
                       final AsyncDispatcher<UdpListenerMessage> dispatcher,
-                    //  final EventForwarder eventForwarder,
                       final Identity identity,
                       final DnsResolver dnsResolver,
                       final MetricRegistry metricRegistry) {
         this.protocol = Objects.requireNonNull(protocol);
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
-       // this.eventForwarder = Objects.requireNonNull(eventForwarder);
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         Objects.requireNonNull(metricRegistry);
@@ -336,19 +332,6 @@ public abstract class ParserBase implements Parser {
 
                             if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getIllegalFlowEventRate()) {
                                 illegalFlowEventCache.put(session.getRemoteAddress(), Optional.of(Instant.now()));
-
-                              /*  eventForwarder.sendNow(new EventBuilder()
-                                        .setUei(ILLEGAL_FLOW_EVENT_UEI)
-                                        .setTime(new Date())
-                                        .setSource(getName())
-                                        .setInterface(session.getRemoteAddress())
-                                        .setDistPoller(identity.getId())
-                                        .addParam("monitoringSystemId", identity.getId())
-                                        .addParam("monitoringSystemLocation", identity.getLocation())
-                                        .setParam("cause", Joiner.on('\n').join(corrections))
-                                        .setParam("protocol", protocol.name())
-                                        .setParam("illegalFlowEventRate", (int) getIllegalFlowEventRate())
-                                        .getEvent()); */
 
                                 for (final String correction : corrections) {
                                     LOG.warn("Illegal flow detected from exporter {}: \n{}", session.getRemoteAddress().getAddress(), correction);

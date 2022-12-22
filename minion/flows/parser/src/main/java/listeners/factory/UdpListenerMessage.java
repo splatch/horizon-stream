@@ -30,11 +30,13 @@ package listeners.factory;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedOutputStream;
@@ -44,6 +46,8 @@ import com.google.protobuf.Parser;
 import com.google.protobuf.UnknownFieldSet;
 
 public class UdpListenerMessage implements Message {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UdpListenerMessage.class);
 
     public UdpListenerMessage(InetSocketAddress remoteAddress, ByteBuffer buffer) {
         // TODO: fix me

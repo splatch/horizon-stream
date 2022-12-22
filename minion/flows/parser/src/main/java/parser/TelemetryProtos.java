@@ -105,13 +105,6 @@ public final class TelemetryProtos {
             case 0:
               done = true;
               break;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
             case 8: {
               bitField0_ |= 0x00000001;
               timestamp_ = input.readUInt64();
@@ -122,6 +115,13 @@ public final class TelemetryProtos {
               bytes_ = input.readBytes();
               break;
             }
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                  extensionRegistry, tag)) {
+                  done = true;
+              }
+              break;
+          }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -219,6 +219,7 @@ public final class TelemetryProtos {
       return true;
     }
 
+    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
@@ -232,6 +233,8 @@ public final class TelemetryProtos {
     }
 
     private int memoizedSerializedSize = -1;
+
+    @Override
     public int getSerializedSize() {
       int size = memoizedSerializedSize;
       if (size != -1) return size;
@@ -251,11 +254,6 @@ public final class TelemetryProtos {
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    protected Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
 
     public static TelemetryMessage parseFrom(
         com.google.protobuf.ByteString data)
@@ -320,8 +318,7 @@ public final class TelemetryProtos {
     @Override
     protected Builder newBuilderForType(
         BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
+        return new Builder(parent);
     }
     /**
      * Protobuf type {@code TelemetryMessage}
@@ -330,7 +327,7 @@ public final class TelemetryProtos {
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:TelemetryMessage)
         TelemetryMessageOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
+      public static com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return TelemetryProtos.internal_static_TelemetryMessage_descriptor;
       }
@@ -344,17 +341,11 @@ public final class TelemetryProtos {
 
       // Construct using org.opennms.netmgt.telemetry.ipc.TelemetryProtos.TelemetryMessage.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
       }
 
       private Builder(
           BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
       }
       private static Builder create() {
         return new Builder();
@@ -428,16 +419,8 @@ public final class TelemetryProtos {
         return this;
       }
 
-      public final boolean isInitialized() {
-        if (!hasTimestamp()) {
-          
-          return false;
-        }
-        if (!hasBytes()) {
-          
-          return false;
-        }
-        return true;
+      public boolean isInitialized() {
+          return hasTimestamp() && hasBytes();
       }
 
       public Builder mergeFrom(
@@ -660,13 +643,6 @@ public final class TelemetryProtos {
             case 0:
               done = true;
               break;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
             case 10: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
@@ -692,12 +668,19 @@ public final class TelemetryProtos {
             }
             case 42: {
               if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-                message_ = new java.util.ArrayList<TelemetryMessage>();
+                message_ = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000010;
               }
               message_.add(input.readMessage(TelemetryMessage.PARSER, extensionRegistry));
               break;
             }
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                  extensionRegistry, tag)) {
+                  done = true;
+              }
+              break;
+              }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -726,7 +709,7 @@ public final class TelemetryProtos {
     }
 
     public static com.google.protobuf.Parser<TelemetryMessageLog> PARSER =
-        new com.google.protobuf.AbstractParser<TelemetryMessageLog>() {
+        new com.google.protobuf.AbstractParser<>() {
       public TelemetryMessageLog parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -741,7 +724,6 @@ public final class TelemetryProtos {
     }
 
     private int bitField0_;
-    public static final int LOCATION_FIELD_NUMBER = 1;
     private Object location_;
     /**
      * <code>required string location = 1;</code>
@@ -783,7 +765,6 @@ public final class TelemetryProtos {
       }
     }
 
-    public static final int SYSTEM_ID_FIELD_NUMBER = 2;
     private Object systemId_;
     /**
      * <code>required string system_id = 2;</code>
@@ -825,7 +806,6 @@ public final class TelemetryProtos {
       }
     }
 
-    public static final int SOURCE_ADDRESS_FIELD_NUMBER = 3;
     private Object sourceAddress_;
     /**
      * <code>optional string source_address = 3;</code>
@@ -867,7 +847,6 @@ public final class TelemetryProtos {
       }
     }
 
-    public static final int SOURCE_PORT_FIELD_NUMBER = 4;
     private int sourcePort_;
     /**
      * <code>optional uint32 source_port = 4;</code>
@@ -882,7 +861,6 @@ public final class TelemetryProtos {
       return sourcePort_;
     }
 
-    public static final int MESSAGE_FIELD_NUMBER = 5;
     private java.util.List<TelemetryMessage> message_;
     /**
      * <code>repeated .TelemetryMessage message = 5;</code>
@@ -963,9 +941,9 @@ public final class TelemetryProtos {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeUInt32(4, sourcePort_);
       }
-      for (int i = 0; i < message_.size(); i++) {
-        output.writeMessage(5, message_.get(i));
-      }
+        for (TelemetryMessage telemetryMessage : message_) {
+            output.writeMessage(5, telemetryMessage);
+        }
       getUnknownFields().writeTo(output);
     }
 
@@ -991,10 +969,10 @@ public final class TelemetryProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(4, sourcePort_);
       }
-      for (int i = 0; i < message_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, message_.get(i));
-      }
+        for (TelemetryMessage telemetryMessage : message_) {
+            size += com.google.protobuf.CodedOutputStream
+                .computeMessageSize(5, telemetryMessage);
+        }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
@@ -1070,15 +1048,13 @@ public final class TelemetryProtos {
     @Override
     protected Builder newBuilderForType(
         BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
+        return new Builder(parent);
     }
     /**
      * Protobuf type {@code TelemetryMessageLog}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:TelemetryMessageLog)
         TelemetryMessageLogOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
@@ -1244,7 +1220,7 @@ public final class TelemetryProtos {
         return this;
       }
 
-      public final boolean isInitialized() {
+      public boolean isInitialized() {
         if (!hasLocation()) {
           
           return false;

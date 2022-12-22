@@ -28,10 +28,10 @@
 
 package parser.factory.dnsresolver;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /**
  * An infinite iterator that will return random items
@@ -39,15 +39,17 @@ import java.util.Random;
  *
  * @param <T> the type of elements in the list
  */
+@SuppressWarnings("L61")
 public class RandomIterator<T> implements Iterable<T> {
     private final List<T> items;
-    private final Random random;
+    private final SecureRandom random;
 
     public RandomIterator(final List<T> coll) {
         items = new ArrayList<>(coll);
-        random = new Random();
+        random = new SecureRandom();
     }
 
+    @SuppressWarnings({"L61", "L62"})
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {

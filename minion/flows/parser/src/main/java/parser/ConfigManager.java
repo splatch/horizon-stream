@@ -50,12 +50,13 @@ public class ConfigManager {
     }
 
     public synchronized void configure()  {
-        System.out.println("Init parser.ConfigManager..");
+        LOG.debug("Init parser.ConfigManager..");
         UdpListener udpListener = (UdpListener) udpListenerFactory.createBean(listenerDefinition);
         try {
             udpListener.start();
         } catch (InterruptedException e) {
             LOG.error("Starting of UDP Listener failed: ", e);
+            Thread.currentThread().interrupt();
         }
         LOG.info("UDP Listener started.. ");
     }

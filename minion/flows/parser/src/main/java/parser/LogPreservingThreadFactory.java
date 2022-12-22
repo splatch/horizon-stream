@@ -96,18 +96,15 @@ public class LogPreservingThreadFactory implements ThreadFactory {
 
     private Thread getSingleThread(final Runnable r) {
         String name = String.format("%s-Thread", m_name);
-        return new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Map<String,String> mdc = getCopyOfContextMap();
-                try {
-                    // Set the logging prefix if it was stored during creation
-                    setContextMap(m_mdc);
-                    // Run the delegate Runnable
-                    r.run();
-                } finally {
-                    setContextMap(mdc);
-                }
+        return new Thread(() -> {
+            Map<String,String> mdc = getCopyOfContextMap();
+            try {
+                // Set the logging prefix if it was stored during creation
+                setContextMap(m_mdc);
+                // Run the delegate Runnable
+                r.run();
+            } finally {
+                setContextMap(mdc);
             }
         }, name);
     }

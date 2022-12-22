@@ -109,6 +109,7 @@ public class NettyResolverContext implements DnsResolver {
         }
     }
 
+    @SuppressWarnings("java:S2142")
     @Override
     public CompletableFuture<Optional<InetAddress>> lookup(String hostname) {
         final CompletableFuture<Optional<InetAddress>> future = new CompletableFuture<>();
@@ -149,6 +150,7 @@ public class NettyResolverContext implements DnsResolver {
         return future;
     }
 
+    @SuppressWarnings("java:S2142")
     @Override
     public CompletableFuture<Optional<String>> reverseLookup(InetAddress inetAddress) {
         final CompletableFuture<Optional<String>> future = new CompletableFuture<>();

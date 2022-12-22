@@ -70,12 +70,12 @@ import io.netty.util.internal.StringUtil;
 
 /**
  * DNS cache implementation largely copied from Netty's
- *   https://github.com/netty/netty/blob/netty-4.1.38.Final/resolver-dns/src/main/java/io/netty/resolver/dns/DefaultDnsCache.java
+ *   <a href="https://github.com/netty/netty/blob/netty-4.1.38.Final/resolver-dns/src/main/java/io/netty/resolver/dns/DefaultDnsCache.java">...</a>
  * but adapted slightly to work with our {@link CaffeineCache}.
  */
 public class CaffeineDnsCache implements ExtendedDnsCache {
 
-    protected static final int MAX_SUPPORTED_TTL_SECS = (int) TimeUnit.DAYS.toSeconds(365 * 2);
+    protected static final int MAX_SUPPORTED_TTL_SECS = (int) TimeUnit.DAYS.toSeconds(365L * 2);
     protected static final int DEFAULT_NEGATIVE_TTL_SECS = (int) TimeUnit.MINUTES.toSeconds(5);
     protected static final int DEFAULT_MAX_SIZE = 10000;
 

@@ -104,20 +104,20 @@ public final class BufferUtils {
 
     public static int uint16(final ByteBuf buffer) {
         return ((buffer.readUnsignedByte() & 0xFF) << 8)
-             | ((buffer.readUnsignedByte() & 0xFF));
+             | (buffer.readUnsignedByte() & 0xFF);
     }
 
     public static int uint24(final ByteBuf buffer) {
         return ((buffer.readUnsignedByte() & 0xFF) << 16)
              | ((buffer.readUnsignedByte() & 0xFF) << 8)
-             | ((buffer.readUnsignedByte() & 0xFF));
+             | (buffer.readUnsignedByte() & 0xFF);
     }
 
     public static long uint32(final ByteBuf buffer) {
         return ((buffer.readUnsignedByte() & 0xFFL) << 24)
              | ((buffer.readUnsignedByte() & 0xFFL) << 16)
              | ((buffer.readUnsignedByte() & 0xFFL) << 8)
-             | ((buffer.readUnsignedByte() & 0xFFL));
+             | (buffer.readUnsignedByte() & 0xFFL);
     }
 
     public static UnsignedLong uint64(final ByteBuf buffer) {
@@ -129,7 +129,7 @@ public final class BufferUtils {
               | ((buffer.readUnsignedByte() & 0xFFL) << 24)
               | ((buffer.readUnsignedByte() & 0xFFL) << 16)
               | ((buffer.readUnsignedByte() & 0xFFL) << 8)
-              | ((buffer.readUnsignedByte() & 0xFFL)));
+              | (buffer.readUnsignedByte() & 0xFFL));
     }
 
     public static Integer sint8(final ByteBuf buffer) {
@@ -138,20 +138,20 @@ public final class BufferUtils {
 
     public static Integer sint16(final ByteBuf buffer) {
         return ((buffer.readUnsignedByte() & 0xFF) << 8)
-             | ((buffer.readUnsignedByte() & 0xFF));
+             | (buffer.readUnsignedByte() & 0xFF);
     }
 
     public static Integer sint24(final ByteBuf buffer) {
         return ((buffer.readUnsignedByte() & 0xFF) << 16)
              | ((buffer.readUnsignedByte() & 0xFF) << 8)
-             | ((buffer.readUnsignedByte() & 0xFF));
+             | (buffer.readUnsignedByte() & 0xFF);
     }
 
     public static Integer sint32(final ByteBuf buffer) {
         return ((buffer.readUnsignedByte() & 0xFF) << 24)
              | ((buffer.readUnsignedByte() & 0xFF) << 16)
              | ((buffer.readUnsignedByte() & 0xFF) << 8)
-             | ((buffer.readUnsignedByte() & 0xFF));
+             | (buffer.readUnsignedByte() & 0xFF);
     }
 
     public static Long sint64(final ByteBuf buffer) {
@@ -162,7 +162,7 @@ public final class BufferUtils {
              | ((buffer.readUnsignedByte() & 0xFFL) << 24)
              | ((buffer.readUnsignedByte() & 0xFFL) << 16)
              | ((buffer.readUnsignedByte() & 0xFFL) << 8)
-             | ((buffer.readUnsignedByte() & 0xFFL));
+             | (buffer.readUnsignedByte() & 0xFFL);
     }
 
     public static byte[] bytes(final ByteBuf buffer, final int size) {
