@@ -21,3 +21,5 @@ data:
           - targets: ['{{ .Values.Prometheus.PushGateway.ServiceName }}:{{ .Values.Prometheus.PushGateway.Port }}']
             labels:
               pushgateway_instance: horizon-core-pushgateway
+    remote_write:
+      - url: http://{{ .Values.Cortex.ServiceName }}:{{ .Values.Cortex.Port }}/api/v1/push
