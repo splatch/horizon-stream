@@ -31,26 +31,18 @@ package org.opennms.timeseries.cortex;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.taskset.contract.DetectorResponse;
-import org.opennms.taskset.contract.MonitorResponse;
-import org.opennms.taskset.contract.TaskResult;
-import org.opennms.taskset.contract.TaskSetResults;
 import org.opennms.timeseries.cortex.shaded.resilience4j.bulkhead.Bulkhead;
 import org.opennms.timeseries.cortex.shaded.resilience4j.bulkhead.BulkheadConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.xerial.snappy.Snappy;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
@@ -63,7 +55,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import prometheus.PrometheusTypes;
 
 
 /**
