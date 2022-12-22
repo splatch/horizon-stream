@@ -28,44 +28,46 @@
 
 package org.opennms.horizon.tsdata;
 
+import static org.opennms.timeseries.cortex.CortexTSS.sanitizeLabelName;
+import static org.opennms.timeseries.cortex.CortexTSS.sanitizeLabelValue;
+import static org.opennms.timeseries.cortex.CortexTSS.sanitizeMetricName;
+
+import java.io.IOException;
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.snmp.api.SnmpResponseMetric;
 import org.opennms.horizon.snmp.api.SnmpValueType;
-import org.opennms.horizon.tsdata.metrics.MetricsPushAdapter;
 import org.opennms.taskset.contract.CollectorResponse;
 import org.opennms.taskset.contract.DetectorResponse;
 import org.opennms.taskset.contract.MonitorResponse;
 import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskResult;
 import org.opennms.taskset.contract.TaskSetResults;
+import org.opennms.timeseries.cortex.CortexTSS;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.Gauge;
 import lombok.extern.slf4j.Slf4j;
+import prometheus.PrometheusTypes;
 
 @Slf4j
 @Service
 @PropertySource("classpath:application.yml")
 public class TSDataProcessor {
     private static final String METRICS_NAME_PREFIX_MONITOR = "monitor_";
-    private static final String METRICS_UNIT_MS = "msec";
-    private static final String METRICS_NAME_RESPONSE = "response_time";
+    private static final String METRICS_NAME_RESPONSE = "response_time_msec";
+    public static final String METRIC_NAME_LABEL = "__name__";
 
     private static final String[] MONITOR_METRICS_LABEL_NAMES = {
         "tenant_id",
@@ -74,12 +76,10 @@ public class TSDataProcessor {
         "system_id",
         "monitor",
         "node_id"};
-    private final CollectorRegistry collectorRegistry = new CollectorRegistry();
-    private final Map<String, Gauge> gauges = new ConcurrentHashMap<>();
-    private final MetricsPushAdapter pushAdapter;
+    private final CortexTSS cortexTSS;
 
-    public TSDataProcessor(MetricsPushAdapter pushAdapter) {
-        this.pushAdapter = pushAdapter;
+    public TSDataProcessor(CortexTSS cortexTSS) {
+        this.cortexTSS = cortexTSS;
     }
 
     //headers for future use.
@@ -99,7 +99,8 @@ public class TSDataProcessor {
                             DetectorResponse detectorResponse = result.getDetectorResponse();
                             // TBD: how to process?
                             log.info("Have detector response, tenant-id: {}; task-id={}; detected={}", tenantId, result.getId(), detectorResponse.getDetected());
-                        } else if(result.hasCollectorResponse()) {
+                        }
+                        else if(result.hasCollectorResponse()) {
                             log.info("Have collector response, tenant-id: {}; task-id={};", tenantId, result.getId());
                             processCollectorResponse(tenantId, result);
                         }
@@ -117,85 +118,87 @@ public class TSDataProcessor {
         }
     }
 
-    private void processMonitorResponse(String tenantId, TaskResult result) {
+    private void processMonitorResponse(String tenantId, TaskResult result) throws IOException {
         MonitorResponse response = result.getMonitorResponse();
         String[] labelValues = {tenantId, response.getIpAddress(), result.getLocation(), result.getSystemId(), response.getMonitorType().name(), String.valueOf(response.getNodeId())};
-        Gauge gauge = getGaugeFrom(METRICS_NAME_RESPONSE, "Monitor round trip response time", METRICS_UNIT_MS);
-        gauge.labels(labelValues).set(response.getResponseTimeMs());
-        Map<String, String> labels = new HashMap<>();
-        for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
-            labels.put(MONITOR_METRICS_LABEL_NAMES[i], labelValues[i]);
+
+        prometheus.PrometheusTypes.TimeSeries.Builder builder = prometheus.PrometheusTypes.TimeSeries.newBuilder();
+
+        if (response.getMetricsMap().isEmpty()) {
+            builder.addLabels(PrometheusTypes.Label.newBuilder()
+                .setName(METRIC_NAME_LABEL)
+                .setValue(sanitizeMetricName(METRICS_NAME_RESPONSE)));
+        } else {
+            response.getMetricsMap().forEach((k, v) ->
+                builder.addLabels(PrometheusTypes.Label.newBuilder()
+                    .setName(METRIC_NAME_LABEL)
+                    .setValue(sanitizeMetricName(METRICS_NAME_PREFIX_MONITOR + k))));
         }
 
-        response.getMetricsMap().forEach((k, v) -> {
-            Gauge extGauge = getGaugeFrom(METRICS_NAME_PREFIX_MONITOR + k, null, null);
-            extGauge.labels(labelValues).set(v);
-        });
+        for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
+            builder.addLabels(prometheus.PrometheusTypes.Label.newBuilder()
+                .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
+                .setValue(sanitizeLabelValue(labelValues[i])));
+        }
+        builder.addSamples(prometheus.PrometheusTypes.Sample.newBuilder()
+            //is now() okay ?
+            .setTimestamp(Instant.now().toEpochMilli())
+            .setValue(response.getResponseTimeMs()));
 
-        pushAdapter.pushMetrics(collectorRegistry, labels);
+           cortexTSS.store(tenantId, builder);
     }
 
-    private Gauge getGaugeFrom(String name, String description, String unit) {
-        return gauges.compute(name, (key, gauge) -> {
-            if (gauge != null) {
-                return gauge;
-            }
-            var builder = Gauge.build().name(name).labelNames(TSDataProcessor.MONITOR_METRICS_LABEL_NAMES);
-
-            if (!Strings.isNullOrEmpty(description)) {
-                builder.help(description);
-            }
-            if (!Strings.isNullOrEmpty(unit)) {
-                builder.unit(unit);
-            }
-
-            return builder.register(collectorRegistry);
-        });
-    }
-
-    private void processCollectorResponse(String tenantId, TaskResult result) {
+    private void processCollectorResponse(String tenantId, TaskResult result) throws IOException {
         CollectorResponse response = result.getCollectorResponse();
         String[] labelValues = {tenantId, response.getIpAddress(), result.getLocation(), result.getSystemId(),
             response.getMonitorType().name(), String.valueOf(response.getNodeId())};
+        prometheus.PrometheusTypes.TimeSeries.Builder builder = prometheus.PrometheusTypes.TimeSeries.newBuilder();
         if (response.hasResult() && response.getMonitorType().equals(MonitorType.SNMP)) {
             Any collectorMetric = response.getResult();
             try {
                 var snmpResponse = collectorMetric.unpack(SnmpResponseMetric.class);
                 snmpResponse.getResultsList().forEach((snmpResult) -> {
-                    String metricName = snmpResult.getAlias();
-                    String description = metricName + " with oid " + snmpResult.getBase();
+                    builder.addLabels(PrometheusTypes.Label.newBuilder()
+                        .setName(METRIC_NAME_LABEL)
+                        .setValue(sanitizeMetricName(snmpResult.getAlias())));
                     int type = snmpResult.getValue().getTypeValue();
                     switch (type) {
                         case SnmpValueType.INT32_VALUE:
-                            Gauge int32Value = getGaugeFrom(metricName, description, null);
-                            int32Value.labels(labelValues).set(snmpResult.getValue().getSint64());
+                            builder.addSamples(prometheus.PrometheusTypes.Sample.newBuilder()
+                                //is now() okay ?
+                                .setTimestamp(Instant.now().toEpochMilli())
+                                .setValue(snmpResult.getValue().getSint64()));
                             break;
                         case SnmpValueType.COUNTER32_VALUE:
                             // TODO: Can't set a counter through prometheus API, may be possible with remote write
                         case SnmpValueType.TIMETICKS_VALUE:
                         case SnmpValueType.GAUGE32_VALUE:
-                            Gauge uint64Value = getGaugeFrom(metricName, description, null);
-                            uint64Value.labels(labelValues).set(snmpResult.getValue().getUint64());
+                            builder.addSamples(prometheus.PrometheusTypes.Sample.newBuilder()
+                                //is now() okay ?
+                                .setTimestamp(Instant.now().toEpochMilli())
+                                .setValue(snmpResult.getValue().getUint32()));
                             break;
                         case SnmpValueType.COUNTER64_VALUE:
                             double metric = new BigInteger(snmpResult.getValue().getBytes().toByteArray()).doubleValue();
-                            Gauge gauge = getGaugeFrom(metricName, description, null);
-                            gauge.labels(labelValues).set(metric);
+                            builder.addSamples(prometheus.PrometheusTypes.Sample.newBuilder()
+                                //is now() okay ?
+                                .setTimestamp(Instant.now().toEpochMilli())
+                                .setValue(metric));
                             break;
                     }
-
                 });
             } catch (InvalidProtocolBufferException e) {
                 log.warn("Exception while parsing protobuf ", e);
-
             }
         }
-        Map<String, String> labels = new HashMap<>();
-        for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
-            labels.put(MONITOR_METRICS_LABEL_NAMES[i], labelValues[i]);
-        }
-        pushAdapter.pushMetrics(collectorRegistry, labels);
 
+        for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
+            builder.addLabels(prometheus.PrometheusTypes.Label.newBuilder()
+                .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
+                .setValue(sanitizeLabelValue(labelValues[i])));
+        }
+
+        cortexTSS.store(tenantId, builder);
     }
 
     private String getTenantId(Map<String, Object> headers) {
@@ -211,5 +214,4 @@ public class TSDataProcessor {
             })
             .orElseThrow(() -> new RuntimeException("Could not determine tenant id"));
     }
-
 }
