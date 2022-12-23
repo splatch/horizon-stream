@@ -44,7 +44,6 @@ import org.xerial.snappy.Snappy;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
-import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
@@ -68,7 +67,6 @@ import okhttp3.ResponseBody;
  *
  * @author jwhite
  */
-@Slf4j
 public class CortexTSS {
     private static final Logger LOG = LoggerFactory.getLogger(CortexTSS.class);
 
