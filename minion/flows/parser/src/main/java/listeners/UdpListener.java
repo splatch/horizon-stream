@@ -92,10 +92,8 @@ public class UdpListener implements GracefulShutdownListener, Listener {
         if (this.parsers.isEmpty()) {
             throw new IllegalArgumentException("At least 1 parsers must be defined");
         }
-        if (this.parsers.size() > 1) {
-            if (this.parsers.stream().filter(p -> p instanceof Dispatchable).count() != this.parsers.size()) {
-                throw new IllegalArgumentException("If more than 1 parser is defined, all parsers must be Dispatchable");
-            }
+        if (this.parsers.size() > 1 && this.parsers.stream().filter(p -> p instanceof Dispatchable).count() != this.parsers.size()) {
+            throw new IllegalArgumentException("If more than 1 parser is defined, all parsers must be Dispatchable");
         }
 
         packetsReceived = metrics.meter(MetricRegistry.name("listeners",  name, "packetsReceived"));

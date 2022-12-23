@@ -43,21 +43,27 @@ public class ConfigManager {
 
     private final ListenerDefinition listenerDefinition;
 
+    private boolean enableUdpListener = false;
+
     public ConfigManager(UdpListenerFactory udpListenerFactory, ListenerDefinition listenerDefinition) {
         this.udpListenerFactory = udpListenerFactory;
         this.listenerDefinition = listenerDefinition;
         configure();
     }
 
-    public synchronized void configure()  {
-        LOG.debug("Init parser.ConfigManager..");
+    public synchronized void configure() {
+        LOG.debug("Init Udp ConfigManager.. ");
         UdpListener udpListener = (UdpListener) udpListenerFactory.createBean(listenerDefinition);
         try {
-            udpListener.start();
+            if (enableUdpListener) {
+                udpListener.start();
+                LOG.info("UDP Listener started.. ");
+            } else {
+                LOG.info("UDP Listener currently disabled. ");
+            }
         } catch (InterruptedException e) {
             LOG.error("Starting of UDP Listener failed: ", e);
             Thread.currentThread().interrupt();
         }
-        LOG.info("UDP Listener started.. ");
     }
 }
