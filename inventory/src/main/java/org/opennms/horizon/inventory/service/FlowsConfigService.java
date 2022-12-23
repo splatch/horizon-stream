@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.horizon.inventory.service;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.Resources;
 import com.google.protobuf.Any;
 import lombok.RequiredArgsConstructor;
@@ -51,8 +52,8 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class FlowConfigService {
-    private static final Logger LOG = LoggerFactory.getLogger(FlowConfigService.class);
+public class FlowsConfigService {
+    private static final Logger LOG = LoggerFactory.getLogger(FlowsConfigService.class);
     private final MonitoringLocationService monitoringLocationService;
     private final TaskSetManager taskSetManager;
     private final TaskSetPublisher taskSetPublisher;
@@ -85,10 +86,11 @@ public class FlowConfigService {
         taskSetPublisher.publishTaskSet(tenantId, location, taskSet);
     }
 
-    private FlowsConfig readFlowsConfig() {
+    @VisibleForTesting
+    FlowsConfig readFlowsConfig() {
         try {
             URL url = this.getClass().getResource("/flows-config.json");
-            return (FlowsConfig) ProtobufUtil.fromJson(Resources.toString(url, StandardCharsets.UTF_8));
+            return ProtobufUtil.fromJson(Resources.toString(url, StandardCharsets.UTF_8), FlowsConfig.class);
         } catch (IOException ex) {
             LOG.error("Fail to read flows config: {}", ex.getMessage());
             throw new RuntimeException(ex);

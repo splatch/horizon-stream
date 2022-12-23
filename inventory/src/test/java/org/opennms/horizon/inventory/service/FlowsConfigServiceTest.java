@@ -25,34 +25,34 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.horizon.shared.protobuf.util;
 
-import com.google.protobuf.GeneratedMessageV3;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.MessageOrBuilder;
-import com.google.protobuf.util.JsonFormat;
+package org.opennms.horizon.inventory.service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import org.junit.Assert;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.opennms.horizon.inventory.service.taskset.manager.TaskSetManager;
+import org.opennms.sink.flows.contract.FlowsConfig;
+import org.opennms.taskset.service.api.TaskSetPublisher;
 
-public class ProtobufUtil {
-    private ProtobufUtil() {
-        // block static class constructor
-    }
+public class FlowsConfigServiceTest {
+    @Mock
+    MonitoringLocationService monitoringLocationService;
 
-    public static <T extends GeneratedMessageV3> T fromJson(String json, Class<T> clazz) throws InvalidProtocolBufferException {
-        T.Builder<?> builder = null;
-        try {
-            Method m = clazz.getMethod("newBuilder");
-            builder = (T.Builder) m.invoke(null);
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            return null;
-        }
-        JsonFormat.parser().ignoringUnknownFields().merge(json, builder);
-        return (T) builder.build();
-    }
+    @Mock
+    TaskSetManager taskSetManager;
 
-    public static String toJson(MessageOrBuilder messageOrBuilder) throws InvalidProtocolBufferException {
-        return JsonFormat.printer().print(messageOrBuilder);
+    @Mock
+    TaskSetPublisher taskSetPublisher;
+
+    @Test
+    public void canReadConfig() {
+        FlowsConfigService service = new FlowsConfigService(monitoringLocationService, taskSetManager, taskSetPublisher);
+        FlowsConfig config = service.readFlowsConfig();
+        Assert.assertNotNull(config);
+        Assert.assertEquals("Netflow-5-UDP-8877", config.getListeners(0).getName());
+        Assert.assertEquals(1, config.getListeners(0).getParsersList().size());
+        Assert.assertEquals(5, config.getListeners(0).getParsers(0).getQueue()
+            .getAdapters(0).getPackages(0).getRrd().getRrasCount());
     }
 }
