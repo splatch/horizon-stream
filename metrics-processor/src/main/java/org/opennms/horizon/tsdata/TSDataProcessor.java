@@ -143,16 +143,11 @@ public class TSDataProcessor {
         }
 
         for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
-            if ("node_id".equals(MONITOR_METRICS_LABEL_NAMES[i]) && "ECHO".equals(response.getMonitorType().name())) {
-                //Do not store node id for minion
-                continue;
+            if (!"node_id".equals(MONITOR_METRICS_LABEL_NAMES[i]) || !"ECHO".equals(response.getMonitorType().name())) {
+                builder.addLabels(prometheus.PrometheusTypes.Label.newBuilder()
+                    .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
+                    .setValue(sanitizeLabelValue(labelValues[i])));
             }
-            //force ICMP otherwise the frontend can't show the status and latency
-            // maybe fix the frontend
-            String value = "SNMP".equals(response.getMonitorType().name()) && "monitor".equals(MONITOR_METRICS_LABEL_NAMES[i]) ? "ICMP" : sanitizeLabelValue(labelValues[i]);
-            builder.addLabels(prometheus.PrometheusTypes.Label.newBuilder()
-                .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
-                .setValue(value));
         }
 
         cortexTSS.store(tenantId, builder);
