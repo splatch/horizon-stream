@@ -39,6 +39,7 @@ import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
 import org.opennms.horizon.minion.flows.parser.ie.RecordProvider;
 import org.opennms.horizon.minion.flows.parser.session.Session;
 import org.opennms.horizon.minion.flows.parser.session.UdpSessionManager;
+import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import com.codahale.metrics.Counter;
@@ -63,7 +64,9 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
 
     public UdpParserBase(final Protocol protocol,
                          final String name,
-                         final AsyncDispatcher<UdpListenerMessage> dispatcher,
+                         final AsyncDispatcher<TelemetryMessage> dispatcher,
+                        // final EventForwarder eventForwarder,
+                         final Identity identity,
                          final DnsResolver dnsResolver,
                          final MetricRegistry metricRegistry) {
         super(protocol, name, dispatcher, dnsResolver, metricRegistry);

@@ -30,6 +30,8 @@ package org.opennms.horizon.minion.flows.parser.factory;
 
 import java.util.Objects;
 
+import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
+import org.opennms.horizon.minion.flows.parser.FlowSinkModule;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 
@@ -45,13 +47,14 @@ public class Netflow9UdpParserFactory implements ParserFactory {
 
     private final DnsResolver dnsResolver;
     private final MessageDispatcherFactory messageDispatcherFactory;
-    private final UdpListenerModule udpListenerModule;
+    private final FlowSinkModule flowSinkModule;
 
     public Netflow9UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory,
-                                    final DnsResolver dnsResolver, UdpListenerModule udpListenerModule) {
+                                    final Identity identity, final DnsResolver dnsResolver, FlowSinkModule flowSinkModule) {
+        this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         this.messageDispatcherFactory = Objects.requireNonNull(messageDispatcherFactory);
-        this.udpListenerModule = Objects.requireNonNull(udpListenerModule);
+        this.flowSinkModule = Objects.requireNonNull(flowSinkModule);
     }
 
     @Override
@@ -61,7 +64,7 @@ public class Netflow9UdpParserFactory implements ParserFactory {
 
     @Override
     public Parser createBean(final ParserDefinition parserDefinition) {
-        final AsyncDispatcher<UdpListenerMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(udpListenerModule);
-        return new Netflow9UdpParser(parserDefinition.getFullName(), dispatcher, dnsResolver, new MetricRegistry());
+        final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(flowSinkModule);
+        return new Netflow9UdpParser(parserDefinition.getFullName(), dispatcher, identity, dnsResolver, new MetricRegistry());
     }
 }

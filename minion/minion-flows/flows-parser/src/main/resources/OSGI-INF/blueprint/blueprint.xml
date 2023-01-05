@@ -18,16 +18,16 @@
     <bean id="telemetryRegistry" class="org.opennms.horizon.minion.flows.parser.TelemetryRegistryImpl" >
         <argument ref="netflow9UdpParserFactory" />
         <argument ref="messageDispatcherFactory" />
-        <argument ref="udpListenerModule"/>
+        <argument ref="flowSinkModule"/>
     </bean>
-    <bean id="udpListenerModule" class="org.opennms.horizon.minion.flows.parser.UdpListenerModule" />
+    <bean id="flowSinkModule" class="org.opennms.horizon.minion.flows.parser.FlowSinkModule" />
 
 
     <!-- Netflow 9 UDP Parser Factory -->
     <bean id="netflow9UdpParserFactory" class="org.opennms.horizon.minion.flows.parser.factory.Netflow9UdpParserFactory">
         <argument ref="messageDispatcherFactory" />
         <argument ref="dnsResolver" />
-        <argument ref="udpListenerModule" />
+        <argument ref="flowSinkModule" />
     </bean>
     <service ref="netflow9UdpParserFactory" interface="org.opennms.horizon.minion.flows.parser.factory.ParserFactory">
     </service>

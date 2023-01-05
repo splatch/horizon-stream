@@ -35,15 +35,19 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
 import org.opennms.horizon.minion.flows.parser.flowmessage.FlowMessage;
 import org.opennms.horizon.minion.flows.parser.transport.MessageBuilder;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
-import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerMessage;
-
-
 import com.codahale.metrics.MetricRegistry;
+
+import parser.factory.DnsResolver;
+import parser.factory.Identity;
+import parser.flowmessage.FlowMessage;
+import parser.ie.Value;
+import parser.transport.MessageBuilder;
 
 public class ClockSkewTest {
     private int eventCount = 0;
@@ -63,7 +67,7 @@ public class ClockSkewTest {
 
     private final ParserBase parserBase = new ParserBaseExt(Protocol.NETFLOW5, "name", new AsyncDispatcher<>() {
         @Override
-        public CompletableFuture<DispatchStatus> send(UdpListenerMessage message) {
+        public CompletableFuture<DispatchStatus> send(TelemetryMessage message) {
             return null;
         }
 
@@ -125,8 +129,8 @@ public class ClockSkewTest {
 
     private static class ParserBaseExt extends ParserBase {
 
-        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<UdpListenerMessage> dispatcher, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
-            super(protocol, name, dispatcher, dnsResolver, metricRegistry);
+        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
+            super(protocol, name, dispatcher, identity, dnsResolver, metricRegistry);
         }
 
         @Override

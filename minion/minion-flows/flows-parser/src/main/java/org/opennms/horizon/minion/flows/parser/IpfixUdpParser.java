@@ -34,6 +34,7 @@ import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.uint1
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
+import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
 import org.opennms.horizon.minion.flows.parser.ie.RecordProvider;
 import org.opennms.horizon.minion.flows.parser.ipfix.proto.Header;
@@ -59,6 +60,8 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
 
     public IpfixUdpParser(final String name,
                           final AsyncDispatcher<UdpListenerMessage> dispatcher,
+                          final AsyncDispatcher<TelemetryMessage> dispatcher,
+                          final Identity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
         super(Protocol.IPFIX, name, dispatcher, dnsResolver, metricRegistry);

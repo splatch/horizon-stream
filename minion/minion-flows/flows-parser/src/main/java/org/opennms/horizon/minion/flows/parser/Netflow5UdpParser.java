@@ -39,6 +39,7 @@ import org.opennms.horizon.minion.flows.parser.proto.Packet;
 import org.opennms.horizon.minion.flows.parser.session.Session;
 import org.opennms.horizon.minion.flows.parser.session.UdpSessionManager;
 import org.opennms.horizon.minion.flows.parser.transport.Netflow5MessageBuilder;
+import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import com.codahale.metrics.MetricRegistry;
@@ -54,7 +55,8 @@ public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispa
     private final Netflow5MessageBuilder messageBuilder = new Netflow5MessageBuilder();
 
     public Netflow5UdpParser(final String name,
-                             final AsyncDispatcher<UdpListenerMessage> dispatcher,
+                             final AsyncDispatcher<TelemetryMessage> dispatcher,
+                             final Identity identity,
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
         super(Protocol.NETFLOW5, name, dispatcher, dnsResolver, metricRegistry);
