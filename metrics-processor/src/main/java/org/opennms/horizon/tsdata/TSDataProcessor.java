@@ -41,6 +41,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.snmp.api.SnmpResponseMetric;
+import org.opennms.horizon.snmp.api.SnmpResultMetric;
 import org.opennms.horizon.snmp.api.SnmpValueType;
 import org.opennms.taskset.contract.CollectorResponse;
 import org.opennms.taskset.contract.DetectorResponse;
@@ -145,26 +146,33 @@ public class TSDataProcessor {
             .setTimestamp(Instant.now().toEpochMilli())
             .setValue(response.getResponseTimeMs()));
 
-           cortexTSS.store(tenantId, builder);
+        cortexTSS.store(tenantId, builder);
     }
 
     private void processCollectorResponse(String tenantId, TaskResult result) throws IOException {
         CollectorResponse response = result.getCollectorResponse();
+
         String[] labelValues = {tenantId, response.getIpAddress(), result.getLocation(), result.getSystemId(),
             response.getMonitorType().name(), String.valueOf(response.getNodeId())};
-        prometheus.PrometheusTypes.TimeSeries.Builder builder = prometheus.PrometheusTypes.TimeSeries.newBuilder();
         if (response.hasResult() && response.getMonitorType().equals(MonitorType.SNMP)) {
             Any collectorMetric = response.getResult();
             try {
                 var snmpResponse = collectorMetric.unpack(SnmpResponseMetric.class);
-                snmpResponse.getResultsList().forEach((snmpResult) -> {
+
+                for (SnmpResultMetric snmpResult : snmpResponse.getResultsList()) {
+                    PrometheusTypes.TimeSeries.Builder builder = prometheus.PrometheusTypes.TimeSeries.newBuilder();
                     builder.addLabels(PrometheusTypes.Label.newBuilder()
                         .setName(METRIC_NAME_LABEL)
                         .setValue(sanitizeMetricName(snmpResult.getAlias())));
+                    for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
+                        builder.addLabels(prometheus.PrometheusTypes.Label.newBuilder()
+                            .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
+                            .setValue(sanitizeLabelValue(labelValues[i])));
+                    }
                     int type = snmpResult.getValue().getTypeValue();
                     switch (type) {
                         case SnmpValueType.INT32_VALUE:
-                            builder.addSamples(prometheus.PrometheusTypes.Sample.newBuilder()
+                            builder.addSamples(PrometheusTypes.Sample.newBuilder()
                                 //is now() okay ?
                                 .setTimestamp(Instant.now().toEpochMilli())
                                 .setValue(snmpResult.getValue().getSint64()));
@@ -173,32 +181,25 @@ public class TSDataProcessor {
                             // TODO: Can't set a counter through prometheus API, may be possible with remote write
                         case SnmpValueType.TIMETICKS_VALUE:
                         case SnmpValueType.GAUGE32_VALUE:
-                            builder.addSamples(prometheus.PrometheusTypes.Sample.newBuilder()
+                            builder.addSamples(PrometheusTypes.Sample.newBuilder()
                                 //is now() okay ?
                                 .setTimestamp(Instant.now().toEpochMilli())
-                                .setValue(snmpResult.getValue().getUint32()));
+                                .setValue(snmpResult.getValue().getUint64()));
                             break;
                         case SnmpValueType.COUNTER64_VALUE:
                             double metric = new BigInteger(snmpResult.getValue().getBytes().toByteArray()).doubleValue();
-                            builder.addSamples(prometheus.PrometheusTypes.Sample.newBuilder()
+                            builder.addSamples(PrometheusTypes.Sample.newBuilder()
                                 //is now() okay ?
                                 .setTimestamp(Instant.now().toEpochMilli())
                                 .setValue(metric));
                             break;
                     }
-                });
+                    cortexTSS.store(tenantId, builder);
+                }
             } catch (InvalidProtocolBufferException e) {
                 log.warn("Exception while parsing protobuf ", e);
             }
         }
-
-        for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
-            builder.addLabels(prometheus.PrometheusTypes.Label.newBuilder()
-                .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
-                .setValue(sanitizeLabelValue(labelValues[i])));
-        }
-
-        cortexTSS.store(tenantId, builder);
     }
 
     private String getTenantId(Map<String, Object> headers) {
