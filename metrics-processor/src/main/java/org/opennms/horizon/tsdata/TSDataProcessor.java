@@ -169,45 +169,41 @@ public class TSDataProcessor {
             response.getMonitorType().name(), String.valueOf(response.getNodeId())};
         if (response.hasResult() && response.getMonitorType().equals(MonitorType.SNMP)) {
             Any collectorMetric = response.getResult();
-            try {
-                var snmpResponse = collectorMetric.unpack(SnmpResponseMetric.class);
-                for (SnmpResultMetric snmpResult : snmpResponse.getResultsList()) {
-                    long now = Instant.now().toEpochMilli();
-                    PrometheusTypes.TimeSeries.Builder builder = prometheus.PrometheusTypes.TimeSeries.newBuilder();
-                    builder.addLabels(PrometheusTypes.Label.newBuilder()
-                        .setName(METRIC_NAME_LABEL)
-                        .setValue(sanitizeMetricName(snmpResult.getAlias())));
-                    for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
-                        builder.addLabels(prometheus.PrometheusTypes.Label.newBuilder()
-                            .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
-                            .setValue(sanitizeLabelValue(labelValues[i])));
-                    }
-                    int type = snmpResult.getValue().getTypeValue();
-                    switch (type) {
-                        case SnmpValueType.INT32_VALUE:
-                            builder.addSamples(PrometheusTypes.Sample.newBuilder()
-                                .setTimestamp(now)
-                                .setValue(snmpResult.getValue().getSint64()));
-                            break;
-                        case SnmpValueType.COUNTER32_VALUE:
-                            // TODO: Can't set a counter through prometheus API, may be possible with remote write
-                        case SnmpValueType.TIMETICKS_VALUE:
-                        case SnmpValueType.GAUGE32_VALUE:
-                            builder.addSamples(PrometheusTypes.Sample.newBuilder()
-                                .setTimestamp(now)
-                                .setValue(snmpResult.getValue().getUint64()));
-                            break;
-                        case SnmpValueType.COUNTER64_VALUE:
-                            double metric = new BigInteger(snmpResult.getValue().getBytes().toByteArray()).doubleValue();
-                            builder.addSamples(PrometheusTypes.Sample.newBuilder()
-                                .setTimestamp(now)
-                                .setValue(metric));
-                            break;
-                    }
-                    cortexTSS.store(tenantId, builder);
+            var snmpResponse = collectorMetric.unpack(SnmpResponseMetric.class);
+            long now = Instant.now().toEpochMilli();
+            for (SnmpResultMetric snmpResult : snmpResponse.getResultsList()) {
+                PrometheusTypes.TimeSeries.Builder builder = prometheus.PrometheusTypes.TimeSeries.newBuilder();
+                builder.addLabels(PrometheusTypes.Label.newBuilder()
+                    .setName(METRIC_NAME_LABEL)
+                    .setValue(sanitizeMetricName(snmpResult.getAlias())));
+                for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
+                    builder.addLabels(prometheus.PrometheusTypes.Label.newBuilder()
+                        .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
+                        .setValue(sanitizeLabelValue(labelValues[i])));
                 }
-            } catch (InvalidProtocolBufferException e) {
-                log.warn("Exception while parsing protobuf ", e);
+                int type = snmpResult.getValue().getTypeValue();
+                switch (type) {
+                    case SnmpValueType.INT32_VALUE:
+                        builder.addSamples(PrometheusTypes.Sample.newBuilder()
+                            .setTimestamp(now)
+                            .setValue(snmpResult.getValue().getSint64()));
+                        break;
+                    case SnmpValueType.COUNTER32_VALUE:
+                        // TODO: Can't set a counter through prometheus API, may be possible with remote write
+                    case SnmpValueType.TIMETICKS_VALUE:
+                    case SnmpValueType.GAUGE32_VALUE:
+                        builder.addSamples(PrometheusTypes.Sample.newBuilder()
+                            .setTimestamp(now)
+                            .setValue(snmpResult.getValue().getUint64()));
+                        break;
+                    case SnmpValueType.COUNTER64_VALUE:
+                        double metric = new BigInteger(snmpResult.getValue().getBytes().toByteArray()).doubleValue();
+                        builder.addSamples(PrometheusTypes.Sample.newBuilder()
+                            .setTimestamp(now)
+                            .setValue(metric));
+                        break;
+                }
+                cortexTSS.store(tenantId, builder);
             }
         }
     }

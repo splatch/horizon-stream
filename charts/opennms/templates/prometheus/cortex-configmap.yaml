@@ -10,10 +10,6 @@ data:
     # Configuration for running Cortex in single-process mode.
     # This should not be used in production.  It is only for getting started
     # and development.
-    
-    # Disable the requirement that every request to Cortex has a
-    # X-Scope-OrgID header. `fake` will be substituted in instead.
-    #auth_enabled: false
         
     server:
       http_listen_port: {{ .Values.Cortex.Port }}

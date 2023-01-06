@@ -38,14 +38,19 @@ import org.springframework.context.annotation.Configuration;
 public class ApplicationConfig {
     @Value("${cortex.write.url}")
     private String cortexWriteURL;
+
     @Value("${cortex.maxconcurrenthttpconnections:100}")
     private int maxConcurrentHttpConnections;
+
     @Value("${cortex.cortexwritetimeoutinms:1000}")
     private long cortexWriteTimeoutInMs;
+
     @Value("${cortex.readtimeoutinms:1000}")
     private long readTimeoutInMs;
+
     @Value("${cortex.bulkheadmaxwaitdurationinms:9223372036854775807}")
     private long bulkheadMaxWaitDurationInMs;
+
     @Value("${cortex.organizationid}")
     private String organizationId;
 
@@ -53,6 +58,7 @@ public class ApplicationConfig {
     public CortexTSSConfig cortexTSSConfig() {
         return new CortexTSSConfig(cortexWriteURL, maxConcurrentHttpConnections, cortexWriteTimeoutInMs, readTimeoutInMs, bulkheadMaxWaitDurationInMs, organizationId);
     }
+
     @Bean
     public CortexTSS createCortex() {
         return new CortexTSS(cortexTSSConfig());
