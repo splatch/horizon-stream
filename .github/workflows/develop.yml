@@ -87,10 +87,11 @@ jobs:
         # Used for tests and sonar scans on the develop branch, not necessary as a prerequisite for other builds
       - name: shared-lib
         id: action-shared-lib
+        if: ${{ github.event.ref == 'refs/heads/develop' }}
         uses: ./.github/actions/shared-lib
         with:
           dir-location: 'shared-lib'
-          enable-sonar-scan: ${{ github.event.ref == 'refs/heads/develop' }}
+          enable-sonar-scan: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
 
