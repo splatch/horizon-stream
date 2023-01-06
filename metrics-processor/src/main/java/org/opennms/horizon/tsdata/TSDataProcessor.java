@@ -124,33 +124,42 @@ public class TSDataProcessor {
 
         prometheus.PrometheusTypes.TimeSeries.Builder builder = prometheus.PrometheusTypes.TimeSeries.newBuilder();
 
-        if (response.getMetricsMap().isEmpty()) {
-            builder.addLabels(PrometheusTypes.Label.newBuilder()
-                .setName(METRIC_NAME_LABEL)
-                .setValue(sanitizeMetricName(METRICS_NAME_RESPONSE)));
-            builder.addSamples(prometheus.PrometheusTypes.Sample.newBuilder()
-                .setTimestamp(Instant.now().toEpochMilli())
-                .setValue(response.getResponseTimeMs()));
-        } else {
-            response.getMetricsMap().forEach((k, v) -> {
-                builder.addLabels(PrometheusTypes.Label.newBuilder()
-                    .setName(METRIC_NAME_LABEL)
-                    .setValue(sanitizeMetricName(METRICS_NAME_PREFIX_MONITOR + k)));
-                builder.addSamples(prometheus.PrometheusTypes.Sample.newBuilder()
-                    .setTimestamp(Instant.now().toEpochMilli())
-                    .setValue(v));
-            });
-        }
+        addLabels(response, labelValues, builder);
+        builder.addLabels(PrometheusTypes.Label.newBuilder()
+            .setName(METRIC_NAME_LABEL)
+            .setValue(sanitizeMetricName(METRICS_NAME_RESPONSE)));
+        builder.addSamples(PrometheusTypes.Sample.newBuilder()
+            .setTimestamp(Instant.now().toEpochMilli())
+            .setValue(response.getResponseTimeMs()));
+        cortexTSS.store(tenantId, builder);
 
+        for (Map.Entry<String, Double> entry : response.getMetricsMap().entrySet()) {
+            processMetricMaps(entry, response, labelValues, tenantId);
+        }
+    }
+
+    private void processMetricMaps(Map.Entry<String, Double> entry, MonitorResponse response, String[] labelValues, String tenantId) throws IOException {
+        prometheus.PrometheusTypes.TimeSeries.Builder builder = prometheus.PrometheusTypes.TimeSeries.newBuilder();
+        String k = entry.getKey();
+        Double v = entry.getValue();
+        addLabels(response, labelValues, builder);
+        builder.addLabels(PrometheusTypes.Label.newBuilder()
+            .setName(METRIC_NAME_LABEL)
+            .setValue(sanitizeMetricName(METRICS_NAME_PREFIX_MONITOR + k)));
+        builder.addSamples(PrometheusTypes.Sample.newBuilder()
+            .setTimestamp(Instant.now().toEpochMilli())
+            .setValue(v));
+        cortexTSS.store(tenantId, builder);
+    }
+
+    private void addLabels(MonitorResponse response, String[] labelValues, PrometheusTypes.TimeSeries.Builder builder) {
         for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
             if (!"node_id".equals(MONITOR_METRICS_LABEL_NAMES[i]) || !"ECHO".equals(response.getMonitorType().name())) {
-                builder.addLabels(prometheus.PrometheusTypes.Label.newBuilder()
+                builder.addLabels(PrometheusTypes.Label.newBuilder()
                     .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
                     .setValue(sanitizeLabelValue(labelValues[i])));
             }
         }
-
-        cortexTSS.store(tenantId, builder);
     }
 
     private void processCollectorResponse(String tenantId, TaskResult result) throws IOException {
@@ -162,8 +171,8 @@ public class TSDataProcessor {
             Any collectorMetric = response.getResult();
             try {
                 var snmpResponse = collectorMetric.unpack(SnmpResponseMetric.class);
-                long now = Instant.now().toEpochMilli();
                 for (SnmpResultMetric snmpResult : snmpResponse.getResultsList()) {
+                    long now = Instant.now().toEpochMilli();
                     PrometheusTypes.TimeSeries.Builder builder = prometheus.PrometheusTypes.TimeSeries.newBuilder();
                     builder.addLabels(PrometheusTypes.Label.newBuilder()
                         .setName(METRIC_NAME_LABEL)
