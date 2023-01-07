@@ -22,6 +22,7 @@
             <th scope="col" data-test="col-minion">Id</th>
             <th scope="col" data-test="col-latency">Latency</th>
             <th scope="col" data-test="col-status">Status</th>
+            <th scope="col" data-test="col-delete">Delete</th>
           </tr>
         </thead>
         <TransitionGroup name="data-table" tag="tbody">
@@ -31,43 +32,151 @@
             <td>{{ minion.id }}</td>
             <MetricChip tag="td" :metric="{timestamp: minion.latency?.timestamp}" :data-metric="minion.latency?.timestamp" class="bg-status" data-test="minion-item-latency" />
             <MetricChip tag="td" :metric="{status: minion.status}" class="bg-status" data-test="minion-item-status" />
+            <td>
+              <FeatherButton
+                data-test="minion-item-delete-btn"
+                icon="Delete"
+                @click="deleteMinion(minion.id, minion.label)"
+              >
+                <FeatherIcon :icon="deleteIcon" />
+              </FeatherButton>
+            </td>
           </tr>
         </TransitionGroup>
       </table>
     </div>
   </TableCard>
-  <PrimaryModal :visible="modal.isVisible" :title="modal.title" :hide-title="modal.hideTitle">
+  <PrimaryModal :visible="isVisible" :title="modal.title" :class="modal.cssClass">
     <template #content>
-      <LineGraph :graph="graphProps" />
+      <div v-html="modal.content"></div>
+      <!-- <LineGraph :graph="graphProps" /> -->
     </template>
     <template #footer>
-      <FeatherButton primary @click="modal.isVisible = false">Close</FeatherButton>
+      <FeatherButton 
+        data-testid="cancel-btn" 
+        secondary 
+        @click="modal.action.cancel.handler">
+          {{ modal.action.cancel.label }}
+      </FeatherButton>
+      <FeatherButton 
+        data-testid="save-btn" 
+        primary
+        @click="modal.action.save.handler">
+          {{ modal.action.save.label }}
+      </FeatherButton>
     </template>
   </PrimaryModal>
 </template>
 
 <script setup lang="ts">
 import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
+// import { useMinionMutations } from '@/store/Mutations/minionMutations'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import { Monitor, WidgetProps} from '@/types'
+import Delete from '@featherds/icon/action/Delete'
+import { Monitor, WidgetProps, ModalAction} from '@/types'
 import { GraphProps } from '@/types/graphs'
 import { ExtendedMinion } from '@/types/minion'
 import { TimeRangeUnit } from '@/types/graphql'
 import MetricChip from '../Common/MetricChip.vue'
+import useSnackbar from '@/composables/useSnackbar'
+import useModal from '@/composables/useModal'
+
+// import mockQuery from '@/mocking/graphql/sample'
+// import { useSampleMock } from '@/mocking/graphql/query.ts.bk'
+
+
+
 
 defineProps<{widgetProps?: WidgetProps}>()
 
-const appliancesStore = useAppliancesStore()
-const applianceQueries = useAppliancesQueries()
-const minionsTable = computed<ExtendedMinion[]>(() => applianceQueries.tableMinions)
+const { showSnackbar } = useSnackbar()
+const { openModal, closeModal, isVisible } = useModal()
+
+const deleteIcon = markRaw(Delete)
 
 const graphProps = ref({} as GraphProps)
+
+const appliancesStore = useAppliancesStore()
+const applianceQueries = useAppliancesQueries()
+// const minionMutations = useMinionMutations()
+const minionsTable = computed<ExtendedMinion[]>(() => applianceQueries.tableMinions)
+
+
+
+// const sampleMock = useSampleMock()
+
+
+// const mockQuery = await sampleMock.query
+
+// console.log(mockQuery)
+
+
+ 
+
 const modal = ref({
   isVisible: false,
   title: '',
+  cssClass: '',
+  content: '',
+  action: {
+    cancel: <ModalAction>{},
+    save: <ModalAction>{}
+  },
   hideTitle: true
 })
+
+
+const deleteMinionHandler = async (id: number) => {
+  // const deleteMinion = await minionMutations.deleteMinion(id)
+
+  // TODO: remove this once BE avail.
+  setTimeout(() => {
+    closeModal()
+    showSnackbar({ msg: 'Minion successfully deleted.' })
+  }, 2000)
+
+  /* if (!deleteMinion.error) {
+    // clears node obj on successful save
+    // Object.assign(node, defaultDevice)
+
+    closeModal()
+
+    showSnackbar({
+      msg: 'Minion successfully deleted.'
+    })
+
+    // Timeout because minion may not be available right away
+    // TODO: Replace timeout with websocket/polling
+    setTimeout(() => {
+      applianceQueries.fetchMinionsForTable()
+    }, 350)
+  } */
+}
+
+const deleteMinion = (id: number, label: string | undefined) => {
+  modal.value = {
+    ...modal.value,
+    title: label || '',
+    cssClass: 'minion-delete-modal',
+    content: `
+      <p>Are you sure to delete</p>
+    `,
+    action: {
+      cancel: {
+        label: 'Cancel',
+        handler: closeModal
+      },
+      save: {
+        label: 'Delete',
+        handler: deleteMinionHandler(id)
+      }
+    }
+  }
+
+  openModal()
+}
+
 
 const openLatencyGraph = (minion: ExtendedMinion) => {
   modal.value = {
