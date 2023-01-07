@@ -34,9 +34,10 @@
             <MetricChip tag="td" :metric="{status: minion.status}" class="bg-status" data-test="minion-item-status" />
             <td>
               <FeatherButton
-                data-test="minion-item-delete-btn"
+                v-if="minion.status === 'DOWN'"
                 icon="Delete"
                 @click="deleteMinion(minion.id, minion.label)"
+                data-test="minion-item-delete-btn"
               >
                 <FeatherIcon :icon="deleteIcon" />
               </FeatherButton>
@@ -70,23 +71,16 @@
 
 <script setup lang="ts">
 import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
-// import { useMinionMutations } from '@/store/Mutations/minionMutations'
 import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import Delete from '@featherds/icon/action/Delete'
-import { Monitor, WidgetProps, ModalAction} from '@/types'
+import { Monitor, WidgetProps } from '@/types'
 import { GraphProps } from '@/types/graphs'
 import { ExtendedMinion } from '@/types/minion'
 import { TimeRangeUnit } from '@/types/graphql'
 import MetricChip from '../Common/MetricChip.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import useModal from '@/composables/useModal'
-
-// import mockQuery from '@/mocking/graphql/sample'
-// import { useSampleMock } from '@/mocking/graphql/query.ts.bk'
-
-
-
 
 defineProps<{widgetProps?: WidgetProps}>()
 
@@ -100,25 +94,30 @@ const graphProps = ref({} as GraphProps)
 const appliancesStore = useAppliancesStore()
 const applianceQueries = useAppliancesQueries()
 // const minionMutations = useMinionMutations()
+
 const minionsTable = computed<ExtendedMinion[]>(() => applianceQueries.tableMinions)
 
+interface ModalAction {
+  label: string
+  handler: object
+}
+interface Modal {
+  title: string
+  cssClass: string
+  content: string
+  minionId: number | null,
+  action: {
+    cancel: ModalAction
+    save: ModalAction
+  },
+  hideTitle: boolean
+}
 
-
-// const sampleMock = useSampleMock()
-
-
-// const mockQuery = await sampleMock.query
-
-// console.log(mockQuery)
-
-
- 
-
-const modal = ref({
-  isVisible: false,
+const modal = ref<Modal>({
   title: '',
   cssClass: '',
   content: '',
+  minionId: null,
   action: {
     cancel: <ModalAction>{},
     save: <ModalAction>{}
@@ -127,16 +126,10 @@ const modal = ref({
 })
 
 
-const deleteMinionHandler = async (id: number) => {
-  // const deleteMinion = await minionMutations.deleteMinion(id)
+const deleteMinionHandler = async () => {
+  /* const deleteMinion = await minionMutations.deleteMinion(modal.value.minionId)
 
-  // TODO: remove this once BE avail.
-  setTimeout(() => {
-    closeModal()
-    showSnackbar({ msg: 'Minion successfully deleted.' })
-  }, 2000)
-
-  /* if (!deleteMinion.error) {
+  if (!deleteMinion.error) {
     // clears node obj on successful save
     // Object.assign(node, defaultDevice)
 
@@ -152,6 +145,12 @@ const deleteMinionHandler = async (id: number) => {
       applianceQueries.fetchMinionsForTable()
     }, 350)
   } */
+
+  // TODO: remove this once BE avail.
+  setTimeout(() => {
+    closeModal()
+    showSnackbar({ msg: 'Minion successfully deleted.' })
+  }, 2000)
 }
 
 const deleteMinion = (id: number, label: string | undefined) => {
@@ -162,6 +161,7 @@ const deleteMinion = (id: number, label: string | undefined) => {
     content: `
       <p>Are you sure to delete</p>
     `,
+    minionId: id,
     action: {
       cancel: {
         label: 'Cancel',
@@ -169,7 +169,7 @@ const deleteMinion = (id: number, label: string | undefined) => {
       },
       save: {
         label: 'Delete',
-        handler: deleteMinionHandler(id)
+        handler: deleteMinionHandler
       }
     }
   }
@@ -177,12 +177,7 @@ const deleteMinion = (id: number, label: string | undefined) => {
   openModal()
 }
 
-
 const openLatencyGraph = (minion: ExtendedMinion) => {
-  modal.value = {
-    ...modal.value,
-    isVisible: true
-  }
   graphProps.value = {
     label: 'Minion Latency',
     metrics: ['response_time_msec'],

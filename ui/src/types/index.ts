@@ -40,8 +40,3 @@ export const enum Monitor {
   SNMP = 'SNMP',
   ECHO = 'ECHO'
 }
-
-export interface ModalAction {
-  label: string
-  handler: object
-}
