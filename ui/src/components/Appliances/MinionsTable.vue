@@ -36,7 +36,7 @@
               <FeatherButton
                 v-if="minion.status === 'DOWN'"
                 icon="Delete"
-                @click="deleteMinion(minion.id, minion.label)"
+                @click="onDelete(minion.id, minion.label)"
                 data-test="minion-item-delete-btn"
               >
                 <FeatherIcon :icon="deleteIcon" />
@@ -75,6 +75,7 @@ import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import Delete from '@featherds/icon/action/Delete'
 import { Monitor, WidgetProps } from '@/types'
+import { ModalDelete, ModalAction } from '@/types/modal'
 import { GraphProps } from '@/types/graphs'
 import { ExtendedMinion } from '@/types/minion'
 import { TimeRangeUnit } from '@/types/graphql'
@@ -97,23 +98,7 @@ const applianceQueries = useAppliancesQueries()
 
 const minionsTable = computed<ExtendedMinion[]>(() => applianceQueries.tableMinions)
 
-interface ModalAction {
-  label: string
-  handler: object
-}
-interface Modal {
-  title: string
-  cssClass: string
-  content: string
-  minionId: number | null,
-  action: {
-    cancel: ModalAction
-    save: ModalAction
-  },
-  hideTitle: boolean
-}
-
-const modal = ref<Modal>({
+const modal = ref<ModalDelete>({
   title: '',
   cssClass: '',
   content: '',
@@ -126,7 +111,7 @@ const modal = ref<Modal>({
 })
 
 
-const deleteMinionHandler = async () => {
+const deleteHandler = async () => {
   /* const deleteMinion = await minionMutations.deleteMinion(modal.value.minionId)
 
   if (!deleteMinion.error) {
@@ -153,11 +138,11 @@ const deleteMinionHandler = async () => {
   }, 2000)
 }
 
-const deleteMinion = (id: number, label: string | undefined) => {
+const onDelete = (id: number, label: string | undefined) => {
   modal.value = {
     ...modal.value,
     title: label || '',
-    cssClass: 'minion-delete-modal',
+    cssClass: 'modal-delete-minion',
     content: `
       <p>Are you sure to delete</p>
     `,
@@ -169,7 +154,7 @@ const deleteMinion = (id: number, label: string | undefined) => {
       },
       save: {
         label: 'Delete',
-        handler: deleteMinionHandler
+        handler: deleteHandler
       }
     }
   }
