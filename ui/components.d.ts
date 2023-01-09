@@ -7,7 +7,10 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    AddNodeCtrl: typeof import('./src/components/Appliances/AddNodeCtrl.vue')['default']
+    AppliancesAddNodeCtrl: typeof import('./src/components/Appliances/AppliancesAddNodeCtrl.vue')['default']
+    AppliancesMinionsTable: typeof import('./src/components/Appliances/AppliancesMinionsTable.vue')['default']
+    AppliancesNodesTable: typeof import('./src/components/Appliances/AppliancesNodesTable.vue')['default']
+    AppliancesNotificationsCtrl: typeof import('./src/components/Appliances/AppliancesNotificationsCtrl.vue')['default']
     ContextMenu: typeof import('./src/components/Topology/ContextMenu.vue')['default']
     CtrlHighlightFocusedNodes: typeof import('./src/components/Topology/CtrlHighlightFocusedNodes.vue')['default']
     CtrlLayers: typeof import('./src/components/Topology/CtrlLayers.vue')['default']
@@ -62,11 +65,9 @@ declare module '@vue/runtime-core' {
     MarkerCluster: typeof import('./src/components/Map/MarkerCluster.vue')['default']
     Menubar: typeof import('./src/components/Layout/Menubar.vue')['default']
     MetricChip: typeof import('./src/components/Common/MetricChip.vue')['default']
-    MinionsTable: typeof import('./src/components/Appliances/MinionsTable.vue')['default']
     MinionWidget: typeof import('./src/components/Widgets/MinionWidget.vue')['default']
     NavigationRail: typeof import('./src/components/Layout/NavigationRail.vue')['default']
     NetworkGraph: typeof import('./src/components/Topology/NetworkGraph.vue')['default']
-    NodesTable: typeof import('./src/components/Appliances/NodesTable.vue')['default']
     NoFocusMsg: typeof import('./src/components/Topology/NoFocusMsg.vue')['default']
     NotificationsCtrl: typeof import('./src/components/Appliances/NotificationsCtrl.vue')['default']
     OptInOutCtrl: typeof import('./src/components/UsageStats/OptInOutCtrl.vue')['default']
