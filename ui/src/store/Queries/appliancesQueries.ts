@@ -54,17 +54,17 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     const addMetricsToMinions = (allMinions: Minion[]) => {
       allMinions.forEach(async (minion) => {
         const { data, isFetching } = await fetchMinionMetrics(minion.systemId as string)
-        const result = data.value?.minionLatency?.data?.result
+        const minionLatency = data.value?.minionLatency?.data?.result as TsResult[]
 
         if (!isFetching.value) {
-          if (result?.length) {
-            const [{ values }] = data.value?.minionLatency?.data?.result as TsResult[]
+          if (minionLatency?.length) {
+            const [{ values }] = minionLatency
             const [, val] = [...values].pop() // get the last item of the list
 
             tableMinions.value.push({
               ...minion,
               latency: {
-                timestamp: val
+                value: val
               }
             })
           } else tableMinions.value.push(minion)
@@ -91,7 +91,13 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     const fetchNodeMetrics = (id: number, instance: string) =>
       useQuery({
         query: ListNodeMetricsDocument,
-        variables: { id, instance, monitor: Monitor.ICMP },
+        variables: {
+          id,
+          instance,
+          monitor: Monitor.ICMP,
+          timeRange: 1,
+          timeRangeUnit: TimeRangeUnit.Minute
+        },
         cachePolicy: 'network-only'
       })
 
@@ -103,7 +109,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
           node.id as number,
           node.ipInterfaces?.[0].ipAddress as string
         ) // currently only 1 interface per node
-        const latencyResult = data.value?.nodeLatency?.data?.result
+        const nodeLatency = data.value?.nodeLatency?.data?.result as TsResult[]
         const status = data.value?.nodeStatus?.status
 
         if (!isFetching.value) {
@@ -112,14 +118,14 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
             status
           }
 
-          if (latencyResult?.length) {
-            const [{ value }] = latencyResult as TsResult[]
-            const [, val] = value as number[]
+          if (nodeLatency?.length) {
+            const [{ values }] = nodeLatency
+            const [, val] = [...values].pop() // get the last item of the list
 
             tableNode = {
               ...tableNode,
               latency: {
-                timestamp: val
+                value: val
               }
             }
           }
