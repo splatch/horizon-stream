@@ -2,7 +2,7 @@
   <div class="container">
     <PageHeader heading="Discovery" />
     <div>
-      <!-- info bar -->
+      <Infobar />
     </div>
     <div class="discovery-cards">
       <Card
@@ -40,15 +40,30 @@
       </Card>
     </div>
   </div>
+   <PrimaryModal :visible="isModalVisible" title="''" hide-title>
+    <template #content>
+      Configuration of {{selectedTool}}
+    </template>
+     <template v-slot:footer>
+      <FeatherButton 
+        data-test="cancel-btn" 
+        secondary 
+        @click="closeModal">
+          Cancel
+      </FeatherButton>
+    </template>
+  </PrimaryModal>
 </template>
 
 <script setup lang="ts">
 import ActiveDiscoveryImg from '@/assets/active-discovery.png'
 import PassiveDiscoveryImg from '@/assets/passive-discovery.png'
-
+const isModalVisible = ref(false)
+const selectedTool = ref('')
 
 const showSettings = (tool: string) => {
-  console.log('show settings for', tool)
+  selectedTool.value = tool
+  isModalVisible.value = true
 }
 
 
@@ -57,8 +72,12 @@ const showInstructions = (tool: string) => {
 }
 
 const showConfigActiveTool = (tool: string) => {
-  console.log('show setting for', tool)
+  selectedTool.value = tool
+  isModalVisible.value = true
+}
 
+const closeModal = () => {
+  isModalVisible.value = false
 }
 </script>
 
