@@ -139,7 +139,7 @@
                 <executions>
                     <execution>
                         <id>build-docker-image</id>
-                        <phase>install</phase>
+                        <phase>pre-integration-test</phase>
                         <goals>
                             <goal>dockerBuild</goal>
                         </goals>
