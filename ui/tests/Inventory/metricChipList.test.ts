@@ -7,14 +7,14 @@ const metrics: Chip[] = [
   {
     type: 'latency',
     label: 'Latency',
-    timestamp: -1667930274660,
+    value: -1667930274660,
     timeUnit: TimeUnit.MSecs,
     status: 'UP'
   },
   {
     type: 'uptime',
     label: 'Uptime',
-    timestamp: 1667930274.660,
+    value: 1667930274.66,
     timeUnit: TimeUnit.Secs,
     status: 'DOWN'
   },
@@ -37,11 +37,11 @@ describe.skip('Metric chip list', () => {
     })
   })
   afterAll(() => {
-    wrapper.unmount() 
+    wrapper.unmount()
   })
 
   it(`should have ${metrics.length} metric chip(s)`, () => {
     const chipItem = wrapper.findAllComponents('[data-test="metric-chip"]')
-    expect(chipItem.length).toEqual(metrics.length)   
+    expect(chipItem.length).toEqual(metrics.length)
   })
 })
