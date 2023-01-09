@@ -14,10 +14,10 @@
     <artifactId>minion-gateway-grpc-proxy</artifactId>
     <packaging>pom</packaging>
 
-    <name>OpenNMS Horizon Stream :: Minion Gateway GRPC Proxy</name>
+    <name>OpenNMS Horizon Stream :: Minion Gateway gRPC Proxy</name>
     <description>
-        Proxy service for GRPC communication with the Minion Gateway.
-        Covers GRPC communications from Minion, and potentially other external services.
+        Proxy service for gRPC communication with the Minion Gateway.
+        Covers gRPC communications from Minion, and potentially other external services.
     </description>
 
     <properties>

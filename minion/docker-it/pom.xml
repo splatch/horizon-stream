@@ -17,7 +17,7 @@
         The docker-maven-plugin is used to spin up containers with the Minion and dependencies, then exercise
         Minion functionality.
 
-        Uses a mock of the Minion Gateway (GRPC server).
+        Uses a mock of the Minion Gateway (gRPC server).
     </description>
 
     <artifactId>docker-it</artifactId>

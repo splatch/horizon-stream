@@ -40,7 +40,7 @@
 
     <name>OpenNMS Horizon Stream :: Minion Gateway :: Main</name>
     <description>
-        Main executable for the Minion Gateway GRPC Proxy.
+        Main executable for the Minion Gateway gRPC Proxy.
     </description>
 
 

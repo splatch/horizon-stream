@@ -12,7 +12,7 @@
 
     <name>OpenNMS Horizon Stream :: Minion Gateway</name>
     <description>
-        Gateway which serves GRPC connections from Minions and routes traffic to and from Minions.
+        Gateway which serves gRPC connections from Minions and routes traffic to and from Minions.
     </description>
 
     <groupId>org.opennms.horizon.minion.gateway</groupId>
