@@ -66,14 +66,6 @@ jobs:
         with:
           dir-location: 'keycloak-ui'
 
-      # This needs to happen before shared-lib.
-      - name: parent-pom
-        id: action-parent-pom
-        uses: ./.github/actions/parent-pom
-        with:
-          dir-location: 'parent-pom'
-          enable-sonar-scan: false
-
       # This needs to happen before core, rest-server, and notifications.
       - name: shared-lib
         id: action-shared-lib
@@ -333,7 +325,7 @@ jobs:
 
           docker push opennms/horizon-stream-metrics-processor:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-metrics-processor:latest
-      
+
       - name: publish-image-alarm
         run: |
 
@@ -397,7 +389,7 @@ jobs:
 
           docker push opennms/horizon-stream-datachoices:${{ env.RELEASE_TAG }}
           docker push opennms/horizon-stream-datachoices:latest
-      
+
       #- name: tag-release-branch
       #  run: |
 
