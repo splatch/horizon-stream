@@ -58,8 +58,8 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
 
         if (!isFetching.value) {
           if (minionLatency?.length) {
-            const [{ values }] = minionLatency
-            const [, val] = [...values].pop() // get the last item of the list
+            const values = [...minionLatency][0].values as number[][]
+            const [, val] = [...values].pop() as number[] // get the last item of the list
 
             tableMinions.value.push({
               ...minion,
@@ -102,7 +102,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       })
 
     const addMetricsToNodes = (allNodes: Node[]) => {
-      tableNodes.value = [] // reset
+      tableNodes.value = []
 
       allNodes.forEach(async (node) => {
         const { data, isFetching } = await fetchNodeMetrics(
@@ -119,8 +119,8 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
           }
 
           if (nodeLatency?.length) {
-            const [{ values }] = nodeLatency
-            const [, val] = [...values].pop() // get the last item of the list
+            const values = [...nodeLatency][0].values as number[][]
+            const [, val] = [...values].pop() as number[] // get the last item of the list
 
             tableNode = {
               ...tableNode,

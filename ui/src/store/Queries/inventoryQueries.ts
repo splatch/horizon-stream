@@ -50,10 +50,10 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
 
         if (data.value && !isFetching.value) {
           const nodeLatency = data.value.nodeLatency?.data?.result as TsResult[]
-          const status = data.value.nodeStatus?.status
+          const values = [...nodeLatency][0].values as number[][]
+          const [, val] = [...values].pop() as number[] // get the last item of the list
 
-          const [{ values }] = nodeLatency
-          const [, val] = [...values].pop() // get the last item of the list
+          const status = data.value.nodeStatus?.status
 
           const { location: nodeLocation } = location as Location
           const [{ ipAddress }] = ipInterfaces as IpInterface[]
