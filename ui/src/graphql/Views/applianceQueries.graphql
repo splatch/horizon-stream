@@ -40,7 +40,7 @@ query ListMinionsForTable {
   ...MinionsTableParts
 }
 
-query ListMinionMetrics($instance: String!, $monitor: String!) {
+query ListMinionMetrics($instance: String!, $monitor: String!, $timeRange: Int!, $timeRangeUnit: TimeRangeUnit!) {
   ...MinionLatencyParts
 }
 
