@@ -59,12 +59,13 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
         if (!isFetching.value) {
           if (minionLatency?.length) {
             const values = [...minionLatency][0].values as number[][]
-            const [, val] = [...values].pop() as number[] // get the last item of the list
+            // const [, val] = [...values].pop() as number[] // get the last item of the list
+            const val = [...values] // get the last item of the list
 
             tableMinions.value.push({
               ...minion,
               latency: {
-                value: val
+                value: val[val.length - 1][1]
               }
             })
           } else tableMinions.value.push(minion)
