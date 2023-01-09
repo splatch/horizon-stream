@@ -1,8 +1,8 @@
 name: 'Maven Cache'
 description: 'Caches Maven dependencies in the runner''s local Maven repository'
 inputs:
-  cache-key-path:
-    description: 'Comma-separated file globs that reference files to use as the cache key'
+  cache-key-hash:
+    description: 'Hash of files to use as the cache key. Use the hashFiles function to generate.'
     required: true
 
 runs:
@@ -11,4 +11,4 @@ runs:
     - uses: actions/cache@v3
       with:
         path: '~/.m2/repository'
-        key: maven-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles(inputs.cache-key-path) }}
+        key: maven-deps-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cache-key-hash }}

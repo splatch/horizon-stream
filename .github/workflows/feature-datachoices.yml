@@ -23,7 +23,7 @@ jobs:
       - name: Cache Maven Dependencies
         uses: ./.github/actions/maven-cache
         with:
-          cache-key-path: 'datachoices/**/pom.xml,parent-pom/pom.xml,shared-lib/**/pom.xml'
+          cache-key-hash: ${{ hashFiles('datachoices/**/pom.xml', 'parent-pom/pom.xml', 'shared-lib/**/pom.xml') }}
 
       - name: shared-lib
         id: action-shared-lib

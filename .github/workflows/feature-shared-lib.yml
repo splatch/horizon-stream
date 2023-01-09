@@ -30,7 +30,7 @@ jobs:
       - name: Cache Maven Dependencies
         uses: ./.github/actions/maven-cache
         with:
-          cache-key-path: 'parent-pom/pom.xml,shared-lib/**/pom.xml'
+          cache-key-hash: ${{ hashFiles('parent-pom/pom.xml', 'shared-lib/**/pom.xml') }}
 
       - name: feature-shared-lib
         uses: ./.github/actions/shared-lib
