@@ -40,6 +40,7 @@ import static parser.transport.MessageUtils.setLongValue;
 
 import java.net.InetAddress;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.google.common.primitives.UnsignedLong;
@@ -53,10 +54,6 @@ import parser.flowmessage.SamplingAlgorithm;
 import parser.ie.Value;
 
 public class IpFixMessageBuilder implements MessageBuilder {
-
-    private Long flowActiveTimeoutFallback;
-    private Long flowInactiveTimeoutFallback;
-    private Long flowSamplingIntervalFallback;
 
     public IpFixMessageBuilder() {
     }
@@ -98,12 +95,11 @@ public class IpFixMessageBuilder implements MessageBuilder {
         Long samplingAlgorithm = null;
         Long samplerMode = null;
         Long selectorAlgorithm = null;
-        Long samplingInterval = this.flowSamplingIntervalFallback;
+        Long samplingInterval = null;
         Long samplerRandomInterval = null;
         Long samplingFlowInterval = null;
         Long samplingFlowSpacing = null;
         Long flowSamplingTimeInterval = null;
-        Long flowSamplingTimeSpacing = null;
         Long samplingSize = null;
         Long samplingPopulation = null;
         Long samplingProbability = null;
@@ -121,8 +117,8 @@ public class IpFixMessageBuilder implements MessageBuilder {
         Long dot1qCustomerVlanId = null;
         Long postDot1qVlanId = null;
         Long postDot1qCustomerVlanId = null;
-        Long flowActiveTimeout = this.flowActiveTimeoutFallback;
-        Long flowInactiveTimeout = this.flowInactiveTimeoutFallback;
+        Long flowActiveTimeout = null;
+        Long flowInactiveTimeout = null;
         UInt32Value ingressPhysicalInterface = null;
         UInt32Value egressPhysicalInterface = null;
         UInt32Value inputSnmp = null;
@@ -152,16 +148,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
                 case "flowDirection":
                     Long directionValue = getLongValue(value);
                     Direction direction = Direction.UNKNOWN;
-                    if (directionValue != null) {
-                        switch (directionValue.intValue()) {
-                            case 0:
-                                direction = Direction.INGRESS;
-                                break;
-                            case 1:
-                                direction = Direction.EGRESS;
-                                break;
-                        }
-                    }
+                    direction = handleDirectionValue(directionValue, direction);
                     builder.setDirection(direction);
                     break;
                 case "destinationIPv6Address":
@@ -306,9 +293,6 @@ public class IpFixMessageBuilder implements MessageBuilder {
                 case "flowSamplingTimeInterval":
                     flowSamplingTimeInterval = getLongValue(value);
                     break;
-                case "flowSamplingTimeSpacing":
-                    flowSamplingTimeSpacing = getLongValue(value);
-                    break;
                 case "samplingSize":
                     samplingSize = getLongValue(value);
                     break;
@@ -379,19 +363,12 @@ public class IpFixMessageBuilder implements MessageBuilder {
         }
 
         // Set input interface
-        first(ingressPhysicalInterface, inputSnmp).ifPresent(ifIndex -> {
-            builder.setInputSnmpIfindex(ifIndex);
-        });
+        first(ingressPhysicalInterface, inputSnmp).ifPresent(builder::setInputSnmpIfindex);
 
         // Set output interface
-        first(egressPhysicalInterface, outputSnmp).ifPresent(ifIndex -> {
-            builder.setOutputSnmpIfindex(ifIndex);
-        });
+        first(egressPhysicalInterface, outputSnmp).ifPresent(builder::setOutputSnmpIfindex);
 
-        first(octetDeltaCount,
-                postOctetDeltaCount,
-                layer2OctetDeltaCount,
-                postLayer2OctetDeltaCount,
+        first(octetDeltaCount, postOctetDeltaCount, layer2OctetDeltaCount, postLayer2OctetDeltaCount,
                 transportOctetDeltaCount)
                 .ifPresent(bytes ->
                     builder.setNumBytes(setLongValue(bytes))
@@ -426,12 +403,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
                 sourceIPv4PrefixLength)
                 .ifPresent(prefixLen -> builder.setSrcMaskLen(setIntValue(prefixLen.intValue())));
 
-        first(vlanId,
-                postVlanId,
-                dot1qVlanId,
-                dot1qCustomerVlanId,
-                postDot1qVlanId,
-                postDot1qCustomerVlanId)
+        first(vlanId, postVlanId, dot1qVlanId, dot1qCustomerVlanId, postDot1qVlanId, postDot1qCustomerVlanId)
                 .ifPresent(vlan -> builder.setVlan(setIntValue(vlan.intValue())));
 
         long timeStamp = exportTime  != null ? exportTime * 1000 : 0;
@@ -453,9 +425,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
             builder.setFirstSwitched(setLongValue(firstSwitchedInMilli.get()));
         } else {
             first(flowStartDelta,
-                    flowStart).ifPresent(firstSwitched -> {
-                        builder.setFirstSwitched(setLongValue(firstSwitched));
-                    }
+                    flowStart).ifPresent(firstSwitched -> builder.setFirstSwitched(setLongValue(firstSwitched))
             );
         }
 
@@ -474,16 +444,11 @@ public class IpFixMessageBuilder implements MessageBuilder {
             builder.setLastSwitched(setLongValue(lastSwitchedInMilli.get()));
         } else {
             first(flowEndDelta,
-                    flowEnd).ifPresent(lastSwitchedValue -> {
-                builder.setLastSwitched(setLongValue(lastSwitchedValue));
-            });
+                    flowEnd).ifPresent(lastSwitchedValue -> builder.setLastSwitched(setLongValue(lastSwitchedValue)));
         }
 
-        first(packetDeltaCount,
-                postPacketDeltaCount,
-                transportPacketDeltaCount).ifPresent(packets -> {
-            builder.setNumPackets(setLongValue(packets));
-        });
+        first(packetDeltaCount, postPacketDeltaCount, transportPacketDeltaCount).ifPresent(packets -> 
+            builder.setNumPackets(setLongValue(packets)));
 
         SamplingAlgorithm sampling = SamplingAlgorithm.UNASSIGNED;
         final Integer deprecatedSamplingAlgorithm = first(samplingAlgorithm, samplerMode)
@@ -529,9 +494,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
         }
         builder.setSamplingAlgorithm(sampling);
 
-        final Double deprecatedSamplingInterval = first(
-                samplingInterval,
-                samplerRandomInterval)
+        final Double deprecatedSamplingInterval = first(samplingInterval, samplerRandomInterval)
                 .map(Long::doubleValue).orElse(null);
 
         if (deprecatedSamplingInterval != null) {
@@ -553,8 +516,6 @@ public class IpFixMessageBuilder implements MessageBuilder {
                     case 2: {
                         double interval = flowSamplingTimeInterval != null ?
                                           flowSamplingTimeInterval.doubleValue() : 1.0;
-                        double spacing = flowSamplingTimeSpacing != null ?
-                                         flowSamplingTimeSpacing.doubleValue() : 0.0;
                         double samplingIntervalValue = interval + 1.0;
                         builder.setSamplingInterval(setDoubleValue(samplingIntervalValue));
                         break;
@@ -567,7 +528,7 @@ public class IpFixMessageBuilder implements MessageBuilder {
                         break;
                     }
                     case 4: {
-                        Double probability = samplingProbability != null ? samplingProbability.doubleValue() : 1.0;
+                        double probability = samplingProbability != null ? samplingProbability.doubleValue() : 1.0;
                         builder.setSamplingInterval(setDoubleValue(1.0 / probability));
                         break;
                     }
@@ -592,7 +553,27 @@ public class IpFixMessageBuilder implements MessageBuilder {
             }
         }
 
-        // Build delta switched
+        buildDeltaSwitched(builder, flowActiveTimeout, flowInactiveTimeout);
+
+        builder.setNetflowVersion(NetflowVersion.IPFIX);
+        return builder;
+    }
+
+    static Direction handleDirectionValue(Long directionValue, Direction direction) {
+        if (Objects.nonNull(directionValue)) {
+            switch (directionValue.intValue()) {
+                case 0:
+                    direction = Direction.INGRESS;
+                    break;
+                case 1:
+                    direction = Direction.EGRESS;
+                    break;
+            }
+        }
+        return direction;
+    }
+
+    static void buildDeltaSwitched(FlowMessage.Builder builder, Long flowActiveTimeout, Long flowInactiveTimeout) {
         Timeout timeout = new Timeout(flowActiveTimeout, flowInactiveTimeout);
         timeout.setFirstSwitched(builder.hasFirstSwitched() ? builder.getFirstSwitched().getValue() : null);
         timeout.setLastSwitched(builder.hasLastSwitched() ? builder.getLastSwitched().getValue() : null);
@@ -600,32 +581,5 @@ public class IpFixMessageBuilder implements MessageBuilder {
         timeout.setNumPackets(builder.getNumPackets().getValue());
         Long deltaSwitched = timeout.getDeltaSwitched();
         getUInt64Value(deltaSwitched).ifPresent(builder::setDeltaSwitched);
-
-        builder.setNetflowVersion(NetflowVersion.IPFIX);
-        return builder;
-    }
-
-    public Long getFlowActiveTimeoutFallback() {
-        return this.flowActiveTimeoutFallback;
-    }
-
-    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
-        this.flowActiveTimeoutFallback = flowActiveTimeoutFallback;
-    }
-
-    public Long getFlowInactiveTimeoutFallback() {
-        return this.flowInactiveTimeoutFallback;
-    }
-
-    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
-        this.flowInactiveTimeoutFallback = flowInactiveTimeoutFallback;
-    }
-
-    public Long getFlowSamplingIntervalFallback() {
-        return this.flowSamplingIntervalFallback;
-    }
-
-    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
-        this.flowSamplingIntervalFallback = flowSamplingIntervalFallback;
     }
 }

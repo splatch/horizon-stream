@@ -32,12 +32,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.jline.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 
 import parser.Protocol;
@@ -62,6 +65,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
     private static final String COLUMN_SEMANTICS = "Data Type Semantics";
 
     private static final CSVFormat CSV_FORMAT = CSVFormat.newFormat(',').withQuote('"').withEscape('\\').withFirstRecordAsHeader();
+    private static final Logger LOG = LoggerFactory.getLogger(InformationElementProvider.class);
 
     private static final Map<String, Semantics> SEMANTICS_LOOKUP = ImmutableMap.<String, Semantics>builder()
             .put("default", Semantics.DEFAULT)
@@ -103,11 +107,11 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
 
     @Override
     public void load(final InformationElementDatabase.Adder adder) {
-        try (final Reader r = new InputStreamReader(this.getClass().getResourceAsStream("/ipfix-information-elements.csv"))) {
+        try (final Reader r = new InputStreamReader(Objects.requireNonNull(this.getClass().getResourceAsStream("/ipfix-information-elements.csv")))) {
             for (final CSVRecord record : CSV_FORMAT.parse(r)) {
                 final int id;
                 try {
-                    id = Integer.valueOf(record.get(COLUMN_ID));
+                    id = Integer.parseInt(record.get(COLUMN_ID));
                 } catch (final NumberFormatException e) {
                     continue;
                 }
@@ -116,7 +120,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
                 final InformationElementDatabase.ValueParserFactory valueParserFactory = TYPE_LOOKUP.get(record.get(COLUMN_TYPE));
 
                 if (valueParserFactory == null) {
-                    // TODO: Log me
+                    LOG.info("ValueParserFactory is null.. ");
                     continue;
                 }
 
@@ -125,8 +129,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
                 adder.add(Protocol.IPFIX, id, valueParserFactory, name, semantics);
             }
         } catch (final IOException e) {
-            // TODO: Log me
-            throw Throwables.propagate(e);
+            Log.error("Exception while loading InformationElementDatabase. ", e.getMessage());
         }
     }
 }

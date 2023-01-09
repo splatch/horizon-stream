@@ -50,25 +50,6 @@ import com.codahale.metrics.MetricRegistry;
 public class ClockSkewTest {
     private int eventCount = 0;
 
-
-
-    private final Identity identity = new Identity() {
-        @Override
-        public String getId() {
-            return "myId";
-        }
-
-        @Override
-        public String getLocation() {
-            return "myLocation";
-        }
-
-        @Override
-        public String getType() {
-            return "MINION";
-        }
-    };
-
     private final DnsResolver dnsResolver = new DnsResolver() {
 
         @Override
@@ -94,10 +75,10 @@ public class ClockSkewTest {
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
 
         }
-    }, identity, dnsResolver, new MetricRegistry());
+    }, dnsResolver, new MetricRegistry());
 
     @Before
     public void reset() {
@@ -146,18 +127,13 @@ public class ClockSkewTest {
 
     private static class ParserBaseExt extends ParserBase {
 
-        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<UdpListenerMessage> dispatcher, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
-            super(protocol, name, dispatcher, identity, dnsResolver, metricRegistry);
+        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<UdpListenerMessage> dispatcher, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
+            super(protocol, name, dispatcher, dnsResolver, metricRegistry);
         }
 
         @Override
         protected MessageBuilder getMessageBuilder() {
-            return new MessageBuilder() {
-                @Override
-                public FlowMessage.Builder buildMessage(final Iterable<Value<?>> values, final RecordEnrichment enrichment) {
-                    return FlowMessage.newBuilder();
-                }
-            };
+            return (values, enrichment) -> FlowMessage.newBuilder();
         }
 
         @Override

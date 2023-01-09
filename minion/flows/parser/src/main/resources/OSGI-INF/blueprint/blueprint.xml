@@ -5,7 +5,6 @@
                 http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
     <reference id="messageDispatcherFactory" interface="org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory"/>
-    <bean id="identity" class="parser.factory.IdentityImpl" />
     <bean id="dnsResolver" class="parser.factory.dnsresolver.NettyDnsResolver" init-method="init" destroy-method="destroy">
         <argument index="0" ref="metricRegistry"/>
     </bean>
@@ -27,7 +26,6 @@
     <!-- Netflow 9 UDP Parser Factory -->
     <bean id="netflow9UdpParserFactory" class="parser.factory.Netflow9UdpParserFactory">
         <argument ref="messageDispatcherFactory" />
-        <argument ref="identity" />
         <argument ref="dnsResolver" />
         <argument ref="udpListenerModule" />
     </bean>

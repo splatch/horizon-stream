@@ -39,6 +39,7 @@ import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import parser.InvalidPacketException;
 import parser.MissingTemplateException;
+import parser.session.Field;
 import parser.session.Session;
 import parser.session.Template;
 
@@ -59,7 +60,7 @@ public final class DataSet extends FlowSet<DataRecord> {
         this.template = this.resolver.lookupTemplate(this.header.setId);
 
         final int minimumRecordLength = template.stream()
-                .mapToInt(f -> f.length()).sum();
+                .mapToInt(Field::length).sum();
 
         final List<DataRecord> records = new LinkedList();
         while (buffer.isReadable(minimumRecordLength)) {

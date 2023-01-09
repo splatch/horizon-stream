@@ -44,7 +44,6 @@ import io.netty.buffer.ByteBuf;
 import listeners.TcpParser;
 import listeners.factory.UdpListenerMessage;
 import parser.factory.DnsResolver;
-import parser.factory.Identity;
 import parser.ipfix.proto.Header;
 import parser.ipfix.proto.Packet;
 import parser.session.TcpSession;
@@ -59,10 +58,9 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
 
     public IpfixTcpParser(final String name,
                           final AsyncDispatcher<UdpListenerMessage> dispatcher,
-                          final Identity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
-        super(Protocol.IPFIX, name, dispatcher, identity, dnsResolver, metricRegistry);
+        super(Protocol.IPFIX, name, dispatcher, dnsResolver, metricRegistry);
     }
 
     @Override
@@ -111,30 +109,6 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
                 sessions.remove(session);
             }
         };
-    }
-
-    public Long getFlowActiveTimeoutFallback() {
-        return this.messageBuilder.getFlowActiveTimeoutFallback();
-    }
-
-    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
-        this.messageBuilder.setFlowActiveTimeoutFallback(flowActiveTimeoutFallback);
-    }
-
-    public Long getFlowInactiveTimeoutFallback() {
-        return this.messageBuilder.getFlowInactiveTimeoutFallback();
-    }
-
-    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
-        this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
-    }
-
-    public Long getFlowSamplingIntervalFallback() {
-        return this.messageBuilder.getFlowSamplingIntervalFallback();
-    }
-
-    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
-        this.messageBuilder.setFlowSamplingIntervalFallback(flowSamplingIntervalFallback);
     }
 
     @Override

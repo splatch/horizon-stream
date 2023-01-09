@@ -34,7 +34,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.google.common.base.Strings;
 import com.google.common.primitives.UnsignedLong;
 import com.google.protobuf.DoubleValue;
 import com.google.protobuf.UInt32Value;
@@ -59,27 +58,18 @@ public class MessageUtils {
 
 
     static Boolean getBooleanValue(Value<?> value) {
-        if (value instanceof BooleanValue) {
-            return ((BooleanValue) value).getValue();
-        }
-        return Boolean.FALSE;
+        return value instanceof BooleanValue ? ((BooleanValue) value).getValue() : Boolean.FALSE;
     }
 
     static InetAddress getInetAddress(Value<?> value) {
         if (value instanceof IPv4AddressValue) {
             return (InetAddress) value.getValue();
         }
-        if (value instanceof IPv6AddressValue) {
-            return (InetAddress) value.getValue();
-        }
-        return null;
+        return value instanceof IPv6AddressValue ? (InetAddress) value.getValue() : null;
     }
 
     static Instant getTime(Value<?> value) {
-        if (value instanceof DateTimeValue) {
-            return ((DateTimeValue) value).getValue();
-        }
-        return null;
+        return value instanceof DateTimeValue ? ((DateTimeValue) value).getValue() : null;
     }
 
     public static <V> Optional<V> first(final V... values) {
@@ -91,45 +81,24 @@ public class MessageUtils {
 
     static Optional<UInt64Value> getUInt64Value(Value<?> value) {
         Long longValue = getLongValue(value);
-        if (longValue != null) {
-            return Optional.of(UInt64Value.newBuilder().setValue(longValue).build());
-        }
-        return Optional.empty();
+        return longValue != null ? Optional.of(UInt64Value.newBuilder().setValue(longValue).build()) : Optional.empty();
     }
 
     static Optional<UInt64Value> getUInt64Value(Long value) {
-        if (value != null) {
-            return Optional.of(UInt64Value.newBuilder().setValue(value).build());
-        }
-        return Optional.empty();
+        return value != null ? Optional.of(UInt64Value.newBuilder().setValue(value).build()) : Optional.empty();
     }
 
 
     static Optional<UInt32Value> getUInt32Value(Value<?> value) {
         Long longValue = getLongValue(value);
-        if (longValue != null) {
-            return Optional.of(UInt32Value.newBuilder().setValue(longValue.intValue()).build());
-        }
-        return Optional.empty();
+        return longValue != null ? Optional.of(UInt32Value.newBuilder().setValue(longValue.intValue()).build()) : Optional.empty();
     }
 
 
     static Optional<DoubleValue> getDoubleValue(Value<?> value) {
         Long longValue = getLongValue(value);
-        if (longValue != null) {
-            return Optional.of(DoubleValue.newBuilder().setValue(longValue.doubleValue()).build());
-        }
-        return Optional.empty();
+        return longValue != null ? Optional.of(DoubleValue.newBuilder().setValue(longValue.doubleValue()).build()) : Optional.empty();
     }
-
-    static Optional<String> getString(String value) {
-        if (!Strings.isNullOrEmpty(value)) {
-            return Optional.of(value);
-        }
-        return Optional.empty();
-    }
-
-
 
     static UInt32Value setIntValue(int value) {
         return UInt32Value.newBuilder().setValue(value).build();

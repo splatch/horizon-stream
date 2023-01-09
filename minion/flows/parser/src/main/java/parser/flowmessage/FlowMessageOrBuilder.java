@@ -31,9 +31,7 @@
 
 package parser.flowmessage;
 
-public interface FlowMessageOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:FlowMessage)
-    com.google.protobuf.MessageOrBuilder {
+public interface FlowMessageOrBuilder extends com.google.protobuf.MessageOrBuilder {
 
   /**
    * <pre>

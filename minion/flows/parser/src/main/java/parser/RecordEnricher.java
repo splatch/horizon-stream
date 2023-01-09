@@ -63,7 +63,7 @@ public class RecordEnricher {
     private static final Logger LOG = LoggerFactory.getLogger(RecordEnricher.class);
 
     private final DnsResolver dnsResolver;
-    private boolean dnsLookupsEnabled;
+    private final boolean dnsLookupsEnabled;
 
     public RecordEnricher(DnsResolver dnsResolver, boolean dnsLookupsEnabled) {
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
@@ -73,7 +73,7 @@ public class RecordEnricher {
     public CompletableFuture<RecordEnrichment> enrich(Iterable<Value<?>> record) {
         if (!this.dnsLookupsEnabled) {
             final CompletableFuture<RecordEnrichment> emptyFuture = new CompletableFuture<>();
-            final RecordEnrichment emptyEnrichment = new DefaultRecordEnrichment(Collections.<InetAddress, String>emptyMap());
+            final RecordEnrichment emptyEnrichment = new DefaultRecordEnrichment(Collections.emptyMap());
             emptyFuture.complete(emptyEnrichment);
             return emptyFuture;
         }
@@ -83,7 +83,7 @@ public class RecordEnricher {
         }
         final Set<InetAddress> addressesToReverseLookup = ipAddressCapturingVisitor.getAddresses();
         final Map<InetAddress, String> hostnamesByAddress = new HashMap<>(addressesToReverseLookup.size());
-        final CompletableFuture reverseLookupFutures[] = addressesToReverseLookup.stream()
+        final CompletableFuture[] reverseLookupFutures = addressesToReverseLookup.stream()
                 .map(addr -> {
                     LOG.trace("Issuing reverse lookup for: {}", addr);
                     return dnsResolver.reverseLookup(addr).whenComplete((hostname, ex) -> {

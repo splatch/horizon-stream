@@ -83,8 +83,8 @@ public final class Template implements Iterable<Field> {
         private final int id;
         private final Type type;
 
-        private List<Scope> scopes = new LinkedList();
-        private List<Field> fields = new LinkedList();
+        private final List<Scope> scopes = new LinkedList();
+        private final List<Field> fields = new LinkedList();
 
         private Builder(final int id,
                         final Type type) {

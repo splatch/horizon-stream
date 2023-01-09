@@ -43,10 +43,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.common.collect.Iterables;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
+
 import com.google.common.collect.Maps;
 
-import parser.InetAddressUtils;
 import parser.MissingTemplateException;
 import parser.ie.Value;
 import parser.state.ExporterState;
@@ -79,8 +79,8 @@ public class TcpSession implements Session {
 
             final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
 
-            for (final Map.Entry<TemplateKey, Map<Set<Value<?>>, List<Value<?>>>> e : Iterables.filter(TcpSession.this.options.entrySet(),
-                                                                                               e -> e.getKey().observationDomainId == this.observationDomainId)) {
+            for (final Map.Entry<TemplateKey, Map<Set<Value<?>>, List<Value<?>>>> e : TcpSession.this.options.entrySet().stream()
+                .filter(e -> e.getKey().observationDomainId == this.observationDomainId).collect(Collectors.toList())) {
                 final Template template = TcpSession.this.templates.get(e.getKey());
 
                 final Set<String> scopes = template.scopes.stream().map(Scope::getName).collect(Collectors.toSet());
