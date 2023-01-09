@@ -1,8 +1,10 @@
 import Discovery from '@/containers/Discovery.vue'
-import setupWrapper from 'tests/setupWrapper'
+import mount from 'tests/mountWithPiniaVillus'
 
-const wrapper = setupWrapper({ 
-  component: Discovery 
+const wrapper = mount({ 
+  component: Discovery,
+  attachTo: document.body,
+  shallow: true
 })
 
 test('The Discovery page container mounts correctly', () => {

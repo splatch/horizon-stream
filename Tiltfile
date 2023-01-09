@@ -265,6 +265,12 @@ k8s_resource(
     port_forwards=['21080:9091'],
 )
 
+### Cortex ###
+k8s_resource(
+    'cortex',
+    port_forwards=['19000:9000'],
+)
+
 ### Postgres ###
 k8s_resource(
     'postgres',
@@ -281,5 +287,5 @@ k8s_resource(
 ### Others ###
 k8s_resource(
     'ingress-nginx-controller',
-    port_forwards=['8123:80'],
+    port_forwards=['8123:80', '0.0.0.0:8990:8990'],
 )
