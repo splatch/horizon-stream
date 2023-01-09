@@ -58,14 +58,12 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
 
         if (!isFetching.value) {
           if (minionLatency?.length) {
-            const values = [...minionLatency][0].values as number[][]
-            // const [, val] = [...values].pop() as number[] // get the last item of the list
-            const val = [...values] // get the last item of the list
+            const [...values] = [...minionLatency][0].values as number[][]
 
             tableMinions.value.push({
               ...minion,
               latency: {
-                value: val[val.length - 1][1]
+                value: values[values.length - 1][1] // get the last item of the list
               }
             })
           } else tableMinions.value.push(minion)
@@ -120,13 +118,12 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
           }
 
           if (nodeLatency?.length) {
-            const values = [...nodeLatency][0].values as number[][]
-            const [, val] = [...values].pop() as number[] // get the last item of the list
+            const [...values] = [...nodeLatency][0].values as number[][]
 
             tableNode = {
               ...tableNode,
               latency: {
-                value: val
+                value: values[values.length - 1][1] // get the last item of the list
               }
             }
           }
