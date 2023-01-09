@@ -41,4 +41,6 @@ public interface GrpcClientConstants {
     String CLIENT_CERTIFICATE_FILE_PATH = "client.cert.filepath";
     String CLIENT_PRIVATE_KEY_FILE_PATH = "client.private.key.filepath";
     String TRUST_CERTIFICATE_FILE_PATH = "trust.cert.filepath";
+    String GRPC_DEADLINE = "deadline";
+    long DEFAULT_GRPC_DEADLINE = 60000;
 }

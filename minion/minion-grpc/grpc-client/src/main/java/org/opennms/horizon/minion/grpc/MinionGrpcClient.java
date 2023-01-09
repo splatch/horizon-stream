@@ -28,12 +28,21 @@
 
 package org.opennms.horizon.minion.grpc;
 
-import static org.opennms.horizon.minion.grpc.GrpcClientConstants.*;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.CLIENT_CERTIFICATE_FILE_PATH;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.CLIENT_PRIVATE_KEY_FILE_PATH;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.DEFAULT_GRPC_DEADLINE;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.DEFAULT_GRPC_HOST;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.DEFAULT_GRPC_PORT;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.DEFAULT_MESSAGE_SIZE;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.GRPC_CLIENT_PID;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.GRPC_DEADLINE;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.GRPC_HOST;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.GRPC_MAX_INBOUND_SIZE;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.GRPC_PORT;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.TLS_ENABLED;
+import static org.opennms.horizon.minion.grpc.GrpcClientConstants.TRUST_CERTIFICATE_FILE_PATH;
 import static org.opennms.horizon.shared.ipc.rpc.api.RpcModule.MINION_HEADERS_MODULE;
 
-import com.codahale.metrics.MetricRegistry;
-import com.google.protobuf.Message;
-import io.opentracing.Tracer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -46,8 +55,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.opennms.cloud.grpc.minion.CloudServiceGrpc;
 import org.opennms.cloud.grpc.minion.CloudServiceGrpc.CloudServiceStub;
 import org.opennms.cloud.grpc.minion.CloudToMinionMessage;
@@ -66,8 +75,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.slf4j.MDC.MDCCloseable;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Message;
 
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
@@ -76,8 +89,7 @@ import io.grpc.netty.shaded.io.grpc.netty.NegotiationType;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.grpc.stub.StreamObserver;
-import org.slf4j.MDC;
-import org.slf4j.MDC.MDCCloseable;
+import io.opentracing.Tracer;
 
 /**
  * Minion GRPC client runs both RPC/Sink together.
@@ -120,6 +132,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
     private Tracer tracer;
     private RpcRequestHandler rpcRequestHandler;
     private CloudMessageHandler cloudMessageHandler;
+    private long deadline;
 
     public MinionGrpcClient(IpcIdentity ipcIdentity, ConfigurationAdmin configAdmin) {
         this(ipcIdentity, ConfigUtils.getPropertiesFromConfig(configAdmin, GRPC_CLIENT_PID), new MetricRegistry(), null);
@@ -143,6 +156,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
     public void start() throws IOException {
         String host = PropertiesUtils.getProperty(properties, GRPC_HOST, DEFAULT_GRPC_HOST);
         int port = PropertiesUtils.getProperty(properties, GRPC_PORT, DEFAULT_GRPC_PORT);
+        deadline = PropertiesUtils.getProperty(properties, GRPC_DEADLINE, DEFAULT_GRPC_DEADLINE);
         boolean tlsEnabled = PropertiesUtils.getProperty(properties, TLS_ENABLED, false);
         int maxInboundMessageSize = PropertiesUtils.getProperty(properties, GRPC_MAX_INBOUND_SIZE, DEFAULT_MESSAGE_SIZE);
 
@@ -191,14 +205,14 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
     }
 
     private void initializeRpcStub() {
-        rpcStream = asyncStub.cloudToMinionRPC(new RpcMessageHandler());
+        rpcStream = asyncStub.withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).cloudToMinionRPC(new RpcMessageHandler());
         // Need to send minion headers to gRPC server in order to register.
         sendMinionHeaders();
         LOG.info("Initialized RPC stream");
     }
 
     private void initializeSinkStub() {
-        sinkStream = asyncStub.minionToCloudMessages(new EmptyMessageReceiver());
+        sinkStream = asyncStub.withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).minionToCloudMessages(new EmptyMessageReceiver());
         LOG.info("Initialized Sink stream");
     }
 
@@ -207,7 +221,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
             .setLocation(ipcIdentity.getLocation())
             .setSystemId(ipcIdentity.getId())
             .build();
-        asyncStub.cloudToMinionMessages(identity, new CloudMessageObserver(cloudMessageHandler));
+        asyncStub.withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).cloudToMinionMessages(identity, new CloudMessageObserver(cloudMessageHandler));
         LOG.info("Initialized cloud receiver stream");
     }
 
@@ -359,7 +373,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
     @Override
     public CompletableFuture<RpcResponseProto> call(RpcRequestProto requestProto) {
         CompletableFuture<RpcResponseProto> future = new CompletableFuture<>();
-        asyncStub.minionToCloudRPC(requestProto, new StreamObserver<>() {
+        asyncStub.withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).minionToCloudRPC(requestProto, new StreamObserver<>() {
             @Override
             public void onNext(RpcResponseProto value) {
                 future.complete(value);

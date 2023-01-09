@@ -12,6 +12,7 @@
         <cm:default-properties>
             <cm:property name="host" value="localhost"/>
             <cm:property name="port" value="8990"/>
+            <cm:property name="deadline" value="60000"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
