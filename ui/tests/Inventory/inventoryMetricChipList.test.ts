@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { TimeUnit } from '@/types'
 import { Chip } from '@/types/metric'
-import MetricChipList from '@/components/Inventory/MetricChipList.vue'
+import InventoryMetricChipList from '@/components/Inventory/InventoryMetricChipList.vue'
 
 const metrics: Chip[] = [
   {
@@ -28,9 +28,9 @@ const metrics: Chip[] = [
 let wrapper: any
 
 // TODO: will fix after demo
-describe.skip('Metric chip list', () => {
+describe.skip('InventoryMetricChipList.vue', () => {
   beforeAll(() => {
-    wrapper = mount(MetricChipList, {
+    wrapper = mount(InventoryMetricChipList, {
       props: {
         metrics
       }
