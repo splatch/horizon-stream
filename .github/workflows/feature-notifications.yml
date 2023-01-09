@@ -17,10 +17,7 @@ jobs:
 
       - name: shared-lib
         id: action-shared-lib
-        uses: ./.github/actions/shared-lib
-        with:
-          dir-location: 'shared-lib'
-          enable-sonar-scan: false
+        uses: ./.github/actions/shared-lib-prereq
 
       - name: feature-notifications
         id: action-feature-notifications
