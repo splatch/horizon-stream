@@ -71,7 +71,7 @@ public class ProtoBufUtilTest {
         String json = ProtobufUtil.toJson(flowsConfig);
         Assert.assertTrue("Json size should not empty.", json.length() > 0);
         FlowsConfig convertedFlowsConfig = ProtobufUtil.fromJson(json, FlowsConfig.class);
-        Assert.assertTrue(flowsConfig.equals(convertedFlowsConfig));
+        Assert.assertEquals(flowsConfig, convertedFlowsConfig);
     }
 
     @Test(expected = InvalidProtocolBufferException.class)
