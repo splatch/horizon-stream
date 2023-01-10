@@ -89,12 +89,12 @@ public class InventoryClientDeadlineTest {
             }
         ));
 
-        grpcCleanUp.register(InProcessServerBuilder.forName("InventoryClientTest").intercept(mockInterceptor)
+        grpcCleanUp.register(InProcessServerBuilder.forName("InventoryClientDeadlineTest").intercept(mockInterceptor)
             .addService(mockLocationService)
             .directExecutor()
             .build()
             .start());
-        ManagedChannel channel = grpcCleanUp.register(InProcessChannelBuilder.forName("InventoryClientTest").directExecutor().build());
+        ManagedChannel channel = grpcCleanUp.register(InProcessChannelBuilder.forName("InventoryClientDeadlineTest").directExecutor().build());
         client = new InventoryClient(channel, 1000);
         client.initialStubs();
     }
