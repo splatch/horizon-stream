@@ -41,12 +41,10 @@ import parser.IpfixUdpParser;
 public class IpfixUdpParserFactory implements ParserFactory {
 
     private final TelemetryRegistry telemetryRegistry;
-    private final Identity identity;
     private final DnsResolver dnsResolver;
 
-    public IpfixUdpParserFactory(final TelemetryRegistry telemetryRegistry, final Identity identity, final DnsResolver dnsResolver) {
+    public IpfixUdpParserFactory(final TelemetryRegistry telemetryRegistry, final DnsResolver dnsResolver) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
-        this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
     }
 
@@ -58,6 +56,6 @@ public class IpfixUdpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<UdpListenerMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new IpfixUdpParser(parserDefinition.getFullName(), dispatcher, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
+        return new IpfixUdpParser(parserDefinition.getFullName(), dispatcher, dnsResolver, telemetryRegistry.getMetricRegistry());
     }
 }

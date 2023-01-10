@@ -51,20 +51,6 @@ public enum NetflowVersion
   UNRECOGNIZED(-1),
   ;
 
-  /**
-   * <code>V5 = 0;</code>
-   */
-  public static final int V5_VALUE = 0;
-  /**
-   * <code>V9 = 1;</code>
-   */
-  public static final int V9_VALUE = 1;
-  /**
-   * <code>IPFIX = 2;</code>
-   */
-  public static final int IPFIX_VALUE = 2;
-
-
   public final int getNumber() {
     if (this == UNRECOGNIZED) {
       throw new IllegalArgumentException(
@@ -90,19 +76,7 @@ public enum NetflowVersion
     }
   }
 
-  public static com.google.protobuf.Internal.EnumLiteMap<NetflowVersion>
-      internalGetValueMap() {
-    return internalValueMap;
-  }
-  private static final com.google.protobuf.Internal.EnumLiteMap<
-      NetflowVersion> internalValueMap =
-        new com.google.protobuf.Internal.EnumLiteMap<NetflowVersion>() {
-          public NetflowVersion findValueByNumber(int number) {
-            return NetflowVersion.forNumber(number);
-          }
-        };
-
-  public final com.google.protobuf.Descriptors.EnumValueDescriptor
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
       getValueDescriptor() {
     return getDescriptor().getValues().get(ordinal());
   }
@@ -110,31 +84,15 @@ public enum NetflowVersion
       getDescriptorForType() {
     return getDescriptor();
   }
-  public static final com.google.protobuf.Descriptors.EnumDescriptor
+  public static com.google.protobuf.Descriptors.EnumDescriptor
       getDescriptor() {
     return FlowProtos.getDescriptor().getEnumTypes().get(2);
   }
 
-  private static final NetflowVersion[] VALUES = values();
-
-  public static NetflowVersion valueOf(
-      com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-    if (desc.getType() != getDescriptor()) {
-      throw new IllegalArgumentException(
-        "EnumValueDescriptor is not for this type.");
-    }
-    if (desc.getIndex() == -1) {
-      return UNRECOGNIZED;
-    }
-    return VALUES[desc.getIndex()];
-  }
-
   private final int value;
 
-  private NetflowVersion(int value) {
+  NetflowVersion(int value) {
     this.value = value;
   }
-
-  // @@protoc_insertion_point(enum_scope:NetflowVersion)
 }
 

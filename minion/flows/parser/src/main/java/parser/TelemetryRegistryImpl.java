@@ -63,9 +63,6 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
 
     @Override
     public AsyncDispatcher<UdpListenerMessage> getDispatcher(String queueName) {
-        // look into HeartBeatProducer:
-        // dispatcher = messageDispatcherFactory.createSyncDispatcher(new HeartbeatModule());
-        final AsyncDispatcher<UdpListenerMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(udpListenerModule);
-        return dispatcher;
+        return messageDispatcherFactory.createAsyncDispatcher(udpListenerModule);
     }
 }

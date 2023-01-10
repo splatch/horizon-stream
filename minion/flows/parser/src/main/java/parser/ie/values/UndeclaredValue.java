@@ -50,11 +50,6 @@ public class UndeclaredValue extends Value<byte[]> {
         this.value = Objects.requireNonNull(value);
     }
 
-    public UndeclaredValue(final int informationElementId,
-                           final byte[] value) {
-        this(Optional.empty(), informationElementId, value);
-    }
-
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -104,6 +99,6 @@ public class UndeclaredValue extends Value<byte[]> {
 
     public static String nameFor(final Optional<Long> enterpriseNumber,
                                  final int informationElementId) {
-        return enterpriseNumber.map(en -> Long.toString(en) + ':').orElse("") + Integer.toString(informationElementId);
+        return enterpriseNumber.map(en -> Long.toString(en) + ':').orElse("") + informationElementId;
     }
 }

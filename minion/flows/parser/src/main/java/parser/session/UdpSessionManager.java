@@ -44,7 +44,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 import parser.MissingTemplateException;
@@ -293,9 +292,9 @@ public class UdpSessionManager {
 
                 final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
 
-                for (final var e : Iterables.filter(UdpSessionManager.this.templates.entrySet(),
-                        e -> Objects.equals(e.getKey().observationDomainId.sessionKey, UdpSession.this.sessionKey) &&
-                                Objects.equals(e.getKey().observationDomainId.observationDomainId, this.observationDomainId))) {
+                for (final var e : UdpSessionManager.this.templates.entrySet().stream().filter(e -> Objects.equals(e.getKey().observationDomainId.sessionKey,
+                    UdpSession.this.sessionKey) && Objects.equals(e.getKey().observationDomainId.observationDomainId, this.observationDomainId))
+                    .collect(Collectors.toList())) {
 
                     final Template template = e.getValue().wrapped.template;
 

@@ -64,8 +64,6 @@ public class IllegalFlowTest {
     @Ignore
     public void testEventsForIllegalFlows() throws Exception {
 
-        final Identity identity = mock(Identity.class);
-
         final DnsResolver dnsResolver = new DnsResolver() {
             @Override
             public CompletableFuture<Optional<InetAddress>> lookup(String hostname) {
@@ -97,7 +95,7 @@ public class IllegalFlowTest {
             @Override
             public void close()  {
             }
-        }, identity, dnsResolver, new MetricRegistry());
+        }, dnsResolver, new MetricRegistry());
 
         // setting up listener
 

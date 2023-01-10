@@ -43,7 +43,7 @@ public class ConfigManager {
 
     private final ListenerDefinition listenerDefinition;
 
-    private boolean enableUdpListener = false;
+    private static final boolean ENABLE_UDP_LISTENER = false;
 
     public ConfigManager(UdpListenerFactory udpListenerFactory, ListenerDefinition listenerDefinition) {
         this.udpListenerFactory = udpListenerFactory;
@@ -55,7 +55,7 @@ public class ConfigManager {
         LOG.debug("Init Udp ConfigManager.. ");
         UdpListener udpListener = (UdpListener) udpListenerFactory.createBean(listenerDefinition);
         try {
-            if (enableUdpListener) {
+            if (ENABLE_UDP_LISTENER) {
                 udpListener.start();
                 LOG.info("UDP Listener started.. ");
             } else {

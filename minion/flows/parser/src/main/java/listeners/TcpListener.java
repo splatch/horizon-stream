@@ -80,7 +80,7 @@ public class TcpListener implements GracefulShutdownListener, Listener {
 
     private ChannelFuture socketFuture;
 
-    private ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     private Future<String> stopFuture;
 
@@ -144,7 +144,7 @@ public class TcpListener implements GracefulShutdownListener, Listener {
                                 .addLast(new SimpleChannelInboundHandler<CompletableFuture<?>>() {
                                     @Override
                                     protected void channelRead0(final ChannelHandlerContext ctx,
-                                                                final CompletableFuture<?> future) throws Exception {
+                                                                final CompletableFuture<?> future) {
                                         future.handle((result, ex) -> {
                                             if (ex != null) {
                                                 ctx.fireExceptionCaught(ex);
