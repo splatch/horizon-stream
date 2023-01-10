@@ -40,15 +40,14 @@
       </Card>
     </div>
   </div>
-   <PrimaryModal :visible="isModalVisible" title="''" hide-title>
+   <PrimaryModal :visible="isVisible" title="''" hide-title>
     <template #content>
       Configuration of {{selectedTool}}
     </template>
      <template v-slot:footer>
       <FeatherButton 
-        data-test="cancel-btn" 
         secondary 
-        @click="closeModal">
+        @click="cancel">
           Cancel
       </FeatherButton>
     </template>
@@ -58,12 +57,13 @@
 <script setup lang="ts">
 import ActiveDiscoveryImg from '@/assets/active-discovery.png'
 import PassiveDiscoveryImg from '@/assets/passive-discovery.png'
-const isModalVisible = ref(false)
+import useModal from '@/composables/useModal'
+const { openModal, closeModal, isVisible } = useModal()
 const selectedTool = ref('')
 
 const showSettings = (tool: string) => {
   selectedTool.value = tool
-  isModalVisible.value = true
+  openModal()
 }
 
 
@@ -73,11 +73,11 @@ const showInstructions = (tool: string) => {
 
 const showConfigActiveTool = (tool: string) => {
   selectedTool.value = tool
-  isModalVisible.value = true
+  openModal()
 }
 
-const closeModal = () => {
-  isModalVisible.value = false
+const cancel = () => {
+  closeModal()
 }
 </script>
 
