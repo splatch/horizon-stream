@@ -1,5 +1,33 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 package org.opennms.horizon.protobuf.util;
 
+import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,7 +39,6 @@ import org.opennms.sink.flows.contract.PackageConfig;
 import org.opennms.sink.flows.contract.Parameter;
 import org.opennms.sink.flows.contract.ParserConfig;
 import org.opennms.sink.flows.contract.QueueConfig;
-import org.opennms.sink.flows.contract.Rrd;
 
 public class ProtoBufUtilTest {
     @Test
@@ -36,14 +63,6 @@ public class ProtoBufUtilTest {
                                 .addParameters(Parameter.newBuilder().setKey("applicationThresholding").setValue("false"))
                                 .addPackages(PackageConfig.newBuilder()
                                     .setName("Netflow-5-Default")
-                                    .setRrd(Rrd.newBuilder()
-                                        .setStep(300)
-                                        .addRras("RRA:AVERAGE:0.5:1:2016")
-                                        .addRras("RRA:AVERAGE:0.5:12:1488")
-                                        .addRras("RRA:AVERAGE:0.5:288:366")
-                                        .addRras("RRA:MAX:0.5:288:366")
-                                        .addRras("RRA:MAX:0.5:288:366")
-                                    )
                                 )
                             )
                     )
@@ -53,5 +72,15 @@ public class ProtoBufUtilTest {
         Assert.assertTrue("Json size should not empty.", json.length() > 0);
         FlowsConfig convertedFlowsConfig = ProtobufUtil.fromJson(json, FlowsConfig.class);
         Assert.assertTrue(flowsConfig.equals(convertedFlowsConfig));
+    }
+
+    @Test(expected = InvalidProtocolBufferException.class)
+    public void testInvalidInput() throws InvalidProtocolBufferException {
+        ProtobufUtil.fromJson("{", FlowsConfig.class);
+    }
+
+    @Test(expected = InvalidProtocolBufferException.class)
+    public void testInvalidClass() throws InvalidProtocolBufferException {
+        ProtobufUtil.fromJson(ProtobufUtil.toJson(FlowsConfig.newBuilder().build()), GeneratedMessageV3.class);
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -59,7 +59,7 @@ public class FlowsConfigService {
     private final TaskSetPublisher taskSetPublisher;
 
     @EventListener(ApplicationReadyEvent.class)
-    public void sendTrapConfigToMinionAfterStartup() {
+    public void sendFlowConfigToMinionAfterStartup() {
         List<MonitoringLocationDTO> allLocations = monitoringLocationService.findAll();
 
         for (MonitoringLocationDTO dto : allLocations) {

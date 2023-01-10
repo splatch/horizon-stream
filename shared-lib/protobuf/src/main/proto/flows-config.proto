@@ -73,7 +73,6 @@ message ConnectorConfig {
 message PackageConfig {
   string name = 1;
   Filter filter = 2;
-  Rrd rrd = 3;
   repeated Parameter parameters = 4;
   string filter_rule = 5;
   map<string, string>  parameter_map = 6;
@@ -81,16 +80,6 @@ message PackageConfig {
 
 message Filter {
   string content = 1;
-}
-
-message RrdDefinition {
-}
-
-// RRD related settings for a given telemetry protocol package.
-message Rrd {
-  int32 step = 1;
-  repeated string rras = 2;
-  string base_dir = 3;
 }
 
 message QueueConfig {
