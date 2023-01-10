@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.miniongateway.grpc.server.rpcrequest.flow;
+package org.opennms.miniongateway.grpc.server.rpcrequest.flows;
 
 import com.google.protobuf.Message;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -53,7 +53,7 @@ import java.util.List;
 @Component
 public class FlowKafkaForwarder implements MessageConsumer<Message, Message> {
     public static final String TENANT_ID_HEADER_NAME = "tenant-id";
-    public static final String DEFAULT_TASK_RESULTS_TOPIC = "flow";
+    public static final String DEFAULT_TASK_RESULTS_TOPIC = "flows";
 
     private final Logger logger = LoggerFactory.getLogger(FlowKafkaForwarder.class);
 

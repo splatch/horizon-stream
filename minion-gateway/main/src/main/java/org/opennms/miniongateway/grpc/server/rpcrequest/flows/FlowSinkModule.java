@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.miniongateway.grpc.server.rpcrequest.flow;
+package org.opennms.miniongateway.grpc.server.rpcrequest.flows;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
