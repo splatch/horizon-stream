@@ -39,10 +39,6 @@ import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.model.MonitoringSystem;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.MonitoringSystemRepository;
-import org.opennms.horizon.shared.protobuf.marshalling.ProtoBufJsonDeserializer;
-import org.opennms.horizon.shared.protobuf.util.ProtobufUtil;
-import org.opennms.sink.flows.contract.FlowsConfig;
-import org.opennms.sink.flows.contract.ListenerConfig;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -134,4 +130,5 @@ public class MonitoringSystemServiceTest {
         assertThat(result.get().getStatus()).isTrue();
         verify(mockMonitoringSystemRepo).findBySystemIdAndTenantId(systemId, tenantId);
     }
+
 }

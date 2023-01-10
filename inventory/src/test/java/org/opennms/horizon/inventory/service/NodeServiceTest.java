@@ -76,9 +76,6 @@ public class NodeServiceTest {
     ConfigUpdateService configUpdateService;
 
     @Mock
-    FlowsConfigService flowsConfigService;
-
-    @Mock
     NodeMapper mapper;
 
     private final String tenantID = "test-tenant";
