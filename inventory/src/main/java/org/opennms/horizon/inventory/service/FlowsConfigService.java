@@ -32,11 +32,9 @@ import com.google.common.io.Resources;
 import com.google.protobuf.Any;
 import lombok.RequiredArgsConstructor;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
-import org.opennms.horizon.inventory.service.taskset.manager.TaskSetManager;
 import org.opennms.horizon.shared.protobuf.util.ProtobufUtil;
 import org.opennms.sink.flows.contract.FlowsConfig;
 import org.opennms.taskset.contract.TaskDefinition;
-import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.contract.TaskType;
 import org.opennms.taskset.service.api.TaskSetPublisher;
 import org.slf4j.Logger;
@@ -48,6 +46,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,7 +54,6 @@ import java.util.List;
 public class FlowsConfigService {
     private static final Logger LOG = LoggerFactory.getLogger(FlowsConfigService.class);
     private final MonitoringLocationService monitoringLocationService;
-    private final TaskSetManager taskSetManager;
     private final TaskSetPublisher taskSetPublisher;
 
     @EventListener(ApplicationReadyEvent.class)
@@ -80,10 +78,9 @@ public class FlowsConfigService {
             .setConfiguration(Any.pack(flowsConfig))
             .build();
 
-        taskSetManager.addTaskSet(tenantId, location, taskDefinition);
-
-        TaskSet taskSet = taskSetManager.getTaskSet(tenantId, location);
-        taskSetPublisher.publishTaskSet(tenantId, location, taskSet);
+        var taskList = new ArrayList<TaskDefinition>();
+        taskList.add(taskDefinition);
+        taskSetPublisher.publishNewTasks(tenantId, location, taskList);
     }
 
     @VisibleForTesting

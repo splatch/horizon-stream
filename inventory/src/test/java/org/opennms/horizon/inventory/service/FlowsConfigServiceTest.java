@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,6 @@ package org.opennms.horizon.inventory.service;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.opennms.horizon.inventory.service.taskset.manager.TaskSetManager;
 import org.opennms.sink.flows.contract.FlowsConfig;
 import org.opennms.taskset.service.api.TaskSetPublisher;
 
@@ -40,14 +39,11 @@ public class FlowsConfigServiceTest {
     MonitoringLocationService monitoringLocationService;
 
     @Mock
-    TaskSetManager taskSetManager;
-
-    @Mock
     TaskSetPublisher taskSetPublisher;
 
     @Test
     public void canReadConfig() {
-        FlowsConfigService service = new FlowsConfigService(monitoringLocationService, taskSetManager, taskSetPublisher);
+        FlowsConfigService service = new FlowsConfigService(monitoringLocationService, taskSetPublisher);
         FlowsConfig config = service.readFlowsConfig();
         Assert.assertNotNull(config);
         Assert.assertEquals("Netflow-5-UDP-8877", config.getListeners(0).getName());
