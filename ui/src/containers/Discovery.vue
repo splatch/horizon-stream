@@ -91,7 +91,7 @@ const showSettings = (tool: DiscoveryType) => {
 }
 
 
-const showInstructions = (tool: string) => {
+const showInstructions = (tool: DiscoveryType) => {
   selectedTool.value = tool
   isDrawerOpen.value = true
 }

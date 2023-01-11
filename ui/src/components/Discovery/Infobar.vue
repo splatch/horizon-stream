@@ -34,7 +34,7 @@
 </template>
 <script setup lang="ts">
 import CheckCircle from '@featherds/icon/action/CheckCircle'
-import Texts from './discovery.text.ts'
+import Texts from '@/components/Discovery/discovery.text'
 </script>
 <style scoped lang="scss">
 @use '@featherds/styles/themes/variables';
