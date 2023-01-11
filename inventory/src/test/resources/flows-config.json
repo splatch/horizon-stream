@@ -1,7 +1,7 @@
 {
   "listeners": [{
     "name": "Netflow-5-UDP-8877",
-    "className": "org.opennms.netmgt.telemetry.listeners.UdpListener",
+    "className": "org.opennms.horizon.minion.parser.UdpListener",
     "enabled": true,
     "parameters": [{
       "key": "port",
@@ -9,12 +9,12 @@
     }],
     "parsers": [{
       "name": "Netflow-5-Parser",
-      "className": "org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser",
+      "className": "org.opennms.horizon.minion.parser.Netflow5UdpParser",
       "queue": {
         "name": "Netflow-5",
         "adapters": [{
           "name": "Netflow-5-Adapter",
-          "className": "org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter",
+          "className": "org.opennms.horizon.flows.netflow5.Netflow5Adapter",
           "enabled": true,
           "parameters": [{
             "key": "applicationDataCollection",

@@ -31,7 +31,6 @@ package opennms.sink.flows;
 option java_multiple_files = true;
 option java_package = "org.opennms.sink.flows.contract";
 
-// rename from TelemetrydConfig
 message FlowsConfig {
   repeated ListenerConfig listeners = 1;
   repeated ConnectorConfig connectors = 2;
