@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="title">{{props.tool}} {{Texts.Instructions.title}}</div>
+    <div class="title">{{DiscoveryType[props.tool]}} {{Texts.Instructions.title}}</div>
 	<p>{{Texts.Instructions.subtitle}}</p>
 	<div class="locations">
 		<DiscoveryLocations />
@@ -10,9 +10,10 @@
 
 <script lang="ts" setup>
 import Texts from './discovery.text.ts'
+import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 
 const props = defineProps<{
-	tool: string
+	tool: number
 }>()
 </script>
 

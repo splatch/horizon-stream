@@ -26,13 +26,13 @@
             <div class="passive-tools">
               <PassiveTool
                 :label="'Syslog'"
-                @show-settings="() => showSettings('Syslog')"
-                @show-instructions="() => showInstructions('Syslog')"
+                @show-settings="showSettings(DiscoveryType.Syslog)"
+                @show-instructions="showInstructions(DiscoveryType.Syslog)"
               />
               <PassiveTool
                 :label="'SNMP Traps'"
-                @show-settings="() => showSettings('SNMP')"
-                @show-instructions="() => showInstructions('SNMP')"
+                @show-settings="showSettings(DiscoveryType.SNMP)"
+                @show-instructions="showInstructions(DiscoveryType.SNMP)"
               />
             </div>
           </div>
@@ -42,13 +42,13 @@
   </div>
    <PrimaryModal :visible="isVisible" title="''" hide-title>
     <template #content>
-      Configuration of {{selectedTool}}
+      <component :is="modalContent?.component" v-bind="modalContent?.props" />
     </template>
-     <template v-slot:footer>
+    <template v-slot:footer>
       <FeatherButton 
         secondary 
-        @click="cancel">
-          Cancel
+        @click="closeModal">
+          Close
       </FeatherButton>
     </template>
   </PrimaryModal>
@@ -69,12 +69,23 @@
 <script setup lang="ts">
 import ActiveDiscoveryImg from '@/assets/active-discovery.png'
 import PassiveDiscoveryImg from '@/assets/passive-discovery.png'
+import DiscoveryStepper from '@/components/Discovery/DiscoveryStepper.vue'
+import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import useModal from '@/composables/useModal'
 const { openModal, closeModal, isVisible } = useModal()
-const selectedTool = ref('')
+const selectedTool = ref()
 const isDrawerOpen = ref(false)
 
-const showSettings = (tool: string) => {
+const modalContent = computed(() => {
+  switch(selectedTool.value) {
+    case DiscoveryType.ICMP:
+      return { component: DiscoveryStepper, props: { callback: closeModal }}
+    case DiscoveryType.Azure:
+      // return Azure content
+  }
+})
+
+const showSettings = (tool: DiscoveryType) => {
   selectedTool.value = tool
   openModal()
 }
@@ -85,13 +96,9 @@ const showInstructions = (tool: string) => {
   isDrawerOpen.value = true
 }
 
-const showConfigActiveTool = (tool: string) => {
+const showConfigActiveTool = (tool: DiscoveryType) => {
   selectedTool.value = tool
   openModal()
-}
-
-const cancel = () => {
-  closeModal()
 }
 
 const closeDrawer = () => {
