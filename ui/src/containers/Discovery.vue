@@ -26,13 +26,13 @@
             <div class="passive-tools">
               <PassiveTool
                 :label="'Syslog'"
-                @show-settings="() => showSettings('syslog')"
-                @show-instructions="() => showInstructions('syslog')"
+                @show-settings="() => showSettings('Syslog')"
+                @show-instructions="() => showInstructions('Syslog')"
               />
               <PassiveTool
                 :label="'SNMP Traps'"
-                @show-settings="() => showSettings('snmp')"
-                @show-instructions="() => showInstructions('snmp')"
+                @show-settings="() => showSettings('SNMP')"
+                @show-instructions="() => showInstructions('SNMP')"
               />
             </div>
           </div>
@@ -52,6 +52,18 @@
       </FeatherButton>
     </template>
   </PrimaryModal>
+   <FeatherDrawer
+    id="map-left-drawer"
+    :left="false"
+    :modelValue="isDrawerOpen"
+    @update:modelValue="closeDrawer"
+    :labels="{ close: 'close', title: 'Instructions' }"
+  >
+    <div class="container">
+      <slot name="search"><DiscoveryInstructions :tool="selectedTool"/></slot>
+      <slot name="view"></slot>
+    </div>
+  </FeatherDrawer>
 </template>
 
 <script setup lang="ts">
@@ -60,6 +72,7 @@ import PassiveDiscoveryImg from '@/assets/passive-discovery.png'
 import useModal from '@/composables/useModal'
 const { openModal, closeModal, isVisible } = useModal()
 const selectedTool = ref('')
+const isDrawerOpen = ref(false)
 
 const showSettings = (tool: string) => {
   selectedTool.value = tool
@@ -68,7 +81,8 @@ const showSettings = (tool: string) => {
 
 
 const showInstructions = (tool: string) => {
-  console.log('show instructions for', tool)
+  selectedTool.value = tool
+  isDrawerOpen.value = true
 }
 
 const showConfigActiveTool = (tool: string) => {
@@ -78,6 +92,10 @@ const showConfigActiveTool = (tool: string) => {
 
 const cancel = () => {
   closeModal()
+}
+
+const closeDrawer = () => {
+  isDrawerOpen.value = false
 }
 </script>
 
