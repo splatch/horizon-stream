@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import Texts from '@/components/Discovery/discovery.textx'
+import Texts from '@/components/Discovery/discovery.text'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 
 const props = defineProps<{
