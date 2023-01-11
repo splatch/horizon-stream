@@ -28,18 +28,18 @@
 
 package org.opennms.horizon.minion.flows.parser.netflow9;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.slice;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,33 +55,33 @@ import io.netty.buffer.Unpooled;
 
 @RunWith(Parameterized.class)
 public class BlackboxTest {
-    private final static Path FOLDER = Paths.get("src/test/resources/flows");
+    private final static String FILE_PATH = "/org.opennms.horizon.minion.flows/";
 
     @Parameterized.Parameters(name = "file: {0}")
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(
-                new Object[]{Arrays.asList("netflow9_test_valid01.dat")},
-                new Object[]{Arrays.asList("netflow9_test_macaddr_tpl.dat", "netflow9_test_macaddr_data.dat")},
-                new Object[]{Arrays.asList("netflow9_test_cisco_asa_1_tpl.dat", "netflow9_test_cisco_asa_1_data.dat")},
-                new Object[]{Arrays.asList("netflow9_test_nprobe_tpl.dat", "netflow9_test_softflowd_tpl_data.dat", "netflow9_test_nprobe_data.dat")},
-                new Object[]{Arrays.asList("netflow9_test_cisco_asa_2_tpl_26x.dat", "netflow9_test_cisco_asa_2_tpl_27x.dat", "netflow9_test_cisco_asa_2_data.dat")},
-                new Object[]{Arrays.asList("netflow9_test_ubnt_edgerouter_tpl.dat", "netflow9_test_ubnt_edgerouter_data1024.dat", "netflow9_test_ubnt_edgerouter_data1025.dat")},
-                new Object[]{Arrays.asList("netflow9_test_nprobe_dpi.dat")},
-                new Object[]{Arrays.asList("netflow9_test_fortigate_fortios_521_tpl.dat", "netflow9_test_fortigate_fortios_521_data256.dat", "netflow9_test_fortigate_fortios_521_data257.dat")},
-                new Object[]{Arrays.asList("netflow9_test_streamcore_tpl_data256.dat", "netflow9_test_streamcore_tpl_data260.dat")},
-                new Object[]{Arrays.asList("netflow9_test_juniper_srx_tplopt.dat")},
-                new Object[]{Arrays.asList("netflow9_test_0length_fields_tpl_data.dat")},
-                new Object[]{Arrays.asList("netflow9_test_cisco_asr9k_opttpl256.dat", "netflow9_test_cisco_asr9k_data256.dat")},
-                new Object[]{Arrays.asList("netflow9_test_cisco_asr9k_tpl260.dat", "netflow9_test_cisco_asr9k_data260.dat")},
-                new Object[]{Arrays.asList("netflow9_test_cisco_nbar_opttpl260.dat")},
-                new Object[]{Arrays.asList("netflow9_test_cisco_nbar_tpl262.dat", "netflow9_test_cisco_nbar_data262.dat")},
-                new Object[]{Arrays.asList("netflow9_test_cisco_wlc_tpl.dat", "netflow9_test_cisco_wlc_data261.dat")},
-                new Object[]{Arrays.asList("netflow9_test_cisco_wlc_8510_tpl_262.dat")},
-                new Object[]{Arrays.asList("netflow9_test_cisco_1941K9.dat")},
-                new Object[]{Arrays.asList("netflow9_cisco_asr1001x_tpl259.dat")},
-                new Object[]{Arrays.asList("netflow9_test_paloalto_panos_tpl.dat", "netflow9_test_paloalto_panos_data.dat")},
-                new Object[]{Arrays.asList("netflow9_test_juniper_data_b4_tmpl.dat")},
-                new Object[]{Arrays.asList("nms-14130.dat")}
+            new Object[]{Arrays.asList("netflow9_test_valid01.dat")},
+            new Object[]{Arrays.asList("netflow9_test_macaddr_tpl.dat", "netflow9_test_macaddr_data.dat")},
+            new Object[]{Arrays.asList("netflow9_test_cisco_asa_1_tpl.dat", "netflow9_test_cisco_asa_1_data.dat")},
+            new Object[]{Arrays.asList("netflow9_test_nprobe_tpl.dat", "netflow9_test_softflowd_tpl_data.dat", "netflow9_test_nprobe_data.dat")},
+            new Object[]{Arrays.asList("netflow9_test_cisco_asa_2_tpl_26x.dat", "netflow9_test_cisco_asa_2_tpl_27x.dat", "netflow9_test_cisco_asa_2_data.dat")},
+            new Object[]{Arrays.asList("netflow9_test_ubnt_edgerouter_tpl.dat", "netflow9_test_ubnt_edgerouter_data1024.dat", "netflow9_test_ubnt_edgerouter_data1025.dat")},
+            new Object[]{Arrays.asList("netflow9_test_nprobe_dpi.dat")},
+            new Object[]{Arrays.asList("netflow9_test_fortigate_fortios_521_tpl.dat", "netflow9_test_fortigate_fortios_521_data256.dat", "netflow9_test_fortigate_fortios_521_data257.dat")},
+            new Object[]{Arrays.asList("netflow9_test_streamcore_tpl_data256.dat", "netflow9_test_streamcore_tpl_data260.dat")},
+            new Object[]{Arrays.asList("netflow9_test_juniper_srx_tplopt.dat")},
+            new Object[]{Arrays.asList("netflow9_test_0length_fields_tpl_data.dat")},
+            new Object[]{Arrays.asList("netflow9_test_cisco_asr9k_opttpl256.dat", "netflow9_test_cisco_asr9k_data256.dat")},
+            new Object[]{Arrays.asList("netflow9_test_cisco_asr9k_tpl260.dat", "netflow9_test_cisco_asr9k_data260.dat")},
+            new Object[]{Arrays.asList("netflow9_test_cisco_nbar_opttpl260.dat")},
+            new Object[]{Arrays.asList("netflow9_test_cisco_nbar_tpl262.dat", "netflow9_test_cisco_nbar_data262.dat")},
+            new Object[]{Arrays.asList("netflow9_test_cisco_wlc_tpl.dat", "netflow9_test_cisco_wlc_data261.dat")},
+            new Object[]{Arrays.asList("netflow9_test_cisco_wlc_8510_tpl_262.dat")},
+            new Object[]{Arrays.asList("netflow9_test_cisco_1941K9.dat")},
+            new Object[]{Arrays.asList("netflow9_cisco_asr1001x_tpl259.dat")},
+            new Object[]{Arrays.asList("netflow9_test_paloalto_panos_tpl.dat", "netflow9_test_paloalto_panos_data.dat")},
+            new Object[]{Arrays.asList("netflow9_test_juniper_data_b4_tmpl.dat")},
+            new Object[]{Arrays.asList("nms-14130.dat")}
         );
     }
 
@@ -96,7 +96,9 @@ public class BlackboxTest {
         final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
 
         for (final String file : this.files) {
-            try (final FileChannel channel = FileChannel.open(FOLDER.resolve(file))) {
+            final URL resourceURL = getClass().getResource(String.format("%s%s", FILE_PATH, file));
+            Objects.requireNonNull(resourceURL);
+            try (final FileChannel channel = FileChannel.open(Paths.get(resourceURL.toURI()))) {
                 final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
                 channel.read(buffer);
                 buffer.flip();
@@ -107,8 +109,7 @@ public class BlackboxTest {
                     final Header header = new Header(slice(buf, Header.SIZE));
                     final Packet packet = new Packet(session, header, buf);
 
-                    assertThat(packet.header.versionNumber, is(0x0009));
-
+                    assertEquals(packet.header.versionNumber, 0x0009);
                 } while (buf.isReadable());
             }
         }

@@ -28,18 +28,19 @@
 
 package org.opennms.horizon.minion.flows.parser;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static java.lang.String.format;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.slice;
 
 import java.net.InetAddress;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -58,7 +59,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class NMS13006_Test {
-    private final static Path FOLDER = Paths.get("src/test/resources/flows");
+    private final static String FILE_PATH = "/org.opennms.horizon.minion.flows/";
 
     @Test
     public void firstAndLastSwitchedTest() throws Exception {
@@ -99,8 +100,12 @@ public class NMS13006_Test {
 
     public void testFile(final String filename) throws Exception {
         final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
+        String resourcePath = format("%s%s", FILE_PATH, filename);
+        Objects.requireNonNull(resourcePath);
+        final URL resourceURL = getClass().getResource(resourcePath);
+        Objects.requireNonNull(resourceURL);
 
-        try (final FileChannel channel = FileChannel.open(FOLDER.resolve(filename))) {
+        try (final FileChannel channel = FileChannel.open(Paths.get(resourceURL.toURI()))) {
             final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
             channel.read(buffer);
             buffer.flip();
@@ -114,17 +119,15 @@ public class NMS13006_Test {
                 final RecordEnrichment enrichment = (address -> Optional.empty());
 
                 packet.getRecords().forEach(r -> {
-                            final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
-                            final FlowMessage flowMessage = builder.buildMessage(r, enrichment).build();
+                        final Netflow9MessageBuilder builder = new Netflow9MessageBuilder();
+                        final FlowMessage flowMessage = builder.buildMessage(r, enrichment).build();
 
-                            Assert.assertEquals(true, flowMessage.hasFirstSwitched());
-                            Assert.assertEquals(true, flowMessage.hasLastSwitched());
-                            Assert.assertEquals(true, flowMessage.hasDeltaSwitched());
-                        }
+                        assertTrue(flowMessage.hasFirstSwitched());
+                        assertTrue(flowMessage.hasLastSwitched());
+                        assertTrue(flowMessage.hasDeltaSwitched());
+                    }
                 );
-
-                assertThat(packet.header.versionNumber, is(0x0009));
-
+                assertEquals(packet.header.versionNumber, 0x0009);
             } while (buf.isReadable());
         }
     }
