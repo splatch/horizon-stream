@@ -50,16 +50,21 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import io.netty.buffer.ByteBuf;
-import org.opennms.horizon.minion.flows.listeners.Dispatchable;
-import org.opennms.horizon.minion.flows.listeners.UdpParser;
-import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerMessage;
+import listeners.Dispatchable;
+import listeners.UdpParser;
+import parser.factory.DnsResolver;
+import parser.ie.RecordProvider;
+import parser.ipfix.proto.Header;
+import parser.ipfix.proto.Packet;
+import parser.session.Session;
+import parser.session.UdpSessionManager;
+import parser.transport.IpFixMessageBuilder;
 
 public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatchable {
 
     private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
 
     public IpfixUdpParser(final String name,
-                          final AsyncDispatcher<UdpListenerMessage> dispatcher,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
                           final Identity identity,
                           final DnsResolver dnsResolver,

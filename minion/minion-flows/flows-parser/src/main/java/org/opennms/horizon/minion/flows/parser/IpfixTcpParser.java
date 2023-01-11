@@ -46,7 +46,6 @@ import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
-import com.google.protobuf.Message;
 
 import io.netty.buffer.ByteBuf;
 import org.opennms.horizon.minion.flows.listeners.TcpParser;

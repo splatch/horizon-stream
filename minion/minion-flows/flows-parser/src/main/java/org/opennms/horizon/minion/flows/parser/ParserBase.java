@@ -30,7 +30,6 @@ package org.opennms.horizon.minion.flows.parser;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -52,7 +51,6 @@ import org.opennms.horizon.minion.flows.parser.session.SequenceNumberTracker;
 import org.opennms.horizon.minion.flows.parser.session.Session;
 import org.opennms.horizon.minion.flows.parser.transport.MessageBuilder;
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
-import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessageOrBuilder;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.horizon.shared.logging.LogPreservingThreadFactory;
 import org.slf4j.Logger;
@@ -67,7 +65,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.Message;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 import org.opennms.horizon.minion.flows.listeners.Parser;

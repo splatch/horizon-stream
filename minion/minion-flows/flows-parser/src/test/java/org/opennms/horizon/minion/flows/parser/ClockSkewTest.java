@@ -42,11 +42,11 @@ import org.opennms.horizon.minion.flows.parser.transport.MessageBuilder;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.protobuf.Message;
 
 import parser.factory.DnsResolver;
 import parser.factory.Identity;
 import parser.flowmessage.FlowMessage;
-import parser.ie.Value;
 import parser.transport.MessageBuilder;
 
 public class ClockSkewTest {
@@ -129,8 +129,8 @@ public class ClockSkewTest {
 
     private static class ParserBaseExt extends ParserBase {
 
-        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
-            super(protocol, name, dispatcher, identity, dnsResolver, metricRegistry);
+        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
+            super(protocol, name, dispatcher, dnsResolver, metricRegistry);
         }
 
         @Override

@@ -57,6 +57,6 @@ public class IpfixTcpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(parserDefinition.getQueueName());
-        return new IpfixTcpParser(parserDefinition.getFullName(), dispatcher, identity, dnsResolver, telemetryRegistry.getMetricRegistry());
+        return new IpfixTcpParser(parserDefinition.getFullName(), dispatcher, dnsResolver, telemetryRegistry.getMetricRegistry());
     }
 }
