@@ -36,7 +36,7 @@ import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AggregationPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
-import org.opennms.horizon.shared.ipc.sink.api.UnmarshalException;
+
 
 public class FlowSinkModule implements SinkModule<TelemetryMessage, TelemetryMessageLog> {
 
@@ -44,6 +44,10 @@ public class FlowSinkModule implements SinkModule<TelemetryMessage, TelemetryMes
 
     public FlowSinkModule(IpcIdentity identity) {
         this.identity = identity;
+    }
+
+    public FlowSinkModule() {
+        this.identity = null;
     }
 
     @Override

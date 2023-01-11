@@ -21,6 +21,7 @@
         <argument ref="flowSinkModule"/>
     </bean>
     <bean id="flowSinkModule" class="org.opennms.horizon.minion.flows.parser.FlowSinkModule" />
+    <bean id="UnmarshalException" class="org.opennms.horizon.minion.flows.parser.UnmarshalException" />
 
 
     <!-- Netflow 9 UDP Parser Factory -->
