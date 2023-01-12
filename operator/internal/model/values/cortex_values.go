@@ -15,6 +15,7 @@ limitations under the License.
 package values
 
 type CortexValues struct {
-	Enabled     bool          `yaml:"Enabled"`
-	Server      ServiceValues `yaml:"Server"`
+	ServiceValues `yaml:",inline"`
+	Enabled       bool          `yaml:"Enabled"`
+	Server        ServiceValues `yaml:"Server"`
 }
