@@ -91,8 +91,8 @@ public class MinionRpcClient {
                 });
             });
         } catch (Exception e) {
-            throw new RuntimeException("Failed to call minion", e);
+            future.completeExceptionally(new RuntimeException("Failed to call minion", e));
         }
-        return future.orTimeout(deadline, TimeUnit.MILLISECONDS);
+        return future;
     }
 }
