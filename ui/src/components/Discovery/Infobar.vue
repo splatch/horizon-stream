@@ -1,19 +1,19 @@
 ;
 <template>
   <div class="infobar">
-    <div>With Zero Touch Provisioning, BTO discovers your network actively and passively:</div>
+    <div>{{Texts.Infobar.title}}</div>
     <div class="list">
       <div class="item">
         <FeatherIcon
           class="icon"
           :icon="CheckCircle"
-        />We can queue nodes for discovery
+        />{{Texts.Infobar.text1}}
       </div>
       <div class="item">
         <FeatherIcon
           class="icon"
           :icon="CheckCircle"
-        />You can configure your nodes to deliver notifications to BTO
+        />{{Texts.Infobar.text2}}
       </div>
       <div class="item">
         <FeatherIcon
@@ -21,7 +21,7 @@
           :icon="CheckCircle"
         />
         <div>
-          You can customize how BTO discovers your network using
+         {{Texts.Infobar.text3}}
           <a
             class="link"
             href="my-discovery"
@@ -34,6 +34,7 @@
 </template>
 <script setup lang="ts">
 import CheckCircle from '@featherds/icon/action/CheckCircle'
+import Texts from '@/components/Discovery/discovery.text'
 </script>
 <style scoped lang="scss">
 @use '@featherds/styles/themes/variables';

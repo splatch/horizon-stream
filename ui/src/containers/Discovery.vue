@@ -52,6 +52,18 @@
       </FeatherButton>
     </template>
   </PrimaryModal>
+   <FeatherDrawer
+    id="map-left-drawer"
+    :left="false"
+    :modelValue="isDrawerOpen"
+    @update:modelValue="closeDrawer"
+    :labels="{ close: 'close', title: 'Instructions' }"
+  >
+    <div class="container">
+      <slot name="search"><DiscoveryInstructions :tool="selectedTool"/></slot>
+      <slot name="view"></slot>
+    </div>
+  </FeatherDrawer>
 </template>
 
 <script setup lang="ts">
@@ -62,6 +74,7 @@ import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import useModal from '@/composables/useModal'
 const { openModal, closeModal, isVisible } = useModal()
 const selectedTool = ref()
+const isDrawerOpen = ref(false)
 
 const modalContent = computed(() => {
   switch(selectedTool.value) {
@@ -77,13 +90,19 @@ const showSettings = (tool: DiscoveryType) => {
   openModal()
 }
 
+
 const showInstructions = (tool: DiscoveryType) => {
-  console.log('show instructions for', tool)
+  selectedTool.value = tool
+  isDrawerOpen.value = true
 }
 
 const showConfigActiveTool = (tool: DiscoveryType) => {
   selectedTool.value = tool
   openModal()
+}
+
+const closeDrawer = () => {
+  isDrawerOpen.value = false
 }
 </script>
 
