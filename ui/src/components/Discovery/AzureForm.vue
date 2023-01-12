@@ -30,11 +30,11 @@
 </template>
 
 <script setup lang="ts">
+import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+const store = useDiscoveryStore()
 defineProps<{
   callback: () => void
 }>()
-import { useDiscoveryStore } from '@/store/Views/discoveryStore'
-const store = useDiscoveryStore()
 </script>
 
 <style scoped lang="scss">
