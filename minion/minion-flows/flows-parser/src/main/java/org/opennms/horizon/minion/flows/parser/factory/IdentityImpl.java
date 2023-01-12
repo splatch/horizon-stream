@@ -29,18 +29,27 @@
 package org.opennms.horizon.minion.flows.parser.factory;
 
 public class IdentityImpl implements Identity {
+
+    private final String systemId;
+    private final String location;
+
+    public IdentityImpl(String systemId, String location) {
+        this.systemId = systemId;
+        this.location = location;
+    }
+
     @Override
     public String getId() {
-        return null;
+        return systemId;
     }
 
     @Override
     public String getLocation() {
-        return null;
+        return location;
     }
 
     @Override
     public String getType() {
-        return null;
+        return "";
     }
 }

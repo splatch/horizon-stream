@@ -46,11 +46,14 @@ import org.opennms.horizon.minion.flows.parser.UdpListenerModule;
 public class Netflow9UdpParserFactory implements ParserFactory {
 
     private final DnsResolver dnsResolver;
+    private final Identity identity;
     private final MessageDispatcherFactory messageDispatcherFactory;
     private final FlowSinkModule flowSinkModule;
 
     public Netflow9UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory,
+                                    final Identity identity,
                                     final DnsResolver dnsResolver, FlowSinkModule flowSinkModule) {
+        this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         this.messageDispatcherFactory = Objects.requireNonNull(messageDispatcherFactory);
         this.flowSinkModule = Objects.requireNonNull(flowSinkModule);
@@ -64,6 +67,6 @@ public class Netflow9UdpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(final ParserDefinition parserDefinition) {
         final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(flowSinkModule);
-        return new Netflow9UdpParser(parserDefinition.getFullName(), dispatcher, dnsResolver, new MetricRegistry());
+        return new Netflow9UdpParser(parserDefinition.getFullName(), dispatcher, identity, dnsResolver, new MetricRegistry());
     }
 }

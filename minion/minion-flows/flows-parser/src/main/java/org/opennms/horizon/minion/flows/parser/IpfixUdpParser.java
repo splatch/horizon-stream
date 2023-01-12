@@ -53,6 +53,7 @@ import io.netty.buffer.ByteBuf;
 import listeners.Dispatchable;
 import listeners.UdpParser;
 import parser.factory.DnsResolver;
+import parser.factory.Identity;
 import parser.ie.RecordProvider;
 import parser.ipfix.proto.Header;
 import parser.ipfix.proto.Packet;
@@ -69,7 +70,7 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
                           final Identity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
-        super(Protocol.IPFIX, name, dispatcher, dnsResolver, metricRegistry);
+        super(Protocol.IPFIX, name, dispatcher, identity, dnsResolver, metricRegistry);
     }
 
     public IpFixMessageBuilder getMessageBuilder() {

@@ -52,6 +52,24 @@ import parser.transport.MessageBuilder;
 public class ClockSkewTest {
     private int eventCount = 0;
 
+    private final Identity identity = new Identity() {
+        @Override
+        public String getId() {
+            return "myId";
+        }
+
+        @Override
+        public String getLocation() {
+            return "myLocation";
+        }
+
+        @Override
+        public String getType() {
+            return "MINION";
+        }
+    };
+
+
     private final DnsResolver dnsResolver = new DnsResolver() {
 
         @Override
@@ -80,7 +98,7 @@ public class ClockSkewTest {
         public void close() {
 
         }
-    }, dnsResolver, new MetricRegistry());
+    }, identity, dnsResolver, new MetricRegistry());
 
     @Before
     public void reset() {
@@ -129,8 +147,8 @@ public class ClockSkewTest {
 
     private static class ParserBaseExt extends ParserBase {
 
-        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
-            super(protocol, name, dispatcher, dnsResolver, metricRegistry);
+        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, Identity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
+            super(protocol, name, dispatcher, identity, dnsResolver, metricRegistry);
         }
 
         @Override

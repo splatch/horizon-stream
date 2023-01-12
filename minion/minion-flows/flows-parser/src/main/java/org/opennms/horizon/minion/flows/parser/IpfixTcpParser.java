@@ -62,7 +62,7 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
                           final Identity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
-        super(Protocol.IPFIX, name, dispatcher, dnsResolver, metricRegistry);
+        super(Protocol.IPFIX, name, dispatcher, identity, dnsResolver, metricRegistry);
     }
 
     @Override

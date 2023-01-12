@@ -59,7 +59,7 @@ public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispa
                              final Identity identity,
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
-        super(Protocol.NETFLOW5, name, dispatcher, dnsResolver, metricRegistry);
+        super(Protocol.NETFLOW5, name, dispatcher, identity, dnsResolver, metricRegistry);
     }
 
     public Netflow5MessageBuilder getMessageBuilder() {

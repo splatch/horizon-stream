@@ -40,14 +40,10 @@ import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
 
 public class FlowSinkModule implements SinkModule<TelemetryMessage, TelemetryMessageLog> {
 
-    private final IpcIdentity identity;
+    private final parser.factory.Identity identity;
 
-    public FlowSinkModule(IpcIdentity identity) {
+    public FlowSinkModule(parser.factory.Identity identity) {
         this.identity = identity;
-    }
-
-    public FlowSinkModule() {
-        this.identity = null;
     }
 
     @Override
