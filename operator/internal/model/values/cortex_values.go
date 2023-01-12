@@ -14,8 +14,8 @@ limitations under the License.
 
 package values
 
-type PrometheusValues struct {
-	Enabled     bool          `yaml:"Enabled"`
-	Server      ServiceValues `yaml:"Server"`
-	PushGateway ServiceValues `yaml:"PushGateway"`
+type CortexValues struct {
+	ServiceValues `yaml:",inline"`
+	Enabled       bool          `yaml:"Enabled"`
+	Server        ServiceValues `yaml:"Server"`
 }
