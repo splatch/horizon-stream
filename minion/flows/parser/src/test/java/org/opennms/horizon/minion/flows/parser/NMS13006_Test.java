@@ -37,6 +37,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class NMS13006_Test {
-    private final static String FILE_PATH = "/org.opennms.horizon.minion.flows/";
+    private final static Path FOLDER = Paths.get("src/test/resources/flows");
 
     @Test
     public void firstAndLastSwitchedTest() throws Exception {
@@ -100,12 +101,8 @@ public class NMS13006_Test {
 
     public void testFile(final String filename) throws Exception {
         final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
-        String resourcePath = format("%s%s", FILE_PATH, filename);
-        Objects.requireNonNull(resourcePath);
-        final URL resourceURL = getClass().getResource(resourcePath);
-        Objects.requireNonNull(resourceURL);
 
-        try (final FileChannel channel = FileChannel.open(Paths.get(resourceURL.toURI()))) {
+        try (final FileChannel channel = FileChannel.open(FOLDER.resolve(filename))) {
             final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
             channel.read(buffer);
             buffer.flip();

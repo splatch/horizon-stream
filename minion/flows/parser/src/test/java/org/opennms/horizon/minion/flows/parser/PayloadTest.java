@@ -57,7 +57,7 @@ public class PayloadTest {
 
     @Test
     public void outputPayloadTest() throws IOException, URISyntaxException {
-        execute("/org.opennms.horizon.minion.flows/nf9_broken.dat", buffer -> {
+        execute("/flows/nf9_broken.dat", buffer -> {
             try {
                 final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
                 final Header h1 =

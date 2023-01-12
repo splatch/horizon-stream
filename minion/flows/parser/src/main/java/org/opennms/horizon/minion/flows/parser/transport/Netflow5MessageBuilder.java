@@ -29,6 +29,11 @@
 package org.opennms.horizon.minion.flows.parser.transport;
 
 
+import static org.opennms.horizon.minion.flows.parser.flowmessage.SamplingAlgorithm.RANDOM_N_OUT_OF_N_SAMPLING;
+import static org.opennms.horizon.minion.flows.parser.flowmessage.SamplingAlgorithm.SYSTEMATIC_COUNT_BASED_SAMPLING;
+import static org.opennms.horizon.minion.flows.parser.flowmessage.SamplingAlgorithm.UNASSIGNED;
+import static org.opennms.horizon.minion.flows.parser.transport.MessageUtils.getLongValue;
+import static org.opennms.horizon.minion.flows.parser.transport.MessageUtils.getUInt32Value;
 import static org.opennms.horizon.minion.flows.parser.transport.MessageUtils.getUInt64Value;
 
 import java.net.InetAddress;
@@ -61,36 +66,36 @@ public class Netflow5MessageBuilder implements MessageBuilder {
         for (Value<?> value : values) {
             switch (value.getName()) {
                 case "@count":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setNumFlowRecords);
+                    getUInt32Value(value).ifPresent(builder::setNumFlowRecords);
                     break;
                 case "@unixSecs":
-                    unixSecs = MessageUtils.getLongValue(value);
+                    unixSecs = getLongValue(value);
                     break;
                 case "@unixNSecs":
-                    unixNSecs = MessageUtils.getLongValue(value);
+                    unixNSecs = getLongValue(value);
                     break;
                 case "@sysUptime":
-                    sysUpTime = MessageUtils.getLongValue(value);
+                    sysUpTime = getLongValue(value);
                     break;
                 case "@flowSequence":
-                    MessageUtils.getUInt64Value(value).ifPresent(builder::setFlowSeqNum);
+                    getUInt64Value(value).ifPresent(builder::setFlowSeqNum);
                     break;
                 case "@engineType":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setEngineType);
+                    getUInt32Value(value).ifPresent(builder::setEngineType);
                     break;
                 case "@engineId":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setEngineId);
+                    getUInt32Value(value).ifPresent(builder::setEngineId);
                     break;
                 case "@samplingAlgorithm":
-                    Long saValue = MessageUtils.getLongValue(value);
-                    SamplingAlgorithm samplingAlgorithm = SamplingAlgorithm.UNASSIGNED;
+                    Long saValue = getLongValue(value);
+                    SamplingAlgorithm samplingAlgorithm = UNASSIGNED;
                     if (saValue != null) {
                         switch (saValue.intValue()) {
                             case 1:
-                                samplingAlgorithm = SamplingAlgorithm.SYSTEMATIC_COUNT_BASED_SAMPLING;
+                                samplingAlgorithm = SYSTEMATIC_COUNT_BASED_SAMPLING;
                                 break;
                             case 2:
-                                samplingAlgorithm = SamplingAlgorithm.RANDOM_N_OUT_OF_N_SAMPLING;
+                                samplingAlgorithm = RANDOM_N_OUT_OF_N_SAMPLING;
                                 break;
                         }
                     }
@@ -110,49 +115,49 @@ public class Netflow5MessageBuilder implements MessageBuilder {
                     nextHop = MessageUtils.getInetAddress(value);
                     break;
                 case "input":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setInputSnmpIfindex);
+                    getUInt32Value(value).ifPresent(builder::setInputSnmpIfindex);
                     break;
                 case "output":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setOutputSnmpIfindex);
+                    getUInt32Value(value).ifPresent(builder::setOutputSnmpIfindex);
                     break;
                 case "dPkts":
-                    MessageUtils.getUInt64Value(value).ifPresent(builder::setNumPackets);
+                    getUInt64Value(value).ifPresent(builder::setNumPackets);
                     break;
                 case "dOctets":
-                    MessageUtils.getUInt64Value(value).ifPresent(builder::setNumBytes);
+                    getUInt64Value(value).ifPresent(builder::setNumBytes);
                     break;
                 case "first":
-                    first = MessageUtils.getLongValue(value);
+                    first = getLongValue(value);
                     break;
                 case "last":
-                    last = MessageUtils.getLongValue(value);
+                    last = getLongValue(value);
                     break;
                 case "srcPort":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setSrcPort);
+                    getUInt32Value(value).ifPresent(builder::setSrcPort);
                     break;
                 case "dstPort":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setDstPort);
+                    getUInt32Value(value).ifPresent(builder::setDstPort);
                     break;
                 case "tcpFlags":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setTcpFlags);
+                    getUInt32Value(value).ifPresent(builder::setTcpFlags);
                     break;
                 case "proto":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setProtocol);
+                    getUInt32Value(value).ifPresent(builder::setProtocol);
                     break;
                 case "srcAs":
-                    MessageUtils.getUInt64Value(value).ifPresent(builder::setSrcAs);
+                    getUInt64Value(value).ifPresent(builder::setSrcAs);
                     break;
                 case "dstAs":
-                    MessageUtils.getUInt64Value(value).ifPresent(builder::setDstAs);
+                    getUInt64Value(value).ifPresent(builder::setDstAs);
                     break;
                 case "tos":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setTos);
+                    getUInt32Value(value).ifPresent(builder::setTos);
                     break;
                 case "srcMask":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setSrcMaskLen);
+                    getUInt32Value(value).ifPresent(builder::setSrcMaskLen);
                     break;
                 case "dstMask":
-                    MessageUtils.getUInt32Value(value).ifPresent(builder::setDstMaskLen);
+                    getUInt32Value(value).ifPresent(builder::setDstMaskLen);
                     break;
                 case "egress":
                     Boolean egress = MessageUtils.getBooleanValue(value);

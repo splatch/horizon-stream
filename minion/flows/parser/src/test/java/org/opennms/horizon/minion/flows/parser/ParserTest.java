@@ -58,7 +58,7 @@ public class ParserTest {
 
     @Test
     public void canReadValidIPFIX() throws IOException, URISyntaxException {
-        execute("/org.opennms.horizon.minion.flows/ipfix.dat", buffer -> {
+        execute("/flows/ipfix.dat", buffer -> {
             try {
 
                 final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));

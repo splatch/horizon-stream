@@ -36,6 +36,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -55,7 +56,7 @@ import io.netty.buffer.Unpooled;
 
 @RunWith(Parameterized.class)
 public class BlackboxTest {
-    private final static String FILE_PATH = "/org.opennms.horizon.minion.flows/";
+    private final static Path FOLDER = Paths.get("src/test/resources/flows");
 
     @Parameterized.Parameters(name = "file: {0}")
     public static Iterable<Object[]> data() throws IOException {
@@ -96,9 +97,7 @@ public class BlackboxTest {
         final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
 
         for (final String file : this.files) {
-            final URL resourceURL = getClass().getResource(String.format("%s%s", FILE_PATH, file));
-            Objects.requireNonNull(resourceURL);
-            try (final FileChannel channel = FileChannel.open(Paths.get(resourceURL.toURI()))) {
+            try (final FileChannel channel = FileChannel.open(FOLDER.resolve(file))) {
                 final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
                 channel.read(buffer);
                 buffer.flip();

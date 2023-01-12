@@ -55,7 +55,7 @@ public class NetflowPacketTest {
 
     @Test
     public void canReadValidNetflow5() throws InvalidPacketException {
-        execute("/org.opennms.horizon.minion.flows/netflow5.dat", flowPacket -> {
+        execute("/flows/netflow5.dat", flowPacket -> {
 
             // Verify Header
             assertThat(flowPacket.header.versionNumber, is(0x0005));
@@ -115,21 +115,21 @@ public class NetflowPacketTest {
 
     @Test(expected = InvalidPacketException.class)
     public void canReadInvalidNetflow5_01() throws InvalidPacketException {
-        execute("/org.opennms.horizon.minion.flows/netflow5_test_invalid01.dat", flowPacket -> {
+        execute("/flows/netflow5_test_invalid01.dat", flowPacket -> {
             throw new IllegalStateException();
         });
     }
 
     @Test(expected = InvalidPacketException.class)
     public void canReadInvalidNetflow5_02() throws InvalidPacketException {
-        execute("/org.opennms.horizon.minion.flows/netflow5_test_invalid02.dat", flowPacket -> {
+        execute("/flows/netflow5_test_invalid02.dat", flowPacket -> {
             throw new IllegalStateException();
         });
     }
 
     @Test
     public void canReadMicrotikNetflow5() throws InvalidPacketException {
-        execute("/org.opennms.horizon.minion.flows/netflow5_test_microtik.dat", flowPacket -> {
+        execute("/flows/netflow5_test_microtik.dat", flowPacket -> {
 
             // Verify Header
             assertThat(flowPacket.header.versionNumber, is(0x0005));
@@ -169,7 +169,7 @@ public class NetflowPacketTest {
 
     @Test
     public void canReadJuniperMX80Netflow5() throws InvalidPacketException {
-        execute("/org.opennms.horizon.minion.flows/netflow5_test_juniper_mx80.dat", flowPacket -> {
+        execute("/flows/netflow5_test_juniper_mx80.dat", flowPacket -> {
 
             // Verify Flow Header
             assertThat(flowPacket.header.versionNumber, is(0x0005));
@@ -264,7 +264,7 @@ public class NetflowPacketTest {
 
     @Test
     public void canReadJuniperPackets() throws InvalidPacketException {
-        execute("/org.opennms.horizon.minion.flows/jflow-packet.dat", packet -> {
+        execute("/flows/jflow-packet.dat", packet -> {
             assertThat(packet.header.samplingInterval, is(20));
             assertThat(packet.header.samplingAlgorithm, is(0));
             assertThat(packet.records.size(), is(29));
