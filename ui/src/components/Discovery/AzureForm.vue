@@ -1,0 +1,64 @@
+<template>
+  <div class="azure-container">
+    <div>
+      <div class="location-title">Select a location</div>
+      <DiscoveryLocations />
+    </div>
+    <div class="azure-form">
+      <FeatherInput
+        v-model="store.azure.clientId"
+        label="ClientID"
+      >
+      </FeatherInput>
+      <FeatherInput
+        v-model="store.azure.clientSecret"
+        label="Client Secret"
+      >
+      </FeatherInput>
+      <FeatherInput
+        v-model="store.azure.subscriptionId"
+        label="SubscriptionID"
+      >
+      </FeatherInput>
+      <FeatherInput
+        v-model="store.azure.directoryId"
+        label="DirectoryId"
+      >
+      </FeatherInput>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+defineProps<{
+  callback: () => void
+}>()
+import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+const store = useDiscoveryStore()
+</script>
+
+<style scoped lang="scss">
+@use "@featherds/styles/themes/variables";
+.azure-container {
+  min-width: 800px;
+
+  > .azure-form {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+    border-top: 1px solid var(variables.$shade-4);
+    padding-top: var(variables.$spacing-l);
+    margin-top: var(variables.$spacing-s);
+    > div {
+        width: 49%;
+    }
+  }
+
+  .location-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: -24px;
+  }
+}
+</style>

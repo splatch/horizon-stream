@@ -8,15 +8,24 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       cidr: '',
       fromIp: '',
       toIp: ''
+    },
+    azure: {
+      clientId: '',
+      clientSecret: '',
+      subscriptionId: '',
+      directoryId: ''
     }
   }),
   actions: {
     selectLocation(id: string) {
       if (this.selectedLocationIds.includes(id)) {
-        this.selectedLocationIds = this.selectedLocationIds.filter(x => x !== id)
+        this.selectedLocationIds = this.selectedLocationIds.filter((x) => x !== id)
       } else {
         this.selectedLocationIds.push(id)
       }
+    },
+    saveDiscoveryAzure() {
+      console.log(this.azure)
     }
   }
 })

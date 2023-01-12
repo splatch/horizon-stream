@@ -40,27 +40,41 @@
       </Card>
     </div>
   </div>
-   <PrimaryModal :visible="isVisible" title="''" hide-title>
+  <PrimaryModal
+    :visible="isVisible"
+    title="''"
+    hide-title
+  >
     <template #content>
-      <component :is="modalContent?.component" v-bind="modalContent?.props" />
+      <component
+        :is="modalContent?.component"
+        v-bind="modalContent?.props"
+      />
     </template>
     <template v-slot:footer>
-      <FeatherButton 
-        secondary 
-        @click="closeModal">
-          Close
+      <FeatherButton
+        secondary
+        @click="closeModal"
+      >
+        CLOSE
+      </FeatherButton>
+      <FeatherButton
+        v-if="selectedTool === DiscoveryType.Azure"
+        primary
+        @click="saveAzureDiscovery"
+      >
+        SAVE DISCOVERY
       </FeatherButton>
     </template>
   </PrimaryModal>
-   <FeatherDrawer
-    id="map-left-drawer"
+  <FeatherDrawer
     :left="false"
     :modelValue="isDrawerOpen"
     @update:modelValue="closeDrawer"
     :labels="{ close: 'close', title: 'Instructions' }"
   >
     <div class="container">
-      <slot name="search"><DiscoveryInstructions :tool="selectedTool"/></slot>
+      <slot name="search"><DiscoveryInstructions :tool="selectedTool" /></slot>
       <slot name="view"></slot>
     </div>
   </FeatherDrawer>
@@ -70,8 +84,11 @@
 import ActiveDiscoveryImg from '@/assets/active-discovery.png'
 import PassiveDiscoveryImg from '@/assets/passive-discovery.png'
 import DiscoveryStepper from '@/components/Discovery/DiscoveryStepper.vue'
+import AzureForm from '@/components/Discovery/AzureForm.vue'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import useModal from '@/composables/useModal'
+import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+const store = useDiscoveryStore()
 const { openModal, closeModal, isVisible } = useModal()
 const selectedTool = ref()
 const isDrawerOpen = ref(false)
@@ -81,7 +98,7 @@ const modalContent = computed(() => {
     case DiscoveryType.ICMP:
       return { component: DiscoveryStepper, props: { callback: closeModal }}
     case DiscoveryType.Azure:
-      // return Azure content
+      return { component: AzureForm, props: { callback: closeModal }}
   }
 })
 
@@ -99,6 +116,10 @@ const showInstructions = (tool: DiscoveryType) => {
 const showConfigActiveTool = (tool: DiscoveryType) => {
   selectedTool.value = tool
   openModal()
+}
+
+const saveAzureDiscovery = () => {
+  store.saveDiscoveryAzure()
 }
 
 const closeDrawer = () => {
@@ -132,5 +153,8 @@ const closeDrawer = () => {
     flex-direction: column;
     margin-top: 18px;
   }
+}
+.feather-input-sub-text {
+  display: none;
 }
 </style>
