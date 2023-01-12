@@ -13,7 +13,7 @@
     <name>OpenNMS Horizon :: Minion :: Flows</name>
     <packaging>pom</packaging>
     <modules>
-        <module>parser</module>
-        <module>features</module>
+        <module>flows-parser</module>
+        <module>flows-features</module>
     </modules>
 </project>
