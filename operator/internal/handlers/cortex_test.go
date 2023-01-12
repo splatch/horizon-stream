@@ -21,15 +21,15 @@ import (
 	"testing"
 )
 
-func TestPrometheusUpdateConfig(t *testing.T) {
+func TestCortexUpdateConfig(t *testing.T) {
 	ConfigFilePath = "./../../charts/opennms/templates/"
-	handler := PrometheusHandler{}
+	handler := CortexHandler{}
 	assert.Nil(t, handler.GetConfig(), "config should start as nil")
 	values := DefaultTestValues()
-	values.Values.Prometheus.Enabled = false
+	values.Values.Cortex.Enabled = false
 	handler.UpdateConfig(values)
 	assert.Nil(t, handler.GetConfig(), "config should remain nil when prom is disabled")
-	values.Values.Prometheus.Enabled = true
+	values.Values.Cortex.Enabled = true
 	handler.UpdateConfig(values)
 	assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
 }
