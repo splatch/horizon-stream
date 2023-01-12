@@ -7,7 +7,7 @@ export interface ModalDelete {
   title: string
   cssClass: string
   content: string
-  minionId: number | null
+  id: number
   action: {
     cancel: ModalAction
     save: ModalAction

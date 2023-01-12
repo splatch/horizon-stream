@@ -36,11 +36,15 @@ import Delete from '@featherds/icon/action/Delete'
 import { IIcon } from '@/types'
 import { ModalDelete, ModalAction } from '@/types/modal'
 import { NodeContent } from '@/types/inventory'
-
 import useSnackbar from '@/composables/useSnackbar'
 import useModal from '@/composables/useModal'
+import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
+import { useNodeMutations } from '@/store/Mutations/nodeMutations'
+
 const { showSnackbar } = useSnackbar()
 const { openModal, closeModal, isVisible } = useModal()
+const inventoryQueries = useInventoryQueries()
+const nodeMutations = useNodeMutations()
 
 const router = useRouter()
 const props = defineProps<{ node: NodeContent}>()
@@ -87,7 +91,7 @@ const modal = ref<ModalDelete>({
   title: '',
   cssClass: '',
   content: '',
-  minionId: null,
+  id: 0,
   action: {
     cancel: <ModalAction>{},
     save: <ModalAction>{}
@@ -95,26 +99,21 @@ const modal = ref<ModalDelete>({
   hideTitle: true
 })
 const deleteHandler = async () => {
-  /* const deleteMinion = await minionMutations.deleteMinion(modal.value.minionId)
-  if (!deleteMinion.error) {
-    // clears node obj on successful save
-    // Object.assign(node, defaultDevice)
+  const deleteNode = await nodeMutations.deleteNode(modal.value.id)
+  
+  if (!deleteNode.error) {
     closeModal()
     showSnackbar({
-      msg: 'Minion successfully deleted.'
+      msg: 'Node successfully deleted.'
     })
     // Timeout because minion may not be available right away
     // TODO: Replace timeout with websocket/polling
     setTimeout(() => {
-      applianceQueries.fetchMinionsForTable()
+      inventoryQueries.fetch()
     }, 350)
-  } */
-  // TODO: remove this once BE avail.
-  setTimeout(() => {
-    closeModal()
-    showSnackbar({ msg: 'Minion successfully deleted.' })
-  }, 2000)
+  }
 }
+
 const onDelete = () => {
   modal.value = {
     ...modal.value,
@@ -123,7 +122,7 @@ const onDelete = () => {
     content: `
       <p>Are you sure to delete</p>
     `,
-    minionId: props.node.id,
+    id: props.node.id,
     action: {
       cancel: {
         label: 'Cancel',
