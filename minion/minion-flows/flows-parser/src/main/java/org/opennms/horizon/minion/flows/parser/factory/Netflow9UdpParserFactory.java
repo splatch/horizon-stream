@@ -39,9 +39,7 @@ import com.codahale.metrics.MetricRegistry;
 
 import org.opennms.horizon.minion.flows.listeners.Parser;
 import org.opennms.horizon.minion.flows.listeners.factory.ParserDefinition;
-import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerMessage;
 import org.opennms.horizon.minion.flows.parser.Netflow9UdpParser;
-import org.opennms.horizon.minion.flows.parser.UdpListenerModule;
 
 public class Netflow9UdpParserFactory implements ParserFactory {
 

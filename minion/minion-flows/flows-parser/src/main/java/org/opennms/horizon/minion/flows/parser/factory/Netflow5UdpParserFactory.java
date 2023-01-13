@@ -31,17 +31,14 @@ package org.opennms.horizon.minion.flows.parser.factory;
 import java.util.Objects;
 
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
+import org.opennms.horizon.minion.flows.listeners.Parser;
+import org.opennms.horizon.minion.flows.listeners.factory.ParserDefinition;
 import org.opennms.horizon.minion.flows.parser.FlowSinkModule;
+import org.opennms.horizon.minion.flows.parser.Netflow5UdpParser;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 
 import com.codahale.metrics.MetricRegistry;
-
-import org.opennms.horizon.minion.flows.listeners.Parser;
-import org.opennms.horizon.minion.flows.listeners.factory.ParserDefinition;
-import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerMessage;
-import org.opennms.horizon.minion.flows.parser.Netflow5UdpParser;
-import org.opennms.horizon.minion.flows.parser.UdpListenerModule;
 
 public class Netflow5UdpParserFactory implements ParserFactory {
 

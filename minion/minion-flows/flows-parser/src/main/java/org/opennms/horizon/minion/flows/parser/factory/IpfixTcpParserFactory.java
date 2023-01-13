@@ -36,7 +36,6 @@ import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.horizon.minion.flows.listeners.Parser;
 import org.opennms.horizon.minion.flows.listeners.factory.ParserDefinition;
 import org.opennms.horizon.minion.flows.listeners.factory.TelemetryRegistry;
-import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerMessage;
 import org.opennms.horizon.minion.flows.parser.IpfixTcpParser;
 
 public class IpfixTcpParserFactory implements ParserFactory {

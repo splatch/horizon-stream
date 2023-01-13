@@ -47,14 +47,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Ignore;
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
+import org.opennms.horizon.minion.flows.listeners.UdpListener;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
+import org.opennms.horizon.minion.flows.parser.factory.Identity;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
-import org.opennms.horizon.minion.flows.listeners.UdpListener;
-import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerMessage;
-
 import com.codahale.metrics.MetricRegistry;
-import com.google.protobuf.Message;
 
 public class IllegalFlowTest {
     private final static Path FOLDER = Paths.get("src/test/resources/flows");
@@ -111,17 +109,16 @@ public class IllegalFlowTest {
         sendTemplate(udpPort);
 
         // check that event is delivered only once
-
         parser.setIllegalFlowEventRate(3600);
         sendValid(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(0));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(5));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(eventCount::get, is(0));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(messagesSent::get, is(5));
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(10));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(eventCount::get, is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(messagesSent::get, is(10));
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(15));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(eventCount::get, is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(messagesSent::get, is(15));
 
         // reset counter
 
@@ -132,26 +129,26 @@ public class IllegalFlowTest {
 
         parser.setIllegalFlowEventRate(2);
         sendValid(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(0));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(5));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(eventCount::get, is(0));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(messagesSent::get, is(5));
 
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(10));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(eventCount::get, is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(messagesSent::get, is(10));
 
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(15));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(eventCount::get, is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(messagesSent::get, is(15));
 
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(1));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(20));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(eventCount::get, is(1));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(messagesSent::get, is(20));
 
         Thread.sleep(2000);
 
         sendIllegal(udpPort);
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> eventCount.get(), is(2));
-        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(() -> messagesSent.get(), is(25));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(eventCount::get, is(2));
+        await().pollDelay(250, TimeUnit.MILLISECONDS).atMost(2, TimeUnit.SECONDS).until(messagesSent::get, is(25));
     }
 
     private void sendTemplate(final int udpPort) throws Exception {

@@ -37,17 +37,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
+import org.opennms.horizon.minion.flows.parser.factory.Identity;
 import org.opennms.horizon.minion.flows.parser.flowmessage.FlowMessage;
 import org.opennms.horizon.minion.flows.parser.transport.MessageBuilder;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.protobuf.Message;
-
-import parser.factory.DnsResolver;
-import parser.factory.Identity;
-import parser.flowmessage.FlowMessage;
-import parser.transport.MessageBuilder;
 
 public class ClockSkewTest {
     private int eventCount = 0;
