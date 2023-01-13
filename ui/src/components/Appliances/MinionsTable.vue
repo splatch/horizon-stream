@@ -2,7 +2,7 @@
   <TableCard v-if="appliancesStore.minionsTableOpen">
     <div class="header">
       <div class="title">
-        Minions ({{ applianceQueries.tableMinions.length }})
+        Minions ({{ appliancesQueries.tableMinions.length }})
       </div>
       <FeatherButton 
         data-test="hide-minions-btn"
@@ -34,9 +34,9 @@
             <MetricChip tag="td" :metric="{status: minion.status}" class="bg-status" data-test="minion-item-status" />
             <td>
               <FeatherButton
-                v-if="minion.status === 'DOWN'"
+              v-if="minion.status === 'DOWN'"
                 icon="Delete"
-                @click="onDelete(minion.id, minion.label)"
+                @click="onDelete(minion.systemId as string, minion.label as string)"
                 data-test="minion-item-delete-btn"
               >
                 <FeatherIcon :icon="deleteIcon" />
@@ -62,7 +62,7 @@
       <FeatherButton 
         data-testid="save-btn" 
         primary
-        @click="modal.action.save.handler">
+        @click="deleteHandler">
           {{ modal.action.save.label }}
       </FeatherButton>
     </template>
@@ -82,6 +82,8 @@ import { TimeRangeUnit } from '@/types/graphql'
 import MetricChip from '../Common/MetricChip.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import useModal from '@/composables/useModal'
+import { useMinionMutations } from '@/store/Mutations/minionMutations'
+import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
@@ -93,16 +95,16 @@ const deleteIcon = markRaw(Delete)
 const graphProps = ref({} as GraphProps)
 
 const appliancesStore = useAppliancesStore()
-const applianceQueries = useAppliancesQueries()
-// const minionMutations = useMinionMutations()
+const appliancesQueries = useAppliancesQueries()
+const minionMutations = useMinionMutations()
 
-const minionsTable = computed<ExtendedMinion[]>(() => applianceQueries.tableMinions)
+const minionsTable = computed<ExtendedMinion[]>(() => appliancesQueries.tableMinions)
 
 const modal = ref<ModalDelete>({
   title: '',
   cssClass: '',
   content: '',
-  minionId: null,
+  id: '',
   action: {
     cancel: <ModalAction>{},
     save: <ModalAction>{}
@@ -110,35 +112,22 @@ const modal = ref<ModalDelete>({
   hideTitle: true
 })
 
-
 const deleteHandler = async () => {
-  /* const deleteMinion = await minionMutations.deleteMinion(modal.value.minionId)
+  const deleteMinion = await minionMutations.deleteMinion({id: modal.value.id as string})
 
   if (!deleteMinion.error) {
-    // clears node obj on successful save
-    // Object.assign(node, defaultDevice)
-
     closeModal()
-
     showSnackbar({
-      msg: 'Minion successfully deleted.'
+      msg: 'Node successfully deleted.'
     })
-
     // Timeout because minion may not be available right away
     // TODO: Replace timeout with websocket/polling
     setTimeout(() => {
-      applianceQueries.fetchMinionsForTable()
+      appliancesQueries.fetchMinionsForTable()
     }, 350)
-  } */
-
-  // TODO: remove this once BE avail.
-  setTimeout(() => {
-    closeModal()
-    showSnackbar({ msg: 'Minion successfully deleted.' })
-  }, 2000)
+  }
 }
-
-const onDelete = (id: number, label: string | undefined) => {
+const onDelete = (id: string, label: string) => {
   modal.value = {
     ...modal.value,
     title: label || '',
@@ -146,7 +135,7 @@ const onDelete = (id: number, label: string | undefined) => {
     content: `
       <p>Are you sure to delete</p>
     `,
-    minionId: id,
+    id,
     action: {
       cancel: {
         label: 'Cancel',
@@ -154,11 +143,10 @@ const onDelete = (id: number, label: string | undefined) => {
       },
       save: {
         label: 'Delete',
-        handler: deleteHandler
+        handler: {}
       }
     }
   }
-
   openModal()
 }
 

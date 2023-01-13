@@ -1,8 +1,4 @@
-// const foo = 2 + 2
-
-// console.log(foo)
-
-/* import { defineStore } from 'pinia'
+import { defineStore } from 'pinia'
 import { useMutation } from 'villus'
 import useSpinner from '@/composables/useSpinner'
 
@@ -13,21 +9,16 @@ const { startSpinner, stopSpinner } = useSpinner()
 export const useMinionMutations = defineStore('minionMutations', () => {
   const {
     execute: deleteMinion,
-    isFetching,
-    error
+    isFetching: isDeletingMinion,
+    error: isDeleteMinionError
   } = useMutation(DeleteMinionDocument)
 
   watchEffect(() => {
-    if (isFetching.value) {
-      startSpinner()
-    } else {
-      stopSpinner()
-    }
+    isDeletingMinion.value ? startSpinner() : stopSpinner()
   })
 
   return {
     deleteMinion,
-    error
+    isDeleteMinionError
   }
 })
- */
