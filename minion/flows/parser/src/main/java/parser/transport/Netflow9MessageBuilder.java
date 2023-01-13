@@ -117,16 +117,7 @@ public class Netflow9MessageBuilder implements MessageBuilder {
                 case "DIRECTION":
                     Long directionValue = getLongValue(value);
                     Direction direction = Direction.UNKNOWN;
-                    if (directionValue != null) {
-                        switch (directionValue.intValue()) {
-                            case 0:
-                                direction = Direction.INGRESS;
-                                break;
-                            case 1:
-                                direction = Direction.EGRESS;
-                                break;
-                        }
-                    }
+                    direction = IpFixMessageBuilder.handleDirectionValue(directionValue, direction);
                     builder.setDirection(direction);
                     break;
                 case "IPV4_DST_ADDR":
@@ -276,14 +267,10 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         }
 
         // Set input interface
-        first(ingressPhysicalInterface, inputSnmp).ifPresent(ifIndex -> {
-            builder.setInputSnmpIfindex(ifIndex);
-        });
+        first(ingressPhysicalInterface, inputSnmp).ifPresent(builder::setInputSnmpIfindex);
 
         // Set output interface
-        first(egressPhysicalInterface, outputSnmp).ifPresent(ifIndex -> {
-            builder.setOutputSnmpIfindex(ifIndex);
-        });
+        first(egressPhysicalInterface, outputSnmp).ifPresent(builder::setOutputSnmpIfindex);
 
 
         // Set Destination address and host name.
@@ -313,39 +300,9 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         // set vlan
         first(srcVlan, dstVlan).ifPresent( vlan -> builder.setVlan(setIntValue(vlan.intValue())));
 
-        Timeout timeout = new Timeout(flowActiveTimeout, flowInActiveTimeout);
-        timeout.setFirstSwitched(builder.hasFirstSwitched() ? builder.getFirstSwitched().getValue() : null);
-        timeout.setLastSwitched(builder.hasLastSwitched() ? builder.getLastSwitched().getValue() : null);
-        timeout.setNumBytes(builder.getNumBytes().getValue());
-        timeout.setNumPackets(builder.getNumPackets().getValue());
-        Long deltaSwitched = timeout.getDeltaSwitched();
-        getUInt64Value(deltaSwitched).ifPresent(builder::setDeltaSwitched);
+        IpFixMessageBuilder.buildDeltaSwitched(builder, flowActiveTimeout, flowInActiveTimeout);
 
         builder.setNetflowVersion(NetflowVersion.V9);
         return builder;
-    }
-
-    public Long getFlowActiveTimeoutFallback() {
-        return this.flowActiveTimeoutFallback;
-    }
-
-    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
-        this.flowActiveTimeoutFallback = flowActiveTimeoutFallback;
-    }
-
-    public Long getFlowInactiveTimeoutFallback() {
-        return this.flowInactiveTimeoutFallback;
-    }
-
-    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
-        this.flowInactiveTimeoutFallback = flowInactiveTimeoutFallback;
-    }
-
-    public Long getFlowSamplingIntervalFallback() {
-        return this.flowSamplingIntervalFallback;
-    }
-
-    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
-        this.flowSamplingIntervalFallback = flowSamplingIntervalFallback;
     }
 }

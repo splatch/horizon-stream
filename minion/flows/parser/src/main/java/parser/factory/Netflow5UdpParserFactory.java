@@ -44,8 +44,6 @@ import parser.UdpListenerModule;
 public class Netflow5UdpParserFactory implements ParserFactory {
 
 
-    private final Identity identity;
-
     private final DnsResolver dnsResolver;
 
     private final UdpListenerModule udpListenerModule;
@@ -53,9 +51,8 @@ public class Netflow5UdpParserFactory implements ParserFactory {
     private final MessageDispatcherFactory messageDispatcherFactory;
 
 
-    public Netflow5UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory, final Identity identity, final DnsResolver dnsResolver,
+    public Netflow5UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory, final DnsResolver dnsResolver,
                                     final UdpListenerModule udpListenerModule) {
-        this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         this.udpListenerModule = Objects.requireNonNull(udpListenerModule);
         this.messageDispatcherFactory = Objects.requireNonNull(messageDispatcherFactory);
@@ -69,6 +66,6 @@ public class Netflow5UdpParserFactory implements ParserFactory {
     @Override
     public Parser createBean(final ParserDefinition parserDefinition) {
         final AsyncDispatcher<UdpListenerMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(udpListenerModule);
-        return new Netflow5UdpParser(parserDefinition.getFullName(), dispatcher, identity, dnsResolver, new MetricRegistry());
+        return new Netflow5UdpParser(parserDefinition.getFullName(), dispatcher, dnsResolver, new MetricRegistry());
     }
 }

@@ -46,7 +46,6 @@ import io.netty.buffer.ByteBuf;
 import listeners.UdpParser;
 import listeners.factory.UdpListenerMessage;
 import parser.factory.DnsResolver;
-import parser.factory.Identity;
 import parser.ie.RecordProvider;
 import parser.session.Session;
 import parser.session.UdpSessionManager;
@@ -60,23 +59,21 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
     private UdpSessionManager sessionManager;
 
     private ScheduledFuture<?> housekeepingFuture;
-    private Duration templateTimeout = Duration.ofMinutes(30);
+    private final Duration templateTimeout = Duration.ofMinutes(30);
 
     public UdpParserBase(final Protocol protocol,
                          final String name,
                          final AsyncDispatcher<UdpListenerMessage> dispatcher,
-                        // final EventForwarder eventForwarder,
-                         final Identity identity,
                          final DnsResolver dnsResolver,
                          final MetricRegistry metricRegistry) {
-        super(protocol, name, dispatcher, identity, dnsResolver, metricRegistry);
+        super(protocol, name, dispatcher, dnsResolver, metricRegistry);
 
         this.packetsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "packetsReceived"));
         this.parserErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "parserErrors"));
 
         String sessionCountGauge = MetricRegistry.name("parsers",  name, "sessionCount");
         // Register only if it's not already there in the registry.
-        if (!metricRegistry.getGauges().keySet().contains(sessionCountGauge)) {
+        if (!metricRegistry.getGauges().containsKey(sessionCountGauge)) {
             metricRegistry.register(sessionCountGauge, (Gauge<Integer>) () -> (this.sessionManager != null) ? this.sessionManager.count() : null);
         }
     }
@@ -116,14 +113,6 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
     public void stop() {
         this.housekeepingFuture.cancel(false);
         super.stop();
-    }
-
-    public Duration getTemplateTimeout() {
-        return this.templateTimeout;
-    }
-
-    public void setTemplateTimeout(final Duration templateTimeout) {
-        this.templateTimeout = templateTimeout;
     }
 
     @Override

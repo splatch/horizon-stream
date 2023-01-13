@@ -46,6 +46,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
+import org.opennms.horizon.shared.logging.LogPreservingThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +63,6 @@ import com.swrve.ratelimitedlogger.RateLimitedLog;
 import listeners.Parser;
 import listeners.factory.UdpListenerMessage;
 import parser.factory.DnsResolver;
-import parser.factory.Identity;
 import parser.flowmessage.FlowMessage;
 import parser.ie.RecordProvider;
 import parser.session.SequenceNumberTracker;
@@ -83,10 +83,6 @@ public abstract class ParserBase implements Parser {
 
     private static final long DEFAULT_ILLEGAL_FLOW_EVENT_RATE_SECONDS = TimeUnit.HOURS.toSeconds(1);
 
-    public static final String CLOCK_SKEW_EVENT_UEI = "uei.opennms.org/internal/telemetry/clockSkewDetected";
-
-    public static final String ILLEGAL_FLOW_EVENT_UEI = "uei.opennms.org/internal/telemetry/illegalFlowDetected";
-
     private final ThreadLocal<Boolean> isParserThread = new ThreadLocal<>();
 
     private final Protocol protocol;
@@ -94,8 +90,6 @@ public abstract class ParserBase implements Parser {
     private final String name;
 
     private final AsyncDispatcher<UdpListenerMessage> dispatcher;
-
-    private final Identity identity;
 
     private final DnsResolver dnsResolver;
 
@@ -127,9 +121,7 @@ public abstract class ParserBase implements Parser {
 
     private long illegalFlowEventRate = 0;
 
-    private int sequenceNumberPatience = 32;
-
-    private boolean dnsLookupsEnabled = true;
+    private static final boolean DNS_LOOKUPS_ENABLED = true;
 
     private LoadingCache<InetAddress, Optional<Instant>> clockSkewEventCache;
 
@@ -140,13 +132,11 @@ public abstract class ParserBase implements Parser {
     public ParserBase(final Protocol protocol,
                       final String name,
                       final AsyncDispatcher<UdpListenerMessage> dispatcher,
-                      final Identity identity,
                       final DnsResolver dnsResolver,
                       final MetricRegistry metricRegistry) {
         this.protocol = Objects.requireNonNull(protocol);
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
-        this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         Objects.requireNonNull(metricRegistry);
 
@@ -231,9 +221,9 @@ public abstract class ParserBase implements Parser {
     public void setClockSkewEventRate(final long clockSkewEventRate) {
         this.clockSkewEventRate = clockSkewEventRate;
 
-        this.clockSkewEventCache = CacheBuilder.newBuilder().expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
+        this.clockSkewEventCache = CacheBuilder.newBuilder().expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS).build(new CacheLoader<>() {
             @Override
-            public Optional<Instant> load(InetAddress key) throws Exception {
+            public Optional<Instant> load(InetAddress key) {
                 return Optional.empty();
             }
         });
@@ -242,9 +232,9 @@ public abstract class ParserBase implements Parser {
     public void setIllegalFlowEventRate(final long illegalFlowEventRate) {
         this.illegalFlowEventRate = illegalFlowEventRate;
 
-        this.illegalFlowEventCache = CacheBuilder.newBuilder().expireAfterWrite(this.illegalFlowEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
+        this.illegalFlowEventCache = CacheBuilder.newBuilder().expireAfterWrite(this.illegalFlowEventRate, TimeUnit.SECONDS).build(new CacheLoader<>() {
             @Override
-            public Optional<Instant> load(InetAddress key) throws Exception {
+            public Optional<Instant> load(InetAddress key) {
                 return Optional.empty();
             }
         });
@@ -254,24 +244,8 @@ public abstract class ParserBase implements Parser {
         return illegalFlowEventRate;
     }
 
-    public int getSequenceNumberPatience() {
-        return this.sequenceNumberPatience;
-    }
-
-    public void setSequenceNumberPatience(final int sequenceNumberPatience) {
-        this.sequenceNumberPatience = sequenceNumberPatience;
-    }
-
     public boolean getDnsLookupsEnabled() {
-        return dnsLookupsEnabled;
-    }
-
-    public void setDnsLookupsEnabled(boolean dnsLookupsEnabled) {
-        this.dnsLookupsEnabled = dnsLookupsEnabled;
-    }
-
-    public int getThreads() {
-        return threads;
+        return DNS_LOOKUPS_ENABLED;
     }
 
     public void setThreads(int threads) {
@@ -330,7 +304,7 @@ public abstract class ParserBase implements Parser {
 
                             final Optional<Instant> instant = illegalFlowEventCache.getUnchecked(session.getRemoteAddress());
 
-                            if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getIllegalFlowEventRate()) {
+                            if (instant.isEmpty() || Duration.between(instant.get(), Instant.now()).getSeconds() > getIllegalFlowEventRate()) {
                                 illegalFlowEventCache.put(session.getRemoteAddress(), Optional.of(Instant.now()));
 
                                 for (final String correction : corrections) {
@@ -399,7 +373,7 @@ public abstract class ParserBase implements Parser {
             if (deltaMs > getMaxClockSkew() * 1000L) {
                 final Optional<Instant> instant = clockSkewEventCache.getUnchecked(remoteAddress);
 
-                if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getClockSkewEventRate()) {
+                if (instant.isEmpty() || Duration.between(instant.get(), Instant.now()).getSeconds() > getClockSkewEventRate()) {
                     clockSkewEventCache.put(remoteAddress, Optional.of(Instant.now()));
 
                    /* eventForwarder.sendNow(new EventBuilder()
@@ -445,7 +419,8 @@ public abstract class ParserBase implements Parser {
     }
 
     protected SequenceNumberTracker sequenceNumberTracker() {
-        return new SequenceNumberTracker(this.sequenceNumberPatience);
+        int sequenceNumberPatience = 32;
+        return new SequenceNumberTracker(sequenceNumberPatience);
     }
 
     public void unload() {

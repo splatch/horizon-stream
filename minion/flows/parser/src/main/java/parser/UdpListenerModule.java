@@ -52,7 +52,6 @@ public class UdpListenerModule implements SinkModule<UdpListenerMessage, UdpList
     @Override
     public byte[] marshal(UdpListenerMessage resultsMessage) {
         try {
-            //TODO: update
             return new byte[12];
         } catch (Exception e) {
             log.warn("Error while marshalling message {}.", resultsMessage, e);

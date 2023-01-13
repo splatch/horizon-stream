@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
@@ -45,7 +46,6 @@ import listeners.Dispatchable;
 import listeners.UdpParser;
 import listeners.factory.UdpListenerMessage;
 import parser.factory.DnsResolver;
-import parser.factory.Identity;
 import parser.ie.RecordProvider;
 import parser.netflow9.proto.Header;
 import parser.netflow9.proto.Packet;
@@ -59,11 +59,9 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
 
     public Netflow9UdpParser(final String name,
                              final AsyncDispatcher<UdpListenerMessage> dispatcher,
-                           //  final EventForwarder eventForwarder,
-                             final Identity identity,
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
-        super(Protocol.NETFLOW9, name, dispatcher, identity, dnsResolver, metricRegistry);
+        super(Protocol.NETFLOW9, name, dispatcher, dnsResolver, metricRegistry);
     }
 
     public Netflow9MessageBuilder getMessageBuilder() {
@@ -130,29 +128,5 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
         public InetAddress getRemoteAddress() {
             return this.remoteAddress;
         }
-    }
-
-    public Long getFlowActiveTimeoutFallback() {
-        return this.messageBuilder.getFlowActiveTimeoutFallback();
-    }
-
-    public void setFlowActiveTimeoutFallback(final Long flowActiveTimeoutFallback) {
-        this.messageBuilder.setFlowActiveTimeoutFallback(flowActiveTimeoutFallback);
-    }
-
-    public Long getFlowInactiveTimeoutFallback() {
-        return this.messageBuilder.getFlowInactiveTimeoutFallback();
-    }
-
-    public void setFlowInactiveTimeoutFallback(final Long flowInactiveTimeoutFallback) {
-        this.messageBuilder.setFlowInactiveTimeoutFallback(flowInactiveTimeoutFallback);
-    }
-
-    public Long getFlowSamplingIntervalFallback() {
-        return this.messageBuilder.getFlowSamplingIntervalFallback();
-    }
-
-    public void setFlowSamplingIntervalFallback(final Long flowSamplingIntervalFallback) {
-        this.messageBuilder.setFlowSamplingIntervalFallback(flowSamplingIntervalFallback);
     }
 }

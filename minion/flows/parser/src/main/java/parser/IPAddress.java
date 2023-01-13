@@ -28,9 +28,6 @@
 
 package parser;
 
-import static java.util.Objects.requireNonNull;
-
-import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -43,36 +40,8 @@ public class IPAddress implements Comparable<IPAddress> {
     private static final Pattern LEADING_ZEROS = Pattern.compile("^0:[0:]+");
     protected final InetAddress m_inetAddress;
 
-    public IPAddress(final IPAddress addr) {
-        m_inetAddress = addr.m_inetAddress;
-    }
-
-    public IPAddress(final String dottedNotation) {
-        m_inetAddress = getInetAddress(dottedNotation);
-    }
-
     public IPAddress(final InetAddress inetAddress) {
         m_inetAddress = inetAddress;
-    }
-
-    public IPAddress(final byte[] ipAddrOctets) {
-        try {
-            m_inetAddress = InetAddress.getByAddress(ipAddrOctets);
-        } catch (final UnknownHostException e) {
-            throw new IllegalArgumentException("Cannot convert bytes to an InetAddress.", e);
-        }
-    }
-
-    public static IPAddress min(final IPAddress a, final IPAddress b) {
-        return (a.isLessThan(b) ? a : b);
-    }
-
-    public InetAddress toInetAddress() {
-        return m_inetAddress;
-    }
-
-    public byte[] toOctets() {
-        return m_inetAddress.getAddress();
     }
 
     @Override
@@ -127,100 +96,6 @@ public class IPAddress implements Comparable<IPAddress> {
         return toIpAddrString(m_inetAddress);
     }
 
-    /** {@inheritDoc} */
-    public BigInteger toBigInteger() {
-        return new BigInteger(1, m_inetAddress.getAddress());
-    }
-
-    /**
-     * <p>incr</p>
-     *
-     * @return a {@link IPAddress} object.
-     */
-    public IPAddress incr() {
-        final byte[] current = m_inetAddress.getAddress();
-        final byte[] b = new byte[current.length];
-
-        int carry = 1;
-        for(int i = current.length-1; i >= 0; i--) {
-            b[i] = (byte)(current[i] + carry);
-            // if overflow we need to carry to the next byte
-            carry = b[i] == 0 ? carry : 0;
-        }
-
-        if (carry > 0) {
-            // we have overflowed the address
-            throw new IllegalStateException("you have tried to increment the max ip address");
-        }
-
-        return new IPAddress(b);
-    }
-
-    /**
-     * <p>decr</p>
-     *
-     * @return a {@link IPAddress} object.
-     */
-    public IPAddress decr() {
-        final byte[] current = m_inetAddress.getAddress();
-        final byte[] b = new byte[current.length];
-
-        int borrow = 1;
-        for(int i = current.length-1; i >= 0; i--) {
-            b[i] = (byte)(current[i] - borrow);
-            // if underflow then we need to borrow from the next byte
-            borrow = b[i] == (byte)0xff ? borrow : 0;
-        }
-
-        if (borrow > 0) {
-            // we have underflowed the address
-            throw new IllegalStateException("you have tried to decrement the '0' ip address");
-        }
-
-        return new IPAddress(b);
-
-    }
-
-    /**
-     * <p>isPredecessorOf</p>
-     *
-     * @param other a {@link IPAddress} object.
-     * @return a boolean.
-     */
-    public boolean isPredecessorOf(final IPAddress other) {
-        return other.decr().equals(this);
-    }
-
-    /**
-     * <p>isSuccessorOf</p>
-     *
-     * @param other a {@link IPAddress} object.
-     * @return a boolean.
-     */
-    public boolean isSuccessorOf(final IPAddress other) {
-        return other.incr().equals(this);
-    }
-
-    /**
-     * <p>isLessThan</p>
-     *
-     * @param other a {@link IPAddress} object.
-     * @return a boolean.
-     */
-    public boolean isLessThan(final IPAddress other) {
-        return compareTo(other) < 0;
-    }
-
-    /**
-     * <p>isLessThanOrEqualTo</p>
-     *
-     * @param other a {@link IPAddress} object.
-     * @return a boolean.
-     */
-    public boolean isLessThanOrEqualTo(final IPAddress other) {
-        return compareTo(other) <= 0;
-    }
-
     /**
      * <p>isGreaterThan</p>
      *
@@ -231,15 +106,6 @@ public class IPAddress implements Comparable<IPAddress> {
         return compareTo(other) > 0;
     }
 
-    /**
-     * <p>isGreaterThanOrEqualTo</p>
-     *
-     * @param other a {@link IPAddress} object.
-     * @return a boolean.
-     */
-    public boolean isGreaterThanOrEqualTo(final IPAddress other) {
-        return compareTo(other) >= 0;
-    }
 
     /**
      * <p>max</p>
@@ -305,10 +171,6 @@ public class IPAddress implements Comparable<IPAddress> {
         }
     }
 
-    protected byte[] toIpAddrBytes(final String dottedNotation) {
-        return requireNonNull(getInetAddress(dottedNotation)).getAddress();
-    }
-
     private InetAddress getInetAddress(final byte[] ipAddrOctets) {
         try {
             return InetAddress.getByAddress(ipAddrOctets);
@@ -316,14 +178,6 @@ public class IPAddress implements Comparable<IPAddress> {
             throw new IllegalArgumentException("Invalid IPAddress " + Arrays.toString(ipAddrOctets) + " with length " + ipAddrOctets.length);
         }
 
-    }
-
-    private InetAddress getInetAddress(final String dottedNotation) {
-        try {
-            return dottedNotation == null? null : InetAddress.getByName(dottedNotation);
-        } catch (final UnknownHostException e) {
-            throw new IllegalArgumentException("Invalid IPAddress " + dottedNotation);
-        }
     }
 
     private int compare(final byte[] a, final byte[] b) {
