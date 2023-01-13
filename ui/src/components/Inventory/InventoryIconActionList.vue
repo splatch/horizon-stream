@@ -99,8 +99,8 @@ const modal = ref<ModalDelete>({
   hideTitle: true
 })
 const deleteHandler = async () => {
-  const deleteNode = await nodeMutations.deleteNode(modal.value.id)
-  
+  const deleteNode = await nodeMutations.deleteNode({id: modal.value.id})
+
   if (!deleteNode.error) {
     closeModal()
     showSnackbar({

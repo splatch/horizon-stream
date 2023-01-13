@@ -26,8 +26,10 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
       cachePolicy: 'network-only' // always fetch and do not cache
     })
 
+  watch(nodesFetching, (_, fetched) => (fetched ? stopSpinner() : startSpinner()))
+
   watchEffect(() => {
-    nodesFetching.value ? startSpinner() : stopSpinner()
+    nodes.value = []
 
     const allNodes = nodesData.value?.findAllNodes
 
