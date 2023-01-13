@@ -30,12 +30,10 @@ package org.opennms.horizon.minion.grpc;
 
 import static org.opennms.horizon.minion.grpc.GrpcClientConstants.CLIENT_CERTIFICATE_FILE_PATH;
 import static org.opennms.horizon.minion.grpc.GrpcClientConstants.CLIENT_PRIVATE_KEY_FILE_PATH;
-import static org.opennms.horizon.minion.grpc.GrpcClientConstants.DEFAULT_GRPC_DEADLINE;
 import static org.opennms.horizon.minion.grpc.GrpcClientConstants.DEFAULT_GRPC_HOST;
 import static org.opennms.horizon.minion.grpc.GrpcClientConstants.DEFAULT_GRPC_PORT;
 import static org.opennms.horizon.minion.grpc.GrpcClientConstants.DEFAULT_MESSAGE_SIZE;
 import static org.opennms.horizon.minion.grpc.GrpcClientConstants.GRPC_CLIENT_PID;
-import static org.opennms.horizon.minion.grpc.GrpcClientConstants.GRPC_DEADLINE;
 import static org.opennms.horizon.minion.grpc.GrpcClientConstants.GRPC_HOST;
 import static org.opennms.horizon.minion.grpc.GrpcClientConstants.GRPC_MAX_INBOUND_SIZE;
 import static org.opennms.horizon.minion.grpc.GrpcClientConstants.GRPC_PORT;
@@ -132,7 +130,6 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
     private Tracer tracer;
     private RpcRequestHandler rpcRequestHandler;
     private CloudMessageHandler cloudMessageHandler;
-    private long deadline;
 
     public MinionGrpcClient(IpcIdentity ipcIdentity, ConfigurationAdmin configAdmin) {
         this(ipcIdentity, ConfigUtils.getPropertiesFromConfig(configAdmin, GRPC_CLIENT_PID), new MetricRegistry(), null);
@@ -156,7 +153,6 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
     public void start() throws IOException {
         String host = PropertiesUtils.getProperty(properties, GRPC_HOST, DEFAULT_GRPC_HOST);
         int port = PropertiesUtils.getProperty(properties, GRPC_PORT, DEFAULT_GRPC_PORT);
-        deadline = PropertiesUtils.getProperty(properties, GRPC_DEADLINE, DEFAULT_GRPC_DEADLINE);
         boolean tlsEnabled = PropertiesUtils.getProperty(properties, TLS_ENABLED, false);
         int maxInboundMessageSize = PropertiesUtils.getProperty(properties, GRPC_MAX_INBOUND_SIZE, DEFAULT_MESSAGE_SIZE);
 
@@ -205,14 +201,14 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
     }
 
     private void initializeRpcStub() {
-        rpcStream = asyncStub.withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).cloudToMinionRPC(new RpcMessageHandler());
+        rpcStream = asyncStub.cloudToMinionRPC(new RpcMessageHandler());
         // Need to send minion headers to gRPC server in order to register.
         sendMinionHeaders();
         LOG.info("Initialized RPC stream");
     }
 
     private void initializeSinkStub() {
-        sinkStream = asyncStub.withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).minionToCloudMessages(new EmptyMessageReceiver());
+        sinkStream = asyncStub.minionToCloudMessages(new EmptyMessageReceiver());
         LOG.info("Initialized Sink stream");
     }
 
@@ -221,7 +217,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
             .setLocation(ipcIdentity.getLocation())
             .setSystemId(ipcIdentity.getId())
             .build();
-        asyncStub.withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).cloudToMinionMessages(identity, new CloudMessageObserver(cloudMessageHandler));
+        asyncStub.cloudToMinionMessages(identity, new CloudMessageObserver(cloudMessageHandler));
         LOG.info("Initialized cloud receiver stream");
     }
 
@@ -373,7 +369,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> i
     @Override
     public CompletableFuture<RpcResponseProto> call(RpcRequestProto requestProto) {
         CompletableFuture<RpcResponseProto> future = new CompletableFuture<>();
-        asyncStub.withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).minionToCloudRPC(requestProto, new StreamObserver<>() {
+        asyncStub.minionToCloudRPC(requestProto, new StreamObserver<>() {
             @Override
             public void onNext(RpcResponseProto value) {
                 future.complete(value);

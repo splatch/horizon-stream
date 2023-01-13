@@ -32,7 +32,7 @@ public interface GrpcClientConstants {
 
     String GRPC_CLIENT_PID = "org.opennms.core.ipc.grpc.client";
     String GRPC_HOST = "host";
-    String DEFAULT_GRPC_HOST  = "localhost";
+    String DEFAULT_GRPC_HOST = "localhost";
     String GRPC_PORT = "port";
     int DEFAULT_GRPC_PORT = 8990;
     String TLS_ENABLED = "tls.enabled";
@@ -41,6 +41,4 @@ public interface GrpcClientConstants {
     String CLIENT_CERTIFICATE_FILE_PATH = "client.cert.filepath";
     String CLIENT_PRIVATE_KEY_FILE_PATH = "client.private.key.filepath";
     String TRUST_CERTIFICATE_FILE_PATH = "trust.cert.filepath";
-    String GRPC_DEADLINE = "deadline";
-    long DEFAULT_GRPC_DEADLINE = 6000000;
 }
