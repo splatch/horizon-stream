@@ -8,3 +8,5 @@ yarn-error.log
 cypress/e2e/examples
 cypress/videos
 .vscode
+*copy*
+mocking
