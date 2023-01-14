@@ -69,7 +69,7 @@ jobs:
       - name: Build & Sonar Scan
         run: |
           mvn -B verify \
-              -Prun-it -Ddocker.image=$IMAGE:$IMAGE_TAG \
+              -Prun-it -Ddocker.image=$IMAGE_REGISTRY/$IMAGE:$IMAGE_TAG \
               -T 1C \
               -Dorg.slf4j.simpleLogger.showThreadName=true \
               -Dorg.slf4j.simpleLogger.showDateTime=true \
@@ -82,5 +82,5 @@ jobs:
         working-directory: 'minion'
 
       - name: Push Image
-        run: docker push $IMAGE:$IMAGE_TAG
+        run: docker push $IMAGE_REGISTRY/$IMAGE:$IMAGE_TAG
         working-directory: 'minion'
