@@ -6,10 +6,6 @@ on:
       - 'parent-pom/**'
   workflow_call:
 
-#concurrency:
-#  group: ${{ github.workflow }}-${{ github.ref }}
-#  cancel-in-progress: true
-
 jobs:
   install:
     runs-on: ubuntu-latest
@@ -27,15 +23,15 @@ jobs:
           distribution: temurin
           java-version: 11
 
-      - name: Cache Maven Dependencies
+      - name: Cache Maven dependencies
         uses: ./.github/actions/maven-cache
         with:
           cache-key-hash: ${{ hashFiles('parent-pom/pom.xml') }}
 
-      - name: feature-parent-pom
-        uses: ./.github/actions/parent-pom
+      - name: Maven Install & Sonar Scan
+        uses: ./.github/actions/maven-install-sonar
         with:
-          dir-location: 'parent-pom'
-          enable-sonar-scan: true
+          working-directory: 'parent-pom'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
+          project-key: 'opennms_horizon-stream_parent-pom'
