@@ -40,7 +40,19 @@
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 const store = useDiscoveryStore()
 const ipAddressesStr = ref<string>('')
-const updateIpsPayload = () => store.ipAddresses = ipAddressesStr.value.split(',')
+const updateIpsPayload = () => {
+  if (ipAddressesStr.value) {
+    store.ipAddresses = ipAddressesStr.value.split(',')
+  } else {
+    store.ipAddresses = []
+  }
+}
+onBeforeMount(() => {
+  // populate ipAddresses field with previous data
+  if (store.ipAddresses.length) {
+    ipAddressesStr.value = store.ipAddresses.join(', ')
+  }
+})
 </script>
 
 <style scoped lang="scss">
@@ -51,13 +63,10 @@ const updateIpsPayload = () => store.ipAddresses = ipAddressesStr.value.split(',
   @include typography.subtitle1;
   margin-bottom: var(variables.$spacing-s);
 }
-.ip-address-container,
-.ip-range-container {
-  margin-top: var(variables.$spacing-m);
-}
 .ip-range-container {
   display: flex;
   flex-direction: column;
+  margin-top: var(variables.$spacing-m);
 
   .input-container {
     display: flex;
