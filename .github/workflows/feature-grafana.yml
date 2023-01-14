@@ -43,9 +43,9 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            $IMAGE_REGISTRY/${{ github.repository_owner }}/$IMAGE
+            ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE }}
           tags: |
-            type=raw,value=$IMAGE_TAG
+            type=raw,value=${{ env.IMAGE_TAG }}
 
       - name: Build and push image
         uses: docker/build-push-action@v3
