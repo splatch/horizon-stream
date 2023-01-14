@@ -38,11 +38,21 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            $IMAGE_REGISTRY/${{ github.repository_owner }}/$IMAGE
+          tags: |
+            type=raw,value=$IMAGE_TAG
+
       - name: Build and push image
         uses: docker/build-push-action@v3
         with:
           push: true
           context: grafana
-          tags: ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE }}:${{ env.IMAGE_TAG }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha
