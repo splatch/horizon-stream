@@ -1,16 +1,9 @@
-export interface ModalAction {
-  label: string
-  handler: object
-}
-
-export interface ModalDelete {
+export interface ModalPrimary {
   title: string
   cssClass: string
   content: string
+  cancelLabel: string
+  saveLabel: string
   id: number | string
-  action: {
-    cancel: ModalAction
-    save: ModalAction
-  }
   hideTitle: boolean
 }

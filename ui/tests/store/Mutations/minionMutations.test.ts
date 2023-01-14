@@ -1,4 +1,4 @@
-/* import { createTestingPinia } from '@pinia/testing'
+import { createTestingPinia } from '@pinia/testing'
 import { minionFixture } from '../../fixture/minions'
 import { useAppliancesQueries } from '@/store/Queries/appliancesQueries'
 import { useMinionMutations } from '@/store/Mutations/minionMutations'
@@ -28,10 +28,9 @@ describe('minionMutations', () => {
       }))
     }))
 
-    // delete a node
+    // delete a minion
     // const minionsMutations = useMinionMutations()
     // minionMutations.deleteMinion()
     // assert: minion list - 1 element
   })
 })
- */

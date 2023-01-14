@@ -34,7 +34,7 @@
             <MetricChip tag="td" :metric="{status: minion.status}" class="bg-status" data-test="minion-item-status" />
             <td>
               <FeatherButton
-              v-if="minion.status === 'DOWN'"
+                v-if="minion.status === 'DOWN'"
                 icon="Delete"
                 @click="onDelete(minion.systemId as string, minion.label as string)"
                 data-test="minion-item-delete-btn"
@@ -56,14 +56,14 @@
       <FeatherButton 
         data-testid="cancel-btn" 
         secondary 
-        @click="modal.action.cancel.handler">
-          {{ modal.action.cancel.label }}
+        @click="closeModal">
+          {{ modal.cancelLabel }}
       </FeatherButton>
       <FeatherButton 
         data-testid="save-btn" 
         primary
         @click="deleteHandler">
-          {{ modal.action.save.label }}
+          {{ modal.saveLabel }}
       </FeatherButton>
     </template>
   </PrimaryModal>
@@ -75,7 +75,7 @@ import { useAppliancesStore } from '@/store/Views/appliancesStore'
 import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
 import Delete from '@featherds/icon/action/Delete'
 import { Monitor, WidgetProps } from '@/types'
-import { ModalDelete, ModalAction } from '@/types/modal'
+import { ModalPrimary } from '@/types/modal'
 import { GraphProps } from '@/types/graphs'
 import { ExtendedMinion } from '@/types/minion'
 import { TimeRangeUnit } from '@/types/graphql'
@@ -83,7 +83,6 @@ import MetricChip from '../Common/MetricChip.vue'
 import useSnackbar from '@/composables/useSnackbar'
 import useModal from '@/composables/useModal'
 import { useMinionMutations } from '@/store/Mutations/minionMutations'
-import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
 
 defineProps<{widgetProps?: WidgetProps}>()
 
@@ -100,15 +99,13 @@ const minionMutations = useMinionMutations()
 
 const minionsTable = computed<ExtendedMinion[]>(() => appliancesQueries.tableMinions)
 
-const modal = ref<ModalDelete>({
+const modal = ref<ModalPrimary>({
   title: '',
   cssClass: '',
   content: '',
   id: '',
-  action: {
-    cancel: <ModalAction>{},
-    save: <ModalAction>{}
-  },
+  cancelLabel: 'cancel',
+  saveLabel: 'delete',
   hideTitle: true
 })
 
@@ -118,7 +115,7 @@ const deleteHandler = async () => {
   if (!deleteMinion.error) {
     closeModal()
     showSnackbar({
-      msg: 'Node successfully deleted.'
+      msg: 'Minion successfully deleted.'
     })
     // Timeout because minion may not be available right away
     // TODO: Replace timeout with websocket/polling
@@ -135,18 +132,9 @@ const onDelete = (id: string, label: string) => {
     content: `
       <p>Are you sure to delete</p>
     `,
-    id,
-    action: {
-      cancel: {
-        label: 'Cancel',
-        handler: closeModal
-      },
-      save: {
-        label: 'Delete',
-        handler: {}
-      }
-    }
+    id
   }
+
   openModal()
 }
 
