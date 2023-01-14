@@ -71,7 +71,7 @@ jobs:
         uses: ./.github/actions/jib-maven-sonar
         with:
           working-directory: 'inventory'
-          image: ${{ env.IMAGE_REGISTRY}}/${{ env.IMAGE }}:${{ env.IMAGE_TAG }}
+          image: ${{ env.IMAGE_REGISTRY}}/${{github.actor}}/${{ env.IMAGE }}:${{ env.IMAGE_TAG }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           project-key: 'opennms_horizon-stream_inventory'

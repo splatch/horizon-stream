@@ -18,6 +18,7 @@ on:
 env:
   IMAGE: ${{ inputs.image || 'opennms/horizon-stream-operator' }}
   IMAGE_TAG: ${{ inputs.image-tag || github.sha }}
+  IMAGE_REGISTRY: ghcr.io
 
 jobs:
   build-and-test:
@@ -49,7 +50,7 @@ jobs:
         with:
           push: true
           context: ui
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE }}:${{ env.IMAGE_TAG }}
+          tags: ${{ env.IMAGE_REGISTRY }}/${{github.actor}}/${{ env.IMAGE }}:${{ env.IMAGE_TAG }}
           cache-from: type=gha
           cache-to: type=gha
 
