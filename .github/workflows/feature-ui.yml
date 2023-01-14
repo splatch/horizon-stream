@@ -39,6 +39,15 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate Docker metadata
+        id: docker-metadata
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE }}
+          tags: |
+            type=raw,value=${{ env.IMAGE_TAG }}
+
       - uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -54,7 +63,7 @@ jobs:
         with:
           push: true
           context: ui
-          tags: ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE }}:${{ env.IMAGE_TAG }}
+          tags: ${{ steps.docker-metadata.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha
 

@@ -38,8 +38,8 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Docker meta
-        id: meta
+      - name: Generate Docker metadata
+        id: docker-metadata
         uses: docker/metadata-action@v3
         with:
           images: |
@@ -52,7 +52,7 @@ jobs:
         with:
           push: true
           context: grafana
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.docker-metadata.outputs.tags }}
+          labels: ${{ steps.docker-metadata.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha

@@ -52,6 +52,15 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate Docker metadata
+        id: docker-metadata
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE }}
+          tags: |
+            type=raw,value=${{ env.IMAGE_TAG }}
+
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
@@ -69,7 +78,7 @@ jobs:
       - name: Build & Sonar Scan
         run: |
           mvn -B verify \
-              -Prun-it -Ddocker.image=$IMAGE_REGISTRY/${{ github.repository_owner }}/$IMAGE:$IMAGE_TAG \
+              -Prun-it -Ddocker.image=${{ steps.docker-metadata.outputs.tags }} \
               -T 1C \
               -Dorg.slf4j.simpleLogger.showThreadName=true \
               -Dorg.slf4j.simpleLogger.showDateTime=true \
@@ -82,5 +91,5 @@ jobs:
         working-directory: 'minion'
 
       - name: Push Image
-        run: docker push $IMAGE_REGISTRY/${{ github.repository_owner }}/$IMAGE:$IMAGE_TAG
+        run: docker push ${{ steps.docker-metadata.outputs.tags }}
         working-directory: 'minion'

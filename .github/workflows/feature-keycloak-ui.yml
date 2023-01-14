@@ -38,11 +38,20 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate Docker metadata
+        id: docker-metadata
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE }}
+          tags: |
+            type=raw,value=${{ env.IMAGE_TAG }}
+
       - name: Build and push image
         uses: docker/build-push-action@v3
         with:
           push: true
           context: keycloak-ui
-          tags: ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE }}:${{ env.IMAGE_TAG }}
+          tags: ${{ steps.docker-metadata.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha
