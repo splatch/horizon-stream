@@ -21,7 +21,7 @@ on:
         default: false
 
 env:
-  IMAGE: ${{ inputs.image || 'opennms/horizon-stream-alarm' }}
+  IMAGE: ${{ inputs.image || 'horizon-stream-alarm' }}
   IMAGE_TAG: ${{ inputs.image-tag || github.sha }}
   IMAGE_REGISTRY: ghcr.io
 

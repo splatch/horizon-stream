@@ -16,7 +16,7 @@ on:
         type: string
 
 env:
-  IMAGE: ${{ inputs.image || 'opennms/horizon-stream-ui' }}
+  IMAGE: ${{ inputs.image || 'horizon-stream-ui' }}
   IMAGE_TAG: ${{ inputs.image-tag || github.sha }}
   IMAGE_REGISTRY: ghcr.io
 

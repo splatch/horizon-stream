@@ -21,7 +21,7 @@ on:
         default: false
 
 env:
-  IMAGE: ${{ inputs.image || 'opennms/horizon-stream-minion-gateway-grpc-proxy' }}
+  IMAGE: ${{ inputs.image || 'horizon-stream-minion-gateway-grpc-proxy' }}
   IMAGE_TAG: ${{ inputs.image-tag || github.sha }}
   IMAGE_REGISTRY: ghcr.io
 

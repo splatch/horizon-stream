@@ -21,7 +21,7 @@ on:
         default: false
 
 env:
-  IMAGE: ${{ inputs.image || 'opennms/horizon-stream-rest-server' }}
+  IMAGE: ${{ inputs.image || 'horizon-stream-rest-server' }}
   IMAGE_TAG: ${{ inputs.image-tag || github.sha }}
   IMAGE_REGISTRY: ghcr.io
 
