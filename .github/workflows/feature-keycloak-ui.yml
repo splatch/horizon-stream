@@ -23,7 +23,6 @@ env:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    environment: docker-publish-account
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
