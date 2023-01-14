@@ -53,6 +53,6 @@ jobs:
 
       - name: Jib Maven build and push
         run: |
-          mvn verify jib:build -Dimage=$IMAGE_REGISTRY/${{github.actor}}/$IMAGE:$IMAGE_TAG
+          mvn verify jib:build -Dimage=$IMAGE_REGISTRY/${{ github.repository_owner }}/$IMAGE:$IMAGE_TAG
         working-directory: minion-gateway-grpc-proxy
         shell: bash

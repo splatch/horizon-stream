@@ -43,6 +43,6 @@ jobs:
         with:
           push: true
           context: grafana
-          tags: ${{ env.IMAGE_REGISTRY }}/${{github.actor}}/${{ env.IMAGE }}:${{ env.IMAGE_TAG }}
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE }}:${{ env.IMAGE_TAG }}
           cache-from: type=gha
           cache-to: type=gha
