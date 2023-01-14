@@ -14,14 +14,14 @@
       <FeatherButton 
         data-testid="cancel-btn" 
         secondary 
-        @click="modal.action.cancel.handler">
-          {{ modal.action.cancel.label }}
+        @click="closeModal">
+          {{ modal.cancelLabel }}
       </FeatherButton>
       <FeatherButton 
         data-testid="save-btn" 
         primary
-        @click="modal.action.save.handler">
-          {{ modal.action.save.label }}
+        @click="deleteHandler">
+          {{ modal.saveLabel }}
       </FeatherButton>
     </template>
   </PrimaryModal>
@@ -34,7 +34,7 @@ import PieChart from '@material-design-icons/svg/outlined/pie_chart.svg'
 import Warning from '@featherds/icon/notification/Warning'
 import Delete from '@featherds/icon/action/Delete'
 import { IIcon } from '@/types'
-import { ModalDelete, ModalAction } from '@/types/modal'
+import { ModalPrimary } from '@/types/modal'
 import { NodeContent } from '@/types/inventory'
 import useSnackbar from '@/composables/useSnackbar'
 import useModal from '@/composables/useModal'
@@ -87,17 +87,16 @@ const warningIcon: IIcon = {
   tooltip: 'Events/Alarms'
 }
 
-const modal = ref<ModalDelete>({
+const modal = ref<ModalPrimary>({
   title: '',
   cssClass: '',
   content: '',
-  id: 0,
-  action: {
-    cancel: <ModalAction>{},
-    save: <ModalAction>{}
-  },
+  id: '',
+  cancelLabel: 'cancel',
+  saveLabel: 'delete',
   hideTitle: true
 })
+
 const deleteHandler = async () => {
   const deleteNode = await nodeMutations.deleteNode({id: modal.value.id})
 
@@ -113,7 +112,6 @@ const deleteHandler = async () => {
     }, 350)
   }
 }
-
 const onDelete = () => {
   modal.value = {
     ...modal.value,
@@ -122,20 +120,12 @@ const onDelete = () => {
     content: `
       <p>Are you sure to delete</p>
     `,
-    id: props.node.id,
-    action: {
-      cancel: {
-        label: 'Cancel',
-        handler: closeModal
-      },
-      save: {
-        label: 'Delete',
-        handler: deleteHandler
-      }
-    }
+    id: props.node.id
   }
+
   openModal()
 }
+
 const deleteIcon: IIcon = {
   image: markRaw(Delete),
   tooltip: 'Delete'
