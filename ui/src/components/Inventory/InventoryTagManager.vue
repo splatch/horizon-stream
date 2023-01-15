@@ -1,69 +1,3 @@
-<template>
-  <div class="tag-manager-box" v-if="store.isTagsOpen">
-    <div class="left">
-      <div class="top">
-        <div class="subtitle">Selected Tags: </div>
-
-        <div class="total-selected">
-          <div class="subtitle">Total: {{ tags.length }}</div>
-          <div class="subtitle pipe">|</div>
-          <div class="subtitle">Selected: {{ selectedTags.length }}</div>
-        </div>
-
-        <div class="search-add">
-          <!-- Add tag -->
-          <div>
-            <FeatherDropdown ref="newTagDropdown">
-              <template v-slot:trigger="{ attrs, on }">
-                <FeatherButton link href="#" icon="Add Tag" v-bind="attrs" v-on="on">
-                  <FeatherIcon :icon="addIcon" />
-                </FeatherButton>
-              </template>
-              <FeatherInput v-model="newTag" label="New tag" class="new-tag-input" />
-              <FeatherButton primary class="new-tag-btn" @click="addTag">
-                Add Tag
-              </FeatherButton>
-            </FeatherDropdown>
-          </div>
-
-          <!-- Search tags input -->
-          <FeatherInput
-            class="search"
-            v-model="searchValue"
-            label="Search Tags">
-            <template v-slot:pre>
-              <FeatherIcon :icon="searchIcon" />
-            </template>
-          </FeatherInput>
-        </div>
-      </div>
-
-      <div>
-        <FeatherChipList condensed label="Tags" :key="selectedTags.toString()">
-          <FeatherChip 
-            v-for="tag of tags" 
-            :key="tag" 
-            class="pointer"
-            :class="{ 'selected' : selectedTags.includes(tag) }"
-            @click="selectTag(tag)"
-          >
-            {{ tag }}
-          </FeatherChip>
-        </FeatherChipList>
-      </div>
-    </div>
-
-    <div class="right">
-      <div class="vl"></div>
-      <FeatherRadioGroup vertical :label="'Tag Nodes:'" v-model="tagNodes">
-        <FeatherRadio :value="1">All</FeatherRadio>
-        <FeatherRadio :value="2">Individual</FeatherRadio>
-        <FeatherRadio :value="3">Clear</FeatherRadio>
-      </FeatherRadioGroup>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { useInventoryStore } from '@/store/Views/inventoryStore'
 import Search from '@featherds/icon/action/Search'
@@ -79,8 +13,11 @@ const newTagDropdown = ref()
 const tagNodes = ref()
 const searchValue = ref()
 const selectedTags = ref<string[]>([])
+const tagSelected = ref<Record<string, boolean>>({})
 
-const tags = computed(() => ['tag1', 'tag2'])
+const tags = computed(() => [
+  'tag1tag1 tag1tag1tag1tag1tag1tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8', 'tag9', 'tag10', 'tag11', 'tag12', 'tag13', 'tag14', 'tag15', 'tag16', 'tag17', 'tag18', 'tag19', 'tag20', 'tag21', 'tag22'
+])
 
 const selectTag = (tag: string) => {
   if (selectedTags.value.includes(tag)) {
@@ -97,73 +34,170 @@ const addTag = () => {
 }
 </script>
 
+<template>
+  <div class="tag-manager-box" v-if="store.isTagsOpen">
+    <section class="select-tags">
+      <div class="top">
+        <h4>Select Tags:</h4>
+        <FeatherInput
+          class="search"
+          v-model="searchValue"
+          label="Search Tags">
+          <template v-slot:post>
+            <FeatherIcon :icon="searchIcon" />
+          </template>
+        </FeatherInput>
+      </div>
+      <FeatherList class="tag-list">
+        <FeatherListItem v-for="tag in tags" :key="tag">
+          <FeatherCheckbox :id="tag" v-model="tagSelected[tag]" @update:model-value="selectTag(tag)"
+            >{{ tag }}
+          </FeatherCheckbox>
+        </FeatherListItem>
+      </FeatherList>
+    </section>
+    <section class="selected-tags">
+      <h4>Selected Tags:</h4>
+      <FeatherList class="tag-list">
+        <FeatherListItem v-for="tag in selectedTags" :key="tag"
+          >{{ tag }}
+        </FeatherListItem>
+      </FeatherList>
+    </section>
+    <section class="tag-nodes">
+      <h4>Tag Nodes:</h4>
+      <FeatherRadioGroup vertical label="" v-model="tagNodes" class="select-tag-nodes">
+        <FeatherRadio :value="1">All</FeatherRadio>
+        <FeatherRadio :value="2">Individual</FeatherRadio>
+        <FeatherRadio :value="3">Clear</FeatherRadio>
+      </FeatherRadioGroup>
+    </section>
+  </div>
+</template>
+
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";
 @use "@featherds/styles/mixins/typography";
-.subtitle {
-  @include typography.subtitle2();
-}
+@use "@/styles/vars";
+@use "@/styles/mediaQueriesMixins";
+
 .tag-manager-box {
   display: flex;
-  height: 175px;
-  background: var(variables.$shade-4);
-  margin: 10px 20px 10px 20px;
-  border-radius: 3px;
+  flex-direction: row;
+  flex-flow: wrap;
+  justify-content: space-between;
+  border: 1px solid var(variables.$secondary-text-on-surface);
+  border-radius: vars.$border-radius-m;
   padding: var(variables.$spacing-m);
-
-  .left {
-    width: 80%;
-    display: flex;
-    flex-direction: column;
-    padding-right: var(variables.$spacing-m);
-
-    .top {
-      display: flex;
-      justify-content: space-between;
-
-      .total-selected {
-        display: flex;
-        gap: var(variables.$spacing-m);
-
-        .pipe {
-          color: var(variables.$shade-4);
-        }
-      }
-
-      .search-add {
-        display: flex;
-        gap: 5px;
-        .search {
-          width: 200px;
-        }
-        .new-tag-input {
-          margin: 0px 10px 0px 10px;
-          width: 175px;
-        }
-        .new-tag-btn {
-          margin-left: var(variables.$spacing-s);
-        }
-      }
-    }
-  }
-  .right {
-    display: flex;
-
-    .vl {
-      border-left: 1px solid var(variables.$shade-3);
-      height: 135px;
-      margin-top: 6px;
-      margin-right: var(variables.$spacing-m);
-    }
+  background-color: var(variables.$disabled-text-on-color);
+  min-width: 480px;
+  margin-bottom: var(variables.$spacing-xxl);
+  h4 {
+    padding-top: 3px;
   }
 }
-</style>
+.select-tags {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 445px;
+  .top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    :deep(.search) {
+      width: 200px;
+    }
+  }
+  :deep(.tag-list) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    > li {
+      label {
+        width: 100px;
+        overflow: scroll;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+  }
 
+  @include mediaQueriesMixins.screen-lg {
+    width: 45%;
+    min-width: 0;
+  }
+  @include mediaQueriesMixins.screen-xxl {
+    width: 50%;
+  }
+}
+.selected-tags {
+  width: 100%;
+  min-width: 445px;
+  margin-top: var(variables.$spacing-m);
+  padding-top: var(variables.$spacing-m);
+  border-top: 1px solid var(variables.$secondary-text-on-surface);
+  :deep(.tag-list) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    > li {
+      a {
+        > span {
+          width: 80px;
+          overflow: scroll;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
 
-<style lang="scss">
-.tag-manager-box {
-  .feather-radio-group-container.vertical .layout-container {
-    margin-bottom: 0px !important;
+  @include mediaQueriesMixins.screen-lg {
+    width: 35%;
+    min-width: 0;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+    border-left: 1px solid var(variables.$secondary-text-on-surface);
+    padding-left: var(variables.$spacing-m);
+    h4 {
+      margin-bottom: 26px;
+    }
+  }
+  @include mediaQueriesMixins.screen-xxl {
+    width: 30%;
+  }
+}
+.tag-nodes {
+  display: flex;
+  flex-direction: column;
+  width: 100%;;
+  min-width: 445px;
+  margin-top: var(variables.$spacing-m);
+  padding-top: var(variables.$spacing-m);
+  border-top: 1px solid var(variables.$secondary-text-on-surface);
+  :deep(.select-tag-nodes) {
+    margin-left: var(variables.$spacing-m);
+    .feather-input-sub-text {
+      display: none;
+    }
+  }
+
+  @include mediaQueriesMixins.screen-lg {
+    width: 15%;
+    min-width: 0;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+    padding-left: var(variables.$spacing-m);
+    border-left: 1px solid var(variables.$secondary-text-on-surface);
+    h4 {
+      margin-bottom: 20px;
+    }
+  }
+  @include mediaQueriesMixins.screen-xxl {
+    width: 15%;
   }
 }
 </style>
