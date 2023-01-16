@@ -98,11 +98,6 @@ jobs:
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
-  operator:
-    uses: ./.github/workflows/feature-operator.yml
-    secrets: inherit
-    with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
   grafana:
     uses: ./.github/workflows/feature-grafana.yml
     secrets: inherit
@@ -126,7 +121,6 @@ jobs:
       minion-gateway,
       minion-gateway-grpc-proxy,
       notifications,
-      operator,
       rest-server,
       ui
     ]
