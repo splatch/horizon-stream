@@ -12,25 +12,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package handlers
+package thirdparty
 
 import (
-	"github.com/OpenNMS/opennms-operator/internal/model/values"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/model/values"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
-type KafkaHandler struct {
-	ServiceHandlerObject
+type GrafanaHandler struct {
+	handlers.ServiceHandlerObject
 }
 
-func (h *KafkaHandler) UpdateConfig(values values.TemplateValues) error {
-
-	var deployment appsv1.Deployment
+func (h *GrafanaHandler) UpdateConfig(values values.TemplateValues) error {
+	var secret corev1.Secret
 	var service corev1.Service
+	var deployment appsv1.Deployment
 
-	h.AddToTemplates(filepath("kafka/kafka-service.yaml"), values, &service)
-	h.AddToTemplates(filepath("kafka/kafka-deployment.yaml"), values, &deployment)
+	h.AddToTemplates(handlers.Filepath("grafana/grafana-secret.yaml"), values, &secret)
+	h.AddToTemplates(handlers.Filepath("grafana/grafana-service.yaml"), values, &service)
+	h.AddToTemplates(handlers.Filepath("grafana/grafana-deployment.yaml"), values, &deployment)
 
 	return h.LoadTemplates()
 }

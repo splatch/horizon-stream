@@ -12,24 +12,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package handlers
+package thirdparty
 
 import (
-	"github.com/OpenNMS/opennms-operator/internal/model/values"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/model/values"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
 type MailServerHandler struct {
-	ServiceHandlerObject
+	handlers.ServiceHandlerObject
 }
 
 func (h *MailServerHandler) UpdateConfig(values values.TemplateValues) error {
 	var service corev1.Service
 	var deployment appsv1.Deployment
 
-	h.AddToTemplates(filepath("mail-server/mail-server-service.yaml"), values, &service)
-	h.AddToTemplates(filepath("mail-server/mail-server-deployment.yaml"), values, &deployment)
+	h.AddToTemplates(handlers.Filepath("mail-server/mail-server-service.yaml"), values, &service)
+	h.AddToTemplates(handlers.Filepath("mail-server/mail-server-deployment.yaml"), values, &deployment)
 
 	return h.LoadTemplates()
 }

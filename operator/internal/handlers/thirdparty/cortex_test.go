@@ -1,4 +1,5 @@
 //go:build unit
+// +build unit
 
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +15,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package handlers
+package thirdparty
 
 import (
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers/testutil"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestCortexUpdateConfig(t *testing.T) {
-	ConfigFilePath = "./../../charts/opennms/templates/"
+	handlers.ConfigFilePath = "./../../../charts/opennms/templates/"
 	handler := CortexHandler{}
 	assert.Nil(t, handler.GetConfig(), "config should start as nil")
-	values := DefaultTestValues()
+	values := testutil.DefaultTestValues()
 	values.Values.Cortex.Enabled = false
 	handler.UpdateConfig(values)
 	assert.Nil(t, handler.GetConfig(), "config should remain nil when prom is disabled")

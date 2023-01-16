@@ -12,26 +12,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package handlers
+package opennms
 
 import (
-	"github.com/OpenNMS/opennms-operator/internal/model/values"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/model/values"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	rbacv1 "k8s.io/api/rbac/v1"
 )
 
-type BaseHandler struct {
-	ServiceHandlerObject
+type ApiHandler struct {
+	handlers.ServiceHandlerObject
 }
 
-func (h *BaseHandler) UpdateConfig(values values.TemplateValues) error {
-	var namespace corev1.Namespace
-	var certSecret corev1.Secret
-	var endpointRole rbacv1.Role
+func (h *ApiHandler) UpdateConfig(values values.TemplateValues) error {
+	var apiService corev1.Service
+	var apiDeployment appsv1.Deployment
 
-	h.AddToTemplates(filepath("_namespace.yaml"), values, &namespace)
-	h.AddToTemplates(filepath("cert/cert-secret.yaml"), values, &certSecret)
-	h.AddToTemplates(filepath("endpoints-role.yaml"), values, &endpointRole)
+	h.AddToTemplates(handlers.Filepath("opennms/api/api-service.yaml"), values, &apiService)
+	h.AddToTemplates(handlers.Filepath("opennms/api/api-deployment.yaml"), values, &apiDeployment)
 
 	return h.LoadTemplates()
 }

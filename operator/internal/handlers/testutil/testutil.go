@@ -1,5 +1,3 @@
-//go:build unit
-
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,18 +12,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package handlers
+package testutil
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"github.com/OpenNMS-Cloud/opennms-operator/config"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/model/values"
+	values2 "github.com/OpenNMS-Cloud/opennms-operator/internal/util/values"
 )
 
-func TestPostgresUpdateConfig(t *testing.T) {
-	ConfigFilePath = "./../../charts/opennms/templates/"
-	handler := PostgresHandler{}
-	assert.Nil(t, handler.GetConfig(), "config should start as nil")
-	err := handler.UpdateConfig(DefaultTestValues())
-	assert.Nil(t, err)
-	assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
+var valuesSet bool
+
+var tvals values.TemplateValues
+
+func DefaultTestValues() values.TemplateValues {
+	if !valuesSet {
+		tvals, _ = values2.GetDefaultValues(config.OperatorConfig{
+			DefaultOpenNMSValuesFile: "./../../../charts/opennms/values.yaml",
+		})
+		valuesSet = true
+	}
+	return tvals
 }

@@ -15,22 +15,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package reconciler
+package base
 
 import (
-	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers/base"
-	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers/ingress"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers/testutil"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestInitServiceHandlers(t *testing.T) {
-	r := OpenNMSReconciler{}
-	r.InitServiceHandlers()
-	length := len(r.StandardHandlers)
-	first := r.StandardHandlers[0]
-	last := r.StandardHandlers[length-1]
-
-	assert.IsType(t, &base.BaseHandler{}, first, "First handler must be the base handler")
-	assert.IsType(t, &ingress.IngressHandler{}, last, "Last handler must be the ingress handler")
+func TestBaseUpdateConfig(t *testing.T) {
+	handlers.ConfigFilePath = "./../../../charts/opennms/templates/"
+	handler := BaseHandler{}
+	assert.Nil(t, handler.GetConfig(), "config should start as nil")
+	err := handler.UpdateConfig(testutil.DefaultTestValues())
+	assert.Nil(t, err)
+	assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
 }
