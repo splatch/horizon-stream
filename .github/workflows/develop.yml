@@ -32,14 +32,14 @@ jobs:
       skip-prereqs: true
   datachoices:
     needs: java-prereqs
-    uses: ./.github/workflows/feature-alarm.yml
+    uses: ./.github/workflows/feature-datachoices.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
       skip-prereqs: true
   events:
     needs: java-prereqs
-    uses: ./.github/workflows/feature-alarm.yml
+    uses: ./.github/workflows/feature-events.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
