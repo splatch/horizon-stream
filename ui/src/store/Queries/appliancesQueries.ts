@@ -8,7 +8,8 @@ import {
   ListNodeMetricsDocument,
   TsResult,
   Minion,
-  Node
+  Node,
+  TimeRangeUnit
 } from '@/types/graphql'
 import { ExtendedMinion } from '@/types/minion'
 import { ExtendedNode } from '@/types/node'
@@ -33,16 +34,24 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
 
         const allMinions = minionsData.value?.findAllMinions as Minion[]
 
-        tableMinions.value = []
-
-        if (allMinions?.length) addMetricsToMinions(allMinions)
+        if (allMinions?.length) {
+          addMetricsToMinions(allMinions)
+        } else {
+          tableMinions.value = []
+        }
       })
     }
 
     const fetchMinionMetrics = (instance: string) =>
       useQuery({
         query: ListMinionMetricsDocument,
-        variables: { instance, monitor: Monitor.ECHO },
+
+        variables: {
+          instance,
+          monitor: Monitor.ECHO,
+          timeRange: 1,
+          timeRangeUnit: TimeRangeUnit.Minute
+        },
         cachePolicy: 'network-only'
       })
 
@@ -59,7 +68,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
             tableMinions.value.push({
               ...minion,
               latency: {
-                timestamp: val
+                value: val
               }
             })
           } else tableMinions.value.push(minion)
@@ -86,12 +95,18 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     const fetchNodeMetrics = (id: number, instance: string) =>
       useQuery({
         query: ListNodeMetricsDocument,
-        variables: { id, instance, monitor: Monitor.ICMP },
+        variables: {
+          id,
+          instance,
+          monitor: Monitor.ICMP,
+          timeRange: 1,
+          timeRangeUnit: TimeRangeUnit.Minute
+        },
         cachePolicy: 'network-only'
       })
 
     const addMetricsToNodes = (allNodes: Node[]) => {
-      tableNodes.value = [] // reset
+      tableNodes.value = []
 
       allNodes.forEach(async (node) => {
         const { data, isFetching } = await fetchNodeMetrics(
@@ -114,7 +129,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
             tableNode = {
               ...tableNode,
               latency: {
-                timestamp: val
+                value: val
               }
             }
           }
