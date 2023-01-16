@@ -137,7 +137,7 @@ jobs:
           
           # Build cluster with Horizon Stream installed.
           cd install-local/
-          ./install-local.sh custom-images onmshs
+          ./install-local.sh cicd onmshs pipeline-test ghcr.io/opennms-cloud
 
         shell: bash
 

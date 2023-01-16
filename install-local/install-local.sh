@@ -18,8 +18,18 @@ fi
 
 CONTEXT=$1
 DOMAIN=$2
+IMAGE_TAG="local"
+IMAGE_PREFIX="opennms"
 KIND_CLUSTER_NAME=kind-test
 NAMESPACE=hs-instance
+
+if [[ -n "$3" ]]; then
+  IMAGE_TAG=$3
+fi
+
+if [[ -n "$4" ]]; then
+  IMAGE_PREFIX=$4
+fi
 
 #### FUNCTION DEF
 ################################
@@ -58,6 +68,44 @@ create_ssl_cert_secret () {
 
 }
 
+load_images () {
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-alarm:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-datachoices:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-events:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-grafana:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-inventory:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-keycloak:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-metrics-processor:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-minion:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-minion-gateway:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-minion-gateway-grpc-proxy:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-notification:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-rest-server:${IMAGE_TAG}&
+    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-ui:${IMAGE_TAG}&
+}
+
+install_helm_chart_custom_images () {
+  echo
+  echo ________________Installing Horizon Stream________________
+  echo
+  helm upgrade -i horizon-stream ./../charts/opennms \
+  -f ./tmp/install-local-opennms-horizon-stream-custom-images-values.yaml \
+  --namespace $NAMESPACE --create-namespace \
+  --set OpenNMS.Alarm.Image=${IMAGE_PREFIX}/horizon-stream-alarm:${IMAGE_TAG} \
+  --set OpenNMS.DataChoices.Image=${IMAGE_PREFIX}/horizon-stream-datachoices:${IMAGE_TAG} \
+  --set OpenNMS.Events.Image=${IMAGE_PREFIX}/horizon-stream-events:${IMAGE_TAG} \
+  --set Grafana.Image=${IMAGE_PREFIX}/horizon-stream-grafana-dev:${IMAGE_TAG} \
+  --set OpenNMS.Inventory.Image=${IMAGE_PREFIX}/horizon-stream-inventory:${IMAGE_TAG} \
+  --set Keycloak.Image=${IMAGE_PREFIX}/horizon-stream-keycloak-dev:${IMAGE_TAG} \
+  --set OpenNMS.MetricsProcessor.Image=${IMAGE_PREFIX}/horizon-stream-metrics-processor:${IMAGE_TAG} \
+  --set OpenNMS.Minion.Image=${IMAGE_PREFIX}/horizon-stream-minion:${IMAGE_TAG} \
+  --set OpenNMS.MinionGateway.Image=${IMAGE_PREFIX}/horizon-stream-minion-gateway:${IMAGE_TAG} \
+  --set OpenNMS.MinionGatewayGrpcProxy.Image=${IMAGE_PREFIX}/horizon-stream-minion-gateway-grpc-proxy:${IMAGE_TAG} \
+  --set OpenNMS.Notification.Image=${IMAGE_PREFIX}/horizon-stream-notification:${IMAGE_TAG} \
+  --set OpenNMS.API.Image=${IMAGE_PREFIX}/horizon-stream-rest-server:${IMAGE_TAG} \
+  --set OpenNMS.UI.Image=${IMAGE_PREFIX}/horizon-stream-ui:${IMAGE_TAG}
+}
+
 #### MAIN
 ################################
 
@@ -87,32 +135,28 @@ elif [ "$CONTEXT" == "custom-images" ]; then
 
   create_cluster
 
-  # Will add a kind-registry here at some point, see .github/ for sample script.
-  kind load docker-image --name kind-test opennms/horizon-stream-alarm:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-core:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-minion:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-minion-gateway:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-minion-gateway-grpc-proxy:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-keycloak:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-grafana:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-ui:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-notification:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-rest-server:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-inventory:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-metrics-processor:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-events:local&
-  kind load docker-image --name kind-test opennms/horizon-stream-datachoices:local&
+  load_images
 
   # Need to wait for the images to be loaded.
   sleep 120
 
-  echo
-  echo ________________Installing Horizon Stream________________
-  echo
-  helm upgrade -i horizon-stream ./../charts/opennms -f ./tmp/install-local-opennms-horizon-stream-custom-images-values.yaml --namespace $NAMESPACE --create-namespace
+  install_helm_chart_custom_images
+
   if [ $? -ne 0 ]; then exit; fi
 
-  create_ssl_cert_secret 
+  create_ssl_cert_secret
+  cluster_ready_check
+
+elif [ "$CONTEXT" == "cicd" ]; then
+
+  create_cluster
+
+  # assumes remote docker registry, no need to load images into cluster
+  install_helm_chart_custom_images
+
+  if [ $? -ne 0 ]; then exit; fi
+
+  create_ssl_cert_secret
   cluster_ready_check
 
 elif [ $CONTEXT == "existing-k8s" ]; then
