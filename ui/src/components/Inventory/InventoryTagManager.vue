@@ -89,9 +89,9 @@ const addTag = () => {
   border: 1px solid var(variables.$secondary-text-on-surface);
   border-radius: vars.$border-radius-m;
   padding: var(variables.$spacing-m);
+  margin-bottom: var(variables.$spacing-xxl);
   background-color: var(variables.$disabled-text-on-color);
   min-width: 480px;
-  margin-bottom: var(variables.$spacing-xxl);
   h4 {
     padding-top: 3px;
   }
@@ -160,9 +160,9 @@ const addTag = () => {
     min-width: 0;
     margin-top: 0;
     padding-top: 0;
+    padding-left: var(variables.$spacing-m);
     border-top: 0;
     border-left: 1px solid var(variables.$secondary-text-on-surface);
-    padding-left: var(variables.$spacing-m);
     h4 {
       margin-bottom: 26px;
     }
@@ -191,8 +191,8 @@ const addTag = () => {
     min-width: 0;
     margin-top: 0;
     padding-top: 0;
-    border-top: 0;
     padding-left: var(variables.$spacing-m);
+    border-top: 0;
     border-left: 1px solid var(variables.$secondary-text-on-surface);
     h4 {
       margin-bottom: 20px;
