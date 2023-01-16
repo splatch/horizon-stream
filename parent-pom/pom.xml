@@ -879,6 +879,13 @@
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco.version}</version>
                 </plugin>
+
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>${jib.version}</version>
+                </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
