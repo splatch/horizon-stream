@@ -65,8 +65,11 @@ public class CucumberRunnerIT {
     private static GenericContainer applicationContainer;
     private static PostgreSQLContainer postgreSQLContainer;
 
-
     private static Network network;
+
+    private static final String dockerImageName = System.getProperty("dockerImageName");
+
+    private static final String dockerImageTag = System.getProperty("dockerImageTag");
 
     @BeforeAll
     public static void before() throws Throwable {
@@ -103,7 +106,7 @@ public class CucumberRunnerIT {
 
     @SuppressWarnings({"unchecked"})
     private static void startApplicationContainer() {
-        applicationContainer = new GenericContainer(DockerImageName.parse("opennms/horizon-stream-inventory").withTag("local").toString());
+        applicationContainer = new GenericContainer(DockerImageName.parse(dockerImageName).withTag(dockerImageTag).toString());
         applicationContainer
             .withNetwork(network)
             .withNetworkAliases("application", "application-host")

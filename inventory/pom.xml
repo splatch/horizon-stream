@@ -405,6 +405,10 @@
                     <reuseForks>true</reuseForks>
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <trimStackTrace>false</trimStackTrace>
+                    <systemPropertyVariables>
+                        <dockerImageName>${docker.image.name}</dockerImageName>
+                        <dockerImageTag>${docker.image.tag}</dockerImageTag>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
