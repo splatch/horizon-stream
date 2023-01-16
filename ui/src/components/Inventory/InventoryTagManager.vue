@@ -3,7 +3,7 @@ import { useInventoryStore } from '@/store/Views/inventoryStore'
 import Search from '@featherds/icon/action/Search'
 import AddIcon from '@featherds/icon/action/AddCircleAlt'
 
-const store = useInventoryStore()
+const inventoryStore = useInventoryStore()
 
 const searchIcon = markRaw(Search)
 const addIcon = markRaw(AddIcon)
@@ -30,12 +30,12 @@ const selectTag = (tag: string) => {
 const addTag = () => {
   // send newtag.value
   newTag.value = '' // clear input
-  newTagDropdown.value.handleClose() // clost dropdown
+  newTagDropdown.value.handleClose() // close dropdown
 }
 </script>
 
 <template>
-  <div class="tag-manager-box" v-if="store.isTagsOpen">
+  <div class="tag-manager-box" v-if="inventoryStore.isTaggingBoxOpen">
     <section class="select-tags">
       <div class="top">
         <h4>Select Tags:</h4>
@@ -49,7 +49,7 @@ const addTag = () => {
         </FeatherInput>
       </div>
       <FeatherList class="tag-list">
-        <FeatherListItem v-for="tag in tags" :key="tag">
+        <FeatherListItem v-for="tag in tags" :key="tag" asLi>
           <FeatherCheckbox :id="tag" v-model="tagSelected[tag]" @update:model-value="selectTag(tag)"
             >{{ tag }}
           </FeatherCheckbox>
@@ -59,7 +59,7 @@ const addTag = () => {
     <section class="selected-tags">
       <h4>Selected Tags:</h4>
       <FeatherList class="tag-list">
-        <FeatherListItem v-for="tag in selectedTags" :key="tag"
+        <FeatherListItem v-for="tag in selectedTags" :key="tag" asLi
           >{{ tag }}
         </FeatherListItem>
       </FeatherList>
@@ -79,7 +79,7 @@ const addTag = () => {
 @use "@featherds/styles/themes/variables";
 @use "@featherds/styles/mixins/typography";
 @use "@/styles/vars";
-@use "@/styles/mediaQueriesMixins";
+@use "@/styles/mediaQueries";
 
 .tag-manager-box {
   display: flex;
@@ -123,11 +123,11 @@ const addTag = () => {
     }
   }
 
-  @include mediaQueriesMixins.screen-lg {
+  @include mediaQueries.screen-lg {
     width: 45%;
     min-width: 0;
   }
-  @include mediaQueriesMixins.screen-xxl {
+  @include mediaQueries.screen-xxl {
     width: 50%;
   }
 }
@@ -142,18 +142,20 @@ const addTag = () => {
     flex-direction: row;
     flex-wrap: wrap;
     > li {
-      a {
-        > span {
-          width: 80px;
-          overflow: scroll;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-        }
+      cursor: default;
+      &:hover {
+        background: none;
+      }
+      > span {
+        width: 80px;
+        overflow: scroll;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
   }
 
-  @include mediaQueriesMixins.screen-lg {
+  @include mediaQueries.screen-lg {
     width: 35%;
     min-width: 0;
     margin-top: 0;
@@ -165,7 +167,7 @@ const addTag = () => {
       margin-bottom: 26px;
     }
   }
-  @include mediaQueriesMixins.screen-xxl {
+  @include mediaQueries.screen-xxl {
     width: 30%;
   }
 }
@@ -184,7 +186,7 @@ const addTag = () => {
     }
   }
 
-  @include mediaQueriesMixins.screen-lg {
+  @include mediaQueries.screen-lg {
     width: 15%;
     min-width: 0;
     margin-top: 0;
@@ -196,7 +198,7 @@ const addTag = () => {
       margin-bottom: 20px;
     }
   }
-  @include mediaQueriesMixins.screen-xxl {
+  @include mediaQueries.screen-xxl {
     width: 15%;
   }
 }
