@@ -20,8 +20,8 @@
 
     <properties>
         <java.version>11</java.version>
-        <docker.image.name>opennms/horizon-stream-mock-minion-gateway</docker.image.name>
-        <docker.image.tag>local</docker.image.tag>
+        <minion-gateway-wiremock.docker.image.name>opennms/horizon-stream-mock-minion-gateway</minion-gateway-wiremock.docker.image.name>
+        <minion-gateway-wiremock.docker.image.tag>local</minion-gateway-wiremock.docker.image.tag>
         <skipJib>false</skipJib>
     </properties>
 
@@ -147,7 +147,7 @@
                 <configuration>
                     <skip>${skipJib}</skip>
                     <to>
-                        <image>${docker.image.name}:${docker.image.tag}</image>
+                        <image>${minion-gateway-wiremock.docker.image.name}:${minion-gateway-wiremock.docker.image.tag}</image>
                     </to>
                     <container>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
