@@ -10,9 +10,12 @@
         <version>0.1.0-SNAPSHOT</version>
         <relativePath>../parent-pom</relativePath>
     </parent>
-    <artifactId>datachoices</artifactId>
-    <name>OpenNMS Horizon :: DataChoices</name>
+
+    <name>OpenNMS Horizon Stream :: DataChoices</name>
     <description>datachoices</description>
+
+    <artifactId>datachoices</artifactId>
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
