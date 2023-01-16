@@ -13,7 +13,7 @@ describe('nodeMutations', () => {
   })
 
   // TODO: look for how to test mutations
-  it.only('should add a node', async () => {
+  it('should add a node', async () => {
     // node list
     vi.mock('villus', () => ({
       useQuery: vi.fn().mockImplementation(() => ({
