@@ -1,10 +1,5 @@
 name: 'Install Java Prereqs'
-description: 'Builds a Maven project and installs it into the runner''s Maven repository'
-inputs:
-  cache-key:
-    description: 'The key for the cache containing the resulting build files'
-    required: false
-    default: java-prereqs-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('parent-pom/**', 'shared-lib/**') }}
+description: 'Builds prerequisite Maven projects and installs them into the runner''s Maven repository'
 outputs:
   cache-key:
     description: 'The key for the cache containing the resulting build files'
@@ -25,7 +20,7 @@ runs:
       id: cache-maven
       with:
         path: '~/.m2/repository'
-        key: ${{ inputs.cache-key }}
+        key: java-prereqs-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('parent-pom/**', 'shared-lib/**') }}
     - name: build
       if: ${{ steps.cache-maven.outputs.cache-hit != 'true' }}
       run: |
