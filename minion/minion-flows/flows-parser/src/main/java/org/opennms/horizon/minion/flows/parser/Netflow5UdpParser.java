@@ -33,7 +33,7 @@ import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.slice
 import java.net.InetSocketAddress;
 
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
-import org.opennms.horizon.minion.flows.parser.factory.Identity;
+import org.opennms.horizon.minion.flows.parser.factory.FlowsIdentity;
 import org.opennms.horizon.minion.flows.parser.ie.RecordProvider;
 import org.opennms.horizon.minion.flows.parser.proto.Header;
 import org.opennms.horizon.minion.flows.parser.proto.Packet;
@@ -56,7 +56,7 @@ public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispa
 
     public Netflow5UdpParser(final String name,
                              final AsyncDispatcher<TelemetryMessage> dispatcher,
-                             final Identity identity,
+                             final FlowsIdentity identity,
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
         super(Protocol.NETFLOW5, name, dispatcher, identity, dnsResolver, metricRegistry);

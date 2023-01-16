@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,8 +28,28 @@
 
 package org.opennms.horizon.minion.flows.parser.factory;
 
-public interface Identity {
-    String getId();
-    String getLocation();
-    String getType();
+public class FlowsIdentityImpl implements FlowsIdentity {
+
+    private final String systemId;
+    private final String location;
+
+    public FlowsIdentityImpl(String systemId, String location) {
+        this.systemId = systemId;
+        this.location = location;
+    }
+
+    @Override
+    public String getId() {
+        return systemId;
+    }
+
+    @Override
+    public String getLocation() {
+        return location;
+    }
+
+    @Override
+    public String getType() {
+        return "";
+    }
 }

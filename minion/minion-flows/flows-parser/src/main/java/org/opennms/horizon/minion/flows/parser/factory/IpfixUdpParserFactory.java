@@ -42,9 +42,9 @@ public class IpfixUdpParserFactory implements ParserFactory {
 
     private final TelemetryRegistry telemetryRegistry;
     private final DnsResolver dnsResolver;
-    private final Identity identity;
+    private final FlowsIdentity identity;
 
-    public IpfixUdpParserFactory(final TelemetryRegistry telemetryRegistry, final Identity identity, final DnsResolver dnsResolver) {
+    public IpfixUdpParserFactory(final TelemetryRegistry telemetryRegistry, final FlowsIdentity identity, final DnsResolver dnsResolver) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         this.identity = Objects.requireNonNull(identity);

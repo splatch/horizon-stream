@@ -38,7 +38,7 @@ import java.util.concurrent.CompletableFuture;
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.minion.flows.listeners.TcpParser;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
-import org.opennms.horizon.minion.flows.parser.factory.Identity;
+import org.opennms.horizon.minion.flows.parser.factory.FlowsIdentity;
 import org.opennms.horizon.minion.flows.parser.ipfix.proto.Header;
 import org.opennms.horizon.minion.flows.parser.ipfix.proto.Packet;
 import org.opennms.horizon.minion.flows.parser.session.TcpSession;
@@ -59,7 +59,7 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
 
     public IpfixTcpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
-                          final Identity identity,
+                          final FlowsIdentity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {
         super(Protocol.IPFIX, name, dispatcher, identity, dnsResolver, metricRegistry);

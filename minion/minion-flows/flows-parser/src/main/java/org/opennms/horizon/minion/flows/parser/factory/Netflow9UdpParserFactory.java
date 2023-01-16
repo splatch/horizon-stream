@@ -44,12 +44,12 @@ import org.opennms.horizon.minion.flows.parser.Netflow9UdpParser;
 public class Netflow9UdpParserFactory implements ParserFactory {
 
     private final DnsResolver dnsResolver;
-    private final Identity identity;
+    private final FlowsIdentity identity;
     private final MessageDispatcherFactory messageDispatcherFactory;
     private final FlowSinkModule flowSinkModule;
 
     public Netflow9UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory,
-                                    final Identity identity,
+                                    final FlowsIdentity identity,
                                     final DnsResolver dnsResolver, FlowSinkModule flowSinkModule) {
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);

@@ -25,8 +25,8 @@
         <argument ref="identity" />
     </bean>
     <bean id="UnmarshalException" class="org.opennms.horizon.minion.flows.parser.UnmarshalException" />
-    <bean id="identity" class="org.opennms.horizon.minion.flows.parser.factory.IdentityImpl" >
-        <argument value="$[id]" />
+    <bean id="identity" class="org.opennms.horizon.minion.flows.parser.factory.FlowsIdentityImpl" >
+        <argument value="$[systemId]" />
         <argument value="$[location]" />
     </bean>
 

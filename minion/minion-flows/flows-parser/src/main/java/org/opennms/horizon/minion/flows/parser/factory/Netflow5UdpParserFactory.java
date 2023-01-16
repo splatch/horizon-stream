@@ -42,7 +42,7 @@ import com.codahale.metrics.MetricRegistry;
 
 public class Netflow5UdpParserFactory implements ParserFactory {
 
-    private final Identity identity;
+    private final FlowsIdentity identity;
 
     private final DnsResolver dnsResolver;
 
@@ -51,7 +51,7 @@ public class Netflow5UdpParserFactory implements ParserFactory {
     private final MessageDispatcherFactory messageDispatcherFactory;
 
 
-    public Netflow5UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory, final Identity identity, final DnsResolver dnsResolver,
+    public Netflow5UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory, final FlowsIdentity identity, final DnsResolver dnsResolver,
                                     final FlowSinkModule flowSinkModule) {
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);

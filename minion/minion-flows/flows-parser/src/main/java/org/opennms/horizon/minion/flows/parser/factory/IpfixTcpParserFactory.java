@@ -41,10 +41,10 @@ import org.opennms.horizon.minion.flows.parser.IpfixTcpParser;
 public class IpfixTcpParserFactory implements ParserFactory {
 
     private final TelemetryRegistry telemetryRegistry;
-    private final Identity identity;
+    private final FlowsIdentity identity;
     private final DnsResolver dnsResolver;
 
-    public IpfixTcpParserFactory(final TelemetryRegistry telemetryRegistry, final Identity identity,
+    public IpfixTcpParserFactory(final TelemetryRegistry telemetryRegistry, final FlowsIdentity identity,
                                  final DnsResolver dnsResolver) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
         this.identity = Objects.requireNonNull(identity);
