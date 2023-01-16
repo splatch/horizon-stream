@@ -28,8 +28,6 @@
     </dependencyManagement>
 
     <properties>
-        <docker.image.name>opennms/horizon-stream-minion-gateway</docker.image.name>
-        <docker.image.tag>local</docker.image.tag>
         <skipJib>false</skipJib>
     </properties>
 

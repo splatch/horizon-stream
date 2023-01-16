@@ -22,6 +22,7 @@
 
     <properties>
         <skip-docker-image-build>true</skip-docker-image-build>
+        <docker.image.name>opennms/horizon-stream-minion-gateway</docker.image.name>
         <docker.image.tag>local</docker.image.tag>
         <docker.image.skipPush>false</docker.image.skipPush>
         <docker.it.network>rest-server-it-network</docker.it.network>
