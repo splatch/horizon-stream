@@ -149,10 +149,7 @@ jobs:
 
       - name: Set up & run Cucumber tests
         run: |
-          
           # Cucumber test
-          cd ${{ inputs.dir-location }}
-          
           mvn install
           HORIZON_STREAM_BASE_URL=http://localhost:11080 
           KEYCLOAK_BASE_URL=https://onmshs/auth
@@ -169,8 +166,8 @@ jobs:
           ##    exit;
           ##  fi
           ##done
-
         shell: bash
+        working-directory: external-it
 
       - name: Clean up cluster
         if: ${{ always() }}
