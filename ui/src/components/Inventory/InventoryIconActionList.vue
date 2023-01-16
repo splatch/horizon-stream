@@ -8,7 +8,7 @@
   </ul>
   <PrimaryModal :visible="isVisible" :title="modal.title" :class="modal.cssClass">
     <template #content>
-      <div v-html="modal.content"></div>
+      <p>{{ modal.content }}</p>
     </template>
     <template #footer>
       <FeatherButton 
@@ -117,9 +117,7 @@ const onDelete = () => {
     ...modal.value,
     title: props.node.label || '',
     cssClass: 'modal-delete-node',
-    content: `
-      <p>Do you want to delete</p>
-    `,
+    content: 'Do you want to delete?',
     id: props.node.id
   }
 
