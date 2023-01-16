@@ -163,7 +163,7 @@
                             <name>mock-minion-gateway-it-image</name>
                             <alias>minion-gateway</alias>
                             <build>
-                                <from>opennms/horizon-stream-mock-minion-gateway:local</from>
+                                <from>opennms/horizon-stream-mock-minion-gateway:latest</from>
                             </build>
                             <run>
                                 <env>
