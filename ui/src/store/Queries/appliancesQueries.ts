@@ -8,7 +8,8 @@ import {
   ListNodeMetricsDocument,
   TsResult,
   Minion,
-  Node
+  Node,
+  TimeRangeUnit
 } from '@/types/graphql'
 import { ExtendedMinion } from '@/types/minion'
 import { ExtendedNode } from '@/types/node'
@@ -44,7 +45,13 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     const fetchMinionMetrics = (instance: string) =>
       useQuery({
         query: ListMinionMetricsDocument,
-        variables: { instance, monitor: Monitor.ECHO },
+
+        variables: {
+          instance,
+          monitor: Monitor.ECHO,
+          timeRange: 1,
+          timeRangeUnit: TimeRangeUnit.Minute
+        },
         cachePolicy: 'network-only'
       })
 
@@ -52,6 +59,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       allMinions.forEach(async (minion) => {
         const { data, isFetching } = await fetchMinionMetrics(minion.systemId as string)
         const result = data.value?.minionLatency?.data?.result
+        
         if (!isFetching.value) {
           if (result?.length) {
             const [{ value }] = data.value?.minionLatency?.data?.result as TsResult[]
@@ -87,11 +95,20 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
     const fetchNodeMetrics = (id: number, instance: string) =>
       useQuery({
         query: ListNodeMetricsDocument,
-        variables: { id, instance, monitor: Monitor.ICMP },
+        variables: {
+          id,
+          instance,
+          monitor: Monitor.ICMP,
+          timeRange: 1,
+          timeRangeUnit: TimeRangeUnit.Minute
+        },
         cachePolicy: 'network-only'
       })
 
     const addMetricsToNodes = (allNodes: Node[]) => {
+      tableNodes.value = []
+
+      const addMetricsToNodes = (allNodes: Node[]) => {
       tableNodes.value = [] // reset
 
       allNodes.forEach(async (node) => {
