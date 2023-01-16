@@ -20,9 +20,8 @@
     <artifactId>alarm-service</artifactId>
 
     <properties>
-        <skipITs>false</skipITs>
         <docker.image.name>opennms/horizon-stream-alarm</docker.image.name>
-        <docker.image.tag>local</docker.image.tag>
+        <skipITs>false</skipITs>
         <skipJib>false</skipJib>
     </properties>
 
@@ -232,9 +231,6 @@
                     <from>
                         <image>openjdk:11</image>
                     </from>
-                    <to>
-                        <image>${docker.image.name}:${docker.image.tag}</image>
-                    </to>
                     <container>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                     </container>
@@ -288,8 +284,7 @@
                     <systemPropertyVariables>
                         <application.base-url>http://localhost:${app-http-port}</application.base-url>
                         <kafka-rest.url>http://localhost:${kafka-rest.port}</kafka-rest.url>
-                        <dockerImageName>${docker.image.name}</dockerImageName>
-                        <dockerImageTag>${docker.image.tag}</dockerImageTag>
+                        <docker.image>${docker.image}</docker.image>
                     </systemPropertyVariables>
                 </configuration>
 

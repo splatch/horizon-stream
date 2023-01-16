@@ -22,7 +22,7 @@
 
     <properties>
         <skip-docker-image-build>true</skip-docker-image-build>
-        <docker.image.tag>local</docker.image.tag>
+        <docker.image.name>opennms/horizon-stream-minion-gateway-grpc-proxy</docker.image.name>
         <docker.image.skipPush>false</docker.image.skipPush>
         <docker.it.network>rest-server-it-network</docker.it.network>
     </properties>

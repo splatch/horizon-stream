@@ -22,6 +22,12 @@
         <sonar.organization>opennms</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
+        <!-- Jib properties -->
+        <docker.image>${docker.image.name}:${docker.image.tag}</docker.image>
+        <!--suppress CheckTagEmptyBody -->
+        <docker.image.name></docker.image.name>
+        <docker.image.tag>latest</docker.image.tag>
+
         <!-- Dependency properties -->
         <dropwizard.metrics.version>4.2.10</dropwizard.metrics.version>
         <activemq.version>5.17.1</activemq.version>
@@ -870,6 +876,7 @@
                     </configuration>
                     <executions>
                         <execution>
+                            <id>repackage</id>
                             <goals>
                                 <goal>repackage</goal>
                             </goals>
@@ -898,6 +905,11 @@
                     <groupId>com.google.cloud.tools</groupId>
                     <artifactId>jib-maven-plugin</artifactId>
                     <version>${jib.version}</version>
+                    <configuration>
+                        <to>
+                            <image>${docker.image}</image>
+                        </to>
+                    </configuration>
                 </plugin>
 
             </plugins>

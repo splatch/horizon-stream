@@ -18,7 +18,7 @@
     <artifactId>opennms-ignite-tool</artifactId>
 
     <properties>
-        <docker.image.tag>local</docker.image.tag>
+        <docker.image.name>opennms-ignite-tool</docker.image.name>
         <docker.image.skipPush>false</docker.image.skipPush>
     </properties>
 

@@ -17,6 +17,10 @@
 	<artifactId>notifications</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 
+    <properties>
+        <docker.image.name>opennms/horizon-stream-notification</docker.image.name>
+    </properties>
+
 	<dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -140,8 +140,7 @@
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <trimStackTrace>false</trimStackTrace>
                     <systemPropertyVariables>
-                        <dockerImageName>${docker.image.name}</dockerImageName>
-                        <dockerImageTag>${docker.image.tag}</dockerImageTag>
+                        <docker.image>${docker.image}</docker.image>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

@@ -20,11 +20,9 @@
     <version>0.1.0-SNAPSHOT</version>
 
     <properties>
+        <docker.image.name>opennms/horizon-stream-inventory</docker.image.name>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <!--  below image name and tag are used with cucumber it-->
-        <docker.image.name>opennms/horizon-stream-inventory</docker.image.name>
-        <docker.image.tag>local</docker.image.tag>
         <skipJib>false</skipJib>
     </properties>
     <dependencyManagement>
@@ -332,9 +330,6 @@
                     <from>
                         <image>openjdk:11</image>
                     </from>
-                    <to>
-                        <image>${docker.image.name}:${docker.image.tag}</image>
-                    </to>
                     <container>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                     </container>
@@ -406,8 +401,7 @@
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <trimStackTrace>false</trimStackTrace>
                     <systemPropertyVariables>
-                        <dockerImageName>${docker.image.name}</dockerImageName>
-                        <dockerImageTag>${docker.image.tag}</dockerImageTag>
+                        <docker.image>${docker.image}</docker.image>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

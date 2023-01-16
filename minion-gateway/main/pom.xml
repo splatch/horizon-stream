@@ -161,9 +161,6 @@
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
                     <skip>${skipJib}</skip>
-                    <to>
-                        <image>${docker.image.name}:${docker.image.tag}</image>
-                    </to>
                     <container>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                     </container>

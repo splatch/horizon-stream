@@ -47,9 +47,7 @@ public class TestContainerRunnerClassRule extends ExternalResource {
 
     private final String KAFKA_BOOTSTRAP_SERVER_PROPERTYNAME = "kafka.bootstrap-servers";
 
-    private final String dockerImageName = System.getProperty("dockerImageName");
-
-    private final String dockerImageTag = System.getProperty("dockerImageTag");
+    private final String dockerImage = System.getProperty("docker.image");
 
     private Logger LOG = DEFAULT_LOGGER;
 
@@ -63,7 +61,7 @@ public class TestContainerRunnerClassRule extends ExternalResource {
 
     public TestContainerRunnerClassRule() {
         kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(confluentPlatformVersion));
-        applicationContainer = new GenericContainer(DockerImageName.parse(dockerImageName).withTag(dockerImageTag).toString());
+        applicationContainer = new GenericContainer(DockerImageName.parse(dockerImage).toString());
         postgreSQLContainer = new PostgreSQLContainer(DockerImageName.parse("postgres").withTag("14.5-alpine").toString());
     }
 

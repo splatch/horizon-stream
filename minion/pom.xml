@@ -39,6 +39,7 @@
     </modules>
 
     <properties>
+        <docker.image.name>opennms/horizon-stream-minion</docker.image.name>
         <skipUTs>false</skipUTs>
         <skipITs>false</skipITs>
     </properties>

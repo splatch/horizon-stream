@@ -67,9 +67,7 @@ public class CucumberRunnerIT {
 
     private static Network network;
 
-    private static final String dockerImageName = System.getProperty("dockerImageName");
-
-    private static final String dockerImageTag = System.getProperty("dockerImageTag");
+    private static final String dockerImage = System.getProperty("docker.image");
 
     @BeforeAll
     public static void before() throws Throwable {
@@ -106,7 +104,7 @@ public class CucumberRunnerIT {
 
     @SuppressWarnings({"unchecked"})
     private static void startApplicationContainer() {
-        applicationContainer = new GenericContainer(DockerImageName.parse(dockerImageName).withTag(dockerImageTag).toString());
+        applicationContainer = new GenericContainer(DockerImageName.parse(dockerImage).toString());
         applicationContainer
             .withNetwork(network)
             .withNetworkAliases("application", "application-host")
