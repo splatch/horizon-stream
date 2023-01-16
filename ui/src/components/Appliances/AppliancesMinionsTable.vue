@@ -130,7 +130,7 @@ const onDelete = (id: string, label: string) => {
     title: label || '',
     cssClass: 'modal-delete-minion',
     content: `
-      <p>Are you sure to delete</p>
+      <p>Do you want to delete</p>
     `,
     id
   }
