@@ -118,7 +118,7 @@ const onDelete = () => {
     title: props.node.label || '',
     cssClass: 'modal-delete-node',
     content: `
-      <p>Are you sure to delete</p>
+      <p>Do you want to delete</p>
     `,
     id: props.node.id
   }
