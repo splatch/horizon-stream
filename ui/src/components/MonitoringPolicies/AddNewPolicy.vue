@@ -3,7 +3,7 @@
     <div class="title">New Policy</div>
     <div class="form-new-policy">
       <FeatherInput
-        v-model="store.name"
+        v-model="store.policy.name"
         label="New Policy Name"
         class="name-policy"
       />
@@ -34,11 +34,11 @@
 
 <script lang="ts" setup>
 import { useMonitoringPoliciesStore } from '@/store/Views/monitoringPoliciesStore'
-const store = useMonitoringPoliciesStore()
 import ExpandMore from '@featherds/icon/navigation/ExpandMore'
 import ExpandLess from '@featherds/icon/navigation/ExpandLess'
 import Cancel from '@featherds/icon/navigation/Cancel'
 
+const store = useMonitoringPoliciesStore()
 const Icons = markRaw({
   ExpandMore,
   ExpandLess,
