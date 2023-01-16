@@ -22,7 +22,7 @@
             <th scope="col" data-test="col-minion">Id</th>
             <th scope="col" data-test="col-latency">Latency</th>
             <th scope="col" data-test="col-status">Status</th>
-            <th scope="col" data-test="col-delete">Delete</th>
+            <th v-if="isAnyMinionDown" scope="col" data-test="col-delete">Delete</th>
           </tr>
         </thead>
         <TransitionGroup name="data-table" tag="tbody">
@@ -32,9 +32,8 @@
             <td>{{ minion.id }}</td>
             <MetricChip tag="td" :metric="{timestamp: minion.latency?.timestamp}" :data-metric="minion.latency?.timestamp" class="bg-status" data-test="minion-item-latency" />
             <MetricChip tag="td" :metric="{status: minion.status}" class="bg-status" data-test="minion-item-status" />
-            <td>
+            <td v-if="minion.status === 'DOWN'">
               <FeatherButton
-                v-if="minion.status === 'DOWN'"
                 icon="Delete"
                 @click="onDelete(minion.systemId as string, minion.label as string)"
                 data-test="minion-item-delete-btn"
@@ -49,7 +48,7 @@
   </TableCard>
   <PrimaryModal :visible="isVisible" :title="modal.title" :class="modal.cssClass">
     <template #content>
-      <div v-html="modal.content"></div>
+      <p>{{ modal.content }}</p>
       <!-- <LineGraph :graph="graphProps" /> -->
     </template>
     <template #footer>
@@ -97,7 +96,14 @@ const appliancesStore = useAppliancesStore()
 const appliancesQueries = useAppliancesQueries()
 const minionMutations = useMinionMutations()
 
-const minionsTable = computed<ExtendedMinion[]>(() => appliancesQueries.tableMinions)
+const isAnyMinionDown = ref(false)
+const minionsTable = computed<ExtendedMinion[]>(() => {
+  const minions = appliancesQueries.tableMinions
+
+  isAnyMinionDown.value = minions.some(({status}) => status === 'DOWN')
+
+  return minions
+})
 
 const modal = ref<ModalPrimary>({
   title: '',
@@ -128,10 +134,8 @@ const onDelete = (id: string, label: string) => {
   modal.value = {
     ...modal.value,
     title: label || '',
-    cssClass: 'modal-delete-minion',
-    content: `
-      <p>Do you want to delete</p>
-    `,
+    cssClass: 'modal-delete',
+    content: 'Do you want to delete?',
     id
   }
 

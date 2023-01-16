@@ -33,11 +33,9 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
 
         const allMinions = minionsData.value?.findAllMinions as Minion[]
 
-        if (allMinions?.length) {
-          addMetricsToMinions(allMinions)
-        } else {
-          tableMinions.value = []
-        }
+        tableMinions.value = []
+
+        if (allMinions?.length) addMetricsToMinions(allMinions)
       })
     }
 
@@ -52,6 +50,7 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       allMinions.forEach(async (minion) => {
         const { data, isFetching } = await fetchMinionMetrics(minion.systemId as string)
         const result = data.value?.minionLatency?.data?.result
+
         if (!isFetching.value) {
           if (result?.length) {
             const [{ value }] = data.value?.minionLatency?.data?.result as TsResult[]
