@@ -36,6 +36,7 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.opennms.horizon.minion.flows.shell.SendFlowCmd;
 import org.opennms.horizon.testtool.miniongateway.wiremock.client.MinionGatewayWiremockTestSteps;
 import org.opennms.horizon.testtool.miniongateway.wiremock.client.RetryUtils;
 import org.slf4j.Logger;
@@ -137,6 +138,12 @@ public class MinionTestSteps {
         }
     }
 
+    @Then("Send net flow package")
+    public void sendNetflowPackage() throws Exception {
+        SendFlowCmd cmd = new SendFlowCmd();
+        cmd.setHost(new URL(this.applicationBaseUrl).getHost());
+        cmd.execute();
+    }
 //========================================
 // Utility Rules
 //----------------------------------------

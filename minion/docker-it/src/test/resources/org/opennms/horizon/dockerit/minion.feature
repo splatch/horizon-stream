@@ -41,3 +41,7 @@ Feature: Minion Basic Functionality
     Then parse the JSON response
     Then verify JSON path expressions match
       | serviceCount == 2 |
+
+  Scenario: Send Flow Package to Minion
+    Then Send net flow package
+    Then Verify gateway has received netflow packages
