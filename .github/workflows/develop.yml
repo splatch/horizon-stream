@@ -139,20 +139,19 @@ jobs:
     runs-on:
       labels: ubuntu-latest-8-cores
     steps:
+
+      - uses: actions/checkout@v3
+
       - name: Create & set up cluster
-        run: |
-          
-          # Delete if exists from previous failed run.
-          kind delete clusters kind-test
-          
+        run: |          
           # Setup localhost DNS
           sudo echo "127.0.0.1 onmshs" | sudo tee -a /etc/hosts
           
           # Build cluster with Horizon Stream installed.
-          cd install-local/
           ./install-local.sh cicd onmshs ${{ inputs.image-tag || github.sha }} ${{ inputs.image-registry || 'ghcr.io' }}/opennms-cloud
 
         shell: bash
+        working-directory: install-local
 
       - name: Set up & run Cucumber tests
         run: |
@@ -175,8 +174,3 @@ jobs:
           ##done
         shell: bash
         working-directory: external-it
-
-      - name: Clean up cluster
-        if: ${{ always() }}
-        run: kind delete clusters kind-test
-        shell: bash
