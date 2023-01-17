@@ -46,7 +46,7 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
     submodule_flag = ''
     if submodule:
         submodule_path = '/{}'.format(submodule)
-        # submodule_flag = '-pl {}'.format(submodule)
+        submodule_flag = '-pl {}'.format(submodule)
 
 
     compile_resource_name = '{}-compile'.format(resource_name)
@@ -61,7 +61,7 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
 
     custom_build(
         image_name,
-        'mvn package jib:dockerBuild -Ddocker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
+        'mvn jib:dockerBuild -Ddocker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
         deps=['{}{}/target/classes'.format(base_path, submodule_path), '{}{}/pom.xml'.format(base_path, submodule_path), '{}{}/src/main/resources'.format(base_path, submodule_path)],
         live_update=[
             sync('{}{}/target/classes/org/opennms'.format(base_path, submodule_path), '/app/classes/org/opennms'),
