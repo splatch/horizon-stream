@@ -43,7 +43,7 @@ jobs:
 
       - name: Generate Docker metadata
         id: docker-metadata
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4.3.0
         with:
           images: |
             ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE }}
