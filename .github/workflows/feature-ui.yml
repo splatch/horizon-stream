@@ -73,6 +73,7 @@ jobs:
           cache-to: type=gha
 
       - name: 'Coverage Report'
+        timeout-minutes: 5 # This step can hang forever, see https://opennms.atlassian.net/browse/HS-841
         run: 'yarn test:coverage:sonar'
         working-directory: 'ui'
 
