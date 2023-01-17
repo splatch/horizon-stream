@@ -151,7 +151,7 @@ public class InventoryClientTest {
             .addService(mockSystemService)
             .addService(mockNodeService).directExecutor().build().start());
         ManagedChannel channel = grpcCleanUp.register(InProcessChannelBuilder.forName("InventoryClientTest").directExecutor().build());
-        client = new InventoryClient(channel, 1000);
+        client = new InventoryClient(channel, 5000);
         client.initialStubs();
     }
 
