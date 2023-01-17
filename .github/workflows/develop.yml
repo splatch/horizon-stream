@@ -101,6 +101,10 @@ jobs:
     with:
       image-tag: ${{ env.IMAGE_TAG }}
       image-registry: ${{ env.IMAGE_REGISTRY }}
+  parent-pom:
+    name: Parent POM
+    uses: ./.github/workflows/feature-parent-pom.yml
+    secrets: inherit
   rest-server:
     name: Vue.js BFF
     uses: ./.github/workflows/feature-rest-server.yml
@@ -108,6 +112,10 @@ jobs:
     with:
       image-tag: ${{ env.IMAGE_TAG }}
       image-registry: ${{ env.IMAGE_REGISTRY }}
+  shared-lib:
+    name: Shared Library
+    uses: ./.github/workflows/feature-shared-lib.yml
+    secrets: inherit
   ui:
     name: Vue.js UI
     uses: ./.github/workflows/feature-ui.yml
