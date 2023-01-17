@@ -116,7 +116,7 @@ const onDelete = () => {
   modal.value = {
     ...modal.value,
     title: props.node.label || '',
-    cssClass: 'modal-delete-node',
+    cssClass: 'modal-delete',
     content: 'Do you want to delete?',
     id: props.node.id
   }
