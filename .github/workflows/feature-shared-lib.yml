@@ -1,4 +1,4 @@
-name: feature-shared-lib
+name: Shared Library
 
 on:
   pull_request:

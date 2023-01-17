@@ -1,4 +1,4 @@
-name: feature-minion
+name: Minion
 
 on:
   pull_request:

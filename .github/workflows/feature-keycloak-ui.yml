@@ -1,4 +1,4 @@
-name: feature-keycloak-ui
+name: Keycloak
 
 on:
   pull_request:

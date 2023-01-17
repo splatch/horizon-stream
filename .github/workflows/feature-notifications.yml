@@ -1,4 +1,4 @@
-name: feature-notifications
+name: Notification service
 
 on:
   pull_request:

@@ -1,4 +1,4 @@
-name: feature-grafana
+name: Grafana
 
 on:
   pull_request:

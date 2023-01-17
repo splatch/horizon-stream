@@ -1,4 +1,4 @@
-name: feature-events
+name: Event service
 
 on:
   pull_request:

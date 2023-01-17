@@ -1,4 +1,4 @@
-name: feature-datachoices
+name: DataChoices service
 
 on:
   pull_request:

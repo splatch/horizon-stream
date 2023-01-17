@@ -1,4 +1,4 @@
-name: feature-metrics-processor
+name: Metrics Processor service
 
 on:
   pull_request:

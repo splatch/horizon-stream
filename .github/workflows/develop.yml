@@ -92,6 +92,7 @@ jobs:
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
   external-it:
+    name: End-to-end Tests
     needs: [
       alarm,
       datachoices,

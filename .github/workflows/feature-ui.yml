@@ -1,4 +1,4 @@
-name: feature-ui
+name: Vue.js UI
 
 on:
   pull_request:

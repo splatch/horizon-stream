@@ -1,4 +1,4 @@
-name: feature-operator
+name: Operator
 
 on:
   pull_request:

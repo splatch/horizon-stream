@@ -1,4 +1,4 @@
-name: feature-parent-pom
+name: Parent POM
 
 on:
   pull_request:

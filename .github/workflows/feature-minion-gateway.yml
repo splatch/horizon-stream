@@ -1,4 +1,4 @@
-name: feature-minion-gateway
+name: Minion Gateway service
 
 on:
   pull_request:

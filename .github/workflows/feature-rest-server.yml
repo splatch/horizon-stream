@@ -1,4 +1,4 @@
-name: feature-rest-server
+name: Vue.js BFF
 
 on:
   pull_request:
