@@ -21,10 +21,9 @@
 
     <properties>
         <docker.image.name>opennms/horizon-stream-inventory</docker.image.name>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
         <skipJib>false</skipJib>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -328,7 +327,7 @@
                 <configuration>
                     <skip>${skipJib}</skip>
                     <from>
-                        <image>openjdk:11</image>
+                        <image>openjdk:17</image>
                     </from>
                     <container>
                         <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
