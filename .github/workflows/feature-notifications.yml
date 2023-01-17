@@ -1,4 +1,4 @@
-name: Notification service
+name: Notification Service
 
 on:
   pull_request:
@@ -22,7 +22,7 @@ env:
 
 jobs:
   build-and-test:
-    name: Build and Test
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
