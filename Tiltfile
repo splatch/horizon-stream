@@ -46,7 +46,7 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
     submodule_flag = ''
     if submodule:
         submodule_path = '/{}'.format(submodule)
-        submodule_flag = '-pl {}'.format(submodule)
+        # submodule_flag = '-pl {}'.format(submodule)
 
 
     compile_resource_name = '{}-compile'.format(resource_name)
