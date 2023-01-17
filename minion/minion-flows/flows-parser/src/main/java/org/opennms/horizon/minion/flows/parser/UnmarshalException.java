@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,21 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.minion.flows.parser.factory;
+package org.opennms.horizon.minion.flows.parser;
 
-public class IdentityImpl implements Identity {
-    @Override
-    public String getId() {
-        return null;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+public class UnmarshalException extends RuntimeException {
+
+    private static final long serialVersionUID = -8571716972407237881L;
+
+    public UnmarshalException(String message) {
+        super(message);
     }
 
-    @Override
-    public String getLocation() {
-        return null;
+    public UnmarshalException(Throwable t) {
+        super(t);
     }
 
-    @Override
-    public String getType() {
-        return null;
-    }
 }
