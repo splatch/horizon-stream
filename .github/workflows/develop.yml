@@ -111,7 +111,8 @@ jobs:
       rest-server,
       ui
     ]
-    runs-on: self-hosted
+    runs-on:
+      labels: ubuntu-latest-8-cores
     steps:
       - name: Create & set up cluster
         run: |
