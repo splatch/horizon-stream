@@ -1,9 +1,10 @@
 name: Shared Library
 
 on:
-  pull_request:
-    paths:
-      - 'shared-lib/**'
+# Currently triggered by develop workflow, so this trigger is disabled for now until we can fully separate them
+#  pull_request:
+#    paths:
+#      - 'shared-lib/**'
   workflow_call:
 
 jobs:

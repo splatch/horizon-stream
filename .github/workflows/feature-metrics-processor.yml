@@ -1,9 +1,10 @@
 name: Metrics Processor Service
 
 on:
-  pull_request:
-    paths:
-      - 'metrics-processor/**'
+# Currently triggered by develop workflow, so this trigger is disabled for now until we can fully separate them
+#  pull_request:
+#    paths:
+#      - 'metrics-processor/**'
   workflow_call:
     inputs:
       image:

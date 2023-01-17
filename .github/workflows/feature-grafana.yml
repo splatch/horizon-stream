@@ -1,9 +1,10 @@
 name: Grafana
 
 on:
-  pull_request:
-    paths:
-      - 'grafana/**'
+# Currently triggered by develop workflow, so this trigger is disabled for now until we can fully separate them
+#  pull_request:
+#    paths:
+#      - 'grafana/**'
   workflow_call:
     inputs:
       image:

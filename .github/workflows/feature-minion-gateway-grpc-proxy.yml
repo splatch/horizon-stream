@@ -1,9 +1,10 @@
 name: Minion Gateway GRPC Proxy
 
 on:
-  pull_request:
-    paths:
-      - 'minion-gateway-grpc-proxy/**'
+# Currently triggered by develop workflow, so this trigger is disabled for now until we can fully separate them
+#  pull_request:
+#    paths:
+#      - 'minion-gateway-grpc-proxy/**'
   workflow_call:
     inputs:
       image:

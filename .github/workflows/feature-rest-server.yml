@@ -1,9 +1,10 @@
 name: Vue.js BFF
 
 on:
-  pull_request:
-    paths:
-      - 'rest-server/**'
+# Currently triggered by develop workflow, so this trigger is disabled for now until we can fully separate them
+#  pull_request:
+#    paths:
+#      - 'rest-server/**'
   workflow_call:
     inputs:
       image:

@@ -1,9 +1,10 @@
 name: Inventory Service
 
 on:
-  pull_request:
-    paths:
-      - 'inventory/**'
+# Currently triggered by develop workflow, so this trigger is disabled for now until we can fully separate them
+#  pull_request:
+#    paths:
+#      - 'inventory/**'
   workflow_call:
     inputs:
       image:
