@@ -17,67 +17,80 @@ on:
 
 jobs:
   alarm:
+    name: Alarm Service
     uses: ./.github/workflows/feature-alarm.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
   datachoices:
+    name: DataChoices Service
     uses: ./.github/workflows/feature-datachoices.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
   events:
+    name: Event Service
     uses: ./.github/workflows/feature-events.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
-  rest-server:
-    uses: ./.github/workflows/feature-rest-server.yml
+  grafana:
+    name: Grafana
+    uses: ./.github/workflows/feature-grafana.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
   inventory:
+    name: Inventory Service
     uses: ./.github/workflows/feature-inventory.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+  keycloak-ui:
+    name: Keycloak
+    uses: ./.github/workflows/feature-keycloak-ui.yml
+    secrets: inherit
+    with:
+      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
   metrics-processor:
+    name: Metrics Processor Service
     uses: ./.github/workflows/feature-metrics-processor.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
-  notifications:
-    uses: ./.github/workflows/feature-notifications.yml
-    secrets: inherit
-    with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
   minion:
+    name: Minion
     uses: ./.github/workflows/feature-minion.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
   minion-gateway:
+    name: Minion Gateway Service
     uses: ./.github/workflows/feature-minion-gateway.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
   minion-gateway-grpc-proxy:
+    name: Minion Gateway GRPC Proxy
     uses: ./.github/workflows/feature-minion-gateway-grpc-proxy.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+  notifications:
+    name: Notification Service
+    uses: ./.github/workflows/feature-notifications.yml
+    secrets: inherit
+    with:
+      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+  rest-server:
+    name: Vue.js BFF
+    uses: ./.github/workflows/feature-rest-server.yml
+    secrets: inherit
+    with:
+      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
   ui:
+    name: Vue.js UI
     uses: ./.github/workflows/feature-ui.yml
-    secrets: inherit
-    with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
-  grafana:
-    uses: ./.github/workflows/feature-grafana.yml
-    secrets: inherit
-    with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
-  keycloak-ui:
-    uses: ./.github/workflows/feature-keycloak-ui.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}

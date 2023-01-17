@@ -5,7 +5,6 @@ runs:
   using: "composite"
   steps:
     - name: Install parent-pom and shared-lib
-      if: ${{ steps.cache-maven.outputs.cache-hit != 'true' }}
       run: |
         mvn -B install -f parent-pom -DskipTests
         mvn -B install -f shared-lib -DskipTests
