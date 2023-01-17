@@ -21,79 +21,79 @@ jobs:
     uses: ./.github/workflows/feature-alarm.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   datachoices:
     name: DataChoices Service
     uses: ./.github/workflows/feature-datachoices.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   events:
     name: Event Service
     uses: ./.github/workflows/feature-events.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   grafana:
     name: Grafana
     uses: ./.github/workflows/feature-grafana.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   inventory:
     name: Inventory Service
     uses: ./.github/workflows/feature-inventory.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   keycloak-ui:
     name: Keycloak
     uses: ./.github/workflows/feature-keycloak-ui.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   metrics-processor:
     name: Metrics Processor Service
     uses: ./.github/workflows/feature-metrics-processor.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   minion:
     name: Minion
     uses: ./.github/workflows/feature-minion.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   minion-gateway:
     name: Minion Gateway Service
     uses: ./.github/workflows/feature-minion-gateway.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   minion-gateway-grpc-proxy:
     name: Minion Gateway GRPC Proxy
     uses: ./.github/workflows/feature-minion-gateway-grpc-proxy.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   notifications:
     name: Notification Service
     uses: ./.github/workflows/feature-notifications.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   rest-server:
     name: Vue.js BFF
     uses: ./.github/workflows/feature-rest-server.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   ui:
     name: Vue.js UI
     uses: ./.github/workflows/feature-ui.yml
     secrets: inherit
     with:
-      image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
+      image-tag: ${{ inputs.image-tag || github.ref }}
   external-it:
     name: End-to-end Tests
     needs: [
@@ -124,7 +124,7 @@ jobs:
           
           # Build cluster with Horizon Stream installed.
           cd install-local/
-          ./install-local.sh cicd onmshs pipeline-test ghcr.io/opennms-cloud
+          ./install-local.sh cicd onmshs ${{ github.ref }} ghcr.io/opennms-cloud
 
         shell: bash
 
