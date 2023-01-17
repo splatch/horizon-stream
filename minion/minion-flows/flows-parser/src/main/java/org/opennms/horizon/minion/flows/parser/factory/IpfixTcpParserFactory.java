@@ -31,6 +31,7 @@ package org.opennms.horizon.minion.flows.parser.factory;
 import java.util.Objects;
 
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import org.opennms.horizon.minion.flows.listeners.Parser;
@@ -41,10 +42,10 @@ import org.opennms.horizon.minion.flows.parser.IpfixTcpParser;
 public class IpfixTcpParserFactory implements ParserFactory {
 
     private final TelemetryRegistry telemetryRegistry;
-    private final FlowsIdentity identity;
+    private final IpcIdentity identity;
     private final DnsResolver dnsResolver;
 
-    public IpfixTcpParserFactory(final TelemetryRegistry telemetryRegistry, final FlowsIdentity identity,
+    public IpfixTcpParserFactory(final TelemetryRegistry telemetryRegistry, final IpcIdentity identity,
                                  final DnsResolver dnsResolver) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
         this.identity = Objects.requireNonNull(identity);

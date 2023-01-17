@@ -32,6 +32,7 @@ import java.util.Objects;
 
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.minion.flows.parser.FlowSinkModule;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 
@@ -44,12 +45,12 @@ import org.opennms.horizon.minion.flows.parser.Netflow9UdpParser;
 public class Netflow9UdpParserFactory implements ParserFactory {
 
     private final DnsResolver dnsResolver;
-    private final FlowsIdentity identity;
+    private final IpcIdentity identity;
     private final MessageDispatcherFactory messageDispatcherFactory;
     private final FlowSinkModule flowSinkModule;
 
     public Netflow9UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory,
-                                    final FlowsIdentity identity,
+                                    final IpcIdentity identity,
                                     final DnsResolver dnsResolver, FlowSinkModule flowSinkModule) {
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);

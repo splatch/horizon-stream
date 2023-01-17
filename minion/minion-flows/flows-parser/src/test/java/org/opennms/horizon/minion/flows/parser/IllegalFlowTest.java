@@ -49,7 +49,7 @@ import org.junit.Ignore;
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.minion.flows.listeners.UdpListener;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
-import org.opennms.horizon.minion.flows.parser.factory.FlowsIdentity;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import com.codahale.metrics.MetricRegistry;
@@ -62,7 +62,7 @@ public class IllegalFlowTest {
     @Ignore
     public void testEventsForIllegalFlows() throws Exception {
 
-        final FlowsIdentity identity = mock(FlowsIdentity.class);
+        final IpcIdentity identity = mock(IpcIdentity.class);
 
         final DnsResolver dnsResolver = new DnsResolver() {
             @Override

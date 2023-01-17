@@ -25,15 +25,15 @@
         <argument ref="identity" />
     </bean>
     <bean id="UnmarshalException" class="org.opennms.horizon.minion.flows.parser.UnmarshalException" />
-    <bean id="identity" class="org.opennms.horizon.minion.flows.parser.factory.FlowsIdentityImpl" >
-        <argument value="$[systemId]" />
+    <bean id="identity" class="org.opennms.horizon.minion.grpc.MinionIpcIdentity" >
+        <argument value="$[id]" />
         <argument value="$[location]" />
     </bean>
 
     <cm:property-placeholder id="identityProperties" persistent-id="org.horizon.identity" update-strategy="reload"
                              placeholder-prefix="$[" placeholder-suffix="]">
         <cm:default-properties>
-            <cm:property name="systemId" value="UNKNOWN"/>
+            <cm:property name="id" value="UNKNOWN"/>
             <cm:property name="location" value="Default"/>
         </cm:default-properties>
     </cm:property-placeholder>

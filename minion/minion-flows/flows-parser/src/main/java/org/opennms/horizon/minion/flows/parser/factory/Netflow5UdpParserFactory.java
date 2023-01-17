@@ -35,6 +35,7 @@ import org.opennms.horizon.minion.flows.listeners.Parser;
 import org.opennms.horizon.minion.flows.listeners.factory.ParserDefinition;
 import org.opennms.horizon.minion.flows.parser.FlowSinkModule;
 import org.opennms.horizon.minion.flows.parser.Netflow5UdpParser;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 
@@ -42,7 +43,7 @@ import com.codahale.metrics.MetricRegistry;
 
 public class Netflow5UdpParserFactory implements ParserFactory {
 
-    private final FlowsIdentity identity;
+    private final IpcIdentity identity;
 
     private final DnsResolver dnsResolver;
 
@@ -51,7 +52,7 @@ public class Netflow5UdpParserFactory implements ParserFactory {
     private final MessageDispatcherFactory messageDispatcherFactory;
 
 
-    public Netflow5UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory, final FlowsIdentity identity, final DnsResolver dnsResolver,
+    public Netflow5UdpParserFactory(final MessageDispatcherFactory messageDispatcherFactory, final IpcIdentity identity, final DnsResolver dnsResolver,
                                     final FlowSinkModule flowSinkModule) {
         this.identity = Objects.requireNonNull(identity);
         this.dnsResolver = Objects.requireNonNull(dnsResolver);

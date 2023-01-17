@@ -37,9 +37,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
-import org.opennms.horizon.minion.flows.parser.factory.FlowsIdentity;
 import org.opennms.horizon.minion.flows.parser.flowmessage.FlowMessage;
 import org.opennms.horizon.minion.flows.parser.transport.MessageBuilder;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 
 import com.codahale.metrics.MetricRegistry;
@@ -47,7 +47,7 @@ import com.codahale.metrics.MetricRegistry;
 public class ClockSkewTest {
     private int eventCount = 0;
 
-    private final FlowsIdentity identity = new FlowsIdentity() {
+    private final IpcIdentity identity = new IpcIdentity() {
         @Override
         public String getId() {
             return "myId";
@@ -56,11 +56,6 @@ public class ClockSkewTest {
         @Override
         public String getLocation() {
             return "myLocation";
-        }
-
-        @Override
-        public String getType() {
-            return "MINION";
         }
     };
 
@@ -142,7 +137,7 @@ public class ClockSkewTest {
 
     private static class ParserBaseExt extends ParserBase {
 
-        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, FlowsIdentity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
+        public ParserBaseExt(Protocol protocol, String name, AsyncDispatcher<TelemetryMessage> dispatcher, IpcIdentity identity, DnsResolver dnsResolver, MetricRegistry metricRegistry) {
             super(protocol, name, dispatcher, identity, dnsResolver, metricRegistry);
         }
 

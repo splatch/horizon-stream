@@ -47,12 +47,12 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.minion.flows.listeners.Parser;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
-import org.opennms.horizon.minion.flows.parser.factory.FlowsIdentity;
 import org.opennms.horizon.minion.flows.parser.flowmessage.FlowMessage;
 import org.opennms.horizon.minion.flows.parser.ie.RecordProvider;
 import org.opennms.horizon.minion.flows.parser.session.SequenceNumberTracker;
 import org.opennms.horizon.minion.flows.parser.session.Session;
 import org.opennms.horizon.minion.flows.parser.transport.MessageBuilder;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.horizon.shared.logging.LogPreservingThreadFactory;
 import org.slf4j.Logger;
@@ -91,7 +91,7 @@ public abstract class ParserBase implements Parser {
 
     private final AsyncDispatcher<TelemetryMessage> dispatcher;
 
-    private final FlowsIdentity identity;
+    private final IpcIdentity identity;
 
     private final DnsResolver dnsResolver;
 
@@ -134,7 +134,7 @@ public abstract class ParserBase implements Parser {
     public ParserBase(final Protocol protocol,
                       final String name,
                       final AsyncDispatcher<TelemetryMessage> dispatcher,
-                      final FlowsIdentity identity,
+                      final IpcIdentity identity,
                       final DnsResolver dnsResolver,
                       final MetricRegistry metricRegistry) {
         this.protocol = Objects.requireNonNull(protocol);

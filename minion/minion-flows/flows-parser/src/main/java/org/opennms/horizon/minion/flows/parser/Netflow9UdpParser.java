@@ -36,13 +36,13 @@ import java.net.InetSocketAddress;
 
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
-import org.opennms.horizon.minion.flows.parser.factory.FlowsIdentity;
 import org.opennms.horizon.minion.flows.parser.ie.RecordProvider;
 import org.opennms.horizon.minion.flows.parser.netflow9.proto.Header;
 import org.opennms.horizon.minion.flows.parser.netflow9.proto.Packet;
 import org.opennms.horizon.minion.flows.parser.session.Session;
 import org.opennms.horizon.minion.flows.parser.session.UdpSessionManager;
 import org.opennms.horizon.minion.flows.parser.transport.Netflow9MessageBuilder;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 
@@ -60,7 +60,7 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
 
     public Netflow9UdpParser(final String name,
                              final AsyncDispatcher<TelemetryMessage> dispatcher,
-                             final FlowsIdentity identity,
+                             final IpcIdentity identity,
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
         super(Protocol.NETFLOW9, name, dispatcher, identity, dnsResolver, metricRegistry);

@@ -29,10 +29,11 @@
 package org.opennms.horizon.minion.flows.parser;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import org.opennms.horizon.minion.flows.parser.factory.FlowsIdentity;
+
 import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
 import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessageLog;
+import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AggregationPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
@@ -40,9 +41,9 @@ import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
 
 public class FlowSinkModule implements SinkModule<TelemetryMessage, TelemetryMessageLog> {
 
-    private final FlowsIdentity identity;
+    private final IpcIdentity identity;
 
-    public FlowSinkModule(FlowsIdentity identity) {
+    public FlowSinkModule(IpcIdentity identity) {
         this.identity = identity;
     }
 
