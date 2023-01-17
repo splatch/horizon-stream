@@ -1,30 +1,31 @@
 import { defineStore } from 'pinia'
 import { without } from 'lodash'
+import { IPolicy, IRule } from '@/types/policies'
 
 type TState = {
-  policy: {
-    id: string
-    name: string
-    tags: string[]
-    rules: string[]
-  }
+  selectedPolicy: IPolicy
+  selectedRule: IRule
 }
 
-export const useMonitoringPoliciesStore = defineStore(
-  'monitoringPoliciesStore',
-  {
-    state: (): TState => ({
-      policy: {
-        id: '',
-        name: '',
-        tags: [],
-        rules: []
-      }
-    }),
-    actions: {
-      removeTag(tag: string) {
-        this.policy.tags = without(this.policy.tags, tag)
-      }
+export const useMonitoringPoliciesStore = defineStore('monitoringPoliciesStore', {
+  state: (): TState => ({
+    selectedPolicy: {
+      id: '',
+      name: '',
+      tags: [],
+      rules: []
+    },
+    selectedRule: {
+      id: '',
+      name: '',
+      componentType: '',
+      detectionMethod: '',
+      conditions: []
+    }
+  }),
+  actions: {
+    removeTag(tag: string) {
+      this.selectedPolicy.tags = without(this.selectedPolicy.tags, tag)
     }
   }
-)
+})

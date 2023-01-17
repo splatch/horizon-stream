@@ -3,7 +3,7 @@
     <div class="title">New Policy</div>
     <div class="form-new-policy">
       <FeatherInput
-        v-model="store.policy.name"
+        v-model="store.selectedPolicy.name"
         label="New Policy Name"
         class="name-policy"
       />
@@ -16,7 +16,11 @@
         <FeatherIcon :icon="showTags ? Icons.ExpandLess : Icons.ExpandMore" />
       </FeatherButton>
       <div class="list-selected-tags">
-        <div class="selected-tag" v-for="tag in store.policy.tags" :key="tag">
+        <div
+          class="selected-tag"
+          v-for="tag in store.selectedPolicy.tags"
+          :key="tag"
+        >
           {{ tag
           }}<FeatherIcon
             class="remove-icon"
@@ -52,12 +56,6 @@ const showTags = ref(false)
 @use '@featherds/styles/mixins/typography';
 
 .new-policy {
-  background-color: var(variables.$surface);
-  padding: var(variables.$spacing-l);
-  margin-top: var(variables.$spacing-m);
-  border: 1px var(variables.$shade-4) solid;
-  width: 80%;
-
   .title {
     @include typography.headline4;
     margin-bottom: var(variables.$spacing-s);
