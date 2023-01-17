@@ -162,7 +162,6 @@
                 <configuration>
                     <skip>${skipJib}</skip>
                     <container>
-                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                         <jvmFlags>
                             <jvmFlag>--add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED</jvmFlag>
                             <jvmFlag>--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED</jvmFlag>

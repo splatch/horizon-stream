@@ -329,9 +329,6 @@
                     <from>
                         <image>openjdk:17</image>
                     </from>
-                    <container>
-                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-                    </container>
                 </configuration>
                 <executions>
                     <execution>

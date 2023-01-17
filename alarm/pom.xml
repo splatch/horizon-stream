@@ -231,7 +231,6 @@
                 <configuration>
                     <skip>${skipJib}</skip>
                     <container>
-                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
                         <jvmFlags>
                             <jvmFlag>--add-opens=java.base/java.util=ALL-UNNAMED</jvmFlag>
                             <jvmFlag>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmFlag>
