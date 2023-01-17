@@ -20,7 +20,7 @@
 
     <properties>
         <docker.image.name>opennms/horizon-stream-metrics-processor</docker.image.name>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
     </properties>
 
     <dependencyManagement>
@@ -144,7 +144,7 @@
             <plugin>
                 <groupId>kr.motd.maven</groupId>
                 <artifactId>os-maven-plugin</artifactId>
-                <version>1.6.2</version>
+                <version>${os-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>initialize</phase>
@@ -157,7 +157,7 @@
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
+                <version>${protobuf-maven-plugin.version}</version>
                 <configuration>
                     <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
