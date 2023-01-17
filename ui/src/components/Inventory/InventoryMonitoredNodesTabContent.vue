@@ -61,6 +61,7 @@ const checkbox: IIcon = {
 <style lang="scss" scoped>
 @use "@featherds/styles/themes/variables";
 @use "@/styles/vars";
+@use "@/styles/mediaQueriesMixins";
 
 .overlay {
   $color-header-title: white;
@@ -146,6 +147,25 @@ ul.cards {
     border: 1px solid var(variables.$secondary-text-on-surface); 
     border-radius: 10px;
     border-left: 10px solid var(variables.$secondary-text-on-surface); // TODO set color dynamically to the node's status
+    min-width: 400px;
+
+    @include mediaQueriesMixins.screen-sm {
+      width: 100%;
+    }
+    @include mediaQueriesMixins.screen-md {
+      max-width: 480px;
+      width: 100%;
+    }
+    @include mediaQueriesMixins.screen-lg {
+      width: 48%;
+    }
+    @include mediaQueriesMixins.screen-xl {
+      width: 32%;
+    }
+    @include mediaQueriesMixins.screen-xxl {
+      width: 24%;
+    }
+    
     > .header {
       margin-bottom: var(variables.$spacing-s);
       display: flex;
