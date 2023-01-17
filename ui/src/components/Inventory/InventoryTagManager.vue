@@ -34,24 +34,12 @@ const selectTag = (tag: string) => {
 }
 
 const placement = ref(PopoverPlacement.top)
-/* const placements = [
-  PopoverPlacement.top,
-  PopoverPlacement.bottom,
-  PopoverPlacement.left,
-  PopoverPlacement.right
-] */
 const alignment = ref(PointerAlignment.center)
-/* const alignments = [
-  PointerAlignment.center,
-  PointerAlignment.left,
-  PointerAlignment.right
-] */
-    
 
 const addTag = () => {
   // send newtag.value
   newTag.value = '' // clear input
-  newTagDropdown.value.handleClose() // clost dropdown
+  newTagDropdown.value.handleClose() // close dropdown
 }
 </script>
 
@@ -70,10 +58,13 @@ const addTag = () => {
           <!-- Add tag -->
           <FeatherPopover :pointer-alignment="alignment" :placement="placement">
             <template #default>
-              <div>
-                <h4>Test heading</h4>
-                <p>lorem ipsum or something</p>
-                <a href="#"> random link i guess</a>
+              <div class="add-new-tag-popover">
+                <FeatherInput
+                  :label="'type...'"
+                  v-model="newTag"
+                  class="new-tag-input"
+                />
+                <FeatherButton @click="addTag" primary>Add tag</FeatherButton>
               </div>
             </template>
             <template #trigger="{ attrs, on }">
@@ -124,6 +115,12 @@ const addTag = () => {
 @use "@/styles/vars";
 @use "@/styles/mediaQueries";
 
+
+:deep(.feather-popover-container) {
+  > .popover {
+    // to style add tag popover
+  }
+}
 .add-new-tag-btn {
   color: white;
   border-radius: 50%;
@@ -133,12 +130,13 @@ const addTag = () => {
   padding: 1rem;
   line-height: inherit;
   background-color: var(variables.$shade-2);
+  // TODO: how to remove the weird blue border when button clicked
   :deep {
     > .btn-content {
       display: block;
       > svg {
-        left: -16px;
-        top: -16px;
+        left: -1rem; // TODO: how to set dynamically using addIcon.size value
+        top: -1rem;
       }
     }
   }

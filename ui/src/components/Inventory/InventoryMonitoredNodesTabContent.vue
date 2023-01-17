@@ -70,7 +70,7 @@ const checkbox: IIcon = {
   top: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, .75);
+  background-color: rgba(10, 12, 27, 0.75); // darker than shade-1
   padding: var(variables.$spacing-l) var(variables.$spacing-l);
   border-radius: 0 vars.$border-radius-m vars.$border-radius-m 0;
   .tag-node-checkbox {
