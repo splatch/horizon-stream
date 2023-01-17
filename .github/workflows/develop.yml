@@ -16,78 +16,61 @@ on:
         type: string
 
 jobs:
-  java-prereqs:
-    if: ${{ ( github.event.label.name == 'actions-develop' ) || ( github.event.ref == 'refs/heads/develop' ) }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install prereqs
-        uses: ./.github/actions/java-install-prereqs
   alarm:
-    needs: java-prereqs
     uses: ./.github/workflows/feature-alarm.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
       skip-prereqs: true
   datachoices:
-    needs: java-prereqs
     uses: ./.github/workflows/feature-datachoices.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
       skip-prereqs: true
   events:
-    needs: java-prereqs
     uses: ./.github/workflows/feature-events.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
       skip-prereqs: true
   rest-server:
-    needs: java-prereqs
     uses: ./.github/workflows/feature-rest-server.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
       skip-prereqs: true
   inventory:
-    needs: java-prereqs
     uses: ./.github/workflows/feature-inventory.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
       skip-prereqs: true
   metrics-processor:
-    needs: java-prereqs
     uses: ./.github/workflows/feature-metrics-processor.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
       skip-prereqs: true
   notifications:
-    needs: java-prereqs
     uses: ./.github/workflows/feature-notifications.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
       skip-prereqs: true
   minion:
-    needs: java-prereqs
     uses: ./.github/workflows/feature-minion.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
       skip-prereqs: true
   minion-gateway:
-    needs: java-prereqs
     uses: ./.github/workflows/feature-minion-gateway.yml
     secrets: inherit
     with:
       image-tag: ${{ inputs.image-tag || 'pipeline-test' }}
       skip-prereqs: true
   minion-gateway-grpc-proxy:
-    needs: java-prereqs
     uses: ./.github/workflows/feature-minion-gateway-grpc-proxy.yml
     secrets: inherit
     with:

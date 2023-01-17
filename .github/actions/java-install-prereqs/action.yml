@@ -1,27 +1,10 @@
 name: 'Install Java Prereqs'
 description: 'Builds prerequisite Maven projects and installs them into the runner''s Maven repository'
-outputs:
-  cache-key:
-    description: 'The key for the cache containing the resulting build files'
-    value: ${{ steps.generate-cache-key.outputs.cache-key }}
-  cache-hit:
-    description: 'True if a previously cached build was found and reused, false otherwise'
-    value: ${{ steps.cache-maven.outputs.cache-hit }}
 
 runs:
   using: "composite"
   steps:
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        distribution: temurin
-        java-version: 11
-    - uses: actions/cache@v3
-      id: cache-maven
-      with:
-        path: '~/.m2/repository'
-        key: java-prereqs-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('parent-pom/**', 'shared-lib/**') }}
-    - name: build
+    - name: Install parent-pom and shared-lib
       if: ${{ steps.cache-maven.outputs.cache-hit != 'true' }}
       run: |
         mvn -B install -f parent-pom -DskipTests

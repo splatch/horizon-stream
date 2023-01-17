@@ -26,18 +26,7 @@ env:
   IMAGE_REGISTRY: ghcr.io
 
 jobs:
-  prereqs:
-    if: ${{ !inputs.skip-prereqs }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Install prereqs
-        id: install-prereqs
-        uses: ./.github/actions/java-install-prereqs
   build-and-test:
-    needs: prereqs
     if: ${{ inputs.skip-prereqs || success() }}
     runs-on: ubuntu-latest
     steps:
@@ -72,8 +61,8 @@ jobs:
         with:
           cache-key-hash: ${{ hashFiles('metrics-processor/**/pom.xml', 'parent-pom/pom.xml', 'shared-lib/**/pom.xml') }}
 
-      - name: Restore prereqs Maven Repository cache
-        uses: ./.github/actions/java-restore-prereqs
+      - name: Build and install prerequisites
+        uses: ./.github/actions/java-install-prereqs
 
       - name: Jib Maven build, scan, and push
         uses: ./.github/actions/jib-maven-sonar
