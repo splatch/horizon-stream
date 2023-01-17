@@ -1,3 +1,18 @@
+<script lang="ts" setup>
+import { PropType } from 'vue'
+import { setViewBox } from '@/components/utils'
+import { IIcon } from '@/types'
+
+const props = defineProps({
+  icon: {
+    type: Object as PropType<IIcon>,
+    required: true
+  }
+})
+
+const iconSize = props.icon.size || 'inherit'
+</script>
+
 <template>
   <FeatherTooltip
     :title="icon.tooltip || ''"
@@ -12,15 +27,10 @@
   </FeatherTooltip>
 </template>
 
-<script lang="ts" setup>
-import { PropType } from 'vue'
-import { setViewBox } from '@/components/utils'
-import { IIcon } from '@/types'
-
-defineProps({
-  icon: {
-    type: Object as PropType<IIcon>,
-    required: true
-  }
-})
-</script>
+<style lang="scss" scoped>
+// FeatherIcon default width/height: 1rem
+.btn-content > svg {
+  width: v-bind(iconSize);
+  height: v-bind(iconSize);
+}
+</style>

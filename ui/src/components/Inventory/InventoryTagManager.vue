@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import { useInventoryStore } from '@/store/Views/inventoryStore'
 import Search from '@featherds/icon/action/Search'
-import AddIcon from '@featherds/icon/action/AddCircleAlt'
+import Add from '@featherds/icon/action/Add'
+import { IIcon } from '@/types'
+import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
 
 const inventoryStore = useInventoryStore()
 
-const searchIcon = markRaw(Search)
-const addIcon = markRaw(AddIcon)
+const searchIcon: IIcon = {
+  image: markRaw(Search),
+  tooltip: 'Search'
+}
+
+const addIcon: IIcon = {
+  image: markRaw(Add),
+  size: '2rem'
+}
 
 const newTag = ref()
 const newTagDropdown = ref()
@@ -23,6 +32,21 @@ const selectTag = (tag: string) => {
     selectedTags.value.push(tag)
   }
 }
+
+const placement = ref(PopoverPlacement.top)
+/* const placements = [
+  PopoverPlacement.top,
+  PopoverPlacement.bottom,
+  PopoverPlacement.left,
+  PopoverPlacement.right
+] */
+const alignment = ref(PointerAlignment.center)
+/* const alignments = [
+  PointerAlignment.center,
+  PointerAlignment.left,
+  PointerAlignment.right
+] */
+    
 
 const addTag = () => {
   // send newtag.value
@@ -44,36 +68,41 @@ const addTag = () => {
         </div>
         <div class="search-add">
           <!-- Add tag -->
-          <FeatherDropdown ref="newTagDropdown" class="add-tag-dropdown">
-            <template v-slot:trigger="{ attrs, on }">
-              <FeatherButton link href="#" icon="Add Tag" v-bind="attrs" v-on="on">
-                <FeatherIcon :icon="addIcon" />
-              </FeatherButton>
+          <FeatherPopover :pointer-alignment="alignment" :placement="placement">
+            <template #default>
+              <div>
+                <h4>Test heading</h4>
+                <p>lorem ipsum or something</p>
+                <a href="#"> random link i guess</a>
+              </div>
             </template>
-            <FeatherInput v-model="newTag" label="New tag" class="new-tag-input" />
-            <FeatherButton primary class="new-tag-btn" @click="addTag">
-              Add Tag
-            </FeatherButton>
-          </FeatherDropdown>
+            <template #trigger="{ attrs, on }">
+              <FeatherButton v-bind="attrs" v-on="on" class="add-new-tag-btn"
+                >
+                <Icon :icon="addIcon" />
+              </FeatherButton
+              >
+            </template>
+          </FeatherPopover>
           <!-- Search tags input -->
           <FeatherInput
             class="search"
             v-model="searchValue"
             label="Search Tags">
             <template v-slot:post>
-              <FeatherIcon :icon="searchIcon" />
+              <Icon :icon="searchIcon" class="icon-search" />
             </template>
           </FeatherInput>
         </div>
       </div>
-      <FeatherChipList condensed label="Tags" :key="selectedTags.toString()">
+      <FeatherChipList condensed label="Tags" :key="selectedTags.toString()" class="tag-chip-list">
         <FeatherChip 
           v-for="tag of tags" 
           :key="tag" 
           class="pointer"
           :class="{ 'selected' : selectedTags.includes(tag) }"
           @click="selectTag(tag)"
-        >
+          >
           {{ tag }}
         </FeatherChip>
       </FeatherChipList>
@@ -94,6 +123,26 @@ const addTag = () => {
 @use "@featherds/styles/mixins/typography";
 @use "@/styles/vars";
 @use "@/styles/mediaQueries";
+
+.add-new-tag-btn {
+  color: white;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  min-width: inherit;
+  padding: 1rem;
+  line-height: inherit;
+  background-color: var(variables.$shade-2);
+  :deep {
+    > .btn-content {
+      display: block;
+      > svg {
+        left: -16px;
+        top: -16px;
+      }
+    }
+  }
+}
 
 .tag-manager-box {
   display: flex;
@@ -169,6 +218,10 @@ const addTag = () => {
       margin-bottom: 0;
     }
   }
+  .tag-chip-list {
+    margin-top: 0;
+  }
+
   @include mediaQueries.screen-lg {
     width: 75%;
     min-width: 0;

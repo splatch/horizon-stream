@@ -33,6 +33,7 @@ export interface IIcon {
   image: any
   title?: string
   tooltip?: string
+  size?: string
 }
 
 export const enum Monitor {
