@@ -21,6 +21,8 @@
 
     <properties>
         <docker.image.name>opennms/horizon-stream-alarm</docker.image.name>
+        <!-- There is no sonarcloud project for the Alarm service yet, so skip scanning it -->
+        <sonar.skip>true</sonar.skip>
         <skipITs>false</skipITs>
         <skipJib>false</skipJib>
     </properties>
