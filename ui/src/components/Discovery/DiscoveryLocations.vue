@@ -18,7 +18,7 @@
         :key="location.id" 
         class="pointer"
         :class="{ 'selected' : store.selectedLocationIds.includes(location.id) }"
-        @click="store.selectLocation(location.id)"
+        @click="store.selectLocation(location.id, single)"
       >
         {{ location.location }}
       </FeatherChip>
@@ -29,6 +29,9 @@
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 import Search from '@featherds/icon/action/Search'
+
+defineProps<{ single?: boolean }>()
+
 const discoveryQueries = useDiscoveryQueries()
 const store = useDiscoveryStore()
 const searchIcon = markRaw(Search)
