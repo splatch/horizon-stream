@@ -35,7 +35,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import java.io.IOException;
@@ -66,11 +70,14 @@ import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
+import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
+import org.opennms.horizon.inventory.service.taskset.publisher.GrpcTaskSetPublisher;
 import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.service.contract.PublishTaskSetRequest;
 import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.protobuf.Empty;
@@ -89,8 +96,8 @@ import io.grpc.stub.MetadataUtils;
 @SpringBootTest
 @ContextConfiguration(initializers = {SpringContextTestInitializer.class})
 class NodeGrpcItTest extends GrpcTestBase {
-    private static final int EXPECTED_TASK_DEF_COUNT_FOR_NEW_LOCATION = 4;
-    private static final int EXPECTED_TASK_DEF_COUNT_WITHOUT_NEW_LOCATION = 2;
+    private static final int EXPECTED_TASK_DEF_COUNT_FOR_NEW_LOCATION = 5;
+    private static final int EXPECTED_TASK_DEF_COUNT_WITHOUT_NEW_LOCATION = 3;
     private NodeServiceGrpc.NodeServiceBlockingStub serviceStub;
 
     @Autowired
@@ -147,10 +154,10 @@ class NodeGrpcItTest extends GrpcTestBase {
         assertThat(node.getSystemDesc()).isEmpty();
         assertThat(node.getSystemLocation()).isEmpty();
         assertThat(node.getSystemContact()).isEmpty();
-        await().atMost(10, TimeUnit.SECONDS).untilAtomic(testGrpcService.getTimesCalled(), Matchers.is(3));
+        await().atMost(10, TimeUnit.SECONDS).untilAtomic(testGrpcService.getTimesCalled(), Matchers.is(4));
 
         org.assertj.core.api.Assertions.assertThat(testGrpcService.getRequests())
-            .hasSize(3)
+            .hasSize(4)
             .extracting(PublishTaskSetRequest::getTaskSet)
             .isNotNull()
             .extracting(TaskSet::getTaskDefinitionCount)
@@ -215,10 +222,10 @@ class NodeGrpcItTest extends GrpcTestBase {
         NodeDTO node = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(differentTenantHeader))).createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
-        await().atMost(10, TimeUnit.SECONDS).untilAtomic(testGrpcService.getTimesCalled(), Matchers.is(3));
+        await().atMost(10, TimeUnit.SECONDS).untilAtomic(testGrpcService.getTimesCalled(), Matchers.is(4));
 
         org.assertj.core.api.Assertions.assertThat(testGrpcService.getRequests())
-            .hasSize(3)
+            .hasSize(4)
             .extracting(PublishTaskSetRequest::getTaskSet)
             .isNotNull()
             .extracting(TaskSet::getTaskDefinitionCount)
@@ -244,10 +251,10 @@ class NodeGrpcItTest extends GrpcTestBase {
         NodeDTO node = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
-        await().atMost(10, TimeUnit.SECONDS).untilAtomic(testGrpcService.getTimesCalled(), Matchers.is(3));
+        await().atMost(10, TimeUnit.SECONDS).untilAtomic(testGrpcService.getTimesCalled(), Matchers.is(4));
 
         org.assertj.core.api.Assertions.assertThat(testGrpcService.getRequests())
-            .hasSize(3)
+            .hasSize(4)
             .extracting(PublishTaskSetRequest::getTaskSet)
             .isNotNull()
             .extracting(TaskSet::getTaskDefinitionCount)
@@ -276,14 +283,14 @@ class NodeGrpcItTest extends GrpcTestBase {
         NodeDTO node = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).createNode(createDTO);
 
         assertEquals(label, node.getNodeLabel());
-        await().atMost(10, TimeUnit.SECONDS).untilAtomic(testGrpcService.getTimesCalled(), Matchers.is(1));
+        await().atMost(10, TimeUnit.SECONDS).untilAtomic(testGrpcService.getTimesCalled(), Matchers.is(2));
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
 
         List<PublishTaskSetRequest> grpcRequests = testGrpcService.getRequests();
-        assertEquals(1, grpcRequests.size());
+        assertEquals(2, grpcRequests.size());
 
-        PublishTaskSetRequest request = grpcRequests.get(0);
+        PublishTaskSetRequest request = grpcRequests.get(1);
         TaskSet taskSet = request.getTaskSet();
         assertNotNull(taskSet);
         assertEquals(EXPECTED_TASK_DEF_COUNT_WITHOUT_NEW_LOCATION, taskSet.getTaskDefinitionCount());

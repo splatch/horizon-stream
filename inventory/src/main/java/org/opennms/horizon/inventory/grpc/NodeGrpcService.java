@@ -52,6 +52,7 @@ import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
+import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -69,6 +70,7 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
     private final NodeMapper nodeMapper;
     private final TenantLookup tenantLookup;
     private final DetectorTaskSetService taskSetService;
+    private final ScannerTaskSetService scannerService;
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
         .setNameFormat("send-taskset-for-node-%d")
         .build();
@@ -85,6 +87,7 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
             responseObserver.onCompleted();
             // Asynchronously send task sets to Minion
             executorService.execute(() -> sendTaskSetsToMinion(node));
+            executorService.execute(() -> scannerService.sendNodScannerTask(node));
         }
     }
 
