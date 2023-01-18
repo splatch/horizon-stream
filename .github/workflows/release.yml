@@ -227,6 +227,8 @@ jobs:
           # Login to dockerhub.
           echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
 
+          docker images
+
           # Publish minion-gateway image
           cd minion-gateway/
 
