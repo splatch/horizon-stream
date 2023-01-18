@@ -2,7 +2,7 @@
   <div class="azure-container">
     <div>
       <div class="location-title">Select a location</div>
-      <DiscoveryLocations />
+      <DiscoveryLocations single />
     </div>
     <div class="azure-form">
       <FeatherInput
@@ -22,7 +22,7 @@
       </FeatherInput>
       <FeatherInput
         v-model="store.azure.directoryId"
-        label="DirectoryId"
+        label="DirectoryID"
       >
       </FeatherInput>
     </div>

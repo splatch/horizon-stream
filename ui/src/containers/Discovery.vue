@@ -60,6 +60,7 @@
       </FeatherButton>
       <FeatherButton
         v-if="selectedTool === DiscoveryType.Azure"
+        :disabled="!isAzureEnabled"
         primary
         @click="saveAzureDiscovery"
       >
@@ -102,6 +103,14 @@ const modalContent = computed(() => {
   }
 })
 
+const isAzureEnabled = computed(() => {
+  return Boolean(store.selectedLocationIds.length 
+    && store.azure.clientId 
+    && store.azure.clientSecret
+    && store.azure.directoryId
+    && store.azure.subscriptionId)
+})
+
 const showSettings = (tool: DiscoveryType) => {
   selectedTool.value = tool
   openModal()
@@ -118,8 +127,9 @@ const showConfigActiveTool = (tool: DiscoveryType) => {
   openModal()
 }
 
-const saveAzureDiscovery = () => {
-  store.saveDiscoveryAzure()
+const saveAzureDiscovery = async () => {
+  const success = await store.saveDiscoveryAzure()
+  if (success) closeModal()
 }
 
 const closeDrawer = () => {

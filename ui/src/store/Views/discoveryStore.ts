@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useDiscoveryMutations } from '../Mutations/discoveryMutations'
 
 export const useDiscoveryStore = defineStore('discoveryStore', {
   state: () => ({
@@ -17,15 +18,29 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
     }
   }),
   actions: {
-    selectLocation(id: string) {
+    selectLocation(id: string, single?: boolean) {
+      if (single) {
+        this.selectedLocationIds = [id]
+        return
+      }
+
       if (this.selectedLocationIds.includes(id)) {
         this.selectedLocationIds = this.selectedLocationIds.filter((x) => x !== id)
       } else {
         this.selectedLocationIds.push(id)
       }
     },
-    saveDiscoveryAzure() {
-      console.log(this.azure)
+    async saveDiscoveryAzure() {
+      const { addAzureCreds, azureError } = useDiscoveryMutations()
+
+      await addAzureCreds({
+        azureCredential: {
+          location: this.selectedLocationIds[0],
+          ...this.azure
+        }
+      })
+
+      return !azureError
     }
   }
 })
