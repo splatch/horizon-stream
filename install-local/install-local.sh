@@ -35,6 +35,17 @@ create_cluster() {
   kubectl config get-contexts
 }
 
+cluster_ready_check () {
+
+  # This is the last pod to run, if ready, then give back the terminal session.
+  sleep 60 # Need to wait until the pod is created or else nothing comes back. Messes with the conditional.
+  while [[ $(kubectl get pods -n $NAMESPACE -l=app.kubernetes.io/component="controller-$NAMESPACE" -o jsonpath='{.items[*].status.containerStatuses[0].ready}') == 'false' ]]; do
+    echo "not-ready"
+    sleep 30
+  done
+
+}
+
 create_ssl_cert_secret () {
 
   # Create SSL Certificate
@@ -63,7 +74,6 @@ load_images () {
     kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-notification:${IMAGE_TAG} &
     kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-rest-server:${IMAGE_TAG} &
     kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-ui:${IMAGE_TAG} &
-    wait
 }
 
 install_helm_chart_custom_images () {
@@ -86,8 +96,7 @@ install_helm_chart_custom_images () {
   --set OpenNMS.MinionGatewayGrpcProxy.Image=${IMAGE_PREFIX}/horizon-stream-minion-gateway-grpc-proxy:${IMAGE_TAG} \
   --set OpenNMS.Notification.Image=${IMAGE_PREFIX}/horizon-stream-notification:${IMAGE_TAG} \
   --set OpenNMS.API.Image=${IMAGE_PREFIX}/horizon-stream-rest-server:${IMAGE_TAG} \
-  --set OpenNMS.UI.Image=${IMAGE_PREFIX}/horizon-stream-ui:${IMAGE_TAG} \
-  --wait --timeout 10m0s
+  --set OpenNMS.UI.Image=${IMAGE_PREFIX}/horizon-stream-ui:${IMAGE_TAG}
 }
 
 #### MAIN
@@ -109,10 +118,11 @@ if [ $CONTEXT == "local" ]; then
   echo
   echo ________________Installing Horizon Stream________________
   echo
-  helm upgrade -i horizon-stream ./../charts/opennms -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --create-namespace --wait --timeout 10m0s
+  helm upgrade -i horizon-stream ./../charts/opennms -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --create-namespace
   if [ $? -ne 0 ]; then exit; fi
 
   create_ssl_cert_secret
+  cluster_ready_check
 
 elif [ "$CONTEXT" == "custom-images" ]; then
 
@@ -120,11 +130,15 @@ elif [ "$CONTEXT" == "custom-images" ]; then
 
   load_images
 
+  # Need to wait for the images to be loaded.
+  sleep 120
+
   install_helm_chart_custom_images
 
   if [ $? -ne 0 ]; then exit; fi
 
   create_ssl_cert_secret
+  cluster_ready_check
 
 elif [ "$CONTEXT" == "cicd" ]; then
 
@@ -133,17 +147,23 @@ elif [ "$CONTEXT" == "cicd" ]; then
   # assumes remote docker registry, no need to load images into cluster
   install_helm_chart_custom_images
 
+  # output values from the release to help with debugging pipelines
+  helm get values horizon-stream --namespace $NAMESPACE
+
   if [ $? -ne 0 ]; then exit; fi
 
   create_ssl_cert_secret
+  cluster_ready_check
 
 elif [ $CONTEXT == "existing-k8s" ]; then
 
   echo
   echo ________________Installing Horizon Stream________________
   echo
-  helm upgrade -i horizon-stream ./../charts/opennms -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --create-namespace --wait --timeout 10m0s
+  helm upgrade -i horizon-stream ./../charts/opennms -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --create-namespace
   if [ $? -ne 0 ]; then exit; fi
+
+  cluster_ready_check
 
 else
   echo "$HELP"
