@@ -18,18 +18,10 @@ fi
 
 CONTEXT=$1
 DOMAIN=$2
-IMAGE_TAG="local"
-IMAGE_PREFIX="opennms"
+IMAGE_TAG=${3:-local}
+IMAGE_PREFIX=${4:-opennms}
 KIND_CLUSTER_NAME=kind-test
 NAMESPACE=hs-instance
-
-if [[ -n "$3" ]]; then
-  IMAGE_TAG=$3
-fi
-
-if [[ -n "$4" ]]; then
-  IMAGE_PREFIX=$4
-fi
 
 #### FUNCTION DEF
 ################################
