@@ -12,13 +12,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package values
+package opennms
 
-type IngressValues struct {
-	Enabled              bool   `yaml:"Enabled" default:"True"`
-	HttpPort             int    `yaml:"HttpPort"`
-	HttpsPort            int    `yaml:"HttpsPort"`
-	ControllerImage      string `yaml:"ControllerImage"`
-	SecretJobImage       string `yaml:"SecretJobImage"`
-	WebhookPatchJobImage string `yaml:"WebhookPatchJobImage"`
+import (
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/model/values"
+	appsv1 "k8s.io/api/apps/v1"
+)
+
+type MetricsProcessorHandler struct {
+	handlers.ServiceHandlerObject
+}
+
+func (h *MetricsProcessorHandler) UpdateConfig(values values.TemplateValues) error {
+	var mpDeployment appsv1.Deployment
+
+	h.AddToTemplates(handlers.Filepath("opennms/metricsprocessor/metricsprocessor-deployment.yaml"), values, &mpDeployment)
+
+	return h.LoadTemplates()
 }

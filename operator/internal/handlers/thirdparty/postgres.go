@@ -12,16 +12,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package handlers
+package thirdparty
 
 import (
-	"github.com/OpenNMS/opennms-operator/internal/model/values"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/model/values"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
 type PostgresHandler struct {
-	ServiceHandlerObject
+	handlers.ServiceHandlerObject
 }
 
 func (h *PostgresHandler) UpdateConfig(values values.TemplateValues) error {
@@ -30,10 +31,10 @@ func (h *PostgresHandler) UpdateConfig(values values.TemplateValues) error {
 	var service corev1.Service
 	var deployment appsv1.Deployment
 
-	h.AddToTemplates(filepath("postgres/postgres-init-secret.yaml"), values, &initSecret)
-	h.AddToTemplates(filepath("postgres/postgres-cred-secret.yaml"), values, &credSecret)
-	h.AddToTemplates(filepath("postgres/postgres-service.yaml"), values, &service)
-	h.AddToTemplates(filepath("postgres/postgres-deployment.yaml"), values, &deployment)
+	h.AddToTemplates(handlers.Filepath("postgres/postgres-init-secret.yaml"), values, &initSecret)
+	h.AddToTemplates(handlers.Filepath("postgres/postgres-cred-secret.yaml"), values, &credSecret)
+	h.AddToTemplates(handlers.Filepath("postgres/postgres-service.yaml"), values, &service)
+	h.AddToTemplates(handlers.Filepath("postgres/postgres-deployment.yaml"), values, &deployment)
 
 	return h.LoadTemplates()
 }

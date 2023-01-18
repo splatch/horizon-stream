@@ -14,18 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package handlers
+package thirdparty
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
+    "github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
+    "github.com/OpenNMS-Cloud/opennms-operator/internal/handlers/testutil"
+    "github.com/stretchr/testify/assert"
+    "testing"
 )
 
 func TestGrafanaUpdateConfig(t *testing.T) {
-	ConfigFilePath = "./../../charts/opennms/templates/"
-	handler := GrafanaHandler{}
-	assert.Nil(t, handler.GetConfig(), "config should start as nil")
-	err := handler.UpdateConfig(DefaultTestValues())
-	assert.Nil(t, err)
-	assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
+    handlers.ConfigFilePath = "./../../../charts/opennms/templates/"
+    handler := GrafanaHandler{}
+    assert.Nil(t, handler.GetConfig(), "config should start as nil")
+    err := handler.UpdateConfig(testutil.DefaultTestValues())
+    assert.Nil(t, err)
+    assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
 }

@@ -14,18 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package handlers
+package opennms
 
 import (
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
+	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers/testutil"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestKeycloakUpdateConfig(t *testing.T) {
-	ConfigFilePath = "./../../charts/opennms/templates/"
-	handler := KeycloakHandler{}
-	assert.Nil(t, handler.GetConfig(), "config should start as nil")
-	err := handler.UpdateConfig(DefaultTestValues())
-	assert.Nil(t, err)
-	assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
+func TestOpenNMSUpdateConfig(t *testing.T) {
+	handlers.ConfigFilePath = "./../../../charts/opennms/templates/"
+	for _, handler := range GetOpenNMSHandlers() {
+		assert.Nil(t, handler.GetConfig(), "config should start as nil")
+		err := handler.UpdateConfig(testutil.DefaultTestValues())
+		assert.Nil(t, err)
+		assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
+	}
 }
