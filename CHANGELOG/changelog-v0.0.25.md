@@ -12,4 +12,3 @@ Changes:
 * 3d53e7553 Merge pull request #613 from OpenNMS/feature/HS-810_remove_prometheus
 * d9c2d0b64 Merge pull request #609 from OpenNMS/jira/DC-496
 * b67bf827d Merge pull request #612 from OpenNMS/feature/HS-771
-
