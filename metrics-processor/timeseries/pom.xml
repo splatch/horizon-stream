@@ -10,7 +10,7 @@
         <relativePath>../pom.xml</relativePath>
 	</parent>
 
-    <name>OpenNMS Horizon Stream :: Time Series</name>
+    <name>OpenNMS Horizon Stream :: Metrics Processor :: Time Series</name>
     <description>
         A microservice responsible for processing device metrics.
     </description>
