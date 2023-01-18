@@ -7,27 +7,30 @@
         label="New Rule Name"
         class="name-rule"
       />
-      <FeatherDropdown>
-        <template v-slot:trigger="{ attrs, on }">
-          <FeatherButton
-            secondary
-            class="btn-dropdown"
-            v-bind="attrs"
-            v-on="on"
-          >
-            <div class="btn-content">
-              {{ componentType }}
-              <FeatherIcon :icon="Icons.UnfoldMore" />
-            </div>
-          </FeatherButton>
-        </template>
-        <FeatherDropdownItem
-          @click="selectedRuleType(compType)"
-          v-for="(compType, index) of componentTypes"
-          :key="index"
-          >{{ compType }}
-        </FeatherDropdownItem>
-      </FeatherDropdown>
+      <div>
+        <div class="subtitle">Component Type</div>
+        <FeatherDropdown>
+          <template v-slot:trigger="{ attrs, on }">
+            <FeatherButton
+              secondary
+              class="btn-dropdown"
+              v-bind="attrs"
+              v-on="on"
+            >
+              <div class="btn-content">
+                {{ componentType }}
+                <FeatherIcon :icon="Icons.UnfoldMore" />
+              </div>
+            </FeatherButton>
+          </template>
+          <FeatherDropdownItem
+            @click="selectedRuleType(compType)"
+            v-for="(compType, index) of componentTypes"
+            :key="index"
+            >{{ compType }}
+          </FeatherDropdownItem>
+        </FeatherDropdown>
+      </div>
     </div>
   </div>
 </template>
@@ -63,10 +66,13 @@ const selectedRuleType = (ruleType: string) => {
 .new-rule {
   .title {
     @include typography.headline4;
-    margin-bottom: var(variables.$spacing-s);
   }
   .form-new-rule {
     display: flex;
+    align-items: flex-end;
+    .subtitle {
+      @include typography.subtitle2;
+    }
     .name-rule {
       width: 350px;
       margin-right: var(variables.$spacing-l);
