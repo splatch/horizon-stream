@@ -163,7 +163,7 @@ jobs:
           sudo echo "127.0.0.1 onmshs" | sudo tee -a /etc/hosts
           
           # Build cluster with Horizon Stream installed.
-          ./install-local.sh cicd onmshs ${{ inputs.image-tag || github.sha }} ${{ inputs.image-registry || 'ghcr.io' }}/opennms-cloud
+          ./install-local.sh cicd onmshs "${{ inputs.image-tag || github.sha }}" "${{ inputs.image-registry || 'ghcr.io' }}/opennms-cloud"
 
         shell: bash
         working-directory: install-local
