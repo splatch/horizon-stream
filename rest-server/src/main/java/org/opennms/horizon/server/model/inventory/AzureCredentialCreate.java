@@ -25,19 +25,18 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.horizon.inventory.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.opennms.horizon.inventory.dto.AzureCredentialCreateDTO;
-import org.opennms.horizon.inventory.dto.AzureCredentialDTO;
-import org.opennms.horizon.inventory.model.AzureCredential;
+package org.opennms.horizon.server.model.inventory;
 
-@Mapper(componentModel = "spring")
-public interface AzureCredentialMapper extends DateTimeMapper {
-    AzureCredential dtoToModel(AzureCredentialCreateDTO dto);
+import lombok.Getter;
+import lombok.Setter;
 
-    @Mapping(source = "monitoringLocation.location", target = "location")
-    @Mapping(source = "createTime", target = "createTimeMsec")
-    AzureCredentialDTO modelToDto(AzureCredential model);
+@Getter
+@Setter
+public class AzureCredentialCreate {
+    private String location;
+    private String clientId;
+    private String clientSecret;
+    private String subscriptionId;
+    private String directoryId;
 }
