@@ -39,7 +39,7 @@ cluster_ready_check () {
 
   # This is the last pod to run, if ready, then give back the terminal session.
   sleep 60 # Need to wait until the pod is created or else nothing comes back. Messes with the conditional.
-  while [[ $(kubectl get pods -n $NAMESPACE -l=app.kubernetes.io/component="controller-$NAMESPACE" -o jsonpath='{.items[*].status.containerStatuses[0].ready}') == 'false' ]]; do 
+  while [[ $(kubectl get pods -n $NAMESPACE -l=app.kubernetes.io/component="controller-$NAMESPACE" -o jsonpath='{.items[*].status.containerStatuses[0].ready}') == 'false' ]]; do
     echo "not-ready"
     sleep 30
   done
@@ -61,25 +61,27 @@ create_ssl_cert_secret () {
 }
 
 load_images () {
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-alarm:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-datachoices:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-events:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-grafana:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-inventory:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-keycloak:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-metrics-processor:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-minion:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-minion-gateway:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-minion-gateway-grpc-proxy:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-notification:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-rest-server:${IMAGE_TAG}&
-    kind load docker-image --name kind-test ${IMAGE_PREFIX}/horizon-stream-ui:${IMAGE_TAG}&
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-alarm:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-datachoices:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-events:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-grafana:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-inventory:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-keycloak:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-metrics-processor:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-minion:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-minion-gateway:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-minion-gateway-grpc-proxy:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-notification:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-rest-server:${IMAGE_TAG} &
+    kind load docker-image --name $KIND_CLUSTER_NAME ${IMAGE_PREFIX}/horizon-stream-ui:${IMAGE_TAG} &
+    wait
 }
 
 install_helm_chart_custom_images () {
   echo
   echo ________________Installing Horizon Stream________________
   echo
+
   helm upgrade -i horizon-stream ./../charts/opennms \
   -f ./tmp/install-local-opennms-horizon-stream-custom-images-values.yaml \
   --namespace $NAMESPACE --create-namespace \
