@@ -59,6 +59,8 @@ spec:
               value: "{{ .Values.OpenNMS.Inventory.ServiceName }}:{{ .Values.OpenNMS.Inventory.GrpcPort }}"
             - name: GRPC_URL_EVENTS
               value: "{{ .Values.OpenNMS.Events.ServiceName }}:{{ .Values.OpenNMS.Events.GrpcPort }}"
+            - name: GRPC_URL_NOTIFICATION
+              value: "{{ .Values.OpenNMS.Notification.ServiceName }}:{{ .Values.OpenNMS.Notification.GrpcPort }}"
           ports:
             - containerPort: {{ .Values.OpenNMS.API.Port }}
           {{/*  TODO    livenessProbe:*/}}

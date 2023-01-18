@@ -25,42 +25,19 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+syntax = "proto3";
 
-package org.opennms.horizon.shared.dto.notifications;
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
-public class PagerDutyConfigDTO {
-    public PagerDutyConfigDTO() {
-    }
+package opennms.inventory;
+option java_multiple_files = true;
+option java_package = "org.opennms.horizon.notifications.dto";
 
-    public PagerDutyConfigDTO(String integrationkey) {
-        this.integrationkey = integrationkey;
-    }
+message PagerDutyConfigDTO {
+  string integration_key = 1;
+}
 
-    private String integrationkey;
-
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        if (!super.equals(object)) return false;
-
-        PagerDutyConfigDTO that = (PagerDutyConfigDTO) object;
-
-        if (!integrationkey.equals(that.integrationkey)) return false;
-
-        return true;
-    }
-
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + integrationkey.hashCode();
-        return result;
-    }
-
-    public String getIntegrationkey() {
-        return integrationkey;
-    }
-
-    public void setIntegrationkey(String integrationkey) {
-        this.integrationkey = integrationkey;
-    }
+service NotificationService {
+  rpc postPagerDutyConfig(PagerDutyConfigDTO) returns (PagerDutyConfigDTO) {};
 }

@@ -26,28 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.server.mapper;
 
-import org.opennms.horizon.notifications.api.PagerDutyAPI;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.exceptions.NotificationException;
-import org.opennms.horizon.shared.dto.event.AlarmDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.opennms.horizon.server.model.notification.PagerDutyConfig;
 
-@Service
-public class NotificationServiceImpl implements NotificationService {
+@Mapper(componentModel = "spring")
+public interface PagerDutyConfigMapper {
 
-    @Autowired
-    private PagerDutyAPI pagerDutyAPI;
-
-    @Override
-    public void postNotification(AlarmDTO alarm) throws NotificationException {
-        pagerDutyAPI.postNotification(alarm);
-    }
-
-    @Override
-    public void postPagerDutyConfig(PagerDutyConfigDTO config) {
-        pagerDutyAPI.saveConfig(config);
-    }
+    @Mapping(source = "integrationkey", target = "integrationKey")
+    PagerDutyConfigDTO pagerDutyConfigToProto(PagerDutyConfig config);
+    @Mapping(source = "integrationKey", target = "integrationkey")
+    PagerDutyConfig protoToConfig(PagerDutyConfigDTO configDTO);
 }
