@@ -24,8 +24,8 @@
 
         <!-- Jib properties -->
         <docker.image>${docker.image.name}:${docker.image.tag}</docker.image>
-        <!--suppress CheckTagEmptyBody -->
-        <docker.image.name></docker.image.name>
+        <!-- docker.image.name MUST be set by child modules that use Jib. -->
+        <docker.image.name>INVALID</docker.image.name>
         <docker.image.tag>latest</docker.image.tag>
 
         <!-- Dependency properties -->
