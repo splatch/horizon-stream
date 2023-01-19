@@ -89,7 +89,7 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
             responseObserver.onCompleted();
             // Asynchronously send task sets to Minion
             executorService.execute(() -> sendTaskSetsToMinion(node));
-            scannerService.sendNodScannerTask(List.of(nodeMapper.modelToDTO(node)),
+            scannerService.sendNodeScannerTask(List.of(nodeMapper.modelToDTO(node)),
                 node.getMonitoringLocation().getLocation(), node.getTenantId());
         }
     }

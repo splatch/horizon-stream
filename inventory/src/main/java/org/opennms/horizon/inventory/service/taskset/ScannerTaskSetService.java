@@ -65,7 +65,7 @@ public class ScannerTaskSetService {
         executorService.execute(() -> sendAzureScannerTask(credential));
     }
 
-    public void sendNodScannerTask(List<NodeDTO> nodes, String location, String tenantId) {
+    public void sendNodeScannerTask(List<NodeDTO> nodes, String location, String tenantId) {
         executorService.execute(()-> {
             List<TaskDefinition> tasks = nodes.stream().map(this::createNodeScanTask).collect(Collectors.toList());
             taskSetPublisher.publishNewTasks(tenantId, location, tasks);

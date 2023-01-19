@@ -152,7 +152,7 @@ public class NodeService {
         if(!nodeList.isEmpty()) {
             String location = nodeList.get(0).getMonitoringLocation().getLocation();
             List<NodeDTO> dtoList = nodeList.stream().map(mapper::modelToDTO).collect(Collectors.toList());
-            scannerTaskSetService.sendNodScannerTask(dtoList, location, tenantId);
+            scannerTaskSetService.sendNodeScannerTask(dtoList, location, tenantId);
             return true;
         }
         return false;
