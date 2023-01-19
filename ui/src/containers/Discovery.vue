@@ -102,7 +102,7 @@ const modalContent = computed(() => {
     case DiscoveryType.ICMP:
       return { component: DiscoveryStepper, props: { callback: closeModal }}
     case DiscoveryType.Azure:
-      return { component: AzureForm, props: { callback: closeModal }}
+      return { component: AzureForm }
   }
 })
 
