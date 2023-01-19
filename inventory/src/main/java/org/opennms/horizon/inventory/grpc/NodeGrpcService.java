@@ -28,19 +28,12 @@
 
 package org.opennms.horizon.inventory.grpc;
 
-import com.google.common.base.Strings;
-import com.google.common.net.InetAddresses;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.protobuf.BoolValue;
-import com.google.protobuf.Empty;
-import com.google.protobuf.Int64Value;
-import com.google.rpc.Code;
-import com.google.rpc.Status;
-import io.grpc.Context;
-import io.grpc.protobuf.StatusProto;
-import io.grpc.stub.StreamObserver;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
@@ -55,11 +48,20 @@ import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import com.google.common.base.Strings;
+import com.google.common.net.InetAddresses;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.protobuf.BoolValue;
+import com.google.protobuf.Empty;
+import com.google.protobuf.Int64Value;
+import com.google.rpc.Code;
+import com.google.rpc.Status;
+
+import io.grpc.Context;
+import io.grpc.protobuf.StatusProto;
+import io.grpc.stub.StreamObserver;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -87,7 +89,8 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
             responseObserver.onCompleted();
             // Asynchronously send task sets to Minion
             executorService.execute(() -> sendTaskSetsToMinion(node));
-            executorService.execute(() -> scannerService.sendNodScannerTask(node));
+            scannerService.sendNodScannerTask(List.of(nodeMapper.modelToDTO(node)),
+                node.getMonitoringLocation().getLocation(), node.getTenantId());
         }
     }
 
@@ -175,6 +178,25 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
         );
     }
 
+    @Override
+    public void startNodeScanByLocationId(Int64Value request, StreamObserver<BoolValue> responseObserver) {
+        Optional<String> tenantIdOptional = tenantLookup.lookupTenantId(Context.current());
+        tenantIdOptional.ifPresentOrElse(tenantId -> {
+                if(nodeService.scanNodesByLocation(request.getValue(), tenantId)) {
+                    responseObserver.onNext(BoolValue.of(true));
+                    responseObserver.onCompleted();
+                } else {
+                    Status status = Status.newBuilder()
+                        .setCode(Code.NOT_FOUND_VALUE)
+                        .setMessage("Didn't find any nodes with location id: " + request.getValue()).build();
+                    responseObserver.onError(StatusProto.toStatusRuntimeException(status));
+                }
+            }, () -> {
+                Status status = Status.newBuilder().setCode(Code.INVALID_ARGUMENT_VALUE).setMessage("Tenant ID is missing").build();
+                responseObserver.onError(StatusProto.toStatusRuntimeException(status));
+            });
+    }
+
     private Status createStatusNotExits(long id) {
         return Status.newBuilder()
             .setCode(Code.NOT_FOUND_VALUE)
@@ -195,7 +217,7 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
                 responseObserver.onError(StatusProto.toStatusRuntimeException(status));
             } else {
                 Optional<IpInterfaceDTO> optionalIpInterface = ipInterfaceService.findByIpAddressAndLocationAndTenantId(request.getManagementIp(), request.getLocation(), tenantId);
-                if (!optionalIpInterface.isEmpty()) {
+                if (optionalIpInterface.isPresent()) {
                     valid = false;
                     Status status = Status.newBuilder()
                         .setCode(Code.ALREADY_EXISTS_VALUE)

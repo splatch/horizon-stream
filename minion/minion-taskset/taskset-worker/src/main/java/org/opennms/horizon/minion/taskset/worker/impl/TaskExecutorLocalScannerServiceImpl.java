@@ -78,9 +78,7 @@ public class TaskExecutorLocalScannerServiceImpl implements TaskExecutorLocalSer
 
     @Override
     public void cancel() {
-        if (future != null
-            && !future.isCancelled()) {
-
+        if (future != null && !future.isCancelled()) {
             future.cancel(true);
         }
         future = null;
