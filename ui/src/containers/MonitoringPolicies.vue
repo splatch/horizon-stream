@@ -17,7 +17,7 @@
         <FeatherTab>Create New Rule</FeatherTab>
         <FeatherTab>Existing Rules</FeatherTab>
       </template>
-      <FeatherTabPanel class="panel"><AddNewRule /></FeatherTabPanel>
+      <FeatherTabPanel class="panel"><AddNewRule /><DetectionMethod /></FeatherTabPanel>
       <FeatherTabPanel class="panel"> Content for Existing Rule List </FeatherTabPanel>
     </FeatherTabContainer>
   </div>
