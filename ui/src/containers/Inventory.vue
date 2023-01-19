@@ -13,7 +13,7 @@
       <InventoryMonitoredNodesTabContent :tabContent="tabUnmonitoredContent" />
     </FeatherTabPanel> -->
     <!-- <FeatherTabPanel>
-      <Filter v-if="tabDetectedContent.length" />
+      <InventoryFilter v-if="tabDetectedContent.length" />
       <InventoryDetectedNodesTabContent :tabContent="tabDetectedContent" />
     </FeatherTabPanel> -->
   </FeatherTabContainer>

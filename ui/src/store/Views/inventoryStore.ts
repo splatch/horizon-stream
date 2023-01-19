@@ -2,12 +2,12 @@ import { defineStore } from 'pinia'
 
 export const useInventoryStore = defineStore('inventoryStore', {
   state: () => ({
-    isTagsOpen: false,
+    isTaggingBoxOpen: false,
     isFilterOpen: false
   }),
   actions: {
-    triggerTagsBox() {
-      this.isTagsOpen = !this.isTagsOpen
+    toggleTaggingBox() {
+      this.isTaggingBoxOpen = !this.isTaggingBoxOpen
     },
     toggleFilter() {
       this.isFilterOpen = !this.isFilterOpen

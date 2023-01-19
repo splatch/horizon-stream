@@ -1,63 +1,3 @@
-<template>
-  <ul class="filter-container">
-    <!-- Search -->
-    <li class="autocomplete">
-      <FeatherAutocomplete
-        v-model="search.value"
-        :loading="search.loading"
-        :results="search.results"
-        @search="search.getItem"
-        label="Search"
-        type="multi"
-        data-test="search"
-      />
-    </li>
-    <!-- Node type -->
-    <li>
-      <FeatherSelect
-        v-model="nodeTypeState"
-        :options="nodeType.options"
-        :text-prop="nodeType.optionText"
-        :label="nodeType.label"
-        @update:modelValue="onNodeTypeSelect"
-        data-test="node-type"
-      />
-    </li>
-    <!-- Monitoring Location -->
-    <li>
-      <FeatherSelect
-        v-model="monitoringLocationState"
-        :options="monitoringLocation.options"
-        :text-prop="monitoringLocation.optionText"
-        :label="monitoringLocation.label"
-        @update:modelValue="onMonitoringLocationSelect"
-        data-test="monitoring-location"
-      />
-    </li>
-    <!-- Severity -->
-    <li>
-      <FeatherSelect
-        v-model="severityState"
-        :options="severity.options"
-        :text-prop="severity.optionText"
-        :label="severity.label"
-        @update:modelValue="onSeveritySelect"
-        data-test="severity"
-      />
-    </li>
-    <!-- Tagging -->
-    <li>
-      <InventoryTagManagerCtrl data-test="tag-manager-ctrl" /> 
-    </li>
-    <!-- Sort/A-Z -->
-    <li @click="onSort" class="action-btn" data-test="sort-btn"><Icon :icon="sort" /></li>
-    <li @click="onSortAlpha" class="action-btn" data-test="sort-alpha-btn" ><Icon :icon="sortAlpha" /></li>
-    <!-- Expand/Collapse -->
-    <li @click="inventoryStore.toggleFilter" :data-test="expandCollapseBtn" class="action-btn"><Icon :icon="expandCollapse" /></li>
-  </ul>
-  <InventoryTagManager />
-</template>
-
 <script lang="ts" setup>
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import Sort from '@material-design-icons/svg/outlined/sort.svg'
@@ -190,7 +130,65 @@ const expandCollapse = ref(computed<IIcon>(() => {
 }))
 
 </script>
-
+<template>
+  <ul class="filter-container">
+    <!-- Search -->
+    <li class="autocomplete">
+      <FeatherAutocomplete
+        v-model="search.value"
+        :loading="search.loading"
+        :results="search.results"
+        @search="search.getItem"
+        label="Search"
+        type="multi"
+        data-test="search"
+      />
+    </li>
+    <!-- Node type -->
+    <li>
+      <FeatherSelect
+        v-model="nodeTypeState"
+        :options="nodeType.options"
+        :text-prop="nodeType.optionText"
+        :label="nodeType.label"
+        @update:modelValue="onNodeTypeSelect"
+        data-test="node-type"
+      />
+    </li>
+    <!-- Monitoring Location -->
+    <li>
+      <FeatherSelect
+        v-model="monitoringLocationState"
+        :options="monitoringLocation.options"
+        :text-prop="monitoringLocation.optionText"
+        :label="monitoringLocation.label"
+        @update:modelValue="onMonitoringLocationSelect"
+        data-test="monitoring-location"
+      />
+    </li>
+    <!-- Severity -->
+    <li>
+      <FeatherSelect
+        v-model="severityState"
+        :options="severity.options"
+        :text-prop="severity.optionText"
+        :label="severity.label"
+        @update:modelValue="onSeveritySelect"
+        data-test="severity"
+      />
+    </li>
+    <!-- Tagging -->
+    <li>
+      <InventoryTagManagerCtrl data-test="tag-manager-ctrl" /> 
+    </li>
+    <!-- Sort/A-Z -->
+    <li @click="onSort" class="action-btn" data-test="sort-btn"><Icon :icon="sort" /></li>
+    <li @click="onSortAlpha" class="action-btn" data-test="sort-alpha-btn" ><Icon :icon="sortAlpha" /></li>
+    <!-- Expand/Collapse -->
+    <li @click="inventoryStore.toggleFilter" :data-test="expandCollapseBtn" class="action-btn"><Icon :icon="expandCollapse" /></li>
+  </ul>
+  <InventoryTagManager />
+</template>
 <style lang="scss" scoped>
 @use "@featherds/styles/themes/variables";
 
