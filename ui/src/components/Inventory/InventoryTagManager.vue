@@ -1,78 +1,87 @@
 <template>
-  <div class="tag-manager-box" v-if="store.isTagsOpen">
-    <div class="left">
+  <div class="tag-manager-box" v-if="inventoryStore.isTaggingBoxOpen">
+    <section class="select-tags">
       <div class="top">
-        <div class="subtitle">Selected Tags: </div>
-
-        <div class="total-selected">
-          <div class="subtitle">Total: {{ tags.length }}</div>
-          <div class="subtitle pipe">|</div>
-          <div class="subtitle">Selected: {{ selectedTags.length }}</div>
+        <div class="heading-total-selected">
+          <h4>Select Tags:</h4>
+          <div class="total-selected">
+            <div>TOTAL: <span>{{ tags.length }}</span><span class="pipe">|</span></div>
+            <div>SELECTED: <span>{{ selectedTags.length }}</span></div>
+          </div>
         </div>
-
         <div class="search-add">
           <!-- Add tag -->
-          <div>
-            <FeatherDropdown ref="newTagDropdown">
-              <template v-slot:trigger="{ attrs, on }">
-                <FeatherButton link href="#" icon="Add Tag" v-bind="attrs" v-on="on">
-                  <FeatherIcon :icon="addIcon" />
-                </FeatherButton>
-              </template>
-              <FeatherInput v-model="newTag" label="New tag" class="new-tag-input" />
-              <FeatherButton primary class="new-tag-btn" @click="addTag">
-                Add Tag
-              </FeatherButton>
-            </FeatherDropdown>
-          </div>
-
+          <FeatherPopover :pointer-alignment="alignment" :placement="placement">
+            <template #default>
+              <div class="add-new-tag-popover">
+                <FeatherInput
+                  :label="'type...'"
+                  v-model="newTag"
+                  class="new-tag-input"
+                />
+                <FeatherButton @click="addTag" primary>Add tag</FeatherButton>
+              </div>
+            </template>
+            <template #trigger="{ attrs, on }">
+              <FeatherButton v-bind="attrs" v-on="on" class="add-new-tag-btn"
+                >
+                <Icon :icon="addIcon" />
+              </FeatherButton
+              >
+            </template>
+          </FeatherPopover>
           <!-- Search tags input -->
           <FeatherInput
             class="search"
             v-model="searchValue"
             label="Search Tags">
-            <template v-slot:pre>
-              <FeatherIcon :icon="searchIcon" />
+            <template v-slot:post>
+              <Icon :icon="searchIcon" class="icon-search" />
             </template>
           </FeatherInput>
         </div>
       </div>
-
-      <div>
-        <FeatherChipList condensed label="Tags" :key="selectedTags.toString()">
-          <FeatherChip 
-            v-for="tag of tags" 
-            :key="tag" 
-            class="pointer"
-            :class="{ 'selected' : selectedTags.includes(tag) }"
-            @click="selectTag(tag)"
+      <FeatherChipList condensed label="Tags" :key="selectedTags.toString()" class="tag-chip-list">
+        <FeatherChip 
+          v-for="tag of tags" 
+          :key="tag" 
+          class="pointer"
+          :class="{ 'selected' : selectedTags.includes(tag) }"
+          @click="selectTag(tag)"
           >
-            {{ tag }}
-          </FeatherChip>
-        </FeatherChipList>
-      </div>
-    </div>
-
-    <div class="right">
-      <div class="vl"></div>
-      <FeatherRadioGroup vertical :label="'Tag Nodes:'" v-model="tagNodes">
+          {{ tag }}
+        </FeatherChip>
+      </FeatherChipList>
+    </section>
+    <section class="tag-nodes">
+      <h4>Tag Nodes:</h4>
+      <FeatherRadioGroup vertical label="" v-model="tagNodes" class="select-tag-nodes">
         <FeatherRadio :value="1">All</FeatherRadio>
         <FeatherRadio :value="2">Individual</FeatherRadio>
         <FeatherRadio :value="3">Clear</FeatherRadio>
       </FeatherRadioGroup>
-    </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useInventoryStore } from '@/store/Views/inventoryStore'
 import Search from '@featherds/icon/action/Search'
-import AddIcon from '@featherds/icon/action/AddCircleAlt'
+import Add from '@featherds/icon/action/Add'
+import { IIcon } from '@/types'
+import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
 
-const store = useInventoryStore()
+const inventoryStore = useInventoryStore()
 
-const searchIcon = markRaw(Search)
-const addIcon = markRaw(AddIcon)
+const searchIcon: IIcon = {
+  image: markRaw(Search),
+  tooltip: 'Search'
+}
+
+const addIcon: IIcon = {
+  image: markRaw(Add),
+  size: '2rem'
+}
 
 const newTag = ref()
 const newTagDropdown = ref()
@@ -80,7 +89,7 @@ const tagNodes = ref()
 const searchValue = ref()
 const selectedTags = ref<string[]>([])
 
-const tags = computed(() => ['tag1', 'tag2'])
+const tags = computed(() => ['tag1tag1 tag1tag1tag1tag1tag1tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8', 'tag9', 'tag10', 'tag11', 'tag12', 'tag13', 'tag14', 'tag15', 'tag16', 'tag17', 'tag18', 'tag19', 'tag20', 'tag21', 'tag22'])
 
 const selectTag = (tag: string) => {
   if (selectedTags.value.includes(tag)) {
@@ -90,52 +99,102 @@ const selectTag = (tag: string) => {
   }
 }
 
+const placement = ref(PopoverPlacement.top)
+const alignment = ref(PointerAlignment.center)
+
 const addTag = () => {
   // send newtag.value
   newTag.value = '' // clear input
-  newTagDropdown.value.handleClose() // clost dropdown
+  newTagDropdown.value.handleClose() // close dropdown
 }
 </script>
 
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";
 @use "@featherds/styles/mixins/typography";
-.subtitle {
-  @include typography.subtitle2();
+@use "@/styles/vars";
+@use "@/styles/mediaQueries";
+
+
+:deep(.feather-popover-container) {
+  > .popover {
+    // to style add tag popover
+  }
 }
+.add-new-tag-btn {
+  color: white;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  min-width: inherit;
+  padding: 1rem;
+  line-height: inherit;
+  background-color: var(variables.$shade-2);
+  // TODO: how to remove the weird blue border when button clicked
+  :deep {
+    > .btn-content {
+      display: block;
+      > svg {
+        left: -1rem; // TODO: how to set dynamically using addIcon.size value
+        top: -1rem;
+      }
+    }
+  }
+}
+
 .tag-manager-box {
   display: flex;
-  height: 175px;
-  background: var(variables.$shade-4);
-  margin: 10px 20px 10px 20px;
-  border-radius: 3px;
+  flex-direction: row;
+  flex-flow: wrap;
+  justify-content: space-between;
+  border: 1px solid var(variables.$secondary-text-on-surface);
+  border-radius: vars.$border-radius-m;
   padding: var(variables.$spacing-m);
+  margin-bottom: var(variables.$spacing-xxl);
+  background-color: var(variables.$disabled-text-on-color);
+  min-width: 480px;
+  h4 {
+    padding-top: 3px;
+  }
+}
 
-  .left {
-    width: 80%;
+.select-tags {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 445px;
+  .top {
     display: flex;
-    flex-direction: column;
-    padding-right: var(variables.$spacing-m);
-
-    .top {
-      display: flex;
-      justify-content: space-between;
-
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: var(variables.$spacing-m);
+    .heading-total-selected {
       .total-selected {
         display: flex;
-        gap: var(variables.$spacing-m);
-
-        .pipe {
-          color: var(variables.$shade-4);
+        flex-direction: row;
+        padding-top: 8px;
+        > * {
+          > span {
+            font-weight: bold;
+            &.pipe {
+              color: var(variables.$secondary-text-on-surface);
+              margin: 0 var(variables.$spacing-s);
+            }
+          }
         }
       }
 
-      .search-add {
+      @include mediaQueries.screen-md {
         display: flex;
-        gap: 5px;
-        .search {
-          width: 200px;
-        }
+        flex-direction: row;
+        width: 50%;
+        justify-content: space-between;
+      }
+    }
+    .search-add {
+      display: flex;
+      flex-direction: row;
+      .add-tag-dropdown {
         .new-tag-input {
           margin: 0px 10px 0px 10px;
           width: 175px;
@@ -143,27 +202,81 @@ const addTag = () => {
         .new-tag-btn {
           margin-left: var(variables.$spacing-s);
         }
+        .feather-menu-dropdown {
+          color: red;
+        }
+      }
+
+      :deep(.search) {
+        width: 200px;
+      }
+    }
+
+    @include mediaQueries.screen-md {
+      margin-bottom: 0;
+    }
+  }
+  .tag-chip-list {
+    margin-top: 0;
+  }
+
+  @include mediaQueries.screen-lg {
+    width: 75%;
+    min-width: 0;
+  }
+  @include mediaQueries.screen-xxl {
+    width: 80%;
+  }
+}
+
+.tag-nodes {
+  display: flex;
+  flex-direction: row;
+  width: 100%;;
+  min-width: 445px;
+  margin-top: var(variables.$spacing-m);
+  padding-top: var(variables.$spacing-m);
+  border-top: 1px solid var(variables.$secondary-text-on-surface);
+
+  :deep(.select-tag-nodes) {
+    margin-left: var(variables.$spacing-m);
+    > label {
+      display: none;
+    }
+    .feather-radio-group {
+      display: flex;
+      flex-direction: row;
+      .layout-container {
+        margin-right: var(variables.$spacing-m);
+      }
+    }
+    .feather-input-sub-text {
+      display: none;
+    }
+  }
+
+  @include mediaQueries.screen-lg {
+    width: 20%;
+    min-width: 0;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+    border-left: 1px solid var(variables.$secondary-text-on-surface);
+    padding-left: var(variables.$spacing-l);
+    display: block;
+
+    :deep(.select-tag-nodes) {
+      .feather-radio-group {
+        display: block;
+        > * {
+          margin-bottom: var(variables.$spacing-xs);
+        }
       }
     }
   }
-  .right {
-    display: flex;
 
-    .vl {
-      border-left: 1px solid var(variables.$shade-3);
-      height: 135px;
-      margin-top: 6px;
-      margin-right: var(variables.$spacing-m);
-    }
-  }
-}
-</style>
-
-
-<style lang="scss">
-.tag-manager-box {
-  .feather-radio-group-container.vertical .layout-container {
-    margin-bottom: 0px !important;
+  @include mediaQueries.screen-xxl {
+    width: 15%;
   }
 }
 </style>
