@@ -1,33 +1,31 @@
 <template>
   <div class="list">
-    <div class="card">
+    <div
+      class="card"
+      :class="{ selected: selectedAlert === 'InterfaceUtil' }"
+      @click="setThresholdAlert('InterfaceUtil')"
+    >
       Interface Util
-      <div>
-        <FeatherIcon
-          class="icon"
-          :icon="Icons.EditMode"
-        />
-        <FeatherIcon
-          class="icon"
-          :icon="Icons.ContentCopy"
-        />
-      </div>
     </div>
-    <div class="card">Discards</div>
+    <div
+      class="card"
+      :class="{ selected: selectedAlert === 'Discards' }"
+      @click="setThresholdAlert('Discards')"
+    >
+      Discards
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useMonitoringPoliciesStore } from '@/store/Views/monitoringPoliciesStore'
-import ContentCopy from '@featherds/icon/action/ContentCopy'
-import EditMode from '@featherds/icon/action/EditMode'
-
-import { markRaw } from 'vue'
-const Icons = markRaw({
-  ContentCopy,
-  EditMode
-})
 const store = useMonitoringPoliciesStore()
+const selectedAlert = ref('InterfaceUtil')
+
+const setThresholdAlert = (type: string) => {
+  selectedAlert.value = type
+  store.setMetricName(type)
+}
 </script>
 
 <style scoped lang="scss">
@@ -46,12 +44,10 @@ const store = useMonitoringPoliciesStore()
     margin-right: var(variables.$spacing-m);
     width: 240px;
     border-radius: 5px;
-
-    .icon {
-      font-size: 20px;
-      margin-left: 7px;
-      cursor: pointer;
-      color: var(variables.$primary);
+    cursor: pointer;
+    &.selected {
+      border: 2px solid var(variables.$primary);
+      @include typography.subtitle2;
     }
   }
 }

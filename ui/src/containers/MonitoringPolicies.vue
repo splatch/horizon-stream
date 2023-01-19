@@ -17,7 +17,7 @@
         <FeatherTab>Create New Rule</FeatherTab>
         <FeatherTab>Existing Rules</FeatherTab>
       </template>
-      <FeatherTabPanel class="panel"><AddNewRule /><DetectionMethod /></FeatherTabPanel>
+      <FeatherTabPanel class="panel"><AddNewRule /><DetectionMethod /><AlertConditions /></FeatherTabPanel>
       <FeatherTabPanel class="panel"> Content for Existing Rule List </FeatherTabPanel>
     </FeatherTabContainer>
   </div>
@@ -29,7 +29,6 @@ import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tab
 
 <style scoped lang="scss">
 @use '@featherds/styles/themes/variables';
-
 @use '@featherds/styles/mixins/typography';
 
 .container {
@@ -42,7 +41,6 @@ import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tab
     padding: var(variables.$spacing-l);
     margin-top: var(variables.$spacing-m);
     border: 1px var(variables.$shade-4) solid;
-    width: 80%;
   }
   .tab-container {
     margin-bottom: var(variables.$spacing-xxl);

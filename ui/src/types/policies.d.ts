@@ -10,5 +10,6 @@ export interface IRule {
   name: string
   componentType: string
   detectionMethod: string
+  metricName: string
   conditions: any[]
 }

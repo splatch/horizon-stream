@@ -20,12 +20,16 @@ export const useMonitoringPoliciesStore = defineStore('monitoringPoliciesStore',
       name: '',
       componentType: '',
       detectionMethod: '',
+      metricName: '',
       conditions: []
     }
   }),
   actions: {
     removeTag(tag: string) {
       this.selectedPolicy.tags = without(this.selectedPolicy.tags, tag)
+    },
+    setMetricName(name: string) {
+      this.selectedRule.metricName = name
     }
   }
 })
