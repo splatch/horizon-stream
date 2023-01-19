@@ -179,7 +179,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.38.1</version>
+                    <version>0.40.3</version>
                     <extensions>true</extensions>
                 </plugin>
                 <plugin>
@@ -220,6 +220,12 @@
                     <artifactId>karaf-maven-plugin</artifactId>
                     <version>${karaf.version}</version>
                     <extensions>true</extensions>
+                    <configuration combine.children="append">
+                        <javase>${java.version}</javase>
+                        <framework>
+                            <feature>framework</feature>
+                        </framework>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
