@@ -3,17 +3,16 @@ import InventoryIconActionList from '@/components/Inventory/InventoryIconActionL
 
 let wrapper: any
 
-// TODO: find how to fix this error
-/**
- * TypeError: Cannot read properties of undefined (reading 'title')
- ❯ Proxy._sfc_render src/components/Inventory/InventoryIconActionList.vue:9:27
-      7|     <li @click="onDelete" data-test="delete"><Icon :icon="deleteIco…
-      8|   </ul>
-      9|   <PrimaryModal :visible="isVisible" :title="modal.title" :class="m…
-       |                           ^
-     10|     <template #content>
-     11|       <p>{{ modal.content }}</p>
- */
+/*
+TODO: TypeError: Cannot read properties of undefined (reading 'title')
+❯ Proxy._sfc_render src/components/Inventory/InventoryIconActionList.vue:9:27
+     7|     <li @click="onDelete" data-test="delete"><Icon :icon="deleteIcon" /></li>
+     8|   </ul>
+     9|   <PrimaryModal :visible="isVisible" :title="modal.title" :class="modal.cssClass">
+      |                           ^
+    10|     <template #content>
+    11|       <p>{{ modal.content }}</p>
+*/
 describe.skip('InventoryIconActionList.vue', () => {
   beforeAll(() => {
     wrapper = mount(InventoryIconActionList, {
