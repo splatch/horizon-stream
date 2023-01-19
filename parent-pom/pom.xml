@@ -875,7 +875,6 @@
                     </configuration>
                     <executions>
                         <execution>
-                            <id>repackage</id>
                             <goals>
                                 <goal>repackage</goal>
                             </goals>
