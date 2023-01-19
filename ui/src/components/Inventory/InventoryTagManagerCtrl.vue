@@ -1,3 +1,12 @@
+<template>
+  <FeatherButton @click="taggingBoxToggle" class="btn-as-input">
+    <template v-slot:icon>
+      <label for="tagging">Tagging</label>
+      <FeatherIcon id="tagging" :icon="taggingBoxIsOpen ? upIcon : downIcon" aria-hidden="true" focusable="false" flex />
+    </template>
+  </FeatherButton>
+</template>
+
 <script setup lang="ts">
 import { useInventoryStore } from '@/store/Views/inventoryStore'
 import ArrowDown from '@featherds/icon/navigation/ExpandMore'
@@ -11,15 +20,6 @@ const taggingBoxToggle = () => inventoryStore.toggleTaggingBox()
 const upIcon = markRaw(ArrowUp)
 const downIcon = markRaw(ArrowDown)
 </script>
-
-<template>
-  <FeatherButton @click="taggingBoxToggle" class="btn-as-input">
-    <template v-slot:icon>
-      <label for="tagging">Tagging</label>
-      <FeatherIcon id="tagging" :icon="taggingBoxIsOpen ? upIcon : downIcon" aria-hidden="true" focusable="false" flex />
-    </template>
-</FeatherButton>
-</template>
 
 <style lang="scss" scoped>
 @use "@/styles/btns.scss";

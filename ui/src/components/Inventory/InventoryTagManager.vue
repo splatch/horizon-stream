@@ -1,48 +1,3 @@
-<script setup lang="ts">
-import { useInventoryStore } from '@/store/Views/inventoryStore'
-import Search from '@featherds/icon/action/Search'
-import Add from '@featherds/icon/action/Add'
-import { IIcon } from '@/types'
-import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
-
-const inventoryStore = useInventoryStore()
-
-const searchIcon: IIcon = {
-  image: markRaw(Search),
-  tooltip: 'Search'
-}
-
-const addIcon: IIcon = {
-  image: markRaw(Add),
-  size: '2rem'
-}
-
-const newTag = ref()
-const newTagDropdown = ref()
-const tagNodes = ref()
-const searchValue = ref()
-const selectedTags = ref<string[]>([])
-
-const tags = computed(() => ['tag1tag1 tag1tag1tag1tag1tag1tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8', 'tag9', 'tag10', 'tag11', 'tag12', 'tag13', 'tag14', 'tag15', 'tag16', 'tag17', 'tag18', 'tag19', 'tag20', 'tag21', 'tag22'])
-
-const selectTag = (tag: string) => {
-  if (selectedTags.value.includes(tag)) {
-    selectedTags.value = selectedTags.value.filter(t => t !== tag)
-  } else {
-    selectedTags.value.push(tag)
-  }
-}
-
-const placement = ref(PopoverPlacement.top)
-const alignment = ref(PointerAlignment.center)
-
-const addTag = () => {
-  // send newtag.value
-  newTag.value = '' // clear input
-  newTagDropdown.value.handleClose() // close dropdown
-}
-</script>
-
 <template>
   <div class="tag-manager-box" v-if="inventoryStore.isTaggingBoxOpen">
     <section class="select-tags">
@@ -108,6 +63,51 @@ const addTag = () => {
     </section>
   </div>
 </template>
+
+<script setup lang="ts">
+import { useInventoryStore } from '@/store/Views/inventoryStore'
+import Search from '@featherds/icon/action/Search'
+import Add from '@featherds/icon/action/Add'
+import { IIcon } from '@/types'
+import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
+
+const inventoryStore = useInventoryStore()
+
+const searchIcon: IIcon = {
+  image: markRaw(Search),
+  tooltip: 'Search'
+}
+
+const addIcon: IIcon = {
+  image: markRaw(Add),
+  size: '2rem'
+}
+
+const newTag = ref()
+const newTagDropdown = ref()
+const tagNodes = ref()
+const searchValue = ref()
+const selectedTags = ref<string[]>([])
+
+const tags = computed(() => ['tag1tag1 tag1tag1tag1tag1tag1tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8', 'tag9', 'tag10', 'tag11', 'tag12', 'tag13', 'tag14', 'tag15', 'tag16', 'tag17', 'tag18', 'tag19', 'tag20', 'tag21', 'tag22'])
+
+const selectTag = (tag: string) => {
+  if (selectedTags.value.includes(tag)) {
+    selectedTags.value = selectedTags.value.filter(t => t !== tag)
+  } else {
+    selectedTags.value.push(tag)
+  }
+}
+
+const placement = ref(PopoverPlacement.top)
+const alignment = ref(PointerAlignment.center)
+
+const addTag = () => {
+  // send newtag.value
+  newTag.value = '' // clear input
+  newTagDropdown.value.handleClose() // close dropdown
+}
+</script>
 
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";

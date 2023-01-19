@@ -1,30 +1,3 @@
-<script lang="ts" setup>
-import { PropType } from 'vue'
-import Storage from '@material-design-icons/svg/outlined/storage.svg'
-import Checkbox from '@material-design-icons/svg/outlined/check_box.svg'
-import { NodeContent } from '@/types/inventory'
-import { IIcon } from '@/types'
-  
-defineProps({
-  tabContent: {
-    type: Object as PropType<NodeContent[]>,
-    required: true
-  }
-})
-
-const tagsSelected = ['tag1tag1 tag1tag1tag1tag1tag1tag1', 'tag2', 'tag3']
-const tagChecked = ref(false)
-
-const storage: IIcon = {
-  image: Storage,
-  title: 'Node'
-}
-const checkbox: IIcon = {
-  image: Checkbox,
-  title: ''
-}
-</script>
-
 <template>
   <ul class="cards">
     <li v-for="node in tabContent" :key="node?.id">
@@ -57,6 +30,33 @@ const checkbox: IIcon = {
     </li>
   </ul>
 </template>
+
+<script lang="ts" setup>
+import { PropType } from 'vue'
+import Storage from '@material-design-icons/svg/outlined/storage.svg'
+import Checkbox from '@material-design-icons/svg/outlined/check_box.svg'
+import { NodeContent } from '@/types/inventory'
+import { IIcon } from '@/types'
+  
+defineProps({
+  tabContent: {
+    type: Object as PropType<NodeContent[]>,
+    required: true
+  }
+})
+
+const tagsSelected = ['tag1tag1 tag1tag1tag1tag1tag1tag1', 'tag2', 'tag3']
+const tagChecked = ref(false)
+
+const storage: IIcon = {
+  image: Storage,
+  title: 'Node'
+}
+const checkbox: IIcon = {
+  image: Checkbox,
+  title: ''
+}
+</script>
 
 <style lang="scss" scoped>
 @use "@featherds/styles/themes/variables";
