@@ -60,9 +60,23 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: ui/yarn.lock
 
-      - name: 'Install dependencies'
+      - name: Install dependencies
         run: 'yarn install --frozen-lockfile'
         working-directory: 'ui'
+
+      - name: Test and coverage report
+        timeout-minutes: 5 # This step can hang forever, see https://opennms.atlassian.net/browse/HS-841
+        continue-on-error: true
+        run: 'yarn test:coverage:sonar'
+        working-directory: 'ui'
+
+      - name: SonarCloud scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: ui
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Build and push image
         uses: docker/build-push-action@v3
@@ -72,17 +86,3 @@ jobs:
           tags: ${{ steps.docker-metadata.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha
-
-      - name: 'Coverage Report'
-        timeout-minutes: 5 # This step can hang forever, see https://opennms.atlassian.net/browse/HS-841
-        continue-on-error: true
-        run: 'yarn test:coverage:sonar'
-        working-directory: 'ui'
-
-      - name: 'SonarCloud Scan'
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: ui
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
