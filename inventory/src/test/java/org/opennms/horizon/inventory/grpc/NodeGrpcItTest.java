@@ -427,7 +427,7 @@ class NodeGrpcItTest extends GrpcTestBase {
     @Test
     void testStartScanByLocation() throws VerificationException {
         List<Node> list = prepareNodes(2, false);
-        long locationId = list.get(0).getId();
+        long locationId = list.get(0).getMonitoringLocation().getId();
         BoolValue result = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
             .startNodeScanByLocationId(Int64Value.of(locationId));
         assertThat(result.getValue()).isTrue();
