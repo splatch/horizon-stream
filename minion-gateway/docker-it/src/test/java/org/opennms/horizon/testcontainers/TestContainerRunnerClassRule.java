@@ -48,7 +48,7 @@ public class TestContainerRunnerClassRule extends ExternalResource {
 
     private Logger LOG = DEFAULT_LOGGER;
 
-    private final String dockerImage = System.getProperty("docker.image");
+    private final String dockerImage = System.getProperty("application.docker.image");
 
     private String confluentPlatformVersion = "7.3.0";
 

@@ -47,7 +47,7 @@ public class TestContainerRunnerClassRule extends ExternalResource {
 
     private final String KAFKA_BOOTSTRAP_SERVER_PROPERTYNAME = "kafka.bootstrap-servers";
 
-    private final String dockerImage = System.getProperty("docker.image");
+    private final String dockerImage = System.getProperty("application.docker.image");
 
     private Logger LOG = DEFAULT_LOGGER;
 

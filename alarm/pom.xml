@@ -20,7 +20,7 @@
     <artifactId>alarm-service</artifactId>
 
     <properties>
-        <docker.image.name>opennms/horizon-stream-alarm</docker.image.name>
+        <application.docker.image.name>opennms/horizon-stream-alarm</application.docker.image.name>
         <!-- There is no sonarcloud project for the Alarm service yet, so skip scanning it -->
         <sonar.skip>true</sonar.skip>
         <skipITs>false</skipITs>
@@ -289,7 +289,7 @@
                     <systemPropertyVariables>
                         <application.base-url>http://localhost:${app-http-port}</application.base-url>
                         <kafka-rest.url>http://localhost:${kafka-rest.port}</kafka-rest.url>
-                        <docker.image>${docker.image}</docker.image>
+                        <application.docker.image>${application.docker.image}</application.docker.image>
                     </systemPropertyVariables>
                 </configuration>
                 <executions>

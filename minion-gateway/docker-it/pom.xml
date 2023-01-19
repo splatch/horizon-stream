@@ -152,7 +152,7 @@
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <trimStackTrace>false</trimStackTrace>
                     <systemPropertyVariables>
-                        <docker.image>${docker.image}</docker.image>
+                        <application.docker.image>${application.docker.image}</application.docker.image>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

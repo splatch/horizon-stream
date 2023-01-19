@@ -188,7 +188,7 @@
                             <name>opennms-horizon-application-it-image</name>
                             <alias>application</alias>
                             <build>
-                                <from>${docker.image}</from>
+                                <from>${application.docker.image}</from>
                                 <assembly>
                                     <user>minion-poc</user>
                                     <targetDir>/</targetDir>

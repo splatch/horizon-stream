@@ -23,10 +23,10 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
         <!-- Jib properties -->
-        <docker.image>${docker.image.name}:${docker.image.tag}</docker.image>
-        <!-- docker.image.name MUST be set by child modules that use Jib. -->
-        <docker.image.name>INVALID</docker.image.name>
-        <docker.image.tag>latest</docker.image.tag>
+        <application.docker.image>${application.docker.image.name}:${application.docker.image.tag}</application.docker.image>
+        <!-- application.docker.image.name MUST be set by child modules that use Jib. -->
+        <application.docker.image.name>INVALID</application.docker.image.name>
+        <application.docker.image.tag>latest</application.docker.image.tag>
 
         <!-- Dependency properties -->
         <dropwizard.metrics.version>4.2.10</dropwizard.metrics.version>
@@ -905,7 +905,7 @@
                     <version>${jib.version}</version>
                     <configuration>
                         <to>
-                            <image>${docker.image}</image>
+                            <image>${application.docker.image}</image>
                         </to>
                     </configuration>
                 </plugin>

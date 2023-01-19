@@ -5,7 +5,7 @@ access to statistics, functionality, and more.
 
 # To use with Kubernetes + Kind
 
-    $ mvn clean install jib:dockerBuild -Ddocker.image=opennms-ignite-tool:latest
+    $ mvn clean install jib:dockerBuild -Dapplication.docker.image=opennms-ignite-tool:latest
     $ kind load docker-image opennms-ignite-tool:latest
     $ kubectl run opennms-ignite-tool --env ignite_use_kubernetes=true --env ignite_kubernetes_service_name=horizon-stream-ignite-core --restart=Never --rm -it --image opennms-ignite-tool:latest --port 8080
     $ kubectl port-forward pod/opennms-ignite-tool 8008:8080

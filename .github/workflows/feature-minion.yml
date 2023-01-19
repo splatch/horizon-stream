@@ -73,7 +73,7 @@ jobs:
       - name: Build & Sonar Scan
         run: |
           mvn -B verify \
-              -Prun-it -Ddocker.image=${{ steps.docker-metadata.outputs.tags }} \
+              -Prun-it -Dapplication.docker.image=${{ steps.docker-metadata.outputs.tags }} \
               org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

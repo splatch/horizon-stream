@@ -21,7 +21,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <docker.image.name>opennms/horizon-stream-events</docker.image.name>
+        <application.docker.image.name>opennms/horizon-stream-events</application.docker.image.name>
     </properties>
 
     <modules>

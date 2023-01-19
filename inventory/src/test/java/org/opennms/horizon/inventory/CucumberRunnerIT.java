@@ -67,7 +67,7 @@ public class CucumberRunnerIT {
 
     private static Network network;
 
-    private static final String dockerImage = System.getProperty("docker.image");
+    private static final String dockerImage = System.getProperty("application.docker.image");
 
     @BeforeAll
     public static void before() throws Throwable {
