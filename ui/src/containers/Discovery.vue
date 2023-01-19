@@ -89,6 +89,9 @@ import AzureForm from '@/components/Discovery/AzureForm.vue'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import useModal from '@/composables/useModal'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+import useSnackbar from '@/composables/useSnackbar'
+
+const { showSnackbar } = useSnackbar()
 const store = useDiscoveryStore()
 const { openModal, closeModal, isVisible } = useModal()
 const selectedTool = ref()
@@ -104,7 +107,7 @@ const modalContent = computed(() => {
 })
 
 const isAzureEnabled = computed(() => {
-  return Boolean(store.selectedLocationIds.length 
+  return Boolean(store.selectedLocations.length 
     && store.azure.clientId 
     && store.azure.clientSecret
     && store.azure.directoryId
@@ -129,7 +132,12 @@ const showConfigActiveTool = (tool: DiscoveryType) => {
 
 const saveAzureDiscovery = async () => {
   const success = await store.saveDiscoveryAzure()
-  if (success) closeModal()
+  if (success) {
+    closeModal()
+    showSnackbar({
+      msg: 'Azure successfully discovered.'
+    })
+  }
 }
 
 const closeDrawer = () => {

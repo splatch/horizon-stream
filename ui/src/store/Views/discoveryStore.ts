@@ -3,7 +3,7 @@ import { useDiscoveryMutations } from '../Mutations/discoveryMutations'
 
 export const useDiscoveryStore = defineStore('discoveryStore', {
   state: () => ({
-    selectedLocationIds: <string[]>[],
+    selectedLocations: <string[]>[],
     ipAddresses: <string[]>[],
     ipRange: {
       cidr: '',
@@ -18,16 +18,16 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
     }
   }),
   actions: {
-    selectLocation(id: string, single?: boolean) {
+    selectLocation(location: string, single?: boolean) {
       if (single) {
-        this.selectedLocationIds = [id]
+        this.selectedLocations = [location]
         return
       }
 
-      if (this.selectedLocationIds.includes(id)) {
-        this.selectedLocationIds = this.selectedLocationIds.filter((x) => x !== id)
+      if (this.selectedLocations.includes(location)) {
+        this.selectedLocations = this.selectedLocations.filter((x) => x !== location)
       } else {
-        this.selectedLocationIds.push(id)
+        this.selectedLocations.push(location)
       }
     },
     async saveDiscoveryAzure() {
@@ -35,12 +35,12 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
 
       await addAzureCreds({
         azureCredential: {
-          location: this.selectedLocationIds[0],
+          location: this.selectedLocations[0],
           ...this.azure
         }
       })
 
-      return !azureError
+      return !azureError.value
     }
   }
 })

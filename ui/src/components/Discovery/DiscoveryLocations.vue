@@ -12,13 +12,13 @@
     </div>
 
     <!-- Locations selection -->
-    <FeatherChipList label="Locations" :key="store.selectedLocationIds.toString()">
+    <FeatherChipList label="Locations" :key="store.selectedLocations.toString()">
       <FeatherChip 
         v-for="location in filteredLocations" 
         :key="location.id" 
         class="pointer"
-        :class="{ 'selected' : store.selectedLocationIds.includes(location.id) }"
-        @click="store.selectLocation(location.id, single)"
+        :class="{ 'selected' : store.selectedLocations.includes(location.location as string) }"
+        @click="store.selectLocation(location.location as string, single)"
       >
         {{ location.location }}
       </FeatherChip>
