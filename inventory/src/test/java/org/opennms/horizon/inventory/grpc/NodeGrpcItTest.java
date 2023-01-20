@@ -30,7 +30,6 @@ package org.opennms.horizon.inventory.grpc;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterAll;
@@ -55,6 +55,7 @@ import org.keycloak.common.VerificationException;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.inventory.dto.NodeIdList;
 import org.opennms.horizon.inventory.dto.NodeList;
 import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
 import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
@@ -424,12 +425,11 @@ class NodeGrpcItTest extends GrpcTestBase {
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
-    @Test
+   @Test
     void testStartScanByLocation() throws VerificationException {
-        List<Node> list = prepareNodes(2, false);
-        long locationId = list.get(0).getMonitoringLocation().getId();
+        List<Long> ids = prepareNodes(2, false).stream().map(n -> n.getId()).collect(Collectors.toList());
         BoolValue result = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .startNodeScanByLocationId(Int64Value.of(locationId));
+                .startNodeScanByIds(NodeIdList.newBuilder().build().newBuilder().addAllIds(ids).build());
         assertThat(result.getValue()).isTrue();
         await().atMost(10, TimeUnit.SECONDS).untilAtomic(testGrpcService.getTimesCalled(), Matchers.is(1));
         verify(spyInterceptor).verifyAccessToken(authHeader);
@@ -443,7 +443,8 @@ class NodeGrpcItTest extends GrpcTestBase {
     @Test
     void testStartScanByLocationNotfound() throws VerificationException {
         StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, () -> serviceStub
-            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).startNodeScanByLocationId(Int64Value.of(1L)));
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
+            .startNodeScanByIds(NodeIdList.newBuilder().addAllIds(List.of(1L)).build()));
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.NOT_FOUND_VALUE);
         verify(spyInterceptor).verifyAccessToken(authHeader);

@@ -49,6 +49,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -96,7 +97,7 @@ public class GrpcNodeService {
     }
 
     @GraphQLMutation
-    public Mono<Boolean> discoveryByLocation(long locationId, @GraphQLEnvironment ResolutionEnvironment env) {
-        return Mono.just(client.startScanByLocation(locationId, headerUtil.getAuthHeader(env)));
+    public Mono<Boolean> discoveryByNodeIds(List<Long> ids, @GraphQLEnvironment ResolutionEnvironment env) {
+        return Mono.just(client.startScanByNodeIds(ids, headerUtil.getAuthHeader(env)));
     }
 }

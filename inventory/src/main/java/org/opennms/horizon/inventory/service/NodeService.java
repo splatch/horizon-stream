@@ -67,8 +67,6 @@ public class NodeService {
     private final IpInterfaceRepository ipInterfaceRepository;
     private final ConfigUpdateService configUpdateService;
     private final NodeMapper mapper;
-    private final ScannerTaskSetService scannerTaskSetService;
-
     @Transactional(readOnly = true)
     public List<NodeDTO> findByTenantId(String tenantId) {
         List<Node> all = nodeRepository.findByTenantId(tenantId);
@@ -147,15 +145,10 @@ public class NodeService {
     }
 
     @Transactional
-    public Boolean scanNodesByLocation(long locationId, String tenantId) {
-        List<Node> nodeList = nodeRepository.findByMonitoringLocationIdAndTenantId(locationId, tenantId);
-        if(!nodeList.isEmpty()) {
-            String location = nodeList.get(0).getMonitoringLocation().getLocation();
-            List<NodeDTO> dtoList = nodeList.stream().map(mapper::modelToDTO).collect(Collectors.toList());
-            scannerTaskSetService.sendNodeScannerTask(dtoList, location, tenantId);
-            return true;
-        }
-        return false;
+    public Map<String, List<NodeDTO>> listNodeByIds(List<Long> ids, String tenantId) {
+        List<Node> nodeList = nodeRepository.findByIdInAndTenantId(ids, tenantId);
+        return nodeList.stream().collect(Collectors.groupingBy(node -> node.getMonitoringLocation().getLocation(),
+            Collectors.mapping(mapper::modelToDTO, Collectors.toList())));
     }
 
 

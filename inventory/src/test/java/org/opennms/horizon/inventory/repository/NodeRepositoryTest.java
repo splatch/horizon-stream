@@ -97,25 +97,19 @@ class NodeRepositoryTest {
     }
 
     @Test
-    void testListByLocationIdAndTenant() {
-        List<Node> list = nodeRepo.findByMonitoringLocationIdAndTenantId(location1.getId(), tenantId1);
-        assertThat(list)
-            .hasSize(2)
+    void testFindByIdIndAndTenant() {
+        List<Long> ids = List.of(node1.getId(), node2.getId(), node3.getId());
+        List<Node> nodes = nodeRepo.findByIdInAndTenantId(ids, tenantId1);
+        assertThat(nodes).hasSize(2)
             .extracting(Node::getNodeLabel)
             .containsExactly(node1.getNodeLabel(), node2.getNodeLabel());
-
-        List<Node> list2 = nodeRepo.findByMonitoringLocationIdAndTenantId(location2.getId(), tenantId2);
-        assertThat(list2)
-            .hasSize(1)
-            .extracting(Node::getNodeLabel)
-            .containsExactly(node3.getNodeLabel());
     }
 
     @Test
-    void testListByWrongIdOrTenant() {
-        List<Node> list = nodeRepo.findByMonitoringLocationIdAndTenantId(location1.getId(), tenantId2);
+    void testListByWrongIdsOrTenant() {
+        List<Node> list = nodeRepo.findByIdInAndTenantId(List.of(node1.getId(), node2.getId()), tenantId2);
         assertThat(list).isEmpty();
-        List<Node> list2 = nodeRepo.findByMonitoringLocationIdAndTenantId(location2.getId(), tenantId1);
+        List<Node> list2 = nodeRepo.findByIdInAndTenantId(List.of(node3.getId()), tenantId1);
         assertThat(list2).isEmpty();
     }
 }

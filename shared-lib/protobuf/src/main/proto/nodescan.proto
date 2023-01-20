@@ -32,7 +32,8 @@ option java_multiple_files = true;
 option java_package = "org.opennms.node.scan.contract";
 
 message NodeScanRequest {
-  repeated string ipAddresses = 1;
+  int64 nodeId = 1;
+  repeated string ipAddresses = 2;
 }
 
 //Scan Results
@@ -48,8 +49,6 @@ message ServiceResult {
   string serviceName = 1;
   string status = 2;
   int64 lastGoodTime = 3;
-  int64 lastFailTime = 4;
-
 }
 
 message IpInterfaceResult {
@@ -57,7 +56,6 @@ message IpInterfaceResult {
   string ipHostName = 2;
   string netMask = 3;
   bool isSNMPPrimary = 4;
-  int64 lastPollTime = 5;
 }
 
 message IfServiceResult {
@@ -65,7 +63,7 @@ message IfServiceResult {
   repeated ServiceResult services = 2;
 }
 
-message SnmpInterfaceMessage {
+message SnmpInterfaceResult {
   string physicalAddr = 1;
   int32 ifIndex =2;
   string ifDesc = 3;
@@ -79,7 +77,6 @@ message SnmpInterfaceMessage {
   bool isPolled = 11;
   int64 lastPollTime = 12;
   int64 lastIngressTime = 13;
-  int64 lastEgressTime = 14;
 }
 
 

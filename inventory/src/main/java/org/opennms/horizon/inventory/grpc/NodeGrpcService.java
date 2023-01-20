@@ -29,6 +29,7 @@
 package org.opennms.horizon.inventory.grpc;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,6 +38,7 @@ import java.util.concurrent.ThreadFactory;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.inventory.dto.NodeIdList;
 import org.opennms.horizon.inventory.dto.NodeIdQuery;
 import org.opennms.horizon.inventory.dto.NodeList;
 import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
@@ -89,8 +91,6 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
             responseObserver.onCompleted();
             // Asynchronously send task sets to Minion
             executorService.execute(() -> sendTaskSetsToMinion(node));
-            scannerService.sendNodeScannerTask(List.of(nodeMapper.modelToDTO(node)),
-                node.getMonitoringLocation().getLocation(), node.getTenantId());
         }
     }
 
@@ -179,22 +179,24 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
     }
 
     @Override
-    public void startNodeScanByLocationId(Int64Value request, StreamObserver<BoolValue> responseObserver) {
-        Optional<String> tenantIdOptional = tenantLookup.lookupTenantId(Context.current());
-        tenantIdOptional.ifPresentOrElse(tenantId -> {
-                if(nodeService.scanNodesByLocation(request.getValue(), tenantId)) {
-                    responseObserver.onNext(BoolValue.of(true));
-                    responseObserver.onCompleted();
-                } else {
-                    Status status = Status.newBuilder()
-                        .setCode(Code.NOT_FOUND_VALUE)
-                        .setMessage("Didn't find any nodes with location id: " + request.getValue()).build();
-                    responseObserver.onError(StatusProto.toStatusRuntimeException(status));
-                }
-            }, () -> {
-                Status status = Status.newBuilder().setCode(Code.INVALID_ARGUMENT_VALUE).setMessage("Tenant ID is missing").build();
+    public void startNodeScanByIds(NodeIdList request, StreamObserver<BoolValue> responseObserver) {
+        tenantLookup.lookupTenantId(Context.current()).ifPresentOrElse(tenantId -> {
+            Map<String, List<NodeDTO>> nodes = nodeService.listNodeByIds(request.getIdsList(), tenantId);
+            if(nodes != null && !nodes.isEmpty()) {
+                executorService.execute(() -> sendTaskSetsToMinion(nodes, tenantId));
+                responseObserver.onNext(BoolValue.of(true));
+                responseObserver.onCompleted();
+            } else {
+                Status status = Status.newBuilder()
+                    .setCode(Code.NOT_FOUND_VALUE)
+                    .setMessage("No nodes exist with ids " + request.getIdsList()).build();
                 responseObserver.onError(StatusProto.toStatusRuntimeException(status));
-            });
+            }
+        }, () -> responseObserver.onError(StatusProto.toStatusRuntimeException(createTenantIdMissingStatus())));
+    }
+
+    private Status createTenantIdMissingStatus() {
+        return Status.newBuilder().setCode(Code.INVALID_ARGUMENT_VALUE).setMessage("Tenant ID is missing").build();
     }
 
     private Status createStatusNotExits(long id) {
@@ -234,8 +236,16 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
     private void sendTaskSetsToMinion(Node node) {
         try {
             taskSetService.sendDetectorTasks(node);
+            scannerService.sendNodeScannerTask(List.of(nodeMapper.modelToDTO(node)),
+                node.getMonitoringLocation().getLocation(), node.getTenantId());
         } catch (Exception e) {
             log.error("Error while sending detector task for node with label {}", node.getNodeLabel());
+        }
+    }
+
+    private void sendTaskSetsToMinion(Map<String, List<NodeDTO>> locationNodes, String tenantId) {
+        for(String location: locationNodes.keySet()) {
+            scannerService.sendNodeScannerTask(locationNodes.get(location), location, tenantId);
         }
     }
 }

@@ -23,5 +23,5 @@ public interface NodeRepository extends JpaRepository<Node, Long> {
     Optional<Node> findByTenantLocationAndNodeLabel(@Param("tenantId") String tenantId,
                                                     @Param("location") String location,
                                                     @Param("nodeLabel") String nodeLabel);
-    List<Node> findByMonitoringLocationIdAndTenantId(long locationId, String tenantId);
+    List<Node> findByIdInAndTenantId(List<Long> ids, String tenantId);
 }

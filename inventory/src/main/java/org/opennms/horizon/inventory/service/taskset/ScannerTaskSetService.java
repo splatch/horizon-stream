@@ -66,10 +66,8 @@ public class ScannerTaskSetService {
     }
 
     public void sendNodeScannerTask(List<NodeDTO> nodes, String location, String tenantId) {
-        executorService.execute(()-> {
             List<TaskDefinition> tasks = nodes.stream().map(this::createNodeScanTask).collect(Collectors.toList());
             taskSetPublisher.publishNewTasks(tenantId, location, tasks);
-        });
     }
 
     private void sendAzureScannerTask(AzureCredential credential) {
@@ -107,6 +105,7 @@ public class ScannerTaskSetService {
         List<String> ipAddresses = node.getIpInterfacesList().stream().map(IpInterfaceDTO::getIpAddress).collect(Collectors.toList());
         String taskId = "node-scan=" + node.getNodeLabel() + "-" + node.getId() ;
         Any taskConfig = Any.pack(NodeScanRequest.newBuilder()
+            .setNodeId(node.getId())
             .addAllIpAddresses(ipAddresses).build());
 
         return TaskDefinition.newBuilder()
