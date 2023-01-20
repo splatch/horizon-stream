@@ -1,4 +1,4 @@
-package org.opennms.horizon.data;
+package org.opennms.horizon.tsdata;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
