@@ -65,6 +65,7 @@ public class MinionTestSteps {
     // Test Configuration
     //
     private String applicationBaseUrl;
+    private String applicationHostName;
 
     //
     // Test Runtime Data
@@ -92,6 +93,13 @@ public class MinionTestSteps {
         applicationBaseUrl = System.getProperty(systemProperty);
 
         log.info("Using BASE URL {}", applicationBaseUrl);
+    }
+
+    @Given("Application Host Name in system property {string}")
+    public void applicationHostNameInSystemProperty(String systemProperty) {
+        applicationHostName = System.getProperty(systemProperty);
+
+        log.info("Using application host name {}", applicationHostName);
     }
 
     @Then("Send GET request to application at path {string}")
@@ -141,7 +149,7 @@ public class MinionTestSteps {
     @Then("Send net flow package")
     public void sendNetflowPackage() throws Exception {
         SendFlowCmd cmd = new SendFlowCmd();
-        cmd.setHost(new URL(this.applicationBaseUrl).getHost());
+        cmd.setHost(applicationHostName);
         cmd.execute();
     }
 //========================================

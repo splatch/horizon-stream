@@ -130,27 +130,6 @@ public class MinionGatewayWiremockTestSteps {
         assertFalse(messages.isEmpty());
     }
 
-    @SneakyThrows
-    private List<SinkMessageDto> getFlowMessages() {
-        RestAssuredConfig restAssuredConfig = RestAssuredConfig.config()
-            .httpClient(HttpClientConfig.httpClientConfig()
-            );
-
-        RequestSpecification requestSpecification =
-            RestAssured
-                .given()
-                .config(restAssuredConfig);
-
-        final SinkMessageDto[] result = requestSpecification
-            .get(formatUrl(BASE_PATH + "/sinkMessages"))
-            .thenReturn()
-            .as(SinkMessageDto[].class);
-        List<SinkMessageDto> messages = Arrays.stream(result)
-            .filter(msg -> "Flow".equals(msg.getModuleId()))
-            .collect(Collectors.toList());
-        log.info("Cloud Gateway received:\n   {} SinkMessages in total\n   {} of these were Flow messages", result.length, messages.size());
-        return messages;
-    }
 
 //========================================
 // Internals
@@ -235,5 +214,27 @@ public class MinionGatewayWiremockTestSteps {
         }
 
         return found;
+    }
+
+    @SneakyThrows
+    private List<SinkMessageDto> getFlowMessages() {
+        RestAssuredConfig restAssuredConfig = RestAssuredConfig.config()
+            .httpClient(HttpClientConfig.httpClientConfig()
+            );
+
+        RequestSpecification requestSpecification =
+            RestAssured
+                .given()
+                .config(restAssuredConfig);
+
+        final SinkMessageDto[] result = requestSpecification
+            .get(formatUrl(BASE_PATH + "/sinkMessages"))
+            .thenReturn()
+            .as(SinkMessageDto[].class);
+        List<SinkMessageDto> messages = Arrays.stream(result)
+            .filter(msg -> "Flow".equals(msg.getModuleId()))
+            .collect(Collectors.toList());
+        log.info("Cloud Gateway received:\n   {} SinkMessages in total\n   {} of these were Flow messages", result.length, messages.size());
+        return messages;
     }
 }

@@ -3,6 +3,7 @@ Feature: Minion Basic Functionality
   Background: Configure base URLs
     Given MOCK Minion Gateway Base URL in system property "mock-miniongateway.base-url"
     Given Application Base URL in system property "application.base-url"
+    Given Application Host Name in system property "application.host-name"
 
   Scenario: Verify on startup the Minion has no tasks deployed
     Then Send GET request to application at path "/ignite-worker/service-deployment/metrics?verbose=true" until success with timeout 60000ms
