@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.timeseries.cortex;
+package org.opennms.horizon.timeseries.cortex;
 
 
 import java.io.IOException;

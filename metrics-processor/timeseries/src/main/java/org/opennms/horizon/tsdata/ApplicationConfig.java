@@ -28,8 +28,8 @@
 
 package org.opennms.horizon.tsdata;
 
-import org.opennms.timeseries.cortex.CortexTSS;
-import org.opennms.timeseries.cortex.CortexTSSConfig;
+import org.opennms.horizon.timeseries.cortex.CortexTSS;
+import org.opennms.horizon.timeseries.cortex.CortexTSSConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

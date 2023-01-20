@@ -1,4 +1,4 @@
-package org.opennms.timeseries.cortex;
+package org.opennms.horizon.timeseries.cortex;
 
 import java.util.Objects;
 import java.util.StringJoiner;

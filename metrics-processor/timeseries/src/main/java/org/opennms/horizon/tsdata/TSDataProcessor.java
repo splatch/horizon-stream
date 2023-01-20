@@ -28,10 +28,6 @@
 
 package org.opennms.horizon.tsdata;
 
-import static org.opennms.timeseries.cortex.CortexTSS.sanitizeLabelName;
-import static org.opennms.timeseries.cortex.CortexTSS.sanitizeLabelValue;
-import static org.opennms.timeseries.cortex.CortexTSS.sanitizeMetricName;
-
 import java.io.IOException;
 import java.math.BigInteger;
 import java.time.Instant;
@@ -39,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.opennms.horizon.timeseries.cortex.CortexTSS;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.snmp.api.SnmpResponseMetric;
 import org.opennms.horizon.snmp.api.SnmpResultMetric;
@@ -49,7 +46,6 @@ import org.opennms.taskset.contract.MonitorResponse;
 import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskResult;
 import org.opennms.taskset.contract.TaskSetResults;
-import org.opennms.timeseries.cortex.CortexTSS;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Headers;
@@ -127,7 +123,7 @@ public class TSDataProcessor {
         addLabels(response, labelValues, builder);
         builder.addLabels(PrometheusTypes.Label.newBuilder()
             .setName(METRIC_NAME_LABEL)
-            .setValue(sanitizeMetricName(METRICS_NAME_RESPONSE)));
+            .setValue(CortexTSS.sanitizeMetricName(METRICS_NAME_RESPONSE)));
         builder.addSamples(PrometheusTypes.Sample.newBuilder()
             .setTimestamp(Instant.now().toEpochMilli())
             .setValue(response.getResponseTimeMs()));
@@ -145,7 +141,7 @@ public class TSDataProcessor {
         addLabels(response, labelValues, builder);
         builder.addLabels(PrometheusTypes.Label.newBuilder()
             .setName(METRIC_NAME_LABEL)
-            .setValue(sanitizeMetricName(METRICS_NAME_PREFIX_MONITOR + k)));
+            .setValue(CortexTSS.sanitizeMetricName(METRICS_NAME_PREFIX_MONITOR + k)));
         builder.addSamples(PrometheusTypes.Sample.newBuilder()
             .setTimestamp(Instant.now().toEpochMilli())
             .setValue(v));
@@ -156,8 +152,8 @@ public class TSDataProcessor {
         for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
             if (!"node_id".equals(MONITOR_METRICS_LABEL_NAMES[i]) || !"ECHO".equals(response.getMonitorType().name())) {
                 builder.addLabels(PrometheusTypes.Label.newBuilder()
-                    .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
-                    .setValue(sanitizeLabelValue(labelValues[i])));
+                    .setName(CortexTSS.sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
+                    .setValue(CortexTSS.sanitizeLabelValue(labelValues[i])));
             }
         }
     }
@@ -176,11 +172,11 @@ public class TSDataProcessor {
                     PrometheusTypes.TimeSeries.Builder builder = prometheus.PrometheusTypes.TimeSeries.newBuilder();
                     builder.addLabels(PrometheusTypes.Label.newBuilder()
                         .setName(METRIC_NAME_LABEL)
-                        .setValue(sanitizeMetricName(snmpResult.getAlias())));
+                        .setValue(CortexTSS.sanitizeMetricName(snmpResult.getAlias())));
                     for (int i = 0; i < MONITOR_METRICS_LABEL_NAMES.length; i++) {
                         builder.addLabels(prometheus.PrometheusTypes.Label.newBuilder()
-                            .setName(sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
-                            .setValue(sanitizeLabelValue(labelValues[i])));
+                            .setName(CortexTSS.sanitizeLabelName(MONITOR_METRICS_LABEL_NAMES[i]))
+                            .setValue(CortexTSS.sanitizeLabelValue(labelValues[i])));
                     }
                     int type = snmpResult.getValue().getTypeValue();
                     switch (type) {
