@@ -124,7 +124,7 @@ public class MinionGatewayWiremockTestSteps {
             this::getFlowMessages,
             list -> !list.isEmpty(),
             500,
-            60000,
+            30000,
             Collections.emptyList()
         );
         assertFalse(messages.isEmpty());

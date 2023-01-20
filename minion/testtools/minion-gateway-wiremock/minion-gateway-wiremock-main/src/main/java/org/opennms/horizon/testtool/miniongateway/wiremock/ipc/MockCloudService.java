@@ -1,15 +1,17 @@
 package org.opennms.horizon.testtool.miniongateway.wiremock.ipc;
 
-import com.google.common.collect.EvictingQueue;
 import com.google.protobuf.Empty;
-import io.grpc.stub.ServerCalls;
 import io.grpc.stub.StreamObserver;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.opennms.cloud.grpc.minion.*;
+import org.opennms.cloud.grpc.minion.CloudServiceGrpc;
+import org.opennms.cloud.grpc.minion.CloudToMinionMessage;
+import org.opennms.cloud.grpc.minion.Identity;
+import org.opennms.cloud.grpc.minion.MinionToCloudMessage;
+import org.opennms.cloud.grpc.minion.RpcRequestProto;
+import org.opennms.cloud.grpc.minion.RpcResponseProto;
+import org.opennms.cloud.grpc.minion.SinkMessage;
 import org.opennms.horizon.testtool.miniongateway.wiremock.api.MockGrpcServiceApi;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
