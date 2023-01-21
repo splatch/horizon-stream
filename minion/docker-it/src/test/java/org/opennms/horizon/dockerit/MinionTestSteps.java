@@ -66,6 +66,7 @@ public class MinionTestSteps {
     //
     private String applicationBaseUrl;
     private String applicationHostName;
+    private int netflow5ListenerPort;
 
     //
     // Test Runtime Data
@@ -101,6 +102,13 @@ public class MinionTestSteps {
 
         log.info("Using application host name {}", applicationHostName);
     }
+
+    @Given("Netflow 5 Listener Port in system property {int}")
+    public void netflow5ListenerPortInSystemProperty(String systemProperty) {
+        netflow5ListenerPort = Integer.getInteger(systemProperty);
+        log.info("Using netflow5ListenerPort {}", netflow5ListenerPort);
+    }
+
 
     @Then("Send GET request to application at path {string}")
     public void sendGETRequestToApplicationAtPath(String path) throws Exception {
@@ -150,6 +158,8 @@ public class MinionTestSteps {
     public void sendNetflowPackage() throws Exception {
         SendFlowCmd cmd = new SendFlowCmd();
         cmd.setHost(applicationHostName);
+        cmd.setPort(netflow5ListenerPort); // netflow 5 port enabled by default
+        cmd.setFile("netflow5.dat");
         cmd.execute();
     }
 //========================================

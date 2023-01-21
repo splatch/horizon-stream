@@ -210,6 +210,10 @@
                             <name>application.host-name</name>
                             <value>localhost</value>
                         </property>
+                        <property>
+                            <name>netflow-5-listener-port</name>
+                            <value>${netflow-5-listener-port}</value>
+                        </property>
                         <application.docker.image>${application.docker.image}</application.docker.image>
                     </systemProperties>
                 </configuration>
