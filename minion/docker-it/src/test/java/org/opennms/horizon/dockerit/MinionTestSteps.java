@@ -103,7 +103,7 @@ public class MinionTestSteps {
         log.info("Using application host name {}", applicationHostName);
     }
 
-    @Given("Netflow Listener Port in system property {netflow-5-listener-port}")
+    @Given("Netflow Listener Port in system property {string}")
     public void netflow5ListenerPortInSystemProperty(String systemProperty) {
         netflow5ListenerPort = Integer.getInteger(systemProperty);
         log.info("Using netflow5ListenerPort {}", netflow5ListenerPort);
