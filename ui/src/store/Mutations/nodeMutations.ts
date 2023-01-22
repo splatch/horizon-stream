@@ -11,6 +11,18 @@ export const useNodeMutations = defineStore('nodeMutations', () => {
 
   const { execute: deleteNode, isFetching: isDeletingNode } = useMutation(DeleteNodeDocument)
 
+  const addTagsToNode = () => {
+    console.log('addTagsToNode')
+    // TODO: query for single node
+    // refresh inventory nodes: useInventoryQueries.fetch()
+  }
+
+  const addTagsToAllNodes = () => {
+    console.log('addTagsToAllNodes')
+    // TODO: query for all nodes
+    // refresh inventory nodes: useInventoryQueries.fetch()
+  }
+
   watchEffect(() => {
     if (isFetching.value || isDeletingNode.value) {
       startSpinner()
