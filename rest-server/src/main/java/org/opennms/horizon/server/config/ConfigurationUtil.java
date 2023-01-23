@@ -44,8 +44,6 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 public class ConfigurationUtil {
-    @Value("${horizon-stream.notifications.url}")
-    private String notificationsUrl;
     @Value("${grpc.url.inventory}")
     private String inventoryGrpcAddress;
 
