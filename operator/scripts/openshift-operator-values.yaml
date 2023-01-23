@@ -1,0 +1,10 @@
+image: default-route-openshift-image-registry.apps-crc.testing/openshift/opennms-operator:local
+imagePullPolicy: IfNotPresent
+resources:
+  limits:
+    cpu: 100m
+    memory: 500Mi
+  requests:
+    cpu: 100m
+    memory: 500Mi
+

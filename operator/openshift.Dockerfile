@@ -1,5 +1,5 @@
 #Builder
-FROM golang:1.17 as builder
+FROM golang:1.19 as builder
 
 WORKDIR /app
 
@@ -15,10 +15,10 @@ COPY api/ api/
 COPY config/ config/
 COPY internal/ internal/
 
-RUN make alpine-build
+RUN make openshift-build
 
 #Runner
-FROM ppc64le/alpine:3.15
+FROM alpine:3.15
 
 WORKDIR /app
 
