@@ -156,6 +156,7 @@ public class MinionTestSteps {
 
     @Then("Send net flow package")
     public void sendNetflowPackage() throws Exception {
+        Thread.sleep(5000); // TODO: Patrick: wait a bit until Minion opens the port
         SendFlowCmd cmd = new SendFlowCmd();
         cmd.setHost(applicationHostName);
         cmd.setPort(netflow5ListenerPort); // netflow 5 port enabled by default

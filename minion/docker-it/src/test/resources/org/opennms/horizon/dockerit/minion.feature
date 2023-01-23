@@ -44,6 +44,8 @@ Feature: Minion Basic Functionality
     Then verify JSON path expressions match
       | serviceCount == 2 |
 
-  Scenario: Send Flow Package to Minion
+  Scenario: Configure Minion for Flows and send Flow package to Minion
+    Given MOCK twin update in resource file "/testdata/task-set.flows.001.json"
+    Then MOCK send twin update for topic "task-set" at location "Default"
     Then Send net flow package
     Then Verify gateway has received netflow packages
