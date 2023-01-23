@@ -28,9 +28,14 @@
 
 package org.opennms.horizon.inventory.service;
 
-import com.vladmihalcea.hibernate.type.basic.Inet;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
@@ -41,17 +46,15 @@ import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
+import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.vladmihalcea.hibernate.type.basic.Inet;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Service
@@ -63,9 +66,7 @@ public class NodeService {
     private final MonitoringLocationRepository monitoringLocationRepository;
     private final IpInterfaceRepository ipInterfaceRepository;
     private final ConfigUpdateService configUpdateService;
-
     private final NodeMapper mapper;
-
     @Transactional(readOnly = true)
     public List<NodeDTO> findByTenantId(String tenantId) {
         List<Node> all = nodeRepository.findByTenantId(tenantId);
@@ -142,6 +143,14 @@ public class NodeService {
         });
         return nodesByTenantLocation;
     }
+
+    @Transactional
+    public Map<String, List<NodeDTO>> listNodeByIds(List<Long> ids, String tenantId) {
+        List<Node> nodeList = nodeRepository.findByIdInAndTenantId(ids, tenantId);
+        return nodeList.stream().collect(Collectors.groupingBy(node -> node.getMonitoringLocation().getLocation(),
+            Collectors.mapping(mapper::modelToDTO, Collectors.toList())));
+    }
+
 
     public void deleteNode(long id) {
         nodeRepository.deleteById(id);
