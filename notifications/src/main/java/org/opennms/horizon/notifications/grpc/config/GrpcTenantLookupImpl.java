@@ -26,28 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.grpc.config;
 
-import org.opennms.horizon.notifications.api.PagerDutyAPI;
-import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.exceptions.NotificationException;
-import org.opennms.horizon.shared.dto.event.AlarmDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import io.grpc.Context;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 
-@Service
-public class NotificationServiceImpl implements NotificationService {
+import java.util.Optional;
 
-    @Autowired
-    private PagerDutyAPI pagerDutyAPI;
-
+public class GrpcTenantLookupImpl implements TenantLookup {
     @Override
-    public void postNotification(AlarmDTO alarm) throws NotificationException {
-        pagerDutyAPI.postNotification(alarm);
-    }
-
-    @Override
-    public void postPagerDutyConfig(PagerDutyConfigDTO config) {
-        pagerDutyAPI.saveConfig(config);
+    public Optional<String> lookupTenantId(Context context) {
+        return Optional.ofNullable(GrpcConstants.TENANT_ID_CONTEXT_KEY.get());
     }
 }
