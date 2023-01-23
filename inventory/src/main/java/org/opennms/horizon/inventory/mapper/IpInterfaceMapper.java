@@ -28,10 +28,11 @@
 
 package org.opennms.horizon.inventory.mapper;
 
-import com.vladmihalcea.hibernate.type.basic.Inet;
 import org.mapstruct.Mapper;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.model.IpInterface;
+
+import com.vladmihalcea.hibernate.type.basic.Inet;
 
 @Mapper(componentModel = "spring")
 public interface IpInterfaceMapper {

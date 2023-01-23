@@ -25,6 +25,7 @@
             <column name="ip_address" type="INET">
                 <constraints nullable="false"/>
             </column>
+            <column name="snmp_primary" type="boolean" defaultValue="false" />
 
         </createTable>
 
