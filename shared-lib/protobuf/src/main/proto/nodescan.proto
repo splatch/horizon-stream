@@ -48,7 +48,6 @@ message NodeInfoResult {
 message ServiceResult {
   string serviceName = 1;
   string status = 2;
-  int64 lastGoodTime = 3;
 }
 
 message IpInterfaceResult {
@@ -73,10 +72,6 @@ message SnmpInterfaceResult {
   int32 ifAdminStatus = 7;
   int32 ifOperatorStatus = 8;
   string ifAlias = 9;
-  bool isCollected = 10;
-  bool isPolled = 11;
-  int64 lastPollTime = 12;
-  int64 lastIngressTime = 13;
 }
 
 
