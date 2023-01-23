@@ -84,4 +84,12 @@ message NodeScanResult {
   repeated google.protobuf.Any otherResults = 4;
 }
 
+message NodeScanResult {
+  NodeInfoResult nodeInfo = 1;
+  repeated IfServiceResult ifServices = 2;
+  repeated SnmpInterfaceResult snmpInterfaces = 3;
+  //TODO: might be changed
+  repeated google.protobuf.Any otherResults = 4;
+}
+
 
