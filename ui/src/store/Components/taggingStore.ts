@@ -1,20 +1,23 @@
 import { defineStore } from 'pinia'
-import { TagNodesType, Tag } from '@/types/tags'
+import { TagNodesType } from '@/types/tags'
 
-export const useTaggingStore = defineStore('useTaggingStore', () => {
-  const selectedTags = ref<Tag[]>([])
+export const useTaggingStore = defineStore('taggingStore', () => {
+  const selectedTags = ref([])
   const tagNodesSelected = ref(TagNodesType.Unselected)
 
   const updateSelectedTags = (tags) => {
     selectedTags.value = tags
   }
 
-  const selectTag = (tag) => {
-    // if(selectedTags.filter(selTag => selTag.id === tag.id))
+  const toggleTag = (tag) => {
+    if (selectedTags.value.includes(tag)) {
+      selectedTags.value = selectedTags.value.filter((t) => t !== tag)
+    } else {
+      selectedTags.value.push(tag)
+    }
   }
 
   const selectTagNodes = (type: TagNodesType) => {
-    // console.log(type)
     tagNodesSelected.value = type
   }
 
@@ -22,7 +25,7 @@ export const useTaggingStore = defineStore('useTaggingStore', () => {
     selectedTags,
     tagNodesSelected,
     updateSelectedTags,
-    selectTag,
+    toggleTag,
     selectTagNodes
   }
 })

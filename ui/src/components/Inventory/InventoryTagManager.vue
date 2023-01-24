@@ -41,15 +41,15 @@
           </FeatherInput>
         </div>
       </div>
-      <FeatherChipList condensed label="Tags" class="tag-chip-list">
+      <FeatherChipList condensed label="Tags" :key="selectedTags.toString()">
         <FeatherChip 
           v-for="tag of tags" 
-          :key="tag.id" 
+          :key="tag" 
           class="pointer"
-          :class="{ 'selected' : selectedTags.id === tag.id }"
-          @click="selectTag(tag)"
-          >
-          {{ tag.label }}
+          :class="{ 'selected' : selectedTags.includes(tag) }"
+          @click="taggingStore.toggleTag(tag)"
+        >
+          {{ tag }}
         </FeatherChip>
       </FeatherChipList>
     </section>
@@ -72,7 +72,7 @@ import Search from '@featherds/icon/action/Search'
 import Add from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
-import { TagNodesType, Tag } from '@/types/tags'
+import { TagNodesType } from '@/types/tags'
 
 const inventoryStore = useInventoryStore()
 const taggingQueries = useTaggingQueries()
@@ -91,7 +91,8 @@ const addIcon: IIcon = {
 const newTag = ref()
 const newTagDropdown = ref()
 const searchValue = ref()
-const selectedTags = ref<Tag[]>([])
+const tags = computed(() => taggingQueries.tags)
+const selectedTags = computed(() => taggingStore.selectedTags)
 
 const isTaggingBoxOpen = computed(() => {
   if(!inventoryStore.isTaggingBoxOpen) {
@@ -102,16 +103,6 @@ const isTaggingBoxOpen = computed(() => {
 
   return inventoryStore.isTaggingBoxOpen
 })
-
-const tags = computed(() => taggingQueries.tags)
-
-const selectTag = (tag: Tag) => {
-  if (selectedTags.value.includes(tag)) {
-    selectedTags.value = selectedTags.value.filter(t => t !== tag)
-  } else {
-    selectedTags.value.push(tag)
-  }
-}
 
 const placement = ref(PopoverPlacement.top)
 const alignment = ref(PointerAlignment.center)

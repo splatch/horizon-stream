@@ -4,8 +4,3 @@ export enum TagNodesType {
   Individual = 2,
   Clear = 3
 }
-
-export interface Tag {
-  id: number
-  label: string
-}

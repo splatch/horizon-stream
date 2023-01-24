@@ -32,7 +32,6 @@
   <PrimaryModal :visible="isVisible" :title="modal.title" :class="modal.cssClass">
     <template #content>
       <p>{{ modal.content }}</p>
-      <!-- <LineGraph :graph="graphProps" /> -->
     </template>
     <template #footer>
       <FeatherButton 
@@ -58,9 +57,8 @@ import Checkbox from '@material-design-icons/svg/outlined/check_box.svg'
 import { NodeContent } from '@/types/inventory'
 import { IIcon } from '@/types'
 import { useTaggingStore } from '@/store/Components/taggingStore'
-import { useTaggingMutations } from '@/store/Mutations/taggingMutations'
-import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
-import { TagNodesType, Tag } from '@/types/tags'
+import { useNodeMutations } from '@/store/Mutations/nodeMutations'
+import { TagNodesType } from '@/types/tags'
 import { ModalPrimary } from '@/types/modal'
 import useModal from '@/composables/useModal'
 
@@ -76,14 +74,12 @@ const nodes = ref<NodeContent[]>(props.tabContent)
 const { openModal, closeModal, isVisible } = useModal()
 
 const taggingStore = useTaggingStore()
-const taggingMutations= useTaggingMutations()
-const inventoryQueries = useInventoryQueries()
+const nodeMutations= useNodeMutations()
 
 const tagsSelected = computed(() => taggingStore.selectedTags)
 const tagNodesSelected = computed(() => taggingStore.tagNodesSelected)
 
 watch(tagNodesSelected, (selected) => {
-  // console.log('selected',selected)
   let isTaggingChecked = false
   let isEditMode = false
 
@@ -110,7 +106,7 @@ const cancelTagsAllNodes = () => {
 
 const saveTagsAllNodes = () => {
   taggingStore.selectTagNodes(TagNodesType.Unselected)
-  taggingMutations.addTagsToAllNodes()
+  nodeMutations.addTagsToAllNodes()
   // refetch nodes
   // refetch tags
   closeModal()
@@ -122,14 +118,12 @@ const saveTagsAllNodes = () => {
   *   - display toaster
   *   - select clear to exit tagging mode
   *     - node checkbox: set checked to false
-  *  
   * @param id the node to be edited (add/remove tags)
   */
 const editNodeTags = (id: number) => {
-  console.log('id',id)
   const toAddTags = nodes.value.filter((node) => node.id === id)[0].isTaggingChecked || false
 
-  taggingMutations.editTagsInNode(id, toAddTags) // node id and boolean for add or remove tags
+  nodeMutations.editTagsToNode(id, toAddTags) // node id and boolean for add or remove tags
 }
 
 const modal: ModalPrimary = {
