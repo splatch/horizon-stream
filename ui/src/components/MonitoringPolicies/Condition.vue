@@ -1,41 +1,41 @@
 <template>
   <div class="condition">
     <div class="text">Trigger when the metric is</div>
-    <BasicDropdown
+    <BasicSelect
       :list="limitList"
       :size="160"
-      @dropdown-item-selected="(val) => setValue('level', val)"
+      @item-selected="(val) => setValue('level', val)"
       :isDisabled="!isEdit"
     />
     <Slider
-      v-model="porcentage"
+      v-model="percentage"
       :min="0"
       :max="100"
       class="slider-red"
       :tooltipPosition="'top'"
       :format="(num) => num + '%'"
-      @change="(val) => setValue('porcentage', val)"
+      @change="(val) => setValue('percentage', val)"
       :disabled="!isEdit"
     />
     <div class="text">for any</div>
-    <BasicDropdown
+    <BasicSelect
       :list="timeList"
       :size="180"
-      @dropdown-item-selected="(val) => setValue('duration', val)"
+      @item-selected="(val) => setValue('duration', val)"
       :isDisabled="!isEdit"
     />
     <div class="text">during the last</div>
-    <BasicDropdown
+    <BasicSelect
       :list="lastPeriodList"
       :size="180"
-      @dropdown-item-selected="(val) => setValue('period', val)"
+      @item-selected="(val) => setValue('period', val)"
       :isDisabled="!isEdit"
     />
     <div class="text">as</div>
-    <BasicDropdown
+    <BasicSelect
       :list="severityList"
       :size="180"
-      @dropdown-item-selected="(val) => setValue('severity', val)"
+      @item-selected="(val) => setValue('severity', val)"
       :isDisabled="!isEdit"
     />
     <div class="icons">
@@ -68,7 +68,7 @@ import { useMonitoringPoliciesStore } from '@/store/Views/monitoringPoliciesStor
 import Delete from '@featherds/icon/action/Delete'
 import EditMode from '@featherds/icon/action/EditMode'
 import Save from '@featherds/icon/action/MarkComplete'
-import { ICondition } from '@/types/policies.d.ts'
+import { ICondition } from '@/types/policies'
 
 import { markRaw } from 'vue'
 const Icons = markRaw({
@@ -82,8 +82,8 @@ const props = defineProps<{
   condition: ICondition
 }>()
 const isEdit = ref(true)
-const porcentage = ref(props.condition.porcentage)
-const alert = ref(props.condition)
+const percentage = ref(props.condition.percentage)
+const alert: ICondition = ref(props.condition)
 
 const limitList = [
   { id: 'above', name: 'above' },
@@ -122,7 +122,6 @@ const remove = () => {
 
 const saveCondition = () => {
   isEdit.value = false
-  console.log(store.selectedRule)
 }
 </script>
 
@@ -155,12 +154,6 @@ const saveCondition = () => {
     .action {
       display: flex;
       align-items: center;
-    }
-    .action-text {
-      font-size: 15px;
-      color: var(variables.$success);
-      font-weight: 700;
-      cursor: pointer;
     }
     .icon {
       font-size: 26px;

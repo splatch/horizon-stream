@@ -32,15 +32,15 @@ export const useMonitoringPoliciesStore = defineStore('monitoringPoliciesStore',
       this.selectedRule.metricName = name
     },
     addNewCondition() {
-      const defaultRule = {
-        id: this.selectedRule.conditions.length + 1,
+      const defaultCondition = {
+        id: new Date().getTime(),
         level: 'above',
-        porcentage: 50,
+        percentage: 50,
         duration: 5,
         period: 15,
         severity: 'critical'
       }
-      this.selectedRule.conditions.push(defaultRule)
+      this.selectedRule.conditions.push(defaultCondition)
     },
     removeCondition(id: number) {
       this.selectedRule.conditions = this.selectedRule.conditions.filter((c) => c.id !== id)

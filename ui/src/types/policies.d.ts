@@ -17,7 +17,7 @@ export interface IRule {
 export interface ICondition {
   id: number
   level: string
-  porcentage: number
+  percentage: number
   duration: number
   period: number
   severity: string

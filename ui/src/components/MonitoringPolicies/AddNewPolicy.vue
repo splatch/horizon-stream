@@ -21,8 +21,8 @@
           v-for="tag in store.selectedPolicy.tags"
           :key="tag"
         >
-          {{ tag
-          }}<FeatherIcon
+          {{ tag }}
+          <FeatherIcon
             class="remove-icon"
             :icon="Icons.Cancel"
             @click="store.removeTag(tag)"
