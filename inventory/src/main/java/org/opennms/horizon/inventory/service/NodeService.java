@@ -28,9 +28,6 @@
 
 package org.opennms.horizon.inventory.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +50,6 @@ import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +84,7 @@ public class NodeService {
                 ipInterface.setNode(node);
                 ipInterface.setTenantId(tenantId);
                 ipInterface.setIpAddress(InetAddressUtils.getInetAddress(request.getManagementIp()));
+                ipInterface.setSnmpPrimary(true);
                 ipInterfaceRepository.save(ipInterface);
         }
     }
