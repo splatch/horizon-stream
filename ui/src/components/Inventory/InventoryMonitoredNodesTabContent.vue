@@ -23,7 +23,7 @@
         <section class="overlay-content">
           <div class="title"><label for="iconCheckbox">Tagged</label><Icon :icon="checkbox" data-test="icon-checkbox" /></div>
           <FeatherChipList condensed label="Tag list">
-            <FeatherChip v-for="tag in tagsSelected" :key="tag.id">{{ tagsSelected }}</FeatherChip>
+            <FeatherChip v-for="tag in tagsSelected" :key="tag">{{ tag }}</FeatherChip>
           </FeatherChipList>
         </section>
       </div>
