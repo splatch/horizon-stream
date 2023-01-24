@@ -44,7 +44,17 @@ spec:
           imagePullPolicy: {{ .Values.OpenNMS.Minion.ImagePullPolicy }}
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: minionGatewayUser
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: minionGatewayPwd
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
             - name: IGNITE_UPDATE_NOTIFIER # Disable Ignite version lookups
