@@ -37,6 +37,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -238,7 +239,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher, TwinProvid
         }
     }
 
-    public static class SessionKey {
+    public static class SessionKey implements Serializable {
 
         public final String key;
         public final String tenantId;

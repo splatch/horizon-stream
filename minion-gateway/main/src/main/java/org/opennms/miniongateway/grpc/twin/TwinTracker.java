@@ -49,7 +49,7 @@ import org.apache.ignite.binary.Binarylizable;
  * TwinTracker is created and updated by publisher and only consumed by Subscriber.
  * Subscriber will ignore any stale updates based on version but resets version whenever there is new SessionId.
  */
-public class TwinTracker implements Binarylizable {
+public class TwinTracker implements Binarylizable, Serializable {
 
     public static final int REVISION = 1;
     private AtomicInteger version;

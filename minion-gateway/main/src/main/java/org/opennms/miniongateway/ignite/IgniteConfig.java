@@ -20,15 +20,19 @@ import org.opennms.miniongateway.grpc.twin.AbstractTwinPublisher;
 import org.opennms.miniongateway.grpc.twin.AbstractTwinPublisher.SessionKey;
 import org.opennms.miniongateway.grpc.twin.TwinUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class IgniteConfig {
 
+    public static final String DATA_SOURCE_BEAN_NAME = "dataSource";
     @Value("${ignite.use-kubernetes:false}")
     private boolean useKubernetes;
 
@@ -43,8 +47,12 @@ public class IgniteConfig {
 //----------------------------------------
 
     @Bean
-    public CacheJdbcBlobStoreFactory createCacheJdbcBlobStoreFactory(DataSource dataSource) {
-        return new CacheJdbcBlobStoreFactory().setDataSource(dataSource);
+    public CacheJdbcBlobStoreFactory createCacheJdbcBlobStoreFactory(@Qualifier(DATA_SOURCE_BEAN_NAME) DataSource dataSource) {
+        return new CacheJdbcBlobStoreFactory()
+            .setCreateTableQuery(PostgresBlobCacheStore.DFLT_CREATE_TBL_QRY)
+            .setDataSource(dataSource)
+            // required because of serialization
+            .setDataSourceBean(DATA_SOURCE_BEAN_NAME);
     }
 
     @Bean
