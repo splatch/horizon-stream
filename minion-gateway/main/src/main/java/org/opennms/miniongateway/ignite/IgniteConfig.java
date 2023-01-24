@@ -67,7 +67,9 @@ public class IgniteConfig {
         CacheConfiguration<SessionKey, TwinUpdate> twinCache = new CacheConfiguration<>();
         twinCache.setName(AbstractTwinPublisher.TWIN_TRACKER_CACHE_NAME)
             .setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL)
-            .setCacheStoreFactory(cacheJdbcBlobStoreFactory);
+            .setCacheStoreFactory(cacheJdbcBlobStoreFactory)
+            .setWriteThrough(true)
+            .setReadThrough(true);
         igniteConfiguration.setCacheConfiguration(
             twinCache
         );
