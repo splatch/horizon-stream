@@ -1,9 +1,13 @@
 package org.opennms.miniongateway.ignite;
 
+import javax.sql.DataSource;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteSpring;
-import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.CacheAtomicityMode;
+import org.apache.ignite.cache.store.jdbc.CacheJdbcBlobStore;
+import org.apache.ignite.cache.store.jdbc.CacheJdbcBlobStoreFactory;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.ClientConnectorConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
@@ -12,8 +16,12 @@ import org.apache.ignite.kubernetes.configuration.KubernetesConnectionConfigurat
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder;
+import org.opennms.miniongateway.grpc.twin.AbstractTwinPublisher;
+import org.opennms.miniongateway.grpc.twin.AbstractTwinPublisher.SessionKey;
+import org.opennms.miniongateway.grpc.twin.TwinUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,8 +43,13 @@ public class IgniteConfig {
 //----------------------------------------
 
     @Bean
-    public Ignite ignite() {
-        IgniteConfiguration igniteConfiguration = this.prepareIgniteConfiguration();
+    public CacheJdbcBlobStoreFactory createCacheJdbcBlobStoreFactory(DataSource dataSource) {
+        return new CacheJdbcBlobStoreFactory().setDataSource(dataSource);
+    }
+
+    @Bean
+    public Ignite ignite(CacheJdbcBlobStoreFactory cacheJdbcBlobStoreFactory) {
+        IgniteConfiguration igniteConfiguration = this.prepareIgniteConfiguration(cacheJdbcBlobStoreFactory);
 
         try {
             return IgniteSpring.start(igniteConfiguration, applicationContext);
@@ -49,8 +62,16 @@ public class IgniteConfig {
 // Internals
 //----------------------------------------
 
-    private IgniteConfiguration prepareIgniteConfiguration() {
+    private IgniteConfiguration prepareIgniteConfiguration(CacheJdbcBlobStoreFactory cacheJdbcBlobStoreFactory) {
         org.apache.ignite.configuration.IgniteConfiguration igniteConfiguration = new org.apache.ignite.configuration.IgniteConfiguration();
+        CacheConfiguration<SessionKey, TwinUpdate> twinCache = new CacheConfiguration<>();
+        twinCache.setName(AbstractTwinPublisher.TWIN_TRACKER_CACHE_NAME)
+            .setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL)
+            .setCacheStoreFactory(cacheJdbcBlobStoreFactory);
+        igniteConfiguration.setCacheConfiguration(
+            twinCache
+        );
+        igniteConfiguration.setClassLoader(applicationContext.getClassLoader());
 
         // enable compute calls from thin client
         ThinClientConfiguration thinClientConfiguration = new ThinClientConfiguration();
