@@ -28,18 +28,18 @@
 
 package org.opennms.horizon.inventory.model;
 
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -67,6 +67,6 @@ public class Configuration {
 
     @NotNull
     @Column(columnDefinition = "jsonb", name = "value")
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonBinaryType")
+    @JdbcTypeCode(SqlTypes.JSON)
     private JsonNode value;
 }
