@@ -86,7 +86,9 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
               managementIpLink: '',
               tagValue: '--',
               tagLink: ''
-            }
+            },
+            isTaggingChecked: false, // to control the checkmark in the overlay of a node (tagging mode)
+            isEditMode: false // to control dispplay of node overlay
           })
         }
       })

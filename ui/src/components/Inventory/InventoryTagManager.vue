@@ -1,5 +1,5 @@
 <template>
-  <div class="tag-manager-box" v-if="inventoryStore.isTaggingBoxOpen">
+  <div class="tag-manager-box" v-if="isTaggingBoxOpen">
     <section class="select-tags">
       <div class="top">
         <div class="heading-total-selected">
@@ -41,24 +41,24 @@
           </FeatherInput>
         </div>
       </div>
-      <FeatherChipList condensed label="Tags" :key="selectedTags.toString()" class="tag-chip-list">
+      <FeatherChipList condensed label="Tags" :key="selectedTags.toString()">
         <FeatherChip 
           v-for="tag of tags" 
           :key="tag" 
           class="pointer"
           :class="{ 'selected' : selectedTags.includes(tag) }"
-          @click="selectTag(tag)"
-          >
+          @click="taggingStore.toggleTag(tag)"
+        >
           {{ tag }}
         </FeatherChip>
       </FeatherChipList>
     </section>
     <section class="tag-nodes">
       <h4>Tag Nodes:</h4>
-      <FeatherRadioGroup vertical label="" v-model="tagNodes" class="select-tag-nodes">
-        <FeatherRadio :value="1">All</FeatherRadio>
-        <FeatherRadio :value="2">Individual</FeatherRadio>
-        <FeatherRadio :value="3">Clear</FeatherRadio>
+      <FeatherRadioGroup vertical label="" v-model="taggingStore.tagNodesSelected" class="select-tag-nodes">
+        <FeatherRadio :value="TagNodesType.All">All</FeatherRadio>
+        <FeatherRadio :value="TagNodesType.Individual">Individual</FeatherRadio>
+        <FeatherRadio :value="TagNodesType.Clear">Clear</FeatherRadio>
       </FeatherRadioGroup>
     </section>
   </div>
@@ -66,12 +66,17 @@
 
 <script setup lang="ts">
 import { useInventoryStore } from '@/store/Views/inventoryStore'
+import { useTaggingQueries } from '@/store/Queries/taggingQueries'
+import { useTaggingStore } from '@/store/Components/taggingStore'
 import Search from '@featherds/icon/action/Search'
 import Add from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
+import { TagNodesType } from '@/types/tags'
 
 const inventoryStore = useInventoryStore()
+const taggingQueries = useTaggingQueries()
+const taggingStore = useTaggingStore()
 
 const searchIcon: IIcon = {
   image: markRaw(Search),
@@ -85,19 +90,19 @@ const addIcon: IIcon = {
 
 const newTag = ref()
 const newTagDropdown = ref()
-const tagNodes = ref()
 const searchValue = ref()
-const selectedTags = ref<string[]>([])
+const tags = computed(() => taggingQueries.tags)
+const selectedTags = computed(() => taggingStore.selectedTags)
 
-const tags = computed(() => ['tag1tag1 tag1tag1tag1tag1tag1tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8', 'tag9', 'tag10', 'tag11', 'tag12', 'tag13', 'tag14', 'tag15', 'tag16', 'tag17', 'tag18', 'tag19', 'tag20', 'tag21', 'tag22'])
-
-const selectTag = (tag: string) => {
-  if (selectedTags.value.includes(tag)) {
-    selectedTags.value = selectedTags.value.filter(t => t !== tag)
+const isTaggingBoxOpen = computed(() => {
+  if(!inventoryStore.isTaggingBoxOpen) {
+    taggingQueries.resetTags()
   } else {
-    selectedTags.value.push(tag)
+    taggingQueries.fetchTags()
   }
-}
+
+  return inventoryStore.isTaggingBoxOpen
+})
 
 const placement = ref(PopoverPlacement.top)
 const alignment = ref(PointerAlignment.center)

@@ -1,6 +1,6 @@
 <template>
   <ul class="cards">
-    <li v-for="node in tabContent" :key="node?.id">
+    <li v-for="node in nodes" :key="node?.id">
       <section class="header">
         <Icon :icon="storage" data-test="icon-storage" />
         <h4 data-test="heading">{{ node?.label }}</h4>
@@ -14,8 +14,8 @@
         </div>
         <InventoryIconActionList :node="node" class="icon-action" data-test="icon-action-list" />
       </section>
-      <div class="overlay">
-        <feather-checkbox id="tagged" v-model="tagChecked" class="tag-node-checkbox"/>
+      <div class="overlay" v-if="node.isEditMode">
+        <feather-checkbox id="tagged" v-model="node.isTaggingChecked" @update:model-value="editNodeTags(node.id)" class="tag-node-checkbox"/>
         <section class="overlay-header">
           <Icon :icon="storage" data-test="icon-storage" />
           <h4 data-test="heading">{{ node?.label }}</h4>
@@ -29,6 +29,25 @@
       </div>
     </li>
   </ul>
+  <PrimaryModal :visible="isVisible" :title="modal.title" :class="modal.cssClass">
+    <template #content>
+      <p>{{ modal.content }}</p>
+    </template>
+    <template #footer>
+      <FeatherButton 
+        data-testid="cancel-btn" 
+        secondary 
+        @click="cancelTagsAllNodes">
+          {{ modal.cancelLabel }}
+      </FeatherButton>
+      <FeatherButton 
+        data-testid="save-btn" 
+        primary
+        @click="saveTagsAllNodes">
+          {{ modal.saveLabel }}
+      </FeatherButton>
+    </template>
+  </PrimaryModal>
 </template>
 
 <script lang="ts" setup>
@@ -37,16 +56,85 @@ import Storage from '@material-design-icons/svg/outlined/storage.svg'
 import Checkbox from '@material-design-icons/svg/outlined/check_box.svg'
 import { NodeContent } from '@/types/inventory'
 import { IIcon } from '@/types'
-  
-defineProps({
+import { useTaggingStore } from '@/store/Components/taggingStore'
+import { useNodeMutations } from '@/store/Mutations/nodeMutations'
+import { TagNodesType } from '@/types/tags'
+import { ModalPrimary } from '@/types/modal'
+import useModal from '@/composables/useModal'
+
+// TODO: sort tabContent alpha (default)
+const props = defineProps({
   tabContent: {
     type: Object as PropType<NodeContent[]>,
     required: true
   }
 })
+const nodes = ref<NodeContent[]>(props.tabContent)
 
-const tagsSelected = ['tag1tag1 tag1tag1tag1tag1tag1tag1', 'tag2', 'tag3']
-const tagChecked = ref(false)
+const { openModal, closeModal, isVisible } = useModal()
+
+const taggingStore = useTaggingStore()
+const nodeMutations= useNodeMutations()
+
+const tagsSelected = computed(() => taggingStore.selectedTags)
+const tagNodesSelected = computed(() => taggingStore.tagNodesSelected)
+
+watch(tagNodesSelected, (selected) => {
+  let isTaggingChecked = false
+  let isEditMode = false
+
+  if(selected === TagNodesType.All) {
+    isTaggingChecked = true
+    isEditMode = true
+    openModal()
+  } else if(selected === TagNodesType.Individual) {
+    isTaggingChecked = false
+    isEditMode = true
+  }
+
+  nodes.value = nodes.value.map(node => ({
+    ...node,
+    isTaggingChecked,
+    isEditMode
+  }))
+})
+
+const cancelTagsAllNodes = () => {
+  taggingStore.selectTagNodes(TagNodesType.Unselected)
+  closeModal()
+}
+
+const saveTagsAllNodes = () => {
+  taggingStore.selectTagNodes(TagNodesType.Unselected)
+  nodeMutations.addTagsToAllNodes()
+  // refetch nodes
+  // refetch tags
+  closeModal()
+}
+
+/**
+  * Tagging individual node
+  * - check/uncheck node: query to add/remove tags
+  *   - display toaster
+  *   - select clear to exit tagging mode
+  *     - node checkbox: set checked to false
+  * @param id the node to be edited (add/remove tags)
+  */
+const editNodeTags = (id: number) => {
+  const toAddTags = nodes.value.filter((node) => node.id === id)[0].isTaggingChecked || false
+
+  nodeMutations.editTagsToNode(id, toAddTags) // node id and boolean for add or remove tags
+}
+
+const modal: ModalPrimary = {
+  title: 'Add tags to all nodes?',
+  cssClass: '',
+  content: '',
+  id: '',
+  cancelLabel: 'cancel',
+  saveLabel: 'ok',
+  hideTitle: true
+}
 
 const storage: IIcon = {
   image: Storage,

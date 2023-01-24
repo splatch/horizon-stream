@@ -11,6 +11,21 @@ export const useNodeMutations = defineStore('nodeMutations', () => {
 
   const { execute: deleteNode, isFetching: isDeletingNode } = useMutation(DeleteNodeDocument)
 
+  const editTagsToNode = (id: number, toAddTags: boolean) => {
+    // TODO: query for single node
+    // refresh inventory nodes: useInventoryQueries.fetch()
+  }
+
+  const addTagsToAllNodes = () => {
+    // TODO: query for all nodes
+    // refresh inventory nodes: useInventoryQueries.fetch()
+  }
+
+  const removeTagsToAllNodes = () => {
+    // TODO: query for all nodes
+    // refresh inventory nodes: useInventoryQueries.fetch()
+  }
+
   watchEffect(() => {
     if (isFetching.value || isDeletingNode.value) {
       startSpinner()
@@ -22,6 +37,9 @@ export const useNodeMutations = defineStore('nodeMutations', () => {
   return {
     deleteNode,
     addNode,
-    error
+    error,
+    editTagsToNode,
+    addTagsToAllNodes,
+    removeTagsToAllNodes
   }
 })
