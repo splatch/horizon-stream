@@ -3,7 +3,8 @@
     <div class="title">Set Alert Conditions</div>
     <FeatherButton
       primary
-      @click="triggerWidget"
+      @click="addComponent"
+      class="btn"
     >
       <FeatherIcon
         :icon="Add"
@@ -11,29 +12,25 @@
       />
       Add
     </FeatherButton>
-    <div id="conditions-conatiner"></div>
+    <div v-if="store.selectedRule.conditions.length">
+      <div
+        class="condition-card"
+        v-for="cond in store.selectedRule.conditions"
+        :key="cond.id"
+      >
+        <Condition :condition="cond" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useMonitoringPoliciesStore } from '@/store/Views/monitoringPoliciesStore'
 import Add from '@featherds/icon/action/Add'
-import { getCurrentInstance } from 'vue'
-import { AppContext, createVNode, render } from 'vue'
 const store = useMonitoringPoliciesStore()
-const widgetContainer = () => document.getElementById('conditions-conatiner') as HTMLDivElement
-const instance = getCurrentInstance()?.appContext as AppContext
-const conditionAlertCountId = ref(0)
 
-const triggerWidget = () => {
-  conditionAlertCountId.value++
-  const component = defineAsyncComponent(() => import('@/components/MonitoringPolicies/Condition.vue'))
-  const div = document.createElement('div')
-  div.id = 'condition-alert' + conditionAlertCountId.value
-  const vNode = createVNode(component, { id: conditionAlertCountId.value })
-  vNode.appContext = instance
-  render(vNode, div)
-  widgetContainer().appendChild(div)
+const addComponent = () => {
+  store.addNewCondition()
 }
 </script>
 
@@ -42,13 +39,22 @@ const triggerWidget = () => {
 @use '@featherds/styles/mixins/typography';
 
 .alert-conditions {
-  margin-top: var(variables.$spacing-xxl);
-
+  margin-top: var(variables.$spacing-xl);
+  .btn {
+    margin-top: var(variables.$spacing-s);
+  }
   .title {
     @include typography.headline4;
   }
   .icon {
     font-size: 20px;
+    vertical-align: text-bottom;
+  }
+  .condition-card {
+    border-bottom: 1px solid var(variables.$shade-4);
+    &:last-child {
+      border: none;
+    }
   }
 }
 </style>

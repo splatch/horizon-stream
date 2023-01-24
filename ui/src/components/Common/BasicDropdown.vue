@@ -4,13 +4,13 @@
       <FeatherButton
         secondary
         class="btn-dropdown"
+        :class="{ disabled: props.isDisabled }"
         v-bind="attrs"
         v-on="on"
+        :disabled="props.isDisabled"
+        :style="{ width: size + 'px' }"
       >
-        <div
-          class="btn-content"
-          :style="{ width: size + 'px' }"
-        >
+        <div class="btn-content">
           {{ selectedItem.name }}
           <FeatherIcon :icon="Icons.UnfoldMore" />
         </div>
@@ -34,10 +34,13 @@ const Icons = markRaw({
 })
 
 const props = defineProps<{
-  list: Record<string, string>[]
+  list: Record<string, string>[] // accept the structure [{id, name}]
   size?: number
+  preselectedOption?: number //index number in the list parameter
+  isDisabled?: boolean
 }>()
-const selectedItem = ref(props.list[0])
+
+const selectedItem = ref(props.list[props.preselectedOption] || props.list[0])
 const setSelectedItem = (selected: Record<string, string>) => {
   selectedItem.value = selected
   emit('dropdown-item-selected', selected.id)
@@ -49,12 +52,14 @@ const setSelectedItem = (selected: Record<string, string>) => {
 
 .btn-dropdown {
   height: 40px;
-  border: 1px solid var(variables.$shade-2) !important;
+  border: 1px solid var(variables.$secondary-text-on-surface) !important;
   .btn-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: v-bind(size) + 'px';
+  }
+  &.disabled {
+    border: 1px solid var(variables.$shade-4) !important;
   }
 }
 </style>

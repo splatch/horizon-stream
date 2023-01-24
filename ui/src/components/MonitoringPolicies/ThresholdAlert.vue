@@ -2,16 +2,19 @@
   <div class="list">
     <div
       class="card"
-      :class="{ selected: selectedAlert === 'InterfaceUtil' }"
-      @click="setThresholdAlert('InterfaceUtil')"
+      :class="{ selected: selectedAlert === 'interfaceUtil' }"
+      @click="setThresholdAlert('interfaceUtil')"
     >
+      <div class="metric-name">METRIC NAME</div>
       Interface Util
     </div>
     <div
       class="card"
-      :class="{ selected: selectedAlert === 'Discards' }"
-      @click="setThresholdAlert('Discards')"
+      :class="{ selected: selectedAlert === 'discards' }"
+      @click="setThresholdAlert('discards')"
     >
+      <div class="metric-name">METRIC NAME</div>
+
       Discards
     </div>
   </div>
@@ -20,7 +23,7 @@
 <script lang="ts" setup>
 import { useMonitoringPoliciesStore } from '@/store/Views/monitoringPoliciesStore'
 const store = useMonitoringPoliciesStore()
-const selectedAlert = ref('InterfaceUtil')
+const selectedAlert = ref('interfaceUtil')
 
 const setThresholdAlert = (type: string) => {
   selectedAlert.value = type
@@ -37,17 +40,27 @@ const setThresholdAlert = (type: string) => {
   margin-top: var(variables.$spacing-l);
   > .card {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    padding: var(variables.$spacing-l);
+    padding: var(variables.$spacing-s);
     border: 1px solid var(variables.$shade-4);
     background-color: var(variables.$shade-4);
     margin-right: var(variables.$spacing-m);
     width: 240px;
     border-radius: 5px;
+    font-size: 15px;
+    @include typography.body-small;
+
     cursor: pointer;
     &.selected {
       border: 2px solid var(variables.$primary);
-      @include typography.subtitle2;
+      font-weight: 700;
+    }
+
+    > .metric-name {
+      font-size: 9px;
+      font-weight: 400;
+      line-height: 16px;
     }
   }
 }

@@ -11,5 +11,14 @@ export interface IRule {
   componentType: string
   detectionMethod: string
   metricName: string
-  conditions: any[]
+  conditions: ICondition[]
+}
+
+export interface ICondition {
+  id: number
+  level: string
+  porcentage: number
+  duration: number
+  period: number
+  severity: string
 }

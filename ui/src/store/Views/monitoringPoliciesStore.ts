@@ -18,9 +18,9 @@ export const useMonitoringPoliciesStore = defineStore('monitoringPoliciesStore',
     selectedRule: {
       id: '',
       name: '',
-      componentType: '',
-      detectionMethod: '',
-      metricName: '',
+      componentType: 'cpu',
+      detectionMethod: 'thresholdAlert',
+      metricName: 'interfaceUtil',
       conditions: []
     }
   }),
@@ -30,6 +30,20 @@ export const useMonitoringPoliciesStore = defineStore('monitoringPoliciesStore',
     },
     setMetricName(name: string) {
       this.selectedRule.metricName = name
+    },
+    addNewCondition() {
+      const defaultRule = {
+        id: this.selectedRule.conditions.length + 1,
+        level: 'above',
+        porcentage: 50,
+        duration: 5,
+        period: 15,
+        severity: 'critical'
+      }
+      this.selectedRule.conditions.push(defaultRule)
+    },
+    removeCondition(id: number) {
+      this.selectedRule.conditions = this.selectedRule.conditions.filter((c) => c.id !== id)
     }
   }
 })
