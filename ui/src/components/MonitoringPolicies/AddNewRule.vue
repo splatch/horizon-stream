@@ -9,10 +9,10 @@
       />
       <div>
         <div class="subtitle">Component Type</div>
-        <BasicDropdown
+        <BasicSelect
           :list="componentTypes"
           :size="160"
-          @dropdown-item-selected="selectedRuleType"
+          @item-selected="selectedRuleType"
         />
       </div>
     </div>
