@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 export const useTaggingMutations = defineStore('taggingMutations', () => {
-  const editTag = (id: number, toAddTags: boolean) => {
+  const editTag = (val: string, toAddTags: boolean) => {
     if (toAddTags) {
       // TODO: gql query to add tags to node
     } else {
