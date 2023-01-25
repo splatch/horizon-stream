@@ -28,23 +28,19 @@
 
 package org.opennms.horizon.minion.nodescan;
 
-import org.opennms.horizon.minion.icmp.IcmpDetector;
 import org.opennms.horizon.minion.plugin.api.Scanner;
 import org.opennms.horizon.minion.plugin.api.ScannerManager;
-import org.opennms.horizon.minion.plugin.api.registries.DetectorRegistry;
-import org.opennms.horizon.minion.snmp.SnmpDetector;
+import org.opennms.horizon.shared.snmp.SnmpHelper;
 
 public class NodeScannerManager implements ScannerManager {
-    private static final String ICMP_DETECTOR = "ICMPDetector";
-    private static final String SNMP_DETECTOR = "SNMPDetector";
-    private final DetectorRegistry detectorRegistry;
+    private final SnmpHelper snmpHelper;
 
-    public NodeScannerManager(DetectorRegistry detectorRegistry) {
-        this.detectorRegistry = detectorRegistry;
+    public NodeScannerManager(SnmpHelper snmpHelper) {
+        this.snmpHelper = snmpHelper;
     }
 
     @Override
     public Scanner create() {
-        return new NodeScanner((IcmpDetector) detectorRegistry.getService(ICMP_DETECTOR).create(), (SnmpDetector) detectorRegistry.getService(SNMP_DETECTOR).create());
+        return new NodeScanner(snmpHelper);
     }
 }

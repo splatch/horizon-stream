@@ -14,7 +14,7 @@
     <name>OpenNms Horizon Stream:: Minion :: Plugins :: Node Scan</name>
 
 
-    <properties>
+   <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,13 +32,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>icmp-plugin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.horizon.minion</groupId>
-            <artifactId>snmp-plugin</artifactId>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>snmp-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -96,7 +91,7 @@
                                 <descriptor>mvn:org.opennms.horizon.minion/ipc-features/${project.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.horizon.minion/observability-features/${project.version}/xml/features</descriptor>
                                 <descriptor>mvn:org.opennms.horizon.minion/plugin-features/${project.version}/xml/features</descriptor>
-                                <descriptor>mvn:org.opennms.horizon.shared/azure-http/${project.version}/xml/features</descriptor>
+                                <descriptor>mvn:org.opennms.horizon.shared/snmp-api/${project.version}/xml/features</descriptor>
                                 <descriptor>file:${project.build.directory}/feature/feature.xml</descriptor>
                             </descriptors>
                             <javase>17</javase>
@@ -104,7 +99,7 @@
                                 <feature>framework</feature>
                             </framework>
                             <features>
-                                <feature>azure*</feature>
+                                <feature>node-scan-plugin</feature>
                             </features>
                         </configuration>
                     </execution>

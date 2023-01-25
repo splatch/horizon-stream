@@ -28,20 +28,13 @@
 
 package org.opennms.horizon.minion.nodescan;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-import org.opennms.horizon.minion.icmp.IcmpDetector;
 import org.opennms.horizon.minion.plugin.api.ScanResultsResponse;
 import org.opennms.horizon.minion.plugin.api.ScanResultsResponseImpl;
 import org.opennms.horizon.minion.plugin.api.Scanner;
-import org.opennms.horizon.minion.plugin.api.ServiceDetectorResponse;
-import org.opennms.horizon.minion.snmp.SnmpDetector;
-import org.opennms.icmp.contract.IcmpDetectorRequest;
+import org.opennms.horizon.shared.snmp.SnmpHelper;
 import org.opennms.node.scan.contract.NodeScanRequest;
-import org.opennms.snmp.contract.SnmpDetectorRequest;
 import org.opennms.taskset.contract.ScannerResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +43,11 @@ import com.google.protobuf.Any;
 
 public class NodeScanner implements Scanner {
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeScanner.class);
-    private final IcmpDetector icmpDetector;
-    private final SnmpDetector snmpDetector;
+    private static final String DEFAULT_OBJECT_IDENTIFIER = ".1.3.6.1.2.1.1.2.0";
+    private final SnmpHelper snmpHelper;
 
-    public NodeScanner(IcmpDetector icmpDetector, SnmpDetector snmpDetector) {
-        this.icmpDetector = icmpDetector;
-        this.snmpDetector = snmpDetector;
+    public NodeScanner(SnmpHelper snmpHelper) {
+        this.snmpHelper = snmpHelper;
     }
 
     @Override
@@ -65,22 +57,8 @@ public class NodeScanner implements Scanner {
             throw new IllegalArgumentException("Task config must be a NodeScanRequest, this is wrong type: " + config.getTypeUrl());
         }
         CompletableFuture<ScanResultsResponse> resultFuture = new CompletableFuture<>();
-
         try {
-
             NodeScanRequest scanRequest = config.unpack(NodeScanRequest.class);
-            List<CompletableFuture<ServiceDetectorResponse>> detectorFutures = scanRequest.getIpAddressesList()
-                .stream().map(ip->IcmpDetectorRequest.newBuilder()
-                    .setHost(ip)
-                    .build()).map(request -> icmpDetector.detect(Any.pack(request), scanRequest.getNodeId()))
-                .collect(Collectors.toList());
-
-            detectorFutures.addAll(scanRequest.getIpAddressesList().stream().map(ip -> SnmpDetectorRequest.newBuilder().setHost(ip).build())
-                .map(request -> snmpDetector.detect(Any.pack(request), scanRequest.getNodeId()))
-                .toList());
-            CompletableFuture.allOf(detectorFutures.toArray(new CompletableFuture[0]))
-                .thenApply(v -> detectorFutures.stream().map(CompletableFuture::join).collect(Collectors.toList()))
-                .thenAccept(results -> results.forEach(response -> LOGGER.info("Detector response: {}", response)));
             //TODO: how to create node scan response, add more detector tools
             ScannerResponse scannerResponse = ScannerResponse.newBuilder().build();
             resultFuture.complete(ScanResultsResponseImpl.builder().results(scannerResponse).build());
