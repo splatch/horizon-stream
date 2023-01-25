@@ -56,8 +56,8 @@
     <section class="tag-nodes">
       <h4>Tag Nodes:</h4>
       <FeatherRadioGroup vertical label="" v-model="taggingStore.tagNodesSelected" class="select-tag-nodes">
-        <FeatherRadio :value="TagNodesType.All">All</FeatherRadio>
-        <FeatherRadio :value="TagNodesType.Individual">Individual</FeatherRadio>
+        <FeatherRadio :value="TagNodesType.All" :disabled="selectedTags.length === 0">All</FeatherRadio>
+        <FeatherRadio :value="TagNodesType.Individual" :disabled="selectedTags.length === 0">Individual</FeatherRadio>
         <FeatherRadio :value="TagNodesType.Clear">Clear</FeatherRadio>
       </FeatherRadioGroup>
     </section>
