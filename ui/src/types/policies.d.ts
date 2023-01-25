@@ -14,7 +14,11 @@ export interface IRule {
   conditions: ICondition[]
 }
 
-export interface ICondition {
+interface IObjectKeys {
+  [key: string]: string | number
+}
+
+export interface ICondition extends IObjectKeys {
   id: number
   level: string
   percentage: number

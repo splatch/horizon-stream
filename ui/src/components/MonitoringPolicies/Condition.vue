@@ -4,7 +4,7 @@
     <BasicSelect
       :list="limitList"
       :size="160"
-      @item-selected="(val) => setValue('level', val)"
+      @item-selected="(val:string) => setValue('level', val)"
       :isDisabled="!isEdit"
     />
     <Slider
@@ -13,29 +13,29 @@
       :max="100"
       class="slider-red"
       :tooltipPosition="'top'"
-      :format="(num) => num + '%'"
-      @change="(val) => setValue('percentage', val)"
+      :format="(num: number) => num + '%'"
+      @change="(val:number) => setValue('percentage', val)"
       :disabled="!isEdit"
     />
     <div class="text">for any</div>
     <BasicSelect
       :list="timeList"
       :size="180"
-      @item-selected="(val) => setValue('duration', val)"
+      @item-selected="(val:number) => setValue('duration', val)"
       :isDisabled="!isEdit"
     />
     <div class="text">during the last</div>
     <BasicSelect
       :list="lastPeriodList"
       :size="180"
-      @item-selected="(val) => setValue('period', val)"
+      @item-selected="(val:number) => setValue('period', val)"
       :isDisabled="!isEdit"
     />
     <div class="text">as</div>
     <BasicSelect
       :list="severityList"
       :size="180"
-      @item-selected="(val) => setValue('severity', val)"
+      @item-selected="(val:string) => setValue('severity', val)"
       :isDisabled="!isEdit"
     />
     <div class="icons">
@@ -69,6 +69,7 @@ import Delete from '@featherds/icon/action/Delete'
 import EditMode from '@featherds/icon/action/EditMode'
 import Save from '@featherds/icon/action/MarkComplete'
 import { ICondition } from '@/types/policies'
+import type { Ref } from 'vue'
 
 import { markRaw } from 'vue'
 const Icons = markRaw({
@@ -83,7 +84,7 @@ const props = defineProps<{
 }>()
 const isEdit = ref(true)
 const percentage = ref(props.condition.percentage)
-const alert: ICondition = ref(props.condition)
+const alert = ref(props.condition) as Ref<ICondition>
 
 const limitList = [
   { id: 'above', name: 'above' },

@@ -13,17 +13,19 @@
 </template>
 
 <script lang="ts" setup>
+import { ISelectItemType } from '@featherds/select/src/components/types'
+
 const emit = defineEmits(['item-selected'])
 
 const props = defineProps<{
-  list: Record<string, string>[] // accept the structure [{id, name}]
+  list: ISelectItemType[] // accept the structure [{id, name}]
   size?: number
   isDisabled?: boolean
 }>()
 
-const selectedItem = ref(props.preselectedOption ? props.list[props.preselectedOption] : props.list[0])
-const setSelectedItem = (selected: Record<string, string>) => {
-  emit('item-selected', selected.id)
+const selectedItem = ref(props.list[0])
+const setSelectedItem = (selected: ISelectItemType | undefined) => {
+  emit('item-selected', selected?.id)
 }
 </script>
 
