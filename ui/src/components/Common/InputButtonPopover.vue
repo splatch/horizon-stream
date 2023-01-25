@@ -6,7 +6,7 @@
           label="Type..."
           v-model="inputValue"
         />
-        <FeatherButton @click="handler(inputValue)" :disabled="!inputValue" primary>{{ label }}</FeatherButton>
+        <FeatherButton @click="handler" :disabled="!inputValue" primary>{{ label }}</FeatherButton>
       </div>
     </template>
     <template #trigger="{ attrs, on }">
@@ -25,7 +25,7 @@ import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
 import Add from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 
-defineProps({
+const props = defineProps({
   placement: {
     type: Object as PropType<PopoverPlacement>,
     default: PopoverPlacement.top
@@ -52,17 +52,17 @@ defineProps({
 })
 
 const inputValue = ref()
+
+const handler = () => {
+  props.handler(inputValue.value)
+  inputValue.value = ''
+}
   
 </script>
 
 <style lang="scss" scoped>
 @use "@featherds/styles/themes/variables";
 
-:deep(.feather-popover-container) {
-  > .popover {
-    // to style popover
-  }
-}
 .add-btn {
   color: white;
   border-radius: 50%;

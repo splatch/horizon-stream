@@ -227,4 +227,10 @@ const addTag = (val: string) => {
     width: 15%;
   }
 }
+
+.search-add {
+  :deep(.add-btn) {
+    margin: 5px 10px 0 0;
+  }
+}
 </style>
