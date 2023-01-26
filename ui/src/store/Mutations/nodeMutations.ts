@@ -11,8 +11,12 @@ export const useNodeMutations = defineStore('nodeMutations', () => {
 
   const { execute: deleteNode, isFetching: isDeletingNode } = useMutation(DeleteNodeDocument)
 
-  const editTagsToNode = (id: number, toAddTags: boolean) => {
-    // TODO: query for single node
+  const editTagsToNode = (id: number, toAdd: boolean) => {
+    if (toAdd) {
+      // TODO: query to add tags to the node
+    } else {
+      // TODO: query to remove tags from the node
+    }
     // refresh inventory nodes: useInventoryQueries.fetch()
   }
 

@@ -33,16 +33,15 @@ const taggingStore = useTaggingStore()
 const tagsSelected = computed(() => taggingStore.selectedTags)
 
 const isChecked = ref(false)
-const emit = defineEmits(['is-checked'])
-watch(isChecked, (val) => {
-  emit('is-checked', {
-    id: props.node.id,
-    value: val
-  })
+
+watchEffect(() => {
+  isChecked.value = props.node.isTaggingChecked as boolean
 })
 
+const emit = defineEmits(['editTagsNode'])
+
 const editNodeTags = (id: number) => {
-  console.log('id', id)
+  emit('editTagsNode', { id, toAdd: isChecked.value })
 }
 
 const storage: IIcon = {

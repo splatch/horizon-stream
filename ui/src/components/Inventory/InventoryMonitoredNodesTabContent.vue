@@ -14,7 +14,7 @@
         </div>
         <InventoryIconActionList :node="node" class="icon-action" data-test="icon-action-list" />
       </section>
-      <InventoryNodeTaggingEditOverlay v-if="node.isEditMode" @is-checked="nodeChecked" :node="node" />
+      <InventoryNodeTaggingEditOverlay v-if="node.isEditMode" @edit-tags-node="editTagsNode" :node="node" />
     </li>
   </ul>
   <PrimaryModal :visible="isVisible" :title="modal.title" :class="modal.cssClass">
@@ -49,7 +49,7 @@ import { TagNodesType } from '@/types/tags'
 import { ModalPrimary } from '@/types/modal'
 import useModal from '@/composables/useModal'
 
-// TODO: sort tabContent alpha (default)
+// TODO: sort tabContent alpha (default)? to keep list display consistently in same order (e.g. page refresh)
 const props = defineProps({
   tabContent: {
     type: Object as PropType<NodeContent[]>,
@@ -65,33 +65,20 @@ const nodeMutations= useNodeMutations()
 
 const tagNodesSelected = computed(() => taggingStore.tagNodesSelected)
 
-const nodeChecked = (val: { value: boolean; id: number }) => {
-  nodes.value.some(node => {
-    if(node.id === val.id) {
-      node.isTaggingChecked = val.value
-      nodeMutations.editTagsToNode(val.id, val.value) // node id and boolean for add or remove tags
-
-      return true
-    }
-
-    return false
-  })
-}
-
-watch(tagNodesSelected, (selected) => {
+watch(tagNodesSelected, (type) => {
   let isTaggingChecked = false
   let isEditMode = false
 
-  if(selected === TagNodesType.All) {
+  if(type === TagNodesType.All) {
     isTaggingChecked = true
     isEditMode = true
     openModal()
-  } else if(selected === TagNodesType.Individual) {
+  } else if(type === TagNodesType.Individual) {
     isTaggingChecked = false
     isEditMode = true
   }
 
-  nodes.value = nodes.value.map(node => ({
+  nodes.value = nodes.value.map(node => ({ 
     ...node,
     isTaggingChecked,
     isEditMode
@@ -109,6 +96,10 @@ const saveTagsAllNodes = () => {
   // refetch nodes
   // refetch tags
   closeModal()
+}
+
+const editTagsNode = (args: { id: number, toAdd: boolean, toDelete: boolean}) => {
+  nodeMutations.editTagsToNode(args.id, args.toAdd)
 }
 
 const modal: ModalPrimary = {
