@@ -14,19 +14,7 @@
         </div>
         <InventoryIconActionList :node="node" class="icon-action" data-test="icon-action-list" />
       </section>
-      <div class="overlay" v-if="node.isEditMode">
-        <feather-checkbox id="tagged" v-model="node.isTaggingChecked" @update:model-value="editNodeTags(node.id)" class="tag-node-checkbox"/>
-        <section class="overlay-header">
-          <Icon :icon="storage" data-test="icon-storage" />
-          <h4 data-test="heading">{{ node?.label }}</h4>
-        </section>
-        <section class="overlay-content">
-          <div class="title"><label for="iconCheckbox">Tagged</label><Icon :icon="checkbox" data-test="icon-checkbox" /></div>
-          <FeatherChipList condensed label="Tag list">
-            <FeatherChip v-for="tag in tagsSelected" :key="tag">{{ tag }}</FeatherChip>
-          </FeatherChipList>
-        </section>
-      </div>
+      <InventoryNodeTaggingEditOverlay v-if="node.isEditMode" @edit-tags-node="editTagsNode" :node="node" />
     </li>
   </ul>
   <PrimaryModal :visible="isVisible" :title="modal.title" :class="modal.cssClass">
@@ -53,7 +41,6 @@
 <script lang="ts" setup>
 import { PropType } from 'vue'
 import Storage from '@material-design-icons/svg/outlined/storage.svg'
-import Checkbox from '@material-design-icons/svg/outlined/check_box.svg'
 import { NodeContent } from '@/types/inventory'
 import { IIcon } from '@/types'
 import { useTaggingStore } from '@/store/Components/taggingStore'
@@ -62,7 +49,7 @@ import { TagNodesType } from '@/types/tags'
 import { ModalPrimary } from '@/types/modal'
 import useModal from '@/composables/useModal'
 
-// TODO: sort tabContent alpha (default)
+// TODO: sort tabContent alpha (default)? to keep list display consistently in same order (e.g. page refresh)
 const props = defineProps({
   tabContent: {
     type: Object as PropType<NodeContent[]>,
@@ -76,23 +63,22 @@ const { openModal, closeModal, isVisible } = useModal()
 const taggingStore = useTaggingStore()
 const nodeMutations= useNodeMutations()
 
-const tagsSelected = computed(() => taggingStore.selectedTags)
 const tagNodesSelected = computed(() => taggingStore.tagNodesSelected)
 
-watch(tagNodesSelected, (selected) => {
+watch(tagNodesSelected, (type) => {
   let isTaggingChecked = false
   let isEditMode = false
 
-  if(selected === TagNodesType.All) {
+  if(type === TagNodesType.All) {
     isTaggingChecked = true
     isEditMode = true
     openModal()
-  } else if(selected === TagNodesType.Individual) {
+  } else if(type === TagNodesType.Individual) {
     isTaggingChecked = false
     isEditMode = true
   }
 
-  nodes.value = nodes.value.map(node => ({
+  nodes.value = nodes.value.map(node => ({ 
     ...node,
     isTaggingChecked,
     isEditMode
@@ -112,18 +98,8 @@ const saveTagsAllNodes = () => {
   closeModal()
 }
 
-/**
-  * Tagging individual node
-  * - check/uncheck node: query to add/remove tags
-  *   - display toaster
-  *   - select clear to exit tagging mode
-  *     - node checkbox: set checked to false
-  * @param id the node to be edited (add/remove tags)
-  */
-const editNodeTags = (id: number) => {
-  const toAddTags = nodes.value.filter((node) => node.id === id)[0].isTaggingChecked || false
-
-  nodeMutations.editTagsToNode(id, toAddTags) // node id and boolean for add or remove tags
+const editTagsNode = (args: { id: number, toAdd: boolean, toDelete: boolean}) => {
+  nodeMutations.editTagsToNode(args.id, args.toAdd)
 }
 
 const modal: ModalPrimary = {
@@ -140,90 +116,12 @@ const storage: IIcon = {
   image: Storage,
   title: 'Node'
 }
-const checkbox: IIcon = {
-  image: Checkbox,
-  title: ''
-}
 </script>
 
 <style lang="scss" scoped>
 @use "@featherds/styles/themes/variables";
 @use "@/styles/vars";
 @use "@/styles/mediaQueriesMixins";
-
-.overlay {
-  $color-header-title: white;
-
-  position: absolute;
-  lefT: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(10, 12, 27, 0.75); // darker than shade-1
-  padding: var(variables.$spacing-l) var(variables.$spacing-l);
-  border-radius: 0 vars.$border-radius-m vars.$border-radius-m 0;
-  .tag-node-checkbox {
-    position: absolute;
-    top: 0;
-    right: 0;
-    :deep {
-      label {
-        display: none;
-      }
-      .feather-checkbox {
-        .box {
-          border-color: $color-header-title;
-        }
-        &[aria-checked=true] {
-          .box {
-            border-color: var(variables.$primary);
-          }
-        }
-      }
-    }
-  }
-  > .overlay-header {
-    margin-bottom: var(variables.$spacing-xs);
-    margin-right: var(variables.$spacing-s);
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-    align-items: center;
-    color: $color-header-title;
-    > h4 {
-      color: $color-header-title;
-    }
-  }
-  > .overlay-content {
-    > .title {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      color: $color-header-title;
-    }
-    label {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    :deep(svg) {
-      width: 3em;
-      height: 3em;
-      margin-left: var(variables.$spacing-xs);
-    }
-    .chip-list {
-      margin-top: var(variables.$spacing-s);
-      :deep {
-        .chip {
-          margin: 0;
-          background-color: var(variables.$primary);
-          .label {
-            color: var(variables.$primary-text-on-color);
-          }
-        }
-      }
-    }
-  }
-}
 
 ul.cards {
   display: flex;
