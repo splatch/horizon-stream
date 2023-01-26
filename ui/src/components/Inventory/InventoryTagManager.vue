@@ -11,25 +11,7 @@
         </div>
         <div class="search-add">
           <!-- Add tag -->
-          <FeatherPopover :pointer-alignment="alignment" :placement="placement">
-            <template #default>
-              <div class="add-new-tag-popover">
-                <FeatherInput
-                  :label="'type...'"
-                  v-model="newTag"
-                  class="new-tag-input"
-                />
-                <FeatherButton @click="addTag" primary>Add tag</FeatherButton>
-              </div>
-            </template>
-            <template #trigger="{ attrs, on }">
-              <FeatherButton v-bind="attrs" v-on="on" class="add-new-tag-btn"
-                >
-                <Icon :icon="addIcon" />
-              </FeatherButton
-              >
-            </template>
-          </FeatherPopover>
+          <InputButtonPopover :handler="addTag" label="Add Tag" />
           <!-- Search tags input -->
           <FeatherInput
             class="search"
@@ -68,28 +50,21 @@
 import { useInventoryStore } from '@/store/Views/inventoryStore'
 import { useTaggingQueries } from '@/store/Queries/taggingQueries'
 import { useTaggingStore } from '@/store/Components/taggingStore'
+import { useTaggingMutations } from '@/store/Mutations/taggingMutations'
 import Search from '@featherds/icon/action/Search'
-import Add from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
-import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
 import { TagNodesType } from '@/types/tags'
 
 const inventoryStore = useInventoryStore()
 const taggingQueries = useTaggingQueries()
 const taggingStore = useTaggingStore()
+const taggingMutations = useTaggingMutations()
 
 const searchIcon: IIcon = {
   image: markRaw(Search),
   tooltip: 'Search'
 }
 
-const addIcon: IIcon = {
-  image: markRaw(Add),
-  size: '2rem'
-}
-
-const newTag = ref()
-const newTagDropdown = ref()
 const searchValue = ref()
 const tags = computed(() => taggingQueries.tags)
 const selectedTags = computed(() => taggingStore.selectedTags)
@@ -104,13 +79,8 @@ const isTaggingBoxOpen = computed(() => {
   return inventoryStore.isTaggingBoxOpen
 })
 
-const placement = ref(PopoverPlacement.top)
-const alignment = ref(PointerAlignment.center)
-
-const addTag = () => {
-  // send newtag.value
-  newTag.value = '' // clear input
-  newTagDropdown.value.handleClose() // close dropdown
+const addTag = (val: string) => {
+  taggingMutations.editTag(val, true)
 }
 </script>
 
@@ -119,33 +89,6 @@ const addTag = () => {
 @use "@featherds/styles/mixins/typography";
 @use "@/styles/vars";
 @use "@/styles/mediaQueries";
-
-
-:deep(.feather-popover-container) {
-  > .popover {
-    // to style add tag popover
-  }
-}
-.add-new-tag-btn {
-  color: white;
-  border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
-  min-width: inherit;
-  padding: 1rem;
-  line-height: inherit;
-  background-color: var(variables.$shade-2);
-  // TODO: how to remove the weird blue border when button clicked
-  :deep {
-    > .btn-content {
-      display: block;
-      > svg {
-        left: -1rem; // TODO: how to set dynamically using addIcon.size value
-        top: -1rem;
-      }
-    }
-  }
-}
 
 .tag-manager-box {
   display: flex;
@@ -282,6 +225,12 @@ const addTag = () => {
 
   @include mediaQueries.screen-xxl {
     width: 15%;
+  }
+}
+
+.search-add {
+  :deep(.add-btn) {
+    margin: 5px 10px 0 0;
   }
 }
 </style>
