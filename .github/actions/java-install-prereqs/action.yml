@@ -6,6 +6,6 @@ runs:
   steps:
     - name: Install parent-pom and shared-lib
       run: |
-        mvn -B install -f parent-pom -DskipTests
-        mvn -B install -f shared-lib -DskipTests
+        mvn install -f parent-pom -DskipTests
+        mvn install -f shared-lib -DskipTests
       shell: bash

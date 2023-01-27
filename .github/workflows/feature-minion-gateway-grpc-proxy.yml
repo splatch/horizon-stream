@@ -66,6 +66,6 @@ jobs:
 
       - name: Jib Maven build and push
         run: |
-          mvn -B -Pcoverage verify jib:build -Dapplication.docker.image=${{ steps.docker-metadata.outputs.tags }}
+          mvn -Pcoverage verify jib:build -Dapplication.docker.image=${{ steps.docker-metadata.outputs.tags }}
         working-directory: minion-gateway-grpc-proxy
         shell: bash

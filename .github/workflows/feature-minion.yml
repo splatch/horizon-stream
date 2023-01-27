@@ -78,7 +78,7 @@ jobs:
 
       - name: Build & Sonar Scan
         run: |
-          mvn -B -Pcoverage verify \
+          mvn -Pcoverage verify \
               -Prun-it -Dapplication.docker.image=${{ steps.docker-metadata.outputs.tags }} \
               org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
         env:
