@@ -25,7 +25,8 @@ runs:
         key: ${{ runner.os }}-${{ runner.arch }}-sonar
 
     - run: |
-        mvn -Pcoverage install \
+        mvn -B -Dstyle.color=always \
+            -Pcoverage install \
             org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT_KEY
       shell: bash
       working-directory: ${{ inputs.working-directory }}
