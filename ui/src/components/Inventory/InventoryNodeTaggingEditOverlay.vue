@@ -46,11 +46,13 @@ const editNodeTags = (id: number) => {
 
 const storage: IIcon = {
   image: Storage,
-  title: 'Node'
+  title: 'Node',
+  size: '1.5rem'
 }
 const checkbox: IIcon = {
   image: Checkbox,
-  title: ''
+  title: '',
+  size: '3rem'
 }
 </script>
 
@@ -113,8 +115,6 @@ const checkbox: IIcon = {
       font-weight: bold;
     }
     :deep(svg) {
-      width: 3em;
-      height: 3em;
       margin-left: var(variables.$spacing-xs);
     }
     .chip-list {

@@ -2,7 +2,7 @@
   <ul>
     <li v-for="node in tabContent" :key="node?.id">
       <section class="header">
-        <Icon :icon="icon" data-test="icon" />
+        <Icon :icon="storageIcon" data-test="icon" />
         <h4 data-test="heading">{{ node?.label }}</h4>
       </section>
       <section class="node-content">
@@ -29,9 +29,10 @@ defineProps({
   }
 })
 
-const icon: IIcon = {
+const storageIcon: IIcon = {
   image: Storage,
-  title: 'Node'
+  title: 'Node',
+  size: '1.5rem'
 }
 </script>
 

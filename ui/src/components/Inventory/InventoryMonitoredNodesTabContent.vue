@@ -2,7 +2,7 @@
   <ul class="cards">
     <li v-for="node in nodes" :key="node?.id">
       <section class="header">
-        <Icon :icon="storage" data-test="icon-storage" />
+        <Icon :icon="storageIcon" data-test="icon-storage" />
         <h4 data-test="heading">{{ node?.label }}</h4>
       </section>
       <section class="content">
@@ -112,9 +112,10 @@ const modal: ModalPrimary = {
   hideTitle: true
 }
 
-const storage: IIcon = {
+const storageIcon: IIcon = {
   image: Storage,
-  title: 'Node'
+  title: 'Node',
+  size: '1.5rem'
 }
 </script>
 

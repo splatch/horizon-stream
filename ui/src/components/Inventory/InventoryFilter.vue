@@ -50,8 +50,8 @@
       <InventoryTagManagerCtrl data-test="tag-manager-ctrl" /> 
     </li>
     <!-- Sort/A-Z -->
-    <li @click="onSort" class="action-btn" data-test="sort-btn"><Icon :icon="sort" /></li>
-    <li @click="onSortAlpha" class="action-btn" data-test="sort-alpha-btn" ><Icon :icon="sortAlpha" /></li>
+    <li @click="onSort" class="action-btn" data-test="sort-btn"><Icon :icon="sortIcon" /></li>
+    <li @click="onSortAlpha" class="action-btn" data-test="sort-alpha-btn" ><Icon :icon="sortAlphaIcon" /></li>
     <!-- Expand/Collapse -->
     <li @click="inventoryStore.toggleFilter" :data-test="expandCollapseBtn" class="action-btn"><Icon :icon="expandCollapse" /></li>
   </ul>
@@ -164,29 +164,33 @@ const severity: ISelectDropdown = {
 
 // Sort/A-Z
 const onSort = () => null
-const sort: IIcon = {
+const sortIcon: IIcon = {
   image: Sort,
-  title: 'Sort'
+  title: 'Sort',
+  size: '2rem'
 }
 const onSortAlpha = () => null
-const sortAlpha: IIcon = {
+const sortAlphaIcon: IIcon = {
   image: SortByAlpha,
-  title: 'Sort Alpha'
+  title: 'Sort Alpha',
+  size: '2rem'
 }
 
 // Expand/Collapse
 const expandCollapseBtn = ref('expand-btn')
-const expand: IIcon = {
+const expandIcon: IIcon = {
   image: KeyboardDoubleArrowDown,
-  title: 'Expand'
+  title: 'Expand',
+  size: '2rem'
 }
-const collapse: IIcon = {
+const collapseIcon: IIcon = {
   image: KeyboardDoubleArrowUp,
-  title: 'Collapse'
+  title: 'Collapse',
+  size: '2rem'
 }
 const expandCollapse = ref(computed<IIcon>(() => {
   expandCollapseBtn.value = inventoryStore.isFilterOpen ? 'collapse-btn' : 'expand-btn'
-  return inventoryStore.isFilterOpen ? collapse : expand
+  return inventoryStore.isFilterOpen ? collapseIcon : expandIcon
 }))
 
 </script>
