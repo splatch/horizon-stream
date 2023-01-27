@@ -34,11 +34,10 @@ const props = defineProps({
   }
 })
 
-const iconSize = props.icon.size || 'inherit'
+const iconSize = props.icon.size || '1rem' // FeatherIcon default width/height: 1rem
 </script>
 
 <style lang="scss" scoped>
-// FeatherIcon default width/height: 1rem
 svg.feather-icon {
   width: v-bind(iconSize);
   height: v-bind(iconSize);

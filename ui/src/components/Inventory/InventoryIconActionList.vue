@@ -54,7 +54,8 @@ const onBubbleChart = () => {
 }
 const bubbleChartIcon: IIcon = {
   image: BubbleChart,
-  title: 'Bubble Chart'
+  title: 'Bubble Chart',
+  size: '1.5rem'
 }
 
 const onLineChart = () => {
@@ -65,7 +66,8 @@ const onLineChart = () => {
 }
 const lineChartIcon: IIcon = {
   image: MultilineChart,
-  tooltip: 'Graphs'
+  tooltip: 'Graphs',
+  size: '1.5rem'
 }
 
 const onPieChart = () => {
@@ -73,7 +75,8 @@ const onPieChart = () => {
 }
 const pieChartIcon: IIcon = {
   image: PieChart,
-  title: 'Pie Chart'
+  title: 'Pie Chart',
+  size: '1.5rem'
 }
 
 const onWarning = () => {
@@ -84,7 +87,8 @@ const onWarning = () => {
 }
 const warningIcon: IIcon = {
   image: markRaw(Warning),
-  tooltip: 'Events/Alarms'
+  tooltip: 'Events/Alarms',
+  size: '1.5rem'
 }
 
 const modal = ref<ModalPrimary>({
@@ -126,7 +130,8 @@ const onDelete = () => {
 
 const deleteIcon: IIcon = {
   image: markRaw(Delete),
-  tooltip: 'Delete'
+  tooltip: 'Delete',
+  size: '1.5rem'
 }
 </script>
 

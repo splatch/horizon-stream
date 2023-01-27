@@ -14,13 +14,11 @@
           <InputButtonPopover :handler="addTag" label="Add Tag" />
           <!-- Search tags input -->
           <FeatherInput
-            class="search"
-            v-model="searchValue"
-            label="Search Tags">
-            <template v-slot:post>
-              <Icon :icon="searchIcon" class="icon-search" />
-            </template>
-          </FeatherInput>
+            :modelValue="searchValue"
+            @update:model-value="tagsFiltering"
+            clear="clear"
+            label="Search Tags"
+            class="search" />
         </div>
       </div>
       <FeatherChipList condensed label="Tags" :key="selectedTags.toString()">
@@ -37,7 +35,7 @@
     </section>
     <section class="tag-nodes">
       <h4>Tag Nodes:</h4>
-      <FeatherRadioGroup vertical label="" v-model="taggingStore.tagNodesSelected" class="select-tag-nodes">
+      <FeatherRadioGroup label="" v-model="taggingStore.tagNodesSelected" class="select-tag-nodes">
         <FeatherRadio :value="TagNodesType.All" :disabled="selectedTags.length === 0">All</FeatherRadio>
         <FeatherRadio :value="TagNodesType.Individual" :disabled="selectedTags.length === 0">Individual</FeatherRadio>
         <FeatherRadio :value="TagNodesType.Clear">Clear</FeatherRadio>
@@ -51,8 +49,6 @@ import { useInventoryStore } from '@/store/Views/inventoryStore'
 import { useTaggingQueries } from '@/store/Queries/taggingQueries'
 import { useTaggingStore } from '@/store/Components/taggingStore'
 import { useTaggingMutations } from '@/store/Mutations/taggingMutations'
-import Search from '@featherds/icon/action/Search'
-import { IIcon } from '@/types'
 import { TagNodesType } from '@/types/tags'
 
 const inventoryStore = useInventoryStore()
@@ -60,14 +56,13 @@ const taggingQueries = useTaggingQueries()
 const taggingStore = useTaggingStore()
 const taggingMutations = useTaggingMutations()
 
-const searchIcon: IIcon = {
-  image: markRaw(Search),
-  tooltip: 'Search'
-}
-
 const searchValue = ref()
-const tags = computed(() => taggingQueries.tags)
+const tags = ref()
 const selectedTags = computed(() => taggingStore.selectedTags)
+
+watchEffect(() => {
+  tags.value = taggingQueries.tags
+})
 
 const isTaggingBoxOpen = computed(() => {
   if(!inventoryStore.isTaggingBoxOpen) {
@@ -81,6 +76,14 @@ const isTaggingBoxOpen = computed(() => {
 
 const addTag = (val: string) => {
   taggingMutations.editTag(val, true)
+}
+
+const tagsFiltering = (val: string) => {
+  if(!val?.length) {
+    tags.value = taggingQueries.tags
+  } else {
+    tags.value = taggingQueries.tags.filter((tag: string) => tag.includes(val))
+  }
 }
 </script>
 
@@ -142,21 +145,14 @@ const addTag = (val: string) => {
     .search-add {
       display: flex;
       flex-direction: row;
-      .add-tag-dropdown {
-        .new-tag-input {
-          margin: 0px 10px 0px 10px;
-          width: 175px;
-        }
-        .new-tag-btn {
-          margin-left: var(variables.$spacing-s);
-        }
-        .feather-menu-dropdown {
-          color: red;
-        }
+      :deep(.add-btn) {
+        margin: 5px 10px 0 0;
       }
-
       :deep(.search) {
         width: 200px;
+        input {
+          margin-right: var(variables.$spacing-m);
+        }
       }
     }
 
@@ -191,13 +187,6 @@ const addTag = (val: string) => {
     > label {
       display: none;
     }
-    .feather-radio-group {
-      display: flex;
-      flex-direction: row;
-      .layout-container {
-        margin-right: var(variables.$spacing-m);
-      }
-    }
     .feather-input-sub-text {
       display: none;
     }
@@ -212,25 +201,10 @@ const addTag = (val: string) => {
     border-left: 1px solid var(variables.$secondary-text-on-surface);
     padding-left: var(variables.$spacing-l);
     display: block;
-
-    :deep(.select-tag-nodes) {
-      .feather-radio-group {
-        display: block;
-        > * {
-          margin-bottom: var(variables.$spacing-xs);
-        }
-      }
-    }
   }
 
   @include mediaQueries.screen-xxl {
     width: 15%;
-  }
-}
-
-.search-add {
-  :deep(.add-btn) {
-    margin: 5px 10px 0 0;
   }
 }
 </style>
