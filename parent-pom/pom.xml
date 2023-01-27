@@ -24,9 +24,16 @@
 
         <!-- Jib properties -->
         <application.docker.image>${application.docker.image.name}:${application.docker.image.tag}</application.docker.image>
-        <!-- application.docker.image.name MUST be set by child modules that use Jib. -->
+        <!-- application.docker.image.name MUST be set by child modules that use jib-maven-plugin. -->
         <application.docker.image.name>INVALID</application.docker.image.name>
         <application.docker.image.tag>latest</application.docker.image.tag>
+
+        <!-- Sonar properties -->
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.organization>opennms</sonar.organization>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+        <!-- sonar.projectKey MUST be set by child modules that use sonar-maven-plugin. -->
+        <sonar.projectKey/>
 
         <!-- Dependency properties -->
         <dropwizard.metrics.version>4.2.10</dropwizard.metrics.version>
@@ -943,31 +950,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>sonar</id>
-            <properties>
-                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-                <sonar.organization>opennms</sonar.organization>
-                <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonarsource.scanner.maven</groupId>
-                        <artifactId>sonar-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sonar-scan</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sonar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>coverage</id>
             <build>

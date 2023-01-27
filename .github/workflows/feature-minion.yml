@@ -79,7 +79,7 @@ jobs:
       - name: Build & Sonar Scan
         run: |
           mvn -B -Dstyle.color=always \
-              -Psonar,coverage,run-it verify \
+              -Pcoverage,run-it verify sonar:sonar \
               -Dapplication.docker.image=${{ steps.docker-metadata.outputs.tags }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -39,7 +39,7 @@ runs:
         docker pull $BASE_IMAGE
 
         mvn -B -Dstyle.color=always \
-            -Psonar,coverage verify \
+            -Pcoverage verify sonar:sonar \
             jib:build -Dapplication.docker.image=$IMAGE \
             -Djib.from.image=$BASE_IMAGE \
             -Dsonar.projectKey=$SONAR_PROJECT_KEY
@@ -57,7 +57,7 @@ runs:
         docker pull $BASE_IMAGE
 
         mvn -B -Dstyle.color=always \
-            -Psonar,coverage verify \
+            -Pcoverage verify sonar:sonar \
             jib:build -Dapplication.docker.image=$IMAGE \
             -Djib.from.image=$BASE_IMAGE
       shell: bash
