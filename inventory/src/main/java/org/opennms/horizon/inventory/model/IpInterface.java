@@ -38,4 +38,7 @@ public class IpInterface {
     @NotNull
     @Column(name = "ip_address", columnDefinition = "inet")
     private InetAddress ipAddress;
+
+    @Column(name = "snmp_primary")
+    private Boolean snmpPrimary;
 }
