@@ -19,8 +19,6 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <sonar.organization>opennms</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
         <skipITs>false</skipITs>
 
@@ -113,6 +111,7 @@
         <spring-boot.version>3.0.1</spring-boot.version>
         <spring-security.version>6.0.1</spring-security.version>
         <spring-kafka.version>3.0.1</spring-kafka.version>
+        <sonar-maven.version>3.9.1.2184</sonar-maven.version>
         <swagger.version>2.1.1</swagger.version>
         <lombok.version>1.18.24</lombok.version>
         <lombok.binding.version>0.2.0</lombok.binding.version>
@@ -929,7 +928,11 @@
                         </to>
                     </configuration>
                 </plugin>
-
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.karaf.tooling</groupId>
                     <artifactId>karaf-maven-plugin</artifactId>
@@ -940,6 +943,31 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>sonar</id>
+            <properties>
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.organization>opennms</sonar.organization>
+                <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sonar-scan</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sonar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>coverage</id>
             <build>
