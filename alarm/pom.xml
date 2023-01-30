@@ -254,8 +254,6 @@
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
-                    <!--suppress MavenModelInspection -->
-                    <skip>${application.docker.skip}</skip>
                     <container>
                         <jvmFlags>
                             <jvmFlag>--add-opens=java.base/java.util=ALL-UNNAMED</jvmFlag>
