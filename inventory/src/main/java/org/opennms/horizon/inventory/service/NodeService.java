@@ -46,12 +46,10 @@ import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
-import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
 import org.opennms.horizon.shared.constants.GrpcConstants;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.vladmihalcea.hibernate.type.basic.Inet;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,13 +80,12 @@ public class NodeService {
 
     private void saveIpInterfaces(NodeCreateDTO request, Node node, String tenantId) {
         if (request.hasManagementIp()) {
-            IpInterface ipInterface = new IpInterface();
-
-            ipInterface.setNode(node);
-            ipInterface.setTenantId(tenantId);
-            ipInterface.setIpAddress(new Inet(request.getManagementIp()));
-
-            ipInterfaceRepository.save(ipInterface);
+                IpInterface ipInterface = new IpInterface();
+                ipInterface.setNode(node);
+                ipInterface.setTenantId(tenantId);
+                ipInterface.setIpAddress(InetAddressUtils.getInetAddress(request.getManagementIp()));
+                ipInterface.setSnmpPrimary(true);
+                ipInterfaceRepository.save(ipInterface);
         }
     }
 
