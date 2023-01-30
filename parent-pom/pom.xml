@@ -22,7 +22,8 @@
 
         <skipITs>false</skipITs>
 
-        <!-- Jib properties -->
+        <!-- Docker properties -->
+        <application.docker.skip>false</application.docker.skip>
         <application.docker.image>${application.docker.image.name}:${application.docker.image.tag}</application.docker.image>
         <!-- application.docker.image.name MUST be set by child modules that use jib-maven-plugin. -->
         <application.docker.image.name>INVALID</application.docker.image.name>
@@ -930,6 +931,8 @@
                     <artifactId>jib-maven-plugin</artifactId>
                     <version>${jib.version}</version>
                     <configuration>
+                        <!--suppress MavenModelInspection -->
+                        <skip>${application.docker.skip}</skip>
                         <to>
                             <image>${application.docker.image}</image>
                         </to>

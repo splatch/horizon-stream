@@ -22,7 +22,6 @@
     <properties>
         <application.docker.image.name>opennms/horizon-stream-inventory</application.docker.image.name>
         <sonar.projectKey>opennms_horizon-stream_inventory</sonar.projectKey>
-        <skipJib>false</skipJib>
     </properties>
 
     <dependencyManagement>
@@ -337,7 +336,8 @@
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
-                    <skip>${skipJib}</skip>
+                    <!--suppress MavenModelInspection -->
+                    <skip>${application.docker.skip}</skip>
                     <from>
                         <image>openjdk:17</image>
                     </from>
