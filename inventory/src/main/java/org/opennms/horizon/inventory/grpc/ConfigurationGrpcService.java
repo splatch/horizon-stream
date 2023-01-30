@@ -57,18 +57,18 @@ public class ConfigurationGrpcService extends ConfigurationServiceGrpc.Configura
     private final TenantLookup tenantLookup;
 
     @Override
-    public void listConfigurationsByTenantId(Empty request, StreamObserver<ConfigurationList> responseObserver) {
+    public void listConfigurations(Empty request, StreamObserver<ConfigurationList> responseObserver) {
         List<ConfigurationDTO> result = tenantLookup.lookupTenantId(Context.current())
-            .map(service::findByTenantId)
+            .map(t -> service.findAll())
             .orElseThrow();
         responseObserver.onNext(ConfigurationList.newBuilder().addAllConfigurations(result).build());
         responseObserver.onCompleted();
     }
 
     @Override
-    public void listConfigurationsByTenantIdAndKey(StringValue key, StreamObserver<ConfigurationList> responseObserver) {
+    public void listConfigurationsByKey(StringValue key, StreamObserver<ConfigurationList> responseObserver) {
         List<ConfigurationDTO> configurationDTOS = tenantLookup.lookupTenantId(Context.current())
-            .map(tenantId -> service.findByTenantIdAndKey(tenantId, key.getValue()))
+            .map(tenantId -> service.findByKey(tenantId, key.getValue()))
             .orElseThrow();
         if (!configurationDTOS.isEmpty()) {
             responseObserver.onNext(ConfigurationList.newBuilder().addAllConfigurations(configurationDTOS).build());
@@ -83,9 +83,9 @@ public class ConfigurationGrpcService extends ConfigurationServiceGrpc.Configura
     }
 
     @Override
-    public void listConfigurationsByTenantIdAndLocation(StringValue location, StreamObserver<ConfigurationList> responseObserver) {
+    public void listConfigurationsByLocation(StringValue location, StreamObserver<ConfigurationList> responseObserver) {
         List<ConfigurationDTO> configurationDTOS = tenantLookup.lookupTenantId(Context.current())
-            .map(tenantId -> service.findByTenantIdAndLocation(tenantId, location.getValue()))
+            .map(tenantId -> service.findByLocation(tenantId, location.getValue()))
             .orElseThrow();
         if (!configurationDTOS.isEmpty()) {
             responseObserver.onNext(ConfigurationList.newBuilder().addAllConfigurations(configurationDTOS).build());
@@ -100,9 +100,9 @@ public class ConfigurationGrpcService extends ConfigurationServiceGrpc.Configura
     }
 
     @Override
-    public void getConfigurationByTenantIdAndKeyAndLocation(ConfigurationKeyAndLocation configurationKeyAndLocation, StreamObserver<ConfigurationDTO> responseObserver) {
+    public void getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation configurationKeyAndLocation, StreamObserver<ConfigurationDTO> responseObserver) {
         Optional<ConfigurationDTO> configuration = tenantLookup.lookupTenantId(Context.current())
-            .map(tenantId -> service.getByTenantIdAndKeyAndLocation(tenantId, configurationKeyAndLocation.getKey(), configurationKeyAndLocation.getLocation()))
+            .map(tenantId -> service.getByKeyAndLocation(tenantId, configurationKeyAndLocation.getKey(), configurationKeyAndLocation.getLocation()))
             .orElseThrow();
         if (configuration.isPresent()) {
             responseObserver.onNext(configuration.get());

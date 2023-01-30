@@ -49,7 +49,7 @@ public class ConfigurationService {
 
     public Configuration createSingle(ConfigurationDTO newConfigurationDTO) {
 
-        Optional<Configuration> configuration = modelRepo.getByTenantIdAndKeyAndLocation(
+        Optional<Configuration> configuration = modelRepo.getByKeyAndLocation(
             newConfigurationDTO.getTenantId(),
             newConfigurationDTO.getKey(),
             newConfigurationDTO.getLocation());
@@ -66,32 +66,24 @@ public class ConfigurationService {
             .collect(Collectors.toList());
     }
 
-    public List<ConfigurationDTO> findByTenantId(String tenantId) {
-        List<Configuration> all = modelRepo.findByTenantId(tenantId);
+    public List<ConfigurationDTO> findByLocation(String tenantId, String location) {
+        List<Configuration> all = modelRepo.findByLocation(tenantId, location);
         return all
             .stream()
             .map(mapper::modelToDTO)
             .collect(Collectors.toList());
     }
 
-    public List<ConfigurationDTO> findByTenantIdAndLocation(String tenantId, String location) {
-        List<Configuration> all = modelRepo.findByTenantIdAndLocation(tenantId, location);
+    public List<ConfigurationDTO> findByKey(String tenantId, String key) {
+        List<Configuration> all = modelRepo.findByKey(tenantId, key);
         return all
             .stream()
             .map(mapper::modelToDTO)
             .collect(Collectors.toList());
     }
 
-    public List<ConfigurationDTO> findByTenantIdAndKey(String tenantId, String key) {
-        List<Configuration> all = modelRepo.findByTenantIdAndKey(tenantId, key);
-        return all
-            .stream()
-            .map(mapper::modelToDTO)
-            .collect(Collectors.toList());
-    }
-
-    public Optional<ConfigurationDTO> getByTenantIdAndKeyAndLocation(String tenantId, String key, String location) {
-        Optional<Configuration> configuration = modelRepo.getByTenantIdAndKeyAndLocation(tenantId, key, location);
+    public Optional<ConfigurationDTO> getByKeyAndLocation(String tenantId, String key, String location) {
+        Optional<Configuration> configuration = modelRepo.getByKeyAndLocation(tenantId, key, location);
         return configuration
             .map(mapper::modelToDTO);
     }

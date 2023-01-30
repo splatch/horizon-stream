@@ -52,8 +52,8 @@ message ConfigurationKeyAndLocation {
 }
 
 service ConfigurationService {
-  rpc listConfigurationsByTenantId(google.protobuf.Empty) returns (ConfigurationList) {};
-  rpc listConfigurationsByTenantIdAndKey(google.protobuf.StringValue) returns (ConfigurationList) {};
-  rpc getConfigurationByTenantIdAndKeyAndLocation(ConfigurationKeyAndLocation) returns (ConfigurationDTO) {};
-  rpc listConfigurationsByTenantIdAndLocation(google.protobuf.StringValue) returns (ConfigurationList) {};
+  rpc listConfigurations(google.protobuf.Empty) returns (ConfigurationList) {};
+  rpc listConfigurationsByKey(google.protobuf.StringValue) returns (ConfigurationList) {};
+  rpc getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation) returns (ConfigurationDTO) {};
+  rpc listConfigurationsByLocation(google.protobuf.StringValue) returns (ConfigurationList) {};
 }

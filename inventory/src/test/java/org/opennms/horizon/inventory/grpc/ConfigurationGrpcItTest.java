@@ -101,7 +101,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     void testListConfigurations () throws VerificationException {
        ConfigurationList configurationList = serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .listConfigurationsByTenantId(Empty.newBuilder().build());
+            .listConfigurations(Empty.newBuilder().build());
         assertThat(configurationList).isNotNull();
         List<ConfigurationDTO> list = configurationList.getConfigurationsList();
         assertThat(list.size()).isEqualTo(2);
@@ -123,7 +123,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     void testListConfigurationsWithWrongTenantId () throws VerificationException {
         ConfigurationList configurationList = serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(differentTenantHeader)))
-            .listConfigurationsByTenantId(Empty.newBuilder().build());
+            .listConfigurations(Empty.newBuilder().build());
         assertThat(configurationList).isNotNull();
         List<ConfigurationDTO> list = configurationList.getConfigurationsList();
         assertThat(list.size()).isZero();
@@ -135,7 +135,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     void testFindConfigurationByKey() throws VerificationException {
         ConfigurationList configurationList = serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .listConfigurationsByTenantIdAndKey(StringValue.of("test-key1"));
+            .listConfigurationsByKey(StringValue.of("test-key1"));
         assertThat(configurationList).isNotNull();
         List<ConfigurationDTO> list = configurationList.getConfigurationsList();
         assertThat(list.size()).isEqualTo(1);
@@ -151,7 +151,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     void testFindConfigurationByKeyNotFound() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .listConfigurationsByTenantIdAndKey(StringValue.of("test-key3")));
+            .listConfigurationsByKey(StringValue.of("test-key3")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
@@ -161,7 +161,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     void testFindConfigurationByKeyInvalidTenantId() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(differentTenantHeader)))
-            .listConfigurationsByTenantIdAndKey(StringValue.of("test-key1")));
+            .listConfigurationsByKey(StringValue.of("test-key1")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
         verify(spyInterceptor).verifyAccessToken(differentTenantHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
@@ -171,7 +171,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     void testFindConfigurationByKeyWithoutTenantId() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(headerWithoutTenant)))
-            .listConfigurationsByTenantIdAndKey(StringValue.of("test-key1")));
+            .listConfigurationsByKey(StringValue.of("test-key1")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
         assertThat(exception.getMessage()).contains("Missing tenant id");
         verify(spyInterceptor).verifyAccessToken(headerWithoutTenant);
@@ -180,7 +180,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
 
     @Test()
     void testFindConfigurationByKeyWithoutHeader() throws VerificationException {
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.listConfigurationsByTenantIdAndKey(StringValue.of("test-location")));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.listConfigurationsByKey(StringValue.of("test-location")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
         assertThat(exception.getMessage()).contains("Invalid access token");
         verify(spyInterceptor).verifyAccessToken(null);
@@ -192,7 +192,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     void testFindConfigurationByKeyAndLocation() throws VerificationException {
         ConfigurationDTO configuration = serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .getConfigurationByTenantIdAndKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build());
+            .getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build());
         assertThat(configuration).isNotNull();
         assertThat(configuration.getLocation()).isEqualTo(configuration1.getLocation());
         assertThat(configuration.getTenantId()).isEqualTo(configuration1.getTenantId());
@@ -206,7 +206,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     void testFindConfigurationByKeyAndLocationNotFound() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .getConfigurationByTenantIdAndKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key3").setLocation("test-location1").build()));
+            .getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key3").setLocation("test-location1").build()));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
@@ -216,7 +216,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     void testFindConfigurationByKeyAndLocationInvalidTenantId() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(differentTenantHeader)))
-            .getConfigurationByTenantIdAndKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build()));
+            .getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build()));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
         verify(spyInterceptor).verifyAccessToken(differentTenantHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
@@ -226,7 +226,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     void testFindConfigurationByKeyAndLocationWithoutTenantId() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(headerWithoutTenant)))
-            .getConfigurationByTenantIdAndKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build()));
+            .getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build()));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
         assertThat(exception.getMessage()).contains("Missing tenant id");
         verify(spyInterceptor).verifyAccessToken(headerWithoutTenant);
@@ -235,7 +235,7 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
 
     @Test()
     void testFindConfigurationByKeyAndLocationWithoutHeader() throws VerificationException {
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.getConfigurationByTenantIdAndKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build()));
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build()));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
         assertThat(exception.getMessage()).contains("Invalid access token");
         verify(spyInterceptor).verifyAccessToken(null);

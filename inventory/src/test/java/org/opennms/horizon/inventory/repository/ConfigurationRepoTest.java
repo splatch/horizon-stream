@@ -114,33 +114,33 @@ public class ConfigurationRepoTest {
     }
 
     @Test
-    void testFindByTenantIdAndKeyAndLocation() {
-        Optional<Configuration> result = repository.getByTenantIdAndKeyAndLocation(tenantId1, configuration1.getKey(), configuration1.getLocation());
+    void testFindByKeyAndLocation() {
+        Optional<Configuration> result = repository.getByKeyAndLocation(tenantId1, configuration1.getKey(), configuration1.getLocation());
         assertThat(result.isPresent()).isTrue();
         assertThat(result.get().getValue().toString()).isEqualTo("{\"test\":\"value1\"}");
     }
 
     @Test
-    void testFindByTenantIdAndLocation() {
-        List<Configuration> result = repository.findByTenantIdAndLocation(configuration1.getTenantId(), configuration1.getLocation());
+    void testFindByLocation() {
+        List<Configuration> result = repository.findByLocation(configuration1.getTenantId(), configuration1.getLocation());
         assertThat(result.size()).isEqualTo(2);
     }
 
     @Test
-    void testFindByTenantIdAndLocationNotExist() {
-        List<Configuration> result = repository.findByTenantIdAndLocation(configuration1.getTenantId(), "random configuration");
-        assertThat(result.size()).isZero();
-    }
-
-    @Test
-    void testFindByTenantIdAndRandomLocation() {
-        List<Configuration> result = repository.findByTenantIdAndLocation(tenantId1, "invalid configuration");
+    void testFindByLocationNotExist() {
+        List<Configuration> result = repository.findByLocation(configuration1.getTenantId(), "random configuration");
         assertThat(result.size()).isZero();
     }
 
     @Test
     void testFindByRandomTenantIdAndLocation() {
-        List<Configuration> result = repository.findByTenantIdAndLocation(new UUID(5, 8).toString(), configuration1.getLocation());
+        List<Configuration> result = repository.findByLocation(tenantId1, "invalid configuration");
+        assertThat(result.size()).isZero();
+    }
+
+    @Test
+    void testFindByRandomLocation() {
+        List<Configuration> result = repository.findByLocation(new UUID(5, 8).toString(), configuration1.getLocation());
         assertThat(result.size()).isZero();
     }
 }

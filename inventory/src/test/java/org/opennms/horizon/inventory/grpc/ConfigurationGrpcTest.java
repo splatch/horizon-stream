@@ -85,31 +85,31 @@ public class ConfigurationGrpcTest extends AbstractGrpcUnitTest {
 
 
     @Test
-    void testListConfigurationsByTenantId() throws VerificationException {
-        doReturn(Arrays.asList(configuration1, configuration2)).when(mockConfigurationService).findByTenantId(anyString());
-        ConfigurationList result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listConfigurationsByTenantId(Empty.newBuilder().build());
+    void testListConfigurations() throws VerificationException {
+        doReturn(Arrays.asList(configuration1, configuration2)).when(mockConfigurationService).findAll();
+        ConfigurationList result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listConfigurations(Empty.newBuilder().build());
         assertThat(result.getConfigurationsList().size()).isEqualTo(2);
-        verify(mockConfigurationService).findByTenantId(tenantId);
+        verify(mockConfigurationService).findAll();
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test
-    void testListConfigurationsByTenantIdAndLocation() throws VerificationException {
-        doReturn(Arrays.asList(configuration1, configuration2)).when(mockConfigurationService).findByTenantIdAndLocation(anyString(), anyString());
-        ConfigurationList result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listConfigurationsByTenantIdAndLocation(StringValue.of("location"));
+    void testListConfigurationsByLocation() throws VerificationException {
+        doReturn(Arrays.asList(configuration1, configuration2)).when(mockConfigurationService).findByLocation(anyString(), anyString());
+        ConfigurationList result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listConfigurationsByLocation(StringValue.of("location"));
         assertThat(result.getConfigurationsList().size()).isEqualTo(2);
-        verify(mockConfigurationService).findByTenantIdAndLocation(tenantId, "location");
+        verify(mockConfigurationService).findByLocation(tenantId, "location");
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test
-    void testListConfigurationsByTenantIdAndKey() throws VerificationException {
-        doReturn(Arrays.asList(configuration1, configuration2)).when(mockConfigurationService).findByTenantIdAndKey(anyString(), anyString());
-        ConfigurationList result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listConfigurationsByTenantIdAndKey(StringValue.of("key"));
+    void testListConfigurationsByKey() throws VerificationException {
+        doReturn(Arrays.asList(configuration1, configuration2)).when(mockConfigurationService).findByKey(anyString(), anyString());
+        ConfigurationList result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listConfigurationsByKey(StringValue.of("key"));
         assertThat(result.getConfigurationsList().size()).isEqualTo(2);
-        verify(mockConfigurationService).findByTenantIdAndKey(tenantId, "key");
+        verify(mockConfigurationService).findByKey(tenantId, "key");
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }

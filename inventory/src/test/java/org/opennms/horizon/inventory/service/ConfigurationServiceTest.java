@@ -81,9 +81,9 @@ public class ConfigurationServiceTest {
 
     @Test
     void testCreateSingle() throws JsonProcessingException {
-        doReturn(Collections.singletonList(testConfiguration)).when(mockConfigurationRepo).findByTenantIdAndKey(tenantId, key);
+        doReturn(Collections.singletonList(testConfiguration)).when(mockConfigurationRepo).findByKey(tenantId, key);
         service.createSingle(testConfiguration);
-        verify(mockConfigurationRepo).getByTenantIdAndKeyAndLocation(tenantId, key, location);
+        verify(mockConfigurationRepo).getByKeyAndLocation(tenantId, key, location);
         ArgumentCaptor<Configuration> configurationArgumentCaptor = ArgumentCaptor.forClass(Configuration.class);
         verify(mockConfigurationRepo).save(configurationArgumentCaptor.capture());
         Configuration result = configurationArgumentCaptor.getValue();

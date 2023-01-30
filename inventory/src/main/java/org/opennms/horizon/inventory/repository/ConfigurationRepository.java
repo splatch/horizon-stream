@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 public interface ConfigurationRepository extends JpaRepository<Configuration, Long> {
     List<Configuration> findByTenantId(String tenantId);
 
-    List<Configuration> findByTenantIdAndKey(String tenantId, String key);
+    List<Configuration> findByKey(String tenantId, String key);
 
-    List<Configuration> findByTenantIdAndLocation(String tenantId, String location);
+    List<Configuration> findByLocation(String tenantId, String location);
 
-    Optional<Configuration> getByTenantIdAndKeyAndLocation(String tenantId, String key, String location);
+    Optional<Configuration> getByKeyAndLocation(String tenantId, String key, String location);
 
     List<Configuration> findAll();
 }
