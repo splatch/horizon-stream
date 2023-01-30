@@ -36,6 +36,9 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+
+import org.apache.commons.lang3.StringUtils;
+import org.opennms.horizon.minion.flows.parser.ConfigManager;
 import org.opennms.horizon.minion.flows.shell.SendFlowCmd;
 import org.opennms.horizon.testtool.miniongateway.wiremock.client.MinionGatewayWiremockTestSteps;
 import org.opennms.horizon.testtool.miniongateway.wiremock.client.RetryUtils;
@@ -105,7 +108,7 @@ public class MinionTestSteps {
 
     @Given("Netflow Listener Port in system property {string}")
     public void netflow5ListenerPortInSystemProperty(String systemProperty) {
-        netflow5ListenerPort = Integer.getInteger(systemProperty);
+        netflow5ListenerPort = Integer.parseInt(StringUtils.split(System.getProperty(systemProperty), "/")[0]);
         log.info("Using netflow5ListenerPort {}", netflow5ListenerPort);
     }
 

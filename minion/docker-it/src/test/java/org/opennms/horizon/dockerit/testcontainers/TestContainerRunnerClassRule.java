@@ -29,6 +29,9 @@
 package org.opennms.horizon.dockerit.testcontainers;
 
 import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.Ports;
+
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +41,8 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("rawtypes")
 public class TestContainerRunnerClassRule extends ExternalResource {
@@ -93,40 +98,45 @@ public class TestContainerRunnerClassRule extends ExternalResource {
             .withNetwork(network)
             .withNetworkAliases("minion-gateway")
             .withExposedPorts(8080)
-            .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("MOCK-MINION-GATEWAY"))
-        ;
-
+            .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("MOCK-MINION-GATEWAY"));
     }
 
     private void startApplicationContainer() {
         applicationContainer
-            .withCreateContainerCmdModifier(cmd -> ((CreateContainerCmd) cmd).withHostName("test-minion-001")) // Why is the cast necessary?
+            .withExposedPorts(8101, 8181, 5005)
+            .withCreateContainerCmdModifier(cmd -> {
+                ((CreateContainerCmd) cmd).withHostName("test-minion-001");
+            })
             .withNetwork(network)
             .withNetworkAliases("application", "application-host")
             .dependsOn(mockMinionGatewayContainer)
-            .withExposedPorts(8101, 8181, 5005)
             .withStartupTimeout(Duration.ofMinutes(5))
             .withEnv("JAVA_TOOL_OPTIONS", "-Djava.security.egd=file:/dev/./urandom -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005")
             .withEnv("MINION_LOCATION", "Default")
             .withEnv("USE_KUBERNETES", "false")
-            .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("APPLICATION"))
-            ;
+            .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("APPLICATION"));
+
 
         // DEBUGGING: uncomment to force local port 5005
-        // applicationContainer.getPortBindings().add("5005:5005");
+        //applicationContainer.getPortBindings().add("5005:5005");
+        applicationContainer.getPortBindings().add(ExposedPort.udp(8877).toString());
         applicationContainer.start();
 
         var karafHttpPort = applicationContainer.getMappedPort(8181); // application-http-port
+        var netflow5ListenerPort = applicationContainer.getPortBindings().get(0);
         var debuggerPort = applicationContainer.getMappedPort(5005);
         var mockMinionGatewayHttpPort = mockMinionGatewayContainer.getMappedPort(8080);
 
-        LOG.info("APPLICATION MAPPED PORTS: http={}; mock-minion-gateway-http-port={}; debugger={}",
+        LOG.info("APPLICATION MAPPED PORTS: http={}; mock-minion-gateway-http-port={}; netflow 5 listener port={}; debugger={}",
             karafHttpPort,
             mockMinionGatewayHttpPort,
+            netflow5ListenerPort,
             debuggerPort
             );
 
         System.setProperty("application.base-url", "http://localhost:" + karafHttpPort);
+        System.setProperty("application.host-name", "localhost");
+        System.setProperty("netflow-5-listener-port", "8877/udp");
         System.setProperty("mock-miniongateway.base-url", "http://localhost:" + mockMinionGatewayHttpPort);
     }
 }
