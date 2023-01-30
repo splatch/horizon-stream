@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.net.InetAddress;
 
 @Getter
@@ -38,4 +38,7 @@ public class IpInterface {
     @NotNull
     @Column(name = "ip_address", columnDefinition = "inet")
     private InetAddress ipAddress;
+
+    @Column(name = "snmp_primary")
+    private Boolean snmpPrimary;
 }
