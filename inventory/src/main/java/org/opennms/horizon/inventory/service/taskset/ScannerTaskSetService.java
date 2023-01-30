@@ -102,11 +102,12 @@ public class ScannerTaskSetService {
     }
 
     private TaskDefinition createNodeScanTask(NodeDTO node) {
-        List<String> ipAddresses = node.getIpInterfacesList().stream().map(IpInterfaceDTO::getIpAddress).collect(Collectors.toList());
-        String taskId = "node-scan=" + node.getNodeLabel() + "-" + node.getId() ;
+        String taskId = "node-scan=" + node.getNodeLabel() + "-" + node.getId() + "-" + System.currentTimeMillis();
+        String primaryIp = node.getIpInterfacesList().stream().filter(IpInterfaceDTO::getSnmpPrimary).findFirst()
+            .map(IpInterfaceDTO::getIpAddress).orElseThrow();
         Any taskConfig = Any.pack(NodeScanRequest.newBuilder()
             .setNodeId(node.getId())
-            .addAllIpAddresses(ipAddresses).build());
+            .setPrimaryIp(primaryIp).build());
 
         return TaskDefinition.newBuilder()
             .setType(TaskType.SCANNER)
