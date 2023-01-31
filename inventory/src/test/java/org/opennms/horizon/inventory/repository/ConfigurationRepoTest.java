@@ -103,7 +103,7 @@ public class ConfigurationRepoTest {
 
     @Test
     void testFindByKeyAndLocation() {
-        Optional<Configuration> result = repository.getByTenantIdAndKeyAndLocation(tenantId1, configuration1.getKey(), configuration1.getLocation());
+        Optional<Configuration> result = repository.getByTenantIdAndKeyAndLocation(configuration1.getTenantId(), configuration1.getKey(), configuration1.getLocation());
         assertThat(result.isPresent()).isTrue();
         assertThat(result.get().getValue().toString()).isEqualTo("{\"test\":\"value1\"}");
     }
@@ -111,7 +111,7 @@ public class ConfigurationRepoTest {
     @Test
     void testFindByKey() {
         List<Configuration> result = repository.findByTenantIdAndKey(configuration1.getTenantId(), configuration1.getKey());
-        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.size()).isEqualTo(1);
     }
 
     @Test
@@ -122,13 +122,13 @@ public class ConfigurationRepoTest {
 
     @Test
     void testFindByRandomTenantIdAndKey() {
-        List<Configuration> result = repository.findByTenantIdAndKey(tenantId1, configuration1.getKey());
+        List<Configuration> result = repository.findByTenantIdAndKey(new UUID(5,8).toString(), configuration1.getKey());
         assertThat(result.size()).isZero();
     }
 
     @Test
     void testFindByTenantIdAndRandomKey() {
-        List<Configuration> result = repository.findByTenantIdAndKey(new UUID(5, 8).toString(), "random key");
+        List<Configuration> result = repository.findByTenantIdAndKey(configuration1.getTenantId(), "random key");
         assertThat(result.size()).isZero();
     }
 
@@ -146,13 +146,13 @@ public class ConfigurationRepoTest {
 
     @Test
     void testFindByRandomTenantIdAndLocation() {
-        List<Configuration> result = repository.findByTenantIdAndLocation(tenantId1, configuration1.getLocation());
+        List<Configuration> result = repository.findByTenantIdAndLocation(new UUID(5,8).toString(), configuration1.getLocation());
         assertThat(result.size()).isZero();
     }
 
     @Test
     void testFindByRandomLocation() {
-        List<Configuration> result = repository.findByTenantIdAndLocation(new UUID(5, 8).toString(), configuration1.getLocation());
+        List<Configuration> result = repository.findByTenantIdAndLocation(tenantId1, "Random location");
         assertThat(result.size()).isZero();
     }
 }

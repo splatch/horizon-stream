@@ -86,10 +86,10 @@ public class ConfigurationGrpcTest extends AbstractGrpcUnitTest {
 
     @Test
     void testListConfigurations() throws VerificationException {
-        doReturn(Arrays.asList(configuration1, configuration2)).when(mockConfigurationService).findAll();
+        doReturn(Arrays.asList(configuration1, configuration2)).when(mockConfigurationService).findByTenantId(anyString());
         ConfigurationList result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listConfigurations(Empty.newBuilder().build());
         assertThat(result.getConfigurationsList().size()).isEqualTo(2);
-        verify(mockConfigurationService).findAll();
+        verify(mockConfigurationService).findByTenantId(tenantId);
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
