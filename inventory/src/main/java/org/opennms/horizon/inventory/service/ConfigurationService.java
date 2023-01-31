@@ -49,13 +49,21 @@ public class ConfigurationService {
 
     public Configuration createSingle(ConfigurationDTO newConfigurationDTO) {
 
-        Optional<Configuration> configuration = modelRepo.getByKeyAndLocation(
+        Optional<Configuration> configuration = modelRepo.getByTenantIdAndKeyAndLocation(
             newConfigurationDTO.getTenantId(),
             newConfigurationDTO.getKey(),
             newConfigurationDTO.getLocation());
 
         return configuration.orElseGet(() -> modelRepo.save(mapper.dtoToModel(newConfigurationDTO)));
 
+    }
+
+    public List<ConfigurationDTO> findByTenantId(String tenantId) {
+        List<Configuration> all = modelRepo.findByTenantId(tenantId);
+        return all
+            .stream()
+            .map(mapper::modelToDTO)
+            .collect(Collectors.toList());
     }
 
     public List<ConfigurationDTO> findAll() {
@@ -67,7 +75,7 @@ public class ConfigurationService {
     }
 
     public List<ConfigurationDTO> findByLocation(String tenantId, String location) {
-        List<Configuration> all = modelRepo.findByLocation(tenantId, location);
+        List<Configuration> all = modelRepo.findByTenantIdAndLocation(tenantId, location);
         return all
             .stream()
             .map(mapper::modelToDTO)
@@ -75,7 +83,7 @@ public class ConfigurationService {
     }
 
     public List<ConfigurationDTO> findByKey(String tenantId, String key) {
-        List<Configuration> all = modelRepo.findByKey(tenantId, key);
+        List<Configuration> all = modelRepo.findByTenantIdAndKey(tenantId, key);
         return all
             .stream()
             .map(mapper::modelToDTO)
@@ -83,12 +91,8 @@ public class ConfigurationService {
     }
 
     public Optional<ConfigurationDTO> getByKeyAndLocation(String tenantId, String key, String location) {
-        Optional<Configuration> configuration = modelRepo.getByKeyAndLocation(tenantId, key, location);
+        Optional<Configuration> configuration = modelRepo.getByTenantIdAndKeyAndLocation(tenantId, key, location);
         return configuration
             .map(mapper::modelToDTO);
-    }
-
-    public Optional<ConfigurationDTO> findByConfigurationId(Long id) {
-        return modelRepo.findById(id).map(mapper::modelToDTO);
     }
 }
