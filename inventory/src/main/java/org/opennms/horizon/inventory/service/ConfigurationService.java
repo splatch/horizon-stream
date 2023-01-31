@@ -82,12 +82,10 @@ public class ConfigurationService {
             .collect(Collectors.toList());
     }
 
-    public List<ConfigurationDTO> findByKey(String tenantId, String key) {
-        List<Configuration> all = modelRepo.findByTenantIdAndKey(tenantId, key);
-        return all
-            .stream()
-            .map(mapper::modelToDTO)
-            .collect(Collectors.toList());
+    public Optional<ConfigurationDTO> findByKey(String tenantId, String key) {
+        Optional<Configuration> configuration = modelRepo.findByTenantIdAndKey(tenantId, key);
+        return configuration
+            .map(mapper::modelToDTO);
     }
 
     public Optional<ConfigurationDTO> getByKeyAndLocation(String tenantId, String key, String location) {

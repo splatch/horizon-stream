@@ -53,7 +53,7 @@ message ConfigurationKeyAndLocation {
 
 service ConfigurationService {
   rpc listConfigurations(google.protobuf.Empty) returns (ConfigurationList) {};
-  rpc listConfigurationsByKey(google.protobuf.StringValue) returns (ConfigurationList) {};
+  rpc listConfigurationsByKey(google.protobuf.StringValue) returns (ConfigurationDTO) {};
   rpc getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation) returns (ConfigurationDTO) {};
   rpc listConfigurationsByLocation(google.protobuf.StringValue) returns (ConfigurationList) {};
 }

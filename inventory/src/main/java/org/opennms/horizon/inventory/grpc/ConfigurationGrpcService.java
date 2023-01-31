@@ -66,12 +66,12 @@ public class ConfigurationGrpcService extends ConfigurationServiceGrpc.Configura
     }
 
     @Override
-    public void listConfigurationsByKey(StringValue key, StreamObserver<ConfigurationList> responseObserver) {
-        List<ConfigurationDTO> configurationDTOS = tenantLookup.lookupTenantId(Context.current())
+    public void listConfigurationsByKey(StringValue key, StreamObserver<ConfigurationDTO> responseObserver) {
+        Optional<ConfigurationDTO> configurationDTO = tenantLookup.lookupTenantId(Context.current())
             .map(tenantId -> service.findByKey(tenantId, key.getValue()))
             .orElseThrow();
-        if (!configurationDTOS.isEmpty()) {
-            responseObserver.onNext(ConfigurationList.newBuilder().addAllConfigurations(configurationDTOS).build());
+        if (configurationDTO.isPresent()) {
+            responseObserver.onNext(configurationDTO.get());
             responseObserver.onCompleted();
         } else {
             Status status = Status.newBuilder()

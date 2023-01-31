@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -81,7 +81,7 @@ public class ConfigurationServiceTest {
 
     @Test
     void testCreateSingle() throws JsonProcessingException {
-        doReturn(Collections.singletonList(testConfiguration)).when(mockConfigurationRepo).findByTenantIdAndKey(tenantId, key);
+        doReturn(Optional.of(testConfiguration)).when(mockConfigurationRepo).findByTenantIdAndKey(tenantId, key);
         service.createSingle(testConfiguration);
         verify(mockConfigurationRepo).getByTenantIdAndKeyAndLocation(tenantId, key, location);
         ArgumentCaptor<Configuration> configurationArgumentCaptor = ArgumentCaptor.forClass(Configuration.class);

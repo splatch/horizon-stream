@@ -110,26 +110,27 @@ public class ConfigurationRepoTest {
 
     @Test
     void testFindByKey() {
-        List<Configuration> result = repository.findByTenantIdAndKey(configuration1.getTenantId(), configuration1.getKey());
-        assertThat(result.size()).isEqualTo(1);
+        Optional<Configuration> result = repository.findByTenantIdAndKey(configuration1.getTenantId(), configuration1.getKey());
+        assertThat(result.isPresent()).isTrue();
+        assertThat(result.get().getValue().toString()).isEqualTo("{\"test\":\"value1\"}");
     }
 
     @Test
     void testFindByKeyNotExist() {
-        List<Configuration> result = repository.findByTenantIdAndKey(configuration1.getTenantId(), "Invalid key");
-        assertThat(result.size()).isZero();
+        Optional<Configuration> result = repository.findByTenantIdAndKey(configuration1.getTenantId(), "Invalid key");
+        assertThat(result.isPresent()).isFalse();
     }
 
     @Test
     void testFindByRandomTenantIdAndKey() {
-        List<Configuration> result = repository.findByTenantIdAndKey(new UUID(5,8).toString(), configuration1.getKey());
-        assertThat(result.size()).isZero();
+        Optional<Configuration> result = repository.findByTenantIdAndKey(new UUID(5,8).toString(), configuration1.getKey());
+        assertThat(result.isPresent()).isFalse();
     }
 
     @Test
     void testFindByTenantIdAndRandomKey() {
-        List<Configuration> result = repository.findByTenantIdAndKey(configuration1.getTenantId(), "random key");
-        assertThat(result.size()).isZero();
+        Optional<Configuration> result = repository.findByTenantIdAndKey(configuration1.getTenantId(), "random key");
+        assertThat(result.isPresent()).isFalse();
     }
 
     @Test

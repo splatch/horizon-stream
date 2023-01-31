@@ -39,6 +39,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,8 +73,8 @@ public class ConfigurationGrpcTest extends AbstractGrpcUnitTest {
         startServer(grpcService);
         ManagedChannel channel = InProcessChannelBuilder.forName(serverName).directExecutor().build();
         stub = ConfigurationServiceGrpc.newBlockingStub(channel);
-        configuration1 = ConfigurationDTO.newBuilder().setTenantId(tenantId).build();
-        configuration2 = ConfigurationDTO.newBuilder().setTenantId(tenantId).build();
+        configuration1 = ConfigurationDTO.newBuilder().setTenantId(tenantId).setKey("key1").build();
+        configuration2 = ConfigurationDTO.newBuilder().setTenantId(tenantId).setKey("key2").build();
     }
 
     @AfterEach
@@ -106,10 +107,11 @@ public class ConfigurationGrpcTest extends AbstractGrpcUnitTest {
 
     @Test
     void testListConfigurationsByKey() throws VerificationException {
-        doReturn(Arrays.asList(configuration1, configuration2)).when(mockConfigurationService).findByKey(anyString(), anyString());
-        ConfigurationList result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listConfigurationsByKey(StringValue.of("key"));
-        assertThat(result.getConfigurationsList().size()).isEqualTo(2);
-        verify(mockConfigurationService).findByKey(tenantId, "key");
+        doReturn(Optional.of(configuration1)).when(mockConfigurationService).findByKey(anyString(), anyString());
+        ConfigurationDTO result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listConfigurationsByKey(StringValue.of("key1"));
+        assertThat(result).isNotNull();
+        assertThat(result.getKey()).isEqualTo("key1");
+        verify(mockConfigurationService).findByKey(tenantId, "key1");
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }

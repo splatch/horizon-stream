@@ -133,16 +133,14 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
 
     @Test
     void testFindConfigurationByKey() throws VerificationException {
-        ConfigurationList configurationList = serviceStub
+        ConfigurationDTO configurationDTO = serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
             .listConfigurationsByKey(StringValue.of("test-key1"));
-        assertThat(configurationList).isNotNull();
-        List<ConfigurationDTO> list = configurationList.getConfigurationsList();
-        assertThat(list.size()).isEqualTo(1);
-        assertThat(list.get(0).getLocation()).isEqualTo(configuration1.getLocation());
-        assertThat(list.get(0).getTenantId()).isEqualTo(configuration1.getTenantId());
-        assertThat(list.get(0).getValue()).isEqualTo("{\"test\":\"value1\"}");
-        assertThat(list.get(0).getId()).isPositive();
+        assertThat(configurationDTO).isNotNull();
+        assertThat(configurationDTO.getLocation()).isEqualTo(configuration1.getLocation());
+        assertThat(configurationDTO.getTenantId()).isEqualTo(configuration1.getTenantId());
+        assertThat(configurationDTO.getValue()).isEqualTo("{\"test\":\"value1\"}");
+        assertThat(configurationDTO.getId()).isPositive();
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
