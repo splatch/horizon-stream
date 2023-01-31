@@ -209,6 +209,7 @@ public class SNMPInterfaceTableTracker extends TableTracker {
 
         public SnmpInterfaceResult createInterfaceFromRow() {
             return SnmpInterfaceResult.newBuilder()
+                .setIfIndex(getIfIndex())
                 .setIfAdminStatus(getIfAdminStatus())
                 .setIfAlias(getIfAlias())
                 .setIfDesc(getIfDescr())
