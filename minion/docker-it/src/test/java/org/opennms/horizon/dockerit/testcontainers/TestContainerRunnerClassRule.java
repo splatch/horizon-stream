@@ -28,9 +28,8 @@
 
 package org.opennms.horizon.dockerit.testcontainers;
 
-import com.github.dockerjava.api.command.CreateContainerCmd;
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.Ports;
+import java.time.Duration;
+import java.util.List;
 
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
@@ -40,9 +39,9 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
+import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.model.ExposedPort;
+import com.github.dockerjava.api.model.InternetProtocol;
 
 @SuppressWarnings("rawtypes")
 public class TestContainerRunnerClassRule extends ExternalResource {
@@ -119,24 +118,28 @@ public class TestContainerRunnerClassRule extends ExternalResource {
 
         // DEBUGGING: uncomment to force local port 5005
         //applicationContainer.getPortBindings().add("5005:5005");
-        applicationContainer.getPortBindings().add(ExposedPort.udp(8877).toString());
+        applicationContainer.getPortBindings().addAll(List.of(ExposedPort.udp(8877).toString(), ExposedPort.udp(4729).toString()));
         applicationContainer.start();
 
         var karafHttpPort = applicationContainer.getMappedPort(8181); // application-http-port
-        var netflow5ListenerPort = applicationContainer.getPortBindings().get(0);
+        var netflow5ListenerPort = applicationContainer.getContainerInfo().getNetworkSettings().getPorts().getBindings().get(new ExposedPort(8877, InternetProtocol.UDP))[1].getHostPortSpec();
+        var netflow9ListenerPort = applicationContainer.getContainerInfo().getNetworkSettings().getPorts().getBindings().get(new ExposedPort(4729, InternetProtocol.UDP))[1].getHostPortSpec();
         var debuggerPort = applicationContainer.getMappedPort(5005);
         var mockMinionGatewayHttpPort = mockMinionGatewayContainer.getMappedPort(8080);
 
-        LOG.info("APPLICATION MAPPED PORTS: http={}; mock-minion-gateway-http-port={}; netflow 5 listener port={}; debugger={}",
+        LOG.info("APPLICATION MAPPED PORTS: http={}; mock-minion-gateway-http-port={}; netflow 5 listener port={}; " +
+                "netflow 9 listener port={}, debugger={}",
             karafHttpPort,
             mockMinionGatewayHttpPort,
             netflow5ListenerPort,
+            netflow9ListenerPort,
             debuggerPort
             );
 
         System.setProperty("application.base-url", "http://localhost:" + karafHttpPort);
         System.setProperty("application.host-name", "localhost");
-        System.setProperty("netflow-5-listener-port", "8877/udp");
+        System.setProperty("netflow-5-listener-port", netflow5ListenerPort);
+        System.setProperty("netflow-9-listener-port", netflow9ListenerPort);
         System.setProperty("mock-miniongateway.base-url", "http://localhost:" + mockMinionGatewayHttpPort);
     }
 }
