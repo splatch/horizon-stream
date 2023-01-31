@@ -2,9 +2,9 @@
   <div class="detection-method">
     <div class="header">
       <div class="title">{{ info.label }}</div>
-      <div class="bg-status">{{ info.metrics.find((m) => m.type == 'status').status }}</div>
+      <div class="bg-status">{{ info.metrics.find((m) => m.type == 'status')?.status }}</div>
       <MetricChip
-        :metric="{ status: info.metrics.find((m) => m.type == 'status').status }"
+        :metric="{ status: info.metrics.find((m) => m.type == 'status')?.status }"
         class="bg-status"
       />
     </div>
@@ -22,13 +22,14 @@
 
 <script lang="ts" setup>
 import Location from '@featherds/icon/action/Location'
+import { NodeContent } from '@/types/inventory'
 import { markRaw } from 'vue'
 const Icons = markRaw({
   Location
 })
 
 defineProps<{
-  info: Node
+  info: NodeContent
 }>()
 </script>
 
