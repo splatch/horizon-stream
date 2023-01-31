@@ -59,7 +59,7 @@ public class ConfigurationGrpcService extends ConfigurationServiceGrpc.Configura
     @Override
     public void listConfigurations(Empty request, StreamObserver<ConfigurationList> responseObserver) {
         List<ConfigurationDTO> result = tenantLookup.lookupTenantId(Context.current())
-            .map(t -> service.findAll())
+            .map(service::findByTenantId)
             .orElseThrow();
         responseObserver.onNext(ConfigurationList.newBuilder().addAllConfigurations(result).build());
         responseObserver.onCompleted();
