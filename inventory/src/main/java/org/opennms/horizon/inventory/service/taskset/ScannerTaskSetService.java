@@ -29,6 +29,7 @@
 package org.opennms.horizon.inventory.service.taskset;
 
 import static org.opennms.horizon.inventory.service.taskset.TaskUtils.identityForAzureTask;
+import static org.opennms.horizon.inventory.service.taskset.TaskUtils.identityForNodeScan;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -102,7 +103,7 @@ public class ScannerTaskSetService {
     }
 
     private TaskDefinition createNodeScanTask(NodeDTO node) {
-        String taskId = "node-scan=" + node.getNodeLabel() + "-" + node.getId() + "-" + System.currentTimeMillis();
+        String taskId = identityForNodeScan(node.getId());
         String primaryIp = node.getIpInterfacesList().stream().filter(IpInterfaceDTO::getSnmpPrimary).findFirst()
             .map(IpInterfaceDTO::getIpAddress).orElseThrow();
         Any taskConfig = Any.pack(NodeScanRequest.newBuilder()
