@@ -47,5 +47,6 @@ Feature: Minion Basic Functionality
   Scenario: Configure Minion for Flows and send Flow package to Minion
     Given MOCK twin update in resource file "/testdata/task-set.flows.001.json"
     Then MOCK send twin update for topic "task-set" at location "Default"
+    Then delay 5000ms
     Then Send net flow package
     Then Verify gateway has received netflow packages
