@@ -46,14 +46,8 @@ message ConfigurationList {
   repeated ConfigurationDTO configurations = 1;
 }
 
-message ConfigurationKeyAndLocation {
-  string key = 1;
-  string location = 2;
-}
-
 service ConfigurationService {
   rpc listConfigurations(google.protobuf.Empty) returns (ConfigurationList) {};
-  rpc listConfigurationsByKey(google.protobuf.StringValue) returns (ConfigurationDTO) {};
-  rpc getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation) returns (ConfigurationDTO) {};
+  rpc getConfigurationsByKey(google.protobuf.StringValue) returns (ConfigurationDTO) {};
   rpc listConfigurationsByLocation(google.protobuf.StringValue) returns (ConfigurationList) {};
 }

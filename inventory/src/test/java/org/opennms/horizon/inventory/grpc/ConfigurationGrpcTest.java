@@ -108,7 +108,7 @@ public class ConfigurationGrpcTest extends AbstractGrpcUnitTest {
     @Test
     void testListConfigurationsByKey() throws VerificationException {
         doReturn(Optional.of(configuration1)).when(mockConfigurationService).findByKey(anyString(), anyString());
-        ConfigurationDTO result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listConfigurationsByKey(StringValue.of("key1"));
+        ConfigurationDTO result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).getConfigurationsByKey(StringValue.of("key1"));
         assertThat(result).isNotNull();
         assertThat(result.getKey()).isEqualTo("key1");
         verify(mockConfigurationService).findByKey(tenantId, "key1");

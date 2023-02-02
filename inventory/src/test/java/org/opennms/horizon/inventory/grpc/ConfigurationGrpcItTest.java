@@ -41,7 +41,6 @@ import org.junit.jupiter.api.Test;
 import org.keycloak.common.VerificationException;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
 import org.opennms.horizon.inventory.dto.ConfigurationDTO;
-import org.opennms.horizon.inventory.dto.ConfigurationKeyAndLocation;
 import org.opennms.horizon.inventory.dto.ConfigurationList;
 import org.opennms.horizon.inventory.dto.ConfigurationServiceGrpc;
 import org.opennms.horizon.inventory.model.Configuration;
@@ -132,10 +131,10 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     }
 
     @Test
-    void testFindConfigurationByKey() throws VerificationException {
+    void testGetConfigurationByKey() throws VerificationException {
         ConfigurationDTO configurationDTO = serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .listConfigurationsByKey(StringValue.of("test-key1"));
+            .getConfigurationsByKey(StringValue.of("test-key1"));
         assertThat(configurationDTO).isNotNull();
         assertThat(configurationDTO.getLocation()).isEqualTo(configuration1.getLocation());
         assertThat(configurationDTO.getTenantId()).isEqualTo(configuration1.getTenantId());
@@ -146,30 +145,30 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     }
 
     @Test()
-    void testFindConfigurationByKeyNotFound() throws VerificationException {
+    void testGetConfigurationByKeyNotFound() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .listConfigurationsByKey(StringValue.of("test-key3")));
+            .getConfigurationsByKey(StringValue.of("test-key3")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test()
-    void testFindConfigurationByKeyInvalidTenantId() throws VerificationException {
+    void testGetConfigurationByKeyInvalidTenantId() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(differentTenantHeader)))
-            .listConfigurationsByKey(StringValue.of("test-key1")));
+            .getConfigurationsByKey(StringValue.of("test-key1")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
         verify(spyInterceptor).verifyAccessToken(differentTenantHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test()
-    void testFindConfigurationByKeyWithoutTenantId() throws VerificationException {
+    void testGetConfigurationByKeyWithoutTenantId() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(headerWithoutTenant)))
-            .listConfigurationsByKey(StringValue.of("test-key1")));
+            .getConfigurationsByKey(StringValue.of("test-key1")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
         assertThat(exception.getMessage()).contains("Missing tenant id");
         verify(spyInterceptor).verifyAccessToken(headerWithoutTenant);
@@ -177,66 +176,64 @@ class ConfigurationGrpcItTest extends GrpcTestBase {
     }
 
     @Test()
-    void testFindConfigurationByKeyWithoutHeader() throws VerificationException {
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.listConfigurationsByKey(StringValue.of("test-location")));
+    void testGetConfigurationByKeyWithoutHeader() throws VerificationException {
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.getConfigurationsByKey(StringValue.of("test-location")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
         assertThat(exception.getMessage()).contains("Invalid access token");
         verify(spyInterceptor).verifyAccessToken(null);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
-
 
     @Test
-    void testFindConfigurationByKeyAndLocation() throws VerificationException {
-        ConfigurationDTO configuration = serviceStub
+    void testFindConfigurationByLocation() throws VerificationException {
+        ConfigurationList configurationList = serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build());
-        assertThat(configuration).isNotNull();
-        assertThat(configuration.getLocation()).isEqualTo(configuration1.getLocation());
-        assertThat(configuration.getTenantId()).isEqualTo(configuration1.getTenantId());
-        assertThat(configuration.getValue()).isEqualTo("{\"test\":\"value1\"}");
-        assertThat(configuration.getId()).isPositive();
+            .listConfigurationsByLocation(StringValue.of("test-location1"));
+        assertThat(configurationList).isNotNull();
+        List<ConfigurationDTO> list = configurationList.getConfigurationsList();
+        assertThat(list.size()).isEqualTo(2);
+        assertThat(list.get(0).getLocation()).isEqualTo(configuration1.getLocation());
+        assertThat(list.get(1).getLocation()).isEqualTo(configuration2.getLocation());
+        assertThat(list.get(0).getTenantId()).isEqualTo(configuration1.getTenantId());
+        assertThat(list.get(1).getTenantId()).isEqualTo(configuration2.getTenantId());
+        assertThat(list.get(0).getKey()).isEqualTo(configuration1.getKey());
+        assertThat(list.get(1).getKey()).isEqualTo(configuration2.getKey());
+        assertThat(list.get(0).getValue()).isEqualTo("{\"test\":\"value1\"}");
+        assertThat(list.get(1).getValue()).isEqualTo("{\"test\":\"value2\"}");
+        assertThat(list.get(0).getId()).isPositive();
+        assertThat(list.get(1).getId()).isPositive();
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test()
-    void testFindConfigurationByKeyAndLocationNotFound() throws VerificationException {
+    void testFindConfigurationByLocationNotFound() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key3").setLocation("test-location1").build()));
+            .listConfigurationsByLocation(StringValue.of("test-location3")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test()
-    void testFindConfigurationByKeyAndLocationInvalidTenantId() throws VerificationException {
+    void testFindConfigurationByLocationInvalidTenantId() throws VerificationException {
         StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(differentTenantHeader)))
-            .getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build()));
+            .listConfigurationsByLocation(StringValue.of("test-location1")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.NOT_FOUND);
         verify(spyInterceptor).verifyAccessToken(differentTenantHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test()
-    void testFindConfigurationByKeyAndLocationWithoutTenantId() throws VerificationException {
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub
+    void testFindConfigurationByLocationWithoutTenantId() throws VerificationException {
+        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () -> serviceStub
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(headerWithoutTenant)))
-            .getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build()));
+            .listConfigurationsByLocation(StringValue.of("test-location1")));
         assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
         assertThat(exception.getMessage()).contains("Missing tenant id");
         verify(spyInterceptor).verifyAccessToken(headerWithoutTenant);
-        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
-    }
-
-    @Test()
-    void testFindConfigurationByKeyAndLocationWithoutHeader() throws VerificationException {
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, ()->serviceStub.getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation.newBuilder().setKey("test-key1").setLocation("test-location1").build()));
-        assertThat(exception.getStatus().getCode()).isEqualTo(Status.Code.UNAUTHENTICATED);
-        assertThat(exception.getMessage()).contains("Invalid access token");
-        verify(spyInterceptor).verifyAccessToken(null);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 }

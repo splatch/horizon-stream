@@ -81,9 +81,9 @@ public class ConfigurationServiceTest {
 
     @Test
     void testCreateSingle() throws JsonProcessingException {
-        doReturn(Optional.of(testConfiguration)).when(mockConfigurationRepo).findByTenantIdAndKey(tenantId, key);
+        doReturn(Optional.empty()).when(mockConfigurationRepo).getByTenantIdAndKey(tenantId, key);
         service.createSingle(testConfiguration);
-        verify(mockConfigurationRepo).getByTenantIdAndKeyAndLocation(tenantId, key, location);
+        verify(mockConfigurationRepo).getByTenantIdAndKey(tenantId, key);
         ArgumentCaptor<Configuration> configurationArgumentCaptor = ArgumentCaptor.forClass(Configuration.class);
         verify(mockConfigurationRepo).save(configurationArgumentCaptor.capture());
         Configuration result = configurationArgumentCaptor.getValue();
@@ -91,5 +91,23 @@ public class ConfigurationServiceTest {
         assertThat(result.getLocation()).isEqualTo(location);
         assertThat(result.getKey()).isEqualTo(key);
         assertThat(result.getValue()).isEqualTo(new ObjectMapper().readTree(value));
+    }
+
+    @Test
+    void testCreateSingleDuplicate() throws JsonProcessingException {
+        Configuration configuration = new Configuration();
+        configuration.setTenantId(tenantId);
+        configuration.setLocation(location);
+        configuration.setKey(key);
+        configuration.setId(1L);
+        configuration.setValue(new ObjectMapper().readTree(value));
+        doReturn(Optional.of(configuration)).when(mockConfigurationRepo).getByTenantIdAndKey(tenantId, key);
+        Configuration result = service.createSingle(testConfiguration);
+        assertThat(result.getTenantId()).isEqualTo(tenantId);
+        assertThat(result.getLocation()).isEqualTo(location);
+        assertThat(result.getKey()).isEqualTo(key);
+        assertThat(result.getValue()).isEqualTo(new ObjectMapper().readTree(value));
+        assertThat(result.getId()).isEqualTo(1L);
+        verify(mockConfigurationRepo).getByTenantIdAndKey(tenantId, key);
     }
 }

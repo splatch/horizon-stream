@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.opennms.horizon.inventory.dto.ConfigurationDTO;
-import org.opennms.horizon.inventory.dto.ConfigurationKeyAndLocation;
 import org.opennms.horizon.inventory.dto.ConfigurationList;
 import org.opennms.horizon.inventory.dto.ConfigurationServiceGrpc;
 import org.opennms.horizon.inventory.service.ConfigurationService;
@@ -66,7 +65,7 @@ public class ConfigurationGrpcService extends ConfigurationServiceGrpc.Configura
     }
 
     @Override
-    public void listConfigurationsByKey(StringValue key, StreamObserver<ConfigurationDTO> responseObserver) {
+    public void getConfigurationsByKey(StringValue key, StreamObserver<ConfigurationDTO> responseObserver) {
         Optional<ConfigurationDTO> configurationDTO = tenantLookup.lookupTenantId(Context.current())
             .map(tenantId -> service.findByKey(tenantId, key.getValue()))
             .orElseThrow();
@@ -94,23 +93,6 @@ public class ConfigurationGrpcService extends ConfigurationServiceGrpc.Configura
             Status status = Status.newBuilder()
                 .setCode(Code.NOT_FOUND_VALUE)
                 .setMessage("Configuration with location: " + location.getValue() + " doesn't exist")
-                .build();
-            responseObserver.onError(StatusProto.toStatusRuntimeException(status));
-        }
-    }
-
-    @Override
-    public void getConfigurationByKeyAndLocation(ConfigurationKeyAndLocation configurationKeyAndLocation, StreamObserver<ConfigurationDTO> responseObserver) {
-        Optional<ConfigurationDTO> configuration = tenantLookup.lookupTenantId(Context.current())
-            .map(tenantId -> service.getByKeyAndLocation(tenantId, configurationKeyAndLocation.getKey(), configurationKeyAndLocation.getLocation()))
-            .orElseThrow();
-        if (configuration.isPresent()) {
-            responseObserver.onNext(configuration.get());
-            responseObserver.onCompleted();
-        } else {
-            Status status = Status.newBuilder()
-                .setCode(Code.NOT_FOUND_VALUE)
-                .setMessage("Configuration with location: " + configurationKeyAndLocation.getLocation() + "and key: " + configurationKeyAndLocation.getKey() + " doesn't exist")
                 .build();
             responseObserver.onError(StatusProto.toStatusRuntimeException(status));
         }

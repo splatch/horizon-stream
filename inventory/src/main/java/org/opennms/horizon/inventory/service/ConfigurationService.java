@@ -49,13 +49,11 @@ public class ConfigurationService {
 
     public Configuration createSingle(ConfigurationDTO newConfigurationDTO) {
 
-        Optional<Configuration> configuration = modelRepo.getByTenantIdAndKeyAndLocation(
+        Optional<Configuration> configuration = modelRepo.getByTenantIdAndKey(
             newConfigurationDTO.getTenantId(),
-            newConfigurationDTO.getKey(),
-            newConfigurationDTO.getLocation());
+            newConfigurationDTO.getKey());
 
         return configuration.orElseGet(() -> modelRepo.save(mapper.dtoToModel(newConfigurationDTO)));
-
     }
 
     public List<ConfigurationDTO> findByTenantId(String tenantId) {
@@ -83,13 +81,7 @@ public class ConfigurationService {
     }
 
     public Optional<ConfigurationDTO> findByKey(String tenantId, String key) {
-        Optional<Configuration> configuration = modelRepo.findByTenantIdAndKey(tenantId, key);
-        return configuration
-            .map(mapper::modelToDTO);
-    }
-
-    public Optional<ConfigurationDTO> getByKeyAndLocation(String tenantId, String key, String location) {
-        Optional<Configuration> configuration = modelRepo.getByTenantIdAndKeyAndLocation(tenantId, key, location);
+        Optional<Configuration> configuration = modelRepo.getByTenantIdAndKey(tenantId, key);
         return configuration
             .map(mapper::modelToDTO);
     }
