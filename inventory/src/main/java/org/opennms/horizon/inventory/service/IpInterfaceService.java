@@ -45,6 +45,7 @@ public class IpInterfaceService {
                 ipInterface.setNode(node);
                 ipInterface.setTenantId(tenantId);
                 ipInterface.setSnmpPrimary(false);
+                ipInterface.setHostname(result.getIpHostName());
                 modelRepo.save(ipInterface);
             });
     }

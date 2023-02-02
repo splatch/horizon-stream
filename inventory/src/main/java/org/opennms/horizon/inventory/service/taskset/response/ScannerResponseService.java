@@ -92,7 +92,7 @@ public class ScannerResponseService {
             //TODO process the node scan results
             case NODE_SCAN -> {
                 NodeScanResult nodeScanResult = result.unpack(NodeScanResult.class);
-                log.info("received node scan result: {}", nodeScanResult);
+                log.debug("received node scan result: {}", nodeScanResult);
                 processNodeScanResponse(tenantId, nodeScanResult);
             }
             case UNRECOGNIZED -> log.warn("Unrecognized scan type");

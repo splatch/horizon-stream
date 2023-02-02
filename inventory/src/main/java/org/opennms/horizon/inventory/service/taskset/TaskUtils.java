@@ -31,6 +31,6 @@ public interface TaskUtils {
     }
 
     static String identityForNodeScan(long nodeId) {
-        return NODE_SCAN + nodeId + "/" + System.currentTimeMillis();
+        return NODE_SCAN + nodeId;
     }
 }
