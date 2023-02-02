@@ -28,10 +28,9 @@
 
 package org.opennms.horizon.inventory.service.taskset.response;
 
-import com.google.protobuf.Any;
-import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.Optional;
+
 import org.opennms.horizon.azure.api.AzureScanItem;
 import org.opennms.horizon.azure.api.AzureScanResponse;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
@@ -39,16 +38,22 @@ import org.opennms.horizon.inventory.model.AzureCredential;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.AzureCredentialRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
+import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.opennms.horizon.inventory.service.NodeService;
+import org.opennms.horizon.inventory.service.SnmpInterfaceService;
 import org.opennms.horizon.inventory.service.taskset.CollectorTaskSetService;
 import org.opennms.horizon.inventory.service.taskset.MonitorTaskSetService;
+import org.opennms.node.scan.contract.IfServiceResult;
 import org.opennms.node.scan.contract.NodeScanResult;
 import org.opennms.taskset.contract.ScanType;
 import org.opennms.taskset.contract.ScannerResponse;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
+import com.google.protobuf.Any;
+import com.google.protobuf.InvalidProtocolBufferException;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -59,6 +64,8 @@ public class ScannerResponseService {
     private final NodeService nodeService;
     private final MonitorTaskSetService monitorTaskSetService;
     private final CollectorTaskSetService collectorTaskSetService;
+    private final IpInterfaceService ipInterfaceService;
+    private final SnmpInterfaceService snmpInterfaceService;
 
     public void accept(String tenantId, String location, ScannerResponse response) throws InvalidProtocolBufferException {
         Any result = response.getResult();
@@ -81,10 +88,13 @@ public class ScannerResponseService {
 
                     processAzureScanItem(tenantId, location, ipAddress, item);
                 }
-                break;
             }
             //TODO process the node scan results
-            case NODE_SCAN -> log.info("received node scan result: {}", result.unpack(NodeScanResult.class));
+            case NODE_SCAN -> {
+                NodeScanResult nodeScanResult = result.unpack(NodeScanResult.class);
+                log.info("received node scan result: {}", nodeScanResult);
+                processNodeScanResponse(tenantId, nodeScanResult);
+            }
             case UNRECOGNIZED -> log.warn("Unrecognized scan type");
 
         }
@@ -128,5 +138,15 @@ public class ScannerResponseService {
         } else {
             log.warn("Node already exists for tenant: {}, location: {}, label: {}", tenantId, location, nodeLabel);
         }
+    }
+
+    private void processNodeScanResponse(String tenantId, NodeScanResult result ) {
+        nodeRepository.findByIdAndTenantId(result.getNodeId(), tenantId)
+            .ifPresentOrElse(node -> {
+                nodeService.updateNodeInfo(node, result.getNodeInfo());
+                result.getIfServicesList().stream().map(IfServiceResult::getIpInterface)
+                    .forEach(ipIfResult -> ipInterfaceService.creatUpdateFromScanResult(tenantId, node, ipIfResult));
+                result.getSnmpInterfacesList().forEach(snmpIfResult -> snmpInterfaceService.createOrUpdateFromScanResult(tenantId, node, snmpIfResult));
+            }, () -> log.error("Error while process node scan results, node with id {} doesn't exist", result.getNodeId()));
     }
 }

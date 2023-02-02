@@ -553,7 +553,7 @@ class NodeGrpcItTest extends GrpcTestBase {
                 node.setObjectId("12345." + i);
                 node.setSystemLocation("systemLocation" +i);
                 node.setSystemName("systemName"+1);
-                node.setSystemDesc("desc"+1);
+                node.setSystemDescr("desc"+1);
                 node.setSystemContact("contact"+1);
             }
             nodeRepository.save(node);

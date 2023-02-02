@@ -33,6 +33,7 @@ import org.mapstruct.Mapper;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
+import org.opennms.node.scan.contract.IpInterfaceResult;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -42,6 +43,8 @@ public interface IpInterfaceMapper {
     IpInterface dtoToModel(IpInterfaceDTO dto);
 
     IpInterfaceDTO modelToDTO(IpInterface model);
+
+    IpInterface fromScanResult(IpInterfaceResult result);
 
     default InetAddress map(String value) throws UnknownHostException {
         return InetAddressUtils.getInetAddress(value);

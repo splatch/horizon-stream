@@ -31,7 +31,9 @@ package org.opennms.horizon.minion.nodescan;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.opennms.horizon.minion.plugin.api.ScanResultsResponse;
 import org.opennms.horizon.minion.plugin.api.ScanResultsResponseImpl;
@@ -80,11 +82,13 @@ public class NodeScanner implements Scanner {
                 List<IfServiceResult> ifServices = ipAddrTblResults.stream()
                     .map(result -> IfServiceResult.newBuilder().setIpInterface(result.getIpInterface()).build()).toList();
                 List<SnmpInterfaceResult> snmpInterfaceResults = scanSnmpInterface(agentConfig);
+                List<SnmpInterfaceResult> mergedSNMPInterfaces = mergeSNMPResult(ipAddrTblResults.stream()
+                    .map(IpTableScanResult::getSnmpInterface).toList(), snmpInterfaceResults);
                 NodeScanResult scanResult = NodeScanResult.newBuilder()
+                    .setNodeId(scanRequest.getNodeId())
                     .setNodeInfo(nodeInfo)
                     .addAllIfServices(ifServices)
-                    .addAllSnmpInterfaces(ipAddrTblResults.stream().map(IpTableScanResult::getSnmpInterface).toList())
-                    .addAllSnmpInterfaces(snmpInterfaceResults)
+                    .addAllSnmpInterfaces(mergedSNMPInterfaces)
                     .build();
                 return ScanResultsResponseImpl.builder().results(scanResult).build();
             } catch (Exception e) {
@@ -92,6 +96,20 @@ public class NodeScanner implements Scanner {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    private List<SnmpInterfaceResult> mergeSNMPResult(List<SnmpInterfaceResult> ipTableResults, List<SnmpInterfaceResult> snmpIfTableResults) {
+        List<SnmpInterfaceResult> merged = new ArrayList<>();
+        Map<Integer, SnmpInterfaceResult> ipTableMap = ipTableResults.stream().collect(Collectors.toMap(SnmpInterfaceResult::getIfIndex, r->r));
+        snmpIfTableResults.forEach(r->{
+            SnmpInterfaceResult.Builder builder = SnmpInterfaceResult.newBuilder(r);
+            SnmpInterfaceResult tmp = ipTableMap.get(r.getIfIndex());
+            if(tmp != null) {
+                builder.setIpAddress(tmp.getIpAddress());
+            }
+            merged.add(builder.build());
+        });
+        return merged;
     }
 
     private List<SnmpInterfaceResult> scanSnmpInterface(SnmpAgentConfig agentConfig) throws InterruptedException {
