@@ -112,7 +112,7 @@ public class ScannerTaskSetService {
         Optional<IpInterfaceDTO> ipInterface = node.getIpInterfacesList().stream()
             .filter(IpInterfaceDTO::getSnmpPrimary).findFirst()
             .or(()->Optional.ofNullable(node.getIpInterfaces(0)));
-        return ipInterface.map(ip ->{
+        return ipInterface.map(ip -> {
             String taskId = identityForNodeScan(node.getId());
             Any taskConfig = Any.pack(NodeScanRequest.newBuilder()
                 .setNodeId(node.getId())
