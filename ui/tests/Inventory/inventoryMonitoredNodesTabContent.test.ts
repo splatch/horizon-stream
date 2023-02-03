@@ -1,14 +1,8 @@
 import { mount } from '@vue/test-utils'
 import InventoryMonitoredNodesTabContent from '@/components/Inventory/InventoryMonitoredNodesTabContent.vue'
-// import InventoryMonitoredNodesTabContent from '../../src/components/Inventory/InventoryMonitoredNodesTabContent.vue'
 import { TimeUnit } from '@/types'
-import { NodeContent } from '@/types/inventory'
-import { useTaggingStore } from '@/store/Components/taggingStore'
-import { TagNodesType } from '@/types/tags'
-import useModal from '@/composables/useModal'
 
-// const tabContent: NodeContent[] = [
-const tabContent: any = [
+const tabContent = [
   {
     id: 1,
     label: 'Monitored Node 1',
@@ -43,9 +37,7 @@ const tabContent: any = [
       managementIpLink: 'goto',
       tagValue: 100,
       tagLink: 'goto'
-    },
-    isTaggingChecked: false,
-    isEditMode: false
+    }
   }
 ]
 
@@ -54,7 +46,7 @@ let wrapper: any
 describe('InventoryMonitoredNodesTabContent.vue', () => {
   beforeAll(() => {
     wrapper = mount(InventoryMonitoredNodesTabContent, {
-      // shallow: true,
+      shallow: true,
       props: {
         tabContent
       }
@@ -64,23 +56,8 @@ describe('InventoryMonitoredNodesTabContent.vue', () => {
     wrapper.unmount()
   })
 
-  const tabElements = [
-    ['Icon', 'icon-storage'],
-    ['Heading', 'heading'],
-    ['Chip list', 'metric-chip-list'],
-    ['Link list', 'text-anchor-list'],
-    ['Action list', 'icon-action-list']
-  ]
-  /* test.each(tabElements)('Should have "%s" element', (elem) => {
-    expect(wrapper.get(`[data-test="${elem}"]`).exists()).toBeTruthy()
-  }) */
-
-  test('Should have node edit overlay', () => {
-    const { isVisible = false } = useModal()
-    const taggingStore = useTaggingStore()
-    taggingStore.tagNodesSelected = TagNodesType.All
-
-    const modal = wrapper.get('[data-test="primary-model"]')
-    expect(modal.exists()).toBeTruthy()
+  const tabComponents = ['icon-storage', 'heading', 'metric-chip-list', 'text-anchor-list', 'icon-action-list']
+  it.each(tabComponents)('should have "%s" components', (cmp) => {
+    expect(wrapper.get(`[data-test="${cmp}"]`).exists()).toBe(true)
   })
 })
