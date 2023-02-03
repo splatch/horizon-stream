@@ -43,7 +43,6 @@ import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.SnmpInterfaceService;
 import org.opennms.horizon.inventory.service.taskset.CollectorTaskSetService;
 import org.opennms.horizon.inventory.service.taskset.MonitorTaskSetService;
-import org.opennms.node.scan.contract.IfServiceResult;
 import org.opennms.node.scan.contract.NodeScanResult;
 import org.opennms.taskset.contract.ScanType;
 import org.opennms.taskset.contract.ScannerResponse;
@@ -144,8 +143,7 @@ public class ScannerResponseService {
         nodeRepository.findByIdAndTenantId(result.getNodeId(), tenantId)
             .ifPresentOrElse(node -> {
                 nodeService.updateNodeInfo(node, result.getNodeInfo());
-                result.getIfServicesList().stream().map(IfServiceResult::getIpInterface)
-                    .forEach(ipIfResult -> ipInterfaceService.creatUpdateFromScanResult(tenantId, node, ipIfResult));
+                result.getIpInterfacesList().forEach(ipIfResult -> ipInterfaceService.creatUpdateFromScanResult(tenantId, node, ipIfResult));
                 result.getSnmpInterfacesList().forEach(snmpIfResult -> snmpInterfaceService.createOrUpdateFromScanResult(tenantId, node, snmpIfResult));
             }, () -> log.error("Error while process node scan results, node with id {} doesn't exist", result.getNodeId()));
     }

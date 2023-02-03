@@ -62,7 +62,6 @@ import org.opennms.horizon.inventory.repository.NodeRepository;
 import org.opennms.horizon.inventory.repository.SnmpInterfaceRepository;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
-import org.opennms.node.scan.contract.IfServiceResult;
 import org.opennms.node.scan.contract.IpInterfaceResult;
 import org.opennms.node.scan.contract.NodeInfoResult;
 import org.opennms.node.scan.contract.NodeScanResult;
@@ -183,9 +182,9 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
         assertIpInterface(node.getIpInterfaces().get(0), null);
         List<IpInterface> ipIfList = ipInterfaceRepository.findByNodeId(node.getId());
         assertThat(ipIfList.get(0)).extracting(ipIf -> ipIf.getIpAddress().getHostAddress()).isEqualTo(managedIp);
-        assertThat(ipIfList).asList().hasSize(result.getIfServicesList().size());
+        assertThat(ipIfList).asList().hasSize(result.getIpInterfacesList().size());
         IntStream.range(0, ipIfList.size())
-            .forEach(i -> assertIpInterface(ipIfList.get(i), result.getIfServices(i).getIpInterface()));
+            .forEach(i -> assertIpInterface(ipIfList.get(i), result.getIpInterfaces(i)));
 
         List<SnmpInterface> snmpInterfaceList = snmpInterfaceRepository.findByTenantId(TEST_TENANT_ID);
         assertThat(snmpInterfaceList).asList().hasSize(2);
@@ -221,20 +220,16 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
             .setSystemLocation("Somewhere")
             .setSystemContact("admin@opennms.com")
             .build();
-        IfServiceResult ifService1 = IfServiceResult.newBuilder()
-            .setIpInterface(IpInterfaceResult.newBuilder()
+        IpInterfaceResult ipIf1 = IpInterfaceResult.newBuilder()
                 .setIpAddress(ipAddress)
                 .setIpHostName("hostname1")
                 .setNetmask("255.255.255.0")
-                .build())
-            .build();
-        IfServiceResult ifService2 = IfServiceResult.newBuilder()
-            .setIpInterface(IpInterfaceResult.newBuilder()
+                .build();
+        IpInterfaceResult ipIf2 = IpInterfaceResult.newBuilder()
                 .setIpAddress("192.168.2.3")
                 .setNetmask("255.255.0.0")
                 .setIpHostName("hostname-2")
-                .build())
-            .build();
+                .build();
         SnmpInterfaceResult snmpIf1 = SnmpInterfaceResult.newBuilder()
             .setIfIndex(ifIndex)
             .setIfDescr("SNMP Interface1")
@@ -260,7 +255,7 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
         return NodeScanResult.newBuilder()
             .setNodeId(nodeId)
             .setNodeInfo(nodeInfo)
-            .addAllIfServices(List.of(ifService1, ifService2))
+            .addAllIpInterfaces(List.of(ipIf1, ipIf2))
             .addAllSnmpInterfaces(List.of(snmpIf1, snmpIf2))
             .build();
     }
