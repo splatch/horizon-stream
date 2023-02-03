@@ -49,20 +49,17 @@ message NodeInfoResult {
   int64 systemUptime = 6;
 }
 
+//for service detector
 message ServiceResult {
-  string serviceName = 1;
-  string status = 2;
+  string ipAddress = 1;
+  string serviceName = 2;
+  string status = 3;
 }
 
 message IpInterfaceResult {
   string ipAddress = 1;
   string ipHostName = 2;
   string netmask = 3;
-}
-
-message IfServiceResult {
-  IpInterfaceResult ipInterface = 1;
-  repeated ServiceResult services = 2;
 }
 
 message SnmpInterfaceResult {
@@ -86,7 +83,7 @@ message IpTableScanResult {
 message NodeScanResult {
   int64 nodeId = 1;
   NodeInfoResult nodeInfo = 2;
-  repeated IfServiceResult ifServices = 3;
+  repeated IpInterfaceResult ipInterfaces = 3;
   repeated SnmpInterfaceResult snmpInterfaces = 4;
 }
 
