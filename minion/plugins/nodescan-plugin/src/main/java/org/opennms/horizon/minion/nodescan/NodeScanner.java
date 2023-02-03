@@ -40,7 +40,6 @@ import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
 import org.opennms.horizon.shared.snmp.SnmpConfiguration;
 import org.opennms.horizon.shared.snmp.SnmpHelper;
 import org.opennms.horizon.shared.snmp.SnmpWalker;
-import org.opennms.node.scan.contract.IfServiceResult;
 import org.opennms.node.scan.contract.IpTableScanResult;
 import org.opennms.node.scan.contract.NodeInfoResult;
 import org.opennms.node.scan.contract.NodeScanRequest;
@@ -76,13 +75,10 @@ public class NodeScanner implements Scanner {
 
 
                 List<IpTableScanResult> ipAddrTblResults = scanIpAddrTable(agentConfig);
-                //TODO add interface services scan
-                List<IfServiceResult> ifServices = ipAddrTblResults.stream()
-                    .map(result -> IfServiceResult.newBuilder().setIpInterface(result.getIpInterface()).build()).toList();
                 List<SnmpInterfaceResult> snmpInterfaceResults = scanSnmpInterface(agentConfig);
                 NodeScanResult scanResult = NodeScanResult.newBuilder()
                     .setNodeInfo(nodeInfo)
-                    .addAllIfServices(ifServices)
+                    .addAllIpInterfaces(ipAddrTblResults.stream().map(IpTableScanResult::getIpInterface).toList())
                     .addAllSnmpInterfaces(ipAddrTblResults.stream().map(IpTableScanResult::getSnmpInterface).toList())
                     .addAllSnmpInterfaces(snmpInterfaceResults)
                     .build();
