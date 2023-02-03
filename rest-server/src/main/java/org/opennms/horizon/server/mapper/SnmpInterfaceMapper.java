@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,28 +28,11 @@
 
 package org.opennms.horizon.server.mapper;
 
-import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.NullValueCheckStrategy;
-import org.opennms.horizon.inventory.dto.NodeCreateDTO;
-import org.opennms.horizon.inventory.dto.NodeDTO;
-import org.opennms.horizon.server.model.inventory.Node;
-import org.opennms.horizon.server.model.inventory.NodeCreate;
+import org.opennms.horizon.server.model.inventory.SnmpInterface;
+import org.opennms.horizon.inventory.dto.SnmpInterfaceDTO;
 
-
-@Mapper(componentModel = "spring", uses = {IpInterfaceMapper.class, SnmpInterfaceMapper.class},
-    // Needed for grpc proto mapping
-    collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
-public interface NodeMapper {
-
-    @Mappings({
-        @Mapping(source = "ipInterfacesList", target = "ipInterfaces"),
-        @Mapping(source = "snmpInterfacesList", target = "snmpInterfaces")
-    })
-    Node protoToNode(NodeDTO nodeDTO);
-
-    @Mapping(target = "location", source = "location", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    NodeCreateDTO nodeCreateToProto(NodeCreate request);
+@Mapper(componentModel = "spring")
+public interface SnmpInterfaceMapper {
+    SnmpInterface protobufToSnmpInterface(SnmpInterfaceDTO protoBuf);
 }

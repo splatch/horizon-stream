@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,26 +25,26 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-syntax = "proto3";
 
-import "google/protobuf/any.proto";
+package org.opennms.horizon.server.model.inventory;
 
-package opennms.inventory;
-option java_multiple_files = true;
-option java_package = "org.opennms.horizon.inventory.dto";
+import lombok.Getter;
+import lombok.Setter;
 
-message SnmpInterfaceDTO {
-  int64 id = 1;
-  string tenant_id = 2;
-  int64 node_id = 3;
-  string ip_address = 4;
-  int32 if_index = 5;
-  string if_descr = 6;
-  int32 ifType = 7;
-  string ifName = 8;
-  int64 ifSpeed = 9;
-  int32 ifAdminStatus = 10;
-  int32 ifOperatorStatus = 11;
-  string ifAlias = 12;
-  string physicalAddr = 13;
+@Getter
+@Setter
+public class SnmpInterface {
+    private long id;
+    private String tenantId;
+    private long nodeId;
+    private String ipAddress;
+    private int ifIndex;
+    private String ifDescr;
+    private int ifType;
+    private String ifName;
+    private long ifSpeed;
+    private int ifAdminStatus;
+    private int ifOperatorStatus;
+    private String ifAlias;
+    private String physicalAddr;
 }
