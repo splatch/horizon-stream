@@ -28,16 +28,19 @@
 
 package org.opennms.horizon.inventory;
 
-import com.google.protobuf.Empty;
-import com.google.protobuf.StringValue;
-import com.google.protobuf.Timestamp;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.grpc.ClientInterceptor;
-import io.grpc.ManagedChannel;
-import io.grpc.Metadata;
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
-import io.grpc.stub.MetadataUtils;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -47,6 +50,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.opennms.cloud.grpc.minion.Identity;
 import org.opennms.horizon.grpc.heartbeat.contract.HeartbeatMessage;
+import org.opennms.horizon.inventory.dto.ConfigurationServiceGrpc;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
 import org.opennms.horizon.inventory.dto.MonitoringSystemServiceGrpc;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
@@ -56,18 +60,17 @@ import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
+import com.google.protobuf.Empty;
+import com.google.protobuf.StringValue;
+import com.google.protobuf.Timestamp;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.grpc.ClientInterceptor;
+import io.grpc.ManagedChannel;
+import io.grpc.Metadata;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.stub.MetadataUtils;
 
 
 public class InventoryCucumberTestSteps {
@@ -81,6 +84,7 @@ public class InventoryCucumberTestSteps {
     private MonitoringSystemServiceGrpc.MonitoringSystemServiceBlockingStub monitoringSystemStub;
     private MonitoringLocationServiceGrpc.MonitoringLocationServiceBlockingStub monitoringLocationStub;
     private NodeServiceGrpc.NodeServiceBlockingStub nodeServiceBlockingStub;
+    private ConfigurationServiceGrpc.ConfigurationServiceBlockingStub configurationServiceBlockingStub;
     private final Map<String, String> grpcHeaders = new TreeMap<>();
 
 
@@ -128,7 +132,8 @@ public class InventoryCucumberTestSteps {
             .withInterceptors(prepareGrpcHeaderInterceptor()).withDeadlineAfter(30, TimeUnit.SECONDS);
         nodeServiceBlockingStub = NodeServiceGrpc.newBlockingStub(managedChannel)
             .withInterceptors(prepareGrpcHeaderInterceptor()).withDeadlineAfter(30, TimeUnit.SECONDS);
-
+        configurationServiceBlockingStub = ConfigurationServiceGrpc.newBlockingStub(managedChannel)
+            .withInterceptors(prepareGrpcHeaderInterceptor()).withDeadlineAfter(30, TimeUnit.SECONDS);
     }
 
 
