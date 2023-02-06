@@ -29,12 +29,15 @@
 package org.opennms.horizon.inventory.mapper;
 
 
+import java.net.InetAddress;
+
+import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.opennms.horizon.inventory.dto.SnmpInterfaceDTO;
 import org.opennms.horizon.inventory.model.SnmpInterface;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
-
-import java.net.InetAddress;
+import org.opennms.node.scan.contract.SnmpInterfaceResult;
 
 @Mapper(componentModel = "spring")
 public interface SnmpInterfaceMapper {
@@ -50,4 +53,12 @@ public interface SnmpInterfaceMapper {
     default String map(InetAddress value) {
         return InetAddressUtils.toIpAddrString(value);
     }
+
+    @Condition
+    default boolean isNotEmpty(String value) {
+        return value != null && !value.isEmpty();
+    }
+
+    SnmpInterface scanResultToModel(SnmpInterfaceResult result);
+    void updateFromScanResult(SnmpInterfaceResult result, @MappingTarget SnmpInterface snmpInterface);
 }
