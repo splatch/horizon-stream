@@ -59,15 +59,26 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
         labels=labels,
     )
 
-    custom_build(
-        image_name,
-        'mvn jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
-        deps=['{}{}/target/classes'.format(base_path, submodule_path), '{}{}/pom.xml'.format(base_path, submodule_path), '{}{}/src/main/resources'.format(base_path, submodule_path)],
-        live_update=[
-            sync('{}{}/target/classes/org/opennms'.format(base_path, submodule_path), '/app/classes/org/opennms'),
-            sync('{}{}/src/main/resources'.format(base_path, submodule_path), '/app/resources'),
-        ],
-    )
+    if submodule:
+        custom_build(
+            image_name,
+            'mvn jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
+            deps=['{}{}/target/classes'.format(base_path, submodule_path), '{}{}/pom.xml'.format(base_path, submodule_path), '{}{}/src/main/resources'.format(base_path, submodule_path)],
+            live_update=[
+                sync('{}{}/target/classes/org/opennms'.format(base_path, submodule_path), '/app/classes/org/opennms'),
+                sync('{}{}/src/main/resources'.format(base_path, submodule_path), '/app/resources'),
+            ],
+        )
+    else:
+        custom_build(
+            image_name,
+            'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, ''),
+            deps=['{}{}/target/classes'.format(base_path, ''), '{}{}/pom.xml'.format(base_path, ''), '{}{}/src/main/resources'.format(base_path, '')],
+            live_update=[
+                sync('{}{}/target/classes/org/opennms'.format(base_path, ''), '/app/classes/org/opennms'),
+                sync('{}{}/src/main/resources'.format(base_path, ''), '/app/resources'),
+            ],
+        )
 
     k8s_resource(
         k8s_resource_name,
