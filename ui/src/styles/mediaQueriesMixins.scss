@@ -13,11 +13,14 @@ $grid-breakpoints: (
 
 @use "sass:map";
 
+@mixin screen-xs {
+  @media (max-width: map.get($grid-breakpoints, 'xs')) { @content; }
+}
 @mixin screen-sm {
-  @media (max-width: map.get($grid-breakpoints, 'sm')) { @content; }
+  @media (min-width: map.get($grid-breakpoints, 'sm')) { @content; }
 }
 @mixin screen-md {
-  @media (max-width: map.get($grid-breakpoints, 'md')) { @content; }
+  @media (min-width: map.get($grid-breakpoints, 'md')) { @content; }
 }
 @mixin screen-lg {
   @media (min-width: map.get($grid-breakpoints, 'lg')) { @content; }
