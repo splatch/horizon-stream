@@ -21,9 +21,9 @@
 
     <properties>
         <application.docker.image.name>opennms/horizon-stream-alarm</application.docker.image.name>
+        <sonar.projectKey>opennms_horizon-stream_alarm</sonar.projectKey>
         <!-- There is no sonarcloud project for the Alarm service yet, so skip scanning it -->
         <sonar.skip>true</sonar.skip>
-        <skipJib>false</skipJib>
     </properties>
 
     <dependencyManagement>
@@ -254,7 +254,6 @@
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
-                    <skip>${skipJib}</skip>
                     <container>
                         <jvmFlags>
                             <jvmFlag>--add-opens=java.base/java.util=ALL-UNNAMED</jvmFlag>
@@ -354,5 +353,5 @@
         </plugins>
     </build>
 
-    
+
 </project>
