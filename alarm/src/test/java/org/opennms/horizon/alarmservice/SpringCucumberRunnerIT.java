@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.db.entity;
+package org.opennms.horizon.alarmservice;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.TenantId;
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * <p>Abstract Entity class.</p>
- */
-//@Getter
-//@Setter
-//@MappedSuperclass
-public abstract class TenantAwareEntity {
-
-//    @TenantId
-    @Column
-    private String tenantId;
-	
-	/**
-	 * <p>hasNewValue</p>
-	 *
-	 * @param newVal a {@link Object} object.
-	 * @param existingVal a {@link Object} object.
-	 * @return a boolean.
-	 */
-	protected static boolean hasNewValue(Object newVal, Object existingVal) {
-        return newVal != null && !newVal.equals(existingVal);
-    }
-
+@RunWith(Cucumber.class)
+@CucumberOptions(
+    glue = {"org.opennms.horizon.alarmservice.steps"},
+    plugin = {"json:target/cucumber-report.json", "html:target/cucumber.html", "pretty"},
+    objectFactory = io.cucumber.spring.SpringFactory.class,
+    features = "classpath:org/opennms/horizon/spring"
+)
+public class SpringCucumberRunnerIT {
+    private static final Logger LOG = LoggerFactory.getLogger(SpringCucumberRunnerIT.class);
 }

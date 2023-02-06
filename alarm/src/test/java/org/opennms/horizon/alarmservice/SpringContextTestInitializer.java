@@ -26,37 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alarmservice.service.routing;
+package org.opennms.horizon.alarmservice;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.alarmservice.api.AlarmService;
-import org.opennms.horizon.events.proto.Event;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.support.GenericApplicationContext;
+import org.testcontainers.containers.PostgreSQLContainer;
 
-@RequiredArgsConstructor
-@Component
-@Slf4j
-@PropertySource("classpath:application.yaml")
-public class EventConsumer {
+public class SpringContextTestInitializer implements ApplicationContextInitializer<GenericApplicationContext> {
 
-    @Autowired
-    private AlarmService alarmService;
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.5-alpine")
+        .withDatabaseName("alarm").withUsername("alarm")
+        .withPassword("passw0rd").withExposedPorts(5432);
 
-    @KafkaListener(topics = "${kafka.topics.alarm-events}", concurrency = "1")
-    public void receiveMessage(byte[] data) {
-        //String tenantId = getTenantIdFromHeaders();
-        // Place into grpc context
-        try {
-            Event event = Event.parseFrom(data);
-            log.info("Received alarm event message");
-            alarmService.process(event);
-        } catch (InvalidProtocolBufferException e) {
-            log.error("Error while parsing Event message", e);
-        }
+
+    static {
+        postgres.start();
+    }
+
+    @Override
+    public void initialize(@NotNull GenericApplicationContext context) {
+        initDatasourceParams(context);
+    }
+
+    private void initDatasourceParams(GenericApplicationContext context) {
+        TestPropertyValues.of(
+            "spring.datasource.url=" + postgres.getJdbcUrl(),
+            "spring.datasource.username=" + postgres.getUsername(),
+            "spring.datasource.password=" + postgres.getPassword()
+        ).applyTo(context.getEnvironment());
     }
 }
