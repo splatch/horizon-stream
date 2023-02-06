@@ -30,10 +30,10 @@ package org.opennms.horizon.minion.flows.adapter.netflow9;
 
 import java.util.Objects;
 
-import org.opennms.horizon.minion.flows.adapter.AdapterFactory;
+import org.opennms.horizon.minion.flows.adapter.common.AdapterFactory;
 import org.opennms.horizon.minion.flows.adapter.common.Adapter;
 import org.opennms.horizon.minion.flows.adapter.common.AdapterDefinition;
-import org.opennms.horizon.minion.flows.adapter.copied.Pipeline;
+import org.opennms.horizon.minion.flows.adapter.imported.Pipeline;
 import org.opennms.horizon.minion.flows.parser.TelemetryRegistry;
 
 public class Netflow9AdapterFactory implements AdapterFactory {

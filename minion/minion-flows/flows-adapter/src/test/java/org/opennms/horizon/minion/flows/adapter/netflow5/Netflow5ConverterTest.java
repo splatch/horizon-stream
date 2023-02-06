@@ -47,7 +47,7 @@ import java.util.Optional;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opennms.horizon.minion.flows.adapter.common.NetflowMessage;
-import org.opennms.horizon.minion.flows.adapter.copied.Flow;
+import org.opennms.horizon.minion.flows.adapter.imported.Flow;
 import org.opennms.horizon.minion.flows.parser.InvalidPacketException;
 import org.opennms.horizon.minion.flows.parser.flowmessage.Direction;
 import org.opennms.horizon.minion.flows.parser.flowmessage.FlowMessage;

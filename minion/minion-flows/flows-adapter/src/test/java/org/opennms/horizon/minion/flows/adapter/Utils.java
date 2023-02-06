@@ -44,7 +44,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
 
 import org.opennms.horizon.minion.flows.adapter.common.NetflowMessage;
-import org.opennms.horizon.minion.flows.adapter.copied.Flow;
+import org.opennms.horizon.minion.flows.adapter.imported.Flow;
 import org.opennms.horizon.minion.flows.parser.flowmessage.FlowMessage;
 
 public class Utils {

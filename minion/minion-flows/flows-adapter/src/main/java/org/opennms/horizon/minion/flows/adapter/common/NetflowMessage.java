@@ -34,9 +34,9 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.opennms.horizon.minion.flows.adapter.copied.Flow;
-import org.opennms.horizon.minion.flows.adapter.copied.Locality;
-import org.opennms.horizon.minion.flows.adapter.copied.NodeInfo;
+import org.opennms.horizon.minion.flows.adapter.imported.Flow;
+import org.opennms.horizon.minion.flows.adapter.imported.Locality;
+import org.opennms.horizon.minion.flows.adapter.imported.NodeInfo;
 import org.opennms.horizon.minion.flows.parser.flowmessage.Direction;
 import org.opennms.horizon.minion.flows.parser.flowmessage.FlowMessage;
 import org.opennms.horizon.minion.flows.parser.flowmessage.NetflowVersion;

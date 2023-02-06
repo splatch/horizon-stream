@@ -35,11 +35,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.horizon.minion.flows.adapter.copied.ContextKey;
-import org.opennms.horizon.minion.flows.adapter.copied.Flow;
-import org.opennms.horizon.minion.flows.adapter.copied.FlowSource;
-import org.opennms.horizon.minion.flows.adapter.copied.Pipeline;
-import org.opennms.horizon.minion.flows.adapter.copied.ProcessingOptions;
+import org.opennms.horizon.minion.flows.adapter.imported.ContextKey;
+import org.opennms.horizon.minion.flows.adapter.imported.Flow;
+import org.opennms.horizon.minion.flows.adapter.imported.FlowSource;
+import org.opennms.horizon.minion.flows.adapter.imported.Pipeline;
+import org.opennms.horizon.minion.flows.adapter.imported.ProcessingOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

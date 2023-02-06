@@ -30,7 +30,7 @@ package org.opennms.horizon.minion.flows.adapter.ipfix;
 
 import org.opennms.horizon.minion.flows.adapter.common.AdapterDefinition;
 import org.opennms.horizon.minion.flows.adapter.common.NetflowAdapter;
-import org.opennms.horizon.minion.flows.adapter.copied.Pipeline;
+import org.opennms.horizon.minion.flows.adapter.imported.Pipeline;
 
 import com.codahale.metrics.MetricRegistry;
 

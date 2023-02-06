@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.minion.flows.adapter.copied;
+package org.opennms.horizon.minion.flows.adapter.imported;
 
 import java.time.Duration;
 import java.time.Instant;

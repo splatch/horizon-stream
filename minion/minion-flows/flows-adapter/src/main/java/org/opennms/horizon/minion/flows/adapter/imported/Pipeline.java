@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,18 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.minion.flows.adapter;
+package org.opennms.horizon.minion.flows.adapter.imported;
 
 
-import org.opennms.horizon.minion.flows.adapter.common.Adapter;
-import org.opennms.horizon.minion.flows.adapter.common.AdapterDefinition;
-import org.opennms.horizon.minion.flows.listeners.factory.TelemetryBeanFactory;
+import java.util.List;
 
-/**
- * Factory to create {@link Adapter} from a {@link AdapterDefinition}
- *
- * @author mvrueden
- */
-public interface AdapterFactory extends TelemetryBeanFactory<Adapter, AdapterDefinition> {
+import org.opennms.horizon.minion.flows.adapter.common.FlowException;
 
+public interface Pipeline {
+    void process(final List<Flow> flows,
+                 final FlowSource source,
+                 final ProcessingOptions processingOptions) throws FlowException;
 }
