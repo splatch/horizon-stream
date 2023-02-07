@@ -1,176 +1,231 @@
 <template>
-  <div class="container">
-    <PageHeader heading="Discovery" />
-    <div>
-      <Infobar />
-    </div>
-    <div class="discovery-cards">
-      <Card
-        :title="'Active Discovery'"
-        :imgUrl="ActiveDiscoveryImg"
-      >
-        <template v-slot:footer>
-          <div class="footer">
-            <p>Select tool(s) to configure your nodes to send logs to BTO</p>
-            <ActiveDiscoveryToolsList @show-config-active-tool="showConfigActiveTool" />
-          </div>
-        </template>
-      </Card>
-      <Card
-        :title="'Passive Discovery'"
-        :imgUrl="PassiveDiscoveryImg"
-      >
-        <template v-slot:footer>
-          <div class="footer">
-            <p>Select tool(s) to configure your nodes to send logs to BTO</p>
-            <div class="passive-tools">
-              <PassiveTool
-                :label="'Syslog'"
-                @show-settings="showSettings(DiscoveryType.Syslog)"
-                @show-instructions="showInstructions(DiscoveryType.Syslog)"
-              />
-              <PassiveTool
-                :label="'SNMP Traps'"
-                @show-settings="showSettings(DiscoveryType.SNMP)"
-                @show-instructions="showInstructions(DiscoveryType.SNMP)"
-              />
-            </div>
-          </div>
-        </template>
-      </Card>
-    </div>
-  </div>
-  <PrimaryModal
-    :visible="isVisible"
-    title="''"
-    hide-title
-  >
-    <template #content>
-      <component :is="modalContent" />
-    </template>
-    <template v-slot:footer>
-      <FeatherButton
-        secondary
-        @click="closeModal"
-      >
-        CLOSE
-      </FeatherButton>
-      <ButtonWithSpinner v-if="selectedTool === DiscoveryType.Azure"
+  <PageHeader
+    heading="Discovery"
+    class="header"
+  />
+  <!-- add discovery button -->
+  <!-- TODO: Awaiting UI confirmation to have the button at top right corner -->
+  <!-- <FeatherButton
+        @click="addDiscovery"
         primary
-        :isFetching="isFetching" 
-        :disabled="!isAzureEnabled"
-        @click="saveAzureDiscovery"
       >
-        SAVE DISCOVERY
-      </ButtonWithSpinner>
-    </template>
-  </PrimaryModal>
-  <FeatherDrawer
-    :left="false"
-    :modelValue="isDrawerOpen"
-    @update:modelValue="closeDrawer"
-    :labels="{ close: 'close', title: 'Instructions' }"
-  >
-    <div class="container">
-      <slot name="search"><DiscoveryInstructions :tool="selectedTool" /></slot>
-      <slot name="view"></slot>
-    </div>
-  </FeatherDrawer>
+        New discovery
+        <template #icon>
+          <Icon :icon="addIcon" />
+        </template>
+      </FeatherButton> -->
+  <div class="container">
+    <!-- my discovery -->
+    <section class="my-discovery">
+      <!-- my active -->
+      <div>
+        <div>My active discovery</div>
+        <div>You have no active discovery</div>
+      </div>
+      <!-- my passive -->
+      <div>
+        <div>My passive discovery</div>
+        <div>You have no active discovery</div>
+      </div>
+      <!-- dropdown select discovery (edit) -->
+      <div>Search/Filter discovery</div>
+    </section>
+
+    <!-- add/edit a discovery  -->
+    <section
+      v-if="isFormShown"
+      class="discovery"
+    >
+      <h5>Select a discovery</h5>
+      <form>
+        <div>
+          <!-- active -->
+          <!-- passive -->
+        </div>
+        <div v-if="formInput.type">
+          <h4>ICMP/SNMP Discovery Setup</h4>
+          <div>
+            <!-- ICMP/SNMP name input -->
+            <FeatherInput
+              v-model="formInput.name"
+              label="ICMP/SNMP name"
+              class="name-input"
+            />
+            <!-- location input -->
+            <!-- IP input -->
+            <!-- community input -->
+            <!-- port input -->
+          </div>
+        </div>
+        <div
+          v-else
+          class="get-started"
+        >
+          Select a discovery to get started
+        </div>
+        <div class="footer">
+          <FeatherButton
+            @click="cancelHandler"
+            secondary
+            >cancel</FeatherButton
+          >
+          <FeatherButton
+            @click="saveHandler"
+            :disabled="isFormValid"
+            primary
+            type="submit"
+            >save discovery</FeatherButton
+          >
+        </div>
+      </form>
+    </section>
+  </div>
 </template>
 
-<script setup lang="ts">
-import ActiveDiscoveryImg from '@/assets/active-discovery.png'
-import PassiveDiscoveryImg from '@/assets/passive-discovery.png'
-import DiscoveryStepper from '@/components/Discovery/DiscoveryStepper.vue'
-import AzureForm from '@/components/Discovery/AzureForm.vue'
-import { DiscoveryType } from '@/components/Discovery/discovery.constants'
-import useModal from '@/composables/useModal'
-import { useDiscoveryStore } from '@/store/Views/discoveryStore'
-import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
+<script lang="ts" setup>
+import AddIcon from '@featherds/icon/action/Add'
+import { IIcon } from '@/types'
+import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 
-const { isFetching } = useDiscoveryMutations()
+const enum DiscoverytType {
+  None,
+  ICSNMP,
+  Azure,
+  SysLog,
+  SNMPTraps
+}
+
+interface DiscoveryInput {
+  type: DiscoverytType
+  name: string
+  location: string
+  IPRange: string
+  communityString: string
+  UDPPort: number
+}
+
+const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
-const store = useDiscoveryStore()
-const { openModal, closeModal, isVisible } = useModal()
-const selectedTool = ref()
-const isDrawerOpen = ref(false)
 
-const modalContent = computed(() => {
-  switch(selectedTool.value) {
-    case DiscoveryType.ICMP:
-      return DiscoveryStepper
-    case DiscoveryType.Azure:
-      return AzureForm
-  }
+const isFormShown = ref(true)
+
+const formInput = ref<DiscoveryInput>({
+  type: DiscoverytType.ICSNMP,
+  name: '', // required?
+  location: 'Default',
+  IPRange: '', // required?
+  communityString: '', // required?
+  UDPPort: 0 // required?
 })
 
-const isAzureEnabled = computed(() => {
-  return Boolean(store.selectedLocations.length 
-    && store.azure.clientId 
-    && store.azure.clientSecret
-    && store.azure.directoryId
-    && store.azure.subscriptionId)
+const addDiscovery = () => {
+  isFormShown.value = true
+}
+
+const isFormValid = computed(() => {
+  // formInput validation
+  return true
 })
 
-const showSettings = (tool: DiscoveryType) => {
-  selectedTool.value = tool
-  openModal()
+const saveHandler = () => {
+  // startSpinner()
+  // add query
+  // if success
+  // stopSpinner()
+  // if error
+  // showSnackbar({
+  // msg: 'Save unsuccessfully!'
+  // })
 }
 
-const showInstructions = (tool: DiscoveryType) => {
-  selectedTool.value = tool
-  isDrawerOpen.value = true
+const cancelHandler = () => {
+  formInput.value.type = DiscoverytType.None
 }
 
-const showConfigActiveTool = (tool: DiscoveryType) => {
-  selectedTool.value = tool
-  openModal()
-}
-
-const saveAzureDiscovery = async () => {
-  const success = await store.saveDiscoveryAzure()
-  if (success) {
-    closeModal()
-    showSnackbar({
-      msg: 'Azure successfully discovered.'
-    })
-  }
-}
-
-const closeDrawer = () => {
-  isDrawerOpen.value = false
+const addIcon: IIcon = {
+  image: markRaw(AddIcon)
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scope>
 @use '@featherds/styles/themes/variables';
+@use '@/styles/mediaQueriesMixins.scss';
+@use '@/styles/vars.scss';
 
 .container {
-	display: flex;
-	flex-direction: column;
-	margin: 0 1rem;
+  display: flex;
+  flex-direction: row;
+  flex-flow: wrap;
+  margin-left: var(variables.$spacing-l);
+  margin-right: var(variables.$spacing-l);
 
-	.discovery-cards {
-		display: flex;
-	}
-
-	.footer {
-		padding: var(variables.$spacing-m);
-		padding-top: var(variables.$spacing-s);
-
-		> p {
-			margin-bottom: 10px;
-		}
-	}
-
-  .passive-tools {
-    display: flex;
-    flex-direction: column;
-    margin-top: 18px;
+  @include mediaQueriesMixins.screen-md {
+    column-gap: 3%;
+    > .my-discovery {
+      width: 30%;
+      min-width: auto;
+    }
+    > .discovery {
+      width: 67%;
+      min-width: auto;
+    }
   }
 }
-.feather-input-sub-text {
-  display: none;
+
+.my-discovery {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 400px;
+  border: 1px solid var(variables.$border-on-surface);
+  border-radius: vars.$border-radius-s;
+  padding: var(variables.$spacing-m);
+  margin-bottom: var(variables.$spacing-l);
+  > * {
+    margin-bottom: var(variables.$spacing-m);
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  @include mediaQueriesMixins.screen-sm {
+    flex-direction: row;
+    column-gap: 2%;
+    > * {
+      width: 32%;
+      margin-bottom: 0;
+    }
+  }
+  @include mediaQueriesMixins.screen-md {
+    flex-direction: column;
+    margin-bottom: 0;
+    > * {
+      width: 100%;
+      margin-bottom: var(variables.$spacing-m);
+    }
+  }
+}
+
+.discovery {
+  width: 100%;
+  min-width: 400px;
+  border: 1px solid var(variables.$border-on-surface);
+  border-radius: vars.$border-radius-s;
+  padding: var(variables.$spacing-m);
+  > h5,
+  h4 {
+    margin-bottom: var(variables.$spacing-m);
+  }
+}
+
+.header {
+  margin-left: var(variables.$spacing-l);
+  margin-right: var(variables.$spacing-l);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
 }
 </style>
