@@ -32,8 +32,10 @@ import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.model.Node;
+import org.opennms.node.scan.contract.NodeInfoResult;
 
 
 @Mapper(componentModel = "spring", uses = IpInterfaceMapper.class,
@@ -52,4 +54,6 @@ public interface NodeMapper extends DateTimeMapper {
     default boolean isNotEmpty(String value) {
         return value != null && !value.isEmpty();
     }
+
+    void updateFromNodeInfo(NodeInfoResult nodeInfoResult, @MappingTarget Node node);
 }
