@@ -3,32 +3,30 @@
     heading="Discovery"
     class="header"
   />
-  <!-- add discovery button -->
-  <!-- TODO: Awaiting UI confirmation to have the button at top right corner -->
-  <!-- <FeatherButton
+  <div class="container">
+    <section class="my-discovery">
+      <!-- <FeatherButton
         @click="addDiscovery"
         primary
+        class="add-btn"
       >
         New discovery
         <template #icon>
           <Icon :icon="addIcon" />
         </template>
       </FeatherButton> -->
-  <div class="container">
-    <!-- my discovery -->
-    <section class="my-discovery">
-      <!-- my active -->
       <div>
-        <div>My active discovery</div>
-        <div>You have no active discovery</div>
+        <div>
+          <div>My active discovery</div>
+          <div>You have no active discovery</div>
+        </div>
+        <div>
+          <div>My passive discovery</div>
+          <div>You have no active discovery</div>
+        </div>
+        <!-- dropdown select discovery (edit) -->
+        <div>Search/Filter discovery</div>
       </div>
-      <!-- my passive -->
-      <div>
-        <div>My passive discovery</div>
-        <div>You have no active discovery</div>
-      </div>
-      <!-- dropdown select discovery (edit) -->
-      <div>Search/Filter discovery</div>
     </section>
 
     <!-- add/edit a discovery  -->
@@ -53,6 +51,19 @@
             />
             <!-- location input -->
             <!-- IP input -->
+            <div>
+              <div class="editable-box">
+                <label for="contentEditable">Enter IP ranges and/or subnets</label>
+                <div
+                  v-html="renderHtml"
+                  ref="contentEdited"
+                  contenteditable="true"
+                  id="contentEditable"
+                  class="content-editable"
+                />
+                <span @click="validateFormatIPs"><Icon :icon="checkCircleIcon" /></span>
+              </div>
+            </div>
             <!-- community input -->
             <!-- port input -->
           </div>
@@ -71,7 +82,7 @@
           >
           <FeatherButton
             @click="saveHandler"
-            :disabled="isFormValid"
+            :disabled="isFormInvalid || isEditableContentInvalid"
             primary
             type="submit"
             >save discovery</FeatherButton
@@ -84,9 +95,11 @@
 
 <script lang="ts" setup>
 import AddIcon from '@featherds/icon/action/Add'
+import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
+import { isIPAddress } from 'ip-address-validator'
 
 const enum DiscoverytType {
   None,
@@ -103,6 +116,30 @@ interface DiscoveryInput {
   IPRange: string
   communityString: string
   UDPPort: number
+}
+
+const isEditableContentInvalid = ref(true)
+const contentEdited = ref()
+const renderHtml = ref('')
+const validateFormatIPs = () => {
+  isEditableContentInvalid.value = validateIPs()
+  renderHtml.value = formatIPs()
+}
+const validateIPs = () => {
+  const reDelimiter = /[,;\s]+/
+  const IPs = contentEdited.value.textContent.split(reDelimiter)
+
+  return IPs.some((IP: string) => !isIPAddress(IP))
+}
+const formatIPs = () => {
+  const reDelimiter = /[,;\s]+/
+  const IPs = contentEdited.value.textContent.split(reDelimiter)
+
+  return IPs.map((IP: string) => {
+    if (isIPAddress(IP)) return IP
+
+    return `<span style="color: red">${IP}</span>`
+  }).join(';')
 }
 
 const { startSpinner, stopSpinner } = useSpinner()
@@ -123,9 +160,9 @@ const addDiscovery = () => {
   isFormShown.value = true
 }
 
-const isFormValid = computed(() => {
+const isFormInvalid = computed(() => {
   // formInput validation
-  return true
+  return false
 })
 
 const saveHandler = () => {
@@ -140,11 +177,15 @@ const saveHandler = () => {
 }
 
 const cancelHandler = () => {
-  formInput.value.type = DiscoverytType.None
+  // formInput.value.type = DiscoverytType.None
 }
 
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
+}
+const checkCircleIcon: IIcon = {
+  image: markRaw(CheckCircleIcon),
+  tooltip: 'Validate'
 }
 </script>
 
@@ -152,6 +193,29 @@ const addIcon: IIcon = {
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
+
+.editable-box {
+  position: relative;
+  > .content-editable {
+    border: 1px solid var(variables.$secondary-text-on-surface);
+    border-radius: vars.$border-radius-xs;
+    padding: var(variables.$spacing-xs) var(variables.$spacing-m) var(variables.$spacing-xl);
+    height: 200px;
+    overflow: scroll;
+    outline: none;
+  }
+  .feather-icon {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    width: 1.5rem;
+    height: 1.5rem;
+    outline: none;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
 
 .container {
   display: flex;
