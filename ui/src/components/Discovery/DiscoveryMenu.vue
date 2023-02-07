@@ -6,20 +6,21 @@
         <FeatherRadioGroup
           vertical
           :label="'Active Discovery'"
-          v-model="discovery"
+          v-model="menuOption"
+          @update:modelValue="setDiscoveryOption"
         >
           <div class="row">
             <FeatherIcon
               class="icon"
-              :icon="Network"
+              :icon="networkIcon"
             />
-            <FeatherRadio :value="snmp">ICMP/SNMP</FeatherRadio>
+            <FeatherRadio :value="'snmp'">ICMP/SNMP</FeatherRadio>
           </div>
           <div class="row">
             <FeatherIcon
               class="icon"
-              :icon="Cloud"
-            /><FeatherRadio :value="azure">AZURE</FeatherRadio>
+              :icon="cloudIcon"
+            /><FeatherRadio :value="'azure'">AZURE</FeatherRadio>
           </div>
         </FeatherRadioGroup>
       </div>
@@ -27,15 +28,16 @@
         <FeatherRadioGroup
           horizontal
           :label="'Passive Discovery'"
-          v-model="discovery"
+          v-model="menuOption"
+          @update:modelValue="setDiscoveryOption"
         >
           <div class="row">
             <FeatherIcon
               class="icon"
-              :icon="Network"
+              :icon="networkIcon"
             />
-            <FeatherRadio :value="syslog">SYSLOG</FeatherRadio>
-            <FeatherRadio :value="snmpTraps">SNMP Traps</FeatherRadio>
+            <FeatherRadio :value="'syslog'">SYSLOG</FeatherRadio>
+            <FeatherRadio :value="'snmpTraps'">SNMP Traps</FeatherRadio>
           </div>
         </FeatherRadioGroup>
       </div>
@@ -46,6 +48,14 @@
 <script setup lang="ts">
 import Cloud from '@featherds/icon/action/Cloud'
 import Network from '@featherds/icon/hardware/Network'
+const cloudIcon = markRaw(Cloud)
+const networkIcon = markRaw(Network)
+const menuOption = ref()
+const emit = defineEmits(['discovery-option-selected'])
+
+const setDiscoveryOption = () => {
+  emit('discovery-option-selected', menuOption.value)
+}
 </script>
 
 <style scoped lang="scss">
