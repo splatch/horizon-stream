@@ -26,30 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.mapper;
+package org.opennms.horizon.server.model.inventory.tag;
 
-import org.mapstruct.CollectionMappingStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.NullValueCheckStrategy;
-import org.opennms.horizon.inventory.dto.NodeCreateDTO;
-import org.opennms.horizon.inventory.dto.NodeDTO;
-import org.opennms.horizon.server.model.inventory.Node;
-import org.opennms.horizon.server.model.inventory.NodeCreate;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {IpInterfaceMapper.class, SnmpInterfaceMapper.class},
-    // Needed for grpc proto mapping
-    collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
-public interface NodeMapper {
+@Getter
+@Setter
+public class TagListRemove {
 
-    @Mappings({
-        @Mapping(source = "ipInterfacesList", target = "ipInterfaces"),
-        @Mapping(source = "snmpInterfacesList", target = "snmpInterfaces")
-    })
-    Node protoToNode(NodeDTO nodeDTO);
+    private long nodeId;
 
-    @Mapping(target = "location", source = "location", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    NodeCreateDTO nodeCreateToProto(NodeCreate request);
+    private List<Long> tagIds = new ArrayList<>();
 }

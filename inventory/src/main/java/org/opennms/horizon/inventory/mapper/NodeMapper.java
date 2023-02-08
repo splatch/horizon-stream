@@ -33,20 +33,27 @@ import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Mappings;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.node.scan.contract.NodeInfoResult;
 
 
-@Mapper(componentModel = "spring", uses = IpInterfaceMapper.class,
+@Mapper(componentModel = "spring", uses = {IpInterfaceMapper.class, SnmpInterfaceMapper.class},
     // Needed for grpc proto mapping
     collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
 public interface NodeMapper extends DateTimeMapper {
 
-    @Mapping(source = "ipInterfacesList", target = "ipInterfaces")
+    @Mappings({
+        @Mapping(source = "ipInterfacesList", target = "ipInterfaces"),
+        @Mapping(source = "snmpInterfacesList", target = "snmpInterfaces")
+    })
     Node dtoToModel(NodeDTO dto);
 
-    @Mapping(source = "ipInterfaces", target = "ipInterfacesList")
+    @Mappings({
+        @Mapping(source = "ipInterfaces", target = "ipInterfacesList"),
+        @Mapping(source = "snmpInterfaces", target = "snmpInterfacesList"),
+    })
     NodeDTO modelToDTO(Node model);
 
     //need for string value check

@@ -158,7 +158,7 @@ class NodeGrpcItTest extends GrpcTestBase {
         assertThat(node.getNodeLabel()).isEqualTo(label);
         assertThat(node.getObjectId()).isEmpty();
         assertThat(node.getSystemName()).isEmpty();
-        assertThat(node.getSystemDesc()).isEmpty();
+        assertThat(node.getSystemDescr()).isEmpty();
         assertThat(node.getSystemLocation()).isEmpty();
         assertThat(node.getSystemContact()).isEmpty();
         await().atMost(10, TimeUnit.SECONDS).until(()-> testGrpcService.getRequests().size(), Matchers.is(4));

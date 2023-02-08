@@ -28,28 +28,38 @@
 
 package org.opennms.horizon.server.mapper;
 
+import com.google.protobuf.Int64Value;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.NullValueCheckStrategy;
-import org.opennms.horizon.inventory.dto.NodeCreateDTO;
-import org.opennms.horizon.inventory.dto.NodeDTO;
-import org.opennms.horizon.server.model.inventory.Node;
-import org.opennms.horizon.server.model.inventory.NodeCreate;
+import org.opennms.horizon.inventory.dto.TagCreateDTO;
+import org.opennms.horizon.inventory.dto.TagCreateListDTO;
+import org.opennms.horizon.inventory.dto.TagDTO;
+import org.opennms.horizon.inventory.dto.TagRemoveListDTO;
+import org.opennms.horizon.server.model.inventory.tag.Tag;
+import org.opennms.horizon.server.model.inventory.tag.TagCreate;
+import org.opennms.horizon.server.model.inventory.tag.TagListAdd;
+import org.opennms.horizon.server.model.inventory.tag.TagListRemove;
+
+import java.util.List;
 
 
-@Mapper(componentModel = "spring", uses = {IpInterfaceMapper.class, SnmpInterfaceMapper.class},
+@Mapper(componentModel = "spring", uses = {},
     // Needed for grpc proto mapping
     collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
-public interface NodeMapper {
+public interface TagMapper {
+    Tag protoToTag(TagDTO tagDTO);
 
-    @Mappings({
-        @Mapping(source = "ipInterfacesList", target = "ipInterfaces"),
-        @Mapping(source = "snmpInterfacesList", target = "snmpInterfaces")
-    })
-    Node protoToNode(NodeDTO nodeDTO);
+    @Mapping(target = "tagsList", source = "tags", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    TagCreateListDTO tagListAddToProto(TagListAdd tags);
 
-    @Mapping(target = "location", source = "location", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    NodeCreateDTO nodeCreateToProto(NodeCreate request);
+    TagCreateDTO tagCreateToProto(TagCreate tagCreate);
+
+    @Mapping(target = "tagIdsList", source = "tagIds", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+    TagRemoveListDTO tagListRemoveToProto(TagListRemove tags);
+
+    default Int64Value longToInt64Value(Long value) {
+        return Int64Value.of(value);
+    }
 }
