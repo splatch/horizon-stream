@@ -26,34 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.model;
+package org.opennms.horizon.inventory.taskset.api;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
+import org.opennms.taskset.contract.TaskDefinition;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import java.util.List;
 
+public interface TaskSetPublisher {
 
-@Setter
-@Getter
-@RequiredArgsConstructor
-@Entity
-public class MonitoredServiceType {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    void publishNewTasks(String tenantId, String location, List<TaskDefinition> taskList);
 
-    @NotNull
-    @Column(name = "tenant_id")
-    private String tenantId;
-
-    @NotNull
-    @Column(name = "service_name")
-    private String serviceName;
+    void publishTaskDeletion(String tenantId, String location, List<TaskDefinition> taskList);
 }

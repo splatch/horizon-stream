@@ -28,14 +28,7 @@
 
 package org.opennms.horizon.inventory.service.taskset.publiser;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import java.util.List;
-
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,11 +41,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
+import org.opennms.horizon.inventory.taskset.api.TaskSetPublisher;
 import org.opennms.node.scan.contract.NodeScanRequest;
 import org.opennms.taskset.contract.TaskDefinition;
-import org.opennms.taskset.service.api.TaskSetPublisher;
 
-import com.google.protobuf.InvalidProtocolBufferException;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
 public class ScannerTaskSetServiceTest {
