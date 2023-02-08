@@ -21,12 +21,14 @@
 import { isIPAddress } from 'ip-address-validator'
 import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
+import { ContentEditableType } from '@/types/discovery'
+import { PropType } from 'vue'
 
 const emit = defineEmits(['is-content-invalid', 'content-formatted'])
 
 const props = defineProps({
   contentType: {
-    type: String,
+    type: Object as PropType<ContentEditableType>,
     required: true
   },
   regexDelim: {
@@ -57,10 +59,12 @@ const validateContent = () => {
   let isValid = true
 
   switch (props.contentType) {
-    case 'IP':
+    case ContentEditableType.IP:
       isValid = contentEditableStrings.some((str: string) => !isIPAddress(str))
       break
-    case 'port':
+    case ContentEditableType.community:
+      break
+    case ContentEditableType.port:
       break
     default:
   }
@@ -75,7 +79,7 @@ const formatContent = () => {
   let errorStr = '<span style="color: #ff555e">{{}}</span>'
 
   switch (props.contentType) {
-    case 'IP':
+    case ContentEditableType.IP:
       formattedStr = contentEditableStrings
         .map((str: string) => {
           if (isIPAddress(str)) return str
@@ -84,7 +88,9 @@ const formatContent = () => {
         })
         .join(';')
       break
-    case 'port':
+    case ContentEditableType.community:
+      break
+    case ContentEditableType.port:
       break
     default:
   }

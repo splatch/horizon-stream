@@ -110,29 +110,7 @@ import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
-
-const enum DiscoverytType {
-  None,
-  ICSNMP,
-  Azure,
-  SysLog,
-  SNMPTraps
-}
-
-const enum ContentEditableType {
-  IP,
-  community,
-  port
-}
-
-interface DiscoveryInput {
-  type: DiscoverytType
-  name: string
-  location: string
-  IPRange: string
-  communityString: string
-  UDPPort: number
-}
+import { ContentEditableType, DiscoverytType, DiscoveryInput } from '@/types/discovery'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
