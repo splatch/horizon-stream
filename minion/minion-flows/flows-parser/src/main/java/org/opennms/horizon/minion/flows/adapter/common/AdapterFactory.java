@@ -29,8 +29,6 @@
 package org.opennms.horizon.minion.flows.adapter.common;
 
 
-import org.opennms.horizon.minion.flows.adapter.common.Adapter;
-import org.opennms.horizon.minion.flows.adapter.common.AdapterDefinition;
 import org.opennms.horizon.minion.flows.listeners.factory.TelemetryBeanFactory;
 
 /**

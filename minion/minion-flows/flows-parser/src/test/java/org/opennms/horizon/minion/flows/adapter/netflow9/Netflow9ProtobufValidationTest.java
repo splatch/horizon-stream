@@ -68,14 +68,14 @@ public class Netflow9ProtobufValidationTest {
     @Test
     public void canValidateNetflow9FlowsWithJsonOutput() {
         // Generate flows from existing packet payloads
-        List<Flow> flows = getFlowsForPayloadsInSession("/flows/netflow9.dat",
-                "/flows/netflow9_template.dat",
-                "/flows/netflow9_records.dat");
+        List<Flow> flows = getFlowsForPayloadsInSession("/flows-adapter/netflow9.dat",
+                "/flows-adapter/netflow9_template.dat",
+                "/flows-adapter/netflow9_records.dat");
 
         assertEquals(12, flows.size());
         List<Flow> jsonFlows = Utils.getJsonFlowFromResources(Instant.now(),
-                                                              "/flows/netflow9.json",
-                                                              "/flows/netflow9_1.json");
+                                                              "/flows-adapter/netflow9.json",
+                                                              "/flows-adapter/netflow9_1.json");
         assertEquals(12, jsonFlows.size());
         for (int i = 0; i < 12; i++) {
             assertEquals(flows.get(i).getFlowSeqNum(), jsonFlows.get(i).getFlowSeqNum());

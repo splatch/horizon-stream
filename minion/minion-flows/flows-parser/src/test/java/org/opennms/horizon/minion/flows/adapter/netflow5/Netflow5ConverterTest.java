@@ -65,7 +65,7 @@ public class Netflow5ConverterTest {
     @Test
     public void canParseNetflow5Flows() {
         // Generate flows from existing packet payloads
-        List<Flow> flows = getFlowsForPayloadsInSession("/flows/netflow5.dat");
+        List<Flow> flows = getFlowsForPayloadsInSession("/flows-adapter/netflow5.dat");
         MatcherAssert.assertThat(flows, hasSize(2));
 
         final Flow flow = flows.get(0);
