@@ -1,5 +1,5 @@
 <template>
-  <div class="content-editable-container">
+  <div class="content-editable-wrapper">
     <label for="contentEditable">{{ props.label }}</label>
     <div
       v-html="htmlString"
@@ -21,7 +21,6 @@
 import { isIPAddress } from 'ip-address-validator'
 import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
-import { defineEmits, defineExpose } from 'vue'
 
 const emit = defineEmits(['is-content-invalid', 'content-formatted'])
 
@@ -108,7 +107,7 @@ defineExpose({
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
 
-.content-editable-container {
+.content-editable-wrapper {
   position: relative;
   > .content-editable {
     border: 1px solid var(variables.$secondary-text-on-surface);

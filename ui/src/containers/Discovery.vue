@@ -43,24 +43,41 @@
         <div v-if="formInput.type">
           <h4>ICMP/SNMP Discovery Setup</h4>
           <div>
-            <!-- ICMP/SNMP name input -->
             <FeatherInput
               v-model="formInput.name"
               label="ICMP/SNMP name"
               class="name-input"
             />
             <!-- location input -->
-            <!-- IP input -->
-            <DiscoveryContentEditable
-              @is-content-invalid="isContentInvalidIP"
-              @content-formatted="contentFormattedIP"
-              ref="contentEditableIPRef"
-              :contentType="IPs.type"
-              :regexDelim="IPs.regexDelim"
-              :label="IPs.label"
-            />
-            <!-- community input -->
-            <!-- port input -->
+            <div class="content-editable-container">
+              <DiscoveryContentEditable
+                @is-content-invalid="isContentInvalidIP"
+                @content-formatted="contentFormattedIP"
+                ref="contentEditableIPRef"
+                :contentType="IPs.type"
+                :regexDelim="IPs.regexDelim"
+                :label="IPs.label"
+                class="ip-input"
+              />
+              <DiscoveryContentEditable
+                @is-content-invalid="isContentInvalidCommunity"
+                @content-formatted="contentFormattedCommunity"
+                ref="contentEditableCommunityRef"
+                :contentType="community.type"
+                :regexDelim="community.regexDelim"
+                :label="community.label"
+                class="community-input"
+              />
+              <DiscoveryContentEditable
+                @is-content-invalid="isContentInvalidPort"
+                @content-formatted="contentFormattedPort"
+                ref="contentEditablePortRef"
+                :contentType="port.type"
+                :regexDelim="port.regexDelim"
+                :label="port.label"
+                class="port-input"
+              />
+            </div>
           </div>
         </div>
         <div
@@ -102,6 +119,12 @@ const enum DiscoverytType {
   SNMPTraps
 }
 
+const enum ContentEditableType {
+  IP,
+  community,
+  port
+}
+
 interface DiscoveryInput {
   type: DiscoverytType
   name: string
@@ -118,16 +141,16 @@ const isFormShown = ref(true)
 
 const formInput = ref<DiscoveryInput>({
   type: DiscoverytType.ICSNMP,
-  name: '', // required?
+  name: '',
   location: 'Default',
-  IPRange: '', // required?
-  communityString: '', // required?
-  UDPPort: 0 // required?
+  IPRange: '',
+  communityString: '', // optional
+  UDPPort: 0 // optional
 })
 
 const contentEditableIPRef = ref()
 const IPs = {
-  type: 'IP',
+  type: ContentEditableType.IP,
   regexDelim: '[,; ]+',
   label: 'Enter IP ranges and/or subnets'
 }
@@ -135,6 +158,32 @@ const isContentInvalidIP = (args) => {
   console.log('args', args)
 }
 const contentFormattedIP = (args) => {
+  console.log('args', args)
+}
+
+const contentEditableCommunityRef = ref()
+const community = {
+  type: ContentEditableType.community,
+  regexDelim: '',
+  label: 'Enter community string (optional)'
+}
+const isContentInvalidCommunity = (args) => {
+  console.log('args', args)
+}
+const contentFormattedCommunity = (args) => {
+  console.log('args', args)
+}
+
+const contentEditablePortRef = ref()
+const port = {
+  type: ContentEditableType.port,
+  regexDelim: '',
+  label: 'Enter UDP port (optional)'
+}
+const isContentInvalidPort = (args) => {
+  console.log('args', args)
+}
+const contentFormattedPort = (args) => {
   console.log('args', args)
 }
 
@@ -233,9 +282,27 @@ const addIcon: IIcon = {
   border: 1px solid var(variables.$border-on-surface);
   border-radius: vars.$border-radius-s;
   padding: var(variables.$spacing-m);
-  > h5,
-  h4 {
+  h4,
+  h5 {
     margin-bottom: var(variables.$spacing-m);
+  }
+  > form {
+    div[class$='-input'] {
+      margin-bottom: var(variables.$spacing-m);
+    }
+  }
+
+  @include mediaQueriesMixins.screen-xl {
+    .content-editable-container {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-end;
+      > div {
+        width: 32%;
+      }
+    }
   }
 }
 
