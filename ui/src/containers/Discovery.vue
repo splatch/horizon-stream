@@ -3,32 +3,31 @@
     heading="Discovery"
     class="header"
   />
-  <!-- add discovery button -->
-  <!-- TODO: Awaiting UI confirmation to have the button at top right corner -->
-  <!-- <FeatherButton
-        @click="addDiscovery"
-        primary
-      >
-        New discovery
-        <template #icon>
-          <Icon :icon="addIcon" />
-        </template>
-      </FeatherButton> -->
   <div class="container">
-    <!-- my discovery -->
     <section class="my-discovery">
-      <!-- my active -->
-      <div>
-        <div>My active discovery</div>
-        <div>You have no active discovery</div>
+      <div class="add-btn">
+        <FeatherButton
+          @click="addDiscovery"
+          primary
+        >
+          New discovery
+          <template #icon>
+            <Icon :icon="addIcon" />
+          </template>
+        </FeatherButton>
       </div>
-      <!-- my passive -->
-      <div>
-        <div>My passive discovery</div>
-        <div>You have no active discovery</div>
+      <div class="my-discovery-inner">
+        <!-- dropdown select discovery (edit) -->
+        <div>Search/Filter discovery</div>
+        <div>
+          <div>My active discovery</div>
+          <div>You have no active discovery</div>
+        </div>
+        <div>
+          <div>My passive discovery</div>
+          <div>You have no active discovery</div>
+        </div>
       </div>
-      <!-- dropdown select discovery (edit) -->
-      <div>Search/Filter discovery</div>
     </section>
 
     <!-- add/edit a discovery  -->
@@ -174,18 +173,31 @@ const addIcon: IIcon = {
 }
 
 .my-discovery {
-  display: flex;
-  flex-direction: column;
   width: 100%;
   min-width: 400px;
-  border: 1px solid var(variables.$border-on-surface);
-  border-radius: vars.$border-radius-s;
-  padding: var(variables.$spacing-m);
-  margin-bottom: var(variables.$spacing-l);
-  > * {
-    margin-bottom: var(variables.$spacing-m);
-    &:last-child {
-      margin-bottom: 0;
+
+  .add-btn {
+    width: 100%;
+    margin-bottom: var(variables.$spacing-l);
+    border-bottom: 1px solid var(variables.$border-on-surface);
+    > button {
+      margin-bottom: var(variables.$spacing-l);
+    }
+  }
+
+  > .my-discovery-inner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border: 1px solid var(variables.$border-on-surface);
+    border-radius: vars.$border-radius-s;
+    padding: var(variables.$spacing-m);
+    margin-bottom: var(variables.$spacing-l);
+    > * {
+      margin-bottom: var(variables.$spacing-m);
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 
