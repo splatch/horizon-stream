@@ -10,6 +10,10 @@
 
     <reference id="identity" interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity"/>
 
+    <bean id="pipeline" class="org.opennms.horizon.minion.flows.adapter.imported.PipelineImpl"/>
+    <service ref="pipeline" interface="org.opennms.horizon.minion.flows.adapter.imported.Pipeline" />
+
+
     <bean id="dnsResolver" class="org.opennms.horizon.minion.flows.parser.factory.dnsresolver.NettyDnsResolver"
           init-method="init" destroy-method="destroy">
         <argument index="0" ref="metricRegistry"/>
