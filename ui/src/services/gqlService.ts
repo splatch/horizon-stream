@@ -34,7 +34,7 @@ const errorNotificationPlugin = definePlugin(({ afterQuery }) => {
       },
       {
         err: 'UNAVAILABLE:',
-        msg: `Service not available (${error.message.split('UNAVAILABLE:')[1]})`
+        msg: `Service unavailable (${error.message.split('UNAVAILABLE:')[1]})`
       },
       {
         err: 401,
