@@ -189,11 +189,11 @@ const addIcon: IIcon = {
     display: flex;
     flex-direction: column;
     width: 100%;
-    border: 1px solid var(variables.$border-on-surface);
-    border-radius: vars.$border-radius-s;
-    padding: var(variables.$spacing-m);
     margin-bottom: var(variables.$spacing-l);
     > * {
+      border: 1px solid var(variables.$border-on-surface);
+      border-radius: vars.$border-radius-s;
+      padding: var(variables.$spacing-m);
       margin-bottom: var(variables.$spacing-m);
       &:last-child {
         margin-bottom: 0;
