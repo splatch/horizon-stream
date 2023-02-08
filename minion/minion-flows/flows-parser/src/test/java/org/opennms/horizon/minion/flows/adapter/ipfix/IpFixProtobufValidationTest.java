@@ -68,12 +68,12 @@ public class IpFixProtobufValidationTest {
     @Test
     public void canValidateIpFixFlowsWithJsonOutput() {
         // Generate flows from existing packet payloads
-        List<Flow> flows = getFlowsForPayloadsInSession("/flows-adapter/ipfix_test_1.dat",
-            "/flows-adapter/ipfix_test_2.dat");
+        List<Flow> flows = getFlowsForPayloadsInSession("/adapter/ipfix_test_1.dat",
+            "/adapter/ipfix_test_2.dat");
         assertEquals(8, flows.size());
         List<Flow> jsonData = Utils.getJsonFlowFromResources(Instant.now(),
-            "/flows-adapter/ipfix_test_1.json",
-            "/flows-adapter/ipfix_test_2.json");
+            "/adapter/ipfix_test_1.json",
+            "/adapter/ipfix_test_2.json");
         assertEquals(8, jsonData.size());
         for (int i = 0; i < 8; i++) {
             assertEquals(flows.get(i).getFlowSeqNum(), jsonData.get(i).getFlowSeqNum());

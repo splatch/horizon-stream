@@ -65,7 +65,7 @@ public class Netflow9ConverterTest {
     @Test
     public void canParseNetflow9Flows() {
         // Generate flows from existing packet payloads
-        List<Flow> flows = getFlowsForPayloadsInSession("/flows-adapter/netflow9_template.dat", "/flows-adapter/netflow9_records.dat");
+        List<Flow> flows = getFlowsForPayloadsInSession("/adapter/netflow9_template.dat", "/adapter/netflow9_records.dat");
         assertEquals(5, flows.size());
         // Verify a flow
         Flow flow = flows.get(4);
