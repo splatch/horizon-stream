@@ -51,19 +51,14 @@
             />
             <!-- location input -->
             <!-- IP input -->
-            <div>
-              <div class="editable-box">
-                <label for="contentEditable">Enter IP ranges and/or subnets</label>
-                <div
-                  v-html="renderHtml"
-                  ref="contentEdited"
-                  contenteditable="true"
-                  id="contentEditable"
-                  class="content-editable"
-                />
-                <span @click="validateFormatIPs"><Icon :icon="checkCircleIcon" /></span>
-              </div>
-            </div>
+            <DiscoveryContentEditable
+              @is-content-invalid="isContentInvalidIP"
+              @content-formatted="contentFormattedIP"
+              ref="contentEditableIPRef"
+              :contentType="IPs.type"
+              :regexDelim="IPs.regexDelim"
+              :label="IPs.label"
+            />
             <!-- community input -->
             <!-- port input -->
           </div>
@@ -82,7 +77,7 @@
           >
           <FeatherButton
             @click="saveHandler"
-            :disabled="isFormInvalid || isEditableContentInvalid"
+            :disabled="isFormInvalid"
             primary
             type="submit"
             >save discovery</FeatherButton
@@ -95,11 +90,9 @@
 
 <script lang="ts" setup>
 import AddIcon from '@featherds/icon/action/Add'
-import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
-import { isIPAddress } from 'ip-address-validator'
 
 const enum DiscoverytType {
   None,
@@ -118,30 +111,6 @@ interface DiscoveryInput {
   UDPPort: number
 }
 
-const isEditableContentInvalid = ref(true)
-const contentEdited = ref()
-const renderHtml = ref('')
-const validateFormatIPs = () => {
-  isEditableContentInvalid.value = validateIPs()
-  renderHtml.value = formatIPs()
-}
-const validateIPs = () => {
-  const reDelimiter = /[,;\s]+/
-  const IPs = contentEdited.value.textContent.split(reDelimiter)
-
-  return IPs.some((IP: string) => !isIPAddress(IP))
-}
-const formatIPs = () => {
-  const reDelimiter = /[,;\s]+/
-  const IPs = contentEdited.value.textContent.split(reDelimiter)
-
-  return IPs.map((IP: string) => {
-    if (isIPAddress(IP)) return IP
-
-    return `<span style="color: red">${IP}</span>`
-  }).join(';')
-}
-
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 
@@ -156,6 +125,19 @@ const formInput = ref<DiscoveryInput>({
   UDPPort: 0 // required?
 })
 
+const contentEditableIPRef = ref()
+const IPs = {
+  type: 'IP',
+  regexDelim: '[,; ]+',
+  label: 'Enter IP ranges and/or subnets'
+}
+const isContentInvalidIP = (args) => {
+  console.log('args', args)
+}
+const contentFormattedIP = (args) => {
+  console.log('args', args)
+}
+
 const addDiscovery = () => {
   isFormShown.value = true
 }
@@ -167,6 +149,7 @@ const isFormInvalid = computed(() => {
 
 const saveHandler = () => {
   // startSpinner()
+  // contentEditableIPRef.value.validateAndFormat()
   // add query
   // if success
   // stopSpinner()
@@ -183,39 +166,12 @@ const cancelHandler = () => {
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
 }
-const checkCircleIcon: IIcon = {
-  image: markRaw(CheckCircleIcon),
-  tooltip: 'Validate'
-}
 </script>
 
-<style lang="scss" scope>
+<style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
-
-.editable-box {
-  position: relative;
-  > .content-editable {
-    border: 1px solid var(variables.$secondary-text-on-surface);
-    border-radius: vars.$border-radius-xs;
-    padding: var(variables.$spacing-xs) var(variables.$spacing-m) var(variables.$spacing-xl);
-    height: 200px;
-    overflow: scroll;
-    outline: none;
-  }
-  .feather-icon {
-    position: absolute;
-    right: 5px;
-    bottom: 5px;
-    width: 1.5rem;
-    height: 1.5rem;
-    outline: none;
-    &:hover {
-      cursor: pointer;
-    }
-  }
-}
 
 .container {
   display: flex;
