@@ -33,6 +33,10 @@ const errorNotificationPlugin = definePlugin(({ afterQuery }) => {
         msg: error.message.split('ALREADY_EXISTS:')[1]
       },
       {
+        err: 'UNAVAILABLE:',
+        msg: `Service unavailable (${error.message.split('UNAVAILABLE:')[1]})`
+      },
+      {
         err: 401,
         msg: 'Using invalid or expired credentials.'
       },
