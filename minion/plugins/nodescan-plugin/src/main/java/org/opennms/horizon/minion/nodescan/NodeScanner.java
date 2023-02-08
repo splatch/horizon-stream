@@ -128,7 +128,7 @@ public class NodeScanner implements Scanner {
         IPAddrTracker tracker = new IPAddrTracker() {
             @Override
             public void processIPInterfaceRow(IPInterfaceRow row) {
-                results.add(row.createInterfaceFromRow());
+                row.createInterfaceFromRow().ifPresent(results::add);
             }
         };
         try(var walker = snmpHelper.createWalker(agentConfig, "ipAddrEntry", tracker)) {
@@ -138,7 +138,7 @@ public class NodeScanner implements Scanner {
         IPAddressTableTracker ipAddressTableTracker = new IPAddressTableTracker() {
             @Override
             public void processIPAddressRow(IPAddressRow row) {
-                results.add(row.createInterfaceFromRow());
+                row.createInterfaceFromRow().ifPresent(results::add);
             }
         };
         try(var walker = snmpHelper.createWalker(agentConfig, "ipAddressTableEntry", ipAddressTableTracker)) {
