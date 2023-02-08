@@ -107,10 +107,8 @@ export const useAppliancesQueries = defineStore('appliancesQueries', {
       tableNodes.value = []
 
       allNodes.forEach(async (node) => {
-        const { data, isFetching } = await fetchNodeMetrics(
-          node.id as number,
-          node.ipInterfaces?.[0].ipAddress as string
-        ) // currently only 1 interface per node
+        const { ipAddress } = node.ipInterfaces?.filter((ii) => ii.snmpPrimary)[0] || {}
+        const { data, isFetching } = await fetchNodeMetrics(node.id as number, ipAddress as string)
         const latencyResult = data.value?.nodeLatency?.data?.result?.[0]?.values?.[0]
         const status = data.value?.nodeStatus?.status
 
