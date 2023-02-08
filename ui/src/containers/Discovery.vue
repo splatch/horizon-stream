@@ -19,13 +19,26 @@
       <div class="my-discovery-inner">
         <!-- dropdown select discovery (edit) -->
         <div>Search/Filter discovery</div>
-        <div>
-          <div>My active discovery</div>
-          <div>You have no active discovery</div>
+        <div class="card-my-discoveries">
+          <div class="title">
+            My Active Discovery
+            <div class="count">0</div>
+          </div>
+          <div class="emtpy">
+            <FeatherIcon
+              :icon="Warning"
+              class="icon"
+            />You have no active discovery
+          </div>
         </div>
-        <div>
-          <div>My passive discovery</div>
-          <div>You have no active discovery</div>
+        <div class="card-my-discoveries">
+          <div class="title">My Passive Discovery</div>
+          <div class="emtpy">
+            <FeatherIcon
+              :icon="Warning"
+              class="icon"
+            />You have no active discovery
+          </div>
         </div>
       </div>
     </section>
@@ -83,6 +96,8 @@
 
 <script lang="ts" setup>
 import AddIcon from '@featherds/icon/action/Add'
+import Warning from '@featherds/icon/notification/Warning'
+
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
@@ -151,30 +166,24 @@ const addIcon: IIcon = {
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
+@use '@featherds/styles/mixins/typography';
 
 .container {
   display: flex;
-  flex-direction: row;
-  flex-flow: wrap;
+  flex-direction: column;
   margin-left: var(variables.$spacing-l);
   margin-right: var(variables.$spacing-l);
 
   @include mediaQueriesMixins.screen-md {
-    column-gap: 3%;
-    > .my-discovery {
-      width: 30%;
-      min-width: auto;
-    }
-    > .discovery {
-      width: 67%;
-      min-width: auto;
-    }
+    column-gap: 1.4%;
+    flex-direction: row;
   }
 }
 
 .my-discovery {
   width: 100%;
-  min-width: 400px;
+  border-bottom: 1px solid var(--feather-border-on-surface);
+  margin-bottom: var(variables.$spacing-l);
 
   .add-btn {
     width: 100%;
@@ -190,14 +199,19 @@ const addIcon: IIcon = {
     flex-direction: column;
     width: 100%;
     margin-bottom: var(variables.$spacing-l);
-    > * {
+    > .card-my-discoveries {
+      background-color: var(variables.$surface);
       border: 1px solid var(variables.$border-on-surface);
       border-radius: vars.$border-radius-s;
-      padding: var(variables.$spacing-m);
+      padding: var(variables.$spacing-s);
       margin-bottom: var(variables.$spacing-m);
+      min-height: 100px;
       &:last-child {
         margin-bottom: 0;
       }
+    }
+    @include mediaQueriesMixins.screen-md {
+      margin-bottom: 0;
     }
   }
 
@@ -212,6 +226,8 @@ const addIcon: IIcon = {
   @include mediaQueriesMixins.screen-md {
     flex-direction: column;
     margin-bottom: 0;
+    width: 25%;
+    min-width: 300px;
     > * {
       width: 100%;
       margin-bottom: var(variables.$spacing-m);
@@ -221,13 +237,16 @@ const addIcon: IIcon = {
 
 .discovery {
   width: 100%;
-  min-width: 400px;
   border: 1px solid var(variables.$border-on-surface);
   border-radius: vars.$border-radius-s;
   padding: var(variables.$spacing-m);
+  background-color: var(variables.$surface);
   > h5,
   h4 {
     margin-bottom: var(variables.$spacing-m);
+  }
+  @include mediaQueriesMixins.screen-md {
+    margin-bottom: 0;
   }
 }
 
@@ -239,5 +258,30 @@ const addIcon: IIcon = {
 .footer {
   display: flex;
   justify-content: flex-end;
+}
+
+.title {
+  @include typography.subtitle1;
+  display: flex;
+
+  .count {
+    background-color: #00666d1f;
+    padding: 0 var(variables.$spacing-xs);
+    margin-left: var(variables.$spacing-m);
+    border-radius: 5px;
+    @include typography.body-small;
+  }
+}
+
+.emtpy {
+  display: flex;
+  gap: 8px;
+  margin-top: var(variables.$spacing-s);
+
+  .icon {
+    width: 24px;
+    height: 24px;
+    color: var(variables.$shade-1);
+  }
 }
 </style>
