@@ -65,7 +65,7 @@ const setDiscoveryOption = () => {
 
 .discoveries {
   padding: var(variables.$spacing-l);
-  background-color: vars.$shade-5;
+  background: var(--custom-shade-5);
   display: flex;
   margin-top: var(variables.$spacing-xs);
 

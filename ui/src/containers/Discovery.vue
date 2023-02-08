@@ -2,7 +2,7 @@
   <div class="container">
     <PageHeader heading="Discovery" />
     <div>
-      <Infobar />
+      <DiscoveryMenu />
     </div>
     <div class="discovery-cards">
       <Card
@@ -55,9 +55,10 @@
       >
         CLOSE
       </FeatherButton>
-      <ButtonWithSpinner v-if="selectedTool === DiscoveryType.Azure"
+      <ButtonWithSpinner
+        v-if="selectedTool === DiscoveryType.Azure"
         primary
-        :isFetching="isFetching" 
+        :isFetching="isFetching"
         :disabled="!isAzureEnabled"
         @click="saveAzureDiscovery"
       >
@@ -97,7 +98,7 @@ const selectedTool = ref()
 const isDrawerOpen = ref(false)
 
 const modalContent = computed(() => {
-  switch(selectedTool.value) {
+  switch (selectedTool.value) {
     case DiscoveryType.ICMP:
       return DiscoveryStepper
     case DiscoveryType.Azure:
@@ -106,11 +107,13 @@ const modalContent = computed(() => {
 })
 
 const isAzureEnabled = computed(() => {
-  return Boolean(store.selectedLocations.length 
-    && store.azure.clientId 
-    && store.azure.clientSecret
-    && store.azure.directoryId
-    && store.azure.subscriptionId)
+  return Boolean(
+    store.selectedLocations.length &&
+      store.azure.clientId &&
+      store.azure.clientSecret &&
+      store.azure.directoryId &&
+      store.azure.subscriptionId
+  )
 })
 
 const showSettings = (tool: DiscoveryType) => {
@@ -147,22 +150,22 @@ const closeDrawer = () => {
 @use '@featherds/styles/themes/variables';
 
 .container {
-	display: flex;
-	flex-direction: column;
-	margin: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  margin: 0 1rem;
 
-	.discovery-cards {
-		display: flex;
-	}
+  .discovery-cards {
+    display: flex;
+  }
 
-	.footer {
-		padding: var(variables.$spacing-m);
-		padding-top: var(variables.$spacing-s);
+  .footer {
+    padding: var(variables.$spacing-m);
+    padding-top: var(variables.$spacing-s);
 
-		> p {
-			margin-bottom: 10px;
-		}
-	}
+    > p {
+      margin-bottom: 10px;
+    }
+  }
 
   .passive-tools {
     display: flex;

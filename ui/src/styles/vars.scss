@@ -1,2 +1,10 @@
 //custom variables
-$shade-5: rgba(202, 202, 202, 0.12);
+@use '@featherds/styles/themes/open-mixins';
+
+.open-dark {
+  --custom-shade-5: red;
+}
+
+.open-light {
+  --custom-shade-5: green;
+}
