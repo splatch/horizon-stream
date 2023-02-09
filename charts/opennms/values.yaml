@@ -203,6 +203,7 @@ Keycloak:
   AdminUsername: admin
   AdminPassword: notset
   RealmName: opennms
+  DynamicRealmConfig: true
 Grafana:
   Enabled: true
   Path: /grafana

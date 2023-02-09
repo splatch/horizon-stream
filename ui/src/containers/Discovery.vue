@@ -5,17 +5,20 @@
   />
   <div class="container">
     <section class="my-discovery">
-      <!-- <FeatherButton
-        @click="addDiscovery"
-        primary
-        class="add-btn"
-      >
-        New discovery
-        <template #icon>
-          <Icon :icon="addIcon" />
-        </template>
-      </FeatherButton> -->
-      <div>
+      <div class="add-btn">
+        <FeatherButton
+          @click="addDiscovery"
+          primary
+        >
+          New discovery
+          <template #icon>
+            <Icon :icon="addIcon" />
+          </template>
+        </FeatherButton>
+      </div>
+      <div class="my-discovery-inner">
+        <!-- dropdown select discovery (edit) -->
+        <div>Search/Filter discovery</div>
         <div>
           <div>My active discovery</div>
           <div>You have no active discovery</div>
@@ -24,8 +27,6 @@
           <div>My passive discovery</div>
           <div>You have no active discovery</div>
         </div>
-        <!-- dropdown select discovery (edit) -->
-        <div>Search/Filter discovery</div>
       </div>
     </section>
 
@@ -43,6 +44,7 @@
         <div v-if="formInput.type">
           <h4>ICMP/SNMP Discovery Setup</h4>
           <div>
+            <!-- ICMP/SNMP name input -->
             <FeatherInput
               v-model="formInput.name"
               label="ICMP/SNMP name"
@@ -222,18 +224,31 @@ const addIcon: IIcon = {
 }
 
 .my-discovery {
-  display: flex;
-  flex-direction: column;
   width: 100%;
   min-width: 400px;
-  border: 1px solid var(variables.$border-on-surface);
-  border-radius: vars.$border-radius-s;
-  padding: var(variables.$spacing-m);
-  margin-bottom: var(variables.$spacing-l);
-  > * {
-    margin-bottom: var(variables.$spacing-m);
-    &:last-child {
-      margin-bottom: 0;
+
+  .add-btn {
+    width: 100%;
+    margin-bottom: var(variables.$spacing-l);
+    border-bottom: 1px solid var(variables.$border-on-surface);
+    > button {
+      margin-bottom: var(variables.$spacing-l);
+    }
+  }
+
+  > .my-discovery-inner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: var(variables.$spacing-l);
+    > * {
+      border: 1px solid var(variables.$border-on-surface);
+      border-radius: vars.$border-radius-s;
+      padding: var(variables.$spacing-m);
+      margin-bottom: var(variables.$spacing-m);
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 
