@@ -104,7 +104,7 @@ public class ScannerTaskSetService {
                 .setRetries(TaskUtils.AZURE_DEFAULT_RETRIES)
                 .build());
 
-        String taskId = identityForAzureTask("azure-scanner");
+        String taskId = identityForAzureTask("azure-scanner", String.valueOf(credential.getId()));
         return TaskDefinition.newBuilder()
             .setType(TaskType.SCANNER)
             .setPluginName("AZUREScanner")
