@@ -1,3 +1,17 @@
+<!-- 
+  This component contains:
+    - a label.
+    - an input box, where text can be typed and/or pasted.
+    - a clickable icon to validae the text entered.
+
+  A required type [IP, Community, Port] prop.
+  An optional regex expression for validation.
+
+  Note:
+    - the clickable icon is shown if:
+        - regexDelim prop is not empty and
+        - the input box is not empty
+ -->
 <template>
   <div class="content-editable-wrapper">
     <label for="contentEditable">{{ props.label }}</label>
