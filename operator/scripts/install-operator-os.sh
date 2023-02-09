@@ -16,10 +16,10 @@ REGISTRY="$(oc get route/default-route -n openshift-image-registry -o=jsonpath='
 docker login -u kubeadmin -p $(oc whoami -t) $REGISTRY
 docker tag opennms/operator:local-openshift $REGISTRY/opennms-operator:local
 docker push $REGISTRY/opennms-operator:local
-oc adm policy add-role-to-user system:image-pullers system:serviceaccount:opennms-operator -n opennms
 
 echo
 echo ________________Installing Operator________________
 echo
 helm upgrade -i operator-local ../charts/opennms-operator -f scripts/openshift-operator-values.yaml --namespace opennms --create-namespace
+oc adm policy add-role-to-user system:image-pullers system:serviceaccount:opennms-operator -n opennms
 if [ $? -ne 0 ]; then exit; fi
