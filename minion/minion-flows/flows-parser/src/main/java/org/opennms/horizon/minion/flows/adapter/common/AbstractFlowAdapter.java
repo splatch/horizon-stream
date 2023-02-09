@@ -38,8 +38,6 @@ import java.util.Objects;
 import org.opennms.horizon.minion.flows.adapter.imported.ContextKey;
 import org.opennms.horizon.minion.flows.adapter.imported.Flow;
 import org.opennms.horizon.minion.flows.adapter.imported.FlowSource;
-import org.opennms.horizon.minion.flows.adapter.imported.Pipeline;
-import org.opennms.horizon.minion.flows.adapter.imported.ProcessingOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +50,6 @@ import com.google.common.base.Strings;
 public abstract class AbstractFlowAdapter<P> implements Adapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractFlowAdapter.class);
-
-    private final Pipeline pipeline;
 
     private String metaDataNodeLookup;
     private ContextKey contextKey;
@@ -80,12 +76,9 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
     private final List<? extends PackageDefinition> packages;
 
     public AbstractFlowAdapter(final AdapterDefinition adapterConfig,
-                               final MetricRegistry metricRegistry,
-                               final Pipeline pipeline) {
+                               final MetricRegistry metricRegistry) {
         Objects.requireNonNull(adapterConfig);
         Objects.requireNonNull(metricRegistry);
-
-        this.pipeline = Objects.requireNonNull(pipeline);
 
         this.logParsingTimer = metricRegistry.timer(name("adapters", adapterConfig.getFullName(), "logParsing"));
         this.packetsPerLogHistogram = metricRegistry.histogram(name("adapters", adapterConfig.getFullName(), "packetsPerLog"));
@@ -123,17 +116,17 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             packetsPerLogHistogram.update(flowPackets);
         }
 
-        try {
+       // try {
             LOG.debug("Persisting {} packets, {} flows.", flowPackets, flows.size());
             final FlowSource source = new FlowSource(messageLog.getLocation(),
                     messageLog.getSourceAddress(),
                     contextKey);
-            this.pipeline.process(flows, source, ProcessingOptions.builder()
+           /* this.pipeline.process(flows, source, ProcessingOptions.builder()
                                                                   .setApplicationThresholding(this.applicationThresholding)
                                                                   .setApplicationDataCollection(this.applicationDataCollection)
                                                                   .setPackages(this.packages)
-                                                                  .build());
-        } catch (DetailedFlowException ex) {
+                                                                  .build());  */
+      /*  } catch (DetailedFlowException ex) {
             LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
             for (final String logMessage: ex.getDetailedLogMessages()) {
                 LOG.error(logMessage);
@@ -143,7 +136,7 @@ public abstract class AbstractFlowAdapter<P> implements Adapter {
             return;
         } catch (FlowException ex) {
             LOG.error("Error while persisting flows: {}", ex.getMessage(), ex);
-        }
+        } */
 
         LOG.debug("Completed processing {} telemetry messages.",
                 messageLog.getMessageList().size());

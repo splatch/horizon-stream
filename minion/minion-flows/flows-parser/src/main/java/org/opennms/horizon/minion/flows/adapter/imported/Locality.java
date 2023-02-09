@@ -74,11 +74,11 @@ public enum Locality
   }
 
   public static Locality forNumber(int value) {
-    switch (value) {
-      case 0: return PUBLIC;
-      case 1: return PRIVATE;
-      default: return null;
-    }
+      return switch (value) {
+          case 0 -> PUBLIC;
+          case 1 -> PRIVATE;
+          default -> null;
+      };
   }
 
   public static com.google.protobuf.Internal.EnumLiteMap<Locality>
@@ -86,12 +86,7 @@ public enum Locality
     return internalValueMap;
   }
   private static final com.google.protobuf.Internal.EnumLiteMap<
-      Locality> internalValueMap =
-        new com.google.protobuf.Internal.EnumLiteMap<Locality>() {
-          public Locality findValueByNumber(int number) {
-            return Locality.forNumber(number);
-          }
-        };
+      Locality> internalValueMap = Locality::forNumber;
 
   public final com.google.protobuf.Descriptors.EnumValueDescriptor
       getValueDescriptor() {
@@ -101,9 +96,8 @@ public enum Locality
       getDescriptorForType() {
     return getDescriptor();
   }
-  public static final com.google.protobuf.Descriptors.EnumDescriptor
-      getDescriptor() {
-    return EnrichedFlowProtos.getDescriptor().getEnumTypes().get(3);
+  public static com.google.protobuf.Descriptors.EnumDescriptor getDescriptor() {
+    return null;
   }
 
   private static final Locality[] VALUES = values();
@@ -122,7 +116,7 @@ public enum Locality
 
   private final int value;
 
-  private Locality(int value) {
+  Locality(int value) {
     this.value = value;
   }
 

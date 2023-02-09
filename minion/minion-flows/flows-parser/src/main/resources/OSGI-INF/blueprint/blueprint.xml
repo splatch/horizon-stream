@@ -10,10 +10,6 @@
 
     <reference id="identity" interface="org.opennms.horizon.shared.ipc.rpc.IpcIdentity"/>
 
-    <bean id="pipeline" class="org.opennms.horizon.minion.flows.adapter.imported.PipelineImpl"/>
-    <service ref="pipeline" interface="org.opennms.horizon.minion.flows.adapter.imported.Pipeline" />
-
-
     <bean id="dnsResolver" class="org.opennms.horizon.minion.flows.parser.factory.dnsresolver.NettyDnsResolver"
           init-method="init" destroy-method="destroy">
         <argument index="0" ref="metricRegistry"/>
@@ -91,33 +87,30 @@
     </service>
 
     <!-- Netflow5 Factory and Adapter -->
-    <bean id="netflow5Factory" class="org.opennms.horizon.minion.flows.adapter.netflow5.Netflow5AdapterFactory">
+    <bean id="netflow5AdapterFactory" class="org.opennms.horizon.minion.flows.adapter.netflow5.Netflow5AdapterFactory">
         <property name="telemetryRegistry" ref="telemetryRegistry"/>
-        <property name="pipeline" ref="pipeline" />
     </bean>
-    <service ref="netflow5Factory" interface="org.opennms.horizon.minion.flows.adapter.common.AdapterFactory">
+    <service ref="netflow5AdapterFactory" interface="org.opennms.horizon.minion.flows.adapter.common.AdapterFactory">
         <service-properties>
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
 
     <!-- Netflow9 Factory and Adapter -->
-    <bean id="netflow9Factory" class="org.opennms.horizon.minion.flows.adapter.netflow9.Netflow9AdapterFactory">
+    <bean id="netflow9AdapterFactory" class="org.opennms.horizon.minion.flows.adapter.netflow9.Netflow9AdapterFactory">
         <property name="telemetryRegistry" ref="telemetryRegistry"/>
-        <property name="pipeline" ref="pipeline" />
     </bean>
-    <service ref="netflow9Factory" interface="org.opennms.horizon.minion.flows.adapter.common.AdapterFactory">
+    <service ref="netflow9AdapterFactory" interface="org.opennms.horizon.minion.flows.adapter.common.AdapterFactory">
         <service-properties>
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
 
     <!-- IPFix Factory and Adapter -->
-    <bean id="ipfixFactory" class="org.opennms.horizon.minion.flows.adapter.ipfix.IpfixAdapterFactory">
+    <bean id="ipfixAdapterFactory" class="org.opennms.horizon.minion.flows.adapter.ipfix.IpfixAdapterFactory">
         <property name="telemetryRegistry" ref="telemetryRegistry"/>
-        <property name="pipeline" ref="pipeline" />
     </bean>
-    <service ref="ipfixFactory" interface="org.opennms.horizon.minion.flows.adapter.common.AdapterFactory">
+    <service ref="ipfixAdapterFactory" interface="org.opennms.horizon.minion.flows.adapter.common.AdapterFactory">
         <service-properties>
             <entry key="registration.export" value="true" />
         </service-properties>
