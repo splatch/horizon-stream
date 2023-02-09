@@ -110,7 +110,8 @@ import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
-import { ContentEditableType, DiscoverytType, DiscoveryInput } from '@/types/discovery'
+import { DiscoveryInput } from '@/types/discovery'
+import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
@@ -118,7 +119,7 @@ const { showSnackbar } = useSnackbar()
 const isFormShown = ref(true)
 
 const formInput = ref<DiscoveryInput>({
-  type: DiscoverytType.ICSNMP,
+  type: DiscoveryType.ICMP,
   name: '',
   location: 'Default',
   IPRange: '',
@@ -141,7 +142,7 @@ const contentFormattedIP = (args) => {
 
 const contentEditableCommunityRef = ref()
 const community = {
-  type: ContentEditableType.community,
+  type: ContentEditableType.Community,
   regexDelim: '',
   label: 'Enter community string (optional)'
 }
@@ -154,7 +155,7 @@ const contentFormattedCommunity = (args) => {
 
 const contentEditablePortRef = ref()
 const port = {
-  type: ContentEditableType.port,
+  type: ContentEditableType.Port,
   regexDelim: '',
   label: 'Enter UDP port (optional)'
 }
@@ -187,7 +188,7 @@ const saveHandler = () => {
 }
 
 const cancelHandler = () => {
-  // formInput.value.type = DiscoverytType.None
+  // formInput.value.type = DiscoveryType.None
 }
 
 const addIcon: IIcon = {
