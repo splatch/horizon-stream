@@ -14,3 +14,8 @@ export interface IDiscoverySNMPInput {
   communityString: string
   UDPPort: number
 }
+
+export interface IDiscovery {
+  id: number
+  name: string
+}

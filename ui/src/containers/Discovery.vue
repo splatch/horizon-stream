@@ -56,16 +56,16 @@ import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
-import { DiscoverytType, IDiscoverySNMPInput } from '@/types/discovery'
+import { DiscoverytType, IDiscoverySNMPInput, IDiscovery } from '@/types/discovery'
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
-const discoveriesResults = ref([])
+const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
 const searchLoading = ref(false)
 const searchValue = ref(undefined)
 const mocksActiveList = [
   { id: 1, name: 'MAD-001' },
   { id: 2, name: 'MAD-002' }
-]
+] as IDiscovery[]
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
 }
@@ -88,12 +88,14 @@ const addDiscovery = () => {
 
 const search = (q: string) => {
   searchLoading.value = true
-  discoveriesResults.value = mocksActiveList
+  const results = mocksActiveList
     .filter((x) => x.name.toLowerCase().indexOf(q) > -1)
     .map((x) => ({
       _text: x.name,
-      id: x.id
+      id: x.id,
+      name: x.name
     }))
+  discoveriesResults.value = results
   searchLoading.value = false
 }
 
