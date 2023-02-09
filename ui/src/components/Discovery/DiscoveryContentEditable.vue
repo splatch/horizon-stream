@@ -3,13 +3,14 @@
     <label for="contentEditable">{{ props.label }}</label>
     <div
       v-html="htmlString"
+      @keyup="contentChange"
       ref="contentEditableRef"
       contenteditable="true"
       id="contentEditable"
       class="content-editable"
     />
     <span
-      v-if="props.regexDelim"
+      v-if="props.regexDelim && isContentNotEmpty"
       @click="validateAndFormat"
       class="validate-format"
       ><Icon :icon="checkCircleIcon"
@@ -42,8 +43,13 @@ const props = defineProps({
 })
 
 const isContentInvalid = ref(true)
+const isContentNotEmpty = ref(false)
 const contentEditableRef = ref()
 const htmlString = ref('')
+
+const contentChange = (evt: KeyboardEvent) => {
+  isContentNotEmpty.value = evt.target?.textContent.length as boolean
+}
 
 const validateAndFormat = () => {
   isContentInvalid.value = validateContent()
@@ -129,7 +135,7 @@ defineExpose({
   > .validate-format {
     position: absolute;
     right: 5px;
-    bottom: 5px;
+    bottom: 0;
     :deep(> .feather-icon) {
       width: 1.5rem;
       height: 1.5rem;
