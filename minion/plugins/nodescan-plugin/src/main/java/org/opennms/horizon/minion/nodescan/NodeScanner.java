@@ -30,10 +30,10 @@ package org.opennms.horizon.minion.nodescan;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import org.opennms.horizon.minion.plugin.api.ScanResultsResponse;
 import org.opennms.horizon.minion.plugin.api.ScanResultsResponseImpl;
@@ -96,7 +96,8 @@ public class NodeScanner implements Scanner {
 
     private List<SnmpInterfaceResult> mergeSNMPResult(List<SnmpInterfaceResult> ipTableResults, List<SnmpInterfaceResult> snmpIfTableResults) {
         List<SnmpInterfaceResult> merged = new ArrayList<>();
-        Map<Integer, SnmpInterfaceResult> ipTableMap = ipTableResults.stream().collect(Collectors.toMap(SnmpInterfaceResult::getIfIndex, r->r));
+        Map<Integer, SnmpInterfaceResult> ipTableMap = new HashMap<>();
+        ipTableResults.forEach(r -> ipTableMap.computeIfAbsent(r.getIfIndex(), k -> r));
         snmpIfTableResults.forEach(r->{
             SnmpInterfaceResult.Builder builder = SnmpInterfaceResult.newBuilder(r);
             SnmpInterfaceResult tmp = ipTableMap.get(r.getIfIndex());
