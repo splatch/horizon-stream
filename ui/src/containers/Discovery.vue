@@ -20,19 +20,16 @@
       <div class="my-discovery-inner">
         <FeatherAutocomplete
           class="search"
-          v-model="discoveries.value"
-          :loading="discoveries.loading"
-          :results="discoveries.results"
-          @search="discoveries.search"
+          v-model="searchValue"
+          :loading="searchLoading"
+          :results="discoveriesResults"
+          @search="search"
           label="Search Discovery"
           type="single"
         />
         <DiscoveryListCard
           title=" My Active Discoveries"
-          :list="[
-            { id: 1, name: 'MAD-001' },
-            { id: 2, name: 'MAD-002' }
-          ]"
+          :list="mocksActiveList"
           @select-discovery="showDiscovery"
         />
         <DiscoveryListCard
@@ -62,20 +59,17 @@ import useSnackbar from '@/composables/useSnackbar'
 import { DiscoverytType, IDiscoverySNMPInput } from '@/types/discovery'
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
-
+const discoveriesResults = ref([])
+const searchLoading = ref(false)
+const searchValue = ref(undefined)
+const mocksActiveList = [
+  { id: 1, name: 'MAD-001' },
+  { id: 2, name: 'MAD-002' }
+]
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
 }
 const isFormShown = ref(true)
-
-const formInput = ref<IDiscoverySNMPInput>({
-  type: DiscoverytType.ICSNMP,
-  name: '', // required?
-  location: 'Default',
-  IPRange: '', // required?
-  communityString: '', // required?
-  UDPPort: 0 // required?
-})
 
 const saveHandler = () => {
   // startSpinner()
@@ -88,28 +82,19 @@ const saveHandler = () => {
   // })
 }
 
-const cancelHandler = () => {
-  formInput.value.type = DiscoverytType.None
-}
 const addDiscovery = () => {
   isFormShown.value = true
 }
 
-// Search discoveries
-const discoveries = {
-  loading: false,
-  results: [] as IAutocompleteItemType[],
-  value: [] as IAutocompleteItemType[],
-  items: [],
-  search: (q: string) => {
-    discoveries.loading = true
-    discoveries.results = discoveries.items
-      .filter((x) => x.toLowerCase().indexOf(q) > -1)
-      .map((x) => ({
-        _text: x
-      }))
-    discoveries.loading = false
-  }
+const search = (q: string) => {
+  searchLoading.value = true
+  discoveriesResults.value = mocksActiveList
+    .filter((x) => x.name.toLowerCase().indexOf(q) > -1)
+    .map((x) => ({
+      _text: x.name,
+      id: x.id
+    }))
+  searchLoading.value = false
 }
 
 const showDiscovery = (id: number) => {
