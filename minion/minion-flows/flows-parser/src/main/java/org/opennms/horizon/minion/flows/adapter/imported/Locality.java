@@ -31,6 +31,10 @@
 
 package org.opennms.horizon.minion.flows.adapter.imported;
 
+import org.opennms.horizon.minion.flows.parser.flowmessage.FlowProtos;
+
+import com.google.protobuf.DescriptorProtos;
+
 /**
  * Protobuf enum {@code Locality}
  */
@@ -97,7 +101,7 @@ public enum Locality
     return getDescriptor();
   }
   public static com.google.protobuf.Descriptors.EnumDescriptor getDescriptor() {
-    return null;
+      return FlowProtos.getDescriptor().getEnumTypes().get(3);
   }
 
   private static final Locality[] VALUES = values();
