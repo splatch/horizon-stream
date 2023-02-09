@@ -1,6 +1,6 @@
 <template>
   <PageHeader
-    heading="Discovery"
+    :heading="discoveryText.Discovery.heading"
     class="header"
   />
   <div class="container">
@@ -10,7 +10,7 @@
           @click="addDiscovery"
           primary
         >
-          New discovery
+          {{ discoveryText.Discovery.button.add }}
           <template #icon>
             <Icon :icon="addIcon" />
           </template>
@@ -35,19 +35,19 @@
       v-if="isFormShown"
       class="discovery"
     >
-      <h5>Select a discovery</h5>
+      <h5>{{ discoveryText.Discovery.heading1 }}</h5>
       <form>
         <div>
           <!-- active -->
           <!-- passive -->
         </div>
         <div v-if="formInput.type">
-          <h4>ICMP/SNMP Discovery Setup</h4>
+          <h4>{{ discoveryText.Discovery.heading2 }}</h4>
           <div>
             <!-- ICMP/SNMP name input -->
             <FeatherInput
               v-model="formInput.name"
-              label="ICMP/SNMP name"
+              :label="discoveryText.Discovery.nameInputLabel"
               class="name-input"
             />
             <!-- location input -->
@@ -86,20 +86,20 @@
           v-else
           class="get-started"
         >
-          Select a discovery to get started
+          {{ discoveryText.Discovery.nodiscoverySelectedMsg }}
         </div>
         <div class="footer">
           <FeatherButton
             @click="cancelHandler"
             secondary
-            >cancel</FeatherButton
+            >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
           >
           <FeatherButton
             @click="saveHandler"
             :disabled="isFormInvalid"
             primary
             type="submit"
-            >save discovery</FeatherButton
+            >{{ discoveryText.Discovery.button.submit }}</FeatherButton
           >
         </div>
       </form>
@@ -114,6 +114,7 @@ import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 import { DiscoveryInput } from '@/types/discovery'
 import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
+import discoveryText from '@/components/Discovery/discovery.text'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
@@ -133,7 +134,7 @@ const contentEditableIPRef = ref()
 const IPs = {
   type: ContentEditableType.IP,
   regexDelim: '[,; ]+',
-  label: 'Enter IP ranges and/or subnets'
+  label: discoveryText.ContentEditable.IPs.label
 }
 const isContentInvalidIP = (args) => {
   console.log('args', args)
@@ -146,7 +147,7 @@ const contentEditableCommunityRef = ref()
 const community = {
   type: ContentEditableType.Community,
   regexDelim: '',
-  label: 'Enter community string (optional)'
+  label: discoveryText.ContentEditable.Community.label
 }
 const isContentInvalidCommunity = (args) => {
   console.log('args', args)
@@ -159,7 +160,7 @@ const contentEditablePortRef = ref()
 const port = {
   type: ContentEditableType.Port,
   regexDelim: '',
-  label: 'Enter UDP port (optional)'
+  label: discoveryText.ContentEditable.Port.label
 }
 const isContentInvalidPort = (args) => {
   console.log('args', args)
