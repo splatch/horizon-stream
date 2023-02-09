@@ -47,8 +47,8 @@ const isContentNotEmpty = ref(false)
 const contentEditableRef = ref()
 const htmlString = ref('')
 
-const contentChange = (evt: KeyboardEvent) => {
-  isContentNotEmpty.value = evt.target?.textContent.length as boolean
+const contentChange = () => {
+  isContentNotEmpty.value = contentEditableRef.value.textContent.length as boolean
 }
 
 const validateAndFormat = () => {
