@@ -16,30 +16,29 @@
           </template>
         </FeatherButton>
       </div>
+
       <div class="my-discovery-inner">
-        <!-- dropdown select discovery (edit) -->
-        <div>Search/Filter discovery</div>
-        <div class="card-my-discoveries">
-          <div class="title">
-            My Active Discovery
-            <div class="count">0</div>
-          </div>
-          <div class="emtpy">
-            <FeatherIcon
-              :icon="Warning"
-              class="icon"
-            />You have no active discovery
-          </div>
-        </div>
-        <div class="card-my-discoveries">
-          <div class="title">My Passive Discovery</div>
-          <div class="emtpy">
-            <FeatherIcon
-              :icon="Warning"
-              class="icon"
-            />You have no active discovery
-          </div>
-        </div>
+        <FeatherAutocomplete
+          class="search"
+          v-model="discoveries.value"
+          :loading="discoveries.loading"
+          :results="discoveries.results"
+          @search="discoveries.search"
+          label="Search Discovery"
+          type="single"
+        />
+        <DiscoveryListCard
+          title=" My Active Discoveries"
+          :list="[
+            { id: 1, name: 'MAD-001' },
+            { id: 2, name: 'MAD-002' }
+          ]"
+          @select-discovery="showDiscovery"
+        />
+        <DiscoveryListCard
+          title=" My Passive Discoveries"
+          :list="[]"
+        />
       </div>
     </section>
 
@@ -48,98 +47,34 @@
       v-if="isFormShown"
       class="discovery"
     >
-      <h5>Select a discovery</h5>
-      <form>
-        <div>
-          <!-- active -->
-          <!-- passive -->
-        </div>
-        <div v-if="formInput.type">
-          <h4>ICMP/SNMP Discovery Setup</h4>
-          <div>
-            <!-- ICMP/SNMP name input -->
-            <FeatherInput
-              v-model="formInput.name"
-              label="ICMP/SNMP name"
-              class="name-input"
-            />
-            <!-- location input -->
-            <!-- IP input -->
-            <!-- community input -->
-            <!-- port input -->
-          </div>
-        </div>
-        <div
-          v-else
-          class="get-started"
-        >
-          Select a discovery to get started
-        </div>
-        <div class="footer">
-          <FeatherButton
-            @click="cancelHandler"
-            secondary
-            >cancel</FeatherButton
-          >
-          <FeatherButton
-            @click="saveHandler"
-            :disabled="isFormValid"
-            primary
-            type="submit"
-            >save discovery</FeatherButton
-          >
-        </div>
-      </form>
+      <!--DISCOVERY MENU -->
+      <EditDiscovery />
     </section>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { IAutocompleteItemType } from '@featherds/autocomplete'
 import AddIcon from '@featherds/icon/action/Add'
-import Warning from '@featherds/icon/notification/Warning'
-
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
-
-const enum DiscoverytType {
-  None,
-  ICSNMP,
-  Azure,
-  SysLog,
-  SNMPTraps
-}
-
-interface DiscoveryInput {
-  type: DiscoverytType
-  name: string
-  location: string
-  IPRange: string
-  communityString: string
-  UDPPort: number
-}
-
+import { DiscoverytType, IDiscoverySNMPInput } from '@/types/discovery'
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 
+const addIcon: IIcon = {
+  image: markRaw(AddIcon)
+}
 const isFormShown = ref(true)
 
-const formInput = ref<DiscoveryInput>({
+const formInput = ref<IDiscoverySNMPInput>({
   type: DiscoverytType.ICSNMP,
   name: '', // required?
   location: 'Default',
   IPRange: '', // required?
   communityString: '', // required?
   UDPPort: 0 // required?
-})
-
-const addDiscovery = () => {
-  isFormShown.value = true
-}
-
-const isFormValid = computed(() => {
-  // formInput validation
-  return true
 })
 
 const saveHandler = () => {
@@ -156,9 +91,29 @@ const saveHandler = () => {
 const cancelHandler = () => {
   formInput.value.type = DiscoverytType.None
 }
+const addDiscovery = () => {
+  isFormShown.value = true
+}
 
-const addIcon: IIcon = {
-  image: markRaw(AddIcon)
+// Search discoveries
+const discoveries = {
+  loading: false,
+  results: [] as IAutocompleteItemType[],
+  value: [] as IAutocompleteItemType[],
+  items: [],
+  search: (q: string) => {
+    discoveries.loading = true
+    discoveries.results = discoveries.items
+      .filter((x) => x.toLowerCase().indexOf(q) > -1)
+      .map((x) => ({
+        _text: x
+      }))
+    discoveries.loading = false
+  }
+}
+
+const showDiscovery = (id: number) => {
+  console.log('show discovery', id)
 }
 </script>
 
@@ -175,15 +130,15 @@ const addIcon: IIcon = {
   margin-right: var(variables.$spacing-l);
 
   @include mediaQueriesMixins.screen-md {
-    column-gap: 1.4%;
+    column-gap: var(variables.$spacing-l);
     flex-direction: row;
   }
 }
 
 .my-discovery {
   width: 100%;
-  border-bottom: 1px solid var(--feather-border-on-surface);
   margin-bottom: var(variables.$spacing-l);
+  border-bottom: 1px solid var(variables.$border-on-surface);
 
   .add-btn {
     width: 100%;
@@ -199,65 +154,34 @@ const addIcon: IIcon = {
     flex-direction: column;
     width: 100%;
     margin-bottom: var(variables.$spacing-l);
-    > .card-my-discoveries {
-      background-color: var(variables.$surface);
-      border: 1px solid var(variables.$border-on-surface);
-      border-radius: vars.$border-radius-s;
-      padding: var(variables.$spacing-s);
+    > * {
       margin-bottom: var(variables.$spacing-m);
-      min-height: 100px;
       &:last-child {
         margin-bottom: 0;
       }
     }
+
     @include mediaQueriesMixins.screen-md {
       margin-bottom: 0;
+    }
+
+    .search {
+      background-color: var(variables.$surface);
+      margin-bottom: var(variables.$spacing-m);
     }
   }
 
   @include mediaQueriesMixins.screen-sm {
     flex-direction: row;
     column-gap: 2%;
-    > * {
-      width: 32%;
-      margin-bottom: 0;
-    }
+    border-bottom: none;
   }
   @include mediaQueriesMixins.screen-md {
     flex-direction: column;
     margin-bottom: 0;
     width: 25%;
-    min-width: 300px;
-    > * {
-      width: 100%;
-      margin-bottom: var(variables.$spacing-m);
-    }
+    min-width: 260px;
   }
-}
-
-.discovery {
-  width: 100%;
-  border: 1px solid var(variables.$border-on-surface);
-  border-radius: vars.$border-radius-s;
-  padding: var(variables.$spacing-m);
-  background-color: var(variables.$surface);
-  > h5,
-  h4 {
-    margin-bottom: var(variables.$spacing-m);
-  }
-  @include mediaQueriesMixins.screen-md {
-    margin-bottom: 0;
-  }
-}
-
-.header {
-  margin-left: var(variables.$spacing-l);
-  margin-right: var(variables.$spacing-l);
-}
-
-.footer {
-  display: flex;
-  justify-content: flex-end;
 }
 
 .title {
@@ -283,5 +207,26 @@ const addIcon: IIcon = {
     height: 24px;
     color: var(variables.$shade-1);
   }
+}
+
+.feather-input-sub-text {
+  display: none !important;
+}
+
+.discovery {
+  width: 100%;
+  border: 1px solid var(variables.$border-on-surface);
+  border-radius: vars.$border-radius-s;
+  padding: var(variables.$spacing-m);
+  background-color: var(variables.$surface);
+
+  @include mediaQueriesMixins.screen-md {
+    margin-bottom: 0;
+  }
+}
+
+.header {
+  margin-left: var(variables.$spacing-l);
+  margin-right: var(variables.$spacing-l);
 }
 </style>
