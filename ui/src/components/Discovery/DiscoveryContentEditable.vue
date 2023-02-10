@@ -1,7 +1,7 @@
 <!-- 
   This component contains:
     - a label.
-    - an input box, where text can be typed and/or pasted.
+    - an input box, where text can be typed and/or pasted in.
     - a clickable icon to validae the text entered.
 
   A required type [IP, Community, Port] prop.
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts" setup>
-import { isIPAddress } from 'ip-address-validator'
+import ipRegex from 'ip-regex'
 import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
 import { ContentEditableType } from '@/components/Discovery/discovery.constants'
@@ -80,7 +80,7 @@ const validateContent = () => {
 
   switch (props.contentType) {
     case ContentEditableType.IP:
-      isValid = contentEditableStrings.some((str: string) => !isIPAddress(str))
+      isValid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
       break
     case ContentEditableType.Community:
       break
@@ -102,7 +102,7 @@ const formatContent = () => {
     case ContentEditableType.IP:
       formattedStr = contentEditableStrings
         .map((str: string) => {
-          if (isIPAddress(str)) return str
+          if (ipRegex({ exact: true }).test(str)) return str
 
           return errorStr.replace('{{}}', str)
         })
