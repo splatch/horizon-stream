@@ -134,6 +134,7 @@ defineExpose({
 @use '@/styles/vars.scss';
 
 .content-editable-wrapper {
+  // TODO: mimic FeatherDS input component; label inside input box and animate it to be on top on the box when focus
   position: relative;
   > .content-editable {
     border: 1px solid var(variables.$secondary-text-on-surface);
