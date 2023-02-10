@@ -15,6 +15,7 @@
             :label="discoveryText.Discovery.nameInputLabel"
             class="name-input"
           />
+          <LocationsAutocomplete type="multiply" />
           <!-- location input -->
           <div class="content-editable-container">
             <DiscoveryContentEditable
@@ -161,9 +162,11 @@ const cancelHandler = () => {
     margin-bottom: var(variables.$spacing-m);
   }
 }
-
-@include mediaQueriesMixins.screen-xl {
-  .content-editable-container {
+.content-editable-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(variables.$spacing-m);
+  @include mediaQueriesMixins.screen-md {
     width: 100%;
     display: flex;
     flex-direction: row;
