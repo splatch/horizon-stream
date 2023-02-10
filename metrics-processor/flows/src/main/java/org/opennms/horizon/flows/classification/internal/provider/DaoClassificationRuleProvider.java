@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,39 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.flows.meta.api;
+package org.opennms.horizon.flows.classification.internal.provider;
 
-import com.google.common.collect.ImmutableList;
+import org.opennms.horizon.flows.classification.ClassificationRuleProvider;
+import org.opennms.horizon.flows.classification.persistence.api.ClassificationRuleDao;
+import org.opennms.horizon.flows.classification.persistence.api.Rule;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
-public class FallbackScope implements Scope {
-    private final List<Scope> scopes;
+public class DaoClassificationRuleProvider implements ClassificationRuleProvider {
 
-    public FallbackScope(final List<Scope> scopes) {
-        this.scopes = ImmutableList.copyOf(scopes).reverse();
-    }
+    private final ClassificationRuleDao dao;
 
-    public FallbackScope(final Scope... scopes) {
-        this.scopes = ImmutableList.copyOf(scopes).reverse();
+    public DaoClassificationRuleProvider(ClassificationRuleDao classificationRuleDao) {
+        this.dao = Objects.requireNonNull(classificationRuleDao);
     }
 
     @Override
-    public Optional<ScopeValue> get(final ContextKey contextKey) {
-        return this.scopes.stream()
-                .map(scope -> scope.get(contextKey))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
-    }
-
-    @Override
-    public Set<ContextKey> keys() {
-        return this.scopes.stream()
-                .flatMap(scope -> scope.keys().stream())
-                .collect(Collectors.toSet());
+    public List<Rule> getRules() {
+        return dao.findAllEnabledRules();
     }
 }

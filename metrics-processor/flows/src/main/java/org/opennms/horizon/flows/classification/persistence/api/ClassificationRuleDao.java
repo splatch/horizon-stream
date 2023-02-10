@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,10 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.flows.meta.api;
+package org.opennms.horizon.flows.classification.persistence.api;
 
-public interface MetadataConstants {
+import java.util.List;
 
-    String NODE = "node";
-    String TTL = "ttl";
+public interface ClassificationRuleDao extends OnmsDao<Rule, Integer> {
+
+    List<Rule> findAllEnabledRules();
+
+    Rule findByDefinition(Rule rule, Group group);
+
+    List<Rule> findByDefinition(Rule http);
 }
