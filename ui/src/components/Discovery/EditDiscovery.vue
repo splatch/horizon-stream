@@ -1,24 +1,5 @@
 <template>
   <form class="form">
-    <div>
-      <!-- active -->
-      <!-- passive -->
-    </div>
-    <div v-if="formInput.type">
-      <h4>ICMP/SNMP Discovery Setup</h4>
-      <div>
-        <!-- ICMP/SNMP name input -->
-        <FeatherInput
-          v-model="formInput.name"
-          label="ICMP/SNMP name"
-          class="name-input"
-        />
-        <!-- location input -->
-        <!-- IP input -->
-        <!-- community input -->
-        <!-- port input -->
-      </div>
-    </div>
     <h5>{{ discoveryText.Discovery.heading1 }}</h5>
     <form>
       <div>
