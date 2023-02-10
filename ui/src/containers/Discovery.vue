@@ -2,7 +2,7 @@
   <div class="container">
     <PageHeader heading="Discovery" />
     <div>
-      <DiscoveryMenu />
+      <Infobar />
     </div>
     <div class="discovery-cards">
       <Card

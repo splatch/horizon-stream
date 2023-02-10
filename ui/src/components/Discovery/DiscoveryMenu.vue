@@ -36,8 +36,7 @@
               class="icon"
               :icon="networkIcon"
             />
-            <FeatherRadio :value="'syslog'">SYSLOG</FeatherRadio>
-            <FeatherRadio :value="'snmpTraps'">SNMP Traps</FeatherRadio>
+            <FeatherRadio :value="'syslog'">Syslog & SNMP Traps</FeatherRadio>
           </div>
         </FeatherRadioGroup>
       </div>
@@ -64,25 +63,49 @@ const setDiscoveryOption = () => {
 @use '@/styles/mediaQueriesMixins';
 
 .discoveries {
-  padding: var(variables.$spacing-l);
-  background: var(--custom-shade-5);
+  padding: var(variables.$spacing-s);
+  background: var(variables.$shade-4);
   display: flex;
+  flex-direction: column;
   margin-top: var(variables.$spacing-xs);
 
+  @include mediaQueriesMixins.screen-md {
+    padding: var(variables.$spacing-l);
+    display: flex;
+    flex-direction: row;
+  }
   .discovery-card {
-    width: 50%;
+    width: 100%;
 
     &.passive {
-      border-left: 1px solid var(variables.$shade-4);
-      padding-left: var(variables.$spacing-l);
+      border-left: none;
+      padding-left: 0;
+      border-top: 1px solid var(variables.$shade-4);
+      padding-top: var(variables.$spacing-s);
+      margin-top: var(variables.$spacing-s);
+      .icon {
+        display: none;
+      }
+
+      @include mediaQueriesMixins.screen-md {
+        border-top: none;
+        border-left: 1px solid var(variables.$shade-4);
+        padding-left: var(variables.$spacing-l);
+        padding-top: 0;
+        margin-top: 0;
+        .icon {
+          display: flex;
+        }
+      }
+    }
+
+    @include mediaQueriesMixins.screen-md {
+      width: 50%;
     }
   }
   .row {
     display: flex;
     align-items: center;
-    > .layout-container {
-      padding-right: var(variables.$spacing-xxl);
-    }
   }
   .icon {
     width: 28px;
