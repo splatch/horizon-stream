@@ -38,10 +38,11 @@
 </template>
 
 <script lang="ts" setup>
-import { DiscoverytType, IDiscoverySNMPInput } from '@/types/discovery'
+import { IDiscoverySNMPInput } from '@/types/discovery'
+import { DiscoveryType } from './discovery.constants'
 
 const formInput = ref<IDiscoverySNMPInput>({
-  type: DiscoverytType.ICSNMP,
+  type: DiscoveryType.SNMP,
   name: '', // required?
   location: 'Default',
   IPRange: '', // required?
@@ -66,7 +67,7 @@ const saveHandler = () => {
 }
 
 const cancelHandler = () => {
-  formInput.value.type = DiscoverytType.None
+  formInput.value.type = null
 }
 </script>
 

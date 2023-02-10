@@ -56,7 +56,7 @@ import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
-import { DiscoverytType, IDiscoverySNMPInput, IDiscovery } from '@/types/discovery'
+import { IDiscovery } from '@/types/discovery'
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
@@ -168,31 +168,6 @@ const showDiscovery = (id: number) => {
     margin-bottom: 0;
     width: 25%;
     min-width: 260px;
-  }
-}
-
-.title {
-  @include typography.subtitle1;
-  display: flex;
-
-  .count {
-    background-color: #00666d1f;
-    padding: 0 var(variables.$spacing-xs);
-    margin-left: var(variables.$spacing-m);
-    border-radius: 5px;
-    @include typography.body-small;
-  }
-}
-
-.emtpy {
-  display: flex;
-  gap: 8px;
-  margin-top: var(variables.$spacing-s);
-
-  .icon {
-    width: 24px;
-    height: 24px;
-    color: var(variables.$shade-1);
   }
 }
 

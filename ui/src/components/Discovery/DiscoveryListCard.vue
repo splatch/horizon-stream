@@ -16,7 +16,7 @@
     </div>
     <div
       v-else
-      class="emtpy"
+      class="empty"
     >
       <FeatherIcon
         :icon="Warning"
@@ -70,7 +70,7 @@ defineEmits(['selectDiscovery'])
   cursor: pointer;
 }
 
-.emtpy {
+.empty {
   display: flex;
   gap: 8px;
   margin-top: var(variables.$spacing-s);
