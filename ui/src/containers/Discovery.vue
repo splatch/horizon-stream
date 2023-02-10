@@ -16,17 +16,26 @@
           </template>
         </FeatherButton>
       </div>
+
       <div class="my-discovery-inner">
-        <!-- dropdown select discovery (edit) -->
-        <div>Search/Filter discovery</div>
-        <div>
-          <div>My active discovery</div>
-          <div>You have no active discovery</div>
-        </div>
-        <div>
-          <div>My passive discovery</div>
-          <div>You have no active discovery</div>
-        </div>
+        <FeatherAutocomplete
+          class="search"
+          v-model="searchValue"
+          :loading="searchLoading"
+          :results="discoveriesResults"
+          @search="search"
+          label="Search Discovery"
+          type="single"
+        />
+        <DiscoveryListCard
+          title=" My Active Discoveries"
+          :list="mocksActiveList"
+          @select-discovery="showDiscovery"
+        />
+        <DiscoveryListCard
+          title=" My Passive Discoveries"
+          :list="[]"
+        />
       </div>
     </section>
 
@@ -35,148 +44,33 @@
       v-if="isFormShown"
       class="discovery"
     >
-      <h5>{{ discoveryText.Discovery.heading1 }}</h5>
-      <form>
-        <div>
-          <!-- active -->
-          <!-- passive -->
-        </div>
-        <div v-if="formInput.type">
-          <h4>{{ discoveryText.Discovery.heading2 }}</h4>
-          <div>
-            <!-- ICMP/SNMP name input -->
-            <FeatherInput
-              v-model="formInput.name"
-              :label="discoveryText.Discovery.nameInputLabel"
-              class="name-input"
-            />
-            <!-- location input -->
-            <div class="content-editable-container">
-              <DiscoveryContentEditable
-                @is-content-invalid="isContentInvalidIP"
-                @content-formatted="contentFormattedIP"
-                ref="contentEditableIPRef"
-                :contentType="IPs.type"
-                :regexDelim="IPs.regexDelim"
-                :label="IPs.label"
-                class="ip-input"
-              />
-              <DiscoveryContentEditable
-                @is-content-invalid="isContentInvalidCommunity"
-                @content-formatted="contentFormattedCommunity"
-                ref="contentEditableCommunityRef"
-                :contentType="community.type"
-                :regexDelim="community.regexDelim"
-                :label="community.label"
-                class="community-input"
-              />
-              <DiscoveryContentEditable
-                @is-content-invalid="isContentInvalidPort"
-                @content-formatted="contentFormattedPort"
-                ref="contentEditablePortRef"
-                :contentType="port.type"
-                :regexDelim="port.regexDelim"
-                :label="port.label"
-                class="port-input"
-              />
-            </div>
-          </div>
-        </div>
-        <div
-          v-else
-          class="get-started"
-        >
-          {{ discoveryText.Discovery.nodiscoverySelectedMsg }}
-        </div>
-        <div class="footer">
-          <FeatherButton
-            @click="cancelHandler"
-            secondary
-            >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
-          >
-          <FeatherButton
-            @click="saveHandler"
-            :disabled="isFormInvalid"
-            primary
-            type="submit"
-            >{{ discoveryText.Discovery.button.submit }}</FeatherButton
-          >
-        </div>
-      </form>
+      <EditDiscovery />
     </section>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { IAutocompleteItemType } from '@featherds/autocomplete'
 import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
-import { DiscoveryInput } from '@/types/discovery'
-import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
+import { IDiscovery } from '@/types/discovery'
 import discoveryText from '@/components/Discovery/discovery.text'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
-
+const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
+const searchLoading = ref(false)
+const searchValue = ref(undefined)
+const mocksActiveList = [
+  { id: 1, name: 'MAD-001' },
+  { id: 2, name: 'MAD-002' }
+] as IDiscovery[]
+const addIcon: IIcon = {
+  image: markRaw(AddIcon)
+}
 const isFormShown = ref(true)
-
-const formInput = ref<DiscoveryInput>({
-  type: DiscoveryType.ICMP,
-  name: '',
-  location: 'Default',
-  IPRange: '',
-  communityString: '', // optional
-  UDPPort: 0 // optional
-})
-
-const contentEditableIPRef = ref()
-const IPs = {
-  type: ContentEditableType.IP,
-  regexDelim: '[,; ]+',
-  label: discoveryText.ContentEditable.IPs.label
-}
-const isContentInvalidIP = (args) => {
-  console.log('args', args)
-}
-const contentFormattedIP = (args) => {
-  console.log('args', args)
-}
-
-const contentEditableCommunityRef = ref()
-const community = {
-  type: ContentEditableType.Community,
-  regexDelim: '',
-  label: discoveryText.ContentEditable.Community.label
-}
-const isContentInvalidCommunity = (args) => {
-  console.log('args', args)
-}
-const contentFormattedCommunity = (args) => {
-  console.log('args', args)
-}
-
-const contentEditablePortRef = ref()
-const port = {
-  type: ContentEditableType.Port,
-  regexDelim: '',
-  label: discoveryText.ContentEditable.Port.label
-}
-const isContentInvalidPort = (args) => {
-  console.log('args', args)
-}
-const contentFormattedPort = (args) => {
-  console.log('args', args)
-}
-
-const addDiscovery = () => {
-  isFormShown.value = true
-}
-
-const isFormInvalid = computed(() => {
-  // formInput validation
-  return false
-})
 
 const saveHandler = () => {
   // startSpinner()
@@ -190,12 +84,25 @@ const saveHandler = () => {
   // })
 }
 
-const cancelHandler = () => {
-  // formInput.value.type = DiscoveryType.None
+const addDiscovery = () => {
+  isFormShown.value = true
 }
 
-const addIcon: IIcon = {
-  image: markRaw(AddIcon)
+const search = (q: string) => {
+  searchLoading.value = true
+  const results = mocksActiveList
+    .filter((x) => x.name.toLowerCase().indexOf(q) > -1)
+    .map((x) => ({
+      _text: x.name,
+      id: x.id,
+      name: x.name
+    }))
+  discoveriesResults.value = results
+  searchLoading.value = false
+}
+
+const showDiscovery = (id: number) => {
+  console.log('show discovery', id)
 }
 </script>
 
@@ -203,30 +110,24 @@ const addIcon: IIcon = {
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
+@use '@featherds/styles/mixins/typography';
 
 .container {
   display: flex;
-  flex-direction: row;
-  flex-flow: wrap;
+  flex-direction: column;
   margin-left: var(variables.$spacing-l);
   margin-right: var(variables.$spacing-l);
 
   @include mediaQueriesMixins.screen-md {
-    column-gap: 3%;
-    > .my-discovery {
-      width: 30%;
-      min-width: auto;
-    }
-    > .discovery {
-      width: 67%;
-      min-width: auto;
-    }
+    column-gap: var(variables.$spacing-l);
+    flex-direction: row;
   }
 }
 
 .my-discovery {
   width: 100%;
-  min-width: 400px;
+  margin-bottom: var(variables.$spacing-l);
+  border-bottom: 1px solid var(variables.$border-on-surface);
 
   .add-btn {
     width: 100%;
@@ -243,43 +144,48 @@ const addIcon: IIcon = {
     width: 100%;
     margin-bottom: var(variables.$spacing-l);
     > * {
-      border: 1px solid var(variables.$border-on-surface);
-      border-radius: vars.$border-radius-s;
-      padding: var(variables.$spacing-m);
       margin-bottom: var(variables.$spacing-m);
       &:last-child {
         margin-bottom: 0;
       }
+    }
+
+    @include mediaQueriesMixins.screen-md {
+      margin-bottom: 0;
+    }
+
+    .search {
+      background-color: var(variables.$surface);
+      margin-bottom: var(variables.$spacing-m);
     }
   }
 
   @include mediaQueriesMixins.screen-sm {
     flex-direction: row;
     column-gap: 2%;
-    > * {
-      width: 32%;
-      margin-bottom: 0;
-    }
+    border-bottom: none;
   }
   @include mediaQueriesMixins.screen-md {
     flex-direction: column;
     margin-bottom: 0;
-    > * {
-      width: 100%;
-      margin-bottom: var(variables.$spacing-m);
-    }
+    width: 25%;
+    min-width: 260px;
   }
+}
+
+.feather-input-sub-text {
+  display: none !important;
 }
 
 .discovery {
   width: 100%;
-  min-width: 400px;
   border: 1px solid var(variables.$border-on-surface);
   border-radius: vars.$border-radius-s;
   padding: var(variables.$spacing-m);
-  h4,
-  h5 {
-    margin-bottom: var(variables.$spacing-m);
+  background-color: var(variables.$surface);
+
+  @include mediaQueriesMixins.screen-md {
+    margin-bottom: 0;
   }
   > form {
     div[class$='-input'] {
@@ -304,10 +210,5 @@ const addIcon: IIcon = {
 .header {
   margin-left: var(variables.$spacing-l);
   margin-right: var(variables.$spacing-l);
-}
-
-.footer {
-  display: flex;
-  justify-content: flex-end;
 }
 </style>
