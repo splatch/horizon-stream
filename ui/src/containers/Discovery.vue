@@ -1,6 +1,6 @@
 <template>
   <PageHeader
-    heading="Discovery"
+    :heading="discoveryText.Discovery.heading"
     class="header"
   />
   <div class="container">
@@ -10,7 +10,7 @@
           @click="addDiscovery"
           primary
         >
-          New discovery
+          {{ discoveryText.Discovery.button.add }}
           <template #icon>
             <Icon :icon="addIcon" />
           </template>
@@ -35,45 +35,71 @@
       v-if="isFormShown"
       class="discovery"
     >
-      <h5>Select a discovery</h5>
+      <h5>{{ discoveryText.Discovery.heading1 }}</h5>
       <form>
         <div>
           <!-- active -->
           <!-- passive -->
         </div>
         <div v-if="formInput.type">
-          <h4>ICMP/SNMP Discovery Setup</h4>
+          <h4>{{ discoveryText.Discovery.heading2 }}</h4>
           <div>
             <!-- ICMP/SNMP name input -->
             <FeatherInput
               v-model="formInput.name"
-              label="ICMP/SNMP name"
+              :label="discoveryText.Discovery.nameInputLabel"
               class="name-input"
             />
             <!-- location input -->
-            <!-- IP input -->
-            <!-- community input -->
-            <!-- port input -->
+            <div class="content-editable-container">
+              <DiscoveryContentEditable
+                @is-content-invalid="isContentInvalidIP"
+                @content-formatted="contentFormattedIP"
+                ref="contentEditableIPRef"
+                :contentType="IPs.type"
+                :regexDelim="IPs.regexDelim"
+                :label="IPs.label"
+                class="ip-input"
+              />
+              <DiscoveryContentEditable
+                @is-content-invalid="isContentInvalidCommunity"
+                @content-formatted="contentFormattedCommunity"
+                ref="contentEditableCommunityRef"
+                :contentType="community.type"
+                :regexDelim="community.regexDelim"
+                :label="community.label"
+                class="community-input"
+              />
+              <DiscoveryContentEditable
+                @is-content-invalid="isContentInvalidPort"
+                @content-formatted="contentFormattedPort"
+                ref="contentEditablePortRef"
+                :contentType="port.type"
+                :regexDelim="port.regexDelim"
+                :label="port.label"
+                class="port-input"
+              />
+            </div>
           </div>
         </div>
         <div
           v-else
           class="get-started"
         >
-          Select a discovery to get started
+          {{ discoveryText.Discovery.nodiscoverySelectedMsg }}
         </div>
         <div class="footer">
           <FeatherButton
             @click="cancelHandler"
             secondary
-            >cancel</FeatherButton
+            >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
           >
           <FeatherButton
             @click="saveHandler"
-            :disabled="isFormValid"
+            :disabled="isFormInvalid"
             primary
             type="submit"
-            >save discovery</FeatherButton
+            >{{ discoveryText.Discovery.button.submit }}</FeatherButton
           >
         </div>
       </form>
@@ -86,23 +112,9 @@ import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
-
-const enum DiscoverytType {
-  None,
-  ICSNMP,
-  Azure,
-  SysLog,
-  SNMPTraps
-}
-
-interface DiscoveryInput {
-  type: DiscoverytType
-  name: string
-  location: string
-  IPRange: string
-  communityString: string
-  UDPPort: number
-}
+import { DiscoveryInput } from '@/types/discovery'
+import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
+import discoveryText from '@/components/Discovery/discovery.text'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
@@ -110,25 +122,65 @@ const { showSnackbar } = useSnackbar()
 const isFormShown = ref(true)
 
 const formInput = ref<DiscoveryInput>({
-  type: DiscoverytType.ICSNMP,
-  name: '', // required?
+  type: DiscoveryType.ICMP,
+  name: '',
   location: 'Default',
-  IPRange: '', // required?
-  communityString: '', // required?
-  UDPPort: 0 // required?
+  IPRange: '',
+  communityString: '', // optional
+  UDPPort: 0 // optional
 })
+
+const contentEditableIPRef = ref()
+const IPs = {
+  type: ContentEditableType.IP,
+  regexDelim: '[,; ]+',
+  label: discoveryText.ContentEditable.IPs.label
+}
+const isContentInvalidIP = (args) => {
+  console.log('args', args)
+}
+const contentFormattedIP = (args) => {
+  console.log('args', args)
+}
+
+const contentEditableCommunityRef = ref()
+const community = {
+  type: ContentEditableType.Community,
+  regexDelim: '',
+  label: discoveryText.ContentEditable.Community.label
+}
+const isContentInvalidCommunity = (args) => {
+  console.log('args', args)
+}
+const contentFormattedCommunity = (args) => {
+  console.log('args', args)
+}
+
+const contentEditablePortRef = ref()
+const port = {
+  type: ContentEditableType.Port,
+  regexDelim: '',
+  label: discoveryText.ContentEditable.Port.label
+}
+const isContentInvalidPort = (args) => {
+  console.log('args', args)
+}
+const contentFormattedPort = (args) => {
+  console.log('args', args)
+}
 
 const addDiscovery = () => {
   isFormShown.value = true
 }
 
-const isFormValid = computed(() => {
+const isFormInvalid = computed(() => {
   // formInput validation
-  return true
+  return false
 })
 
 const saveHandler = () => {
   // startSpinner()
+  // contentEditableIPRef.value.validateAndFormat()
   // add query
   // if success
   // stopSpinner()
@@ -139,7 +191,7 @@ const saveHandler = () => {
 }
 
 const cancelHandler = () => {
-  formInput.value.type = DiscoverytType.None
+  // formInput.value.type = DiscoveryType.None
 }
 
 const addIcon: IIcon = {
@@ -147,7 +199,7 @@ const addIcon: IIcon = {
 }
 </script>
 
-<style lang="scss" scope>
+<style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
@@ -225,9 +277,27 @@ const addIcon: IIcon = {
   border: 1px solid var(variables.$border-on-surface);
   border-radius: vars.$border-radius-s;
   padding: var(variables.$spacing-m);
-  > h5,
-  h4 {
+  h4,
+  h5 {
     margin-bottom: var(variables.$spacing-m);
+  }
+  > form {
+    div[class$='-input'] {
+      margin-bottom: var(variables.$spacing-m);
+    }
+  }
+
+  @include mediaQueriesMixins.screen-xl {
+    .content-editable-container {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-end;
+      > div {
+        width: 32%;
+      }
+    }
   }
 }
 
