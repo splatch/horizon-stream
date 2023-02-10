@@ -19,40 +19,139 @@
         <!-- port input -->
       </div>
     </div>
-
-    <div class="footer">
-      <FeatherButton
-        @click="cancelHandler"
-        secondary
-        >cancel</FeatherButton
+    <h5>{{ discoveryText.Discovery.heading1 }}</h5>
+    <form>
+      <div>
+        <!-- active -->
+        <!-- passive -->
+      </div>
+      <div v-if="formInput.type">
+        <h4>{{ discoveryText.Discovery.heading2 }}</h4>
+        <div>
+          <!-- ICMP/SNMP name input -->
+          <FeatherInput
+            v-model="formInput.name"
+            :label="discoveryText.Discovery.nameInputLabel"
+            class="name-input"
+          />
+          <!-- location input -->
+          <div class="content-editable-container">
+            <DiscoveryContentEditable
+              @is-content-invalid="isContentInvalidIP"
+              @content-formatted="contentFormattedIP"
+              ref="contentEditableIPRef"
+              :contentType="IPs.type"
+              :regexDelim="IPs.regexDelim"
+              :label="IPs.label"
+              class="ip-input"
+            />
+            <DiscoveryContentEditable
+              @is-content-invalid="isContentInvalidCommunity"
+              @content-formatted="contentFormattedCommunity"
+              ref="contentEditableCommunityRef"
+              :contentType="community.type"
+              :regexDelim="community.regexDelim"
+              :label="community.label"
+              class="community-input"
+            />
+            <DiscoveryContentEditable
+              @is-content-invalid="isContentInvalidPort"
+              @content-formatted="contentFormattedPort"
+              ref="contentEditablePortRef"
+              :contentType="port.type"
+              :regexDelim="port.regexDelim"
+              :label="port.label"
+              class="port-input"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        v-else
+        class="get-started"
       >
-      <FeatherButton
-        @click="saveHandler"
-        :disabled="isFormValid"
-        primary
-        type="submit"
-        >save discovery</FeatherButton
-      >
-    </div>
+        {{ discoveryText.Discovery.nodiscoverySelectedMsg }}
+      </div>
+      <div class="footer">
+        <FeatherButton
+          @click="cancelHandler"
+          secondary
+          >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
+        >
+        <FeatherButton
+          @click="saveHandler"
+          :disabled="isFormInvalid"
+          primary
+          type="submit"
+          >{{ discoveryText.Discovery.button.submit }}</FeatherButton
+        >
+      </div>
+    </form>
   </form>
 </template>
 
 <script lang="ts" setup>
-import { IDiscoverySNMPInput } from '@/types/discovery'
-import { DiscoveryType } from './discovery.constants'
+import { DiscoveryInput } from '@/types/discovery'
+import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
+import discoveryText from '@/components/Discovery/discovery.text'
 
-const formInput = ref<IDiscoverySNMPInput>({
-  type: DiscoveryType.SNMP,
-  name: '', // required?
+const isFormShown = ref(true)
+
+const formInput = ref<DiscoveryInput>({
+  type: DiscoveryType.ICMP,
+  name: '',
   location: 'Default',
-  IPRange: '', // required?
-  communityString: '', // required?
-  UDPPort: 0 // required?
+  IPRange: '',
+  communityString: '', // optional
+  UDPPort: 0 // optional
 })
 
-const isFormValid = computed(() => {
+const contentEditableIPRef = ref()
+const IPs = {
+  type: ContentEditableType.IP,
+  regexDelim: '[,; ]+',
+  label: discoveryText.ContentEditable.IPs.label
+}
+const isContentInvalidIP = (args: boolean) => {
+  console.log('args', args)
+}
+const contentFormattedIP = (args: string) => {
+  console.log('args', args)
+}
+
+const contentEditableCommunityRef = ref()
+const community = {
+  type: ContentEditableType.Community,
+  regexDelim: '',
+  label: discoveryText.ContentEditable.Community.label
+}
+const isContentInvalidCommunity = (args: boolean) => {
+  console.log('args', args)
+}
+const contentFormattedCommunity = (args: string) => {
+  console.log('args', args)
+}
+
+const contentEditablePortRef = ref()
+const port = {
+  type: ContentEditableType.Port,
+  regexDelim: '',
+  label: discoveryText.ContentEditable.Port.label
+}
+const isContentInvalidPort = (args: boolean) => {
+  console.log('args', args)
+}
+const contentFormattedPort = (args: string) => {
+  console.log('args', args)
+}
+
+const addDiscovery = () => {
+  isFormShown.value = true
+}
+
+const isFormInvalid = computed(() => {
   // formInput validation
-  return true
+  return false
 })
 
 const saveHandler = () => {
@@ -67,7 +166,7 @@ const saveHandler = () => {
 }
 
 const cancelHandler = () => {
-  formInput.value.type = null
+  formInput.value.type = DiscoveryType.None
 }
 </script>
 
@@ -76,16 +175,31 @@ const cancelHandler = () => {
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
 @use '@featherds/styles/mixins/typography';
-
-.form {
-  h5,
-  h4 {
+> form {
+  div[class$='-input'] {
     margin-bottom: var(variables.$spacing-m);
+  }
+}
+
+@include mediaQueriesMixins.screen-xl {
+  .content-editable-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    > div {
+      width: 32%;
+    }
   }
 }
 
 .footer {
   display: flex;
   justify-content: flex-end;
+}
+
+.content-editable-container {
+  display: flex;
 }
 </style>

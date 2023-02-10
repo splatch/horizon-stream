@@ -1,6 +1,6 @@
 <template>
   <PageHeader
-    heading="Discovery"
+    :heading="discoveryText.Discovery.heading"
     class="header"
   />
   <div class="container">
@@ -10,7 +10,7 @@
           @click="addDiscovery"
           primary
         >
-          New discovery
+          {{ discoveryText.Discovery.button.add }}
           <template #icon>
             <Icon :icon="addIcon" />
           </template>
@@ -44,7 +44,6 @@
       v-if="isFormShown"
       class="discovery"
     >
-      <!--DISCOVERY MENU -->
       <EditDiscovery />
     </section>
   </div>
@@ -57,6 +56,8 @@ import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 import { IDiscovery } from '@/types/discovery'
+import discoveryText from '@/components/Discovery/discovery.text'
+
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
@@ -73,6 +74,7 @@ const isFormShown = ref(true)
 
 const saveHandler = () => {
   // startSpinner()
+  // contentEditableIPRef.value.validateAndFormat()
   // add query
   // if success
   // stopSpinner()
@@ -104,7 +106,7 @@ const showDiscovery = (id: number) => {
 }
 </script>
 
-<style lang="scss" scope>
+<style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
@@ -184,6 +186,24 @@ const showDiscovery = (id: number) => {
 
   @include mediaQueriesMixins.screen-md {
     margin-bottom: 0;
+  }
+  > form {
+    div[class$='-input'] {
+      margin-bottom: var(variables.$spacing-m);
+    }
+  }
+
+  @include mediaQueriesMixins.screen-xl {
+    .content-editable-container {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-end;
+      > div {
+        width: 32%;
+      }
+    }
   }
 }
 

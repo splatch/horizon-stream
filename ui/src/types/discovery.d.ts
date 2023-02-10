@@ -1,5 +1,5 @@
-export interface IDiscoverySNMPInput {
-  type: DiscoverytType
+export interface DiscoveryInput {
+  type: number
   name: string
   location: string
   IPRange: string
