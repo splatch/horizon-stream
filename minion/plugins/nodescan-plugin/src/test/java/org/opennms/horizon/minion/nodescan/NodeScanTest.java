@@ -72,8 +72,7 @@ public class NodeScanTest {
         IPAddrTracker tracker = new IPAddrTracker() {
             @Override
             public void processIPInterfaceRow(IPInterfaceRow row) {
-                IpTableScanResult result = row.createInterfaceFromRow();
-                list.add(result);
+                row.createInterfaceFromRow().ifPresent(list::add);
             }
         };
 
@@ -85,7 +84,7 @@ public class NodeScanTest {
         IPAddressTableTracker newTracker = new IPAddressTableTracker() {
             @Override
             public void processIPAddressRow(IPAddressRow row) {
-                list.add(row.createInterfaceFromRow());
+                row.createInterfaceFromRow().ifPresent(list::add);
             }
         };
         try (SnmpWalker newWalker = snmpHelper.createWalker(agentConfig, "ipAddressTable", newTracker)) {

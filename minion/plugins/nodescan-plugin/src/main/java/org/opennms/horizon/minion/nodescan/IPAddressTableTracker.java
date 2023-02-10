@@ -30,6 +30,7 @@ package org.opennms.horizon.minion.nodescan;
 
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.opennms.horizon.shared.snmp.RowCallback;
 import org.opennms.horizon.shared.snmp.SnmpInstId;
@@ -191,7 +192,7 @@ public class IPAddressTableTracker extends TableTracker {
             }
         }
 
-        public IpTableScanResult createInterfaceFromRow() {
+        public Optional<IpTableScanResult> createInterfaceFromRow() {
 
             final Integer ifIndex = getIfIndex();
             final String ipAddr = getIpAddress();
@@ -201,7 +202,7 @@ public class IPAddressTableTracker extends TableTracker {
             LOG.debug("createInterfaceFromRow: ifIndex = {}, ipAddress = {}, type = {}, netmask = {}", ifIndex, ipAddr, type, netMask);
 
             if (type != IP_ADDRESS_TYPE_UNICAST || ipAddr == null) {
-                return null;
+                return Optional.empty();
             }
 
             final InetAddress inetAddress = InetAddressUtils.addr(ipAddr);
@@ -218,7 +219,7 @@ public class IPAddressTableTracker extends TableTracker {
                     .setIpAddress(inetAddress.getHostAddress())
                     .setIfIndex(ifIndex).build());
             }
-            return resultBuilder.build();
+            return Optional.of(resultBuilder.build());
         }
 
         private SnmpResult getResult(final SnmpObjId base) {
