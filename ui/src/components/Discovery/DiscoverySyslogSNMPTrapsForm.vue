@@ -1,7 +1,7 @@
 <template>
   <div class="syslog-snmp-traps-form">
     <div class="headline-action">
-      <div class="headline">Syslog and SNMP Traps Discovery Setup</div>
+      <div class="headline">{{ discoveryText.Discovery.headline2 }}</div>
       <Icon
         @click="deleteHandler"
         :icon="deleteIcon"
