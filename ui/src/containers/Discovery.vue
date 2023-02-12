@@ -7,7 +7,7 @@
     <section class="my-discovery">
       <div class="add-btn">
         <FeatherButton
-          @click="addDiscovery"
+          @click="showDiscoveryEditing"
           primary
         >
           {{ discoveryText.Discovery.button.add }}
@@ -32,77 +32,24 @@
 
     <!-- add/edit a discovery  -->
     <section
-      v-if="isFormShown"
+      v-if="isDiscoveryEditingShown"
       class="discovery"
     >
       <h5>{{ discoveryText.Discovery.heading1 }}</h5>
-      <form>
-        <div>
-          <!-- active -->
-          <!-- passive -->
-        </div>
-        <div v-if="formInput.type">
-          <h4>{{ discoveryText.Discovery.heading2 }}</h4>
-          <div>
-            <!-- ICMP/SNMP name input -->
-            <FeatherInput
-              v-model="formInput.name"
-              :label="discoveryText.Discovery.nameInputLabel"
-              class="name-input"
-            />
-            <!-- location input -->
-            <div class="content-editable-container">
-              <DiscoveryContentEditable
-                @is-content-invalid="isContentInvalidIP"
-                @content-formatted="contentFormattedIP"
-                ref="contentEditableIPRef"
-                :contentType="IPs.type"
-                :regexDelim="IPs.regexDelim"
-                :label="IPs.label"
-                class="ip-input"
-              />
-              <DiscoveryContentEditable
-                @is-content-invalid="isContentInvalidCommunity"
-                @content-formatted="contentFormattedCommunity"
-                ref="contentEditableCommunityRef"
-                :contentType="community.type"
-                :regexDelim="community.regexDelim"
-                :label="community.label"
-                class="community-input"
-              />
-              <DiscoveryContentEditable
-                @is-content-invalid="isContentInvalidPort"
-                @content-formatted="contentFormattedPort"
-                ref="contentEditablePortRef"
-                :contentType="port.type"
-                :regexDelim="port.regexDelim"
-                :label="port.label"
-                class="port-input"
-              />
-            </div>
-          </div>
-        </div>
-        <div
-          v-else
-          class="get-started"
-        >
-          {{ discoveryText.Discovery.nodiscoverySelectedMsg }}
-        </div>
-        <div class="footer">
-          <FeatherButton
-            @click="cancelHandler"
-            secondary
-            >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
-          >
-          <FeatherButton
-            @click="saveHandler"
-            :disabled="isFormInvalid"
-            primary
-            type="submit"
-            >{{ discoveryText.Discovery.button.submit }}</FeatherButton
-          >
-        </div>
-      </form>
+      <div>
+        <!-- active -->
+        <!-- passive -->
+      </div>
+      <DiscoverySyslogSNMPTrapsForm
+        v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
+        @cancel-editing="discoverySelectedType = DiscoveryType.None"
+      />
+      <div
+        v-if="discoverySelectedType === DiscoveryType.None"
+        class="get-started"
+      >
+        {{ discoveryText.Discovery.noneDiscoverySelectedMsg }}
+      </div>
     </section>
   </div>
 </template>
@@ -110,88 +57,15 @@
 <script lang="ts" setup>
 import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
-import useSpinner from '@/composables/useSpinner'
-import useSnackbar from '@/composables/useSnackbar'
-import { DiscoveryInput } from '@/types/discovery'
-import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
+import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
+import DiscoverySyslogSNMPTrapsForm from '@/components/Discovery/DiscoverySyslogSNMPTrapsForm.vue'
 
-const { startSpinner, stopSpinner } = useSpinner()
-const { showSnackbar } = useSnackbar()
+const isDiscoveryEditingShown = ref(true)
+const discoverySelectedType = ref(DiscoveryType.SyslogSNMPTraps)
 
-const isFormShown = ref(true)
-
-const formInput = ref<DiscoveryInput>({
-  type: DiscoveryType.ICMP,
-  name: '',
-  location: 'Default',
-  IPRange: '',
-  communityString: '', // optional
-  UDPPort: 0 // optional
-})
-
-const contentEditableIPRef = ref()
-const IPs = {
-  type: ContentEditableType.IP,
-  regexDelim: '[,; ]+',
-  label: discoveryText.ContentEditable.IPs.label
-}
-const isContentInvalidIP = (args) => {
-  console.log('args', args)
-}
-const contentFormattedIP = (args) => {
-  console.log('args', args)
-}
-
-const contentEditableCommunityRef = ref()
-const community = {
-  type: ContentEditableType.Community,
-  regexDelim: '',
-  label: discoveryText.ContentEditable.Community.label
-}
-const isContentInvalidCommunity = (args) => {
-  console.log('args', args)
-}
-const contentFormattedCommunity = (args) => {
-  console.log('args', args)
-}
-
-const contentEditablePortRef = ref()
-const port = {
-  type: ContentEditableType.Port,
-  regexDelim: '',
-  label: discoveryText.ContentEditable.Port.label
-}
-const isContentInvalidPort = (args) => {
-  console.log('args', args)
-}
-const contentFormattedPort = (args) => {
-  console.log('args', args)
-}
-
-const addDiscovery = () => {
-  isFormShown.value = true
-}
-
-const isFormInvalid = computed(() => {
-  // formInput validation
-  return false
-})
-
-const saveHandler = () => {
-  // startSpinner()
-  // contentEditableIPRef.value.validateAndFormat()
-  // add query
-  // if success
-  // stopSpinner()
-  // if error
-  // showSnackbar({
-  // msg: 'Save unsuccessfully!'
-  // })
-}
-
-const cancelHandler = () => {
-  // formInput.value.type = DiscoveryType.None
+const showDiscoveryEditing = () => {
+  isDiscoveryEditingShown.value = true
 }
 
 const addIcon: IIcon = {

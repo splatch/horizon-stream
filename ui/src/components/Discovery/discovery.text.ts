@@ -4,7 +4,7 @@ export default {
     heading1: 'Select a discovery',
     heading2: 'ICMP/SNMP Discovery Setup',
     nameInputLabel: 'ICMP/SNMP name',
-    nodiscoverySelectedMsg: 'Select a discovery to get started',
+    noneDiscoverySelectedMsg: 'Select a discovery to get started',
     button: {
       add: 'New Discovery',
       cancel: 'Cancel',
@@ -12,13 +12,13 @@ export default {
     }
   },
   ContentEditable: {
-    IPs: {
+    IP: {
       label: 'Enter IP ranges and/or subnets'
     },
-    Community: {
+    CommunityString: {
       label: 'Enter community string (optional)'
     },
-    Port: {
+    UDPPort: {
       label: 'Enter UDP port (optional)'
     }
   },
