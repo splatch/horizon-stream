@@ -72,7 +72,6 @@ import useSnackbar from '@/composables/useSnackbar'
 import { IDiscovery } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
-// import DiscoverySyslogSNMPTrapsForm from '@/components/Discovery/DiscoverySyslogSNMPTrapsForm.vue'
 
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
