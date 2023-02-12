@@ -1,7 +1,7 @@
 <template>
-  <PageHeader
-    :heading="discoveryText.Discovery.heading"
-    class="header"
+  <PageHeadline
+    :text="discoveryText.Discovery.heading"
+    class="page-headline"
   />
   <div class="container">
     <section class="my-discovery">
@@ -16,17 +16,26 @@
           </template>
         </FeatherButton>
       </div>
+
       <div class="my-discovery-inner">
-        <!-- dropdown select discovery (edit) -->
-        <div>Search/Filter discovery</div>
-        <div>
-          <div>My active discovery</div>
-          <div>You have no active discovery</div>
-        </div>
-        <div>
-          <div>My passive discovery</div>
-          <div>You have no active discovery</div>
-        </div>
+        <FeatherAutocomplete
+          class="search"
+          v-model="searchValue"
+          :loading="searchLoading"
+          :results="discoveriesResults"
+          @search="search"
+          label="Search Discovery"
+          type="single"
+        />
+        <DiscoveryListCard
+          title=" My Active Discoveries"
+          :list="mocksActiveList"
+          @select-discovery="showDiscovery"
+        />
+        <DiscoveryListCard
+          title=" My Passive Discoveries"
+          :list="[]"
+        />
       </div>
     </section>
 
@@ -35,10 +44,9 @@
       v-if="isDiscoveryEditingShown"
       class="discovery"
     >
-      <h5>{{ discoveryText.Discovery.heading1 }}</h5>
+      <div class="headline">{{ discoveryText.Discovery.heading1 }}</div>
       <div>
-        <!-- active -->
-        <!-- passive -->
+        <!-- active/passive discovery type selection -->
       </div>
       <DiscoverySyslogSNMPTrapsForm
         v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
@@ -55,21 +63,51 @@
 </template>
 
 <script lang="ts" setup>
+import { IAutocompleteItemType } from '@featherds/autocomplete'
+import PageHeadline from '@/components/Common/PageHeadline.vue'
 import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
+import useSpinner from '@/composables/useSpinner'
+import useSnackbar from '@/composables/useSnackbar'
+import { IDiscovery } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
-import DiscoverySyslogSNMPTrapsForm from '@/components/Discovery/DiscoverySyslogSNMPTrapsForm.vue'
+// import DiscoverySyslogSNMPTrapsForm from '@/components/Discovery/DiscoverySyslogSNMPTrapsForm.vue'
 
-const isDiscoveryEditingShown = ref(true)
+const addIcon: IIcon = {
+  image: markRaw(AddIcon)
+}
+
+const isDiscoveryEditingShown = ref(false)
 const discoverySelectedType = ref(DiscoveryType.SyslogSNMPTraps)
 
 const showDiscoveryEditing = () => {
   isDiscoveryEditingShown.value = true
 }
 
-const addIcon: IIcon = {
-  image: markRaw(AddIcon)
+const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
+const searchLoading = ref(false)
+const searchValue = ref(undefined)
+const mocksActiveList = [
+  { id: 1, name: 'MAD-001' },
+  { id: 2, name: 'MAD-002' }
+] as IDiscovery[]
+
+const search = (q: string) => {
+  searchLoading.value = true
+  const results = mocksActiveList
+    .filter((x) => x.name.toLowerCase().indexOf(q) > -1)
+    .map((x) => ({
+      _text: x.name,
+      id: x.id,
+      name: x.name
+    }))
+  discoveriesResults.value = results
+  searchLoading.value = false
+}
+
+const showDiscovery = (id: number) => {
+  console.log('show discovery', id)
 }
 </script>
 
@@ -77,16 +115,22 @@ const addIcon: IIcon = {
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
+@use '@featherds/styles/mixins/typography';
+
+.page-headline {
+  margin-left: var(variables.$spacing-l);
+  margin-right: var(variables.$spacing-l);
+}
 
 .container {
   display: flex;
   flex-direction: row;
   flex-flow: wrap;
+  justify-content: space-between;
   margin-left: var(variables.$spacing-l);
   margin-right: var(variables.$spacing-l);
 
   @include mediaQueriesMixins.screen-md {
-    column-gap: 3%;
     > .my-discovery {
       width: 30%;
       min-width: auto;
@@ -101,7 +145,6 @@ const addIcon: IIcon = {
 .my-discovery {
   width: 100%;
   min-width: 400px;
-
   .add-btn {
     width: 100%;
     margin-bottom: var(variables.$spacing-l);
@@ -110,31 +153,28 @@ const addIcon: IIcon = {
       margin-bottom: var(variables.$spacing-l);
     }
   }
-
   > .my-discovery-inner {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    width: 100%;
     margin-bottom: var(variables.$spacing-l);
     > * {
-      border: 1px solid var(variables.$border-on-surface);
-      border-radius: vars.$border-radius-s;
-      padding: var(variables.$spacing-m);
       margin-bottom: var(variables.$spacing-m);
       &:last-child {
         margin-bottom: 0;
       }
     }
-  }
 
-  @include mediaQueriesMixins.screen-sm {
-    flex-direction: row;
-    column-gap: 2%;
-    > * {
-      width: 32%;
+    @include mediaQueriesMixins.screen-md {
       margin-bottom: 0;
     }
+
+    .search {
+      background-color: var(variables.$surface);
+      margin-bottom: var(variables.$spacing-m);
+    }
   }
+
   @include mediaQueriesMixins.screen-md {
     flex-direction: column;
     margin-bottom: 0;
@@ -145,20 +185,32 @@ const addIcon: IIcon = {
   }
 }
 
+.feather-input-sub-text {
+  display: none !important;
+}
+
 .discovery {
   width: 100%;
   min-width: 400px;
   border: 1px solid var(variables.$border-on-surface);
   border-radius: vars.$border-radius-s;
   padding: var(variables.$spacing-m);
-  h4,
-  h5 {
-    margin-bottom: var(variables.$spacing-m);
+  background-color: var(variables.$surface);
+
+  .headline {
+    @include typography.headline4();
+  }
+
+  @include mediaQueriesMixins.screen-md {
+    margin-bottom: 0;
   }
 }
 
-.header {
-  margin-left: var(variables.$spacing-l);
-  margin-right: var(variables.$spacing-l);
+.get-started {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

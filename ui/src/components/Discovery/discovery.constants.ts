@@ -2,8 +2,7 @@ export enum DiscoveryType {
   None,
   ICMP,
   Azure,
-  SyslogSNMPTraps,
-  SNMP
+  SyslogSNMPTraps
 }
 
 export enum ContentEditableType {
