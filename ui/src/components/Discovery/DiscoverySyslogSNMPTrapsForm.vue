@@ -7,9 +7,11 @@
         :icon="deleteIcon"
       />
     </div>
-    <form>
+    <form @submit.prevent="submitHandler">
       <div class="form-iputs">
         <div class="content-editable-container">
+          <!-- location -->
+          <!-- tags -->
           <!-- <DiscoveryContentEditable
             @is-content-invalid="isContentInvalidIP"
             @content-formatted="contentFormattedIP"
@@ -39,14 +41,13 @@
           />
         </div>
       </div>
-      <div class="footer">
+      <div class="form-footer">
         <FeatherButton
-          @click="cancelHandler"
+          @click="emits('cancel-editing')"
           secondary
           >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
         >
         <FeatherButton
-          @click="saveHandler"
           :disabled="isFormInvalid"
           primary
           type="submit"
@@ -75,7 +76,7 @@ interface FormInput {
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 
-const emits = defineEmits(['editing-cancel'])
+const emits = defineEmits(['cancel-editing'])
 
 const isFormInvalid = ref(true)
 
@@ -124,7 +125,7 @@ const contentFormattedUDPPort = (args) => {
   console.log('args', args)
 }
 
-const saveHandler = () => {
+const submitHandler = () => {
   // startSpinner()
   // add query
   // if success
@@ -135,28 +136,55 @@ const saveHandler = () => {
   // })
 }
 
-const cancelHandler = () => {
-  emits('editing-cancel')
-}
-
 const deleteHandler = () => {
   console.log('delete')
 }
 
 const deleteIcon: IIcon = {
   image: markRaw(DeleteIcon),
-  tooltip: 'Delete'
+  tooltip: 'Delete',
+  size: '1.5rem',
+  cursorHover: 'pointer'
 }
 </script>
 
 <style lang="scss" scoped>
 @use '@featherds/styles/mixins/typography';
+@use '@featherds/styles/themes/variables';
+@use '@/styles/mediaQueriesMixins.scss';
 
 .headline-action {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(variables.$spacing-m);
 }
+
 .headline {
-  @include typography.headline1();
+  @include typography.headline3();
+}
+
+.content-editable-container {
+  > div[class$='-input'] {
+    margin-bottom: var(variables.$spacing-m);
+  }
+
+  @include mediaQueriesMixins.screen-xl {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    > div {
+      width: 49%;
+    }
+  }
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(variables.$border-on-surface);
+  padding-top: var(variables.$spacing-m);
 }
 </style>

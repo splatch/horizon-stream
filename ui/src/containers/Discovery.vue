@@ -155,33 +155,10 @@ const addIcon: IIcon = {
   h5 {
     margin-bottom: var(variables.$spacing-m);
   }
-  > form {
-    div[class$='-input'] {
-      margin-bottom: var(variables.$spacing-m);
-    }
-  }
-
-  @include mediaQueriesMixins.screen-xl {
-    .content-editable-container {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: flex-end;
-      > div {
-        width: 32%;
-      }
-    }
-  }
 }
 
 .header {
   margin-left: var(variables.$spacing-l);
   margin-right: var(variables.$spacing-l);
-}
-
-.footer {
-  display: flex;
-  justify-content: flex-end;
 }
 </style>
