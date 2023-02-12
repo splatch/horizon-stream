@@ -44,7 +44,6 @@
       v-if="isDiscoveryEditingShown"
       class="discovery"
     >
-      <!-- <h5>{{ discoveryText.Discovery.heading1 }}</h5> -->
       <div class="headline">{{ discoveryText.Discovery.heading1 }}</div>
       <div>
         <!-- active/passive discovery type selection -->
