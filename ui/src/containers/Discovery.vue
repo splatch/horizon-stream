@@ -1,6 +1,6 @@
 <template>
   <PageHeadline
-    :text="discoveryText.Discovery.heading"
+    :text="discoveryText.Discovery.pageHeadline"
     class="page-headline"
   />
   <div class="container">
@@ -44,7 +44,7 @@
       v-if="isDiscoveryEditingShown"
       class="discovery"
     >
-      <div class="headline">{{ discoveryText.Discovery.heading1 }}</div>
+      <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
       <div>
         <!-- active/passive discovery type selection -->
       </div>

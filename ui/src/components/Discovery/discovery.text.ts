@@ -1,8 +1,8 @@
 export default {
   Discovery: {
-    heading: 'Discovery',
-    heading1: 'Select a discovery',
-    heading2: 'ICMP/SNMP Discovery Setup',
+    pageHeadline: 'Discovery',
+    headline1: 'Select a discovery',
+    headline2: 'ICMP/SNMP Discovery Setup',
     nameInputLabel: 'ICMP/SNMP name',
     noneDiscoverySelectedMsg: 'Select a discovery to get started',
     button: {
