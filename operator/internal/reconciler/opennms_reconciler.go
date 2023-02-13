@@ -27,7 +27,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/json"
 	"log"
 	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -71,8 +70,6 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (re
 					r.Log.Error(err, "error setting resource controller reference", "controller", instance, "resource", resource, "kind", kind, "error", err)
 					return reconcile.Result{}, err
 				}
-				objStr, _ := json.Marshal(resource.GetOwnerReferences()[0])
-				r.Log.Info("owner reference", "or", string(objStr))
 				if err := r.Create(ctx, resource); err != nil {
 					r.Log.Error(err, "error creating resource", "namespace", resource.GetNamespace(), "name", resource.GetName(), "kind", kind, "error", err)
 					return reconcile.Result{}, err
