@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.miniongateway.grpc.server.rpcrequest.flows;
+package org.opennms.miniongateway.grpc.server.flows;
 
 import com.google.protobuf.Message;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -73,12 +73,12 @@ public class FlowKafkaForwarder implements MessageConsumer<Message, Message> {
     }
 
     @Override
-    public void handleMessage(Message messageLog) {
+    public void handleMessage(Message message) {
         // Retrieve the Tenant ID from the TenantID GRPC Interceptor
         String tenantId = tenantIDGrpcInterceptor.readCurrentContextTenantId();
-        logger.info("Received flow; sending to Kafka: tenant-id: {}; kafka-topic={}; message={}", tenantId, kafkaTopic, messageLog);
+        logger.trace("Received flow; sending to Kafka: tenant-id: {}; kafka-topic={}; message={}", tenantId, kafkaTopic, message);
 
-        byte[] rawContent = messageLog.toByteArray();
+        byte[] rawContent = message.toByteArray();
         ProducerRecord<String, byte[]> producerRecord = formatProducerRecord(rawContent, tenantId);
 
         this.kafkaTemplate.send(producerRecord);

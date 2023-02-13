@@ -62,7 +62,7 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.SocketUtils;
 
-public class UdpListener implements GracefulShutdownListener, FlowsListener {
+public class UdpListener implements GracefulShutdownListener, Listener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
 
     public static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
@@ -71,7 +71,7 @@ public class UdpListener implements GracefulShutdownListener, FlowsListener {
         .build();
 
     private final String name;
-    private final List<Parser> parsers;
+    private final List<UdpParser> parsers;
 
     private final Meter packetsReceived;
 
@@ -84,11 +84,11 @@ public class UdpListener implements GracefulShutdownListener, FlowsListener {
 
     private Future<String> stopFuture;
 
-    public UdpListener(final String name, final List<Parser> parsers, final MetricRegistry metrics) {
+    public UdpListener(final String name, final List<UdpParser> parsers, final MetricRegistry metrics) {
         this(name, 0, parsers, metrics);
     }
 
-    public UdpListener(final String name, final int port, final List<Parser> parsers, final MetricRegistry metrics) {
+    public UdpListener(final String name, final int port, final List<UdpParser> parsers, final MetricRegistry metrics) {
         this.name = Objects.requireNonNull(name);
         if (port != 0) {
             this.port = port;
@@ -216,7 +216,7 @@ public class UdpListener implements GracefulShutdownListener, FlowsListener {
     }
 
     @Override
-    public Collection<Parser> getParsers() {
+    public Collection<UdpParser> getParsers() {
         return this.parsers;
     }
 

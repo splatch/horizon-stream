@@ -28,86 +28,86 @@
 package org.opennms.horizon.minion.flows.parser;
 
 import com.codahale.metrics.MetricRegistry;
-import lombok.Getter;
-import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
-import org.opennms.horizon.minion.flows.listeners.FlowsListener;
+
+import org.opennms.horizon.grpc.flows.contract.FlowDocument;
+import org.opennms.horizon.minion.flows.listeners.Listener;
 import org.opennms.horizon.minion.flows.listeners.Parser;
 import org.opennms.horizon.minion.flows.listeners.factory.ListenerFactory;
+import org.opennms.horizon.minion.flows.listeners.factory.TcpListenerFactory;
+import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerFactory;
+import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
+import org.opennms.horizon.minion.flows.parser.factory.IpfixTcpParserFactory;
+import org.opennms.horizon.minion.flows.parser.factory.IpfixUdpParserFactory;
+import org.opennms.horizon.minion.flows.parser.factory.Netflow5UdpParserFactory;
+import org.opennms.horizon.minion.flows.parser.factory.Netflow9UdpParserFactory;
 import org.opennms.horizon.minion.flows.parser.factory.ParserFactory;
 import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.horizon.shared.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.sink.flows.contract.ListenerConfig;
 import org.opennms.sink.flows.contract.ParserConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+// TODO: this should be replace by using AlertingPluginRegistry to make plugins work.
+// TODO: AlertingPluginRegistry needs de-registration to make dynamic loading work.
+// TODO: And then this will replace TelemetryRegistry
 public class TelemetryRegistryImpl implements TelemetryRegistry {
-    private static final Logger LOG = LoggerFactory.getLogger(TelemetryRegistryImpl.class);
-
     private final List<ListenerFactory> listenerFactories = new ArrayList<>();
-    private final List<ParserFactory> parserFactoryList = new ArrayList<>();
+    private final List<ParserFactory> parserFactories = new ArrayList<>();
 
-    private final AsyncDispatcher<TelemetryMessage> dispatcher;
+    private final AsyncDispatcher<FlowDocument> dispatcher;
 
-    @Getter
-    private final ListenerHolder listenerHolder;
 
     public TelemetryRegistryImpl(MessageDispatcherFactory messageDispatcherFactory,
                                  IpcIdentity identity,
-                                 ListenerHolder listenerHolder) {
+                                 DnsResolver dnsResolver) {
         Objects.requireNonNull(messageDispatcherFactory);
         Objects.requireNonNull(identity);
-        this.listenerHolder = Objects.requireNonNull(listenerHolder);
+        Objects.requireNonNull(dnsResolver);
+
         var sink = new FlowSinkModule(identity);
-        dispatcher = messageDispatcherFactory.createAsyncDispatcher(sink);
+        this.dispatcher = messageDispatcherFactory.createAsyncDispatcher(sink);
+
+        this.addListenerFactory(new UdpListenerFactory(this));
+        this.addListenerFactory(new TcpListenerFactory(this));
+
+        this.addParserFactory(new Netflow5UdpParserFactory(this, identity, dnsResolver));
+        this.addParserFactory(new Netflow9UdpParserFactory(this, identity, dnsResolver));
+        this.addParserFactory(new IpfixUdpParserFactory(this, identity, dnsResolver));
+        this.addParserFactory(new IpfixTcpParserFactory(this, identity, dnsResolver));
     }
 
     @Override
     public void addListenerFactory(ListenerFactory factory) {
         Objects.requireNonNull(factory);
-        listenerFactories.add(factory);
+        this.listenerFactories.add(factory);
     }
 
     @Override
     public void addParserFactory(ParserFactory factory) {
         Objects.requireNonNull(factory);
-        parserFactoryList.add(factory);
+        this.parserFactories.add(factory);
     }
 
     @Override
-    public FlowsListener getListener(ListenerConfig listenerConfig) {
-        var listener = listenerHolder.get(listenerConfig.getName());
-        if (listener != null) {
-            return listener;
-        }
-        if (!listenerConfig.getEnabled()) {
-            LOG.info("Listener: {} currently disabled. ", listenerConfig.getName());
-            return null;
-        }
-        for (var factory : listenerFactories) {
-            if (factory.getClass().getName().contains(listenerConfig.getClassName())) {
-                listener = factory.createBean(listenerConfig);
-                listenerHolder.put(listener);
-                return listener;
-            }
-        }
-        LOG.error("Unknown listener class: {}", listenerConfig.getClassName());
-        return null;
+    public Listener createListener(ListenerConfig listenerConfig) {
+        return this.listenerFactories.stream()
+            .filter(factory -> factory.getListenerClass().getName().equals(listenerConfig.getClassName()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid parser class."))
+            .create(listenerConfig);
     }
 
     @Override
-    public Parser getParser(ParserConfig parserConfig) {
-        for (var factory : parserFactoryList) {
-            if (factory.getClass().getName().contains(parserConfig.getClassName())) {
-                return factory.createBean(parserConfig);
-            }
-        }
-        throw new IllegalArgumentException("Invalid parser class.");
+    public Parser createParser(ParserConfig parserConfig) {
+        return this.parserFactories.stream()
+            .filter(factory -> factory.getParserClass().getName().equals(parserConfig.getClassName()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid parser class."))
+            .create(parserConfig);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     }
 
     @Override
-    public AsyncDispatcher<TelemetryMessage> getDispatcher() {
+    public AsyncDispatcher<FlowDocument> getDispatcher() {
         return dispatcher;
     }
 }
