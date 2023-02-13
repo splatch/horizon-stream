@@ -38,25 +38,33 @@ secret_settings(disable_scrub=True)  ## TODO: update secret values so we can ree
 # Functions #
 cluster_arch_cmd = '$(tilt get cluster default -o=jsonpath --template="{.status.arch}")'
 
-def jib_project(resource_name, image_name, base_path, k8s_resource_name, resource_deps=[], port_forwards=[], labels=None, submodule=None):
+def multi_module_build(submodule, image_name, base_path):
+    submodule_flag = '-pl {}'.format(submodule)
+
+    custom_build(
+        image_name,
+        'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
+        deps=[base_path],
+        ignore=['**/target'],
+    )
+
+def single_module_build(image_name, base_path):
+    custom_build(
+        image_name,
+        'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, ''),
+        deps=['{}{}/target/classes'.format(base_path, ''), '{}{}/pom.xml'.format(base_path, ''), '{}{}/src/main/resources'.format(base_path, '')],
+        live_update=[
+            sync('{}{}/target/classes/org/opennms'.format(base_path, ''), '/app/classes/org/opennms'),
+            sync('{}{}/src/main/resources'.format(base_path, ''), '/app/resources'),
+        ],
+    )
+
+def jib_project(resource_name, image_name, base_path, k8s_resource_name, resource_deps=[], port_forwards=[], labels=None, submodule=None,):
     if not labels:
         labels=[resource_name]
 
-    submodule_path = ''
-    submodule_flag = ''
     if submodule:
-        submodule_path = '/{}'.format(submodule)
-        submodule_flag = '-pl {}'.format(submodule)
-
-    # TODO: split into single and multi module jib_project functions
-    # multi module
-    if submodule:
-        custom_build(
-            image_name,
-            'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
-            deps=[base_path],
-            ignore=['**/target'],
-        )
+        multi_module_build(submodule, image_name, base_path)
 
         k8s_resource(
             k8s_resource_name,
@@ -66,27 +74,18 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
             port_forwards=port_forwards,
             trigger_mode=TRIGGER_MODE_MANUAL,
         )
-    # single module
     else:
         compile_resource_name = '{}:live-reload'.format(resource_name)
 
         local_resource(
             compile_resource_name,
-            'mvn compile -f {} -am {}'.format(base_path, submodule_flag),
+            'mvn compile -f {} -am {}'.format(base_path, ''),
             deps=['{}/src'.format(base_path), '{}/pom.xml'.format(base_path)],
             ignore=['**/target'],
             labels=labels,
         )
 
-        custom_build(
-            image_name,
-            'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
-            deps=['{}{}/target/classes'.format(base_path, submodule_path), '{}{}/pom.xml'.format(base_path, submodule_path), '{}{}/src/main/resources'.format(base_path, submodule_path)],
-            live_update=[
-                sync('{}{}/target/classes/org/opennms'.format(base_path, submodule_path), '/app/classes/org/opennms'),
-                sync('{}{}/src/main/resources'.format(base_path, submodule_path), '/app/resources'),
-            ],
-        )
+        single_module_build(image_name, base_path)
 
         k8s_resource(
             k8s_resource_name,
@@ -95,6 +94,7 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
             resource_deps=resource_deps + [compile_resource_name],
             port_forwards=port_forwards,
         )
+   
 
 # Deployment #
 k8s_yaml(
