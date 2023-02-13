@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,42 +28,21 @@
 
 package org.opennms.horizon.inventory.model;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-import org.opennms.horizon.inventory.dto.ConfigKey;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.TenantId;
 
+/**
+ * <p>Abstract Entity class.</p>
+ */
 @Getter
 @Setter
-@Entity
-public class Configuration extends TenantAwareEntity {
+@MappedSuperclass
+public abstract class TenantAwareEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @NotNull
-    @Column(name = "key")
-    @Enumerated(EnumType.STRING)
-    private ConfigKey key;
-
-    @Column(name = "location")
-    private String location;
-
-    @NotNull
-    @Column(columnDefinition = "jsonb", name = "value")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private JsonNode value;
+    @TenantId
+    @Column
+    private String tenantId;
 }
