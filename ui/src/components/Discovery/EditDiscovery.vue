@@ -15,7 +15,7 @@
             :label="discoveryText.Discovery.nameInputLabel"
             class="name-input"
           />
-          <LocationsAutocomplete type="multiply" />
+          <LocationsAutocomplete />
           <!-- location input -->
           <div class="content-editable-container">
             <DiscoveryContentEditable
