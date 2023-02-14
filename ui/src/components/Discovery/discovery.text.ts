@@ -10,3 +10,9 @@ export default {
     subtitle: 'Select a location (total: 11) to review specific guidelines'
   }
 }
+
+export const Azure = {
+  title:'Azure Discovery Setup',
+  saveBtnText: 'Save Discovery',
+  cancelBtnText: 'Cancel'
+}

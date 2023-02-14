@@ -1,60 +1,122 @@
 <template>
   <div class="azure-container">
-    <div>
-      <div class="location-title">Select a location</div>
-      <DiscoveryLocations single />
+    <div class="title">
+      {{ Azure.title }}
     </div>
-    <div class="azure-form">
+
+    <FeatherInput
+      label="Azure Name"
+      v-model="store.azure.name"
+      class="name"
+    />
+
+    <div class="row">
       <FeatherInput
         v-model="store.azure.clientId"
         label="ClientID"
-      >
-      </FeatherInput>
+        class="column"
+      />
       <FeatherProtectedInput
         v-model="store.azure.clientSecret"
         label="Client Secret"
+        class="column"
       />
+    </div>
+
+    <div class="row">
       <FeatherInput
         v-model="store.azure.subscriptionId"
         label="SubscriptionID"
-      >
-      </FeatherInput>
+        class="column"
+      />
       <FeatherInput
         v-model="store.azure.directoryId"
         label="DirectoryID"
-      >
-      </FeatherInput>
+        class="column"
+      />
+    </div>
+
+    <!-- Placeholders -->
+    <FeatherInput
+      label="Locations"
+      class="locations"
+    />
+    <FeatherInput
+      label="Tags"
+      class="tags"
+    />
+
+    <hr />
+    <div class="buttons">
+      <FeatherButton
+        @click="store.clearAzureForm" 
+        secondary>
+        {{ Azure.cancelBtnText }}
+      </FeatherButton>
+      <FeatherButton
+        @click="saveAzureDiscovery"
+        primary>
+        {{ Azure.saveBtnText }}
+      </FeatherButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+import { Azure } from './discovery.text'
+import useSnackbar from '@/composables/useSnackbar'
+
 const store = useDiscoveryStore()
+const { showSnackbar } = useSnackbar()
+
+const saveAzureDiscovery = async () => {
+  const success = await store.saveDiscoveryAzure()
+  if (success) {
+    showSnackbar({
+      msg: `${store.azure.name} setup successfully.`
+    })
+  }
+}
 </script>
 
 <style scoped lang="scss">
+@use "@/styles/mediaQueriesMixins";
 @use "@featherds/styles/themes/variables";
+@use "@featherds/styles/mixins/typography";
 .azure-container {
-  min-width: 800px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin-bottom: var(variables.$spacing-xl);
 
-  > .azure-form {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    justify-content: space-between;
-    border-top: 1px solid var(variables.$shade-4);
-    padding-top: var(variables.$spacing-l);
-    margin-top: var(variables.$spacing-s);
-    > div {
-        width: 49%;
-    }
+  .title {
+    @include typography.headline4;
+    margin-bottom: var(variables.$spacing-s);
   }
 
-  .location-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: -24px;
+  hr {
+    width: 100%;
+    margin-bottom: var(variables.$spacing-xl);
+    border-color: var(variables.$shade-4)
+  }
+
+  .buttons {
+    flex-direction: row;
+    align-self: flex-end;
+  }
+
+  @include mediaQueriesMixins.screen-md {
+    .name, .locations, .tags {
+      width: calc(50% - var(variables.$spacing-s))
+    }
+    .row {
+      display: flex;
+      gap: var(variables.$spacing-l);
+      .column {
+        flex: 1;
+      }
+    }
   }
 }
 </style>
