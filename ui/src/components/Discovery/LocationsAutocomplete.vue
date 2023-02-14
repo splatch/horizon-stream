@@ -122,6 +122,7 @@ const deboncedFn = debounce(
         selectedLocations.value.push(selectedLocation)
       }
       locations.value = locations.value.filter((l: Location) => l.id !== selectedLocation.id)
+      searchValue.value = undefined
       emit('location-selected', selectedLocations.value)
     }
   },
@@ -149,7 +150,6 @@ const removeLocation = (location: Location) => {
   display: flex;
   align-items: baseline;
   flex-direction: column;
-  margin-top: var(variables.$spacing-xl);
   margin-bottom: var(variables.$spacing-l);
 
   @include mediaQueriesMixins.screen-md {
@@ -164,8 +164,11 @@ const removeLocation = (location: Location) => {
     }
   }
   .location-chip {
-    margin-bottom: var(variables.$spacing-s);
+    //margin-bottom: var(variables.$spacing-s);
     cursor: pointer;
   }
+}
+:deep(.feather-input-sub-text) {
+  display: none !important;
 }
 </style>

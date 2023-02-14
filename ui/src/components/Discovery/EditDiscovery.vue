@@ -76,7 +76,6 @@
 import { DiscoveryInput } from '@/types/discovery'
 import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
-
 const isFormShown = ref(true)
 
 const formInput = ref<DiscoveryInput>({
@@ -92,7 +91,7 @@ const contentEditableIPRef = ref()
 const IPs = {
   type: ContentEditableType.IP,
   regexDelim: '[,; ]+',
-  label: discoveryText.ContentEditable.IPs.label
+  label: discoveryText.ContentEditable.IP.label
 }
 const isContentInvalidIP = (args: boolean) => {
   console.log('args', args)
@@ -105,7 +104,7 @@ const contentEditableCommunityRef = ref()
 const community = {
   type: ContentEditableType.Community,
   regexDelim: '',
-  label: discoveryText.ContentEditable.Community.label
+  label: discoveryText.ContentEditable.CommunityString.label
 }
 const isContentInvalidCommunity = (args: boolean) => {
   console.log('args', args)
@@ -118,7 +117,7 @@ const contentEditablePortRef = ref()
 const port = {
   type: ContentEditableType.Port,
   regexDelim: '',
-  label: discoveryText.ContentEditable.Port.label
+  label: discoveryText.ContentEditable.UDPPort.label
 }
 const isContentInvalidPort = (args: boolean) => {
   console.log('args', args)
