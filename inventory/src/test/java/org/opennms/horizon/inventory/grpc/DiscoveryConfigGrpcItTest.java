@@ -69,8 +69,6 @@ public class DiscoveryConfigGrpcItTest extends GrpcTestBase {
     @Autowired
     private ConfigurationRepository configRepo;
     private DiscoveryConfigOperationGrpc.DiscoveryConfigOperationBlockingStub serviceStub;
-    //private final String location1 = "test-location-1", location2 = "test-location-2";
-
 
     @BeforeEach
     public void prepare() throws VerificationException {
