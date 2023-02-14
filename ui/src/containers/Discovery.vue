@@ -1,13 +1,13 @@
 <template>
-  <PageHeader
-    :heading="discoveryText.Discovery.heading"
-    class="header"
+  <PageHeadline
+    :text="discoveryText.Discovery.pageHeadline"
+    class="page-headline"
   />
   <div class="container">
     <section class="my-discovery">
       <div class="add-btn">
         <FeatherButton
-          @click="addDiscovery"
+          @click="showDiscoveryEditing"
           primary
         >
           {{ discoveryText.Discovery.button.add }}
@@ -41,25 +41,52 @@
 
     <!-- add/edit a discovery  -->
     <section
-      v-if="isFormShown"
+      v-if="isDiscoveryEditingShown"
       class="discovery"
     >
-      <EditDiscovery />
+      <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
+      <div>
+        <!-- active/passive discovery type selection -->
+      </div>
+      <!-- <DiscoverySyslogSNMPTrapsForm
+        v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
+        @cancel-editing="discoverySelectedType = DiscoveryType.None"
+      /> -->
+      <div
+        v-if="discoverySelectedType === DiscoveryType.None"
+        class="get-started"
+      >
+        {{ discoveryText.Discovery.noneDiscoverySelectedMsg }}
+      </div>
     </section>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { IAutocompleteItemType } from '@featherds/autocomplete'
+import PageHeadline from '@/components/Common/PageHeadline.vue'
 import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 import { IDiscovery } from '@/types/discovery'
+import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
+
+const addIcon: IIcon = {
+  image: markRaw(AddIcon)
+}
+
+const isDiscoveryEditingShown = ref(false)
+const discoverySelectedType = ref(DiscoveryType.None)
+
+const showDiscoveryEditing = () => {
+  isDiscoveryEditingShown.value = true
+}
+
 const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
 const searchLoading = ref(false)
 const searchValue = ref(undefined)
@@ -67,26 +94,6 @@ const mocksActiveList = [
   { id: 1, name: 'MAD-001' },
   { id: 2, name: 'MAD-002' }
 ] as IDiscovery[]
-const addIcon: IIcon = {
-  image: markRaw(AddIcon)
-}
-const isFormShown = ref(true)
-
-const saveHandler = () => {
-  // startSpinner()
-  // contentEditableIPRef.value.validateAndFormat()
-  // add query
-  // if success
-  // stopSpinner()
-  // if error
-  // showSnackbar({
-  // msg: 'Save unsuccessfully!'
-  // })
-}
-
-const addDiscovery = () => {
-  isFormShown.value = true
-}
 
 const search = (q: string) => {
   searchLoading.value = true
@@ -112,23 +119,34 @@ const showDiscovery = (id: number) => {
 @use '@/styles/vars.scss';
 @use '@featherds/styles/mixins/typography';
 
+.page-headline {
+  margin-left: var(variables.$spacing-l);
+  margin-right: var(variables.$spacing-l);
+}
+
 .container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-flow: wrap;
+  justify-content: space-between;
   margin-left: var(variables.$spacing-l);
   margin-right: var(variables.$spacing-l);
 
   @include mediaQueriesMixins.screen-md {
-    column-gap: var(variables.$spacing-l);
-    flex-direction: row;
+    > .my-discovery {
+      width: 30%;
+      min-width: auto;
+    }
+    > .discovery {
+      width: 67%;
+      min-width: auto;
+    }
   }
 }
 
 .my-discovery {
   width: 100%;
-  margin-bottom: var(variables.$spacing-l);
-  border-bottom: 1px solid var(variables.$border-on-surface);
-
+  min-width: 400px;
   .add-btn {
     width: 100%;
     margin-bottom: var(variables.$spacing-l);
@@ -137,11 +155,10 @@ const showDiscovery = (id: number) => {
       margin-bottom: var(variables.$spacing-l);
     }
   }
-
   > .my-discovery-inner {
+    width: 100%;
     display: flex;
     flex-direction: column;
-    width: 100%;
     margin-bottom: var(variables.$spacing-l);
     > * {
       margin-bottom: var(variables.$spacing-m);
@@ -160,16 +177,13 @@ const showDiscovery = (id: number) => {
     }
   }
 
-  @include mediaQueriesMixins.screen-sm {
-    flex-direction: row;
-    column-gap: 2%;
-    border-bottom: none;
-  }
   @include mediaQueriesMixins.screen-md {
     flex-direction: column;
     margin-bottom: 0;
-    width: 25%;
-    min-width: 260px;
+    > * {
+      width: 100%;
+      margin-bottom: var(variables.$spacing-m);
+    }
   }
 }
 
@@ -179,36 +193,26 @@ const showDiscovery = (id: number) => {
 
 .discovery {
   width: 100%;
+  min-width: 400px;
   border: 1px solid var(variables.$border-on-surface);
   border-radius: vars.$border-radius-s;
   padding: var(variables.$spacing-m);
   background-color: var(variables.$surface);
 
+  .headline {
+    @include typography.headline4();
+  }
+
   @include mediaQueriesMixins.screen-md {
     margin-bottom: 0;
   }
-  > form {
-    div[class$='-input'] {
-      margin-bottom: var(variables.$spacing-m);
-    }
-  }
-
-  @include mediaQueriesMixins.screen-xl {
-    .content-editable-container {
-      width: 100%;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: flex-end;
-      > div {
-        width: 32%;
-      }
-    }
-  }
 }
 
-.header {
-  margin-left: var(variables.$spacing-l);
-  margin-right: var(variables.$spacing-l);
+.get-started {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
