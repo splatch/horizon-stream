@@ -11,6 +11,13 @@ export default {
       submit: 'Save discovery'
     }
   },
+  AddDiscoverySection: {
+    activeDiscoveryTitle: 'Active Discovery',
+    passiveDiscoveryTitle: 'Passive Discovery',
+    icmpSnmp: 'ICMP/SNMP',
+    azure: 'AZURE',
+    syslog: 'Syslog & SNMP Traps'
+  },
   ContentEditable: {
     IP: {
       label: 'Enter IP ranges and/or subnets'

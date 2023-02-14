@@ -1,55 +1,57 @@
 <template>
-  <div>
-    Select a discovery
-    <div class="discoveries">
-      <div class="discovery-card">
-        <FeatherRadioGroup
-          vertical
-          :label="'Active Discovery'"
-          v-model="menuOption"
-          @update:modelValue="setDiscoveryOption"
-        >
-          <div class="row">
-            <FeatherIcon
-              class="icon"
-              :icon="networkIcon"
-            />
-            <FeatherRadio :value="'snmp'">ICMP/SNMP</FeatherRadio>
-          </div>
-          <div class="row">
-            <FeatherIcon
-              class="icon"
-              :icon="cloudIcon"
-            /><FeatherRadio :value="'azure'">AZURE</FeatherRadio>
-          </div>
-        </FeatherRadioGroup>
-      </div>
-      <div class="discovery-card passive">
-        <FeatherRadioGroup
-          horizontal
-          :label="'Passive Discovery'"
-          v-model="menuOption"
-          @update:modelValue="setDiscoveryOption"
-        >
-          <div class="row">
-            <FeatherIcon
-              class="icon"
-              :icon="networkIcon"
-            />
-            <FeatherRadio :value="'syslog'">Syslog & SNMP Traps</FeatherRadio>
-          </div>
-        </FeatherRadioGroup>
-      </div>
+  <div class="discoveries">
+    <div class="discovery-card">
+      <FeatherRadioGroup
+        vertical
+        :label="discoveryText.AddDiscoverySection.activeDiscoveryTitle"
+        v-model="menuOption"
+        @update:modelValue="setDiscoveryOption"
+      >
+        <div class="row">
+          <FeatherIcon
+            class="icon"
+            :icon="networkIcon"
+          />
+          <FeatherRadio :value="DiscoveryType.ICMP">{{ discoveryText.AddDiscoverySection.icmpSnmp }}</FeatherRadio>
+        </div>
+        <div class="row">
+          <FeatherIcon
+            class="icon"
+            :icon="cloudIcon"
+          /><FeatherRadio :value="DiscoveryType.Azure">{{ discoveryText.AddDiscoverySection.azure }}</FeatherRadio>
+        </div>
+      </FeatherRadioGroup>
+    </div>
+    <div class="discovery-card passive">
+      <FeatherRadioGroup
+        horizontal
+        :label="discoveryText.AddDiscoverySection.passiveDiscoveryTitle"
+        v-model="menuOption"
+        @update:modelValue="setDiscoveryOption"
+      >
+        <div class="row">
+          <FeatherIcon
+            class="icon"
+            :icon="networkIcon"
+          />
+          <FeatherRadio :value="DiscoveryType.SyslogSNMPTraps">{{
+            discoveryText.AddDiscoverySection.syslog
+          }}</FeatherRadio>
+        </div>
+      </FeatherRadioGroup>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import discoveryText from '@/components/Discovery/discovery.text'
+import { DiscoveryType } from '@/components/Discovery/discovery.constants'
+
 import Cloud from '@featherds/icon/action/Cloud'
 import Network from '@featherds/icon/hardware/Network'
 const cloudIcon = markRaw(Cloud)
 const networkIcon = markRaw(Network)
-const menuOption = ref()
+const menuOption = ref(DiscoveryType.None)
 const emit = defineEmits(['discovery-option-selected'])
 
 const setDiscoveryOption = () => {
