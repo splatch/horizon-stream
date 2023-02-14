@@ -58,24 +58,6 @@ const locations = ref() //locations without selected items
 const filteredLocations = ref() //results in autocomplete
 const computedLocations = computed(() => discoveryQueries.locations)
 
-const locationsMock = [
-  {
-    id: 1,
-    location: 'Montreal'
-  },
-  {
-    id: 2,
-    location: 'Ottawa'
-  },
-  {
-    id: 3,
-    location: 'Toronto'
-  },
-  {
-    id: 4,
-    location: 'Vancouver'
-  }
-]
 const props = defineProps({
   type: {
     type: String,
@@ -87,10 +69,8 @@ const props = defineProps({
 onMounted(() => discoveryQueries.getLocations())
 watchEffect(() => {
   if (computedLocations) {
-    // filteredLocations.value = computedLocations.value as Location[]
-    // locations.value = computedLocations.value as Location[]
-    filteredLocations.value = locationsMock
-    locations.value = locationsMock
+    filteredLocations.value = computedLocations.value as Location[]
+    locations.value = computedLocations.value as Location[]
   }
 })
 
