@@ -27,22 +27,24 @@ services:
         ipv4_address: 172.4.1.1
 
   temp-a:
-    image: polinux/snmpd
+    image: ehazlett/snmpd:latest-linux-arm64
+    volumes:
+      - "./snmpd.conf:/etc/snmp/snmpd.conf"
     networks:
       localnet:
         ipv4_address: 172.4.2.1
 
-  temp-b:
-    image: polinux/snmpd
-    networks:
-      localnet:
-        ipv4_address: 172.4.2.2
-
-  temp-c:
-    image: polinux/snmpd
-    networks:
-      localnet:
-        ipv4_address: 172.4.2.3
+#  temp-b:
+#    image: polinux/snmpd
+#    networks:
+#      localnet:
+#        ipv4_address: 172.4.2.2
+#
+#  temp-c:
+#    image: polinux/snmpd
+#    networks:
+#      localnet:
+#        ipv4_address: 172.4.2.3
 
 networks:
   localnet:
