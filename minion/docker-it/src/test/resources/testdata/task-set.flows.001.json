@@ -20,7 +20,7 @@
             "name": "Netflow-5",
             "adapters": [{
               "name": "Netflow-5-Adapter",
-              "className": "org.opennms.horizon.flows.adapter.netflow5.Netflow5Adapter",
+              "className": "org.opennms.horizon.minion.flows.adapter.netflow5.Netflow5Adapter",
               "enabled": true,
               "parameters": [{
                 "key": "applicationDataCollection",
@@ -47,7 +47,7 @@
             "name": "Netflow-9",
             "adapters": [{
               "name": "Netflow-9-Adapter",
-              "className": "org.opennms.horizon.flows.adapter.netflow9.Netflow9Adapter",
+              "className": "org.opennms.horizon.minion.flows.adapter.netflow9.Netflow9Adapter",
               "enabled": true,
               "parameters": [{
                 "key": "applicationDataCollection",
@@ -74,7 +74,7 @@
             "name": "IPFIX",
             "adapters": [{
               "name": "IPFIX-Adapter",
-              "className": "org.opennms.horizon.flows.adapter.ipfix.IpfixAdapter",
+              "className": "org.opennms.horizon.minion.flows.adapter.ipfix.IpfixAdapter",
               "enabled": true,
               "parameters": [{
                 "key": "applicationDataCollection",

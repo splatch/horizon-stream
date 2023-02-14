@@ -29,7 +29,7 @@
         <argument ref="identity"/>
         <argument ref="listenerHolder"/>
     </bean>
-    <service ref="telemetryRegistry" interface="org.opennms.horizon.minion.flows.listeners.factory.TelemetryRegistry"/>
+    <service ref="telemetryRegistry" interface="org.opennms.horizon.minion.flows.parser.TelemetryRegistry"/>
 
     <!-- Netflow 5 UDP Parser Factory -->
     <bean id="netflow5UdpParserFactory"
@@ -83,6 +83,36 @@
     <service ref="configManager" interface="org.opennms.horizon.minion.plugin.api.ListenerFactory">
         <service-properties>
             <entry key="listener.name" value="flows.parsers.config"/>
+        </service-properties>
+    </service>
+
+    <!-- Netflow5 Factory and Adapter -->
+    <bean id="netflow5AdapterFactory" class="org.opennms.horizon.minion.flows.adapter.netflow5.Netflow5AdapterFactory">
+        <property name="telemetryRegistry" ref="telemetryRegistry"/>
+    </bean>
+    <service ref="netflow5AdapterFactory" interface="org.opennms.horizon.minion.flows.adapter.common.AdapterFactory">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+    <!-- Netflow9 Factory and Adapter -->
+    <bean id="netflow9AdapterFactory" class="org.opennms.horizon.minion.flows.adapter.netflow9.Netflow9AdapterFactory">
+        <property name="telemetryRegistry" ref="telemetryRegistry"/>
+    </bean>
+    <service ref="netflow9AdapterFactory" interface="org.opennms.horizon.minion.flows.adapter.common.AdapterFactory">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+    <!-- IPFix Factory and Adapter -->
+    <bean id="ipfixAdapterFactory" class="org.opennms.horizon.minion.flows.adapter.ipfix.IpfixAdapterFactory">
+        <property name="telemetryRegistry" ref="telemetryRegistry"/>
+    </bean>
+    <service ref="ipfixAdapterFactory" interface="org.opennms.horizon.minion.flows.adapter.common.AdapterFactory">
+        <service-properties>
+            <entry key="registration.export" value="true" />
         </service-properties>
     </service>
 

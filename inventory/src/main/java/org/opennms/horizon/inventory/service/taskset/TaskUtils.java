@@ -21,16 +21,21 @@ public interface TaskUtils {
     String IP_LABEL = "ip=";
     String AZURE_LABEL = "azure=";
     String NODE_SCAN ="nodeScan=node_id/";
+    String NODE_ID = "nodeId:";
 
-    static String identityForIpTask(String ipAddress, String name) {
-        return IP_LABEL + ipAddress + "/" + name;
+    static String identityForIpTask(long nodeId, String ipAddress, String name) {
+        return NODE_ID  + nodeId + "/" + IP_LABEL + ipAddress + "/" + name;
     }
 
-    static String identityForAzureTask(String name) {
-        return AZURE_LABEL + name;
+    static String identityForAzureTask(String name, String id) {
+        return AZURE_LABEL + name + "-" + id;
     }
 
     static String identityForNodeScan(long nodeId) {
         return NODE_SCAN + nodeId;
+    }
+
+    static String identityForConfig(String configName, String location) {
+        return configName + "@" + location;
     }
 }
