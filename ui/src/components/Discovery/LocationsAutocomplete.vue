@@ -99,7 +99,10 @@ const deboncedFn = debounce(
       if (props.type === 'single') {
         selectedLocations.value = [selectedLocation]
       } else {
-        selectedLocations.value.push(selectedLocation)
+        const exists = selectedLocations.value.find((l) => l.id == selectedLocation.id)
+        if (!exists) {
+          selectedLocations.value.push(selectedLocation)
+        }
       }
       locations.value = locations.value.filter((l: Location) => l.id !== selectedLocation.id)
       searchValue.value = undefined
