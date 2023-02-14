@@ -1,8 +1,7 @@
 export default {
   Discovery: {
     pageHeadline: 'Discovery',
-    headline1: 'Select a discovery',
-    headline2: 'ICMP/SNMP Discovery Setup',
+    headline: 'Select a discovery',
     nameInputLabel: 'ICMP/SNMP name',
     noneDiscoverySelectedMsg: 'Select a discovery to get started',
     button: {
@@ -21,6 +20,11 @@ export default {
     UDPPort: {
       label: 'Enter UDP port (optional)'
     }
+  },
+  DiscoverySyslogSNMPTrapsForm: {
+    headline: 'ICMP/SNMP Discovery Setup',
+    location: 'Search a location',
+    tag: 'Search/Add tags (optional)'
   },
   Infobar: {
     title: 'With Zero Touch Provisioning, BTO discovers your network actively and passively',

@@ -44,7 +44,7 @@
       v-if="isDiscoveryEditingShown"
       class="discovery"
     >
-      <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
+      <div class="headline">{{ discoveryText.Discovery.headline }}</div>
       <div>
         <!-- active/passive discovery type selection -->
       </div>
@@ -77,7 +77,7 @@ const addIcon: IIcon = {
   image: markRaw(AddIcon)
 }
 
-const isDiscoveryEditingShown = ref(false)
+const isDiscoveryEditingShown = ref(true)
 const discoverySelectedType = ref(DiscoveryType.SyslogSNMPTraps)
 
 const showDiscoveryEditing = () => {

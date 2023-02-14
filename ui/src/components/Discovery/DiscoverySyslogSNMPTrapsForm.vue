@@ -1,17 +1,49 @@
 <template>
   <div class="syslog-snmp-traps-form">
     <div class="headline-action">
-      <div class="headline">{{ discoveryText.Discovery.headline2 }}</div>
-      <Icon
+      <div class="headline">{{ discoveryText.DiscoverySyslogSNMPTrapsForm.headline }}</div>
+      <!-- <Icon
         @click="deleteHandler"
         :icon="deleteIcon"
-      />
+      /> -->
     </div>
     <form @submit.prevent="submitHandler">
       <div class="form-iputs">
         <div class="content-editable-container">
           <!-- location -->
+          <FeatherInput
+            :label="discoveryText.DiscoverySyslogSNMPTrapsForm.location"
+            :hint="''"
+            v-model="formInput.location"
+            class="my-text-input"
+          />
+          <!-- steppers -->
           <!-- tags -->
+          <!-- <pre>tagResults {{ tagResults }}</pre> -->
+          <!-- <pre>selectedTags {{ selectedTags }}</pre> -->
+          <!-- <FeatherAutocomplete
+            v-model="selectedTags"
+            @search="tagSearch"
+            @new="addTag"
+            :label="discoveryText.DiscoverySyslogSNMPTrapsForm.tag"
+            :loading="isLoading"
+            :results="tagResults"
+            text-prop="name"
+            type="single"
+            allow-new
+            class="tag-autocomplete"
+          /> -->
+          <pre>reaults {{ results }}</pre>
+          <pre>value {{ value }}</pre>
+          <FeatherAutocomplete
+            class="my-autocomplete"
+            label="Users"
+            type="multi"
+            v-model="value"
+            :loading="loading"
+            :results="results"
+            @search="search"
+          ></FeatherAutocomplete>
           <!-- <DiscoveryContentEditable
             @is-content-invalid="isContentInvalidIP"
             @content-formatted="contentFormattedIP"
@@ -63,42 +95,67 @@ import DeleteIcon from '@featherds/icon/action/Delete'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 import { IIcon } from '@/types'
+import { Tag } from '@/types/graphql'
 import discoveryText from './discovery.text'
 import { ContentEditableType } from './discovery.constants'
+import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+import { IAutocompleteItemType } from '@featherds/autocomplete/src/components/types'
+// import { useQuery } from 'villus'
+// import { ListLocationsForDiscoveryDocument, ListTagsByNodeIdDocument, Tag } from '@/types/graphql'
 
 interface FormInput {
-  locations: string[]
-  tags: string[]
-  communtityStrings: string[]
-  UPDPorts: string[]
+  location: string
+  tag: string
+  communtityString: string
+  UPDPort: string
 }
+
+const emits = defineEmits(['cancel-editing'])
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 
-const emits = defineEmits(['cancel-editing'])
+const discoveryQueries = useDiscoveryQueries()
 
 const isFormInvalid = ref(true)
 
 const formInput = ref<FormInput>({
-  locations: ['Default'],
-  tags: [''],
-  communtityStrings: [''], // optional
-  UPDPorts: [''] // optional
+  location: '',
+  tag: '',
+  communtityString: '', // optional
+  UPDPort: '' // optional
 })
 
-/* const contentEditableIPRef = ref()
-const IPs = {
-  type: ContentEditableType.IP,
-  regexDelim: '[,; ]+',
-  label: discoveryText.ContentEditable.IPs.label
+const names = [
+  {
+    id: 1,
+    name: 'local',
+    tenantId: 'opennms-prime'
+  },
+  {
+    id: 2,
+    name: 'localhost',
+    tenantId: 'opennms-prime'
+  }
+]
+let timeout = -1
+let loading = ref(false)
+let results = ref([] as IAutocompleteItemType[])
+const value = [] as IAutocompleteItemType[]
+const search = (q: string) => {
+  loading.value = true
+  clearTimeout(timeout)
+  timeout = window.setTimeout(() => {
+    results.value = names
+      .filter((x) => x.name.toLowerCase().indexOf(q.toLowerCase()) > -1)
+      .map((x) => ({
+        ...x,
+        _text: x.name
+      }))
+    loading.value = false
+  }, 500)
 }
-const isContentInvalidIP = (args) => {
-  console.log('args', args)
-}
-const contentFormattedIP = (args) => {
-  console.log('args', args)
-} */
+
 const contentEditableCommunityStringRef = ref()
 const communityString = {
   type: ContentEditableType.CommunityString,
