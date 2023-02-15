@@ -29,7 +29,7 @@
         />
         <DiscoveryListCard
           title=" My Active Discoveries"
-          :list="mocksActiveList"
+          :list="store.activeDiscoveries"
           @select-discovery="showDiscovery"
         />
         <DiscoveryListCard
@@ -44,11 +44,19 @@
       v-if="isDiscoveryEditingShown"
       class="discovery"
     >
-      <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
-      <DiscoveryTypeSelector @discovery-option-selected="(type: string) => (discoverySelectedType = type)" />
-      <div class="forms">
+      <div
+        v-if="showNewDiscovery"
+        class="type-selector"
+      >
+        <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
+        <DiscoveryTypeSelector @discovery-option-selected="(type: string) => (discoverySelectedType = type)" />
+      </div>
+      <div>
         <div v-if="discoverySelectedType === DiscoveryType.ICMP">
-          <DiscoverySnmpForm @cancel-form="handleCancel" />
+          <DiscoverySnmpForm
+            @close-form="handleCancel"
+            :discovery="selectedDiscovery"
+          />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">AZURE</div>
         <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
@@ -79,6 +87,8 @@ import useSnackbar from '@/composables/useSnackbar'
 import { IDiscovery } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
+import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+const store = useDiscoveryStore()
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
@@ -88,23 +98,22 @@ const addIcon: IIcon = {
 }
 
 const isDiscoveryEditingShown = ref(false)
+const showNewDiscovery = ref(false)
+const selectedDiscovery = ref<IDiscovery>(null)
 const discoverySelectedType = ref(DiscoveryType.None)
 
 const showDiscoveryEditing = () => {
   isDiscoveryEditingShown.value = true
+  showNewDiscovery.value = true
 }
 
 const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
 const searchLoading = ref(false)
 const searchValue = ref(undefined)
-const mocksActiveList = [
-  { id: 1, name: 'MAD-001' },
-  { id: 2, name: 'MAD-002' }
-] as IDiscovery[]
 
 const search = (q: string) => {
   searchLoading.value = true
-  const results = mocksActiveList
+  const results = store.activeDiscoveries
     .filter((x) => x.name.toLowerCase().indexOf(q) > -1)
     .map((x) => ({
       _text: x.name,
@@ -115,8 +124,12 @@ const search = (q: string) => {
   searchLoading.value = false
 }
 
-const showDiscovery = (id: number) => {
-  console.log('show discovery', id)
+const showDiscovery = (discovery: IDiscovery) => {
+  isDiscoveryEditingShown.value = true
+  showNewDiscovery.value = false
+  discoverySelectedType.value = discovery.type
+  selectedDiscovery.value = discovery
+  console.log(discoverySelectedType.value)
 }
 
 const handleCancel = () => {
@@ -218,10 +231,10 @@ const handleCancel = () => {
   @include mediaQueriesMixins.screen-md {
     margin-bottom: 0;
   }
+}
 
-  .forms {
-    margin-top: var(variables.$spacing-l);
-  }
+.type-selector {
+  margin-bottom: var(variables.$spacing-l);
 }
 
 .get-started {

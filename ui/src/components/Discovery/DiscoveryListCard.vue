@@ -8,7 +8,7 @@
       <div
         v-for="item in list"
         :key="item.id"
-        @click="$emit('selectDiscovery', item.id)"
+        @click="$emit('selectDiscovery', item)"
         class="discovery-name"
       >
         {{ item.name?.toUpperCase() }}

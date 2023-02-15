@@ -1,3 +1,5 @@
+import { IDiscovery } from '@/types/discovery'
+import { filter } from 'lodash'
 import { defineStore } from 'pinia'
 import { useDiscoveryMutations } from '../Mutations/discoveryMutations'
 
@@ -15,7 +17,8 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       clientSecret: '',
       subscriptionId: '',
       directoryId: ''
-    }
+    },
+    activeDiscoveries: <IDiscovery[]>[]
   }),
   actions: {
     selectLocation(location: string, single?: boolean) {
@@ -41,6 +44,15 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       })
 
       return !azureError.value
+    },
+    saveDiscovery(discovery: IDiscovery) {
+      const exists = this.activeDiscoveries.find((d) => d.id == discovery.id)
+      if (exists) {
+        this.activeDiscoveries = this.activeDiscoveries.filter((d) => d.id == discovery.id)
+      } else {
+        discovery.id = new Date().getTime()
+      }
+      this.activeDiscoveries.push(discovery)
     }
   }
 })
