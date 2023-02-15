@@ -37,10 +37,10 @@
     </div>
 
     <!-- Placeholders -->
-    <FeatherInput
-      label="Locations"
+    <LocationsAutocomplete
+      @locationSelected="selectLocation"
       class="locations"
-    />
+     />
     <FeatherInput
       label="Tags"
       class="tags"
@@ -66,6 +66,7 @@
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 import { Azure } from './discovery.text'
 import useSnackbar from '@/composables/useSnackbar'
+import { Location } from '@/types/graphql'
 
 const store = useDiscoveryStore()
 const { showSnackbar } = useSnackbar()
@@ -73,6 +74,8 @@ const { showSnackbar } = useSnackbar()
 const props = defineProps<{
 	successCallback: (name: string) => void
 }>()
+
+const selectLocation = (location: Required<Location>) => store.selectLocation(location.location, true)
 
 const saveAzureDiscovery = async () => {
   const success = await store.saveDiscoveryAzure()
@@ -97,8 +100,8 @@ const saveAzureDiscovery = async () => {
   margin-bottom: var(variables.$spacing-xl);
 
   .title {
-    @include typography.headline4;
-    margin-bottom: var(variables.$spacing-s);
+    @include typography.body-large;
+    margin: var(variables.$spacing-s) 0;
   }
 
   hr {
@@ -110,6 +113,10 @@ const saveAzureDiscovery = async () => {
   .buttons {
     flex-direction: row;
     align-self: flex-end;
+  }
+
+  .locations {
+    margin-bottom: var(variables.$spacing-s);
   }
 
   @include mediaQueriesMixins.screen-md {

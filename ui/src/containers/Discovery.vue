@@ -50,7 +50,9 @@
       </div>
 
       <div v-if="discoverySelectedType === DiscoveryType.ICMP">ICMP/SNMP</div>
-      <div v-else-if="discoverySelectedType === DiscoveryType.Azure">AZURE</div>
+      <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
+        <AzureForm :successCallback="(name) => successModal.openSuccessModal(name)" />
+      </div>
       <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
         SyslogSNMPTraps
         <!-- <DiscoverySyslogSNMPTrapsForm
@@ -66,6 +68,7 @@
       </div>
     </section>
   </div>
+  <DiscoverySuccessModal ref="successModal" />
 </template>
 
 <script lang="ts" setup>
@@ -78,9 +81,12 @@ import useSnackbar from '@/composables/useSnackbar'
 import { IDiscovery } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
+import DiscoverySuccessModal from '@/components/Discovery/DiscoverySuccessModal.vue'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
+
+const successModal = ref()
 
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
@@ -193,10 +199,6 @@ const showDiscovery = (id: number) => {
   }
 }
 
-.feather-input-sub-text {
-  display: none !important;
-}
-
 .discovery {
   width: 100%;
   min-width: 400px;
@@ -220,9 +222,5 @@ const showDiscovery = (id: number) => {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-:deep(.feather-input-sub-text) {
-  display: none !important;
 }
 </style>
