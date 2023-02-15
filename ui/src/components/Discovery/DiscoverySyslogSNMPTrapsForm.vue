@@ -17,42 +17,16 @@
             v-model="formInput.location"
             class="my-text-input"
           />
-          <!-- steppers -->
+          <!-- carousel -->
           <!-- tags -->
-          <!-- <pre>tagResults {{ tagResults }}</pre> -->
-          <!-- <pre>selectedTags {{ selectedTags }}</pre> -->
-          <!-- <FeatherAutocomplete
-            v-model="selectedTags"
-            @search="tagSearch"
-            @new="addTag"
+          <DiscoveryAutocomplete
+            @new-value="tagsAdded"
             :label="discoveryText.DiscoverySyslogSNMPTrapsForm.tag"
-            :loading="isLoading"
-            :results="tagResults"
-            text-prop="name"
-            type="single"
-            allow-new
-            class="tag-autocomplete"
-          /> -->
-          <pre>reaults {{ results }}</pre>
-          <pre>value {{ value }}</pre>
-          <FeatherAutocomplete
-            class="my-autocomplete"
-            label="Users"
-            type="multi"
-            v-model="value"
-            :loading="loading"
-            :results="results"
-            @search="search"
-          ></FeatherAutocomplete>
-          <!-- <DiscoveryContentEditable
-            @is-content-invalid="isContentInvalidIP"
-            @content-formatted="contentFormattedIP"
-            ref="contentEditableIPRef"
-            :contentType="IPs.type"
-            :regexDelim="IPs.regexDelim"
-            :label="IPs.label"
-            class="ip-input"
-          /> -->
+            :allow-new="true"
+            :get-items="discoveryQueries.getTagsUponTyping"
+            :items="discoveryQueries.tagsUponTyping"
+            render-type="multi"
+          />
           <DiscoveryContentEditable
             @is-content-invalid="isContentInvalidCommunityString"
             @content-formatted="contentFormattedCommunityString"
@@ -95,13 +69,9 @@ import DeleteIcon from '@featherds/icon/action/Delete'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 import { IIcon } from '@/types'
-import { Tag } from '@/types/graphql'
 import discoveryText from './discovery.text'
 import { ContentEditableType } from './discovery.constants'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
-import { IAutocompleteItemType } from '@featherds/autocomplete/src/components/types'
-// import { useQuery } from 'villus'
-// import { ListLocationsForDiscoveryDocument, ListTagsByNodeIdDocument, Tag } from '@/types/graphql'
 
 interface FormInput {
   location: string
@@ -126,34 +96,8 @@ const formInput = ref<FormInput>({
   UPDPort: '' // optional
 })
 
-const names = [
-  {
-    id: 1,
-    name: 'local',
-    tenantId: 'opennms-prime'
-  },
-  {
-    id: 2,
-    name: 'localhost',
-    tenantId: 'opennms-prime'
-  }
-]
-let timeout = -1
-let loading = ref(false)
-let results = ref([] as IAutocompleteItemType[])
-const value = [] as IAutocompleteItemType[]
-const search = (q: string) => {
-  loading.value = true
-  clearTimeout(timeout)
-  timeout = window.setTimeout(() => {
-    results.value = names
-      .filter((x) => x.name.toLowerCase().indexOf(q.toLowerCase()) > -1)
-      .map((x) => ({
-        ...x,
-        _text: x.name
-      }))
-    loading.value = false
-  }, 500)
+const tagsAdded = (tags: Record<string, string>[]) => {
+  console.log('>>> tags', tags)
 }
 
 const contentEditableCommunityStringRef = ref()
