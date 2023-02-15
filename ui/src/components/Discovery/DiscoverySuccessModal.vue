@@ -2,6 +2,7 @@
   <PrimaryModal :visible="isVisible" title="''" hideTitle>
     <template #content>
       <div class="header">
+        <FeatherIcon class="header-icon" :icon="Icons.CheckCircle" aria-hidden="true" focusable="false" />
         <span class="successName">{{ successName }}</span> {{ SuccessModalOptions.successMsg }}
       </div>
 
@@ -50,6 +51,7 @@
 <script setup lang="ts">
 import useModal from '@/composables/useModal'
 import { useRouter } from 'vue-router'
+import CheckCircle from '@featherds/icon/action/CheckCircle'
 import Discovery from '@featherds/icon/action/Search'
 import Nodes from '@featherds/icon/hardware/Appliances'
 import Synthetic from '@featherds/icon/action/Cycle'
@@ -57,6 +59,7 @@ import Monitoring from '@featherds/icon/hardware/MinionProfiles'
 import { SuccessModalOptions } from './discovery.text'
 
 const Icons = markRaw({
+  CheckCircle,
   Discovery,
   Nodes,
   Synthetic,
@@ -92,6 +95,13 @@ defineExpose({ openSuccessModal })
   background: var(variables.$background);
   margin: 0px;
   text-align: center;
+
+  .header-icon {
+    color: var(variables.$shade-1);
+    font-size: 23px;
+    vertical-align: middle;
+    margin-right: var(variables.$spacing-s);
+  }
   .successName {
     font-weight: bold;
     line-height: 100px; 

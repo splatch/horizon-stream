@@ -36,11 +36,12 @@
       />
     </div>
 
-    <!-- Placeholders -->
     <LocationsAutocomplete
-      @locationSelected="selectLocation"
-      class="locations"
-     />
+    @locationSelected="selectLocation"
+    class="locations"
+    />
+    
+    <!-- Placeholder -->
     <FeatherInput
       label="Tags"
       class="tags"
