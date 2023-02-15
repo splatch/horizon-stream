@@ -70,12 +70,18 @@ import useSnackbar from '@/composables/useSnackbar'
 const store = useDiscoveryStore()
 const { showSnackbar } = useSnackbar()
 
+const props = defineProps<{
+	successCallback: (name: string) => void
+}>()
+
 const saveAzureDiscovery = async () => {
   const success = await store.saveDiscoveryAzure()
   if (success) {
     showSnackbar({
       msg: `${store.azure.name} setup successfully.`
     })
+
+    props.successCallback(store.azure.name)
   }
 }
 </script>

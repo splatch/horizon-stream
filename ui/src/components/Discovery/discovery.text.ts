@@ -16,3 +16,13 @@ export const Azure = {
   saveBtnText: 'Save Discovery',
   cancelBtnText: 'Cancel'
 }
+
+export const SuccessModalOptions = {
+  successMsg: 'setup successfully!',
+  title: 'You may be interested in...',
+  viewNodes: 'View Detected Nodes',
+  addDiscovery:'Add Another Discovery',
+  addTransaction: 'Add Synthetic Transaction',
+  addMonitoring: 'Add Monitoring Policy',
+  checkboxText: 'Don\'t show this again'
+}
