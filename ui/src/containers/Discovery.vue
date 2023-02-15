@@ -1,167 +1,144 @@
 <template>
-  <PageHeader
-    heading="Discovery"
-    class="header"
+  <PageHeadline
+    :text="discoveryText.Discovery.pageHeadline"
+    class="page-headline"
   />
-  <!-- add discovery button -->
-  <!-- TODO: Awaiting UI confirmation to have the button at top right corner -->
-  <!-- <FeatherButton
-        @click="addDiscovery"
-        primary
-      >
-        New discovery
-        <template #icon>
-          <Icon :icon="addIcon" />
-        </template>
-      </FeatherButton> -->
   <div class="container">
-    <!-- my discovery -->
     <section class="my-discovery">
-      <!-- my active -->
-      <div>
-        <div>My active discovery</div>
-        <div>You have no active discovery</div>
+      <div class="add-btn">
+        <FeatherButton
+          @click="showDiscoveryEditing"
+          primary
+        >
+          {{ discoveryText.Discovery.button.add }}
+          <template #icon>
+            <Icon :icon="addIcon" />
+          </template>
+        </FeatherButton>
       </div>
-      <!-- my passive -->
-      <div>
-        <div>My passive discovery</div>
-        <div>You have no active discovery</div>
+
+      <div class="my-discovery-inner">
+        <FeatherAutocomplete
+          class="search"
+          v-model="searchValue"
+          :loading="searchLoading"
+          :results="discoveriesResults"
+          @search="search"
+          label="Search Discovery"
+          type="single"
+        />
+        <DiscoveryListCard
+          title=" My Active Discoveries"
+          :list="mocksActiveList"
+          @select-discovery="showDiscovery"
+        />
+        <DiscoveryListCard
+          title=" My Passive Discoveries"
+          :list="[]"
+        />
       </div>
-      <!-- dropdown select discovery (edit) -->
-      <div>Search/Filter discovery</div>
     </section>
 
     <!-- add/edit a discovery  -->
     <section
-      v-if="isFormShown"
+      v-if="isDiscoveryEditingShown"
       class="discovery"
     >
-      <h5>Select a discovery</h5>
-      <form>
-        <div>
-          <!-- active -->
-          <!-- passive -->
-        </div>
-        <div v-if="formInput.type">
-          <h4>ICMP/SNMP Discovery Setup</h4>
-          <div>
-            <!-- ICMP/SNMP name input -->
-            <FeatherInput
-              v-model="formInput.name"
-              label="ICMP/SNMP name"
-              class="name-input"
-            />
-            <!-- location input -->
-            <!-- IP input -->
-            <!-- community input -->
-            <!-- port input -->
-          </div>
-        </div>
-        <div
-          v-else
-          class="get-started"
-        >
-          Select a discovery to get started
-        </div>
-        <div class="footer">
-          <FeatherButton
-            @click="cancelHandler"
-            secondary
-            >cancel</FeatherButton
-          >
-          <FeatherButton
-            @click="saveHandler"
-            :disabled="isFormValid"
-            primary
-            type="submit"
-            >save discovery</FeatherButton
-          >
-        </div>
-      </form>
+      <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
+      <div>
+        <DiscoveryTypeSelector @discovery-option-selected="(type: string) => (discoverySelectedType = type)" />
+      </div>
+
+      <div v-if="discoverySelectedType === DiscoveryType.ICMP">ICMP/SNMP</div>
+      <div v-else-if="discoverySelectedType === DiscoveryType.Azure">AZURE</div>
+      <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
+        SyslogSNMPTraps
+        <!-- <DiscoverySyslogSNMPTrapsForm
+        v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
+        @cancel-editing="discoverySelectedType = DiscoveryType.None"
+      /> -->
+      </div>
+      <div
+        v-else
+        class="get-started"
+      >
+        {{ discoveryText.Discovery.noneDiscoverySelectedMsg }}
+      </div>
     </section>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { IAutocompleteItemType } from '@featherds/autocomplete'
+import PageHeadline from '@/components/Common/PageHeadline.vue'
 import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
 import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
-
-const enum DiscoverytType {
-  None,
-  ICSNMP,
-  Azure,
-  SysLog,
-  SNMPTraps
-}
-
-interface DiscoveryInput {
-  type: DiscoverytType
-  name: string
-  location: string
-  IPRange: string
-  communityString: string
-  UDPPort: number
-}
+import { IDiscovery } from '@/types/discovery'
+import { DiscoveryType } from '@/components/Discovery/discovery.constants'
+import discoveryText from '@/components/Discovery/discovery.text'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
 
-const isFormShown = ref(true)
-
-const formInput = ref<DiscoveryInput>({
-  type: DiscoverytType.ICSNMP,
-  name: '', // required?
-  location: 'Default',
-  IPRange: '', // required?
-  communityString: '', // required?
-  UDPPort: 0 // required?
-})
-
-const addDiscovery = () => {
-  isFormShown.value = true
-}
-
-const isFormValid = computed(() => {
-  // formInput validation
-  return true
-})
-
-const saveHandler = () => {
-  // startSpinner()
-  // add query
-  // if success
-  // stopSpinner()
-  // if error
-  // showSnackbar({
-  // msg: 'Save unsuccessfully!'
-  // })
-}
-
-const cancelHandler = () => {
-  formInput.value.type = DiscoverytType.None
-}
-
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
 }
+
+const isDiscoveryEditingShown = ref(false)
+const discoverySelectedType = ref(DiscoveryType.None)
+
+const showDiscoveryEditing = () => {
+  isDiscoveryEditingShown.value = true
+}
+
+const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
+const searchLoading = ref(false)
+const searchValue = ref(undefined)
+const mocksActiveList = [
+  { id: 1, name: 'MAD-001' },
+  { id: 2, name: 'MAD-002' }
+] as IDiscovery[]
+
+const search = (q: string) => {
+  searchLoading.value = true
+  const results = mocksActiveList
+    .filter((x) => x.name.toLowerCase().indexOf(q) > -1)
+    .map((x) => ({
+      _text: x.name,
+      id: x.id,
+      name: x.name
+    }))
+  discoveriesResults.value = results
+  searchLoading.value = false
+}
+
+const showDiscovery = (id: number) => {
+  console.log('show discovery', id)
+}
 </script>
 
-<style lang="scss" scope>
+<style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
+@use '@featherds/styles/mixins/typography';
+
+.page-headline {
+  margin-left: var(variables.$spacing-l);
+  margin-right: var(variables.$spacing-l);
+}
 
 .container {
   display: flex;
   flex-direction: row;
   flex-flow: wrap;
+  justify-content: space-between;
   margin-left: var(variables.$spacing-l);
   margin-right: var(variables.$spacing-l);
 
   @include mediaQueriesMixins.screen-md {
-    column-gap: 3%;
     > .my-discovery {
       width: 30%;
       min-width: auto;
@@ -174,29 +151,38 @@ const addIcon: IIcon = {
 }
 
 .my-discovery {
-  display: flex;
-  flex-direction: column;
   width: 100%;
   min-width: 400px;
-  border: 1px solid var(variables.$border-on-surface);
-  border-radius: vars.$border-radius-s;
-  padding: var(variables.$spacing-m);
-  margin-bottom: var(variables.$spacing-l);
-  > * {
-    margin-bottom: var(variables.$spacing-m);
-    &:last-child {
+  .add-btn {
+    width: 100%;
+    margin-bottom: var(variables.$spacing-l);
+    border-bottom: 1px solid var(variables.$border-on-surface);
+    > button {
+      margin-bottom: var(variables.$spacing-l);
+    }
+  }
+  > .my-discovery-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(variables.$spacing-l);
+    > * {
+      margin-bottom: var(variables.$spacing-m);
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    @include mediaQueriesMixins.screen-md {
       margin-bottom: 0;
+    }
+
+    .search {
+      background-color: var(variables.$surface);
+      margin-bottom: var(variables.$spacing-m);
     }
   }
 
-  @include mediaQueriesMixins.screen-sm {
-    flex-direction: row;
-    column-gap: 2%;
-    > * {
-      width: 32%;
-      margin-bottom: 0;
-    }
-  }
   @include mediaQueriesMixins.screen-md {
     flex-direction: column;
     margin-bottom: 0;
@@ -207,25 +193,36 @@ const addIcon: IIcon = {
   }
 }
 
+.feather-input-sub-text {
+  display: none !important;
+}
+
 .discovery {
   width: 100%;
   min-width: 400px;
   border: 1px solid var(variables.$border-on-surface);
   border-radius: vars.$border-radius-s;
   padding: var(variables.$spacing-m);
-  > h5,
-  h4 {
-    margin-bottom: var(variables.$spacing-m);
+  background-color: var(variables.$surface);
+
+  .headline {
+    @include typography.headline4();
+  }
+
+  @include mediaQueriesMixins.screen-md {
+    margin-bottom: 0;
   }
 }
 
-.header {
-  margin-left: var(variables.$spacing-l);
-  margin-right: var(variables.$spacing-l);
+.get-started {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.footer {
-  display: flex;
-  justify-content: flex-end;
+:deep(.feather-input-sub-text) {
+  display: none !important;
 }
 </style>

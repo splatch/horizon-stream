@@ -1,5 +1,6 @@
 package org.opennms.horizon.inventory.service.taskset.response;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,13 +21,12 @@ import org.opennms.horizon.inventory.repository.NodeRepository;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.taskset.contract.DetectorResponse;
 import org.opennms.taskset.contract.MonitorType;
-import org.opennms.taskset.service.contract.PublishTaskSetRequest;
+import org.opennms.taskset.contract.TaskType;
 import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -118,7 +118,7 @@ class DetectorResponseServiceIntTest extends GrpcTestBase {
         MonitoredServiceType relatedType = monitoredService.getMonitoredServiceType();
         assertEquals(monitoredServiceType, relatedType);
 
-        assertEquals(2, testGrpcService.getTimesCalled().intValue());
+        assertEquals(2, testGrpcService.getRequests().size());
     }
 
     @Test
@@ -155,7 +155,7 @@ class DetectorResponseServiceIntTest extends GrpcTestBase {
         MonitoredServiceType relatedType = monitoredService.getMonitoredServiceType();
         assertEquals(monitoredServiceType, relatedType);
 
-        assertEquals(numberOfCalls*2, testGrpcService.getTimesCalled().intValue());
+        assertEquals(numberOfCalls*2, testGrpcService.getRequests().size());
     }
 
     @Test
@@ -175,7 +175,7 @@ class DetectorResponseServiceIntTest extends GrpcTestBase {
         List<MonitoredService> monitoredServices = monitoredServiceRepository.findAll();
         assertEquals(0, monitoredServices.size());
 
-        assertEquals(0, testGrpcService.getTimesCalled().intValue());
+        assertEquals(0, testGrpcService.getRequests().size());
     }
 
     @Test
@@ -221,13 +221,20 @@ class DetectorResponseServiceIntTest extends GrpcTestBase {
             assertEquals(TEST_IP_ADDRESS, InetAddressUtils.toIpAddrString(ipInterface.getIpAddress()));
             assertEquals(TEST_TENANT_ID, monitoredService.getTenantId());
         }
-        
-        // fragile test : extra 1 call for SNMP collector
-        assertEquals(numberOfCalls + 1, testGrpcService.getTimesCalled().intValue());
 
-        List<PublishTaskSetRequest> grpcRequests = testGrpcService.getRequests();
-        // fragile test : extra 1 call for SNMP collector
-        assertEquals(monitorTypes.length + 1, grpcRequests.size());
+        var taskDefinitions = testGrpcService.getTaskDefinitions(TEST_LOCATION);
+        var monitorTasks = taskDefinitions.stream().filter(taskDefinition ->
+                taskDefinition.getType().equals(TaskType.MONITOR))
+            .filter(taskDefinition -> taskDefinition.getPluginName().contains(MonitorType.SNMP.name()) ||
+                taskDefinition.getPluginName().contains(MonitorType.ICMP.name())).toList();
+
+        assertEquals(2, monitorTasks.size());
+
+        var collectorTasks = taskDefinitions.stream().filter(taskDefinition ->
+                taskDefinition.getType().equals(TaskType.COLLECTOR))
+            .filter(taskDefinition -> taskDefinition.getPluginName().contains(MonitorType.SNMP.name())).toList();
+
+        assertEquals(1, collectorTasks.size());
     }
 
     private void populateDatabase() throws UnknownHostException {

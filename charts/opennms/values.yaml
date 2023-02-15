@@ -112,6 +112,7 @@ OpenNMS:
       Requests:
         Cpu: 100m
         Memory: 250Mi
+    EncryptionKey: ~
   Alarm:
     ServiceName: opennms-alarm
     Image: opennms/horizon-stream-alarm
@@ -203,6 +204,7 @@ Keycloak:
   AdminUsername: admin
   AdminPassword: notset
   RealmName: opennms
+  DynamicRealmConfig: true
 Grafana:
   Enabled: true
   Path: /grafana

@@ -28,23 +28,6 @@
 
 package org.opennms.horizon.inventory.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,8 +43,30 @@ import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
+import org.opennms.horizon.inventory.service.taskset.CollectorTaskSetService;
+import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
+import org.opennms.horizon.inventory.service.taskset.MonitorTaskSetService;
+import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
+import org.opennms.horizon.inventory.taskset.api.TaskSetPublisher;
 import org.opennms.horizon.inventory.repository.TagRepository;
 import org.opennms.horizon.shared.constants.GrpcConstants;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class NodeServiceTest {
     private NodeService nodeService;
@@ -82,8 +87,20 @@ public class NodeServiceTest {
         mockIpInterfaceRepository = mock(IpInterfaceRepository.class);
         tagRepository = mock(TagRepository.class);
         mockConfigUpdateService = mock(ConfigUpdateService.class);
-        nodeService = new NodeService(mockNodeRepository, mockMonitoringLocationRepository, mockIpInterfaceRepository, tagRepository,
-            mockConfigUpdateService, nodeMapper);
+
+
+        nodeService = new NodeService(mockNodeRepository,
+            mockMonitoringLocationRepository,
+            mockIpInterfaceRepository,
+            tagRepository,
+            mockConfigUpdateService,
+            mock(DetectorTaskSetService.class),
+            mock(CollectorTaskSetService.class),
+            mock(MonitorTaskSetService.class),
+            mock(ScannerTaskSetService.class),
+            mock(TaskSetPublisher.class),
+            nodeMapper);
+
         node = new Node();
         doReturn(node).when(mockNodeRepository).save(any(node.getClass()));
     }

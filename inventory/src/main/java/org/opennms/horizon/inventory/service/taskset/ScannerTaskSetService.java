@@ -28,8 +28,20 @@
 
 package org.opennms.horizon.inventory.service.taskset;
 
-import static org.opennms.horizon.inventory.service.taskset.TaskUtils.identityForAzureTask;
-import static org.opennms.horizon.inventory.service.taskset.TaskUtils.identityForNodeScan;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.protobuf.Any;
+import lombok.RequiredArgsConstructor;
+import org.opennms.azure.contract.AzureScanRequest;
+import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
+import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.inventory.mapper.NodeMapper;
+import org.opennms.horizon.inventory.model.AzureCredential;
+import org.opennms.horizon.inventory.model.Node;
+import org.opennms.horizon.inventory.taskset.api.TaskSetPublisher;
+import org.opennms.node.scan.contract.NodeScanRequest;
+import org.opennms.taskset.contract.TaskDefinition;
+import org.opennms.taskset.contract.TaskType;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,20 +49,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import org.opennms.azure.contract.AzureScanRequest;
-import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
-import org.opennms.horizon.inventory.dto.NodeDTO;
-import org.opennms.horizon.inventory.model.AzureCredential;
-import org.opennms.node.scan.contract.NodeScanRequest;
-import org.opennms.taskset.contract.TaskDefinition;
-import org.opennms.taskset.contract.TaskType;
-import org.opennms.taskset.service.api.TaskSetPublisher;
-import org.springframework.stereotype.Component;
+import static org.opennms.horizon.inventory.service.taskset.TaskUtils.identityForAzureTask;
+import static org.opennms.horizon.inventory.service.taskset.TaskUtils.identityForNodeScan;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.google.protobuf.Any;
 
-import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -61,17 +63,24 @@ public class ScannerTaskSetService {
     private final ExecutorService executorService = Executors.newFixedThreadPool(10, threadFactory);
 
     private final TaskSetPublisher taskSetPublisher;
+    private final NodeMapper nodeMapper;
 
     public void sendAzureScannerTaskAsync(AzureCredential credential) {
         executorService.execute(() -> sendAzureScannerTask(credential));
     }
 
     public void sendNodeScannerTask(List<NodeDTO> nodes, String location, String tenantId) {
+
             List<TaskDefinition> tasks = nodes.stream().map(this::createNodeScanTask)
                 .flatMap(Optional::stream).toList();
             if(!tasks.isEmpty()) {
                 taskSetPublisher.publishNewTasks(tenantId, location, tasks);
             }
+    }
+
+    public Optional<TaskDefinition> getNodeScanTasks(Node node) {
+        var nodeDto = nodeMapper.modelToDTO(node);
+        return createNodeScanTask(nodeDto);
     }
 
     private void sendAzureScannerTask(AzureCredential credential) {
@@ -95,7 +104,7 @@ public class ScannerTaskSetService {
                 .setRetries(TaskUtils.AZURE_DEFAULT_RETRIES)
                 .build());
 
-        String taskId = identityForAzureTask("azure-scanner");
+        String taskId = identityForAzureTask("azure-scanner", String.valueOf(credential.getId()));
         return TaskDefinition.newBuilder()
             .setType(TaskType.SCANNER)
             .setPluginName("AZUREScanner")
@@ -104,6 +113,7 @@ public class ScannerTaskSetService {
             .setSchedule(TaskUtils.DEFAULT_SCHEDULE)
             .build();
     }
+
 
     private Optional<TaskDefinition> createNodeScanTask(NodeDTO node) {
         Optional<IpInterfaceDTO> ipInterface = node.getIpInterfacesList().stream()
