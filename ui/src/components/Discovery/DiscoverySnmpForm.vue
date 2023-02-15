@@ -1,0 +1,174 @@
+<template>
+  <form class="form">
+    <div class="form-title">{{ discoveryText.Discovery.headline2 }}</div>
+    <div>
+      <FeatherInput
+        v-model="formInput.name"
+        :label="discoveryText.Discovery.nameInputLabel"
+        class="name-input"
+      />
+      <div class="content-editable-container">
+        <DiscoveryContentEditable
+          @is-content-invalid="isContentInvalidIP"
+          @content-formatted="contentFormattedIP"
+          ref="contentEditableIPRef"
+          :contentType="IPs.type"
+          :regexDelim="IPs.regexDelim"
+          :label="IPs.label"
+          class="ip-input"
+        />
+        <DiscoveryContentEditable
+          @is-content-invalid="isContentInvalidCommunity"
+          @content-formatted="contentFormattedCommunity"
+          ref="contentEditableCommunityRef"
+          :contentType="community.type"
+          :regexDelim="community.regexDelim"
+          :label="community.label"
+          class="community-input"
+        />
+        <DiscoveryContentEditable
+          @is-content-invalid="isContentInvalidPort"
+          @content-formatted="contentFormattedPort"
+          ref="contentEditablePortRef"
+          :contentType="port.type"
+          :regexDelim="port.regexDelim"
+          :label="port.label"
+          class="port-input"
+        />
+      </div>
+    </div>
+
+    <div class="footer">
+      <FeatherButton
+        @click="$emit('cancel-form')"
+        secondary
+        >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
+      >
+      <FeatherButton
+        @click="saveHandler"
+        :disabled="isFormInvalid"
+        primary
+        type="submit"
+        >{{ discoveryText.Discovery.button.submit }}</FeatherButton
+      >
+    </div>
+  </form>
+</template>
+
+<script lang="ts" setup>
+import { DiscoveryInput } from '@/types/discovery'
+import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
+import discoveryText from '@/components/Discovery/discovery.text'
+
+const isFormShown = ref(true)
+
+const formInput = ref<DiscoveryInput>({
+  type: DiscoveryType.ICMP,
+  name: '',
+  location: 'Default',
+  IPRange: '',
+  communityString: '', // optional
+  UDPPort: 0 // optional
+})
+
+const contentEditableIPRef = ref()
+const IPs = {
+  type: ContentEditableType.IP,
+  regexDelim: '[,; ]+',
+  label: discoveryText.ContentEditable.IP.label
+}
+const isContentInvalidIP = (args: boolean) => {
+  console.log('args', args)
+}
+const contentFormattedIP = (args: string) => {
+  console.log('args', args)
+}
+
+const contentEditableCommunityRef = ref()
+const community = {
+  type: ContentEditableType.CommunityString,
+  regexDelim: '',
+  label: discoveryText.ContentEditable.CommunityString.label
+}
+const isContentInvalidCommunity = (args: boolean) => {
+  console.log('args', args)
+}
+const contentFormattedCommunity = (args: string) => {
+  console.log('args', args)
+}
+
+const contentEditablePortRef = ref()
+const port = {
+  type: ContentEditableType.UDPPort,
+  regexDelim: '',
+  label: discoveryText.ContentEditable.UDPPort.label
+}
+const isContentInvalidPort = (args: boolean) => {
+  console.log('args', args)
+}
+const contentFormattedPort = (args: string) => {
+  console.log('args', args)
+}
+
+const addDiscovery = () => {
+  isFormShown.value = true
+}
+
+const isFormInvalid = computed(() => {
+  // formInput validation
+  return false
+})
+
+const saveHandler = () => {
+  // startSpinner()
+  // add query
+  // if success
+  // stopSpinner()
+  // if error
+  // showSnackbar({
+  // msg: 'Save unsuccessfully!'
+  // })
+}
+
+const cancelHandler = () => {
+  formInput.value.type = DiscoveryType.None
+}
+</script>
+
+<style scoped lang="scss">
+@use '@featherds/styles/themes/variables';
+@use '@/styles/mediaQueriesMixins.scss';
+@use '@/styles/vars.scss';
+@use '@featherds/styles/mixins/typography';
+.form {
+  div[class$='-input'] {
+    margin-bottom: var(variables.$spacing-m);
+  }
+
+  .form-title {
+    @include typography.headline4();
+  }
+}
+
+@include mediaQueriesMixins.screen-xl {
+  .content-editable-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    > div {
+      width: 32%;
+    }
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.content-editable-container {
+  display: flex;
+}
+</style>

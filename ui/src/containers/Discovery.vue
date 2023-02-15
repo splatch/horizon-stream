@@ -45,24 +45,25 @@
       class="discovery"
     >
       <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
-      <div>
-        <DiscoveryTypeSelector @discovery-option-selected="(type: string) => (discoverySelectedType = type)" />
-      </div>
-
-      <div v-if="discoverySelectedType === DiscoveryType.ICMP">ICMP/SNMP</div>
-      <div v-else-if="discoverySelectedType === DiscoveryType.Azure">AZURE</div>
-      <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
-        SyslogSNMPTraps
-        <!-- <DiscoverySyslogSNMPTrapsForm
+      <DiscoveryTypeSelector @discovery-option-selected="(type: string) => (discoverySelectedType = type)" />
+      <div class="forms">
+        <div v-if="discoverySelectedType === DiscoveryType.ICMP">
+          <DiscoverySnmpForm @cancel-form="handleCancel" />
+        </div>
+        <div v-else-if="discoverySelectedType === DiscoveryType.Azure">AZURE</div>
+        <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
+          SyslogSNMPTraps
+          <!-- <DiscoverySyslogSNMPTrapsForm
         v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
         @cancel-editing="discoverySelectedType = DiscoveryType.None"
       /> -->
-      </div>
-      <div
-        v-else
-        class="get-started"
-      >
-        {{ discoveryText.Discovery.noneDiscoverySelectedMsg }}
+        </div>
+        <div
+          v-else
+          class="get-started"
+        >
+          {{ discoveryText.Discovery.noneDiscoverySelectedMsg }}
+        </div>
       </div>
     </section>
   </div>
@@ -116,6 +117,11 @@ const search = (q: string) => {
 
 const showDiscovery = (id: number) => {
   console.log('show discovery', id)
+}
+
+const handleCancel = () => {
+  isDiscoveryEditingShown.value = false
+  discoverySelectedType.value = DiscoveryType.None
 }
 </script>
 
@@ -206,11 +212,15 @@ const showDiscovery = (id: number) => {
   background-color: var(variables.$surface);
 
   .headline {
-    @include typography.headline4();
+    @include typography.header();
   }
 
   @include mediaQueriesMixins.screen-md {
     margin-bottom: 0;
+  }
+
+  .forms {
+    margin-top: var(variables.$spacing-l);
   }
 }
 
