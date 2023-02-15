@@ -22,7 +22,6 @@
           <DiscoveryAutocomplete
             @new-value="tagsAdded"
             :label="discoveryText.DiscoverySyslogSNMPTrapsForm.tag"
-            :allow-new="true"
             :get-items="discoveryQueries.getTagsUponTyping"
             :items="discoveryQueries.tagsUponTyping"
             render-type="multi"
@@ -97,7 +96,7 @@ const formInput = ref<FormInput>({
 })
 
 const tagsAdded = (tags: Record<string, string>[]) => {
-  console.log('>>> tags', tags)
+  console.log('emit - tagsAdded', tags)
 }
 
 const contentEditableCommunityStringRef = ref()

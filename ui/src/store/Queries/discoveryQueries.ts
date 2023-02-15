@@ -37,7 +37,7 @@ export const useDiscoveryQueries = defineStore('discoveryQueries', () => {
           tenantId: 'opennms-prime'
         }
       ]
-    }, 2000)
+    }, 1000)
   }
 
   const getTagsByNodeId = (nodeId: number) => {

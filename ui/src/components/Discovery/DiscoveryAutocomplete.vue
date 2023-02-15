@@ -1,4 +1,16 @@
+<!-- 
+  Autocomplete search (tag, location,...) upon text entering in the input box. Search on input focus is disabled to prevent having a too long list.
+  - new-value: list of values to be saved
+  - get-items: method to call to get the list of values; endpoint query.
+  - items: results from the endpoint query
+  - render-type: single (default) | multi.
+    - multi: does not allow to add new value if not exists in the list
+  - allow-new: to add new value, if not exists in the list (applicable only to 'single' render-type)
+  TODO:
+    - prevent input box displays `undefined` after unselect value
+ -->
 <template>
+  <pre>{{ modelValue }}</pre>
   <FeatherAutocomplete
     :model-value="modelValue"
     @update:model-value="updateModelValue"
@@ -8,7 +20,7 @@
     :results="results"
     :label="(props.label as string)"
     :type="props.renderType"
-    allow-new
+    :allow-new="allowNew"
     class="tag-autocomplete"
   />
   <FeatherChipList
@@ -45,14 +57,6 @@ const props = defineProps({
     type: String,
     requied: true
   },
-  renderType: {
-    type: String as PropType<TypeSingle | TypeMulti>,
-    default: 'single'
-  },
-  allowNew: {
-    type: Boolean,
-    default: false
-  },
   getItems: {
     type: Function,
     required: true
@@ -60,6 +64,15 @@ const props = defineProps({
   items: {
     type: [Object],
     reqired: true
+  },
+  renderType: {
+    type: String as PropType<TypeSingle | TypeMulti>,
+    default: 'single'
+  },
+  // applicable only to 'single' render-type
+  allowNew: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -76,24 +89,23 @@ let results = computed(() => {
 
 const modelValue = ref([] as IAutomcomplete[])
 
-watch(modelValue.value, (newVal, oldVal) => {
-  // TODO: watch not trigger when remove item from modelValue nor when readd a removed item
-  emits('new-value', newVal)
-})
-
 const updateModelValue = (selected: any) => {
   if (selected) {
     const { _text } = selected
 
     if (props.renderType === 'single') {
-      const exists = modelValue.value?.some(({ _text: vText }) => {
+      const exists = modelValue.value.some(({ _text: vText }) => {
         return vText === _text
       })
 
-      if (!exists) modelValue.value?.push(selected)
+      if (!exists) {
+        modelValue.value.push(selected)
+      }
     } else {
       modelValue.value = selected
     }
+
+    emits('new-value', modelValue.value)
   }
 }
 
@@ -106,11 +118,9 @@ const search = (q: string) => {
 }
 
 const addValue = (q: string) => {
-  // TODO: request endpoint to add new value, or only when saving the form
-  // modelValue.value?.push({ name: q, _text: q })
-  modelValue.value = [...modelValue.value, { name: q, _text: q }]
+  modelValue.value.push({ name: q, _text: q })
 
-  emits('new-value', modelValue.value) // TODO: emit here since watch is not triggered when remove item from modelValue
+  emits('new-value', modelValue.value)
 }
 
 const unselectItem = (q: string) => {
@@ -118,9 +128,11 @@ const unselectItem = (q: string) => {
     if (v._text !== q) return v
   })
 
-  modelValue.value = [...newVal]
+  modelValue.value = newVal
 
-  emits('new-value', modelValue.value) // TODO: emit here since watch is not triggered when remove item from modelValue
+  // TODO: fix `undefined` text dsiplaying in the input box after unselect a value
+
+  emits('new-value', modelValue.value)
 }
 </script>
 
