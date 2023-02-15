@@ -81,7 +81,6 @@ import useSnackbar from '@/composables/useSnackbar'
 import { IDiscovery } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
-import DiscoverySuccessModal from '@/components/Discovery/DiscoverySuccessModal.vue'
 
 const { startSpinner, stopSpinner } = useSpinner()
 const { showSnackbar } = useSnackbar()
