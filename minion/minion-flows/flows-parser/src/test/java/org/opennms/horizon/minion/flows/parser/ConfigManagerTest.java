@@ -32,7 +32,7 @@ import com.google.common.io.Resources;
 import com.google.protobuf.Any;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessage;
+import org.opennms.horizon.grpc.flows.contract.FlowDocumentLog;
 import org.opennms.horizon.minion.flows.listeners.factory.TcpListenerFactory;
 import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerFactory;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
@@ -61,10 +61,10 @@ public class ConfigManagerTest {
         IpcIdentity identity = mock(IpcIdentity.class);
         DnsResolver dnsResolver = mock(DnsResolver.class);
 
-        AsyncDispatcher<TelemetryMessage> dispatcher = mock(AsyncDispatcher.class);
+        AsyncDispatcher<FlowDocumentLog> dispatcher = mock(AsyncDispatcher.class);
         MessageDispatcherFactory messageDispatcherFactory = mock(MessageDispatcherFactory.class);
         when(messageDispatcherFactory.createAsyncDispatcher(any(FlowSinkModule.class))).thenReturn(dispatcher);
-        TelemetryRegistry registry = new TelemetryRegistryImpl(messageDispatcherFactory, identity, holder);
+        TelemetryRegistry registry = new TelemetryRegistryImpl(messageDispatcherFactory, identity, dnsResolver, holder);
 
         UdpListenerFactory udpFactory = new UdpListenerFactory(registry);
         TcpListenerFactory tcoFactory = new TcpListenerFactory(registry);
@@ -73,7 +73,7 @@ public class ConfigManagerTest {
         IpfixTcpParserFactory ipfixTcpParserFactory = new IpfixTcpParserFactory(registry, identity, dnsResolver);
 
         ConfigManager manger = new ConfigManager(registry);
-        manger.create(null, readFlowsConfig());
+        manger.create(readFlowsConfig());
 
         Assert.assertEquals(2, holder.size());
         Assert.assertNotNull(holder.get("IPFIX-TCP-4730"));

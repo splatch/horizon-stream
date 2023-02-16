@@ -31,6 +31,7 @@ package org.opennms.horizon.minion.flows.listeners;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -62,7 +63,7 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.SocketUtils;
 
-public class UdpListener implements GracefulShutdownListener, Listener {
+public class UdpListener implements GracefulShutdownListener, FlowsListener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
 
     public static final RateLimitedLog RATE_LIMITED_LOG = RateLimitedLog
@@ -213,11 +214,6 @@ public class UdpListener implements GracefulShutdownListener, Listener {
     @Override
     public String getDescription() {
         return String.format("UDP %s:%s", this.host != null ? this.host : "*", this.port);
-    }
-
-    @Override
-    public Collection<UdpParser> getParsers() {
-        return this.parsers;
     }
 
     @Override

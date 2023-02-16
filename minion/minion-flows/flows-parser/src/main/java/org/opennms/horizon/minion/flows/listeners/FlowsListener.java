@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,18 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.minion.flows.listeners.factory;
+package org.opennms.horizon.minion.flows.listeners;
 
-import org.opennms.horizon.minion.flows.listeners.FlowsListener;
-import org.opennms.horizon.minion.flows.listeners.Listener;
-import org.opennms.sink.flows.contract.ListenerConfig;
+import java.util.Collection;
 
 /**
- * Factory to create beans of type {@link Listener} defined by a {@link ListenerConfig}
+ * Interface used by the daemon to manage listeners.
  *
- * @author mvrueden
+ * When messages are received, they should be forwarded to the given {@link Parser}s.
+ *
+ * @author jwhite
  */
-public interface ListenerFactory {
-    Class<? extends Listener> getListenerClass();
-    FlowsListener create(ListenerConfig config);
+public interface FlowsListener extends org.opennms.horizon.minion.plugin.api.Listener {
+    String getName();
+    String getDescription();
 }

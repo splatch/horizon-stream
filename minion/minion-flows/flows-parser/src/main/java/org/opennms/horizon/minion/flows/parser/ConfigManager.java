@@ -32,13 +32,14 @@ import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.opennms.horizon.minion.plugin.api.Listener;
+import org.opennms.horizon.minion.plugin.api.ListenerFactory;
 import org.opennms.sink.flows.contract.FlowsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-public class ConfigManager implements org.opennms.horizon.minion.plugin.api.ListenerFactory {
+public class ConfigManager implements ListenerFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigManager.class);
 
@@ -61,38 +62,10 @@ public class ConfigManager implements org.opennms.horizon.minion.plugin.api.List
         try {
             this.flowsConfig = config.unpack(FlowsConfig.class);
             holder.clear();
-            // Get listeners
-            flowsConfig.getListenersList().forEach(telemetryRegistry::getListener);
-
-            // Get Adapters config
-            flowsConfig.getListenersList().forEach(listenerConfig -> {
-                telemetryRegistry.getListener(listenerConfig);
-                listenerConfig.getParsersList().forEach(parserConfig ->
-                    parserConfig.getQueue().getAdaptersList().forEach(telemetryRegistry::getAdapter));
-            });
+            flowsConfig.getListenersList().forEach(telemetryRegistry::createListener);
         } catch (InvalidProtocolBufferException e) {
             throw new IllegalArgumentException("Error while parsing config with type-url=" + config.getTypeUrl());
         }
-
-        // Get listeners
-        final var listeners = this.flowsConfig.getListenersList().stream()
-            .map(telemetryRegistry::createListener)
-            .toList();
-
-        return new Listener() {
-            @Override
-            public void start() throws Exception {
-                for (final var listener : listeners) {
-                    listener.start();
-                }
-            }
-
-            @Override
-            public void stop() {
-                for (final var listener : listeners) {
-                    listener.stop();
-                }
-            }
-        };
+        return holder;
     }
 }

@@ -106,9 +106,21 @@ message FlowDocument {
     google.protobuf.UInt32Value ecn = 47; // ECN; lower 2 bits of TOS
 }
 
+message FlowSource {
+  string location = 1;
+  string sourceAddress = 2;
+  ContextKey contextKey = 3;
+}
+
+message ContextKey {
+  string context = 1;
+  string key = 2;
+}
+
 message FlowDocumentLog {
   string location = 1;
   string system_id = 2;
 
   repeated FlowDocument message = 5;
+  FlowSource flowSource = 6;
 }

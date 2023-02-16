@@ -31,10 +31,10 @@ package org.opennms.horizon.minion.flows.listeners.factory;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.codahale.metrics.MetricRegistry;
 
+import org.opennms.horizon.minion.flows.listeners.FlowsListener;
 import org.opennms.horizon.minion.flows.listeners.Listener;
 import org.opennms.horizon.minion.flows.listeners.Parser;
 import org.opennms.horizon.minion.flows.listeners.UdpListener;
@@ -57,7 +57,7 @@ public class UdpListenerFactory implements ListenerFactory {
     }
 
     @Override
-    public Listener create(ListenerConfig listenerConfig) {
+    public FlowsListener create(ListenerConfig listenerConfig) {
         // Ensure each defined parser is of type UdpParser
         final List<Parser> parsers = listenerConfig.getParsersList().stream()
                 .map(telemetryRegistry::createParser)

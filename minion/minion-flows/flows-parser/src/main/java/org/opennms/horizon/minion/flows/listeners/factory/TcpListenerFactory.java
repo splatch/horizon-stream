@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.opennms.horizon.minion.flows.listeners.FlowsListener;
 import org.opennms.horizon.minion.flows.listeners.TcpParser;
 
 import com.codahale.metrics.MetricRegistry;
@@ -59,7 +60,7 @@ public class TcpListenerFactory implements ListenerFactory {
     }
 
     @Override
-    public Listener create(ListenerConfig listenerConfig) {
+    public FlowsListener create(ListenerConfig listenerConfig) {
         // TcpListener only supports one parser at a time
         if (listenerConfig.getParsersCount() != 1) {
             throw new IllegalArgumentException("The simple TCP listener supports exactly one parser");

@@ -37,6 +37,7 @@ import com.google.common.base.Objects;
 import io.netty.buffer.ByteBuf;
 
 import org.opennms.horizon.grpc.flows.contract.FlowDocument;
+import org.opennms.horizon.grpc.flows.contract.FlowDocumentLog;
 import org.opennms.horizon.minion.flows.listeners.Dispatchable;
 import org.opennms.horizon.minion.flows.listeners.UdpParser;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
@@ -59,7 +60,7 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
 
     public IpfixUdpParser(final String name,
-                          final AsyncDispatcher<FlowDocument> dispatcher,
+                          final AsyncDispatcher<FlowDocumentLog> dispatcher,
                           final IpcIdentity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {

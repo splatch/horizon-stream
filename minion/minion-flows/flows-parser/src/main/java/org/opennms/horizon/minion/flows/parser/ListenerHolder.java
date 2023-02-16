@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,32 +26,49 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+
 package org.opennms.horizon.minion.flows.parser;
 
-import com.codahale.metrics.MetricRegistry;
-
-import org.opennms.horizon.grpc.flows.contract.FlowDocument;
-import org.opennms.horizon.grpc.flows.contract.FlowDocumentLog;
 import org.opennms.horizon.minion.flows.listeners.FlowsListener;
-import org.opennms.horizon.minion.flows.listeners.Parser;
-import org.opennms.horizon.minion.flows.parser.factory.ParserFactory;
-import org.opennms.horizon.minion.flows.listeners.factory.ListenerFactory;
-import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
-import org.opennms.sink.flows.contract.ListenerConfig;
-import org.opennms.sink.flows.contract.ParserConfig;
+import org.opennms.horizon.minion.plugin.api.Listener;
 
-public interface TelemetryRegistry {
-    void addListenerFactory(ListenerFactory factory);
+import java.util.HashMap;
+import java.util.Map;
 
-    void addParserFactory(ParserFactory factory);
+public class ListenerHolder implements Listener {
 
-    FlowsListener createListener(ListenerConfig listenerConfig);
+    private Map<String, FlowsListener> listenerMap = new HashMap<>();
 
-    Parser createParser(ParserConfig parserConfig);
+    public void clear() {
+        stop(); // stop all before remove prevent resource leakage
+        listenerMap.clear();
+    }
 
-    MetricRegistry getMetricRegistry();
+    public int size() {
+        return listenerMap.size();
+    }
 
-    ListenerHolder getListenerHolder();
+    public FlowsListener get(String name) {
+        return this.listenerMap.get(name);
+    }
 
-    AsyncDispatcher<FlowDocumentLog> getDispatcher();
+    public void put(FlowsListener listener) {
+        this.listenerMap.put(listener.getName(), listener);
+    }
+
+    public FlowsListener remove(String name) {
+        return this.listenerMap.remove(name);
+    }
+
+    @Override
+    public void start() throws Exception {
+        for (FlowsListener listener : listenerMap.values()) {
+            listener.start();
+        }
+    }
+
+    @Override
+    public void stop() {
+        listenerMap.values().forEach(FlowsListener::stop);
+    }
 }

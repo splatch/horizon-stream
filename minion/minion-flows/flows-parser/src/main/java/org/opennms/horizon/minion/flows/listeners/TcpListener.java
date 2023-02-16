@@ -64,7 +64,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.internal.SocketUtils;
 
-public class TcpListener implements GracefulShutdownListener, Listener {
+public class TcpListener implements GracefulShutdownListener, FlowsListener {
     private static final Logger LOG = LoggerFactory.getLogger(TcpListener.class);
 
     private final String name;
@@ -260,11 +260,6 @@ public class TcpListener implements GracefulShutdownListener, Listener {
     @Override
     public String getDescription() {
         return String.format("TCP %s:%s", this.host != null ? this.host : "*", this.port);
-    }
-
-    @Override
-    public Collection<TcpParser> getParsers() {
-        return Collections.singleton(this.parser);
     }
 
     public String getHost() {

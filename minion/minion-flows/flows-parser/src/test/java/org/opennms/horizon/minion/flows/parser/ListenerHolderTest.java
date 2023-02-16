@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,30 +28,34 @@
 
 package org.opennms.horizon.minion.flows.parser;
 
-import com.codahale.metrics.MetricRegistry;
-
-import org.opennms.horizon.grpc.flows.contract.FlowDocument;
-import org.opennms.horizon.grpc.flows.contract.FlowDocumentLog;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.horizon.minion.flows.listeners.FlowsListener;
-import org.opennms.horizon.minion.flows.listeners.Parser;
-import org.opennms.horizon.minion.flows.parser.factory.ParserFactory;
-import org.opennms.horizon.minion.flows.listeners.factory.ListenerFactory;
-import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
-import org.opennms.sink.flows.contract.ListenerConfig;
-import org.opennms.sink.flows.contract.ParserConfig;
 
-public interface TelemetryRegistry {
-    void addListenerFactory(ListenerFactory factory);
+public class ListenerHolderTest {
 
-    void addParserFactory(ParserFactory factory);
+    @Test
+    public void testAdd() {
+        FlowsListener listener = Mockito.mock(FlowsListener.class);
+        Mockito.when(listener.getName()).thenReturn("test");
+        ListenerHolder holder = new ListenerHolder();
+        holder.put(listener);
+        Assert.assertEquals(1, holder.size());
+        FlowsListener fromGet = holder.get("test");
+        Assert.assertEquals(listener, fromGet);
+        holder.remove("test");
+        Assert.assertEquals(0, holder.size());
+    }
 
-    FlowsListener createListener(ListenerConfig listenerConfig);
-
-    Parser createParser(ParserConfig parserConfig);
-
-    MetricRegistry getMetricRegistry();
-
-    ListenerHolder getListenerHolder();
-
-    AsyncDispatcher<FlowDocumentLog> getDispatcher();
+    @Test
+    public void testStartAndStop() throws Exception {
+        FlowsListener listener = Mockito.mock(FlowsListener.class);
+        ListenerHolder holder = new ListenerHolder();
+        holder.put(listener);
+        holder.stop();
+        Mockito.verify(listener, Mockito.times(1)).stop();
+        holder.start();
+        Mockito.verify(listener, Mockito.times(1)).start();
+    }
 }

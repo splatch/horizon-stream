@@ -35,6 +35,7 @@ import com.google.common.collect.Sets;
 import io.netty.buffer.ByteBuf;
 
 import org.opennms.horizon.grpc.flows.contract.FlowDocument;
+import org.opennms.horizon.grpc.flows.contract.FlowDocumentLog;
 import org.opennms.horizon.minion.flows.listeners.TcpParser;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
 import org.opennms.horizon.minion.flows.parser.ipfix.proto.Header;
@@ -58,7 +59,7 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
     private final Set<TcpSession> sessions = Sets.newConcurrentHashSet();
 
     public IpfixTcpParser(final String name,
-                          final AsyncDispatcher<FlowDocument> dispatcher,
+                          final AsyncDispatcher<FlowDocumentLog> dispatcher,
                           final IpcIdentity identity,
                           final DnsResolver dnsResolver,
                           final MetricRegistry metricRegistry) {

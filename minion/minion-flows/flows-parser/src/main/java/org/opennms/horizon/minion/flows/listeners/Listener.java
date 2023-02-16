@@ -38,10 +38,6 @@ import java.util.Collection;
  * @author jwhite
  */
 public interface Listener {
-    String getName();
-    String getDescription();
-
-    Collection<? extends Parser> getParsers();
 
     void start() throws Exception;
     void stop();

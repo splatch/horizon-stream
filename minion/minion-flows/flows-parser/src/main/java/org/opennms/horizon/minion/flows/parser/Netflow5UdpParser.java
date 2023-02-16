@@ -34,6 +34,7 @@ import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.slice
 import java.net.InetSocketAddress;
 
 import org.opennms.horizon.grpc.flows.contract.FlowDocument;
+import org.opennms.horizon.grpc.flows.contract.FlowDocumentLog;
 import org.opennms.horizon.minion.flows.listeners.Dispatchable;
 import org.opennms.horizon.minion.flows.listeners.UdpParser;
 import org.opennms.horizon.minion.flows.listeners.utils.BufferUtils;
@@ -56,7 +57,7 @@ public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispa
     private final Netflow5MessageBuilder messageBuilder = new Netflow5MessageBuilder();
 
     public Netflow5UdpParser(final String name,
-                             final AsyncDispatcher<FlowDocument> dispatcher,
+                             final AsyncDispatcher<FlowDocumentLog> dispatcher,
                              final IpcIdentity identity,
                              final DnsResolver dnsResolver,
                              final MetricRegistry metricRegistry) {
