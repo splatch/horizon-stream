@@ -36,7 +36,7 @@ option java_package = "org.opennms.horizon.inventory.dto";
 
 enum ConfigKey {
   DISCOVERY = 0;
-  SNMP_PROFILE = 1;
+  SNMP = 1;
 }
 
 message ConfigurationDTO {

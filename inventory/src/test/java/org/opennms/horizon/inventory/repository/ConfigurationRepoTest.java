@@ -70,13 +70,13 @@ public class ConfigurationRepoTest {
         configuration2 = new Configuration();
         configuration2.setLocation("test-location1");
         configuration2.setTenantId(tenantId1);
-        configuration2.setKey(ConfigKey.SNMP_PROFILE);
+        configuration2.setKey(ConfigKey.SNMP);
         configuration2.setValue(new ObjectMapper().readTree("{\"test\": \"value2\"}"));
 
         configuration3 = new Configuration();
         configuration3.setLocation("test-location3");
         configuration3.setTenantId(new UUID(5, 6).toString());
-        configuration3.setKey(ConfigKey.SNMP_PROFILE);
+        configuration3.setKey(ConfigKey.SNMP);
         configuration3.setValue(new ObjectMapper().readTree("{\"test\": \"value3\"}"));
 
         configuration4 = new Configuration();
