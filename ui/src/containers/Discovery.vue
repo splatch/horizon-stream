@@ -82,16 +82,11 @@ import { IAutocompleteItemType } from '@featherds/autocomplete'
 import PageHeadline from '@/components/Common/PageHeadline.vue'
 import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
-import useSpinner from '@/composables/useSpinner'
-import useSnackbar from '@/composables/useSnackbar'
 import { IDiscovery } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 const store = useDiscoveryStore()
-
-const { startSpinner, stopSpinner } = useSpinner()
-const { showSnackbar } = useSnackbar()
 
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
@@ -105,6 +100,7 @@ const discoverySelectedType = ref(DiscoveryType.None)
 const showDiscoveryEditing = () => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = true
+  selectedDiscovery.value = null
 }
 
 const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
