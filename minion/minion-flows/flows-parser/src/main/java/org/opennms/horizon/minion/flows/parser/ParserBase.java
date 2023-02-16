@@ -331,8 +331,8 @@ public abstract class ParserBase implements Parser {
                             }
                         }
 
-                        // TODO: ContextKey set
-                        // TODO: FlowSource wird gebraucht überhaupt?
+                        contextKey.setContext("");
+                        contextKey.setKey("");
                         flowSource.setContextKey(contextKey);
                         flowSource.setLocation(this.identity.getLocation());
                         flowSource.setSourceAddress(InetAddressUtils.str(remoteAddress.getAddress()));
