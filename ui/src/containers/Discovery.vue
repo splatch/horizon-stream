@@ -7,7 +7,7 @@
     <section class="my-discovery">
       <div class="add-btn">
         <FeatherButton
-          @click="showDiscoveryEditing"
+          @click="handleNewDiscovery"
           primary
         >
           {{ discoveryText.Discovery.button.add }}
@@ -29,7 +29,7 @@
         />
         <DiscoveryListCard
           title=" My Active Discoveries"
-          :list="mocksActiveList"
+          :list="store.activeDiscoveries"
           @select-discovery="showDiscovery"
         />
         <DiscoveryListCard
@@ -44,27 +44,35 @@
       v-if="isDiscoveryEditingShown"
       class="discovery"
     >
-      <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
-      <div>
+      <div
+        v-if="showNewDiscovery"
+        class="type-selector"
+      >
+        <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
         <DiscoveryTypeSelector @discovery-option-selected="(type: DiscoveryType) => (discoverySelectedType = type)" />
       </div>
-
-      <div v-if="discoverySelectedType === DiscoveryType.ICMP">ICMP/SNMP</div>
-      <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
-        <DiscoveryAzureForm :successCallback="(name) => successModal.openSuccessModal(name)" />
-      </div>
-      <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
-        SyslogSNMPTraps
-        <!-- <DiscoverySyslogSNMPTrapsForm
-        v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
-        @cancel-editing="discoverySelectedType = DiscoveryType.None"
-      /> -->
-      </div>
-      <div
-        v-else
-        class="get-started"
-      >
-        {{ discoveryText.Discovery.noneDiscoverySelectedMsg }}
+      <div>
+        <div v-if="discoverySelectedType === DiscoveryType.ICMP">
+          <DiscoverySnmpForm
+            @close-form="handleCancel"
+            :discovery="selectedDiscovery"
+          />
+        </div>
+        <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
+          <DiscoveryAzureForm :successCallback="(name) => successModal.openSuccessModal(name)" />
+        </div>
+        <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
+          <DiscoverySyslogSNMPTrapsForm
+            v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
+            @cancel-editing="discoverySelectedType = DiscoveryType.None"
+          />
+        </div>
+        <div
+          v-else
+          class="get-started"
+        >
+          {{ discoveryText.Discovery.noneDiscoverySelectedMsg }}
+        </div>
       </div>
     </section>
   </div>
@@ -72,13 +80,16 @@
 </template>
 
 <script lang="ts" setup>
-import { IAutocompleteItemType } from '@featherds/autocomplete'
 import PageHeadline from '@/components/Common/PageHeadline.vue'
 import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
-import { IDiscovery } from '@/types/discovery'
+import { DiscoveryInput } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
+import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+type TDiscoveryAutocomplete = DiscoveryInput & { _text: string }
+
+const store = useDiscoveryStore()
 
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
@@ -86,35 +97,44 @@ const addIcon: IIcon = {
 
 const successModal = ref()
 const isDiscoveryEditingShown = ref(false)
+const showNewDiscovery = ref(false)
+const selectedDiscovery = ref<DiscoveryInput | null>(null)
 const discoverySelectedType = ref(DiscoveryType.None)
 
-const showDiscoveryEditing = () => {
+const handleNewDiscovery = () => {
   isDiscoveryEditingShown.value = true
+  showNewDiscovery.value = true
+  selectedDiscovery.value = null
 }
 
-const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
+const discoveriesResults = ref<TDiscoveryAutocomplete[]>([])
 const searchLoading = ref(false)
 const searchValue = ref(undefined)
-const mocksActiveList = [
-  { id: 1, name: 'MAD-001' },
-  { id: 2, name: 'MAD-002' }
-] as IDiscovery[]
 
 const search = (q: string) => {
   searchLoading.value = true
-  const results = mocksActiveList
+  const results = store.activeDiscoveries
     .filter((x) => x.name.toLowerCase().indexOf(q) > -1)
     .map((x) => ({
       _text: x.name,
       id: x.id,
       name: x.name
     }))
-  discoveriesResults.value = results
+  discoveriesResults.value = results as TDiscoveryAutocomplete[]
   searchLoading.value = false
 }
 
-const showDiscovery = (id: number) => {
-  console.log('show discovery', id)
+const showDiscovery = (discovery: DiscoveryInput) => {
+  isDiscoveryEditingShown.value = true
+  showNewDiscovery.value = false
+  discoverySelectedType.value = discovery.type
+  selectedDiscovery.value = discovery
+  console.log(selectedDiscovery.value)
+}
+
+const handleCancel = () => {
+  isDiscoveryEditingShown.value = false
+  discoverySelectedType.value = DiscoveryType.None
 }
 </script>
 
@@ -131,27 +151,20 @@ const showDiscovery = (id: number) => {
 
 .container {
   display: flex;
-  flex-direction: row;
-  flex-flow: wrap;
+  flex-direction: column;
   justify-content: space-between;
   margin-left: var(variables.$spacing-l);
   margin-right: var(variables.$spacing-l);
-
   @include mediaQueriesMixins.screen-md {
-    > .my-discovery {
-      width: 30%;
-      min-width: auto;
-    }
-    > .discovery {
-      width: 67%;
-      min-width: auto;
-    }
+    flex-direction: row;
   }
 }
 
 .my-discovery {
   width: 100%;
   min-width: 400px;
+  margin-bottom: var(variables.$spacing-m);
+  border-bottom: 1px solid var(variables.$border-on-surface);
   .add-btn {
     width: 100%;
     margin-bottom: var(variables.$spacing-l);
@@ -183,8 +196,12 @@ const showDiscovery = (id: number) => {
   }
 
   @include mediaQueriesMixins.screen-md {
+    width: 27%;
+    border-bottom: none;
+    min-width: auto;
     flex-direction: column;
     margin-bottom: 0;
+    margin-right: var(variables.$spacing-m);
     > * {
       width: 100%;
       margin-bottom: var(variables.$spacing-m);
@@ -201,12 +218,18 @@ const showDiscovery = (id: number) => {
   background-color: var(variables.$surface);
 
   .headline {
-    @include typography.headline4();
+    @include typography.header();
   }
 
   @include mediaQueriesMixins.screen-md {
+    flex-grow: 1;
+    min-width: auto;
     margin-bottom: 0;
   }
+}
+
+.type-selector {
+  margin-bottom: var(variables.$spacing-l);
 }
 
 .get-started {

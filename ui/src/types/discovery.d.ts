@@ -1,13 +1,13 @@
-export interface DiscoveryInput {
-  type: number
-  name: string
-  location: string
-  IPRange: string
-  communityString: string
-  UDPPort: number
+interface IKey {
+  [key: string]: any
 }
 
-export interface IDiscovery {
-  id: number
+export interface DiscoveryInput extends IKey {
+  id: number | null
+  type: number
   name: string
+  location: string[]
+  IPRange: string
+  communityString?: string | null
+  UDPPort?: number | null
 }
