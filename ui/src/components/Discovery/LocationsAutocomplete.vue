@@ -2,6 +2,7 @@
     Autocomplete locations
     props: 
         type: single or multiple
+        preLoadedlocations: array of IDs - optional
     emits: 
         location-selected: list of locations
 -->
@@ -44,7 +45,7 @@ import { markRaw } from 'vue'
 import { debounce } from 'lodash'
 import { Location } from '@/types/graphql'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
-
+import { watchOnce } from '@vueuse/core'
 const Icons = markRaw({
   Cancel
 })
@@ -63,15 +64,61 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'multiple'
+  },
+  preLoadedlocations: {
+    type: Array<string>,
+    required: false,
+    default: []
+  }
+})
+/*
+for tests until merge to develop
+const locationsMock = [
+  {
+    id: 1,
+    location: 'Montreal'
+  },
+  {
+    id: 2,
+    location: 'Ottawa'
+  },
+  {
+    id: 3,
+    location: 'Toronto'
+  },
+  {
+    id: 4,
+    location: 'Vancouver'
+  }
+]
+*/
+
+onMounted(() => discoveryQueries.getLocations())
+const initLocations = () => {
+  filteredLocations.value = computedLocations.value as Location[]
+  locations.value = computedLocations.value as Location[]
+  // filteredLocations.value = locationsMock
+  // locations.value = locationsMock
+  if (props.preLoadedlocations.length) {
+    selectedLocations.value = locations.value.filter((l: Location) => props.preLoadedlocations.includes(l.id))
+    locations.value = locations.value.filter((l: Location) => !props.preLoadedlocations.includes(l.id))
+    filteredLocations.value = locations.value
+  } else {
+    if (computedLocations.value.length == 1) {
+      selectedLocations.value = [computedLocations.value[0]] as TLocationAutocomplete[]
+      locations.value = []
+      filteredLocations.value = []
+    }
+  }
+}
+watchOnce(computedLocations, () => {
+  if (computedLocations) {
+    initLocations()
   }
 })
 
-onMounted(() => discoveryQueries.getLocations())
-watchEffect(() => {
-  if (computedLocations) {
-    filteredLocations.value = computedLocations.value as Location[]
-    locations.value = computedLocations.value as Location[]
-  }
+watch(props, () => {
+  initLocations()
 })
 
 const search = (q: string) => {
@@ -131,7 +178,6 @@ const removeLocation = (location: Location) => {
 
 .search-location {
   display: flex;
-  align-items: baseline;
   flex-direction: column;
 
   .search {
