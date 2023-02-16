@@ -41,6 +41,54 @@ export default {
   }
 }
 
+export const DiscoverySyslogSNMPTrapsForm = {
+  headline: 'ICMP/SNMP Discovery Setup',
+  location: 'Search a location',
+  tag: 'Search/Add tags (optional)',
+  help: {
+    top: {
+      heading: 'Forward Syslog to BTO with the following details:',
+      list: {
+        text1: 'Syslog Ingest IP: 193.177.129.26 (Minion IP)',
+        text2: 'Syslog Ingest UDP Port: 20013',
+        text3: 'Need help configuring Syslog forwarding?'
+      }
+    },
+    step1: {
+      heading: 'Step 1 heading',
+      list: {
+        text1: 'Enter configuration commands, one per line. End with CNTL/Z',
+        text2: 'Router-Dallas(Config)#logging 192.168.0.30',
+        text3: 'Router-Dallas(Config)#Servie timestamps debug datetime localtime show-timezone'
+      }
+    },
+    step2: {
+      heading: 'Step 2 heading',
+      list: {
+        text1: '...',
+        text2: '...',
+        text3: '...'
+      }
+    },
+    step3: {
+      heading: 'Step 3 heading',
+      list: {
+        text1: '...',
+        text2: '...',
+        text3: '...'
+      }
+    },
+    step4: {
+      heading: 'Step 4 heading',
+      list: {
+        text1: '...',
+        text2: '...',
+        text3: '...'
+      }
+    }
+  }
+}
+
 export const Azure = {
   title:'Azure Discovery Setup',
   saveBtnText: 'Save Discovery',
