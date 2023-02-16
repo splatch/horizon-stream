@@ -46,7 +46,7 @@
     >
       <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
       <div>
-        <DiscoveryTypeSelector @discovery-option-selected="(type: string) => (discoverySelectedType = type)" />
+        <DiscoveryTypeSelector @discovery-option-selected="(type: DiscoveryType) => (discoverySelectedType = type)" />
       </div>
       <div v-if="discoverySelectedType === DiscoveryType.ICMP">ICMP/SNMP</div>
       <div v-else-if="discoverySelectedType === DiscoveryType.Azure">AZURE</div>
