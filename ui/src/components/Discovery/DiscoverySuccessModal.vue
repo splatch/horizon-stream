@@ -1,5 +1,5 @@
 <template>
-  <PrimaryModal :visible="isVisible" title="''" hideTitle>
+  <PrimaryModal :visible="isVisible" hideTitle>
     <template #content>
       <div class="header">
         <FeatherIcon class="header-icon" :icon="Icons.CheckCircle" aria-hidden="true" focusable="false" />

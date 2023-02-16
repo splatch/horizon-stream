@@ -51,7 +51,7 @@
 
       <div v-if="discoverySelectedType === DiscoveryType.ICMP">ICMP/SNMP</div>
       <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
-        <AzureForm :successCallback="(name) => successModal.openSuccessModal(name)" />
+        <DiscoveryAzureForm :successCallback="(name) => successModal.openSuccessModal(name)" />
       </div>
       <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
         SyslogSNMPTraps
