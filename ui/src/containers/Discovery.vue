@@ -77,8 +77,8 @@ const addIcon: IIcon = {
   image: markRaw(AddIcon)
 }
 
-const isDiscoveryEditingShown = ref(true)
-const discoverySelectedType = ref(DiscoveryType.SyslogSNMPTraps)
+const isDiscoveryEditingShown = ref(false)
+const discoverySelectedType = ref(DiscoveryType.None)
 
 const showDiscoveryEditing = () => {
   isDiscoveryEditingShown.value = true
