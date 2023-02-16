@@ -14,7 +14,7 @@
     />
     <div class="content-editable-container">
       <DiscoveryContentEditable
-        @is-content-invalid="(value) => isValid('IPRange', value)"
+        @is-content-invalid="(value) => isContentValid('IPRange', value)"
         @content-formatted="(value) => saveContent('IPRange', value)"
         ref="contentEditableIPRef"
         :contentType="IPs.type"
@@ -23,7 +23,7 @@
         class="ip-input"
       />
       <DiscoveryContentEditable
-        @is-content-invalid="(value) => isValid('communityString', value)"
+        @is-content-invalid="(value) => isContentValid('communityString', value)"
         @content-formatted="(value) => saveContent('communityString', value)"
         ref="contentEditableCommunityRef"
         :contentType="community.type"
@@ -32,7 +32,7 @@
         class="community-input"
       />
       <DiscoveryContentEditable
-        @is-content-invalid="(value) => isValid('UDPPort', value)"
+        @is-content-invalid="(value) => isContentValid('UDPPort', value)"
         @content-formatted="(value) => saveContent('UDPPort', value)"
         ref="contentEditablePortRef"
         :contentType="port.type"
