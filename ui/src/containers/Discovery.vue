@@ -129,7 +129,6 @@ const showDiscovery = (discovery: IDiscovery) => {
   showNewDiscovery.value = false
   discoverySelectedType.value = discovery.type
   selectedDiscovery.value = discovery
-  console.log(discoverySelectedType.value)
 }
 
 const handleCancel = () => {
@@ -151,27 +150,20 @@ const handleCancel = () => {
 
 .container {
   display: flex;
-  flex-direction: row;
-  flex-flow: wrap;
+  flex-direction: column;
   justify-content: space-between;
   margin-left: var(variables.$spacing-l);
   margin-right: var(variables.$spacing-l);
-
   @include mediaQueriesMixins.screen-md {
-    > .my-discovery {
-      width: 30%;
-      min-width: auto;
-    }
-    > .discovery {
-      width: 67%;
-      min-width: auto;
-    }
+    flex-direction: row;
   }
 }
 
 .my-discovery {
   width: 100%;
   min-width: 400px;
+  margin-bottom: var(variables.$spacing-m);
+  border-bottom: 1px solid var(variables.$border-on-surface);
   .add-btn {
     width: 100%;
     margin-bottom: var(variables.$spacing-l);
@@ -203,8 +195,12 @@ const handleCancel = () => {
   }
 
   @include mediaQueriesMixins.screen-md {
+    width: 27%;
+    border-bottom: none;
+    min-width: auto;
     flex-direction: column;
     margin-bottom: 0;
+    margin-right: var(variables.$spacing-m);
     > * {
       width: 100%;
       margin-bottom: var(variables.$spacing-m);
@@ -229,6 +225,8 @@ const handleCancel = () => {
   }
 
   @include mediaQueriesMixins.screen-md {
+    flex-grow: 1;
+    min-width: auto;
     margin-bottom: 0;
   }
 }

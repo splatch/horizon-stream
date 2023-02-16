@@ -9,7 +9,7 @@
     <LocationsAutocomplete
       class="location"
       type="single"
-      :preLoadedlocations="formInput.location"
+      :preLoadedlocations="props.discovery?.location"
       @location-selected="handleLocations"
     />
     <div class="content-editable-container">
@@ -71,8 +71,8 @@ const store = useDiscoveryStore()
 const props = defineProps<{
   discovery?: IDiscovery
 }>()
-
 const formInput = ref<DiscoveryInput>({
+  id: props.discovery?.id || null,
   type: DiscoveryType.ICMP,
   name: props.discovery?.name || '',
   location: props.discovery?.location || [1],
@@ -83,12 +83,13 @@ const formInput = ref<DiscoveryInput>({
 
 watch(props, () => {
   formInput.value = {
+    id: props.discovery?.id,
     type: DiscoveryType.ICMP,
-    name: props.discovery?.name || '',
-    location: props.discovery?.location || [1],
-    IPRange: props.discovery?.IPRange || '',
-    communityString: props.discovery?.communityString || '', // optional
-    UDPPort: props.discovery?.UDPPort || '' // optional
+    name: props.discovery?.name,
+    location: props.discovery?.location,
+    IPRange: props.discovery?.IPRange,
+    communityString: props.discovery?.communityString,
+    UDPPort: props.discovery?.UDPPort
   }
 })
 
@@ -121,7 +122,7 @@ const saveContent = (property: string, val: string) => {
 }
 
 const handleLocations = (locations: Location[]) => {
-  formInput.location = locations.map((l: Location) => l.id)
+  formInput.value.location = locations.map((l: Location) => l.id)
 }
 
 const isFormInvalid = computed(() => {

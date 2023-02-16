@@ -48,7 +48,7 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
     saveDiscovery(discovery: IDiscovery) {
       const exists = this.activeDiscoveries.find((d) => d.id == discovery.id)
       if (exists) {
-        this.activeDiscoveries = this.activeDiscoveries.filter((d) => d.id == discovery.id)
+        this.activeDiscoveries = this.activeDiscoveries.filter((d) => d.id !== discovery.id)
       } else {
         discovery.id = new Date().getTime()
       }

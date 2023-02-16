@@ -68,6 +68,9 @@ defineEmits(['selectDiscovery'])
   @include typography.headline4;
   color: var(variables.$secondary-variant);
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .empty {

@@ -70,7 +70,8 @@ const props = defineProps({
     default: []
   }
 })
-
+/*
+for tests until merge to develop
 const locationsMock = [
   {
     id: 1,
@@ -89,21 +90,34 @@ const locationsMock = [
     location: 'Vancouver'
   }
 ]
+*/
 
 onMounted(() => discoveryQueries.getLocations())
-
-watchOnce(computedLocations, () => {
-  if (computedLocations) {
-    // filteredLocations.value = computedLocations.value as Location[]
-    // locations.value = computedLocations.value as Location[]
-    filteredLocations.value = locationsMock
-    locations.value = locationsMock
-    if (props.preLoadedlocations.length) {
-      selectedLocations.value = locations.value.filter((l) => props.preLoadedlocations.includes(l.id))
-      locations.value = locations.value.filter((l) => !props.preLoadedlocations.includes(l.id))
-      filteredLocations.value = locations.value
+const initLocations = () => {
+  filteredLocations.value = computedLocations.value as Location[]
+  locations.value = computedLocations.value as Location[]
+  // filteredLocations.value = locationsMock
+  // locations.value = locationsMock
+  if (props.preLoadedlocations.length) {
+    selectedLocations.value = locations.value.filter((l) => props.preLoadedlocations.includes(l.id))
+    locations.value = locations.value.filter((l) => !props.preLoadedlocations.includes(l.id))
+    filteredLocations.value = locations.value
+  } else {
+    if (computedLocations.value.length == 1) {
+      selectedLocations.value = [computedLocations.value[0]]
+      locations.value = []
+      filteredLocations.value = []
     }
   }
+}
+watchOnce(computedLocations, () => {
+  if (computedLocations) {
+    initLocations()
+  }
+})
+
+watch(props, () => {
+  initLocations()
 })
 
 const search = (q: string) => {
