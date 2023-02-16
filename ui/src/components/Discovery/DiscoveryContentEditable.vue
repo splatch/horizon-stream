@@ -70,6 +70,7 @@ const validateAndFormat = () => {
   htmlString.value = formatContent()
 
   emit('is-content-invalid', isContentInvalid.value)
+
   if (!isContentInvalid.value) emit('content-formatted', htmlString.value)
 }
 
@@ -82,9 +83,9 @@ const validateContent = () => {
     case ContentEditableType.IP:
       isValid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
       break
-    case ContentEditableType.Community:
+    case ContentEditableType.CommunityString:
       break
-    case ContentEditableType.Port:
+    case ContentEditableType.UDPPort:
       break
     default:
   }
@@ -108,9 +109,9 @@ const formatContent = () => {
         })
         .join(';')
       break
-    case ContentEditableType.Community:
+    case ContentEditableType.CommunityString:
       break
-    case ContentEditableType.Port:
+    case ContentEditableType.UDPPort:
       break
     default:
   }

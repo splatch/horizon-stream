@@ -10,18 +10,18 @@
     <form @submit.prevent="submitHandler">
       <div class="form-content">
         <!-- location -->
-        <LocationsAutocomplete @location-selected="locationsSelected" />
+        <LocationsAutocomplete @location-selected="locationsSelectedListener" />
         <DiscoveryHelpConfiguring />
         <DiscoveryAutocomplete
-          @items-selected="tagsSelected"
+          @items-selected="tagsSelectedListener"
           :get-items="discoveryQueries.getTagsUponTyping"
           :items="discoveryQueries.tagsUponTyping"
           :label="DiscoverySyslogSNMPTrapsForm.tag"
         />
         <div class="content-editable-container">
           <DiscoveryContentEditable
-            @is-content-invalid="isContentInvalidCommunityString"
-            @content-formatted="contentFormattedCommunityString"
+            @is-content-invalid="isCommunityStringInvalidListerner"
+            @content-formatted="communityStringEnteredListerner"
             ref="contentEditableCommunityStringRef"
             :contentType="communityString.type"
             :regexDelim="communityString.regexDelim"
@@ -29,8 +29,8 @@
             class="community-string-input"
           />
           <DiscoveryContentEditable
-            @is-content-invalid="isContentInvalidUDPPort"
-            @content-formatted="contentFormattedUDPPort"
+            @is-content-invalid="isUDPPortInvalidListener"
+            @content-formatted="UDPPortEnteredListener"
             ref="contentEditableUDPPortRef"
             :contentType="udpPort.type"
             :regexDelim="udpPort.regexDelim"
@@ -80,7 +80,7 @@ const { showSnackbar } = useSnackbar()
 
 const discoveryQueries = useDiscoveryQueries()
 
-const isFormInvalid = ref(true)
+const isFormInvalid = ref(false)
 
 const formInput = ref<FormInput>({
   location: '',
@@ -89,12 +89,16 @@ const formInput = ref<FormInput>({
   UPDPort: '' // optional
 })
 
-const tagsSelected = (tags: Record<string, string>[]) => {
-  console.log('tagsSelected', tags)
+let tagsSelected = []
+const tagsSelectedListener = (tags: Record<string, string>[]) => {
+  console.log('tagsSelectedListener', tags)
+  tagsSelected = tags
 }
 
-const locationsSelected = (locations: Record<string, string>[]) => {
+let locationsSelected = []
+const locationsSelectedListener = (locations: Record<string, string>[]) => {
   console.log('locationsSelected', locations)
+  locationsSelected = locations
 }
 
 const contentEditableCommunityStringRef = ref()
@@ -103,11 +107,15 @@ const communityString = {
   regexDelim: '',
   label: discoveryText.ContentEditable.CommunityString.label
 }
-const isContentInvalidCommunityString = (args) => {
-  console.log('args', args)
+let isCommunityStringInvalid: Boolean = false
+const isCommunityStringInvalidListerner = (isInvalid: Boolean) => {
+  console.log('isInvalid', isInvalid)
+  isCommunityStringInvalid = isInvalid
 }
-const contentFormattedCommunityString = (args) => {
-  console.log('args', args)
+let communityStringEntered: String = ''
+const communityStringEnteredListerner = (str: String) => {
+  console.log('str', str)
+  communityStringEntered = str
 }
 
 const contentEditableUDPPortRef = ref()
@@ -116,14 +124,24 @@ const udpPort = {
   regexDelim: '',
   label: discoveryText.ContentEditable.UDPPort.label
 }
-const isContentInvalidUDPPort = (args) => {
-  console.log('args', args)
+let isUDPPortInvalid: Boolean = false
+const isUDPPortInvalidListener = (isInvalid: Boolean) => {
+  console.log('isInvalid', isInvalid)
+  isUDPPortInvalid = isInvalid
 }
-const contentFormattedUDPPort = (args) => {
-  console.log('args', args)
+let UDPPortEntered: String = ''
+const UDPPortEnteredListener = (str: String) => {
+  console.log('str', str)
+  UDPPortEntered = str
 }
 
 const submitHandler = () => {
+  discoveryQueries.saveSyslogSNMPTrapsForm({
+    locations: locationsSelected,
+    tagsSelected: tagsSelected,
+    communityString: communityStringEntered,
+    UDPPort: UDPPortEntered
+  })
   // startSpinner()
   // add query
   // if success

@@ -39,10 +39,15 @@ export const useDiscoveryQueries = defineStore('discoveryQueries', () => {
     }, 1000)
   }
 
+  const saveSyslogSNMPTrapsForm = (values) => {
+    console.log('saveSyslogSNMPTrapsForm', values)
+  }
+
   return {
     locations: computed(() => locations.value?.findAllLocations || []),
     getLocations,
     tagsUponTyping,
-    getTagsUponTyping
+    getTagsUponTyping,
+    saveSyslogSNMPTrapsForm
   }
 })
