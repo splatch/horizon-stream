@@ -149,14 +149,6 @@ const unselectItem = (q: string) => {
 <style lang="scss" scoped>
 @use '@/styles/mediaQueriesMixins.scss';
 
-.discovery-autocomplete {
-  width: 100%;
-
-  @include mediaQueriesMixins.screen-xl {
-    width: 49%;
-  }
-}
-
 :deep(.chip-label-button) {
   display: flex;
   .chip-icon {

@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia'
 import { useQuery } from 'villus'
-import { ListLocationsForDiscoveryDocument, ListTagsByNodeIdDocument, Tag } from '@/types/graphql'
+import { ListLocationsForDiscoveryDocument, Tag } from '@/types/graphql'
 
 export const useDiscoveryQueries = defineStore('discoveryQueries', () => {
   const tagsUponTyping = ref([] as Tag[])
-  const tagsByNodeId = ref([] as Tag[])
 
   const { data: locations, execute: getLocations } = useQuery({
     query: ListLocationsForDiscoveryDocument,
@@ -40,28 +39,10 @@ export const useDiscoveryQueries = defineStore('discoveryQueries', () => {
     }, 1000)
   }
 
-  const getTagsByNodeId = (nodeId: number) => {
-    const { data, error } = useQuery({
-      query: ListTagsByNodeIdDocument,
-      variables: {
-        nodeId
-      },
-      cachePolicy: 'network-only'
-    })
-
-    watchEffect(() => {
-      if (data.value?.tagsByNodeId?.length) {
-        tagsByNodeId.value = data.value?.tagsByNodeId
-      }
-    })
-  }
-
   return {
     locations: computed(() => locations.value?.findAllLocations || []),
     getLocations,
     tagsUponTyping,
-    getTagsUponTyping,
-    tagsByNodeId,
-    getTagsByNodeId
+    getTagsUponTyping
   }
 })

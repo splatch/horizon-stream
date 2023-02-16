@@ -171,6 +171,14 @@ const deleteIcon: IIcon = {
   }
 }
 
+.discovery-autocomplete {
+  width: 100%;
+
+  @include mediaQueriesMixins.screen-xl {
+    width: 49%;
+  }
+}
+
 .content-editable-container {
   > div[class$='-input'] {
     margin-bottom: var(variables.$spacing-m);
