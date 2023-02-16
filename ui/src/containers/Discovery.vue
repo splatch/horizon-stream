@@ -58,13 +58,14 @@
             :discovery="selectedDiscovery"
           />
         </div>
-        <div v-else-if="discoverySelectedType === DiscoveryType.Azure">AZURE</div>
+        <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
+          <DiscoveryAzureForm :successCallback="(name) => successModal.openSuccessModal(name)" />
+        </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
-          SyslogSNMPTraps
-          <!-- <DiscoverySyslogSNMPTrapsForm
-        v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
-        @cancel-editing="discoverySelectedType = DiscoveryType.None"
-      /> -->
+          <DiscoverySyslogSNMPTrapsForm
+            v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
+            @cancel-editing="discoverySelectedType = DiscoveryType.None"
+          />
         </div>
         <div
           v-else
@@ -75,6 +76,7 @@
       </div>
     </section>
   </div>
+  <DiscoverySuccessModal ref="successModal" />
 </template>
 
 <script lang="ts" setup>
@@ -93,6 +95,7 @@ const addIcon: IIcon = {
   image: markRaw(AddIcon)
 }
 
+const successModal = ref()
 const isDiscoveryEditingShown = ref(false)
 const showNewDiscovery = ref(false)
 const selectedDiscovery = ref<DiscoveryInput | null>(null)
@@ -206,10 +209,6 @@ const handleCancel = () => {
   }
 }
 
-.feather-input-sub-text {
-  display: none !important;
-}
-
 .discovery {
   width: 100%;
   min-width: 400px;
@@ -239,9 +238,5 @@ const handleCancel = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-:deep(.feather-input-sub-text) {
-  display: none !important;
 }
 </style>

@@ -179,18 +179,11 @@ const removeLocation = (location: Location) => {
 .search-location {
   display: flex;
   flex-direction: column;
-  margin-bottom: var(variables.$spacing-l);
 
   .search {
     width: 100%;
-
-    @include mediaQueriesMixins.screen-md {
-      width: 300px;
-      margin-right: var(variables.$spacing-m);
-    }
   }
   .location-chip {
-    //margin-bottom: var(variables.$spacing-s);
     cursor: pointer;
   }
 }

@@ -180,4 +180,8 @@ const saveHandler = () => {
     }
   }
 }
+
+:deep(.feather-input-sub-text) {
+  display: none;
+}
 </style>
