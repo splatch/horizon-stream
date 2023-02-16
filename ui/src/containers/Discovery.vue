@@ -46,7 +46,7 @@
     >
       <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
       <div>
-        <DiscoveryTypeSelector @discovery-option-selected="(type: string) => (discoverySelectedType = type)" />
+        <DiscoveryTypeSelector @discovery-option-selected="(type: DiscoveryType) => (discoverySelectedType = type)" />
       </div>
 
       <div v-if="discoverySelectedType === DiscoveryType.ICMP">ICMP/SNMP</div>
@@ -76,21 +76,15 @@ import { IAutocompleteItemType } from '@featherds/autocomplete'
 import PageHeadline from '@/components/Common/PageHeadline.vue'
 import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
-import useSpinner from '@/composables/useSpinner'
-import useSnackbar from '@/composables/useSnackbar'
 import { IDiscovery } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
-
-const { startSpinner, stopSpinner } = useSpinner()
-const { showSnackbar } = useSnackbar()
-
-const successModal = ref()
 
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
 }
 
+const successModal = ref()
 const isDiscoveryEditingShown = ref(false)
 const discoverySelectedType = ref(DiscoveryType.None)
 
