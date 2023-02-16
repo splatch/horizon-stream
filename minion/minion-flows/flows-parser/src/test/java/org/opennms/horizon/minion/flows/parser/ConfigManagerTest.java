@@ -38,6 +38,7 @@ import org.opennms.horizon.minion.flows.listeners.factory.TcpListenerFactory;
 import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerFactory;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
 import org.opennms.horizon.minion.flows.parser.factory.IpfixTcpParserFactory;
+import org.opennms.horizon.minion.flows.parser.factory.IpfixUdpParserFactory;
 import org.opennms.horizon.minion.flows.parser.factory.Netflow5UdpParserFactory;
 import org.opennms.horizon.minion.flows.parser.factory.Netflow9UdpParserFactory;
 import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
@@ -68,17 +69,20 @@ public class ConfigManagerTest {
         TelemetryRegistry registry = new TelemetryRegistryImpl(messageDispatcherFactory, identity, dnsResolver, holder);
 
         UdpListenerFactory udpFactory = new UdpListenerFactory(registry);
-        TcpListenerFactory tcoFactory = new TcpListenerFactory(registry);
+        TcpListenerFactory tcpFactory = new TcpListenerFactory(registry);
         Netflow5UdpParserFactory netflow5UdpParserFactory = new Netflow5UdpParserFactory(registry, identity, dnsResolver);
         Netflow9UdpParserFactory netflow9UdpParserFactory = new Netflow9UdpParserFactory(registry, identity, dnsResolver);
         IpfixTcpParserFactory ipfixTcpParserFactory = new IpfixTcpParserFactory(registry, identity, dnsResolver);
+        IpfixUdpParserFactory ipfixUdpParserFactory = new IpfixUdpParserFactory(registry, identity, dnsResolver);
 
         ConfigManager manger = new ConfigManager(registry);
         manger.create(readFlowsConfig());
 
-        Assert.assertEquals(2, holder.size());
+        Assert.assertEquals(4, holder.size());
         Assert.assertNotNull(holder.get("IPFIX-TCP-4730"));
         Assert.assertNotNull(holder.get("Netflow-5-UDP-8877"));
+        Assert.assertNotNull(holder.get("Netflow-9-UDP-4729"));
+        Assert.assertNotNull(holder.get("Netflow-UDP-9999"));
     }
 
     Any readFlowsConfig() throws IOException {

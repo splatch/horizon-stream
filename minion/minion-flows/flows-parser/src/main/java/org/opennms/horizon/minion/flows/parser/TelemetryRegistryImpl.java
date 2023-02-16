@@ -101,7 +101,7 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
             return null;
         }
         for (var factory : listenerFactories) {
-            if (factory.getClass().getName().contains(listenerConfig.getClassName())) {
+            if (listenerConfig.getClassName().contains(factory.getListenerClass().getSimpleName())) {
                 listener = factory.create(listenerConfig);
                 listenerHolder.put(listener);
                 return listener;
@@ -114,7 +114,7 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     @Override
     public Parser createParser(ParserConfig parserConfig) {
         for (var factory : parserFactories) {
-            if (factory.getClass().getName().contains(parserConfig.getClassName())) {
+            if (parserConfig.getClassName().contains(factory.getParserClass().getSimpleName())) {
                 return factory.create(parserConfig);
             }
         }
