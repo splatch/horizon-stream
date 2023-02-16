@@ -33,160 +33,118 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opennms.horizon.inventory.discovery.ConfigResults;
 import org.opennms.horizon.inventory.discovery.DiscoveryConfigDTO;
 import org.opennms.horizon.inventory.discovery.DiscoveryConfigRequest;
-import org.opennms.horizon.inventory.discovery.SNMPConfigDTO;
-import org.opennms.horizon.inventory.discovery.SNMPParameters;
-import org.opennms.horizon.inventory.discovery.SNMPVersion;
+import org.opennms.horizon.inventory.dto.ConfigKey;
 import org.opennms.horizon.inventory.dto.ConfigurationDTO;
 import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
+import org.opennms.horizon.inventory.mapper.ConfigurationMapper;
+import org.opennms.horizon.inventory.model.Configuration;
+import org.opennms.horizon.inventory.repository.ConfigurationRepository;
 import org.opennms.horizon.shared.protobuf.util.ProtobufUtil;
 import org.springframework.stereotype.Service;
 
-import com.google.protobuf.GeneratedMessageV3;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class DiscoveryConfigService {
-    protected static final String CONFIG_PREFIX_DISCOVERY = "discovery-";
-    protected static final String CONFIG_PREFIX_SNMP = "snmp-";
-    protected static final String DEFAULT_COMMUNITY_STR = "public";
-    private final DiscoveryConfigDTO.Builder discoveryConfigBuilder = DiscoveryConfigDTO.newBuilder()
+public class DiscoveryConfigService extends ConfigurationService {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final DiscoveryConfigDTO.Builder defaultBuilder = DiscoveryConfigDTO.newBuilder()
         .setRetries(1)
         .setTimeout(300L);
-    private final SNMPConfigDTO.Builder snmpConfigBuilder = SNMPConfigDTO.newBuilder()
-        .setVersion(SNMPVersion.v2c)
-        .setTimeout(3000)
-        .setRetries(1)
-        .setPort(161)
-        .setMaxRequestSize(65535)
-        .setMaxVarsPerPdu(10)
-        .setMaxRepetitions(2)
-        .setTtl(6000);
 
-    private final ConfigurationService configService;
+    public DiscoveryConfigService(ConfigurationRepository modelRepo, ConfigurationMapper mapper) {
+        super(modelRepo, mapper);
+    }
 
-    public ConfigResults createConfigs(DiscoveryConfigRequest request, String tenantId) throws InvalidProtocolBufferException {
-        if (StringUtils.isEmpty(request.getConfigName()) || StringUtils.isEmpty(request.getLocation()) || StringUtils.isEmpty(request.getIpAddresses())) {
+    public List<DiscoveryConfigDTO> createOrUpdateConfig(DiscoveryConfigRequest request, String tenantId) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        if (StringUtils.isEmpty(request.getConfigName()) || StringUtils.isEmpty(request.getLocation()) || request.getIpAddressesList().isEmpty()) {
             throw new InventoryRuntimeException("Invalid config request: " + request);
         }
-        DiscoveryConfigDTO discoveryConfig = createDiscoveryConfig(request, tenantId);
-        SNMPConfigDTO snmpConfigDTO = creatSNMPConfig(request, tenantId);
-        return ConfigResults.newBuilder()
-            .setDiscoveryConfig(discoveryConfig)
-            .setSnmpConfig(snmpConfigDTO)
-            .build();
+        return findByKey(tenantId, ConfigKey.DISCOVERY)
+            .map(dbConfig -> {
+                try {
+                    DiscoveryConfigDTO discoveryConfig = requestToConfig(request);
+                    ConfigurationDTO updatedConfig = mergeConfigValues(dbConfig, discoveryConfig);
+                    Configuration newConfig = createOrUpdate(updatedConfig);
+                    return jsonArrayToConfiglist((ArrayNode) newConfig.getValue());
+                } catch (Exception e) {
+                    log.error("Error while update config value: {} with request {}", dbConfig.getValue(), request);
+                    throw new InventoryRuntimeException("Error while update config value", e);
+                }
+            }).orElseGet(() -> {
+                DiscoveryConfigDTO discoveryConfig = requestToConfig(request);
+                try {
+                    ArrayNode arrayNode = objectMapper.createArrayNode();
+                    arrayNode.add(objectMapper.readTree(ProtobufUtil.toJson(discoveryConfig)));
+                    ConfigurationDTO newConfig = ConfigurationDTO.newBuilder()
+                        .setValue(arrayNode.toString())
+                        .setKey(ConfigKey.DISCOVERY)
+                        .setLocation(request.getLocation())
+                        .setTenantId(tenantId).build();
+                    Configuration result = createOrUpdate(newConfig);
+                    return jsonArrayToConfiglist((ArrayNode) result.getValue());
+                } catch (Exception e) {
+                    log.error("Error while creating new config with request {}", request);
+                    throw new InventoryRuntimeException("Error while creating new config", e);
+                }
+            });
+    }
+
+    List<DiscoveryConfigDTO> jsonArrayToConfiglist(ArrayNode arrayNode) throws InvalidProtocolBufferException {
+        List<DiscoveryConfigDTO> list = new ArrayList<>();
+        for(JsonNode node: arrayNode) {
+            list.add(ProtobufUtil.fromJson(node.toString(), DiscoveryConfigDTO.class));
+        }
+        return list;
+    }
+
+    private DiscoveryConfigDTO requestToConfig(DiscoveryConfigRequest request) {
+        return DiscoveryConfigDTO.newBuilder(defaultBuilder.build())
+            .setConfigName(request.getConfigName())
+            .addAllIpAddresses(request.getIpAddressesList())
+            .setSnmpConf(request.getSnmpConf()).build();
+    }
+
+    private ConfigurationDTO mergeConfigValues(ConfigurationDTO dbConfig, DiscoveryConfigDTO discoveryConfig) throws JsonProcessingException, InvalidProtocolBufferException {
+        ArrayNode arrayNode = (ArrayNode) objectMapper.readTree(dbConfig.getValue());
+        arrayNode.add(objectMapper.readTree(ProtobufUtil.toJson(discoveryConfig)));
+        return ConfigurationDTO.newBuilder(dbConfig)
+            .setValue(arrayNode.toString()).build();
     }
 
     public Optional<DiscoveryConfigDTO> getDiscoveryConfigByName(String name, String tenantId) {
-        return getConfigByKey(CONFIG_PREFIX_DISCOVERY + name, tenantId, DiscoveryConfigDTO.class);
-    }
-
-    public Optional<SNMPConfigDTO> getSnmpConfigByName(String name, String tenantId) {
-        return getConfigByKey(CONFIG_PREFIX_SNMP + name, tenantId, SNMPConfigDTO.class);
+        return findByKey(tenantId, ConfigKey.DISCOVERY)
+            .map(config -> {
+                try {
+                    return jsonArrayToConfiglist((ArrayNode) objectMapper.readTree(config.getValue()))
+                        .stream().filter(c -> c.getConfigName().equals(name)).findFirst();
+                } catch (Exception e) {
+                    log.error("Error while get discovery config for name {}", name);
+                    return Optional.<DiscoveryConfigDTO>empty();
+                }
+            })
+            .orElse(null);
     }
 
     public List<DiscoveryConfigDTO> listDiscoveryConfigs(String tenantId) {
-        return listConfigs(tenantId, CONFIG_PREFIX_DISCOVERY, DiscoveryConfigDTO.class);
-    }
 
-    public List<SNMPConfigDTO> listSnmpConfigs(String tenantId) {
-        return listConfigs(tenantId, CONFIG_PREFIX_SNMP, SNMPConfigDTO.class);
-    }
-
-    public List<DiscoveryConfigDTO> listDiscoveryConfigByLocation(String tenantId, String location) {
-        return listConfigByLocation(tenantId, location, CONFIG_PREFIX_DISCOVERY, DiscoveryConfigDTO.class);
-    }
-
-    public List<SNMPConfigDTO> listSNMPConfigByLocation(String tenantId, String location) {
-        return listConfigByLocation(tenantId, location, CONFIG_PREFIX_SNMP, SNMPConfigDTO.class);
-    }
-
-    private <T extends GeneratedMessageV3> Optional<T> getConfigByKey(String key, String tenantId, Class<T> clazz) {
-        return configService.findByKey(tenantId, key)
+        return findByKey(tenantId, ConfigKey.DISCOVERY)
             .map(config -> {
                 try {
-                    return ProtobufUtil.fromJson(config.getValue(), clazz);
-                } catch (InvalidProtocolBufferException e) {
-                    throw new InventoryRuntimeException("Invalid config value: " + config.getValue(), e);
+                    return jsonArrayToConfiglist((ArrayNode) objectMapper.readTree(config.getValue()));
+                } catch (Exception e) {
+                    log.error("Error while list discovery config", e);
+                    return new ArrayList<DiscoveryConfigDTO>();
                 }
-            });
-    }
-
-    private <T extends GeneratedMessageV3> List<T> listConfigs(String tenantId, String prefix, Class<T> clazz) {
-        List<T> list = new ArrayList<>();
-        configService.findByTenantId(tenantId)
-            .stream().filter(c -> c.getKey().startsWith(prefix))
-            .forEach(config -> {
-                try {
-                    list.add(ProtobufUtil.fromJson(config.getValue(), clazz));
-                } catch (InvalidProtocolBufferException e) {
-                    log.error("Invalid config value {}", config.getValue());
-                }
-            });
-        return list;
-    }
-
-    private <T extends GeneratedMessageV3> List<T> listConfigByLocation(String tenantId, String location, String prefix, Class<T> clazz) {
-        List<T> list = new ArrayList<>();
-        configService.findByLocation(tenantId, location)
-            .stream().filter(c -> c.getKey().startsWith(prefix))
-            .forEach(config -> {
-                try {
-                    list.add(ProtobufUtil.fromJson(config.getValue(), clazz));
-                } catch (InvalidProtocolBufferException e) {
-                    log.error("Invalid config value {}", config.getValue());
-                }
-            });
-        return list;
-    }
-
-
-    private SNMPConfigDTO creatSNMPConfig(DiscoveryConfigRequest request, String tenantId) throws InvalidProtocolBufferException {
-        String ipAddresses = request.getIpAddresses();
-        String firstIp = ipAddresses.contains("-")? ipAddresses.substring(0, ipAddresses.indexOf("-")) : ipAddresses;
-        String lastIp = ipAddresses.contains("-")? ipAddresses.substring(ipAddresses.indexOf("-") + 1) : null;
-        String communityStr = StringUtils.isEmpty(request.getReadComStr()) ? DEFAULT_COMMUNITY_STR : request.getReadComStr();
-        SNMPConfigDTO.Builder clonedBuilder = SNMPConfigDTO.newBuilder(snmpConfigBuilder.build());
-        if(lastIp != null) {
-            clonedBuilder.setLastIP(lastIp);
-        }
-
-        SNMPConfigDTO snmpConfigDTO = clonedBuilder.setConfigName(request.getConfigName())
-            .setFirstIP(firstIp)
-            .setParameters(SNMPParameters.newBuilder().setReadCmString(communityStr).build()).build();
-        ConfigurationDTO configuration = ConfigurationDTO.newBuilder()
-            .setKey(CONFIG_PREFIX_SNMP + request.getConfigName())
-            .setTenantId(tenantId)
-            .setLocation(request.getLocation())
-            .setValue(ProtobufUtil.toJson(snmpConfigDTO)).build();
-        return ProtobufUtil.fromJson(configService.createSingle(configuration).getValue().toString(), SNMPConfigDTO.class);
-    }
-
-    private DiscoveryConfigDTO createDiscoveryConfig(DiscoveryConfigRequest request, String tenantId) throws InvalidProtocolBufferException {
-        DiscoveryConfigDTO discoveryConfig = DiscoveryConfigDTO.newBuilder(discoveryConfigBuilder.build())
-            .setConfigName(request.getConfigName())
-            .setIpAddresses(request.getIpAddresses()).build();
-
-        ConfigurationDTO configuration = ConfigurationDTO.newBuilder()
-            .setKey(CONFIG_PREFIX_DISCOVERY + request.getConfigName())
-            .setTenantId(tenantId)
-            .setValue(ProtobufUtil.toJson(discoveryConfig))
-            .setLocation(request.getLocation()).build();
-        return ProtobufUtil.fromJson(configService.createSingle(configuration).getValue().toString(), DiscoveryConfigDTO.class);
-    }
-
-    protected DiscoveryConfigDTO.Builder getDefaultDiscoveryConfigBuilder() {
-        return discoveryConfigBuilder;
-    }
-
-    protected SNMPConfigDTO.Builder getDefaultSNMPConfigBuilder() {
-        return snmpConfigBuilder;
+            }).orElseGet(ArrayList::new);
     }
 }

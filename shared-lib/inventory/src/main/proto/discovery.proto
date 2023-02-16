@@ -38,8 +38,8 @@ message DiscoveryConfigRequest {
   string configName = 1;
   string location = 2;
   //can be a single ip address, ip ranges: 127.0.0.1 or 127.0.0.1-127.0.0.10 are valid values
-  string ipAddresses = 3;
-  string readComStr = 4;
+  repeated string ipAddresses = 3;
+  SNMPConfig snmpConf = 4;
 }
 
 message DiscoveryConfigDTO {
@@ -47,94 +47,21 @@ message DiscoveryConfigDTO {
   int32 retries = 2;
   int64 timeout = 3;
   //can be a single ip address, ip ranges: 127.0.0.1 or 127.0.0.1-127.0.0.10 are valid values
-  string ipAddresses = 4;
+  repeated string ipAddresses = 4;
+  SNMPConfig snmpConf = 5;
+}
+
+message SNMPConfig {
+  repeated string readCommunity = 1;
+  repeated int32 ports = 2;
 }
 
 message DiscoveryConfigList {
   repeated DiscoveryConfigDTO discoverConfigs = 1;
 }
 
-//SNMP
-message SNMPParameters {
-  string readCmString = 1;
-  string writeCmString = 2;
-}
-
-enum SNMPVersion {
-  v1 = 0;
-  v2c = 1;
-  v3 = 2;
-}
-/* for SNMP v3
-enum SecurityLevel {
-  noAuth_noPriv = 0;
-  Auth_noPriv = 1;
-  Auth_Priv = 2;
-}
-
-enum AuthProtocol {
-  MD5 = 0;
-  SHA = 1;
-  SHA224 = 2;
-  SHA256 = 3;
-  SHA512 = 4;
-}
-
-enum PrivacyProtocol {
-  DES = 0;
-  AES = 1;
-  AES192 = 2;
-  AES256 = 3;
-}
-
-message SNMPParametersV3 {
-  string securityName = 1;
-  SecurityLevel securityLevel = 2;
-  string authPassphrase = 3;
-  AuthProtocol authProtocol = 4;
-  string privacyPassphrase = 5;
-  PrivacyProtocol privacyProtocol = 6;
-  string engineId = 7;
-  string contextEngineId = 8;
-  string contextName = 9;
-  string enterpriseId = 10;
-}
-*/
-
-
-message SNMPConfigDTO {
-  string configName = 1;
-  SNMPVersion version = 2;
-  string firstIP = 3;
-  optional string lastIP = 4;
-  int64 timeout = 5;
-  int32 retries = 6;
-  int32 port = 7;
-  string proxyHost = 8;
-  int64 maxRequestSize = 9;
-  int32 maxVarsPerPdu = 10;
-  int32 maxRepetitions = 11;
-  int64 ttl = 12;
-  SNMPParameters parameters = 13;
-  bool sentEvent = 14;
-  bool sentLocally = 15;
-}
-
-message SNMPConfigList {
-  repeated SNMPConfigDTO snmpConfigs = 1;
-}
-
-message ConfigResults {
-  DiscoveryConfigDTO discoveryConfig = 1;
-  SNMPConfigDTO snmpConfig = 2;
-}
-
 service DiscoveryConfigOperation {
-  rpc createConfig(DiscoveryConfigRequest) returns (ConfigResults);
+  rpc createConfig(DiscoveryConfigRequest) returns (DiscoveryConfigList);
   rpc listDiscoveryConfig(google.protobuf.Empty) returns(DiscoveryConfigList);
-  rpc listSnmpConfig(google.protobuf.Empty) returns(SNMPConfigList);
-  rpc listDiscoveryConfigByLocation(google.protobuf.StringValue) returns(DiscoveryConfigList);
-  rpc listSnmpConfigByLocation(google.protobuf.StringValue) returns(SNMPConfigList);
   rpc getDiscoveryConfigByName(google.protobuf.StringValue) returns (DiscoveryConfigDTO);
-  rpc getSnmpConfigByName(google.protobuf.StringValue) returns (SNMPConfigDTO);
 }
