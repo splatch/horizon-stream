@@ -100,12 +100,12 @@ const initLocations = () => {
   // filteredLocations.value = locationsMock
   // locations.value = locationsMock
   if (props.preLoadedlocations.length) {
-    selectedLocations.value = locations.value.filter((l) => props.preLoadedlocations.includes(l.id))
-    locations.value = locations.value.filter((l) => !props.preLoadedlocations.includes(l.id))
+    selectedLocations.value = locations.value.filter((l: Location) => props.preLoadedlocations.includes(l.id))
+    locations.value = locations.value.filter((l: Location) => !props.preLoadedlocations.includes(l.id))
     filteredLocations.value = locations.value
   } else {
     if (computedLocations.value.length == 1) {
-      selectedLocations.value = [computedLocations.value[0]]
+      selectedLocations.value = [computedLocations.value[0]] as TLocationAutocomplete[]
       locations.value = []
       filteredLocations.value = []
     }

@@ -1,5 +1,4 @@
-import { IDiscovery } from '@/types/discovery'
-import { filter } from 'lodash'
+import { DiscoveryInput } from '@/types/discovery'
 import { defineStore } from 'pinia'
 import { useDiscoveryMutations } from '../Mutations/discoveryMutations'
 
@@ -18,7 +17,7 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       subscriptionId: '',
       directoryId: ''
     },
-    activeDiscoveries: <IDiscovery[]>[]
+    activeDiscoveries: <DiscoveryInput[]>[]
   }),
   actions: {
     selectLocation(location: string, single?: boolean) {
@@ -45,12 +44,14 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
 
       return !azureError.value
     },
-    saveDiscovery(discovery: IDiscovery) {
-      const exists = this.activeDiscoveries.find((d) => d.id == discovery.id)
-      if (exists) {
-        this.activeDiscoveries = this.activeDiscoveries.filter((d) => d.id !== discovery.id)
-      } else {
+    saveDiscovery(discovery: DiscoveryInput) {
+      if (!discovery.id) {
         discovery.id = new Date().getTime()
+      } else {
+        const exists = this.activeDiscoveries.find((d) => d.id == discovery.id)
+        if (exists) {
+          this.activeDiscoveries = this.activeDiscoveries.filter((d) => d.id !== discovery.id)
+        }
       }
       this.activeDiscoveries.push(discovery)
     }

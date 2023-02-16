@@ -14,8 +14,8 @@
     />
     <div class="content-editable-container">
       <DiscoveryContentEditable
-        @is-content-invalid="(value) => isContentValid('IPRange', value)"
-        @content-formatted="(value) => saveContent('IPRange', value)"
+        @is-content-invalid="(value: boolean) => isContentValid('IPRange', value)"
+        @content-formatted="(value: string) => saveContent('IPRange', value)"
         ref="contentEditableIPRef"
         :contentType="IPs.type"
         :regexDelim="IPs.regexDelim"
@@ -23,8 +23,8 @@
         class="ip-input"
       />
       <DiscoveryContentEditable
-        @is-content-invalid="(value) => isContentValid('communityString', value)"
-        @content-formatted="(value) => saveContent('communityString', value)"
+        @is-content-invalid="(value: boolean) => isContentValid('communityString', value)"
+        @content-formatted="(value: string) => saveContent('communityString', value)"
         ref="contentEditableCommunityRef"
         :contentType="community.type"
         :regexDelim="community.regexDelim"
@@ -32,8 +32,8 @@
         class="community-input"
       />
       <DiscoveryContentEditable
-        @is-content-invalid="(value) => isContentValid('UDPPort', value)"
-        @content-formatted="(value) => saveContent('UDPPort', value)"
+        @is-content-invalid="(value: boolean) => isContentValid('UDPPort', value)"
+        @content-formatted="(value: string) => saveContent('UDPPort', value)"
         ref="contentEditablePortRef"
         :contentType="port.type"
         :regexDelim="port.regexDelim"
@@ -63,34 +63,40 @@ import { DiscoveryInput } from '@/types/discovery'
 import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
-import { IDiscovery } from '@/types/discovery'
+import { Location } from '@/types/graphql'
 
 const emit = defineEmits(['close-form'])
 const store = useDiscoveryStore()
 
 const props = defineProps<{
-  discovery?: IDiscovery
+  discovery?: DiscoveryInput | null
 }>()
 const formInput = ref<DiscoveryInput>({
-  id: props.discovery?.id || null,
+  id: null,
   type: DiscoveryType.ICMP,
-  name: props.discovery?.name || '',
-  location: props.discovery?.location || [1],
-  IPRange: props.discovery?.IPRange || '',
-  communityString: props.discovery?.communityString || '', // optional
-  UDPPort: props.discovery?.UDPPort || '' // optional
+  name: '',
+  location: [],
+  IPRange: '',
+  communityString: '', // optional
+  UDPPort: null // optional
 })
-
-watch(props, () => {
+const setFormInput = () => {
   formInput.value = {
-    id: props.discovery?.id,
     type: DiscoveryType.ICMP,
-    name: props.discovery?.name,
-    location: props.discovery?.location,
-    IPRange: props.discovery?.IPRange,
-    communityString: props.discovery?.communityString,
-    UDPPort: props.discovery?.UDPPort
+    id: props.discovery?.id || 0,
+    name: props.discovery?.name || '',
+    location: props.discovery?.location || [],
+    IPRange: props.discovery?.IPRange || '',
+    communityString: props.discovery?.communityString || '',
+    UDPPort: props.discovery?.UDPPort || null
   }
+}
+
+onMounted(() => {
+  setFormInput()
+})
+watch(props, () => {
+  setFormInput()
 })
 
 const contentEditableIPRef = ref()
@@ -122,7 +128,7 @@ const saveContent = (property: string, val: string) => {
 }
 
 const handleLocations = (locations: Location[]) => {
-  formInput.value.location = locations.map((l: Location) => l.id)
+  formInput.value.location = locations.map((l: Location) => l.id) as string[]
 }
 
 const isFormInvalid = computed(() => {

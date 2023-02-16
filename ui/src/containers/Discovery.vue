@@ -7,7 +7,7 @@
     <section class="my-discovery">
       <div class="add-btn">
         <FeatherButton
-          @click="showDiscoveryEditing"
+          @click="handleNewDiscovery"
           primary
         >
           {{ discoveryText.Discovery.button.add }}
@@ -49,7 +49,7 @@
         class="type-selector"
       >
         <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
-        <DiscoveryTypeSelector @discovery-option-selected="(type: string) => (discoverySelectedType = type)" />
+        <DiscoveryTypeSelector @discovery-option-selected="(type: DiscoveryType) => (discoverySelectedType = type)" />
       </div>
       <div>
         <div v-if="discoverySelectedType === DiscoveryType.ICMP">
@@ -78,14 +78,15 @@
 </template>
 
 <script lang="ts" setup>
-import { IAutocompleteItemType } from '@featherds/autocomplete'
 import PageHeadline from '@/components/Common/PageHeadline.vue'
 import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
-import { IDiscovery } from '@/types/discovery'
+import { DiscoveryInput } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+type TDiscoveryAutocomplete = DiscoveryInput & { _text: string }
+
 const store = useDiscoveryStore()
 
 const addIcon: IIcon = {
@@ -94,16 +95,16 @@ const addIcon: IIcon = {
 
 const isDiscoveryEditingShown = ref(false)
 const showNewDiscovery = ref(false)
-const selectedDiscovery = ref<IDiscovery>(null)
+const selectedDiscovery = ref<DiscoveryInput | null>(null)
 const discoverySelectedType = ref(DiscoveryType.None)
 
-const showDiscoveryEditing = () => {
+const handleNewDiscovery = () => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = true
   selectedDiscovery.value = null
 }
 
-const discoveriesResults = ref<(IDiscovery & IAutocompleteItemType)[]>([])
+const discoveriesResults = ref<TDiscoveryAutocomplete[]>([])
 const searchLoading = ref(false)
 const searchValue = ref(undefined)
 
@@ -116,15 +117,16 @@ const search = (q: string) => {
       id: x.id,
       name: x.name
     }))
-  discoveriesResults.value = results
+  discoveriesResults.value = results as TDiscoveryAutocomplete[]
   searchLoading.value = false
 }
 
-const showDiscovery = (discovery: IDiscovery) => {
+const showDiscovery = (discovery: DiscoveryInput) => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = false
   discoverySelectedType.value = discovery.type
   selectedDiscovery.value = discovery
+  console.log(selectedDiscovery.value)
 }
 
 const handleCancel = () => {
