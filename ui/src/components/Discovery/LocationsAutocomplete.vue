@@ -2,6 +2,7 @@
     Autocomplete locations
     props: 
         type: single or multiple
+        preLoadedlocations: array of IDs - optional
     emits: 
         location-selected: list of locations
 -->
