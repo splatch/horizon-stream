@@ -82,9 +82,9 @@ const validateContent = () => {
     case ContentEditableType.IP:
       isValid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
       break
-    case ContentEditableType.Community:
+    case ContentEditableType.CommunityString:
       break
-    case ContentEditableType.Port:
+    case ContentEditableType.UDPPort:
       break
     default:
   }
@@ -108,9 +108,9 @@ const formatContent = () => {
         })
         .join(';')
       break
-    case ContentEditableType.Community:
+    case ContentEditableType.CommunityString:
       break
-    case ContentEditableType.Port:
+    case ContentEditableType.UDPPort:
       break
     default:
   }
