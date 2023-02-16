@@ -45,18 +45,15 @@
       class="discovery"
     >
       <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
-      <div>
+      <div class="type-selector">
         <DiscoveryTypeSelector @discovery-option-selected="(type: DiscoveryType) => (discoverySelectedType = type)" />
       </div>
       <div v-if="discoverySelectedType === DiscoveryType.ICMP">ICMP/SNMP</div>
       <div v-else-if="discoverySelectedType === DiscoveryType.Azure">AZURE</div>
-      <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
-        SyslogSNMPTraps
-        <!-- <DiscoverySyslogSNMPTrapsForm
-        v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
+      <DiscoverySyslogSNMPTrapsForm
+        v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
         @cancel-editing="discoverySelectedType = DiscoveryType.None"
-      /> -->
-      </div>
+      />
       <div
         v-else
         class="get-started"
@@ -201,6 +198,10 @@ const showDiscovery = (id: number) => {
 
   .headline {
     @include typography.headline4();
+  }
+
+  .type-selector {
+    margin-bottom: var(variables.$spacing-xxl);
   }
 
   @include mediaQueriesMixins.screen-md {

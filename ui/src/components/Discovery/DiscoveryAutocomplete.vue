@@ -1,44 +1,55 @@
 <!-- 
-  Autocomplete search (tag, location,...) upon text entering in the input box. Search on input focus is disabled to prevent having a too long list.
-  - new-value: list of values to be saved
-  - get-items: method to call to get the list of values; endpoint query.
-  - items: results from the endpoint query
-  - render-type: single (default) | multi.
-    - multi: does not allow to add new value if not exists in the list
-  - allow-new: to add new value, if not exists in the list (applicable only to 'single' render-type)
+  Autocomplete search upon text entering in the input box. Search on input focus is disabled to prevent having a too long list.
+  
+  - Props
+    - items-selected: list of items to be saved
+    - get-items: method to call to get the list; endpoint query.
+    - items: results from the endpoint query
+    - render-type: single (default) | multi.
+      - multi: 
+        - does not allow to add new value if not exists in the list
+        - selected item is displayed in the input box
+  
+  - Options
+    - allow-new: to add new value, if not exists in the list (applicable only to 'single' render-type)
+  
   TODO:
-    - prevent input box displays `undefined` after unselect value
+    - buggy with allow-new option and mouse clicking
+      - when mouse clicks on existing item on the list, the new event is also triggered (@new="addValue")
+      - probable cause: the `NEW`  item is on focus 
+      - ok when using arrow up/down and enter key to select item
  -->
 <template>
-  <pre>{{ modelValue }}</pre>
-  <FeatherAutocomplete
-    :model-value="modelValue"
-    @update:model-value="updateModelValue"
-    @search="search"
-    @new="addValue"
-    :loading="loading"
-    :results="results"
-    :label="(props.label as string)"
-    :type="props.renderType"
-    :allow-new="allowNew"
-    class="tag-autocomplete"
-  />
-  <FeatherChipList
-    v-if="props.renderType === 'single'"
-    label="Item chip list with icon"
-  >
-    <FeatherChip
-      v-for="item in modelValue"
-      :key="item._text"
+  <div class="discovery-autocomplete">
+    <FeatherAutocomplete
+      :model-value="modelValue"
+      @update:model-value="updateModelValue"
+      @search="search"
+      @new="addValue"
+      :loading="loading"
+      :results="results"
+      :label="(props.label as string)"
+      :type="props.renderType"
+      :allow-new="allowNew"
+      class="tag-autocomplete"
+    />
+    <FeatherChipList
+      v-if="props.renderType === 'single'"
+      label="Item chip list with icon"
     >
-      <span>{{ item._text }}</span>
-      <template v-slot:icon
-        ><FeatherIcon
-          @click="unselectItem(item._text)"
-          :icon="CancelIcon"
-      /></template>
-    </FeatherChip>
-  </FeatherChipList>
+      <FeatherChip
+        v-for="item in selectedItems"
+        :key="item._text"
+      >
+        <span>{{ item._text }}</span>
+        <template v-slot:icon
+          ><FeatherIcon
+            @click="unselectItem(item._text)"
+            :icon="CancelIcon"
+        /></template>
+      </FeatherChip>
+    </FeatherChipList>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -46,11 +57,11 @@ import { PropType } from 'vue'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import CancelIcon from '@featherds/icon/navigation/Cancel'
 
-type IAutomcomplete = IAutocompleteItemType & { _text: string }
+type IAutocomplete = IAutocompleteItemType & { _text: string }
 type TypeSingle = 'single'
 type TypeMulti = 'multi'
 
-const emits = defineEmits(['new-value'])
+const emits = defineEmits(['items-selected'])
 
 const props = defineProps({
   label: {
@@ -69,7 +80,7 @@ const props = defineProps({
     type: String as PropType<TypeSingle | TypeMulti>,
     default: 'single'
   },
-  // applicable only to 'single' render-type
+  // applicable only to 'single' renderType
   allowNew: {
     type: Boolean,
     default: true
@@ -77,6 +88,7 @@ const props = defineProps({
 })
 
 let loading = ref(false)
+let selectedItems = ref<IAutocomplete[]>([])
 
 let results = computed(() => {
   loading.value = false
@@ -87,25 +99,21 @@ let results = computed(() => {
   }))
 })
 
-const modelValue = ref([] as IAutomcomplete[])
+const modelValue = ref<IAutocomplete[] | undefined>()
 
 const updateModelValue = (selected: any) => {
-  if (selected) {
-    const { _text } = selected
+  if (props.renderType === 'single') {
+    const exists = selectedItems.value.some(({ _text: vText }) => vText === selected._text)
 
-    if (props.renderType === 'single') {
-      const exists = modelValue.value.some(({ _text: vText }) => {
-        return vText === _text
-      })
+    if (!exists) {
+      selectedItems.value.push(selected)
 
-      if (!exists) {
-        modelValue.value.push(selected)
-      }
-    } else {
-      modelValue.value = selected
+      modelValue.value = undefined
+
+      emits('items-selected', selectedItems)
     }
-
-    emits('new-value', modelValue.value)
+  } else if (props.renderType === 'multi') {
+    // TODO
   }
 }
 
@@ -118,28 +126,37 @@ const search = (q: string) => {
 }
 
 const addValue = (q: string) => {
-  modelValue.value.push({ name: q, _text: q })
+  const exists = selectedItems.value.some(({ _text: vText }) => vText === q)
 
-  emits('new-value', modelValue.value)
+  if (!exists) {
+    selectedItems.value?.push({ name: q, _text: q })
+
+    emits('items-selected', selectedItems.value)
+  }
 }
 
 const unselectItem = (q: string) => {
-  const newVal = modelValue.value.filter((v) => {
+  const newVal = selectedItems.value?.filter((v) => {
     if (v._text !== q) return v
   })
 
-  modelValue.value = newVal
+  selectedItems.value = newVal
 
-  // TODO: fix `undefined` text dsiplaying in the input box after unselect a value
-
-  emits('new-value', modelValue.value)
+  emits('items-selected', selectedItems.value)
 }
 </script>
 
 <style lang="scss" scoped>
-.chip-list {
-  margin-top: -1rem;
+@use '@/styles/mediaQueriesMixins.scss';
+
+.discovery-autocomplete {
+  width: 100%;
+
+  @include mediaQueriesMixins.screen-xl {
+    width: 49%;
+  }
 }
+
 :deep(.chip-label-button) {
   display: flex;
   .chip-icon {

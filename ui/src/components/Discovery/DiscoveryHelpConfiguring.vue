@@ -144,9 +144,11 @@ const chevronRightIcon = markRaw(ChevronRightIcon)
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
 
+// TODO: convert steppers to carousel alike
 .help-configuring {
   border-left: 1px solid var(variables.$border-on-surface);
   padding-left: 1rem;
+  padding-bottom: var(variables.$spacing-m);
   .subtitle1 {
     @include typography.subtitle1();
     margin-bottom: 1rem;

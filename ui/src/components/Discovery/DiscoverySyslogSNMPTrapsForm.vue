@@ -8,20 +8,15 @@
       /> -->
     </div>
     <form @submit.prevent="submitHandler">
-      <div class="form-iputs">
+      <div class="form-content">
         <!-- location -->
-        <!-- <DiscoveryAutocomplete
-            @new-value="locationAdded"
-            :label="discoveryText.DiscoverySyslogSNMPTrapsForm.location"
-            :get-items="discoveryQueries.getTagsUponTyping"
-            :items="discoveryQueries.tagsUponTyping"
-          /> -->
+        <LocationsAutocomplete @location-selected="locationsSelected" />
         <DiscoveryHelpConfiguring />
         <DiscoveryAutocomplete
-          @new-value="tagsAdded"
-          :label="discoveryText.DiscoverySyslogSNMPTrapsForm.tag"
+          @items-selected="tagsSelected"
           :get-items="discoveryQueries.getTagsUponTyping"
           :items="discoveryQueries.tagsUponTyping"
+          :label="discoveryText.DiscoverySyslogSNMPTrapsForm.tag"
         />
         <div class="content-editable-container">
           <DiscoveryContentEditable
@@ -93,8 +88,12 @@ const formInput = ref<FormInput>({
   UPDPort: '' // optional
 })
 
-const tagsAdded = (tags: Record<string, string>[]) => {
-  console.log('emit - tagsAdded', tags)
+const tagsSelected = (tags: Record<string, string>[]) => {
+  console.log('tagsSelected', tags)
+}
+
+const locationsSelected = (locations: Record<string, string>[]) => {
+  console.log('locationsSelected', locations)
 }
 
 const contentEditableCommunityStringRef = ref()
@@ -160,6 +159,15 @@ const deleteIcon: IIcon = {
 
 .headline {
   @include typography.headline3();
+}
+
+.form-content {
+  > * {
+    margin-bottom: var(variables.$spacing-l);
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .content-editable-container {
