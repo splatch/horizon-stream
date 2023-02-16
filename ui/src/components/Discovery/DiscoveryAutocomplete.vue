@@ -149,6 +149,10 @@ const unselectItem = (q: string) => {
 <style lang="scss" scoped>
 @use '@/styles/mediaQueriesMixins.scss';
 
+.chip-list {
+  margin-top: -0.5rem;
+}
+
 :deep(.chip-label-button) {
   display: flex;
   .chip-icon {
