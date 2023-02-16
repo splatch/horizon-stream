@@ -1,16 +1,16 @@
 <template>
   <section class="help-configuring">
-    <div class="subtitle1">{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.top.heading }}</div>
+    <div class="subtitle1">{{ DiscoverySyslogSNMPTrapsForm.help.top.heading }}</div>
     <ul class="type-square">
-      <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.top.list.text1 }}</li>
-      <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.top.list.text2 }}</li>
+      <li>{{ DiscoverySyslogSNMPTrapsForm.help.top.list.text1 }}</li>
+      <li>{{ DiscoverySyslogSNMPTrapsForm.help.top.list.text2 }}</li>
       <li
         @click="isHelpOpen = !isHelpOpen"
         class="step-opener"
       >
         <span>
-          {{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.top.list.text3 }}
-          <FeatherIcon :icon="isHelpOpen ? expandLessIcon : expandMoreIcon" />
+          {{ DiscoverySyslogSNMPTrapsForm.help.top.list.text3 }}
+          <FeatherIcon :icon="isHelpOpen ? icon.ExpandLess : icon.ExpandMore" />
         </span>
       </li>
     </ul>
@@ -24,7 +24,7 @@
           class="arrow"
           :class="step === 1 ? 'disabled' : ''"
         >
-          <FeatherIcon :icon="chevronLeftIcon" />
+          <FeatherIcon :icon="icon.ChevronLeft" />
         </div>
         <div class="step-line">
           <div class="line"></div>
@@ -60,51 +60,51 @@
           class="arrow"
           :class="step === 4 ? 'disabled' : ''"
         >
-          <FeatherIcon :icon="chevronRightIcon" />
+          <FeatherIcon :icon="icon.ChevronRight" />
         </div>
       </div>
       <div
         v-if="step === 1"
         class="step-content"
       >
-        <div class="subtitle2">{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step1.heading }}</div>
+        <div class="subtitle2">{{ DiscoverySyslogSNMPTrapsForm.help.step1.heading }}</div>
         <ul class="type-square">
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step1.list.text1 }}</li>
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step1.list.text2 }}</li>
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step1.list.text3 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step1.list.text1 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step1.list.text2 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step1.list.text3 }}</li>
         </ul>
       </div>
       <div
         v-if="step === 2"
         class="step-content"
       >
-        <div class="subtitle2">{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step2.heading }}</div>
+        <div class="subtitle2">{{ DiscoverySyslogSNMPTrapsForm.help.step2.heading }}</div>
         <ul class="type-square">
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step2.list.text1 }}</li>
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step2.list.text2 }}</li>
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step2.list.text3 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step2.list.text1 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step2.list.text2 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step2.list.text3 }}</li>
         </ul>
       </div>
       <div
         v-if="step === 3"
         class="step-content"
       >
-        <div class="subtitle2">{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step3.heading }}</div>
+        <div class="subtitle2">{{ DiscoverySyslogSNMPTrapsForm.help.step3.heading }}</div>
         <ul class="type-square">
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step3.list.text1 }}</li>
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step3.list.text2 }}</li>
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step3.list.text3 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step3.list.text1 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step3.list.text2 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step3.list.text3 }}</li>
         </ul>
       </div>
       <div
         v-if="step === 4"
         class="step-content"
       >
-        <div class="subtitle2">{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step4.heading }}</div>
+        <div class="subtitle2">{{ DiscoverySyslogSNMPTrapsForm.help.step4.heading }}</div>
         <ul class="type-square">
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step4.list.text1 }}</li>
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step4.list.text2 }}</li>
-          <li>{{ discoveryText.DiscoverySyslogSNMPTrapsForm.help.step4.list.text3 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step4.list.text1 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step4.list.text2 }}</li>
+          <li>{{ DiscoverySyslogSNMPTrapsForm.help.step4.list.text3 }}</li>
         </ul>
       </div>
     </div>
@@ -112,11 +112,11 @@
 </template>
 
 <script lang="ts" setup>
-import ExpandMoreIcon from '@featherds/icon/navigation/ExpandMore'
-import ExpandLessIcon from '@featherds/icon/navigation/ExpandLess'
-import ChevronLeftIcon from '@featherds/icon/navigation/ChevronLeft'
-import ChevronRightIcon from '@featherds/icon/navigation/ChevronRight'
-import discoveryText from './discovery.text'
+import ExpandMore from '@featherds/icon/navigation/ExpandMore'
+import ExpandLess from '@featherds/icon/navigation/ExpandLess'
+import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
+import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import { DiscoverySyslogSNMPTrapsForm } from './discovery.text'
 
 const step = ref(1)
 const isHelpOpen = ref(false)
@@ -133,10 +133,12 @@ const stepHandler = (s: number) => {
   }
 }
 
-const expandMoreIcon = markRaw(ExpandMoreIcon)
-const expandLessIcon = markRaw(ExpandLessIcon)
-const chevronLeftIcon = markRaw(ChevronLeftIcon)
-const chevronRightIcon = markRaw(ChevronRightIcon)
+const icon = markRaw({
+  ExpandMore,
+  ExpandLess,
+  ChevronLeft,
+  ChevronRight
+})
 </script>
 
 <style lang="scss" scoped>

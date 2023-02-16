@@ -1,7 +1,7 @@
 <template>
   <div class="syslog-snmp-traps-form">
     <div class="headline-action">
-      <div class="headline">{{ discoveryText.DiscoverySyslogSNMPTrapsForm.headline }}</div>
+      <div class="headline">{{ DiscoverySyslogSNMPTrapsForm.headline }}</div>
       <!-- <Icon
         @click="deleteHandler"
         :icon="deleteIcon"
@@ -16,7 +16,7 @@
           @items-selected="tagsSelected"
           :get-items="discoveryQueries.getTagsUponTyping"
           :items="discoveryQueries.tagsUponTyping"
-          :label="discoveryText.DiscoverySyslogSNMPTrapsForm.tag"
+          :label="DiscoverySyslogSNMPTrapsForm.tag"
         />
         <div class="content-editable-container">
           <DiscoveryContentEditable
@@ -62,6 +62,7 @@ import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 import { IIcon } from '@/types'
 import discoveryText from './discovery.text'
+import { DiscoverySyslogSNMPTrapsForm } from './discovery.text'
 import { ContentEditableType } from './discovery.constants'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 
