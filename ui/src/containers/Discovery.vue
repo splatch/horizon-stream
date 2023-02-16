@@ -44,16 +44,21 @@
       v-if="isDiscoveryEditingShown"
       class="discovery"
     >
-      <div class="headline">{{ discoveryText.Discovery.headline }}</div>
+      <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
       <div>
-        <!-- active/passive discovery type selection -->
+        <DiscoveryTypeSelector @discovery-option-selected="(type: string) => (discoverySelectedType = type)" />
       </div>
-      <DiscoverySyslogSNMPTrapsForm
+      <div v-if="discoverySelectedType === DiscoveryType.ICMP">ICMP/SNMP</div>
+      <div v-else-if="discoverySelectedType === DiscoveryType.Azure">AZURE</div>
+      <div v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps">
+        SyslogSNMPTraps
+        <!-- <DiscoverySyslogSNMPTrapsForm
         v-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
         @cancel-editing="discoverySelectedType = DiscoveryType.None"
-      />
+      /> -->
+      </div>
       <div
-        v-if="discoverySelectedType === DiscoveryType.None"
+        v-else
         class="get-started"
       >
         {{ discoveryText.Discovery.noneDiscoverySelectedMsg }}
@@ -67,8 +72,6 @@ import { IAutocompleteItemType } from '@featherds/autocomplete'
 import PageHeadline from '@/components/Common/PageHeadline.vue'
 import AddIcon from '@featherds/icon/action/Add'
 import { IIcon } from '@/types'
-import useSpinner from '@/composables/useSpinner'
-import useSnackbar from '@/composables/useSnackbar'
 import { IDiscovery } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
@@ -211,5 +214,9 @@ const showDiscovery = (id: number) => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+:deep(.feather-input-sub-text) {
+  display: none !important;
 }
 </style>

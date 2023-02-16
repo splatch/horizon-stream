@@ -1,7 +1,8 @@
 export default {
   Discovery: {
     pageHeadline: 'Discovery',
-    headline: 'Select a discovery',
+    headline1: 'Select a discovery',
+    headline2: 'ICMP/SNMP Discovery Setup',
     nameInputLabel: 'ICMP/SNMP name',
     noneDiscoverySelectedMsg: 'Select a discovery to get started',
     button: {
@@ -9,6 +10,13 @@ export default {
       cancel: 'Cancel',
       submit: 'Save discovery'
     }
+  },
+  AddDiscoverySection: {
+    activeDiscoveryTitle: 'Active Discovery',
+    passiveDiscoveryTitle: 'Passive Discovery',
+    icmpSnmp: 'ICMP/SNMP',
+    azure: 'AZURE',
+    syslog: 'Syslog & SNMP Traps'
   },
   ContentEditable: {
     IP: {
