@@ -147,22 +147,23 @@ const chevronRightIcon = markRaw(ChevronRightIcon)
 // TODO: convert steppers to carousel alike
 .help-configuring {
   border-left: 1px solid var(variables.$border-on-surface);
-  padding-left: 1rem;
-  padding-bottom: var(variables.$spacing-m);
+  padding-left: var(variables.$spacing-m);
+  margin-left: var(variables.$spacing-xl);
+
   .subtitle1 {
     @include typography.subtitle1();
-    margin-bottom: 1rem;
+    margin-bottom: var(variables.$spacing-m);
   }
   .subtitle2 {
     @include typography.subtitle2();
-    margin-bottom: 1rem;
+    margin-bottom: var(variables.$spacing-m);
   }
   ul.type-square > li {
     list-style-type: square;
   }
   > ul.type-square {
-    margin-left: 1.5rem;
-    margin-bottom: 1rem;
+    margin-left: var(variables.$spacing-xl);
+    margin-bottom: var(variables.$spacing-m);
   }
   .step-opener {
     > span {
@@ -171,20 +172,24 @@ const chevronRightIcon = markRaw(ChevronRightIcon)
         cursor: pointer;
       }
       .feather-icon {
-        width: 1.2rem;
-        height: 1.2rem;
+        width: var(variables.$spacing-l);
+        height: var(variables.$spacing-l);
         vertical-align: bottom;
       }
     }
   }
   .steps {
-    margin-left: 2rem;
+    margin-left: var(variables.$spacing-xl);
+    padding-bottom: var(variables.$spacing-m);
+    margin-bottom: var(variables.$spacing-xl);
     .stepper {
       display: flex;
-      margin-bottom: 1rem;
+      margin-bottom: var(variables.$spacing-m);
       .arrow {
         width: 10%;
-        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         &:hover {
           cursor: pointer;
         }
@@ -197,7 +202,7 @@ const chevronRightIcon = markRaw(ChevronRightIcon)
           background-color: var(variables.$background);
           width: 100%;
           position: absolute;
-          top: 1rem;
+          top: var(variables.$spacing-m);
           left: 0;
           z-index: 1000;
         }
@@ -231,16 +236,16 @@ const chevronRightIcon = markRaw(ChevronRightIcon)
         }
       }
       .feather-icon {
-        width: 1.2rem;
-        height: 1.2rem;
+        width: var(variables.$spacing-l);
+        height: var(variables.$spacing-l);
         vertical-align: bottom;
       }
     }
     .step-content {
-      margin-right: 2rem;
-      margin-left: 2rem;
+      margin-right: var(variables.$spacing-xl);
+      margin-left: var(variables.$spacing-xl);
       > ul {
-        margin-left: 1rem;
+        margin-left: var(variables.$spacing-m);
       }
     }
   }
