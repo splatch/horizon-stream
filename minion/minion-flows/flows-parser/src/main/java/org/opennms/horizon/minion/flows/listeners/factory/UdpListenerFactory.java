@@ -49,6 +49,7 @@ public class UdpListenerFactory implements ListenerFactory {
 
     public UdpListenerFactory(TelemetryRegistry telemetryRegistry) {
         this.telemetryRegistry = Objects.requireNonNull(telemetryRegistry);
+        telemetryRegistry.addListenerFactory(this);
     }
 
     @Override

@@ -37,6 +37,7 @@ import com.codahale.metrics.MetricRegistry;
 import org.junit.Ignore;
 import org.mockito.ArgumentMatchers;
 import org.opennms.horizon.grpc.flows.contract.FlowDocument;
+import org.opennms.horizon.grpc.flows.contract.FlowDocumentLog;
 import org.opennms.horizon.minion.flows.listeners.UdpListener;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
 import org.opennms.horizon.shared.ipc.rpc.IpcIdentity;
@@ -85,7 +86,7 @@ public class IllegalFlowTest {
 
         final Netflow9UdpParser parser = new Netflow9UdpParser("FLOW", new AsyncDispatcher<>() {
             @Override
-            public CompletableFuture<AsyncDispatcher.DispatchStatus> send(FlowDocument message) {
+            public CompletableFuture<AsyncDispatcher.DispatchStatus> send(FlowDocumentLog message) {
                 messagesSent.incrementAndGet();
                 return CompletableFuture.completedFuture(DispatchStatus.DISPATCHED);
             }

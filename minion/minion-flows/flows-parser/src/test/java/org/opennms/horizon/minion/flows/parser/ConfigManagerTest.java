@@ -32,6 +32,7 @@ import com.google.common.io.Resources;
 import com.google.protobuf.Any;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.horizon.grpc.flows.contract.FlowDocument;
 import org.opennms.horizon.grpc.flows.contract.FlowDocumentLog;
 import org.opennms.horizon.minion.flows.listeners.factory.TcpListenerFactory;
 import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerFactory;

@@ -41,7 +41,7 @@ import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
 
 import java.util.Objects;
 
-public class FlowSinkModule implements SinkModule<FlowDocument, FlowDocumentLog> {
+public class FlowSinkModule implements SinkModule<FlowDocumentLog, FlowDocument> {
 
     private static final String ID = "Flow";
 
@@ -62,12 +62,26 @@ public class FlowSinkModule implements SinkModule<FlowDocument, FlowDocumentLog>
     }
 
     @Override
-    public byte[] marshal(FlowDocumentLog message) {
+    public byte[] marshal(FlowDocument message) {
         return message.toByteArray();
     }
 
     @Override
-    public FlowDocumentLog unmarshal(byte[] message) {
+    public FlowDocument unmarshal(byte[] message) {
+        try {
+            return FlowDocumentLog.parseFrom(message).getMessage(0);
+        } catch (InvalidProtocolBufferException e) {
+            throw new UnmarshalException(e);
+        }
+    }
+
+    @Override
+    public byte[] marshalSingleMessage(FlowDocumentLog message) {
+        return message.toByteArray();
+    }
+
+    @Override
+    public FlowDocumentLog unmarshalSingleMessage(byte[] message) {
         try {
             return FlowDocumentLog.parseFrom(message);
         } catch (InvalidProtocolBufferException e) {
@@ -76,21 +90,7 @@ public class FlowSinkModule implements SinkModule<FlowDocument, FlowDocumentLog>
     }
 
     @Override
-    public byte[] marshalSingleMessage(FlowDocument message) {
-        return message.toByteArray();
-    }
-
-    @Override
-    public FlowDocument unmarshalSingleMessage(byte[] message) {
-        try {
-            return FlowDocument.parseFrom(message);
-        } catch (InvalidProtocolBufferException e) {
-            throw new UnmarshalException(e);
-        }
-    }
-
-    @Override
-    public AggregationPolicy<FlowDocument, FlowDocumentLog, FlowDocumentLog> getAggregationPolicy() {
+    public AggregationPolicy<FlowDocumentLog, FlowDocument, FlowDocument> getAggregationPolicy() {
         return new AggregationPolicy<>() {
             //TODO: hardcode for now. Will fix in DC-455
             @Override
@@ -104,12 +104,12 @@ public class FlowSinkModule implements SinkModule<FlowDocument, FlowDocumentLog>
             }
 
             @Override
-            public Object key(FlowDocument message) {
-                return message.getTimestamp();
+            public Object key(FlowDocumentLog message) {
+                return message.getMessage(0).getTimestamp();
             }
 
             @Override
-            public FlowDocumentLog aggregate(FlowDocumentLog accumulator, FlowDocument newMessage) {
+            public FlowDocument aggregate(FlowDocument newMessage, FlowDocumentLog accumulator) {
                 if (accumulator == null) {
                     accumulator = FlowDocumentLog.newBuilder()
                         .setSystemId(Identity.newBuilder()
@@ -118,11 +118,11 @@ public class FlowSinkModule implements SinkModule<FlowDocument, FlowDocumentLog>
                 } else {
                     FlowDocumentLog.newBuilder(accumulator).addMessage(newMessage);
                 }
-                return accumulator;
+                return newMessage;
             }
 
             @Override
-            public FlowDocumentLog build(FlowDocumentLog accumulator) {
+            public FlowDocument build(FlowDocument accumulator) {
                 return accumulator;
             }
         };
