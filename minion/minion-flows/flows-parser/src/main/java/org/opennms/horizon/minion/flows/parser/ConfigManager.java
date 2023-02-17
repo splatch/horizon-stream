@@ -32,14 +32,13 @@ import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.opennms.horizon.minion.plugin.api.Listener;
-import org.opennms.horizon.minion.plugin.api.ListenerFactory;
 import org.opennms.sink.flows.contract.FlowsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-public class ConfigManager implements ListenerFactory {
+public class ConfigManager implements org.opennms.horizon.minion.plugin.api.ListenerFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigManager.class);
 

@@ -69,7 +69,7 @@ public class FlowSinkModule implements SinkModule<FlowDocumentLog, FlowDocument>
     @Override
     public FlowDocument unmarshal(byte[] message) {
         try {
-            return FlowDocumentLog.parseFrom(message).getMessage(0);
+            return FlowDocument.parseFrom(message);
         } catch (InvalidProtocolBufferException e) {
             throw new UnmarshalException(e);
         }
