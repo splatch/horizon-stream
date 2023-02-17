@@ -121,8 +121,8 @@ const saveAzureDiscovery = async () => {
   margin-bottom: var(variables.$spacing-xl);
 
   .title {
-    @include typography.body-large;
-    margin: var(variables.$spacing-s) 0;
+    @include typography.headline4;
+    margin-bottom: var(variables.$spacing-l);
   }
 
   hr {

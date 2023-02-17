@@ -104,7 +104,7 @@ const communityString = {
   label: discoveryText.ContentEditable.CommunityString.label
 }
 
-// any to to fix build for now
+// 'any' to fix build for now
 const isContentInvalidCommunityString = (args: any) => { 
   console.log('args', args)
 }
@@ -161,7 +161,7 @@ const deleteIcon: IIcon = {
 }
 
 .headline {
-  @include typography.headline3();
+  @include typography.headline4;
 }
 
 .form-content {
