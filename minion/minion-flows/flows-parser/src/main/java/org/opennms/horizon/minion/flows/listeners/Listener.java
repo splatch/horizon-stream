@@ -26,35 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.minion.flows.adapter.common;
+package org.opennms.horizon.minion.flows.listeners;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * Telemetry protocol package configuration.
+ * Interface used by the daemon to manage listeners.
+ *
+ * When messages are received, they should be forwarded to the given {@link Parser}s.
+ *
+ * @author jwhite
  */
-public interface PackageDefinition {
+public interface Listener {
 
-    /**
-     * The filter rule is used to match which sources should belong to this package.
-     *
-     * If the rule is <code>null</code>, then all sources should match.
-     *
-     * @return the filter rule
-     */
-    String getFilterRule();
-
-    /**
-     * The RRD settings are use to control the control of RRD files, when applicable.
-     *
-     * @return the rrd settings
-     */
-    RrdDefinition getRrd();
-
-    /**
-     * Package specific parameters.
-     *
-     * @return the parameter map
-     */
-    Map<String, String> getParameterMap();
+    void start() throws Exception;
+    void stop();
 }

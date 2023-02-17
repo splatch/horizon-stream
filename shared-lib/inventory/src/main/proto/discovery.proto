@@ -25,21 +25,43 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+syntax = "proto3";
 
-package org.opennms.horizon.minion.flows.parser.factory;
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
-import java.net.InetAddress;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+package opennms.inventory;
+option java_multiple_files = true;
+option java_package = "org.opennms.horizon.inventory.discovery";
 
-public class DnsResolverImpl implements DnsResolver {
-    @Override
-    public CompletableFuture<Optional<InetAddress>> lookup(String hostname) {
-        return null;
-    }
+message DiscoveryConfigRequest {
+  string configName = 1;
+  string location = 2;
+  //can be a single ip address, ip ranges: 127.0.0.1 or 127.0.0.1-127.0.0.10 are valid values
+  repeated string ipAddresses = 3;
+  SNMPConfig snmpConf = 4;
+}
 
-    @Override
-    public CompletableFuture<Optional<String>> reverseLookup(InetAddress inetAddress) {
-        return null;
-    }
+message DiscoveryConfigDTO {
+  string configName = 1;
+  int32 retries = 2;
+  int64 timeout = 3;
+  //can be a single ip address, ip ranges: 127.0.0.1 or 127.0.0.1-127.0.0.10 are valid values
+  repeated string ipAddresses = 4;
+  SNMPConfig snmpConf = 5;
+}
+
+message SNMPConfig {
+  repeated string readCommunity = 1;
+  repeated int32 ports = 2;
+}
+
+message DiscoveryConfigList {
+  repeated DiscoveryConfigDTO discoverConfigs = 1;
+}
+
+service DiscoveryConfigOperation {
+  rpc createConfig(DiscoveryConfigRequest) returns (DiscoveryConfigList);
+  rpc listDiscoveryConfig(google.protobuf.Empty) returns(DiscoveryConfigList);
+  rpc getDiscoveryConfigByName(google.protobuf.StringValue) returns (DiscoveryConfigDTO);
 }
