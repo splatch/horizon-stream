@@ -58,12 +58,13 @@
         secondary
         >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
       >
-      <FeatherButton
-        type="submit"
-        :disabled="isFormInvalid"
+      <ButtonWithSpinner
+        :disabled="isDisabled"
+        @click="saveAzureDiscovery"
         primary
-        >{{ discoveryText.Discovery.button.submit }}</FeatherButton
       >
+        {{ discoveryText.Discovery.button.submit }}
+      </ButtonWithSpinner>
     </div>
   </form>
 </template>
@@ -170,7 +171,7 @@ const saveHandler = () => {
 @use '@featherds/styles/mixins/typography';
 .form {
   .form-title {
-    @include typography.headline4();
+    @include typography.headline4;
     margin-bottom: var(variables.$spacing-m);
   }
   .select {

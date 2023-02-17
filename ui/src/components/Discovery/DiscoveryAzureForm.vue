@@ -41,42 +41,61 @@
     class="locations"
     />
     
-    <!-- Placeholder -->
-    <FeatherInput
-      label="Tags"
+    <DiscoveryAutocomplete
       class="tags"
+      @items-selected="tagsSelected"
+      :get-items="discoveryQueries.getTagsUponTyping"
+      :items="discoveryQueries.tagsUponTyping"
+      :label="Common.tagsInput"
     />
 
     <hr />
     <div class="buttons">
       <FeatherButton
-        @click="store.clearAzureForm" 
+        @click="cancel" 
         secondary>
         {{ Azure.cancelBtnText }}
       </FeatherButton>
-      <FeatherButton
+      <ButtonWithSpinner
+        :isFetching="discoveryMutations.isFetching.value"
+        :disabled="isDisabled"
         @click="saveAzureDiscovery"
         primary>
         {{ Azure.saveBtnText }}
-      </FeatherButton>
+      </ButtonWithSpinner>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
-import { Azure } from './discovery.text'
+import { Azure, Common } from './discovery.text'
 import useSnackbar from '@/composables/useSnackbar'
 import { Location } from '@/types/graphql'
+import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 
 const store = useDiscoveryStore()
 const { showSnackbar } = useSnackbar()
+const discoveryQueries = useDiscoveryQueries()
+const discoveryMutations = useDiscoveryMutations()
 
 const props = defineProps<{
 	successCallback: (name: string) => void
+	cancel: () => void
 }>()
 
 const selectLocation = (location: Required<Location>) => store.selectLocation(location.location, true)
+
+const tagsSelected = (tags: Record<string, string>[]) => console.log('tagsSelected', tags)
+
+const isDisabled = computed(() => 
+  !store.azure.name || 
+  !store.azure.clientId || 
+  !store.azure.clientSecret || 
+  !store.azure.directoryId ||
+  !store.azure.subscriptionId
+)
 
 const saveAzureDiscovery = async () => {
   const success = await store.saveDiscoveryAzure()
@@ -85,6 +104,7 @@ const saveAzureDiscovery = async () => {
       msg: `${store.azure.name} setup successfully.`
     })
 
+    store.clearAzureForm()
     props.successCallback(store.azure.name)
   }
 }
@@ -101,8 +121,8 @@ const saveAzureDiscovery = async () => {
   margin-bottom: var(variables.$spacing-xl);
 
   .title {
-    @include typography.body-large;
-    margin: var(variables.$spacing-s) 0;
+    @include typography.headline4;
+    margin-bottom: var(variables.$spacing-l);
   }
 
   hr {

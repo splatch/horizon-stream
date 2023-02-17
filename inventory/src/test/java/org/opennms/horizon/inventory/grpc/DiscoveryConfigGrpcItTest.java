@@ -44,7 +44,7 @@ import org.opennms.horizon.inventory.discovery.DiscoveryConfigDTO;
 import org.opennms.horizon.inventory.discovery.DiscoveryConfigList;
 import org.opennms.horizon.inventory.discovery.DiscoveryConfigOperationGrpc;
 import org.opennms.horizon.inventory.discovery.DiscoveryConfigRequest;
-import org.opennms.horizon.inventory.discovery.SNMPConfig;
+import org.opennms.horizon.inventory.discovery.SNMPConfigDTO;
 import org.opennms.horizon.inventory.dto.ConfigKey;
 import org.opennms.horizon.inventory.model.Configuration;
 import org.opennms.horizon.inventory.repository.ConfigurationRepository;
@@ -87,7 +87,7 @@ public class DiscoveryConfigGrpcItTest extends GrpcTestBase {
 
     @Test
     void testCreateConfig() throws VerificationException {
-        SNMPConfig snmpConfig = SNMPConfig.newBuilder()
+        SNMPConfigDTO snmpConfig = SNMPConfigDTO.newBuilder()
             .addAllPorts(List.of(161))
             .addAllReadCommunity(List.of("test")).build();
         DiscoveryConfigRequest request = DiscoveryConfigRequest.newBuilder()
@@ -101,7 +101,7 @@ public class DiscoveryConfigGrpcItTest extends GrpcTestBase {
         assertThat(result).isNotNull()
             .extracting(DiscoveryConfigList::getDiscoverConfigsList).asList().hasSize(1);
 
-        SNMPConfig snmpConfig2 = SNMPConfig.newBuilder()
+        SNMPConfigDTO snmpConfig2 = SNMPConfigDTO.newBuilder()
             .addAllPorts(List.of(1161))
             .addAllReadCommunity(List.of("test")).build();
         DiscoveryConfigRequest request2 = DiscoveryConfigRequest.newBuilder()
@@ -122,7 +122,7 @@ public class DiscoveryConfigGrpcItTest extends GrpcTestBase {
         DiscoveryConfigDTO tempConfig = DiscoveryConfigDTO.newBuilder()
             .setConfigName(configName)
             .addAllIpAddresses(List.of("127.0.0.1"))
-            .setSnmpConf(SNMPConfig.newBuilder().addAllReadCommunity(List.of("test-community")).build()).build();
+            .setSnmpConf(SNMPConfigDTO.newBuilder().addAllReadCommunity(List.of("test-community")).build()).build();
         Configuration configuration= new Configuration();
             configuration.setKey(ConfigKey.DISCOVERY);
             configuration.setTenantId(tenantId);
@@ -146,12 +146,12 @@ public class DiscoveryConfigGrpcItTest extends GrpcTestBase {
         DiscoveryConfigDTO tempConfig = DiscoveryConfigDTO.newBuilder()
             .setConfigName(configName)
             .addAllIpAddresses(List.of("127.0.0.1"))
-            .setSnmpConf(SNMPConfig.newBuilder().addAllReadCommunity(List.of("test-community")).build()).build();
+            .setSnmpConf(SNMPConfigDTO.newBuilder().addAllReadCommunity(List.of("test-community")).build()).build();
 
         DiscoveryConfigDTO tempConfig2 = DiscoveryConfigDTO.newBuilder()
             .setConfigName("new-config")
             .addAllIpAddresses(List.of("127.0.0.2"))
-            .setSnmpConf(SNMPConfig.newBuilder().addAllReadCommunity(List.of("test-community2")).build()).build();
+            .setSnmpConf(SNMPConfigDTO.newBuilder().addAllReadCommunity(List.of("test-community2")).build()).build();
         Configuration configuration= new Configuration();
         configuration.setKey(ConfigKey.DISCOVERY);
         configuration.setTenantId(tenantId);

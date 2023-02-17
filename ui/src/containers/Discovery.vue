@@ -59,11 +59,14 @@
           />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
-          <DiscoveryAzureForm :successCallback="(name) => successModal.openSuccessModal(name)" />
+          <DiscoveryAzureForm
+            :successCallback="(name) => successModal.openSuccessModal(name)"
+            :cancel="handleCancel"
+          />
         </div>
         <DiscoverySyslogSNMPTrapsForm
           v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
-          @cancel-editing="discoverySelectedType = DiscoveryType.None"
+          @cancel-editing="handleCancel"
         />
         <div
           v-else
@@ -134,6 +137,15 @@ const handleCancel = () => {
   isDiscoveryEditingShown.value = false
   discoverySelectedType.value = DiscoveryType.None
 }
+
+const isDisabled = computed(
+  () =>
+    !store.azure.name ||
+    !store.azure.clientId ||
+    !store.azure.clientSecret ||
+    !store.azure.directoryId ||
+    !store.azure.subscriptionId
+)
 </script>
 
 <style lang="scss" scoped>
@@ -220,7 +232,7 @@ const handleCancel = () => {
   }
 
   .type-selector {
-    margin-bottom: var(variables.$spacing-xl);
+    margin-bottom: var(variables.$spacing-l);
   }
 
   @include mediaQueriesMixins.screen-md {
@@ -229,7 +241,6 @@ const handleCancel = () => {
     margin-bottom: 0;
   }
 }
-
 .get-started {
   width: 100%;
   height: 200px;
