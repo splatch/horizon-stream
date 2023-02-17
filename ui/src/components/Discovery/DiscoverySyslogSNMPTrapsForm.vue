@@ -43,20 +43,21 @@
       </div>
       <div class="form-footer">
         <FeatherButton
-          @click="emits('cancel-editing')"
+          @click="cancel"
           secondary
           >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
         >
-        <FeatherButton
+        <ButtonWithSpinner
+          :isFetching="discoveryMutations.savingSyslogSNMPTraps"
           :disabled="isFormInvalid"
           primary
           type="submit"
-          >{{ discoveryText.Discovery.button.submit }}</FeatherButton
         >
+          {{ discoveryText.Discovery.button.submit }}
+        </ButtonWithSpinner>
       </div>
     </form>
   </div>
-  <DiscoverySuccessModal ref="successModalRef" />
 </template>
 
 <script lang="ts" setup>
@@ -66,10 +67,18 @@ import discoveryText from './discovery.text'
 import { DiscoverySyslogSNMPTrapsForm, Common } from './discovery.text'
 import { ContentEditableType } from './discovery.constants'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
+import useSnackbar from '@/composables/useSnackbar'
 
-const emits = defineEmits(['cancel-editing'])
+const props = defineProps<{
+  successCallback: (name: string) => void
+  cancel: () => void
+}>()
+
+const { showSnackbar } = useSnackbar()
 
 const discoveryQueries = useDiscoveryQueries()
+const discoveryMutations = useDiscoveryMutations()
 
 const isFormInvalid = ref(
   computed(() => {
@@ -119,21 +128,29 @@ const UDPPortEnteredListener = (str: string) => {
   UDPPortEntered = str
 }
 
-const successModalRef = ref()
-const isSyslogSNMPTrapsFormSaveSuccess = computed(() => discoveryQueries.isSyslogSNMPTrapsFormSaveSuccess)
-watch(isSyslogSNMPTrapsFormSaveSuccess, (success: boolean) => {
-  if (success) successModalRef.value.openSuccessModal()
-})
-const submitHandler = () => {
+const submitHandler = async () => {
   contentEditableCommunityStringRef.value.validateAndFormat()
   contentEditableUDPPortRef.value.validateAndFormat()
 
-  discoveryQueries.saveSyslogSNMPTrapsForm({
+  const results: any = await discoveryMutations.saveSyslogSNMPTraps({
     locations: locationsSelected,
     tagsSelected: tagsSelected,
     communityString: communityStringEntered,
     UDPPort: UDPPortEntered
   })
+
+  if (results.data) {
+    showSnackbar({
+      msg: 'Save Successfully!'
+    })
+
+    props.successCallback(results.data.saveDiscovery[0].name)
+  } else {
+    showSnackbar({
+      msg: results.errors[0].message,
+      error: true
+    })
+  }
 }
 
 const deleteHandler = () => {
