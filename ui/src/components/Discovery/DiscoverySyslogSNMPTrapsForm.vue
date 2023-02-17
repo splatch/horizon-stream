@@ -16,7 +16,7 @@
           @items-selected="tagsSelectedListener"
           :get-items="discoveryQueries.getTagsUponTyping"
           :items="discoveryQueries.tagsUponTyping"
-          :label="DiscoverySyslogSNMPTrapsForm.tag"
+          :label="Common.tagsInput"
         />
         <div class="content-editable-container">
           <DiscoveryContentEditable
@@ -63,7 +63,7 @@
 import DeleteIcon from '@featherds/icon/action/Delete'
 import { IIcon } from '@/types'
 import discoveryText from './discovery.text'
-import { DiscoverySyslogSNMPTrapsForm } from './discovery.text'
+import { DiscoverySyslogSNMPTrapsForm, Common } from './discovery.text'
 import { ContentEditableType } from './discovery.constants'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 
@@ -93,6 +93,7 @@ const communityString = {
   regexDelim: '',
   label: discoveryText.ContentEditable.CommunityString.label
 }
+
 let isCommunityStringInvalid = false
 const isCommunityStringInvalidListerner = (isInvalid: boolean) => {
   isCommunityStringInvalid = isInvalid
@@ -108,6 +109,7 @@ const udpPort = {
   regexDelim: '',
   label: discoveryText.ContentEditable.UDPPort.label
 }
+
 let isUDPPortInvalid = false
 const isUDPPortInvalidListener = (isInvalid: boolean) => {
   isUDPPortInvalid = isInvalid
@@ -159,7 +161,7 @@ const deleteIcon: IIcon = {
 }
 
 .headline {
-  @include typography.headline3();
+  @include typography.headline4;
 }
 
 .form-content {

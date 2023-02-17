@@ -23,6 +23,7 @@ export type AzureCredential = {
   directoryId?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Long']>;
   location?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
   subscriptionId?: Maybe<Scalars['String']>;
   tenantId?: Maybe<Scalars['String']>;
 };
@@ -32,6 +33,7 @@ export type AzureCredentialCreateInput = {
   clientSecret?: InputMaybe<Scalars['String']>;
   directoryId?: InputMaybe<Scalars['String']>;
   location?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
   subscriptionId?: InputMaybe<Scalars['String']>;
 };
 
@@ -197,6 +199,7 @@ export type Query = {
   findNodeById?: Maybe<Node>;
   metric?: Maybe<TimeSeriesQueryResult>;
   nodeStatus?: Maybe<NodeStatus>;
+  tags?: Maybe<Array<Maybe<Tag>>>;
   tagsByNodeId?: Maybe<Array<Maybe<Tag>>>;
 };
 
@@ -241,8 +244,15 @@ export type QueryNodeStatusArgs = {
 
 
 /** Query root */
+export type QueryTagsArgs = {
+  searchTerm?: InputMaybe<Scalars['String']>;
+};
+
+
+/** Query root */
 export type QueryTagsByNodeIdArgs = {
   nodeId?: InputMaybe<Scalars['Long']>;
+  searchTerm?: InputMaybe<Scalars['String']>;
 };
 
 export type SnmpInfo = {

@@ -28,23 +28,12 @@ export default {
     UDPPort: {
       label: 'Enter UDP port (optional)'
     }
-  },
-  Infobar: {
-    title: 'With Zero Touch Provisioning, BTO discovers your network actively and passively',
-    text1: 'We can queue nodes for discovery',
-    text2: 'You can configure your nodes to deliver notifications to BTO',
-    text3: 'You can customize how BTO discovers your network using '
-  },
-  Instructions: {
-    title: 'Discovery Instructions',
-    subtitle: 'Select a location (total: 11) to review specific guidelines'
   }
 }
 
 export const DiscoverySyslogSNMPTrapsForm = {
   headline: 'ICMP/SNMP Discovery Setup',
   location: 'Search a location',
-  tag: 'Search/Add tags (optional)',
   help: {
     top: {
       heading: 'Forward Syslog to BTO with the following details:',
@@ -87,6 +76,10 @@ export const DiscoverySyslogSNMPTrapsForm = {
       }
     }
   }
+}
+
+export const Common = {
+  tagsInput: 'Search/Add tags (optional)'
 }
 
 export const Azure = {
