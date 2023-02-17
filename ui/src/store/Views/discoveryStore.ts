@@ -2,14 +2,27 @@ import { DiscoveryInput } from '@/types/discovery'
 import { defineStore } from 'pinia'
 import { useDiscoveryMutations } from '../Mutations/discoveryMutations'
 import { cloneDeep } from 'lodash'
+import { DiscoveryType } from '@/components/Discovery/discovery.constants'
+import { AzureCredential } from '@/types/graphql'
 
 const defaultAzureForm = {
   name: '',
   clientId: '',
   clientSecret: '',
   subscriptionId: '',
-  directoryId: '',
+  directoryId: ''
   // tags: [] to be done later
+}
+
+const defaultSnmpForm: DiscoveryInput = {
+  id: 0,
+  name: '',
+  location: '',
+  tags: [],
+  type: DiscoveryType.ICMP,
+  IPRange: '',
+  communityString: '',
+  UDPPort: ''
 }
 
 export const useDiscoveryStore = defineStore('discoveryStore', {
@@ -22,12 +35,14 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       toIp: ''
     },
     activeDiscoveries: <DiscoveryInput[]>[],
-    azure: cloneDeep(defaultAzureForm)
+    azure: cloneDeep(defaultAzureForm),
+    snmp: cloneDeep(defaultSnmpForm),
+    selectedDiscovery: {}
   }),
   actions: {
     selectLocation(location: string, single?: boolean) {
       if (single) {
-        this.selectedLocations = [location]
+        this.selectedLocations = location ? [location] : []
         return
       }
 
@@ -46,22 +61,42 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
           ...this.azure
         }
       })
-
       return !azureError.value
     },
-    saveDiscovery(discovery: DiscoveryInput) {
-      if (!discovery.id) {
-        discovery.id = new Date().getTime()
+    async saveDiscoverySnmp() {
+      //remove later using query
+      const snmp = this.snmp
+      snmp.location = this.selectedLocations[0]
+      if (!snmp.id) {
+        snmp.id = new Date().getTime()
       } else {
-        const exists = this.activeDiscoveries.find((d) => d.id == discovery.id)
+        const exists = this.activeDiscoveries.find((d: any) => d.id == snmp.id)
         if (exists) {
-          this.activeDiscoveries = this.activeDiscoveries.filter((d) => d.id !== discovery.id)
+          this.activeDiscoveries = this.activeDiscoveries.filter((d: any) => d.id !== snmp.id)
         }
       }
-      this.activeDiscoveries.push(discovery)
+      this.activeDiscoveries.push(snmp)
+      return true
     },
     clearAzureForm() {
       this.azure = cloneDeep(defaultAzureForm)
+    },
+    clearSnmpForm() {
+      this.snmp = cloneDeep(defaultSnmpForm)
+    },
+    setSelectedDiscovery(selected: any) {
+      if (!selected) {
+        this.selectedDiscovery = Object.assign({ type: DiscoveryType.None })
+        this.clearAzureForm()
+        this.clearSnmpForm()
+      } else {
+        if (selected.type === DiscoveryType.ICMP) {
+          this.snmp = selected
+          this.selectedLocations = [selected.location]
+        } else {
+          this.azure = selected
+        }
+      }
     }
   }
 })

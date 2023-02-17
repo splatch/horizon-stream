@@ -1,11 +1,8 @@
 <template>
-  <form
-    @submit="onSubmit"
-    class="form"
-  >
+  <div class="form">
     <div class="form-title">{{ discoveryText.Discovery.headline2 }}</div>
     <FeatherInput
-      v-model="formInput.name"
+      v-model="store.snmp.name"
       :label="discoveryText.Discovery.nameInputLabel"
       class="name-input"
     />
@@ -13,11 +10,11 @@
       class="select"
       type="single"
       :preLoadedlocations="props.discovery?.location"
-      @location-selected="handleLocations"
+      @location-selected="selectLocation"
     />
     <DiscoveryAutocomplete
       class="select"
-      @items-selected="tagsSelected"
+      @items-selected="store.snmp.tags"
       :get-items="discoveryQueries.getTagsUponTyping"
       :items="discoveryQueries.tagsUponTyping"
       :label="DiscoverySNMPForm.tag"
@@ -60,13 +57,13 @@
       >
       <ButtonWithSpinner
         :disabled="isDisabled"
-        @click="saveAzureDiscovery"
+        @click="saveHandler"
         primary
       >
         {{ discoveryText.Discovery.button.submit }}
       </ButtonWithSpinner>
     </div>
-  </form>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -76,43 +73,21 @@ import discoveryText, { DiscoverySNMPForm } from '@/components/Discovery/discove
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 import { Location } from '@/types/graphql'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+import useSnackbar from '@/composables/useSnackbar'
+const { showSnackbar } = useSnackbar()
 
 const discoveryQueries = useDiscoveryQueries()
-
 const emit = defineEmits(['close-form'])
+
 const store = useDiscoveryStore()
 const props = defineProps<{
   discovery?: DiscoveryInput | null
+  successCallback: (name: string) => void
 }>()
-const formInput = ref<DiscoveryInput>({
-  id: null,
-  type: DiscoveryType.ICMP,
-  name: '',
-  location: [],
-  tags: [],
-  IPRange: '',
-  communityString: '', // optional
-  UDPPort: null // optional
-})
-const setFormInput = () => {
-  formInput.value = {
-    type: DiscoveryType.ICMP,
-    id: props.discovery?.id || 0,
-    name: props.discovery?.name || '',
-    location: props.discovery?.location || [],
-    tags: props.discovery?.tags || [],
-    IPRange: props.discovery?.IPRange || '',
-    communityString: props.discovery?.communityString || '',
-    UDPPort: props.discovery?.UDPPort || null
-  }
-}
 
-onMounted(() => {
-  setFormInput()
-})
-watch(props, () => {
-  setFormInput()
-})
+const selectLocation = (location: Required<Location[]>) => store.selectLocation(location[0]?.id, true)
+
+const isDisabled = computed(() => !store.snmp.name || !store.selectedLocations.length)
 
 const contentEditableIPRef = ref()
 const IPs = {
@@ -122,6 +97,11 @@ const IPs = {
 }
 const isContentValid = (property: string, val: boolean) => {
   console.log('valid - ', property, val)
+}
+
+const saveContent = (property: string, val: string) => {
+  //formInput.value[property] = val
+  console.log('content - ', property, val)
 }
 
 const contentEditableCommunityRef = ref()
@@ -138,29 +118,17 @@ const port = {
   label: discoveryText.ContentEditable.UDPPort.label
 }
 
-const saveContent = (property: string, val: string) => {
-  formInput.value[property] = val
-  console.log('content - ', property, val)
-}
-
-const handleLocations = (locations: Location[]) => {
-  formInput.value.location = locations.map((l: Location) => l.id) as string[]
-}
-
-const tagsSelected = (tags: Record<string, string>[]) => {
-  formInput.value.tags = tags.map((t: Location) => t.id) as string[]
-}
-
-const isFormInvalid = computed(() => {
-  // formInput validation
-  return false
-})
-
-const saveHandler = () => {
-  //store.saveDiscovery(formInput.value)
-  //contentEditableIPRef.validateAndFormat()
-  contentEditableCommunityRef.value.validateAndFormat()
-  //emit('close-form')
+const saveHandler = async () => {
+  const success = await store.saveDiscoverySnmp()
+  if (success) {
+    store.clearSnmpForm()
+    emit('close-form')
+    props.successCallback(store.snmp.name)
+  } else {
+    showSnackbar({
+      msg: discoveryText.Discovery.error.errorCreate
+    })
+  }
 }
 </script>
 
@@ -202,5 +170,9 @@ const saveHandler = () => {
       width: 32%;
     }
   }
+}
+
+:deep(.feather-input-sub-text) {
+  display: none !important;
 }
 </style>

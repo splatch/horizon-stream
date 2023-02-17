@@ -9,6 +9,9 @@ export default {
       add: 'New Discovery',
       cancel: 'Cancel',
       submit: 'Save discovery'
+    },
+    error: {
+      errorCreate: 'Error on creating discovery :('
     }
   },
   AddDiscoverySection: {

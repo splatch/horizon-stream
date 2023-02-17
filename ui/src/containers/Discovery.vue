@@ -55,7 +55,8 @@
         <div v-if="discoverySelectedType === DiscoveryType.ICMP">
           <DiscoverySnmpForm
             @close-form="handleCancel"
-            :discovery="selectedDiscovery"
+            :successCallback="(name) => successModal.openSuccessModal(name)"
+            :cancel="handleCancel"
           />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
@@ -105,7 +106,7 @@ const discoverySelectedType = ref(DiscoveryType.None)
 const handleNewDiscovery = () => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = true
-  selectedDiscovery.value = null
+  store.setSelectedDiscovery(null)
 }
 
 const discoveriesResults = ref<TDiscoveryAutocomplete[]>([])
@@ -128,9 +129,9 @@ const search = (q: string) => {
 const showDiscovery = (discovery: DiscoveryInput) => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = false
+  store.setSelectedDiscovery(discovery)
   discoverySelectedType.value = discovery.type
-  selectedDiscovery.value = discovery
-  console.log(selectedDiscovery.value)
+  //selectedDiscovery.value = discovery
 }
 
 const handleCancel = () => {

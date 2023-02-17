@@ -10,5 +10,5 @@ export interface DiscoveryInput extends IKey {
   tags: string[]
   IPRange: string
   communityString?: string | null
-  UDPPort?: number | null
+  UDPPort?: number | string | null
 }
