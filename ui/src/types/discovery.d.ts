@@ -7,6 +7,7 @@ export interface DiscoveryInput extends IKey {
   type: number
   name: string
   location: string[]
+  tags: string[]
   IPRange: string
   communityString?: string | null
   UDPPort?: number | null

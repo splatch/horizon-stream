@@ -27,12 +27,12 @@
         :key="location.id"
         class="location-chip"
       >
-        {{ location.location }}
-        <FeatherIcon
-          :icon="Icons.Cancel"
-          class="icon"
-          @click="removeLocation(location)"
-        />
+        <span>{{ location.location }}</span>
+        <template v-slot:icon
+          ><FeatherIcon
+            @click="removeLocation(location)"
+            :icon="Icons.Cancel"
+        /></template>
       </FeatherChip>
     </FeatherChipList>
   </div>
@@ -189,5 +189,22 @@ const removeLocation = (location: Location) => {
 }
 :deep(.feather-input-sub-text) {
   display: none !important;
+}
+:deep(.chip-label-button) {
+  display: flex;
+  .chip-icon {
+    order: 2;
+    &:hover {
+      cursor: pointer;
+    }
+    > svg {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  > .label {
+    order: 1;
+  }
 }
 </style>

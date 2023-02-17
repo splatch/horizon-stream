@@ -220,7 +220,7 @@ const handleCancel = () => {
   }
 
   .type-selector {
-    margin-bottom: var(variables.$spacing-xxl);
+    margin-bottom: var(variables.$spacing-xl);
   }
 
   @include mediaQueriesMixins.screen-md {
@@ -228,10 +228,6 @@ const handleCancel = () => {
     min-width: auto;
     margin-bottom: 0;
   }
-}
-
-.type-selector {
-  margin-bottom: var(variables.$spacing-l);
 }
 
 .get-started {

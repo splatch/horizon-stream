@@ -32,6 +32,7 @@
       :type="props.renderType"
       :allow-new="allowNew"
       class="tag-autocomplete"
+      :schema="locationV"
     />
     <FeatherChipList
       v-if="props.renderType === 'single'"
@@ -54,8 +55,12 @@
 
 <script lang="ts" setup>
 import { PropType } from 'vue'
+import * as yup from 'yup'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import CancelIcon from '@featherds/icon/navigation/Cancel'
+const locationV = yup.object().shape({
+  stringArray: yup.array().min(1, 'error')
+})
 
 type IAutocomplete = IAutocompleteItemType & { _text: string }
 type TypeSingle = 'single'
@@ -110,7 +115,7 @@ const updateModelValue = (selected: any) => {
 
       modelValue.value = undefined
 
-      emits('items-selected', selectedItems)
+      emits('items-selected', selectedItems.value)
     }
   } else if (props.renderType === 'multi') {
     // TODO

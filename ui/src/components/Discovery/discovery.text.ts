@@ -31,6 +31,10 @@ export default {
   }
 }
 
+export const DiscoverySNMPForm = {
+  tag: 'Search/Add tags (optional)'
+}
+
 export const DiscoverySyslogSNMPTrapsForm = {
   headline: 'ICMP/SNMP Discovery Setup',
   location: 'Search a location',
@@ -80,7 +84,7 @@ export const DiscoverySyslogSNMPTrapsForm = {
 }
 
 export const Azure = {
-  title:'Azure Discovery Setup',
+  title: 'Azure Discovery Setup',
   saveBtnText: 'Save Discovery',
   cancelBtnText: 'Cancel'
 }
@@ -89,8 +93,8 @@ export const SuccessModalOptions = {
   successMsg: 'setup successfully!',
   title: 'You may be interested in...',
   viewNodes: 'View Detected Nodes',
-  addDiscovery:'Add Another Discovery',
+  addDiscovery: 'Add Another Discovery',
   addTransaction: 'Add Synthetic Transaction',
   addMonitoring: 'Add Monitoring Policy',
-  checkboxText: 'Don\'t show this again'
+  checkboxText: "Don't show this again"
 }

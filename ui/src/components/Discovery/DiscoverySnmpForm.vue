@@ -1,5 +1,8 @@
 <template>
-  <div class="form">
+  <form
+    @submit="onSubmit"
+    class="form"
+  >
     <div class="form-title">{{ discoveryText.Discovery.headline2 }}</div>
     <FeatherInput
       v-model="formInput.name"
@@ -7,10 +10,17 @@
       class="name-input"
     />
     <LocationsAutocomplete
-      class="location"
+      class="select"
       type="single"
       :preLoadedlocations="props.discovery?.location"
       @location-selected="handleLocations"
+    />
+    <DiscoveryAutocomplete
+      class="select"
+      @items-selected="tagsSelected"
+      :get-items="discoveryQueries.getTagsUponTyping"
+      :items="discoveryQueries.tagsUponTyping"
+      :label="DiscoverySNMPForm.tag"
     />
     <div class="content-editable-container">
       <DiscoveryContentEditable
@@ -49,25 +59,27 @@
         >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
       >
       <FeatherButton
-        @click="saveHandler"
+        type="submit"
         :disabled="isFormInvalid"
         primary
         >{{ discoveryText.Discovery.button.submit }}</FeatherButton
       >
     </div>
-  </div>
+  </form>
 </template>
 
 <script lang="ts" setup>
 import { DiscoveryInput } from '@/types/discovery'
 import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
-import discoveryText from '@/components/Discovery/discovery.text'
+import discoveryText, { DiscoverySNMPForm } from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 import { Location } from '@/types/graphql'
+import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+
+const discoveryQueries = useDiscoveryQueries()
 
 const emit = defineEmits(['close-form'])
 const store = useDiscoveryStore()
-
 const props = defineProps<{
   discovery?: DiscoveryInput | null
 }>()
@@ -76,6 +88,7 @@ const formInput = ref<DiscoveryInput>({
   type: DiscoveryType.ICMP,
   name: '',
   location: [],
+  tags: [],
   IPRange: '',
   communityString: '', // optional
   UDPPort: null // optional
@@ -86,6 +99,7 @@ const setFormInput = () => {
     id: props.discovery?.id || 0,
     name: props.discovery?.name || '',
     location: props.discovery?.location || [],
+    tags: props.discovery?.tags || [],
     IPRange: props.discovery?.IPRange || '',
     communityString: props.discovery?.communityString || '',
     UDPPort: props.discovery?.UDPPort || null
@@ -106,7 +120,7 @@ const IPs = {
   label: discoveryText.ContentEditable.IP.label
 }
 const isContentValid = (property: string, val: boolean) => {
-  console.log(property, val)
+  console.log('valid - ', property, val)
 }
 
 const contentEditableCommunityRef = ref()
@@ -125,10 +139,15 @@ const port = {
 
 const saveContent = (property: string, val: string) => {
   formInput.value[property] = val
+  console.log('content - ', property, val)
 }
 
 const handleLocations = (locations: Location[]) => {
   formInput.value.location = locations.map((l: Location) => l.id) as string[]
+}
+
+const tagsSelected = (tags: Record<string, string>[]) => {
+  formInput.value.tags = tags.map((t: Location) => t.id) as string[]
 }
 
 const isFormInvalid = computed(() => {
@@ -137,8 +156,10 @@ const isFormInvalid = computed(() => {
 })
 
 const saveHandler = () => {
-  store.saveDiscovery(formInput.value)
-  emit('close-form')
+  //store.saveDiscovery(formInput.value)
+  //contentEditableIPRef.validateAndFormat()
+  contentEditableCommunityRef.value.validateAndFormat()
+  //emit('close-form')
 }
 </script>
 
@@ -152,9 +173,10 @@ const saveHandler = () => {
     @include typography.headline4();
     margin-bottom: var(variables.$spacing-m);
   }
-  .location {
+  .select {
     margin-top: var(variables.$spacing-xl);
     margin-bottom: var(variables.$spacing-s);
+    width: 40%;
   }
 }
 
@@ -179,9 +201,5 @@ const saveHandler = () => {
       width: 32%;
     }
   }
-}
-
-:deep(.feather-input-sub-text) {
-  display: none;
 }
 </style>
