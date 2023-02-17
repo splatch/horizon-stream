@@ -26,11 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.miniongateway.grpc.server.rpcrequest.flows;
+package org.opennms.miniongateway.grpc.server.flows;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
-import org.opennms.horizon.grpc.telemetry.contract.TelemetryMessageLog;
+
+import org.opennms.horizon.grpc.flows.contract.FlowDocumentLog;
 import org.opennms.horizon.shared.ipc.sink.aggregation.IdentityAggregationPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.AggregationPolicy;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncPolicy;
@@ -38,6 +39,7 @@ import org.opennms.horizon.shared.ipc.sink.api.SinkModule;
 import org.opennms.horizon.shared.ipc.sink.api.UnmarshalException;
 
 
+// TODO: Why do we even unpack?
 public class FlowSinkModule implements SinkModule<Message, Message> {
     @Override
     public String getId() {
@@ -57,7 +59,7 @@ public class FlowSinkModule implements SinkModule<Message, Message> {
     @Override
     public Message unmarshal(byte[] message) {
         try {
-            return TelemetryMessageLog.parseFrom(message);
+            return FlowDocumentLog.parseFrom(message);
         } catch (InvalidProtocolBufferException e) {
             throw new UnmarshalException(e);
         }
@@ -71,7 +73,7 @@ public class FlowSinkModule implements SinkModule<Message, Message> {
     @Override
     public Message unmarshalSingleMessage(byte[] message) {
         try {
-            return TelemetryMessageLog.parseFrom(message);
+            return FlowDocumentLog.parseFrom(message);
         } catch (InvalidProtocolBufferException e) {
             throw new UnmarshalException(e);
         }
