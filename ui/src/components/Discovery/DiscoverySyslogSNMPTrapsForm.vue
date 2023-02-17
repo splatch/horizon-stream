@@ -16,7 +16,7 @@
           @items-selected="tagsSelected"
           :get-items="discoveryQueries.getTagsUponTyping"
           :items="discoveryQueries.tagsUponTyping"
-          :label="DiscoverySyslogSNMPTrapsForm.tag"
+          :label="Common.tagsInput"
         />
         <div class="content-editable-container">
           <DiscoveryContentEditable
@@ -62,7 +62,7 @@ import useSpinner from '@/composables/useSpinner'
 import useSnackbar from '@/composables/useSnackbar'
 import { IIcon } from '@/types'
 import discoveryText from './discovery.text'
-import { DiscoverySyslogSNMPTrapsForm } from './discovery.text'
+import { DiscoverySyslogSNMPTrapsForm, Common } from './discovery.text'
 import { ContentEditableType } from './discovery.constants'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 
@@ -103,10 +103,12 @@ const communityString = {
   regexDelim: '',
   label: discoveryText.ContentEditable.CommunityString.label
 }
-const isContentInvalidCommunityString = (args) => {
+
+// 'any' to fix build for now
+const isContentInvalidCommunityString = (args: any) => { 
   console.log('args', args)
 }
-const contentFormattedCommunityString = (args) => {
+const contentFormattedCommunityString = (args: any) => {
   console.log('args', args)
 }
 
@@ -116,10 +118,10 @@ const udpPort = {
   regexDelim: '',
   label: discoveryText.ContentEditable.UDPPort.label
 }
-const isContentInvalidUDPPort = (args) => {
+const isContentInvalidUDPPort = (args: any) => {
   console.log('args', args)
 }
-const contentFormattedUDPPort = (args) => {
+const contentFormattedUDPPort = (args: any) => {
   console.log('args', args)
 }
 
@@ -159,7 +161,7 @@ const deleteIcon: IIcon = {
 }
 
 .headline {
-  @include typography.headline3();
+  @include typography.headline4;
 }
 
 .form-content {

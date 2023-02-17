@@ -149,7 +149,7 @@ const saveHandler = () => {
 @use '@featherds/styles/mixins/typography';
 .form {
   .form-title {
-    @include typography.headline4();
+    @include typography.headline4;
     margin-bottom: var(variables.$spacing-m);
   }
   .location {
