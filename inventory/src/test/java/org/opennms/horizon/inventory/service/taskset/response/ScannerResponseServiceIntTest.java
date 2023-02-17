@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -182,6 +181,8 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
         assertIpInterface(node.getIpInterfaces().get(0), null);
         List<IpInterface> ipIfList = ipInterfaceRepository.findByNodeId(node.getId());
         assertThat(ipIfList.get(0)).extracting(ipIf -> ipIf.getIpAddress().getHostAddress()).isEqualTo(managedIp);
+        assertThat(ipIfList.get(0)).extracting(IpInterface::getSnmpInterface).isNotNull();
+        assertThat(ipIfList.get(1)).extracting(IpInterface::getSnmpInterface).isNull();
         assertThat(ipIfList).asList().hasSize(result.getIpInterfacesList().size());
         IntStream.range(0, ipIfList.size())
             .forEach(i -> assertIpInterface(ipIfList.get(i), result.getIpInterfaces(i)));
@@ -221,15 +222,16 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
             .setSystemContact("admin@opennms.com")
             .build();
         IpInterfaceResult ipIf1 = IpInterfaceResult.newBuilder()
-                .setIpAddress(ipAddress)
-                .setIpHostName("hostname1")
-                .setNetmask("255.255.255.0")
-                .build();
+             .setIpAddress(ipAddress)
+             .setIpHostName("hostname1")
+            .setNetmask("255.255.255.0")
+            .setIfIndex(ifIndex)
+            .build();
         IpInterfaceResult ipIf2 = IpInterfaceResult.newBuilder()
-                .setIpAddress("192.168.2.3")
-                .setNetmask("255.255.0.0")
-                .setIpHostName("hostname-2")
-                .build();
+            .setIpAddress("192.168.2.3")
+            .setNetmask("255.255.0.0")
+            .setIpHostName("hostname-2")
+            .build();
         SnmpInterfaceResult snmpIf1 = SnmpInterfaceResult.newBuilder()
             .setIfIndex(ifIndex)
             .setIfDescr("SNMP Interface1")
@@ -238,7 +240,6 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
             .setIfAdminStatus(1)
             .setIfOperatorStatus(2)
             .setIfAlias("alias1")
-            .setIpAddress(ipAddress)
             .setPhysicalAddr("0sdfasdf")
             .build();
         SnmpInterfaceResult snmpIf2 = SnmpInterfaceResult.newBuilder()
@@ -327,7 +328,6 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
                     SnmpInterface::getIfAdminStatus,
                     SnmpInterface::getIfOperatorStatus,
                     SnmpInterface::getIfAlias,
-                    snmpInterface -> snmpInterface.getIpAddress() == null ? null: snmpInterface.getIpAddress().getHostAddress(),
                     SnmpInterface::getPhysicalAddr)
                 .containsExactly(result.getIfIndex(),
                     result.getIfName(),
@@ -337,7 +337,6 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
                     result.getIfAdminStatus(),
                     result.getIfOperatorStatus(),
                     result.getIfAlias(),
-                    StringUtils.isEmpty(result.getIpAddress())? null: result.getIpAddress(),
                     result.getPhysicalAddr());
         } else {
             assertThat(snmpIf)
@@ -348,9 +347,8 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
                     SnmpInterface::getIfAdminStatus,
                     SnmpInterface::getIfOperatorStatus,
                     SnmpInterface::getIfAlias,
-                    SnmpInterface::getIpAddress,
                     SnmpInterface::getPhysicalAddr)
-                .containsExactly(null,null,0,0L,0,0,null,null,null);
+                .containsExactly(null,null,0,0L,0,0,null,null);
         }
     }
 }
