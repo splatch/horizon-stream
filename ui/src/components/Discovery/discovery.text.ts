@@ -34,7 +34,6 @@ export default {
 export const DiscoverySyslogSNMPTrapsForm = {
   headline: 'ICMP/SNMP Discovery Setup',
   location: 'Search a location',
-  tag: 'Search/Add tags (optional)',
   help: {
     top: {
       heading: 'Forward Syslog to BTO with the following details:',
@@ -77,6 +76,10 @@ export const DiscoverySyslogSNMPTrapsForm = {
       }
     }
   }
+}
+
+export const Common = {
+  tagsInput: 'Search/Add tags (optional)'
 }
 
 export const Azure = {

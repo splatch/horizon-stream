@@ -9,7 +9,7 @@ const defaultAzureForm = {
   clientSecret: '',
   subscriptionId: '',
   directoryId: '',
-  tags: []
+  // tags: [] to be done later
 }
 
 export const useDiscoveryStore = defineStore('discoveryStore', {
