@@ -97,6 +97,7 @@ public class FlowSinkModule implements SinkModule<FlowDocumentLog, FlowDocument>
             public int getCompletionSize() {
                 return 1;
             }
+
             //TODO: hardcode for now. Will fix in DC-455
             @Override
             public int getCompletionIntervalMs() {
@@ -104,8 +105,8 @@ public class FlowSinkModule implements SinkModule<FlowDocumentLog, FlowDocument>
             }
 
             @Override
-            public Object key(FlowDocumentLog message) {
-                return message.getMessage(0).getTimestamp();
+            public Object key(FlowDocumentLog flowDocumentLog) {
+                return flowDocumentLog.getMessage(0).getTimestamp();
             }
 
             @Override
@@ -116,14 +117,18 @@ public class FlowSinkModule implements SinkModule<FlowDocumentLog, FlowDocument>
                             .setSystemId(identity.getId()).setLocation(identity.getLocation()).build().toString())
                         .addMessage(newMessage).build();
                 } else {
-                    FlowDocumentLog.newBuilder(accumulator).addMessage(newMessage);
+                    if (newMessage != null) {
+                        FlowDocumentLog.newBuilder(accumulator).addMessage(newMessage);
+                    } else {
+                        newMessage = accumulator.getMessage(0);
+                    }
                 }
                 return newMessage;
             }
 
             @Override
-            public FlowDocument build(FlowDocument accumulator) {
-                return accumulator;
+            public FlowDocument build(FlowDocument message) {
+                return message;
             }
         };
     }
