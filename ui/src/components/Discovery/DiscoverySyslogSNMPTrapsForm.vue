@@ -9,41 +9,44 @@
     </div>
     <form @submit.prevent="submitHandler">
       <div class="form-content">
-        <!-- location -->
-        <LocationsAutocomplete @location-selected="locationsSelectedListener" />
+        <LocationsAutocomplete
+          @location-selected="locationsSelectedListener"
+          ref="locationsAutocompleteRef"
+        />
         <DiscoveryHelpConfiguring />
         <DiscoveryAutocomplete
           @items-selected="tagsSelectedListener"
-          :get-items="discoveryQueries.getTagsUponTyping"
-          :items="discoveryQueries.tagsUponTyping"
+          :get-items="discoveryQueries.getTagsSearch"
+          :items="discoveryQueries.tagsSearched"
           :label="Common.tagsInput"
+          ref="tagsAutocompleteRef"
         />
         <div class="content-editable-container">
           <DiscoveryContentEditable
             @is-content-invalid="isCommunityStringInvalidListerner"
             @content-formatted="communityStringEnteredListerner"
-            ref="contentEditableCommunityStringRef"
             :contentType="communityString.type"
             :regexDelim="communityString.regexDelim"
             :label="communityString.label"
             :default-content="'someCommunityString'"
             class="community-string-input"
+            ref="contentEditableCommunityStringRef"
           />
           <DiscoveryContentEditable
             @is-content-invalid="isUDPPortInvalidListener"
             @content-formatted="UDPPortEnteredListener"
-            ref="contentEditableUDPPortRef"
             :contentType="udpPort.type"
             :regexDelim="udpPort.regexDelim"
             :label="udpPort.label"
             :default-content="'someUDPPort'"
             class="udp-port-input"
+            ref="contentEditableUDPPortRef"
           />
         </div>
       </div>
       <div class="form-footer">
         <FeatherButton
-          @click="cancel"
+          @click="cancelHandler"
           secondary
           >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
         >
@@ -86,14 +89,19 @@ const isFormInvalid = ref(
   })
 )
 
-let tagsSelected: Record<string, string>[] = []
-const tagsSelectedListener = (tags: Record<string, string>[]) => {
-  tagsSelected = tags
-}
-
+const locationsAutocompleteRef = ref()
 let locationsSelected: Record<string, string>[] = []
 const locationsSelectedListener = (locations: Record<string, string>[]) => {
   locationsSelected = locations
+}
+
+const tagsAutocompleteRef = ref()
+let tagsSelected: Record<string, string>[] = []
+const tagsSelectedListener = (tags: Record<string, string>[]) => {
+  tagsSelected = tags.map((tag) => {
+    delete tag._text
+    return tag
+  })
 }
 
 const contentEditableCommunityStringRef = ref()
@@ -140,17 +148,29 @@ const submitHandler = async () => {
   })
 
   if (results.data) {
-    showSnackbar({
+    /* showSnackbar({
       msg: 'Save Successfully!'
-    })
-
+    }) */
     props.successCallback(results.data.saveDiscovery[0].name)
+    resetForm()
   } else {
     showSnackbar({
       msg: results.errors[0].message,
       error: true
     })
   }
+}
+
+const resetForm = () => {
+  // locationsAutocompleteRef.value.reset()
+  tagsAutocompleteRef.value.reset()
+  contentEditableCommunityStringRef.value.reset()
+  contentEditableUDPPortRef.value.reset()
+}
+
+const cancelHandler = () => {
+  resetForm()
+  props.cancel()
 }
 
 const deleteHandler = () => {
