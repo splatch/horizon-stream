@@ -16,7 +16,7 @@
   TODO:
     - buggy with allow-new option and mouse clicking
       - when mouse clicks on existing item on the list, the new event is also triggered (@new="addValue")
-      - probable cause: the `NEW`  item is on focus 
+      - probable cause: the `NEW` item is on focus 
       - ok when using arrow up/down and enter key to select item
  -->
 <template>
@@ -103,7 +103,7 @@ const modelValue = ref<IAutocomplete[] | undefined>()
 
 const updateModelValue = (selected: any) => {
   if (props.renderType === 'single') {
-    const exists = selectedItems.value.some(({ _text: vText }) => vText === selected._text)
+    const exists = selectedItems.value.some(({ name }) => name === selected.name)
 
     if (!exists) {
       selectedItems.value.push(selected)
@@ -126,7 +126,7 @@ const search = (q: string) => {
 }
 
 const addValue = (q: string) => {
-  const exists = selectedItems.value.some(({ _text: vText }) => vText === q)
+  const exists = selectedItems.value.some(({ name }) => name === q)
 
   if (!exists) {
     selectedItems.value?.push({ name: q, _text: q })

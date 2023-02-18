@@ -63,14 +63,13 @@ const props = defineProps({
 let isContentInvalid = true
 const isContentNotEmpty = ref(false)
 const contentEditableRef = ref()
-const htmlString = ref(props.defaultContent)
+const htmlString = ref(props.defaultContent) // to render string as html
 
 const contentChange = () => {
   isContentNotEmpty.value = contentEditableRef.value.textContent.length as boolean
 }
 
 const validateAndFormat = () => {
-  // console.log('validateAndFormat')
   isContentInvalid = validateContent()
 
   const highlightedString = highlightInvalid()
@@ -78,7 +77,7 @@ const validateAndFormat = () => {
 
   emit('is-content-invalid', isContentInvalid)
 
-  if (!isContentInvalid) emit('content-formatted', htmlString.value)
+  if (!isContentInvalid) emit('content-formatted', contentEditableRef.value.textContent)
 }
 
 const validateContent = () => {
@@ -127,7 +126,7 @@ const highlightInvalid = () => {
 }
 
 const reset = () => {
-  htmlString.value = props.defaultContent
+  contentEditableRef.value.textContent = props.defaultContent
 }
 
 const checkCircleIcon: IIcon = {
