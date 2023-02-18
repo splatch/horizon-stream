@@ -59,14 +59,15 @@
           />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
-          <DiscoveryAzureForm 
+          <DiscoveryAzureForm
             :successCallback="(name) => successModal.openSuccessModal(name)"
             :cancel="handleCancel"
           />
         </div>
         <DiscoverySyslogSNMPTrapsForm
           v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
-          @cancel-editing="handleCancel"
+          :successCallback="(name) => successModal.openSuccessModal(name)"
+          :cancel="handleCancel"
         />
         <div
           v-else

@@ -4,7 +4,6 @@ import { ListLocationsForDiscoveryDocument, Tag } from '@/types/graphql'
 
 export const useDiscoveryQueries = defineStore('discoveryQueries', () => {
   const tagsUponTyping = ref([] as Tag[])
-
   const { data: locations, execute: getLocations } = useQuery({
     query: ListLocationsForDiscoveryDocument,
     fetchOnMount: false
@@ -21,24 +20,23 @@ export const useDiscoveryQueries = defineStore('discoveryQueries', () => {
     }) */
 
     // mock
+    const success = [
+      {
+        id: 1,
+        name: 'local',
+        tenantId: 'opennms-prime'
+      },
+      {
+        id: 2,
+        name: 'localhost',
+        tenantId: 'opennms-prime'
+      }
+    ]
     clearTimeout(timeout)
-
     timeout = window.setTimeout(() => {
-      tagsUponTyping.value = [
-        {
-          id: 1,
-          name: 'local',
-          tenantId: 'opennms-prime'
-        },
-        {
-          id: 2,
-          name: 'localhost',
-          tenantId: 'opennms-prime'
-        }
-      ]
+      tagsUponTyping.value = success
     }, 1000)
   }
-
   return {
     locations: computed(() => locations.value?.findAllLocations || []),
     getLocations,
