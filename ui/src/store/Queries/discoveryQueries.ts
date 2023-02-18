@@ -1,36 +1,46 @@
 import { defineStore } from 'pinia'
 import { useQuery } from 'villus'
-import { ListLocationsForDiscoveryDocument, Tag, ListTagsSearchDocument } from '@/types/graphql'
+import { ListLocationsForDiscoveryDocument, Tag } from '@/types/graphql'
 
 export const useDiscoveryQueries = defineStore('discoveryQueries', () => {
-  const tagsSearched = ref([] as Tag[])
-
+  const tagsUponTyping = ref([] as Tag[])
   const { data: locations, execute: getLocations } = useQuery({
     query: ListLocationsForDiscoveryDocument,
     fetchOnMount: false
   })
 
-  const getTagsSearch = (searchTerm: string) => {
-    const { data, error } = useQuery({
-      query: ListTagsSearchDocument,
+  let timeout = -1
+  const getTagsUponTyping = (s: string) => {
+    /* const { data, error } = useQuery({
+      query: ListTagsByNodeIdDocument,
       variables: {
-        searchTerm
-      }
-    })
+        string: s
+      },
+      cachePolicy: 'network-only'
+    }) */
 
-    watchEffect(() => {
-      if (data.value?.tags) {
-        tagsSearched.value = data.value.tags
-      } else {
-        // TODO: what kind of errors and how to manage them
+    // mock
+    const success = [
+      {
+        id: 1,
+        name: 'local',
+        tenantId: 'opennms-prime'
+      },
+      {
+        id: 2,
+        name: 'localhost',
+        tenantId: 'opennms-prime'
       }
-    })
+    ]
+    clearTimeout(timeout)
+    timeout = window.setTimeout(() => {
+      tagsUponTyping.value = success
+    }, 1000)
   }
-
   return {
     locations: computed(() => locations.value?.findAllLocations || []),
     getLocations,
-    tagsSearched: computed(() => tagsSearched.value || []),
-    getTagsSearch
+    tagsUponTyping,
+    getTagsUponTyping
   }
 })

@@ -60,7 +60,7 @@ const props = defineProps({
   }
 })
 
-let isContentInvalid = true
+const isContentInvalid = ref(true)
 const isContentNotEmpty = ref(false)
 const contentEditableRef = ref()
 const htmlString = ref(props.defaultContent)
@@ -71,14 +71,14 @@ const contentChange = () => {
 
 const validateAndFormat = () => {
   // console.log('validateAndFormat')
-  isContentInvalid = validateContent()
+  isContentInvalid.value = validateContent()
 
   const highlightedString = highlightInvalid()
   if (highlightedString.length) htmlString.value = highlightedString
 
-  emit('is-content-invalid', isContentInvalid)
+  emit('is-content-invalid', isContentInvalid.value)
 
-  if (!isContentInvalid) emit('content-formatted', htmlString.value)
+  if (!isContentInvalid.value) emit('content-formatted', htmlString.value)
 }
 
 const validateContent = () => {
@@ -126,9 +126,9 @@ const highlightInvalid = () => {
   return highlightInvalidString
 }
 
-const reset = () => {
-  htmlString.value = props.defaultContent
-}
+// const getContent = () => {
+//   return contentEditableRef.value.textContent
+// }
 
 const checkCircleIcon: IIcon = {
   image: markRaw(CheckCircleIcon),
@@ -136,8 +136,8 @@ const checkCircleIcon: IIcon = {
 }
 
 defineExpose({
-  validateAndFormat,
-  reset
+  validateAndFormat
+  // getContent
 })
 </script>
 

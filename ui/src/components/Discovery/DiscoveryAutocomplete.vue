@@ -38,13 +38,13 @@
       label="Item chip list with icon"
     >
       <FeatherChip
-        v-for="(item, index) in selectedItems"
-        :key="index"
+        v-for="item in selectedItems"
+        :key="item._text"
       >
-        <span>{{ item.name }}</span>
+        <span>{{ item._text }}</span>
         <template v-slot:icon
           ><FeatherIcon
-            @click="unselectItem(item.name as string)"
+            @click="unselectItem(item._text)"
             :icon="CancelIcon"
         /></template>
       </FeatherChip>
@@ -110,7 +110,7 @@ const updateModelValue = (selected: any) => {
 
       modelValue.value = undefined
 
-      emits('items-selected', selectedItems.value)
+      emits('items-selected', selectedItems)
     }
   } else if (props.renderType === 'multi') {
     // TODO
@@ -136,21 +136,14 @@ const addValue = (q: string) => {
 }
 
 const unselectItem = (q: string) => {
-  selectedItems.value = selectedItems.value?.filter((v) => {
-    if (v.name !== q) return v
+  const newVal = selectedItems.value?.filter((v) => {
+    if (v._text !== q) return v
   })
+
+  selectedItems.value = newVal
 
   emits('items-selected', selectedItems.value)
 }
-
-const reset = () => {
-  modelValue.value = undefined
-  selectedItems.value = []
-}
-
-defineExpose({
-  reset
-})
 </script>
 
 <style lang="scss" scoped>
