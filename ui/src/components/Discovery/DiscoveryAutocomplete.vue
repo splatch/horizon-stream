@@ -31,11 +31,12 @@
       :label="(props.label as string)"
       :type="props.renderType"
       :allow-new="allowNew"
-      class="tag-autocomplete"
+      data-test="fds-autocomplete"
     />
     <FeatherChipList
       v-if="props.renderType === 'single'"
       label="Item chip list with icon"
+      data-test="fds-chip-list"
     >
       <FeatherChip
         v-for="(item, index) in selectedItems"

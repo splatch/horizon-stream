@@ -1,25 +1,38 @@
 <template>
-  <div class="syslog-snmp-traps-form">
+  <div
+    class="syslog-snmp-traps-form"
+    data-test="syslog-snmp-traps-form"
+  >
     <div class="headline-action">
-      <div class="headline">{{ DiscoverySyslogSNMPTrapsForm.headline }}</div>
+      <div
+        class="headline"
+        data-test="headline"
+      >
+        {{ DiscoverySyslogSNMPTrapsForm.headline }}
+      </div>
       <!-- <Icon
         @click="deleteHandler"
         :icon="deleteIcon"
       /> -->
     </div>
-    <form @submit.prevent="submitHandler">
+    <form
+      @submit.prevent="submitHandler"
+      data-test="form"
+    >
       <div class="form-content">
         <LocationsAutocomplete
           @location-selected="locationsSelectedListener"
           ref="locationsAutocompleteRef"
+          data-test="locations-autocomplete"
         />
-        <DiscoveryHelpConfiguring />
+        <DiscoveryHelpConfiguring data-test="help-configuring" />
         <DiscoveryAutocomplete
           @items-selected="tagsSelectedListener"
           :get-items="discoveryQueries.getTagsSearch"
           :items="discoveryQueries.tagsSearched"
           :label="Common.tagsInput"
           ref="tagsAutocompleteRef"
+          data-test="tags-autocomplete"
         />
         <div class="content-editable-container">
           <DiscoveryContentEditable
@@ -31,6 +44,7 @@
             :default-content="'someCommunityString'"
             class="community-string-input"
             ref="contentEditableCommunityStringRef"
+            data-test="cmmunity-string-content-editable"
           />
           <DiscoveryContentEditable
             @is-content-invalid="isUDPPortInvalidListener"
@@ -48,6 +62,7 @@
         <FeatherButton
           @click="cancelHandler"
           secondary
+          data-test="btn-cancel"
           >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
         >
         <ButtonWithSpinner
@@ -55,6 +70,7 @@
           :disabled="isFormInvalid"
           primary
           type="submit"
+          data-test="btn-submit"
         >
           {{ discoveryText.Discovery.button.submit }}
         </ButtonWithSpinner>
