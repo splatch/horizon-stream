@@ -75,11 +75,6 @@ message SnmpInterfaceResult {
   string ifAlias = 9;
 }
 
-/*message IpTableScanResult {
-  IpInterfaceResult ipInterface = 1;
-  SnmpInterfaceResult snmpInterface = 2;
-}*/
-
 message NodeScanResult {
   int64 nodeId = 1;
   NodeInfoResult nodeInfo = 2;
