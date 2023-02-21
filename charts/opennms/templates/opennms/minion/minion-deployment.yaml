@@ -42,6 +42,7 @@ spec:
         - name: minion-config-volume
           configMap:
             name: minion-config 
+      {{ if not .Values.OpenShift }}
       initContainers:
       - name: init-sysctl
         image: busybox
@@ -49,8 +50,10 @@ spec:
         - sysctl
         - -w
         - net.ipv4.ping_group_range=0 429496729
+
         securityContext:
           privileged: true
+      {{ end }}
       containers:
         - name: {{ .Values.OpenNMS.Minion.ServiceName }}
           image: {{ .Values.OpenNMS.Minion.Image }}

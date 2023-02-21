@@ -18,7 +18,7 @@ COPY internal/ internal/
 RUN make alpine-build
 
 #Runner
-FROM ppc64le/alpine:3.15
+FROM alpine:3.15
 
 WORKDIR /app
 

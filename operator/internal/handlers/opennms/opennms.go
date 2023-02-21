@@ -24,15 +24,24 @@ import (
 
 func GetOpenNMSHandlers() []handlers.ServiceHandler {
 	return []handlers.ServiceHandler{
-		&ApiHandler{},
-		&UIHandler{},
+		//&ApiHandler{},
+		//&UIHandler{},
 		&MinionHandler{},
+<<<<<<< HEAD
 		&InventoryHandler{},
 		&NotificationsHandler{},
 		&MetricsProcessorHandler{},
 		&EventsHandler{},
 		&AlertHandler{},
 		&DataChoicesHandler{},
+=======
+		//&InventoryHandler{},
+		//&NotificationsHandler{},
+		//&MetricsProcessorHandler{},
+		//&EventsHandler{},
+		//&AlarmHandler{},
+		//&DataChoicesHandler{},
+>>>>>>> eafe5e6e9 (HS-676: checkpoint)
 	}
 }
 
