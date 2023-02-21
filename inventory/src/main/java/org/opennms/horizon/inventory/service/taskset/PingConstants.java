@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,43 +25,16 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-syntax = "proto3";
 
-import "google/protobuf/any.proto";
+package org.opennms.horizon.inventory.service.taskset;
 
-package opennms.icmp;
-option java_multiple_files = true;
-option java_package = "org.opennms.icmp.contract";
+// TODO: Make this common for Minion/Inventory
+public interface PingConstants {
 
-message IcmpDetectorRequest {
-  string host = 1;
-
-  int64 timeout = 2;
-  int32 dscp = 3;
-  bool allow_fragmentation = 4;
-  int32 packet_size = 5;
-  int32 retries = 6;
+    int DEFAULT_RETRIES = 2;
+    int DEFAULT_TIMEOUT = 800;
+    int DEFAULT_PACKET_SIZE = 64;
+    double DEFAULT_PACKETS_PER_SECOND = 1.0;
+    boolean DEFAULT_ALLOW_FRAGMENTATION = true;
+    int DEFAULT_DSCP = 0;
 }
-
-message IcmpMonitorRequest {
-  string host = 1;
-  int64 timeout = 2;
-  int32 dscp = 3;
-  bool allow_fragmentation = 4;
-  int32 packet_size = 5;
-  int32 retries = 6;
-}
-
-message PingSweepRequest {
-  repeated IpRange ip_range = 1;
-  int64 timeout = 2;
-  double packets_per_second = 3;
-  int32 packet_size = 4;
-  int32 retries = 5;
-}
-
-message IpRange {
-  string begin = 1;
-  string end = 2;
-}
-
