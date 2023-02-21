@@ -139,15 +139,6 @@ const handleCancel = () => {
   isDiscoveryEditingShown.value = false
   discoverySelectedType.value = DiscoveryType.None
 }
-
-const isDisabled = computed(
-  () =>
-    !store.azure.name ||
-    !store.azure.clientId ||
-    !store.azure.clientSecret ||
-    !store.azure.directoryId ||
-    !store.azure.subscriptionId
-)
 </script>
 
 <style lang="scss" scoped>
