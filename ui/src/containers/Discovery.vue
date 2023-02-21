@@ -67,7 +67,8 @@
         </div>
         <DiscoverySyslogSNMPTrapsForm
           v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
-          @cancel-editing="handleCancel"
+          :successCallback="(name) => successModal.openSuccessModal(name)"
+          :cancel="handleCancel"
         />
         <div
           v-else

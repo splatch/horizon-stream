@@ -165,7 +165,7 @@ const icon = markRaw({
   }
   > ul.type-square {
     margin-left: var(variables.$spacing-xl);
-    margin-bottom: var(variables.$spacing-m);
+    margin-bottom: var(variables.$spacing-l);
   }
   .step-opener {
     > span {

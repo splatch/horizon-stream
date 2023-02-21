@@ -53,36 +53,42 @@ const props = defineProps({
   label: {
     type: String,
     default: ''
+  },
+  defaultContent: {
+    type: String,
+    default: ''
   }
 })
 
 const isContentInvalid = ref(true)
 const isContentNotEmpty = ref(false)
 const contentEditableRef = ref()
-const htmlString = ref('')
+const htmlString = ref(props.defaultContent)
 
 const contentChange = () => {
   isContentNotEmpty.value = contentEditableRef.value.textContent.length as boolean
 }
 
 const validateAndFormat = () => {
+  // console.log('validateAndFormat')
   isContentInvalid.value = validateContent()
-  htmlString.value = formatContent()
-  console.log(htmlString.value)
+
+  const highlightedString = highlightInvalid()
+  if (highlightedString.length) htmlString.value = highlightedString
+
   emit('is-content-invalid', isContentInvalid.value)
-  if (!isContentInvalid.value) {
-    emit('content-formatted', htmlString.value)
-  }
+
+  if (!isContentInvalid.value) emit('content-formatted', htmlString.value)
 }
 
 const validateContent = () => {
   const regexDelim = new RegExp(props.regexDelim)
   const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim)
-  let isValid = true
+  let isInvalid = false
 
   switch (props.contentType) {
     case ContentEditableType.IP:
-      isValid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
+      isInvalid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
       break
     case ContentEditableType.CommunityString:
       break
@@ -91,20 +97,18 @@ const validateContent = () => {
     default:
   }
 
-  return isValid
+  return isInvalid
 }
 
-const formatContent = () => {
-  if (!props.regexDelim.length) return contentEditableRef.value.textContent
+const highlightInvalid = () => {
   const regexDelim = new RegExp(props.regexDelim)
   const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim)
-  console.log(contentEditableStrings)
-  let formattedStr = ''
+  let highlightInvalidString = ''
   let errorStr = '<span style="color: #ff555e">{{}}</span>'
 
   switch (props.contentType) {
     case ContentEditableType.IP:
-      formattedStr = contentEditableStrings
+      highlightInvalidString = contentEditableStrings
         .map((str: string) => {
           if (ipRegex({ exact: true }).test(str)) return str
 
@@ -119,8 +123,12 @@ const formatContent = () => {
     default:
   }
 
-  return formattedStr
+  return highlightInvalidString
 }
+
+// const getContent = () => {
+//   return contentEditableRef.value.textContent
+// }
 
 const checkCircleIcon: IIcon = {
   image: markRaw(CheckCircleIcon),
@@ -129,6 +137,7 @@ const checkCircleIcon: IIcon = {
 
 defineExpose({
   validateAndFormat
+  // getContent
 })
 </script>
 
