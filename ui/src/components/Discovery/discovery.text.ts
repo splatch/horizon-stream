@@ -41,7 +41,7 @@ export const DiscoverySNMPForm = {
 }
 
 export const DiscoverySyslogSNMPTrapsForm = {
-  headline: 'ICMP/SNMP Discovery Setup',
+  headline: 'Syslog and SNMP Traps Discovery Setup',
   location: 'Search a location',
   help: {
     top: {
