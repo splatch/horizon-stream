@@ -133,25 +133,16 @@ const saveHandler = async () => {
   contentEditableCommunityStringRef.value.validateAndFormat()
   contentEditableUDPPortRef.value.validateAndFormat()
 
-  console.log(discovery.value)
-
-  // const results: any = await discoveryMutations.saveSyslogSNMPTraps({
-  //   locations: locationsSelected,
-  //   tagsSelected: tagsSelected,
-  //   communityString: communityStringEntered,
-  //   UDPPort: UDPPortEntered
-  // })
-
-  // const success = await store.saveDiscoverySnmp()
-  // if (success) {
-  //   store.clearSnmpForm()
-  //   emit('close-form')
-  //   props.successCallback(store.snmp.name)
-  // } else {
-  //   showSnackbar({
-  //     msg: discoveryText.Discovery.error.errorCreate
-  //   })
-  // }
+  const success = await store.saveDiscoverySnmp()
+  if (success) {
+    store.clearSnmpForm()
+    emit('close-form')
+    props.successCallback(store.snmp.name)
+  } else {
+    showSnackbar({
+      msg: discoveryText.Discovery.error.errorCreate
+    })
+  }
 }
 </script>
 
