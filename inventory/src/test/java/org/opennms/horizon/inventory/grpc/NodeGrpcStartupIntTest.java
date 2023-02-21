@@ -28,11 +28,12 @@
 
 package org.opennms.horizon.inventory.grpc;
 
-import io.grpc.Context;
-import io.grpc.ManagedChannel;
-import io.grpc.inprocess.InProcessChannelBuilder;
+import static com.jayway.awaitility.Awaitility.await;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import org.hamcrest.Matchers;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -40,30 +41,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.common.VerificationException;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
-import org.opennms.horizon.inventory.config.MinionGatewayGrpcClientConfig;
 import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
-import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
-import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.service.contract.PublishTaskSetRequest;
 import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-
-import jakarta.transaction.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-
-import static com.jayway.awaitility.Awaitility.await;
 
 @SpringBootTest(properties = {"spring.liquibase.change-log=db/changelog/changelog-test.xml"})
 @ContextConfiguration(initializers = {SpringContextTestInitializer.class})
@@ -74,8 +57,8 @@ class NodeGrpcStartupIntTest extends GrpcTestBase {
     private static TestTaskSetGrpcService testGrpcService;
 
     @BeforeEach
-    @Transactional
     public void prepare() throws VerificationException {
+        testGrpcService.reset();
         prepareServer();
     }
 
@@ -87,7 +70,6 @@ class NodeGrpcStartupIntTest extends GrpcTestBase {
 
     @AfterEach
     public void cleanUp() throws InterruptedException {
-        testGrpcService.reset();
         afterTest();
     }
 
@@ -97,7 +79,7 @@ class NodeGrpcStartupIntTest extends GrpcTestBase {
         server.awaitTermination();
     }
 
-    //@Test
+    @Test
     void testStartup() {
         // TrapConfigService & FlowsConfigService listens for ApplicationReadyEvent and sends the trap config for each location.
         await().atMost(15, TimeUnit.SECONDS).until(() -> testGrpcService.getRequests().size(), Matchers.is(2));

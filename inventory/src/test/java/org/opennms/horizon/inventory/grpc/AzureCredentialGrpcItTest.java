@@ -28,28 +28,26 @@
 
 package org.opennms.horizon.inventory.grpc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
-import com.github.tomakehurst.wiremock.common.Json;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import com.google.rpc.Code;
-import com.google.rpc.Status;
-import io.grpc.Context;
-import io.grpc.ManagedChannel;
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.StatusRuntimeException;
-import io.grpc.inprocess.InProcessChannelBuilder;
-import io.grpc.protobuf.StatusProto;
-import io.grpc.stub.MetadataUtils;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.opennms.horizon.shared.azure.http.AzureHttpClient.OAUTH2_TOKEN_ENDPOINT;
+import static org.opennms.horizon.shared.azure.http.AzureHttpClient.SUBSCRIPTION_ENDPOINT;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
-import org.jetbrains.annotations.NotNull;
-import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -58,7 +56,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.common.VerificationException;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
-import org.opennms.horizon.inventory.config.MinionGatewayGrpcClientConfig;
 import org.opennms.horizon.inventory.dto.AzureCredentialCreateDTO;
 import org.opennms.horizon.inventory.dto.AzureCredentialDTO;
 import org.opennms.horizon.inventory.dto.AzureCredentialServiceGrpc;
@@ -77,34 +74,26 @@ import org.opennms.horizon.shared.azure.http.dto.subscription.AzureSubscription;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.common.Json;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.google.rpc.Code;
+import com.google.rpc.Status;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static com.jayway.awaitility.Awaitility.await;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.opennms.horizon.shared.azure.http.AzureHttpClient.OAUTH2_TOKEN_ENDPOINT;
-import static org.opennms.horizon.shared.azure.http.AzureHttpClient.SUBSCRIPTION_ENDPOINT;
+import io.grpc.Context;
+import io.grpc.Metadata;
+import io.grpc.ServerCall;
+import io.grpc.ServerCallHandler;
+import io.grpc.StatusRuntimeException;
+import io.grpc.protobuf.StatusProto;
+import io.grpc.stub.MetadataUtils;
 
 @SpringBootTest
 @ContextConfiguration(initializers = {SpringContextTestInitializer.class})
@@ -146,12 +135,12 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
     @BeforeAll
     public static void setup() throws IOException {
         testGrpcService = new TestTaskSetGrpcService();
-        testGrpcService.reset();
         server = startMockServer(TaskSetServiceGrpc.SERVICE_NAME, testGrpcService);
     }
 
     @BeforeEach
     public void prepare() throws VerificationException {
+        testGrpcService.reset();
         prepareServer();
         serviceStub = AzureCredentialServiceGrpc.newBlockingStub(channel);
         wireMock.start();
@@ -166,7 +155,6 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
             monitoringLocationRepository.deleteAll();
             azureCredentialRepository.deleteAll();
         });
-        testGrpcService.reset();
         afterTest();
     }
 

@@ -29,19 +29,24 @@
 package org.opennms.horizon.inventory.grpc;
 
 
-import com.google.protobuf.BoolValue;
-import com.google.protobuf.Empty;
-import com.google.protobuf.Int64Value;
-import com.google.rpc.Code;
-import com.google.rpc.Status;
-import io.grpc.Context;
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.StatusRuntimeException;
-import io.grpc.protobuf.StatusProto;
-import io.grpc.stub.MetadataUtils;
-import jakarta.transaction.Transactional;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -85,23 +90,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import com.google.protobuf.BoolValue;
+import com.google.protobuf.Empty;
+import com.google.protobuf.Int64Value;
+import com.google.rpc.Code;
+import com.google.rpc.Status;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
+import io.grpc.Context;
+import io.grpc.Metadata;
+import io.grpc.ServerCall;
+import io.grpc.ServerCallHandler;
+import io.grpc.StatusRuntimeException;
+import io.grpc.protobuf.StatusProto;
+import io.grpc.stub.MetadataUtils;
 
 
 
@@ -151,6 +152,7 @@ class NodeGrpcItTest extends GrpcTestBase {
 
     @BeforeEach
     public void prepare() throws VerificationException {
+        testGrpcService.reset();
         prepareServer();
         serviceStub = NodeServiceGrpc.newBlockingStub(channel);
     }
@@ -163,7 +165,6 @@ class NodeGrpcItTest extends GrpcTestBase {
             ipInterfaceRepository.deleteAll();
             nodeRepository.deleteAll();
             monitoringLocationRepository.deleteAll();
-            testGrpcService.reset();
         });
         Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, invalidTenantId).run(()->
         {
@@ -171,7 +172,6 @@ class NodeGrpcItTest extends GrpcTestBase {
             ipInterfaceRepository.deleteAll();
             nodeRepository.deleteAll();
             monitoringLocationRepository.deleteAll();
-            testGrpcService.reset();
         });
         afterTest();
     }
@@ -339,7 +339,7 @@ class NodeGrpcItTest extends GrpcTestBase {
     }
 
     @Test
-    public void testNodeDeletionWithTaskSets() throws UnknownHostException {
+    public void testNodeDeletionWithTaskSets() {
         Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
         {
             String location = "location";
@@ -455,7 +455,6 @@ class NodeGrpcItTest extends GrpcTestBase {
 
     @Test
     void testCreateNodeBadIPAddress() throws Exception {
-        String label = "label";
 
         NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
             .setLocation("location")
@@ -564,7 +563,6 @@ class NodeGrpcItTest extends GrpcTestBase {
             .addAllTags(List.of(createDTO3)).setNodeId(node2.getId()).build();
 
         List<TagDTO> tagsList3 = tagService.addTags(tenantId, createListDTO3);
-        TagDTO tag3 = tagsList3.get(0);
 
         serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).deleteNode(Int64Value.of(node1.getId()));
         nodeRepository.flush();
@@ -651,9 +649,7 @@ class NodeGrpcItTest extends GrpcTestBase {
         location.setLocation("test-location");
         location.setTenantId(tenantId);
         Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
-        {
-            monitoringLocationRepository.save(location);
-        });
+            monitoringLocationRepository.save(location));
         List<Node> list = new ArrayList<>();
         for(int i = 0; i < number; i++) {
             Node node = new Node();
@@ -669,9 +665,7 @@ class NodeGrpcItTest extends GrpcTestBase {
                 node.setSystemContact("contact"+1);
             }
             Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
-            {
-                nodeRepository.save(node);
-            });
+                nodeRepository.save(node));
             list.add(node);
         }
         createIpInterFaces(list);
@@ -689,9 +683,7 @@ class NodeGrpcItTest extends GrpcTestBase {
             ipInterface.setIpAddress(InetAddress.getByName(ip + i));
             ipInterface.setTenantId(tenantId);
             Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
-            {
-                ipInterfaceRepository.save(ipInterface);
-            });
+                ipInterfaceRepository.save(ipInterface));
             node.setIpInterfaces(List.of(ipInterface));
         }
     }

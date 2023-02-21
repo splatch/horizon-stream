@@ -39,9 +39,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.azure.api.AzureScanItem;
 import org.opennms.horizon.azure.api.AzureScanResponse;
@@ -113,6 +115,11 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
         server = startMockServer(TaskSetServiceGrpc.SERVICE_NAME, testGrpcService);
     }
 
+    @BeforeEach
+    void beforeTest() {
+        testGrpcService.reset();
+    }
+
     @AfterEach
     public void cleanUp() {
         Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, TEST_TENANT_ID).run(()->
@@ -122,7 +129,6 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
             credentialRepository.deleteAll();
             locationRepository.deleteAll();
         });
-        testGrpcService.reset();
     }
 
     @AfterAll
@@ -132,7 +138,7 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
     }
 
     @Test
-    void testAzureAccept() throws Exception {
+    void testAzureAccept() {
         Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, TEST_TENANT_ID).run(()->
         {
             AzureCredential credential = createAzureCredential();
