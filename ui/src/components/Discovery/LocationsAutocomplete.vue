@@ -11,7 +11,7 @@
     <!-- Search client side -->
     <FeatherAutocomplete
       class="search"
-      label="Select a location"
+      label="Select a location *"
       type="single"
       v-model="searchValue"
       :loading="loading"
@@ -58,7 +58,6 @@ const loading = ref(false)
 const locations = ref() //locations without selected items
 const filteredLocations = ref() //results in autocomplete
 const computedLocations = computed(() => discoveryQueries.locations)
-
 const props = defineProps({
   type: {
     type: String,
@@ -71,41 +70,19 @@ const props = defineProps({
     default: []
   }
 })
-/*
-for tests until merge to develop
-const locationsMock = [
-  {
-    id: 1,
-    location: 'Montreal'
-  },
-  {
-    id: 2,
-    location: 'Ottawa'
-  },
-  {
-    id: 3,
-    location: 'Toronto'
-  },
-  {
-    id: 4,
-    location: 'Vancouver'
-  }
-]
-*/
 
 onMounted(() => discoveryQueries.getLocations())
+
 const initLocations = () => {
   filteredLocations.value = computedLocations.value as Location[]
   locations.value = computedLocations.value as Location[]
-  // filteredLocations.value = locationsMock
-  // locations.value = locationsMock
   if (props.preLoadedlocations.length) {
     selectedLocations.value = locations.value.filter((l: Location) => props.preLoadedlocations.includes(l.id))
     locations.value = locations.value.filter((l: Location) => !props.preLoadedlocations.includes(l.id))
     filteredLocations.value = locations.value
   } else {
     if (computedLocations.value.length == 1) {
-      selectedLocations.value = [computedLocations.value[0]] as TLocationAutocomplete[]
+      selectedLocations.value = computedLocations.value as TLocationAutocomplete[]
       locations.value = []
       filteredLocations.value = []
       emit('location-selected', selectedLocations.value)

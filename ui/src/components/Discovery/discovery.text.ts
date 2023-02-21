@@ -35,7 +35,9 @@ export default {
 }
 
 export const DiscoverySNMPForm = {
-  tag: 'Search/Add tags (optional)'
+  tag: 'Search/Add tags (optional)',
+  nameInputLabel: 'ICMP/SNMP name *',
+  title: 'ICMP/SNMP Discovery Setup'
 }
 
 export const DiscoverySyslogSNMPTrapsForm = {

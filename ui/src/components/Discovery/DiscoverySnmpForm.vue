@@ -1,9 +1,9 @@
 <template>
   <div class="form">
-    <div class="form-title">{{ discoveryText.Discovery.headline2 }}</div>
+    <div class="form-title">{{ DiscoverySNMPForm.title }}</div>
     <FeatherInput
       v-model="store.snmp.name"
-      :label="discoveryText.Discovery.nameInputLabel"
+      :label="DiscoverySNMPForm.nameInputLabel"
       class="name-input"
     />
     <LocationsAutocomplete
@@ -85,7 +85,8 @@ const props = defineProps<{
   successCallback: (name: string) => void
 }>()
 
-const selectLocation = (location: Required<Location[]>) => store.selectLocation(location[0]?.id, true)
+const selectLocation = (location: Required<Location[]>) =>
+  location[0] && location[0].location && store.selectLocation(location[0].location, true)
 
 const isDisabled = computed(() => !store.snmp.name || !store.selectedLocations.length)
 

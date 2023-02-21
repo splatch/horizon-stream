@@ -17,7 +17,7 @@ const defaultAzureForm = {
 const defaultSnmpForm: DiscoveryInput = {
   id: 0,
   name: '',
-  location: '',
+  location: [],
   tags: [],
   type: DiscoveryType.ICMP,
   IPRange: '',
@@ -64,9 +64,10 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       return !azureError.value
     },
     async saveDiscoverySnmp() {
-      //remove later using query
+      console.log(this.snmp)
+      //remove later
       const snmp = this.snmp
-      snmp.location = this.selectedLocations[0]
+      snmp.location = this.selectedLocations
       if (!snmp.id) {
         snmp.id = new Date().getTime()
       } else {
@@ -91,7 +92,7 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
         this.clearSnmpForm()
       } else {
         if (selected.type === DiscoveryType.ICMP) {
-          this.snmp = selected
+          this.snmp = cloneDeep(selected)
           this.selectedLocations = [selected.location]
         } else {
           this.azure = selected
