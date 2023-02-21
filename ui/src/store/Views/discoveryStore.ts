@@ -27,7 +27,7 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
   actions: {
     selectLocation(location: string, single?: boolean) {
       if (single) {
-        this.selectedLocations = [location]
+        this.selectedLocations = location ? [location] : []
         return
       }
 

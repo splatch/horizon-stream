@@ -88,7 +88,8 @@ const props = defineProps<{
   cancel: () => void
 }>()
 
-const selectLocation = (location: Required<Location>) => store.selectLocation(location.location, true)
+const selectLocation = (location: Required<Location[]>) =>
+  location[0] && location[0].location && store.selectLocation(location[0].location, true)
 
 const tagsAutocompleteRef = ref()
 const tagsSelectedListener = (tags: Record<string, string>[]) => {
