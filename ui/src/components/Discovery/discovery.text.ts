@@ -23,7 +23,7 @@ export default {
   },
   ContentEditable: {
     IP: {
-      label: 'Enter IP ranges and/or subnets'
+      label: 'Enter IP ranges and/or subnets *'
     },
     CommunityString: {
       label: 'Enter community string (optional)'
