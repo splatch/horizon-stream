@@ -1,5 +1,5 @@
 fragment TagsByNodeIdParts on Query {
-  tagsByNodeId: tagsByNodeId(nodeId: $nodeId) {
+  tagsByNodeId(nodeId: $nodeId) {
     id
     name
     tenantId

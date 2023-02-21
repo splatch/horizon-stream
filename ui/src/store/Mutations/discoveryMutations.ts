@@ -12,6 +12,8 @@ export const useDiscoveryMutations = defineStore('discoveryMutations', () => {
   const savingSyslogSNMPTraps = ref(false)
   const saveSyslogSNMPTraps = async (values: any) => {
     savingSyslogSNMPTraps.value = true
+
+    // mock
     const errorsRes = {
       errors: [
         {

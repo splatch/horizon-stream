@@ -1,50 +1,68 @@
 <template>
-  <div class="syslog-snmp-traps-form">
+  <div
+    class="syslog-snmp-traps-form"
+    data-test="syslog-snmp-traps-form"
+  >
     <div class="headline-action">
-      <div class="headline">{{ DiscoverySyslogSNMPTrapsForm.headline }}</div>
+      <div
+        class="headline"
+        data-test="headline"
+      >
+        {{ DiscoverySyslogSNMPTrapsForm.headline }}
+      </div>
       <!-- <Icon
         @click="deleteHandler"
         :icon="deleteIcon"
       /> -->
     </div>
-    <form @submit.prevent="submitHandler">
+    <form
+      @submit.prevent="submitHandler"
+      data-test="form"
+    >
       <div class="form-content">
-        <!-- location -->
-        <LocationsAutocomplete @location-selected="locationsSelectedListener" />
-        <DiscoveryHelpConfiguring />
+        <LocationsAutocomplete
+          @location-selected="locationsSelectedListener"
+          ref="locationsAutocompleteRef"
+          data-test="locations-autocomplete"
+        />
+        <DiscoveryHelpConfiguring data-test="help-configuring" />
         <DiscoveryAutocomplete
           @items-selected="tagsSelectedListener"
-          :get-items="discoveryQueries.getTagsUponTyping"
-          :items="discoveryQueries.tagsUponTyping"
+          :get-items="discoveryQueries.getTagsSearch"
+          :items="discoveryQueries.tagsSearched"
           :label="Common.tagsInput"
+          ref="tagsAutocompleteRef"
+          data-test="tags-autocomplete"
         />
         <div class="content-editable-container">
           <DiscoveryContentEditable
             @is-content-invalid="isCommunityStringInvalidListerner"
             @content-formatted="communityStringEnteredListerner"
-            ref="contentEditableCommunityStringRef"
             :contentType="communityString.type"
             :regexDelim="communityString.regexDelim"
             :label="communityString.label"
             :default-content="'someCommunityString'"
             class="community-string-input"
+            ref="contentEditableCommunityStringRef"
+            data-test="cmmunity-string-content-editable"
           />
           <DiscoveryContentEditable
             @is-content-invalid="isUDPPortInvalidListener"
             @content-formatted="UDPPortEnteredListener"
-            ref="contentEditableUDPPortRef"
             :contentType="udpPort.type"
             :regexDelim="udpPort.regexDelim"
             :label="udpPort.label"
             :default-content="'someUDPPort'"
             class="udp-port-input"
+            ref="contentEditableUDPPortRef"
           />
         </div>
       </div>
       <div class="form-footer">
         <FeatherButton
-          @click="cancel"
+          @click="cancelHandler"
           secondary
+          data-test="btn-cancel"
           >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
         >
         <ButtonWithSpinner
@@ -52,6 +70,7 @@
           :disabled="isFormInvalid"
           primary
           type="submit"
+          data-test="btn-submit"
         >
           {{ discoveryText.Discovery.button.submit }}
         </ButtonWithSpinner>
@@ -86,14 +105,19 @@ const isFormInvalid = ref(
   })
 )
 
-let tagsSelected: Record<string, string>[] = []
-const tagsSelectedListener = (tags: Record<string, string>[]) => {
-  tagsSelected = tags
-}
-
+const locationsAutocompleteRef = ref()
 let locationsSelected: Record<string, string>[] = []
 const locationsSelectedListener = (locations: Record<string, string>[]) => {
   locationsSelected = locations
+}
+
+const tagsAutocompleteRef = ref()
+let tagsSelected: Record<string, string>[] = []
+const tagsSelectedListener = (tags: Record<string, string>[]) => {
+  tagsSelected = tags.map((tag) => {
+    delete tag._text
+    return tag
+  })
 }
 
 const contentEditableCommunityStringRef = ref()
@@ -140,17 +164,29 @@ const submitHandler = async () => {
   })
 
   if (results.data) {
-    showSnackbar({
+    /* showSnackbar({
       msg: 'Save Successfully!'
-    })
-
+    }) */
     props.successCallback(results.data.saveDiscovery[0].name)
+    resetForm()
   } else {
     showSnackbar({
       msg: results.errors[0].message,
       error: true
     })
   }
+}
+
+const resetForm = () => {
+  // locationsAutocompleteRef.value.reset()
+  tagsAutocompleteRef.value.reset()
+  contentEditableCommunityStringRef.value.reset()
+  contentEditableUDPPortRef.value.reset()
+}
+
+const cancelHandler = () => {
+  resetForm()
+  props.cancel()
 }
 
 const deleteHandler = () => {
