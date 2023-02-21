@@ -135,12 +135,12 @@ const saveHandler = async () => {
 
   console.log(discovery.value)
 
-  const results: any = await discoveryMutations.saveSyslogSNMPTraps({
-    locations: locationsSelected,
-    tagsSelected: tagsSelected,
-    communityString: communityStringEntered,
-    UDPPort: UDPPortEntered
-  })
+  // const results: any = await discoveryMutations.saveSyslogSNMPTraps({
+  //   locations: locationsSelected,
+  //   tagsSelected: tagsSelected,
+  //   communityString: communityStringEntered,
+  //   UDPPort: UDPPortEntered
+  // })
 
   // const success = await store.saveDiscoverySnmp()
   // if (success) {
