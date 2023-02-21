@@ -35,6 +35,23 @@ export type AzureCredentialCreateInput = {
   location?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
   subscriptionId?: InputMaybe<Scalars['String']>;
+  tags?: InputMaybe<Array<InputMaybe<TagCreateInput>>>;
+};
+
+export type CreateDiscoveryConfigRequestInput = {
+  configName?: InputMaybe<Scalars['String']>;
+  ipAddresses?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  location?: InputMaybe<Scalars['String']>;
+  snmpConfig?: InputMaybe<SnmpConfigInput>;
+};
+
+export type DiscoveryConfig = {
+  __typename?: 'DiscoveryConfig';
+  configName?: Maybe<Scalars['String']>;
+  ipAddresses?: Maybe<Array<Maybe<Scalars['String']>>>;
+  retries: Scalars['Int'];
+  snmpConfig?: Maybe<SnmpConfig>;
+  timeout: Scalars['Long'];
 };
 
 export type Event = {
@@ -98,6 +115,7 @@ export type Mutation = {
   addAzureCredential?: Maybe<AzureCredential>;
   addNode?: Maybe<Node>;
   addTags?: Maybe<Array<Maybe<Tag>>>;
+  createDiscoveryConfig?: Maybe<Array<Maybe<DiscoveryConfig>>>;
   deleteMinion?: Maybe<Scalars['Boolean']>;
   deleteNode?: Maybe<Scalars['Boolean']>;
   discoveryByNodeIds?: Maybe<Scalars['Boolean']>;
@@ -120,7 +138,13 @@ export type MutationAddNodeArgs = {
 
 /** Mutation root */
 export type MutationAddTagsArgs = {
-  tags?: InputMaybe<TagListAddInput>;
+  tags?: InputMaybe<TagListNodeAddInput>;
+};
+
+
+/** Mutation root */
+export type MutationCreateDiscoveryConfigArgs = {
+  request?: InputMaybe<CreateDiscoveryConfigRequestInput>;
 };
 
 
@@ -144,7 +168,7 @@ export type MutationDiscoveryByNodeIdsArgs = {
 
 /** Mutation root */
 export type MutationRemoveTagsArgs = {
-  tags?: InputMaybe<TagListRemoveInput>;
+  tags?: InputMaybe<TagListNodeRemoveInput>;
 };
 
 
@@ -189,6 +213,7 @@ export type PagerDutyConfigInput = {
 /** Query root */
 export type Query = {
   __typename?: 'Query';
+  discoveryConfigByName?: Maybe<DiscoveryConfig>;
   findAllEvents?: Maybe<Array<Maybe<Event>>>;
   findAllLocations?: Maybe<Array<Maybe<Location>>>;
   findAllMinions?: Maybe<Array<Maybe<Minion>>>;
@@ -197,10 +222,18 @@ export type Query = {
   findLocationById?: Maybe<Location>;
   findMinionById?: Maybe<Minion>;
   findNodeById?: Maybe<Node>;
+  listDiscoveryConfig?: Maybe<Array<Maybe<DiscoveryConfig>>>;
   metric?: Maybe<TimeSeriesQueryResult>;
   nodeStatus?: Maybe<NodeStatus>;
   tags?: Maybe<Array<Maybe<Tag>>>;
+  tagsByAzureCredentialId?: Maybe<Array<Maybe<Tag>>>;
   tagsByNodeId?: Maybe<Array<Maybe<Tag>>>;
+};
+
+
+/** Query root */
+export type QueryDiscoveryConfigByNameArgs = {
+  name?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -250,9 +283,27 @@ export type QueryTagsArgs = {
 
 
 /** Query root */
+export type QueryTagsByAzureCredentialIdArgs = {
+  azureCredentialId?: InputMaybe<Scalars['Long']>;
+  searchTerm?: InputMaybe<Scalars['String']>;
+};
+
+
+/** Query root */
 export type QueryTagsByNodeIdArgs = {
   nodeId?: InputMaybe<Scalars['Long']>;
   searchTerm?: InputMaybe<Scalars['String']>;
+};
+
+export type SnmpConfig = {
+  __typename?: 'SNMPConfig';
+  ports?: Maybe<Array<Maybe<Scalars['Int']>>>;
+  readCommunities?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+export type SnmpConfigInput = {
+  ports?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  readCommunities?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type SnmpInfo = {
@@ -306,12 +357,12 @@ export type TagCreateInput = {
   name?: InputMaybe<Scalars['String']>;
 };
 
-export type TagListAddInput = {
+export type TagListNodeAddInput = {
   nodeId: Scalars['Long'];
   tags?: InputMaybe<Array<InputMaybe<TagCreateInput>>>;
 };
 
-export type TagListRemoveInput = {
+export type TagListNodeRemoveInput = {
   nodeId: Scalars['Long'];
   tagIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
@@ -465,7 +516,7 @@ export type GetNodeForGraphsQueryVariables = Exact<{
 }>;
 
 
-export type GetNodeForGraphsQuery = { __typename?: 'Query', findNodeById?: { __typename?: 'Node', id: any, ipInterfaces?: Array<{ __typename?: 'IpInterface', ipAddress?: string }> } };
+export type GetNodeForGraphsQuery = { __typename?: 'Query', findNodeById?: { __typename?: 'Node', id: any, ipInterfaces?: Array<{ __typename?: 'IpInterface', ipAddress?: string, snmpPrimary?: boolean }> } };
 
 export type NodesListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -529,7 +580,7 @@ export const ListMinionsAndDevicesForTablesDocument = {"kind":"Document","defini
 export const ListLocationsForDiscoveryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ListLocationsForDiscovery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LocationsParts"}}]}},...LocationsPartsFragmentDoc.definitions]} as unknown as DocumentNode<ListLocationsForDiscoveryQuery, ListLocationsForDiscoveryQueryVariables>;
 export const GetMetricDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMetric"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"metric"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TimeSeriesMetric"}}]}},...TimeSeriesMetricFragmentDoc.definitions,...MetricPartsFragmentDoc.definitions]} as unknown as DocumentNode<GetMetricQuery, GetMetricQueryVariables>;
 export const GetTimeSeriesMetricDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTimeSeriesMetric"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"monitor"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"nodeId"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timeRange"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timeRangeUnit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TimeRangeUnit"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"instance"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ChartTimeSeriesMetric"}}]}},...ChartTimeSeriesMetricFragmentDoc.definitions,...MetricPartsFragmentDoc.definitions]} as unknown as DocumentNode<GetTimeSeriesMetricQuery, GetTimeSeriesMetricQueryVariables>;
-export const GetNodeForGraphsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetNodeForGraphs"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Long"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findNodeById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"ipInterfaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}}]}}]}}]}}]} as unknown as DocumentNode<GetNodeForGraphsQuery, GetNodeForGraphsQueryVariables>;
+export const GetNodeForGraphsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetNodeForGraphs"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Long"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findNodeById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"ipInterfaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"snmpPrimary"}}]}}]}}]}}]} as unknown as DocumentNode<GetNodeForGraphsQuery, GetNodeForGraphsQueryVariables>;
 export const NodesListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NodesList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NodesParts"}}]}},...NodesPartsFragmentDoc.definitions]} as unknown as DocumentNode<NodesListQuery, NodesListQueryVariables>;
 export const NodeLatencyMetricDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NodeLatencyMetric"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Long"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"monitor"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"instance"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timeRange"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timeRangeUnit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TimeRangeUnit"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NodeLatencyParts"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"NodeStatusParts"}}]}},...NodeLatencyPartsFragmentDoc.definitions,...MetricPartsFragmentDoc.definitions,...NodeStatusPartsFragmentDoc.definitions]} as unknown as DocumentNode<NodeLatencyMetricQuery, NodeLatencyMetricQueryVariables>;
 export const NodesForMapDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NodesForMap"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findAllNodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nodeLabel"}}]}}]}}]} as unknown as DocumentNode<NodesForMapQuery, NodesForMapQueryVariables>;
