@@ -36,12 +36,15 @@ import org.opennms.horizon.flows.classification.ClassificationRuleProvider;
 import org.opennms.horizon.flows.classification.FilterService;
 import org.opennms.horizon.flows.classification.csv.CsvImporter;
 import org.opennms.horizon.flows.classification.internal.DefaultClassificationEngine;
+import org.opennms.horizon.flows.dao.InterfaceToNodeCache;
+import org.opennms.horizon.flows.grpc.client.IngestorClient;
 import org.opennms.horizon.flows.grpc.client.InventoryClient;
 import org.opennms.horizon.flows.integration.FlowRepository;
 import org.opennms.horizon.flows.integration.FlowRepositoryImpl;
 import org.opennms.horizon.flows.processing.DocumentEnricherImpl;
 import org.opennms.horizon.flows.processing.Pipeline;
 import org.opennms.horizon.flows.processing.PipelineImpl;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,19 +75,35 @@ public class FlowsApplicationConfig {
 
     @Value("${grpc.url.inventory}")
     private String inventoryGrpcAddress;
+
+    @Value("${grpc.url.ingestor}")
+    private String ingestorGrpcAddress;
+
     @Value("${grpc.server.deadline:60000}")
     private long deadline;
 
-    @Bean
+    @Bean(name = "inventoryChannel")
     public ManagedChannel createInventoryChannel() {
         return ManagedChannelBuilder.forTarget(inventoryGrpcAddress)
             .keepAliveWithoutCalls(true)
             .usePlaintext().build();
     }
 
+    @Bean(name = "ingestorChannel")
+    public ManagedChannel createIngestorChannel() {
+        return ManagedChannelBuilder.forTarget(ingestorGrpcAddress)
+            .keepAliveWithoutCalls(true)
+            .usePlaintext().build();
+    }
+
     @Bean(destroyMethod = "shutdown", initMethod = "initialStubs")
-    public InventoryClient createInventoryClient(ManagedChannel channel) {
+    public InventoryClient createInventoryClient(@Qualifier("inventoryChannel") ManagedChannel channel) {
         return new InventoryClient(channel, deadline);
+    }
+
+    @Bean(destroyMethod = "shutdown", initMethod = "initStubs")
+    public IngestorClient createIngestorClient(@Qualifier("ingestorChannel") ManagedChannel channel) {
+        return new IngestorClient(channel, deadline);
     }
 
     @Bean
@@ -98,8 +117,8 @@ public class FlowsApplicationConfig {
     }
 
     @Bean
-    public FlowRepository createFlowRepositoryImpl() {
-        return new FlowRepositoryImpl();
+    public FlowRepository createFlowRepositoryImpl(final IngestorClient ingestorClient) {
+        return new FlowRepositoryImpl(ingestorClient);
     }
 
     @Bean

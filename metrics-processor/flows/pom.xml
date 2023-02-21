@@ -75,6 +75,11 @@
             <version>${commons-csv.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.flows</groupId>
+            <artifactId>flows-grpc</artifactId>
+            <version>1.2.8-feature-DC-436-pipelines-7</version>
+        </dependency>
+        <dependency>
             <groupId>net.jqwik</groupId>
             <artifactId>jqwik</artifactId>
             <version>1.6.5</version>
