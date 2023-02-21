@@ -4,7 +4,6 @@ import { useDiscoveryMutations } from '../Mutations/discoveryMutations'
 import { cloneDeep } from 'lodash'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import { AzureCredential } from '@/types/graphql'
-
 const defaultAzureForm = {
   name: '',
   clientId: '',
@@ -64,20 +63,16 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       return !azureError.value
     },
     async saveDiscoverySnmp() {
-      console.log(this.snmp)
-      //remove later
-      const snmp = this.snmp
-      snmp.location = this.selectedLocations
-      if (!snmp.id) {
-        snmp.id = new Date().getTime()
-      } else {
-        const exists = this.activeDiscoveries.find((d: any) => d.id == snmp.id)
-        if (exists) {
-          this.activeDiscoveries = this.activeDiscoveries.filter((d: any) => d.id !== snmp.id)
+      const { createDiscoveryConfig, errorSnmp } = useDiscoveryMutations()
+      await createDiscoveryConfig({
+        snmpInfo: {
+          configName: this.snmp.name,
+          ipAddresses: ['127.0.0.1'],
+          location: this.selectedLocations[0],
+          snmpConfig: { readCommunities: ['test-community'], ports: [161] }
         }
-      }
-      this.activeDiscoveries.push(snmp)
-      return true
+      })
+      return !errorSnmp.value
     },
     clearAzureForm() {
       this.azure = cloneDeep(defaultAzureForm)
