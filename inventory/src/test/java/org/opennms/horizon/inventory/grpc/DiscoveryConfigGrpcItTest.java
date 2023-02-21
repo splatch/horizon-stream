@@ -35,6 +35,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.List;
 
+import io.grpc.Context;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,10 +45,11 @@ import org.opennms.horizon.inventory.discovery.DiscoveryConfigDTO;
 import org.opennms.horizon.inventory.discovery.DiscoveryConfigList;
 import org.opennms.horizon.inventory.discovery.DiscoveryConfigOperationGrpc;
 import org.opennms.horizon.inventory.discovery.DiscoveryConfigRequest;
-import org.opennms.horizon.inventory.discovery.SNMPConfig;
+import org.opennms.horizon.inventory.discovery.SNMPConfigDTO;
 import org.opennms.horizon.inventory.dto.ConfigKey;
 import org.opennms.horizon.inventory.model.Configuration;
 import org.opennms.horizon.inventory.repository.ConfigurationRepository;
+import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.horizon.shared.protobuf.util.ProtobufUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -81,13 +83,16 @@ public class DiscoveryConfigGrpcItTest extends GrpcTestBase {
 
     @AfterEach
     public void cleanUp() throws InterruptedException {
-        configRepo.deleteAll();
+        Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
+        {
+            configRepo.deleteAll();
+        });
         afterTest();
     }
 
     @Test
     void testCreateConfig() throws VerificationException {
-        SNMPConfig snmpConfig = SNMPConfig.newBuilder()
+        SNMPConfigDTO snmpConfig = SNMPConfigDTO.newBuilder()
             .addAllPorts(List.of(161))
             .addAllReadCommunity(List.of("test")).build();
         DiscoveryConfigRequest request = DiscoveryConfigRequest.newBuilder()
@@ -101,7 +106,7 @@ public class DiscoveryConfigGrpcItTest extends GrpcTestBase {
         assertThat(result).isNotNull()
             .extracting(DiscoveryConfigList::getDiscoverConfigsList).asList().hasSize(1);
 
-        SNMPConfig snmpConfig2 = SNMPConfig.newBuilder()
+        SNMPConfigDTO snmpConfig2 = SNMPConfigDTO.newBuilder()
             .addAllPorts(List.of(1161))
             .addAllReadCommunity(List.of("test")).build();
         DiscoveryConfigRequest request2 = DiscoveryConfigRequest.newBuilder()
@@ -119,16 +124,19 @@ public class DiscoveryConfigGrpcItTest extends GrpcTestBase {
 
     @Test
     void testGetConfigByName() throws VerificationException {
-        DiscoveryConfigDTO tempConfig = DiscoveryConfigDTO.newBuilder()
-            .setConfigName(configName)
-            .addAllIpAddresses(List.of("127.0.0.1"))
-            .setSnmpConf(SNMPConfig.newBuilder().addAllReadCommunity(List.of("test-community")).build()).build();
-        Configuration configuration= new Configuration();
+        Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
+        {
+            DiscoveryConfigDTO tempConfig = DiscoveryConfigDTO.newBuilder()
+                .setConfigName(configName)
+                .addAllIpAddresses(List.of("127.0.0.1"))
+                .setSnmpConf(SNMPConfigDTO.newBuilder().addAllReadCommunity(List.of("test-community")).build()).build();
+            Configuration configuration = new Configuration();
             configuration.setKey(ConfigKey.DISCOVERY);
             configuration.setTenantId(tenantId);
             configuration.setLocation(location);
             configuration.setValue(listToJson(List.of(tempConfig)));
-        configRepo.save(configuration);
+            configRepo.save(configuration);
+        });
 
         DiscoveryConfigDTO discoveryConfig = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
                 .getDiscoveryConfigByName(StringValue.of(configName));
@@ -143,21 +151,24 @@ public class DiscoveryConfigGrpcItTest extends GrpcTestBase {
 
     @Test
     void testListConfig() throws VerificationException {
-        DiscoveryConfigDTO tempConfig = DiscoveryConfigDTO.newBuilder()
-            .setConfigName(configName)
-            .addAllIpAddresses(List.of("127.0.0.1"))
-            .setSnmpConf(SNMPConfig.newBuilder().addAllReadCommunity(List.of("test-community")).build()).build();
+        Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
+        {
+            DiscoveryConfigDTO tempConfig = DiscoveryConfigDTO.newBuilder()
+                .setConfigName(configName)
+                .addAllIpAddresses(List.of("127.0.0.1"))
+                .setSnmpConf(SNMPConfigDTO.newBuilder().addAllReadCommunity(List.of("test-community")).build()).build();
 
-        DiscoveryConfigDTO tempConfig2 = DiscoveryConfigDTO.newBuilder()
-            .setConfigName("new-config")
-            .addAllIpAddresses(List.of("127.0.0.2"))
-            .setSnmpConf(SNMPConfig.newBuilder().addAllReadCommunity(List.of("test-community2")).build()).build();
-        Configuration configuration= new Configuration();
-        configuration.setKey(ConfigKey.DISCOVERY);
-        configuration.setTenantId(tenantId);
-        configuration.setLocation(location);
-        configuration.setValue(listToJson(List.of(tempConfig, tempConfig2)));
-        configRepo.save(configuration);
+            DiscoveryConfigDTO tempConfig2 = DiscoveryConfigDTO.newBuilder()
+                .setConfigName("new-config")
+                .addAllIpAddresses(List.of("127.0.0.2"))
+                .setSnmpConf(SNMPConfigDTO.newBuilder().addAllReadCommunity(List.of("test-community2")).build()).build();
+            Configuration configuration = new Configuration();
+            configuration.setKey(ConfigKey.DISCOVERY);
+            configuration.setTenantId(tenantId);
+            configuration.setLocation(location);
+            configuration.setValue(listToJson(List.of(tempConfig, tempConfig2)));
+            configRepo.save(configuration);
+        });
 
         DiscoveryConfigList result = serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader)))
             .listDiscoveryConfig(Empty.getDefaultInstance());

@@ -26,44 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.model;
+package org.opennms.horizon.server.model.inventory.discovery;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-import org.opennms.horizon.inventory.dto.ConfigKey;
+import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
-public class Configuration extends TenantAwareEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @NotNull
-    @Column(name = "key")
-    @Enumerated(EnumType.STRING)
-    private ConfigKey key;
-
-    @Column(name = "location")
-    private String location;
-
-    @NotNull
-    @Column(columnDefinition = "jsonb", name = "value")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private JsonNode value;
+public class DiscoveryConfig {
+    private String configName;
+    private int retries;
+    private long timeout;
+    private List<String> ipAddresses;
+    private SNMPConfig snmpConfig;
 }
