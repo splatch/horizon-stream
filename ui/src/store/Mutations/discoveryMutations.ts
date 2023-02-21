@@ -2,9 +2,15 @@ import { defineStore } from 'pinia'
 import { useMutation } from 'villus'
 
 import { AddAzureCredentialDocument } from '@/types/graphql'
+import { CreateDiscoveryConfigDocument } from '@/types/graphql'
 
 export const useDiscoveryMutations = defineStore('discoveryMutations', () => {
   const { execute: addAzureCreds, error, isFetching } = useMutation(AddAzureCredentialDocument)
+  const {
+    execute: createDiscoveryConfig,
+    error: errorSnmp,
+    isFetching: isFetchingSnmp
+  } = useMutation(CreateDiscoveryConfigDocument)
 
   // mock
   let timeout = -1
@@ -48,6 +54,9 @@ export const useDiscoveryMutations = defineStore('discoveryMutations', () => {
     addAzureCreds,
     azureError: computed(() => error),
     isFetching: computed(() => isFetching),
+    createDiscoveryConfig,
+    errorSnmp: computed(() => errorSnmp),
+    isFetchingSnmp: computed(() => isFetchingSnmp),
     saveSyslogSNMPTraps,
     saveSyslogSNMPTrapsErrors: computed(() => saveSyslogSNMPTrapsError.value),
     savingSyslogSNMPTraps: computed(() => savingSyslogSNMPTraps.value)

@@ -54,22 +54,6 @@ export type DiscoveryConfig = {
   timeout: Scalars['Long'];
 };
 
-export type CreateDiscoveryConfigRequestInput = {
-  configName?: InputMaybe<Scalars['String']>;
-  ipAddresses?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  location?: InputMaybe<Scalars['String']>;
-  snmpConfig?: InputMaybe<SnmpConfigInput>;
-};
-
-export type DiscoveryConfig = {
-  __typename?: 'DiscoveryConfig';
-  configName?: Maybe<Scalars['String']>;
-  ipAddresses?: Maybe<Array<Maybe<Scalars['String']>>>;
-  retries: Scalars['Int'];
-  snmpConfig?: Maybe<SnmpConfig>;
-  timeout: Scalars['Long'];
-};
-
 export type Event = {
   __typename?: 'Event';
   eventInfo?: Maybe<EventInfo>;
@@ -155,12 +139,6 @@ export type MutationAddNodeArgs = {
 /** Mutation root */
 export type MutationAddTagsArgs = {
   tags?: InputMaybe<TagListNodeAddInput>;
-};
-
-
-/** Mutation root */
-export type MutationCreateDiscoveryConfigArgs = {
-  request?: InputMaybe<CreateDiscoveryConfigRequestInput>;
 };
 
 
@@ -410,6 +388,13 @@ export type AddAzureCredentialMutationVariables = Exact<{
 
 export type AddAzureCredentialMutation = { __typename?: 'Mutation', addAzureCredential?: { __typename?: 'AzureCredential', createTimeMsec?: any, location?: string, subscriptionId?: string, clientId?: string } };
 
+export type CreateDiscoveryConfigMutationVariables = Exact<{
+  snmpInfo: CreateDiscoveryConfigRequestInput;
+}>;
+
+
+export type CreateDiscoveryConfigMutation = { __typename?: 'Mutation', createDiscoveryConfig?: Array<{ __typename?: 'DiscoveryConfig', configName?: string, ipAddresses?: Array<string>, snmpConfig?: { __typename?: 'SNMPConfig', ports?: Array<number>, readCommunities?: Array<string> } }> };
+
 export type ChartTimeSeriesMetricFragment = { __typename?: 'Query', metric?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, values?: Array<Array<number>> }> } } };
 
 export type DeviceUptimePartsFragment = { __typename?: 'Query', deviceUptime?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, values?: Array<Array<number>> }> } } };
@@ -607,6 +592,7 @@ export const LocationsPartsFragmentDoc = {"kind":"Document","definitions":[{"kin
 export const EventsByNodeIdPartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventsByNodeIdParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"events"},"name":{"kind":"Name","value":"findEventsByNodeId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"uei"}},{"kind":"Field","name":{"kind":"Name","value":"nodeId"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"producedTime"}}]}}]}}]} as unknown as DocumentNode<EventsByNodeIdPartsFragment, unknown>;
 export const NodeByIdPartsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NodeByIdParts"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Query"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"node"},"name":{"kind":"Name","value":"findNodeById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nodeLabel"}},{"kind":"Field","name":{"kind":"Name","value":"objectId"}},{"kind":"Field","name":{"kind":"Name","value":"systemContact"}},{"kind":"Field","name":{"kind":"Name","value":"systemDescr"}},{"kind":"Field","name":{"kind":"Name","value":"systemLocation"}},{"kind":"Field","name":{"kind":"Name","value":"systemName"}},{"kind":"Field","name":{"kind":"Name","value":"location"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"location"}}]}},{"kind":"Field","name":{"kind":"Name","value":"ipInterfaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"hostname"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"netmask"}},{"kind":"Field","name":{"kind":"Name","value":"nodeId"}},{"kind":"Field","name":{"kind":"Name","value":"snmpPrimary"}}]}},{"kind":"Field","name":{"kind":"Name","value":"snmpInterfaces"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"ifAdminStatus"}},{"kind":"Field","name":{"kind":"Name","value":"ifAlias"}},{"kind":"Field","name":{"kind":"Name","value":"ifDescr"}},{"kind":"Field","name":{"kind":"Name","value":"ifIndex"}},{"kind":"Field","name":{"kind":"Name","value":"ifName"}},{"kind":"Field","name":{"kind":"Name","value":"ifOperatorStatus"}},{"kind":"Field","name":{"kind":"Name","value":"ifSpeed"}},{"kind":"Field","name":{"kind":"Name","value":"ifType"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddress"}},{"kind":"Field","name":{"kind":"Name","value":"nodeId"}},{"kind":"Field","name":{"kind":"Name","value":"physicalAddr"}}]}}]}}]}}]} as unknown as DocumentNode<NodeByIdPartsFragment, unknown>;
 export const AddAzureCredentialDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddAzureCredential"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"azureCredential"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AzureCredentialCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addAzureCredential"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"azureCredential"},"value":{"kind":"Variable","name":{"kind":"Name","value":"azureCredential"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTimeMsec"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"subscriptionId"}},{"kind":"Field","name":{"kind":"Name","value":"clientId"}}]}}]}}]} as unknown as DocumentNode<AddAzureCredentialMutation, AddAzureCredentialMutationVariables>;
+export const CreateDiscoveryConfigDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateDiscoveryConfig"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"snmpInfo"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateDiscoveryConfigRequestInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createDiscoveryConfig"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"snmpInfo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"configName"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddresses"}},{"kind":"Field","name":{"kind":"Name","value":"snmpConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ports"}},{"kind":"Field","name":{"kind":"Name","value":"readCommunities"}}]}}]}}]}}]} as unknown as DocumentNode<CreateDiscoveryConfigMutation, CreateDiscoveryConfigMutationVariables>;
 export const DeleteMinionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteMinion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMinion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteMinionMutation, DeleteMinionMutationVariables>;
 export const AddNodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddNode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"node"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NodeCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addNode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"node"},"value":{"kind":"Variable","name":{"kind":"Name","value":"node"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTime"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"monitoringLocationId"}},{"kind":"Field","name":{"kind":"Name","value":"nodeLabel"}},{"kind":"Field","name":{"kind":"Name","value":"tenantId"}}]}}]}}]} as unknown as DocumentNode<AddNodeMutation, AddNodeMutationVariables>;
 export const DeleteNodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteNode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Long"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteNode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteNodeMutation, DeleteNodeMutationVariables>;

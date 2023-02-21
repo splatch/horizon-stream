@@ -22,7 +22,7 @@
     <div class="content-editable-container">
       <DiscoveryContentEditable
         @is-content-invalid="isIPRangeInvalidHandler"
-        @content-formatted="(value: string) => saveContent('IPRange', value)"
+        @content-formatted="store.snmp.IPRange"
         ref="contentEditableIPRef"
         :contentType="IPs.type"
         :regexDelim="IPs.regexDelim"
@@ -72,14 +72,10 @@ import { ContentEditableType, DiscoveryType } from '@/components/Discovery/disco
 import discoveryText, { DiscoverySNMPForm } from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 import { Location } from '@/types/graphql'
-import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
-import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 
 import useSnackbar from '@/composables/useSnackbar'
 const { showSnackbar } = useSnackbar()
 
-const discoveryQueries = useDiscoveryQueries()
-const discoveryMutations = useDiscoveryMutations()
 const emit = defineEmits(['close-form'])
 
 const store = useDiscoveryStore()
