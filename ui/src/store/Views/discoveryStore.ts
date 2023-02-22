@@ -98,7 +98,7 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
     clearSnmpForm() {
       this.snmp = cloneDeep(defaultSnmpForm)
     },
-    setSelectedDiscovery(selected: DiscoveryConfig) {
+    setSelectedDiscovery(selected: DiscoveryConfig | null) {
       if (!selected) {
         this.selectedDiscovery = Object.assign({ type: DiscoveryType.None })
         this.clearAzureForm()

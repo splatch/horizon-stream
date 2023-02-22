@@ -138,7 +138,6 @@ const showDiscovery = (discovery: DiscoveryConfig) => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = false
   //type hardocoded for now
-  discovery.type = DiscoveryType.ICMP
   discoverySelectedType.value = DiscoveryType.ICMP
   store.setSelectedDiscovery(discovery)
 }
