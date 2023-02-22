@@ -23,6 +23,7 @@ const defaultSnmpForm = {
 export const useDiscoveryStore = defineStore('discoveryStore', {
   state: () => ({
     selectedLocations: <string[]>[],
+    selectedTags: [] as Record<string, string>[],
     ipAddresses: <string[]>[],
     ipRange: {
       cidr: '',
@@ -50,12 +51,16 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
         this.selectedLocations.push(location)
       }
     },
+    selectTags(tags: Record<string, string>[]) {
+      this.selectedTags = tags
+    },
     async saveDiscoveryAzure() {
       const { addAzureCreds, azureError } = useDiscoveryMutations()
 
       await addAzureCreds({
         azureCredential: {
           location: this.selectedLocations[0],
+          tags: this.selectedTags,
           ...this.azure
         }
       })
