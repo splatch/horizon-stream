@@ -11,7 +11,6 @@ const defaultAzureForm = {
   clientSecret: '',
   subscriptionId: '',
   directoryId: ''
-  // tags: [] to be done later
 }
 
 const defaultSnmpForm = {
