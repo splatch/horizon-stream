@@ -2,20 +2,16 @@ package org.opennms.horizon.inventory.service.taskset.response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
 import org.opennms.horizon.inventory.grpc.GrpcTestBase;
-import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoredService;
 import org.opennms.horizon.inventory.model.MonitoredServiceType;
@@ -31,7 +27,6 @@ import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.opennms.taskset.contract.DetectorResponse;
 import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskType;
-import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -65,14 +60,6 @@ class DetectorResponseServiceIntTest extends GrpcTestBase {
     @Autowired
     private MonitoredServiceRepository monitoredServiceRepository;
 
-    private static TestTaskSetGrpcService testGrpcService;
-
-    @BeforeAll
-    public static void setup() throws IOException {
-        testGrpcService = new TestTaskSetGrpcService();
-        server = startMockServer(TaskSetServiceGrpc.SERVICE_NAME, testGrpcService);
-    }
-
     @BeforeEach
     void beforeTest() {
         testGrpcService.reset();
@@ -88,12 +75,6 @@ class DetectorResponseServiceIntTest extends GrpcTestBase {
             nodeRepository.deleteAll();
             monitoringLocationRepository.deleteAll();
         });
-    }
-
-    @AfterAll
-    public static void tearDown() throws InterruptedException {
-        server.shutdownNow();
-        server.awaitTermination();
     }
 
     @Test

@@ -33,16 +33,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.azure.api.AzureScanItem;
@@ -50,7 +46,6 @@ import org.opennms.horizon.azure.api.AzureScanResponse;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.grpc.GrpcTestBase;
-import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.inventory.model.AzureCredential;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
@@ -69,7 +64,6 @@ import org.opennms.node.scan.contract.NodeInfoResult;
 import org.opennms.node.scan.contract.NodeScanResult;
 import org.opennms.node.scan.contract.SnmpInterfaceResult;
 import org.opennms.taskset.contract.ScannerResponse;
-import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -107,14 +101,6 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
     @Autowired
     private NodeService nodeService;
 
-    private static TestTaskSetGrpcService testGrpcService;
-
-    @BeforeAll
-    public static void setup() throws IOException {
-        testGrpcService = new TestTaskSetGrpcService();
-        server = startMockServer(TaskSetServiceGrpc.SERVICE_NAME, testGrpcService);
-    }
-
     @BeforeEach
     void beforeTest() {
         testGrpcService.reset();
@@ -129,12 +115,6 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
             credentialRepository.deleteAll();
             locationRepository.deleteAll();
         });
-    }
-
-    @AfterAll
-    public static void tearDown() throws InterruptedException {
-        server.shutdownNow();
-        server.awaitTermination();
     }
 
     @Test

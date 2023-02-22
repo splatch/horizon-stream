@@ -42,16 +42,13 @@ import static org.mockito.Mockito.verify;
 import static org.opennms.horizon.shared.azure.http.AzureHttpClient.OAUTH2_TOKEN_ENDPOINT;
 import static org.opennms.horizon.shared.azure.http.AzureHttpClient.SUBSCRIPTION_ENDPOINT;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.common.VerificationException;
@@ -60,7 +57,6 @@ import org.opennms.horizon.inventory.dto.AzureCredentialCreateDTO;
 import org.opennms.horizon.inventory.dto.AzureCredentialDTO;
 import org.opennms.horizon.inventory.dto.AzureCredentialServiceGrpc;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
-import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.inventory.model.AzureCredential;
 import org.opennms.horizon.inventory.model.Tag;
 import org.opennms.horizon.inventory.repository.AzureCredentialRepository;
@@ -72,7 +68,6 @@ import org.opennms.horizon.shared.azure.http.dto.error.AzureHttpError;
 import org.opennms.horizon.shared.azure.http.dto.login.AzureOAuthToken;
 import org.opennms.horizon.shared.azure.http.dto.subscription.AzureSubscription;
 import org.opennms.horizon.shared.constants.GrpcConstants;
-import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -123,19 +118,11 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
     //marking as a @Rule doesn't work, need to manually start/stop in before/after
     public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(12345));
 
-    private static TestTaskSetGrpcService testGrpcService;
-
     private final ObjectMapper snakeCaseMapper;
 
     public AzureCredentialGrpcItTest() {
         this.snakeCaseMapper = new ObjectMapper();
         this.snakeCaseMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-    }
-
-    @BeforeAll
-    public static void setup() throws IOException {
-        testGrpcService = new TestTaskSetGrpcService();
-        server = startMockServer(TaskSetServiceGrpc.SERVICE_NAME, testGrpcService);
     }
 
     @BeforeEach
@@ -158,11 +145,6 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
         afterTest();
     }
 
-    @AfterAll
-    public static void tearDown() throws InterruptedException {
-        server.shutdownNow();
-        server.awaitTermination();
-    }
 
     @Test
     void testCreateAzureCredentials() throws Exception {

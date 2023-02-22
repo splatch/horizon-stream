@@ -30,21 +30,16 @@ package org.opennms.horizon.inventory.grpc;
 
 import static com.jayway.awaitility.Awaitility.await;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.common.VerificationException;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
-import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.service.contract.PublishTaskSetRequest;
-import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -54,29 +49,15 @@ class NodeGrpcStartupIntTest extends GrpcTestBase {
 
     private static final int EXPECTED_TASK_DEF_COUNT = 1;
 
-    private static TestTaskSetGrpcService testGrpcService;
-
     @BeforeEach
     public void prepare() throws VerificationException {
-        testGrpcService.reset();
         prepareServer();
-    }
-
-    @BeforeAll
-    public static void setup() throws IOException {
-        testGrpcService = new TestTaskSetGrpcService();
-        server = startMockServer(TaskSetServiceGrpc.SERVICE_NAME, testGrpcService);
     }
 
     @AfterEach
     public void cleanUp() throws InterruptedException {
         afterTest();
-    }
-
-    @AfterAll
-    public static void tearDown() throws InterruptedException {
-        server.shutdownNow();
-        server.awaitTermination();
+        testGrpcService.reset();
     }
 
     @Test
