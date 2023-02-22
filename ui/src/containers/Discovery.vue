@@ -29,7 +29,7 @@
         />
         <DiscoveryListCard
           title=" My Active Discoveries"
-          :list="store.activeDiscoveries"
+          :list="activeDiscoveries"
           @select-discovery="showDiscovery"
         />
         <DiscoveryListCard
@@ -55,7 +55,8 @@
         <div v-if="discoverySelectedType === DiscoveryType.ICMP">
           <DiscoverySnmpForm
             @close-form="handleCancel"
-            :discovery="selectedDiscovery"
+            :successCallback="(name) => successModal.openSuccessModal(name)"
+            :cancel="handleCancel"
           />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
@@ -89,6 +90,13 @@ import { DiscoveryInput } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+import { DiscoveryConfig } from '@/types/graphql'
+
+const discoveryQueries = useDiscoveryQueries()
+onMounted(() => discoveryQueries.getDiscoveries())
+const activeDiscoveries = computed(() => discoveryQueries.discoveries)
+
 type TDiscoveryAutocomplete = DiscoveryInput & { _text: string }
 
 const store = useDiscoveryStore()
@@ -106,7 +114,7 @@ const discoverySelectedType = ref(DiscoveryType.None)
 const handleNewDiscovery = () => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = true
-  selectedDiscovery.value = null
+  store.setSelectedDiscovery(null)
 }
 
 const discoveriesResults = ref<TDiscoveryAutocomplete[]>([])
@@ -126,12 +134,12 @@ const search = (q: string) => {
   searchLoading.value = false
 }
 
-const showDiscovery = (discovery: DiscoveryInput) => {
+const showDiscovery = (discovery: DiscoveryConfig) => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = false
-  discoverySelectedType.value = discovery.type
-  selectedDiscovery.value = discovery
-  console.log(selectedDiscovery.value)
+  //type hardocoded for now
+  discoverySelectedType.value = DiscoveryType.ICMP
+  store.setSelectedDiscovery(discovery)
 }
 
 const handleCancel = () => {
@@ -228,6 +236,8 @@ const handleCancel = () => {
   }
 
   @include mediaQueriesMixins.screen-md {
+    padding: var(variables.$spacing-l);
+
     flex-grow: 1;
     min-width: auto;
     margin-bottom: 0;

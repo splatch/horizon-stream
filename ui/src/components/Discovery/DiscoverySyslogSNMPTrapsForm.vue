@@ -41,7 +41,7 @@
             :contentType="communityString.type"
             :regexDelim="communityString.regexDelim"
             :label="communityString.label"
-            :default-content="'someCommunityString'"
+            :default-content="''"
             class="community-string-input"
             ref="contentEditableCommunityStringRef"
             data-test="cmmunity-string-content-editable"
@@ -52,7 +52,7 @@
             :contentType="udpPort.type"
             :regexDelim="udpPort.regexDelim"
             :label="udpPort.label"
-            :default-content="'someUDPPort'"
+            :default-content="''"
             class="udp-port-input"
             ref="contentEditableUDPPortRef"
           />
@@ -164,9 +164,6 @@ const submitHandler = async () => {
   })
 
   if (results.data) {
-    /* showSnackbar({
-      msg: 'Save Successfully!'
-    }) */
     props.successCallback(results.data.saveDiscovery[0].name)
     resetForm()
   } else {

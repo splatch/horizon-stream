@@ -50,7 +50,6 @@
       ref="tagsAutocompleteRef"
     />
 
-    <hr />
     <div class="buttons">
       <FeatherButton
         @click="cancel"
@@ -115,10 +114,10 @@ const isDisabled = computed(
 const saveAzureDiscovery = async () => {
   const success = await store.saveDiscoveryAzure()
   if (success) {
-    showSnackbar({
-      msg: `${store.azure.name} setup successfully.`
-    })
-
+    // showSnackbar({
+    //   msg: `${store.azure.name} setup successfully.`
+    // })
+    discoveryQueries.getDiscoveries()
     store.clearAzureForm()
     tagsAutocompleteRef.value.reset()
     props.successCallback(store.azure.name)
@@ -134,7 +133,6 @@ const saveAzureDiscovery = async () => {
   display: flex;
   flex: 1;
   flex-direction: column;
-  margin-bottom: var(variables.$spacing-xl);
 
   .title {
     @include typography.headline4;

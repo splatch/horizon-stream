@@ -2,6 +2,8 @@ import { DiscoveryInput } from '@/types/discovery'
 import { defineStore } from 'pinia'
 import { useDiscoveryMutations } from '../Mutations/discoveryMutations'
 import { cloneDeep } from 'lodash'
+import { DiscoveryType } from '@/components/Discovery/discovery.constants'
+import { DiscoveryConfig } from '@/types/graphql'
 
 const defaultAzureForm = {
   name: '',
@@ -9,6 +11,13 @@ const defaultAzureForm = {
   clientSecret: '',
   subscriptionId: '',
   directoryId: ''
+}
+
+const defaultSnmpForm = {
+  id: 0,
+  name: '',
+  location: [],
+  type: DiscoveryType.ICMP
 }
 
 export const useDiscoveryStore = defineStore('discoveryStore', {
@@ -21,8 +30,13 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       fromIp: '',
       toIp: ''
     },
+    tags: [] as Record<string, string>[],
+    udpPorts: [] as number[],
+    communiyString: [] as string[],
     activeDiscoveries: <DiscoveryInput[]>[],
-    azure: cloneDeep(defaultAzureForm)
+    azure: cloneDeep(defaultAzureForm),
+    snmp: cloneDeep(defaultSnmpForm),
+    selectedDiscovery: {}
   }),
   actions: {
     selectLocation(location: string, single?: boolean) {
@@ -50,22 +64,53 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
           ...this.azure
         }
       })
-
       return !azureError.value
-    },
-    saveDiscovery(discovery: DiscoveryInput) {
-      if (!discovery.id) {
-        discovery.id = new Date().getTime()
-      } else {
-        const exists = this.activeDiscoveries.find((d) => d.id == discovery.id)
-        if (exists) {
-          this.activeDiscoveries = this.activeDiscoveries.filter((d) => d.id !== discovery.id)
-        }
-      }
-      this.activeDiscoveries.push(discovery)
     },
     clearAzureForm() {
       this.azure = cloneDeep(defaultAzureForm)
+    },
+    setTags(tags: Record<string, string>[]) {
+      this.tags = tags
+    },
+    setIpAddresses(ips: string[]) {
+      this.ipAddresses = ips
+    },
+    setUdpPorts(ports: number[]) {
+      this.udpPorts = ports
+    },
+    setCommunityString(str: string[]) {
+      this.communiyString = str
+    },
+    async saveDiscoverySnmp() {
+      const { createDiscoveryConfig, errorSnmp } = useDiscoveryMutations()
+      await createDiscoveryConfig({
+        snmpInfo: {
+          configName: this.snmp.name,
+          // tags: this.tags,
+          ipAddresses: this.ipAddresses,
+          location: this.selectedLocations[0],
+          snmpConfig: { readCommunities: this.communiyString, ports: this.udpPorts }
+        }
+      })
+      return !errorSnmp.value
+    },
+    clearSnmpForm() {
+      this.snmp = cloneDeep(defaultSnmpForm)
+    },
+    setSelectedDiscovery(selected: DiscoveryConfig | null) {
+      if (!selected) {
+        this.selectedDiscovery = Object.assign({ type: DiscoveryType.None })
+        this.clearAzureForm()
+        this.clearSnmpForm()
+      } else {
+        // add check type
+        const discovery = cloneDeep(selected)
+        if (discovery) {
+          this.snmp.name = discovery.configName || ''
+          this.ipAddresses = discovery.ipAddresses || []
+          this.udpPorts = discovery.snmpConfig?.ports || []
+        }
+      }
     }
   }
 })

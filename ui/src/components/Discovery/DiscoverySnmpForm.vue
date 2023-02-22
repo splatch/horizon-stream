@@ -1,44 +1,58 @@
 <template>
-  <div class="form">
-    <div class="form-title">{{ discoveryText.Discovery.headline2 }}</div>
+  <form
+    @submit.prevent="saveHandler"
+    novalidate
+    class="form"
+  >
+    <div class="form-title">{{ DiscoverySNMPForm.title }}</div>
     <FeatherInput
-      v-model="formInput.name"
-      :label="discoveryText.Discovery.nameInputLabel"
+      v-model="store.snmp.name"
+      :label="DiscoverySNMPForm.nameInputLabel"
       class="name-input"
     />
     <LocationsAutocomplete
-      class="location"
+      class="locations-select"
       type="single"
       :preLoadedlocations="props.discovery?.location"
-      @location-selected="handleLocations"
+      @location-selected="selectLocation"
     />
+    <!-- <DiscoveryAutocomplete
+      @items-selected="tagsSelectedListener"
+      :get-items="discoveryQueries.getTagsSearch"
+      :items="discoveryQueries.tagsSearched"
+      :label="Common.tagsInput"
+      ref="tagsAutocompleteRef"
+      data-test="tags-autocomplete"
+    /> -->
     <div class="content-editable-container">
       <DiscoveryContentEditable
-        @is-content-invalid="(value: boolean) => isContentValid('IPRange', value)"
-        @content-formatted="(value: string) => saveContent('IPRange', value)"
-        ref="contentEditableIPRef"
+        @is-content-invalid="isIPRangeInvalidListener"
+        @content-formatted="ipRangeEnteredListerner"
         :contentType="IPs.type"
         :regexDelim="IPs.regexDelim"
         :label="IPs.label"
+        ref="contentEditableIPRef"
         class="ip-input"
       />
       <DiscoveryContentEditable
-        @is-content-invalid="(value: boolean) => isContentValid('communityString', value)"
-        @content-formatted="(value: string) => saveContent('communityString', value)"
-        ref="contentEditableCommunityRef"
+        @is-content-invalid="isCommunityStringInvalidListerner"
+        @content-formatted="communityStringEnteredListerner"
         :contentType="community.type"
         :regexDelim="community.regexDelim"
         :label="community.label"
+        default-content=""
+        ref="contentEditableCommunityStringRef"
         class="community-input"
       />
       <DiscoveryContentEditable
-        @is-content-invalid="(value: boolean) => isContentValid('UDPPort', value)"
-        @content-formatted="(value: string) => saveContent('UDPPort', value)"
-        ref="contentEditablePortRef"
-        :contentType="port.type"
-        :regexDelim="port.regexDelim"
-        :label="port.label"
-        class="port-input"
+        @is-content-invalid="isUDPPortInvalidListener"
+        @content-formatted="UDPPortEnteredListener"
+        :contentType="udpPort.type"
+        :regexDelim="udpPort.regexDelim"
+        :label="udpPort.label"
+        :default-content="''"
+        class="udp-port-input"
+        ref="contentEditableUDPPortRef"
       />
     </div>
 
@@ -48,56 +62,53 @@
         secondary
         >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
       >
-      <FeatherButton
-        @click="saveHandler"
-        :disabled="isFormInvalid"
+      <ButtonWithSpinner
+        type="submit"
         primary
-        >{{ discoveryText.Discovery.button.submit }}</FeatherButton
       >
+        {{ discoveryText.Discovery.button.submit }}
+      </ButtonWithSpinner>
     </div>
-  </div>
+  </form>
 </template>
 
 <script lang="ts" setup>
 import { DiscoveryInput } from '@/types/discovery'
-import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
-import discoveryText from '@/components/Discovery/discovery.text'
+import { ContentEditableType } from '@/components/Discovery/discovery.constants'
+import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { Location } from '@/types/graphql'
 
-const emit = defineEmits(['close-form'])
-const store = useDiscoveryStore()
+import useSnackbar from '@/composables/useSnackbar'
+const { showSnackbar } = useSnackbar()
 
+// const emit = defineEmits(['close-form'])
+
+const discoveryQueries = useDiscoveryQueries()
+const store = useDiscoveryStore()
 const props = defineProps<{
   discovery?: DiscoveryInput | null
+  successCallback: (name: string) => void
 }>()
-const formInput = ref<DiscoveryInput>({
-  id: null,
-  type: DiscoveryType.ICMP,
-  name: '',
-  location: [],
-  IPRange: '',
-  communityString: '', // optional
-  UDPPort: null // optional
-})
-const setFormInput = () => {
-  formInput.value = {
-    type: DiscoveryType.ICMP,
-    id: props.discovery?.id || 0,
-    name: props.discovery?.name || '',
-    location: props.discovery?.location || [],
-    IPRange: props.discovery?.IPRange || '',
-    communityString: props.discovery?.communityString || '',
-    UDPPort: props.discovery?.UDPPort || null
-  }
-}
 
-onMounted(() => {
-  setFormInput()
-})
-watch(props, () => {
-  setFormInput()
-})
+// const isIPRangeInvalid = ref(false)
+const selectLocation = (location: Required<Location[]>) =>
+  location[0] && location[0].location && store.selectLocation(location[0].location, true)
+
+// const isContentValid = (property: string, val: boolean) => {
+//   console.log('valid - ', property, val)
+// }
+
+const tagsAutocompleteRef = ref()
+const tagsSelectedListener = (tags: Record<string, string>[]) => {
+  const tagsSelected = tags.map((tag) => {
+    delete tag._text
+    return tag
+  })
+
+  store.setTags(tagsSelected)
+}
 
 const contentEditableIPRef = ref()
 const IPs = {
@@ -105,40 +116,69 @@ const IPs = {
   regexDelim: '[,; ]+',
   label: discoveryText.ContentEditable.IP.label
 }
-const isContentValid = (property: string, val: boolean) => {
-  console.log(property, val)
+let isIPRangeInvalid = false
+const isIPRangeInvalidListener = (isInvalid: boolean) => {
+  isIPRangeInvalid = isInvalid
+}
+const ipRangeEnteredListerner = (str: string) => {
+  const regexDelim = new RegExp(udpPort.regexDelim)
+  store.setIpAddresses(str.split(regexDelim))
 }
 
-const contentEditableCommunityRef = ref()
+const contentEditableCommunityStringRef = ref()
 const community = {
   type: ContentEditableType.CommunityString,
   regexDelim: '',
   label: discoveryText.ContentEditable.CommunityString.label
 }
+let isCommunityStringInvalid = false
+const isCommunityStringInvalidListerner = (isInvalid: boolean) => {
+  isCommunityStringInvalid = isInvalid
+}
+const communityStringEnteredListerner = (str: string) => {
+  const regexDelim = new RegExp(udpPort.regexDelim)
+  store.setCommunityString(str.split(regexDelim))
+}
 
-const contentEditablePortRef = ref()
-const port = {
+const contentEditableUDPPortRef = ref()
+const udpPort = {
   type: ContentEditableType.UDPPort,
-  regexDelim: '',
+  regexDelim: '[,; ]+',
   label: discoveryText.ContentEditable.UDPPort.label
 }
-
-const saveContent = (property: string, val: string) => {
-  formInput.value[property] = val
+let isUDPPortInvalid = false
+const isUDPPortInvalidListener = (isInvalid: boolean) => {
+  isUDPPortInvalid = isInvalid
+}
+const UDPPortEnteredListener = (str: string) => {
+  const regexDelim = new RegExp(udpPort.regexDelim)
+  const ports = str.split(regexDelim)
+  store.setUdpPorts(ports.map((p) => parseInt(p)))
 }
 
-const handleLocations = (locations: Location[]) => {
-  formInput.value.location = locations.map((l: Location) => l.id) as string[]
+const resetContentEditable = () => {
+  // tagsAutocompleteRef.value.reset()
+  contentEditableIPRef.value.reset()
+  contentEditableCommunityStringRef.value.reset()
+  contentEditableUDPPortRef.value.reset()
 }
 
-const isFormInvalid = computed(() => {
-  // formInput validation
-  return false
-})
+const saveHandler = async () => {
+  contentEditableIPRef.value.validateAndFormat()
+  contentEditableCommunityStringRef.value.validateAndFormat()
+  contentEditableUDPPortRef.value.validateAndFormat()
 
-const saveHandler = () => {
-  store.saveDiscovery(formInput.value)
-  emit('close-form')
+  const success = await store.saveDiscoverySnmp()
+  if (success) {
+    discoveryQueries.getDiscoveries()
+    store.clearSnmpForm()
+    resetContentEditable()
+    props.successCallback(store.snmp.name)
+  } else {
+    showSnackbar({
+      msg: discoveryText.Discovery.error.errorCreate
+    })
+  }
 }
 </script>
 
@@ -152,15 +192,33 @@ const saveHandler = () => {
     @include typography.headline4;
     margin-bottom: var(variables.$spacing-m);
   }
-  .location {
+  .name-input {
+    width: 100%;
+  }
+  .locations-select {
     margin-top: var(variables.$spacing-xl);
     margin-bottom: var(variables.$spacing-s);
+    width: 100%;
+  }
+
+  @include mediaQueriesMixins.screen-lg {
+    .name-input,
+    .locations-select {
+      width: 49%;
+    }
   }
 }
 
 .footer {
   display: flex;
   justify-content: flex-end;
+}
+
+.discovery-autocomplete {
+  :deep(.chip-list) {
+    margin-top: var(variables.$spacing-s);
+    margin-bottom: var(variables.$spacing-s);
+  }
 }
 
 .content-editable-container {
@@ -182,6 +240,6 @@ const saveHandler = () => {
 }
 
 :deep(.feather-input-sub-text) {
-  display: none;
+  display: none !important;
 }
 </style>
