@@ -8,13 +8,13 @@ const defaultAzureForm = {
   clientId: '',
   clientSecret: '',
   subscriptionId: '',
-  directoryId: '',
-  // tags: [] to be done later
+  directoryId: ''
 }
 
 export const useDiscoveryStore = defineStore('discoveryStore', {
   state: () => ({
     selectedLocations: <string[]>[],
+    selectedTags: [] as Record<string, string>[],
     ipAddresses: <string[]>[],
     ipRange: {
       cidr: '',
@@ -27,7 +27,7 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
   actions: {
     selectLocation(location: string, single?: boolean) {
       if (single) {
-        this.selectedLocations = [location]
+        this.selectedLocations = location ? [location] : []
         return
       }
 
@@ -37,12 +37,16 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
         this.selectedLocations.push(location)
       }
     },
+    selectTags(tags: Record<string, string>[]) {
+      this.selectedTags = tags
+    },
     async saveDiscoveryAzure() {
       const { addAzureCreds, azureError } = useDiscoveryMutations()
 
       await addAzureCreds({
         azureCredential: {
           location: this.selectedLocations[0],
+          tags: this.selectedTags,
           ...this.azure
         }
       })
