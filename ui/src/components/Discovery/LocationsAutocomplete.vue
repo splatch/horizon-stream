@@ -108,6 +108,7 @@ const initLocations = () => {
       selectedLocations.value = [computedLocations.value[0]] as TLocationAutocomplete[]
       locations.value = []
       filteredLocations.value = []
+      emit('location-selected', selectedLocations.value)
     }
   }
 }

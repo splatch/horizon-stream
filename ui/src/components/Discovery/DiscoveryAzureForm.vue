@@ -37,30 +37,33 @@
     </div>
 
     <LocationsAutocomplete
-    @locationSelected="selectLocation"
-    class="locations"
+      @locationSelected="selectLocation"
+      class="locations"
     />
-    
+
     <DiscoveryAutocomplete
       class="tags"
-      @items-selected="tagsSelected"
-      :get-items="discoveryQueries.getTagsUponTyping"
-      :items="discoveryQueries.tagsUponTyping"
+      @items-selected="tagsSelectedListener"
+      :get-items="discoveryQueries.getTagsSearch"
+      :items="discoveryQueries.tagsSearched"
       :label="Common.tagsInput"
+      ref="tagsAutocompleteRef"
     />
 
     <hr />
     <div class="buttons">
       <FeatherButton
-        @click="cancel" 
-        secondary>
+        @click="cancel"
+        secondary
+      >
         {{ Azure.cancelBtnText }}
       </FeatherButton>
       <ButtonWithSpinner
         :isFetching="discoveryMutations.isFetching.value"
         :disabled="isDisabled"
         @click="saveAzureDiscovery"
-        primary>
+        primary
+      >
         {{ Azure.saveBtnText }}
       </ButtonWithSpinner>
     </div>
@@ -81,20 +84,32 @@ const discoveryQueries = useDiscoveryQueries()
 const discoveryMutations = useDiscoveryMutations()
 
 const props = defineProps<{
-	successCallback: (name: string) => void
-	cancel: () => void
+  successCallback: (name: string) => void
+  cancel: () => void
 }>()
 
-const selectLocation = (location: Required<Location>) => store.selectLocation(location.location, true)
+const selectLocation = (location: Required<Location[]>) =>
+  location[0] && location[0].location && store.selectLocation(location[0].location, true)
 
-const tagsSelected = (tags: Record<string, string>[]) => console.log('tagsSelected', tags)
+const tagsAutocompleteRef = ref()
+const tagsSelectedListener = (tags: Record<string, string>[]) => {
+  const tagsSelected = tags.map((tag) => {
+    delete tag._text
+    delete tag.id
+    delete tag.tenantId
+    return tag
+  })
 
-const isDisabled = computed(() => 
-  !store.azure.name || 
-  !store.azure.clientId || 
-  !store.azure.clientSecret || 
-  !store.azure.directoryId ||
-  !store.azure.subscriptionId
+  store.selectTags(tagsSelected)
+}
+
+const isDisabled = computed(
+  () =>
+    !store.azure.name ||
+    !store.azure.clientId ||
+    !store.azure.clientSecret ||
+    !store.azure.directoryId ||
+    !store.azure.subscriptionId
 )
 
 const saveAzureDiscovery = async () => {
@@ -105,15 +120,16 @@ const saveAzureDiscovery = async () => {
     })
 
     store.clearAzureForm()
+    tagsAutocompleteRef.value.reset()
     props.successCallback(store.azure.name)
   }
 }
 </script>
 
 <style scoped lang="scss">
-@use "@/styles/mediaQueriesMixins";
-@use "@featherds/styles/themes/variables";
-@use "@featherds/styles/mixins/typography";
+@use '@/styles/mediaQueriesMixins';
+@use '@featherds/styles/themes/variables';
+@use '@featherds/styles/mixins/typography';
 .azure-container {
   display: flex;
   flex: 1;
@@ -128,7 +144,7 @@ const saveAzureDiscovery = async () => {
   hr {
     width: 100%;
     margin-bottom: var(variables.$spacing-xl);
-    border-color: var(variables.$shade-4)
+    border-color: var(variables.$shade-4);
   }
 
   .buttons {
@@ -141,8 +157,10 @@ const saveAzureDiscovery = async () => {
   }
 
   @include mediaQueriesMixins.screen-md {
-    .name, .locations, .tags {
-      width: calc(50% - var(variables.$spacing-s))
+    .name,
+    .locations,
+    .tags {
+      width: calc(50% - var(variables.$spacing-s));
     }
     .row {
       display: flex;

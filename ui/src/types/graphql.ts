@@ -54,22 +54,6 @@ export type DiscoveryConfig = {
   timeout: Scalars['Long'];
 };
 
-export type CreateDiscoveryConfigRequestInput = {
-  configName?: InputMaybe<Scalars['String']>;
-  ipAddresses?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  location?: InputMaybe<Scalars['String']>;
-  snmpConfig?: InputMaybe<SnmpConfigInput>;
-};
-
-export type DiscoveryConfig = {
-  __typename?: 'DiscoveryConfig';
-  configName?: Maybe<Scalars['String']>;
-  ipAddresses?: Maybe<Array<Maybe<Scalars['String']>>>;
-  retries: Scalars['Int'];
-  snmpConfig?: Maybe<SnmpConfig>;
-  timeout: Scalars['Long'];
-};
-
 export type Event = {
   __typename?: 'Event';
   eventInfo?: Maybe<EventInfo>;
@@ -155,12 +139,6 @@ export type MutationAddNodeArgs = {
 /** Mutation root */
 export type MutationAddTagsArgs = {
   tags?: InputMaybe<TagListNodeAddInput>;
-};
-
-
-/** Mutation root */
-export type MutationCreateDiscoveryConfigArgs = {
-  request?: InputMaybe<CreateDiscoveryConfigRequestInput>;
 };
 
 
