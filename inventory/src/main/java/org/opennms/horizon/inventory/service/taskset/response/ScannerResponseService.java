@@ -28,6 +28,10 @@
 
 package org.opennms.horizon.inventory.service.taskset.response;
 
+import com.google.protobuf.Any;
+import com.google.protobuf.InvalidProtocolBufferException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,18 +47,16 @@ import org.opennms.horizon.inventory.repository.AzureCredentialRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
 import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.opennms.horizon.inventory.service.NodeService;
-import org.opennms.horizon.inventory.service.taskset.TaskSetHandler;
 import org.opennms.horizon.inventory.service.SnmpInterfaceService;
+import org.opennms.horizon.inventory.service.taskset.TaskSetHandler;
 import org.opennms.node.scan.contract.NodeScanResult;
+import org.opennms.taskset.contract.DiscoveryScanResult;
+import org.opennms.taskset.contract.PingResponse;
 import org.opennms.taskset.contract.ScanType;
 import org.opennms.taskset.contract.ScannerResponse;
 import org.springframework.stereotype.Component;
 
-import com.google.protobuf.Any;
-import com.google.protobuf.InvalidProtocolBufferException;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -71,9 +73,6 @@ public class ScannerResponseService {
         Any result = response.getResult();
 
         switch (getType(response)) {
-
-            // other scan types
-
             case AZURE_SCAN -> {
                 AzureScanResponse azureResponse = result.unpack(AzureScanResponse.class);
                 List<AzureScanItem> resultsList = azureResponse.getResultsList();
@@ -95,6 +94,11 @@ public class ScannerResponseService {
                 log.debug("received node scan result: {}", nodeScanResult);
                 processNodeScanResponse(tenantId, nodeScanResult);
             }
+            case DISCOVERY_SCAN -> {
+                DiscoveryScanResult discoveryScanResult = result.unpack(DiscoveryScanResult.class);
+                log.debug("received discovery result: {}", discoveryScanResult);
+                processDiscoveryScanResponse(tenantId, location, discoveryScanResult);
+            }
             case UNRECOGNIZED -> log.warn("Unrecognized scan type");
 
         }
@@ -106,8 +110,21 @@ public class ScannerResponseService {
             return ScanType.AZURE_SCAN;
         } else if(result.is(NodeScanResult.class)) {
             return ScanType.NODE_SCAN;
+        } else if(result.is(DiscoveryScanResult.class)) {
+            return ScanType.DISCOVERY_SCAN;
         }
         return ScanType.UNRECOGNIZED;
+    }
+
+    private void processDiscoveryScanResponse(String tenantId, String location, DiscoveryScanResult discoveryScanResult) {
+        for (PingResponse pingResponse : discoveryScanResult.getPingResponseList()) {
+            NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
+                .setLocation(location)
+                .setManagementIp(pingResponse.getIpAddress())
+                .setLabel(pingResponse.getIpAddress())
+                .build();
+            nodeService.createNode(createDTO, ScanType.DISCOVERY_SCAN, tenantId);
+        }
     }
 
     private void processAzureScanItem(String tenantId, String location, String ipAddress, AzureScanItem item) {
@@ -130,7 +147,7 @@ public class ScannerResponseService {
                 .setManagementIp(ipAddress)
                 .setLabel(nodeLabel)
                 .build();
-            Node node = nodeService.createNode(createDTO, tenantId);
+            Node node = nodeService.createNode(createDTO, ScanType.AZURE_SCAN, tenantId);
 
             taskSetHandler.sendAzureMonitorTasks(credential, item, ipAddress, node.getId());
             taskSetHandler.sendAzureCollectorTasks(credential, item, ipAddress, node.getId());

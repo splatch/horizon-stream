@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.service.taskset.publiser;
+package org.opennms.horizon.inventory.service.taskset;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import org.junit.jupiter.api.AfterEach;
@@ -40,8 +40,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
-import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
 import org.opennms.horizon.inventory.taskset.api.TaskSetPublisher;
+import org.opennms.icmp.contract.PingSweepRequest;
 import org.opennms.node.scan.contract.NodeScanRequest;
 import org.opennms.taskset.contract.TaskDefinition;
 
@@ -52,6 +52,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.opennms.horizon.inventory.service.taskset.TaskUtils.DISCOVERY_PROFILE;
 
 @ExtendWith(MockitoExtension.class)
 public class ScannerTaskSetServiceTest {
@@ -70,7 +71,7 @@ public class ScannerTaskSetServiceTest {
     @BeforeEach
     void prepareTest() {
         ipInterface1 = IpInterfaceDTO.newBuilder().setIpAddress("127.0.0.1").setSnmpPrimary(true).build();
-        ipInterface2 = IpInterfaceDTO.newBuilder().setIpAddress("127.0.0.1").build();
+        ipInterface2 = IpInterfaceDTO.newBuilder().setIpAddress("127.0.0.2").build();
         nodeBuilder = NodeDTO.newBuilder().setId(1L);
     }
 
@@ -110,5 +111,25 @@ public class ScannerTaskSetServiceTest {
         NodeDTO node = nodeBuilder.build();
         service.sendNodeScannerTask(List.of(node), location, tenantId);
         verifyNoInteractions(mockPublisher);
+    }
+
+
+    @Test
+    void testCreateDiscoveryTaskSet() throws InvalidProtocolBufferException {
+        String discoveryProfile = "discovery-local";
+        List<String> ipAddresses = List.of("127.0.0.1 - 127.0.0.3", "127.0.0.5 - 127.0.0.8", " 127.0.0.9 ");
+        var taskDefOptional = service.createDiscoveryTask(ipAddresses, location, discoveryProfile);
+        assertThat(taskDefOptional).isPresent();
+
+        var taskDef = taskDefOptional.get();
+
+        assertThat(taskDef.getId()).isEqualTo(DISCOVERY_PROFILE + discoveryProfile + "/" + location);
+        assertThat(taskDef.getPluginName()).isEqualTo(ScannerTaskSetService.DISCOVERY_TASK_PLUGIN_NAME);
+        assertThat(taskDef.getConfiguration()).isNotNull();
+        var pingSweepRequest = taskDef.getConfiguration().unpack(PingSweepRequest.class);
+        assertThat(pingSweepRequest).extracting(PingSweepRequest::getIpRangeCount).isEqualTo(3);
+        var specific = pingSweepRequest.getIpRangeList().stream()
+            .filter(request -> request.getBegin().equals(request.getEnd())).findFirst();
+        assertThat(specific).isPresent();
     }
 }
