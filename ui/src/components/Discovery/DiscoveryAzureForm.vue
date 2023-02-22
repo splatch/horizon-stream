@@ -72,13 +72,11 @@
 <script setup lang="ts">
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 import { Azure, Common } from './discovery.text'
-import useSnackbar from '@/composables/useSnackbar'
 import { Location } from '@/types/graphql'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 
 const store = useDiscoveryStore()
-const { showSnackbar } = useSnackbar()
 const discoveryQueries = useDiscoveryQueries()
 const discoveryMutations = useDiscoveryMutations()
 
@@ -114,9 +112,6 @@ const isDisabled = computed(
 const saveAzureDiscovery = async () => {
   const success = await store.saveDiscoveryAzure()
   if (success) {
-    // showSnackbar({
-    //   msg: `${store.azure.name} setup successfully.`
-    // })
     discoveryQueries.getDiscoveries()
     store.clearAzureForm()
     tagsAutocompleteRef.value.reset()
