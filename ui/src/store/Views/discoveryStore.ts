@@ -17,7 +17,6 @@ const defaultSnmpForm = {
   id: 0,
   name: '',
   location: [],
-  tags: [],
   type: DiscoveryType.ICMP
 }
 
@@ -30,6 +29,7 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       fromIp: '',
       toIp: ''
     },
+    tags: [] as Record<string, string>[],
     udpPorts: [] as number[],
     communiyString: [] as string[],
     activeDiscoveries: <DiscoveryInput[]>[],
@@ -64,6 +64,9 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
     clearAzureForm() {
       this.azure = cloneDeep(defaultAzureForm)
     },
+    setTags(tags: Record<string, string>[]) {
+      this.tags = tags
+    },
     setIpAddresses(ips: string[]) {
       this.ipAddresses = ips
     },
@@ -78,6 +81,7 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       await createDiscoveryConfig({
         snmpInfo: {
           configName: this.snmp.name,
+          // tags: this.tags,
           ipAddresses: this.ipAddresses,
           location: this.selectedLocations[0],
           snmpConfig: { readCommunities: this.communiyString, ports: this.udpPorts }

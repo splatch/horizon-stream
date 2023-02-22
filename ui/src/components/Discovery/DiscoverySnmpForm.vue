@@ -12,12 +12,13 @@
       :preLoadedlocations="props.discovery?.location"
       @location-selected="selectLocation"
     />
-    <!--<DiscoveryAutocomplete
-      class="select"
-      @items-selected="store.snmp.tags"
-      :get-items="discoveryQueries.getTagsUponTyping"
-      :items="discoveryQueries.tagsUponTyping"
-      :label="DiscoverySNMPForm.tag"
+    <!-- <DiscoveryAutocomplete
+      @items-selected="tagsSelectedListener"
+      :get-items="discoveryQueries.getTagsSearch"
+      :items="discoveryQueries.tagsSearched"
+      :label="Common.tagsInput"
+      ref="tagsAutocompleteRef"
+      data-test="tags-autocomplete"
     /> -->
     <div class="content-editable-container">
       <DiscoveryContentEditable
@@ -71,23 +72,23 @@
 <script lang="ts" setup>
 import { DiscoveryInput } from '@/types/discovery'
 import { ContentEditableType } from '@/components/Discovery/discovery.constants'
-import discoveryText, { DiscoverySNMPForm } from '@/components/Discovery/discovery.text'
+import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { Location } from '@/types/graphql'
 
 import useSnackbar from '@/composables/useSnackbar'
 const { showSnackbar } = useSnackbar()
 
-const emit = defineEmits(['close-form'])
+// const emit = defineEmits(['close-form'])
 
+const discoveryQueries = useDiscoveryQueries()
 const store = useDiscoveryStore()
 const props = defineProps<{
   discovery?: DiscoveryInput | null
   successCallback: (name: string) => void
 }>()
 
-const contentEditableCommunityStringRef = ref()
-const contentEditableUDPPortRef = ref()
 // const isIPRangeInvalid = ref(false)
 const selectLocation = (location: Required<Location[]>) =>
   location[0] && location[0].location && store.selectLocation(location[0].location, true)
@@ -95,6 +96,16 @@ const selectLocation = (location: Required<Location[]>) =>
 // const isContentValid = (property: string, val: boolean) => {
 //   console.log('valid - ', property, val)
 // }
+
+const tagsAutocompleteRef = ref()
+const tagsSelectedListener = (tags: Record<string, string>[]) => {
+  const tagsSelected = tags.map((tag) => {
+    delete tag._text
+    return tag
+  })
+
+  store.setTags(tagsSelected)
+}
 
 const contentEditableIPRef = ref()
 const IPs = {
@@ -111,6 +122,7 @@ const ipRangeEnteredListerner = (str: string) => {
   store.setIpAddresses(str.split(regexDelim))
 }
 
+const contentEditableCommunityStringRef = ref()
 const community = {
   type: ContentEditableType.CommunityString,
   regexDelim: '',
@@ -125,6 +137,7 @@ const communityStringEnteredListerner = (str: string) => {
   store.setCommunityString(str.split(regexDelim))
 }
 
+const contentEditableUDPPortRef = ref()
 const udpPort = {
   type: ContentEditableType.UDPPort,
   regexDelim: '[,; ]+',
@@ -140,6 +153,13 @@ const UDPPortEnteredListener = (str: string) => {
   store.setUdpPorts(ports.map((p) => parseInt(p)))
 }
 
+const resetContentEditable = () => {
+  // tagsAutocompleteRef.value.reset()
+  contentEditableIPRef.value.reset()
+  contentEditableCommunityStringRef.value.reset()
+  contentEditableUDPPortRef.value.reset()
+}
+
 const saveHandler = async () => {
   contentEditableIPRef.value.validateAndFormat()
   contentEditableCommunityStringRef.value.validateAndFormat()
@@ -148,7 +168,7 @@ const saveHandler = async () => {
   const success = await store.saveDiscoverySnmp()
   if (success) {
     store.clearSnmpForm()
-    emit('close-form')
+    resetContentEditable()
     props.successCallback(store.snmp.name)
   } else {
     showSnackbar({
@@ -178,6 +198,13 @@ const saveHandler = async () => {
 .footer {
   display: flex;
   justify-content: flex-end;
+}
+
+.discovery-autocomplete {
+  :deep(.chip-list) {
+    margin-top: var(variables.$spacing-s);
+    margin-bottom: var(variables.$spacing-s);
+  }
 }
 
 .content-editable-container {
