@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { useDiscoveryMutations } from '../Mutations/discoveryMutations'
 import { cloneDeep } from 'lodash'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
-import { AzureCredential } from '@/types/graphql'
+
 const defaultAzureForm = {
   name: '',
   clientId: '',
@@ -13,15 +13,12 @@ const defaultAzureForm = {
   // tags: [] to be done later
 }
 
-const defaultSnmpForm: DiscoveryInput = {
+const defaultSnmpForm = {
   id: 0,
   name: '',
   location: [],
   tags: [],
-  type: DiscoveryType.ICMP,
-  IPRange: '',
-  communityString: '',
-  UDPPort: ''
+  type: DiscoveryType.ICMP
 }
 
 export const useDiscoveryStore = defineStore('discoveryStore', {
@@ -33,6 +30,8 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       fromIp: '',
       toIp: ''
     },
+    udpPorts: [] as number[],
+    communiyString: [] as string[],
     activeDiscoveries: <DiscoveryInput[]>[],
     azure: cloneDeep(defaultAzureForm),
     snmp: cloneDeep(defaultSnmpForm),
@@ -62,20 +61,29 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
       })
       return !azureError.value
     },
+    clearAzureForm() {
+      this.azure = cloneDeep(defaultAzureForm)
+    },
+    setIpAddresses(ips: string[]) {
+      this.ipAddresses = ips
+    },
+    setUdpPorts(ports: number[]) {
+      this.udpPorts = ports
+    },
+    setCommunityString(str: string[]) {
+      this.communiyString = str
+    },
     async saveDiscoverySnmp() {
       const { createDiscoveryConfig, errorSnmp } = useDiscoveryMutations()
       await createDiscoveryConfig({
         snmpInfo: {
           configName: this.snmp.name,
-          ipAddresses: ['127.0.0.1'],
+          ipAddresses: this.ipAddresses,
           location: this.selectedLocations[0],
-          snmpConfig: { readCommunities: ['test-community'], ports: [161] }
+          snmpConfig: { readCommunities: this.communiyString, ports: this.udpPorts }
         }
       })
       return !errorSnmp.value
-    },
-    clearAzureForm() {
-      this.azure = cloneDeep(defaultAzureForm)
     },
     clearSnmpForm() {
       this.snmp = cloneDeep(defaultSnmpForm)

@@ -21,31 +21,34 @@
     /> -->
     <div class="content-editable-container">
       <DiscoveryContentEditable
-        @is-content-invalid="isIPRangeInvalidHandler"
-        @content-formatted="store.snmp.IPRange"
-        ref="contentEditableIPRef"
+        @is-content-invalid="isIPRangeInvalidListener"
+        @content-formatted="ipRangeEnteredListerner"
         :contentType="IPs.type"
         :regexDelim="IPs.regexDelim"
         :label="IPs.label"
+        default-content="127.0.0.1"
+        ref="contentEditableIPRef"
         class="ip-input"
       />
       <DiscoveryContentEditable
-        @is-content-invalid="(value: boolean) => isContentValid('communityString', value)"
-        @content-formatted="(value: string) => saveContent('communityString', value)"
-        ref="contentEditableCommunityStringRef"
+        @is-content-invalid="isCommunityStringInvalidListerner"
+        @content-formatted="communityStringEnteredListerner"
         :contentType="community.type"
         :regexDelim="community.regexDelim"
         :label="community.label"
+        default-content="someCommunityString"
+        ref="contentEditableCommunityStringRef"
         class="community-input"
       />
       <DiscoveryContentEditable
-        @is-content-invalid="(value: boolean) => isContentValid('UDPPort', value)"
-        @content-formatted="(value: string) => saveContent('UDPPort', value)"
+        @is-content-invalid="isUDPPortInvalidListener"
+        @content-formatted="UDPPortEnteredListener"
+        :contentType="udpPort.type"
+        :regexDelim="udpPort.regexDelim"
+        :label="udpPort.label"
+        :default-content="1234"
+        class="udp-port-input"
         ref="contentEditableUDPPortRef"
-        :contentType="port.type"
-        :regexDelim="port.regexDelim"
-        :label="port.label"
-        class="port-input"
       />
     </div>
 
@@ -56,7 +59,6 @@
         >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
       >
       <ButtonWithSpinner
-        :disabled="isDisabled"
         @click="saveHandler"
         primary
       >
@@ -68,7 +70,7 @@
 
 <script lang="ts" setup>
 import { DiscoveryInput } from '@/types/discovery'
-import { ContentEditableType, DiscoveryType } from '@/components/Discovery/discovery.constants'
+import { ContentEditableType } from '@/components/Discovery/discovery.constants'
 import discoveryText, { DiscoverySNMPForm } from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 import { Location } from '@/types/graphql'
@@ -84,14 +86,15 @@ const props = defineProps<{
   successCallback: (name: string) => void
 }>()
 
-const discovery = ref<DiscoveryInput>(store.snmp)
 const contentEditableCommunityStringRef = ref()
 const contentEditableUDPPortRef = ref()
-const isIPRangeInvalid = ref(false)
+// const isIPRangeInvalid = ref(false)
 const selectLocation = (location: Required<Location[]>) =>
   location[0] && location[0].location && store.selectLocation(location[0].location, true)
 
-const isDisabled = computed(() => !store.snmp.name || !store.selectedLocations.length || isIPRangeInvalid.value)
+// const isContentValid = (property: string, val: boolean) => {
+//   console.log('valid - ', property, val)
+// }
 
 const contentEditableIPRef = ref()
 const IPs = {
@@ -99,18 +102,13 @@ const IPs = {
   regexDelim: '[,; ]+',
   label: discoveryText.ContentEditable.IP.label
 }
-
-const isContentValid = (property: string, val: boolean) => {
-  console.log('valid - ', property, val)
+let isIPRangeInvalid = false
+const isIPRangeInvalidListener = (isInvalid: boolean) => {
+  isIPRangeInvalid = isInvalid
 }
-
-const saveContent = (property: string, val: string) => {
-  discovery.value[property] = val
-}
-
-const isIPRangeInvalidHandler = (value: boolean) => {
-  isIPRangeInvalid.value = value
-  console.log(isIPRangeInvalid.value)
+const ipRangeEnteredListerner = (str: string) => {
+  const regexDelim = new RegExp(udpPort.regexDelim)
+  store.setIpAddresses(str.split(regexDelim))
 }
 
 const community = {
@@ -118,14 +116,32 @@ const community = {
   regexDelim: '',
   label: discoveryText.ContentEditable.CommunityString.label
 }
+let isCommunityStringInvalid = false
+const isCommunityStringInvalidListerner = (isInvalid: boolean) => {
+  isCommunityStringInvalid = isInvalid
+}
+const communityStringEnteredListerner = (str: string) => {
+  const regexDelim = new RegExp(udpPort.regexDelim)
+  store.setCommunityString(str.split(regexDelim))
+}
 
-const port = {
+const udpPort = {
   type: ContentEditableType.UDPPort,
-  regexDelim: '',
+  regexDelim: '[,; ]+',
   label: discoveryText.ContentEditable.UDPPort.label
+}
+let isUDPPortInvalid = false
+const isUDPPortInvalidListener = (isInvalid: boolean) => {
+  isUDPPortInvalid = isInvalid
+}
+const UDPPortEnteredListener = (str: string) => {
+  const regexDelim = new RegExp(udpPort.regexDelim)
+  const ports = str.split(regexDelim)
+  store.setUdpPorts(ports.map((p) => parseInt(p)))
 }
 
 const saveHandler = async () => {
+  contentEditableIPRef.value.validateAndFormat()
   contentEditableCommunityStringRef.value.validateAndFormat()
   contentEditableUDPPortRef.value.validateAndFormat()
 

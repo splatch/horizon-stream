@@ -55,7 +55,7 @@ const props = defineProps({
     default: ''
   },
   defaultContent: {
-    type: String,
+    type: [String, Number],
     default: ''
   }
 })
@@ -87,7 +87,7 @@ const validateContent = () => {
 
   switch (props.contentType) {
     case ContentEditableType.IP:
-      isInvalid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
+      // isInvalid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
       break
     case ContentEditableType.CommunityString:
       break
@@ -107,13 +107,13 @@ const highlightInvalid = () => {
 
   switch (props.contentType) {
     case ContentEditableType.IP:
-      highlightInvalidString = contentEditableStrings
+      /* highlightInvalidString = contentEditableStrings
         .map((str: string) => {
           if (ipRegex({ exact: true }).test(str)) return str
 
           return errorStr.replace('{{}}', str)
         })
-        .join(';')
+        .join(';') */
       break
     case ContentEditableType.CommunityString:
       break
