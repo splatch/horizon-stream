@@ -1,5 +1,9 @@
 <template>
-  <div class="form">
+  <form
+    @submit.prevent="saveHandler"
+    novalidate
+    class="form"
+  >
     <div class="form-title">{{ DiscoverySNMPForm.title }}</div>
     <FeatherInput
       v-model="store.snmp.name"
@@ -7,7 +11,7 @@
       class="name-input"
     />
     <LocationsAutocomplete
-      class="select"
+      class="locations-select"
       type="single"
       :preLoadedlocations="props.discovery?.location"
       @location-selected="selectLocation"
@@ -59,13 +63,13 @@
         >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
       >
       <ButtonWithSpinner
-        @click="saveHandler"
+        type="submit"
         primary
       >
         {{ discoveryText.Discovery.button.submit }}
       </ButtonWithSpinner>
     </div>
-  </div>
+  </form>
 </template>
 
 <script lang="ts" setup>
@@ -187,10 +191,20 @@ const saveHandler = async () => {
     @include typography.headline4;
     margin-bottom: var(variables.$spacing-m);
   }
-  .select {
+  .name-input {
+    width: 100%;
+  }
+  .locations-select {
     margin-top: var(variables.$spacing-xl);
     margin-bottom: var(variables.$spacing-s);
-    width: 40%;
+    width: 100%;
+  }
+
+  @include mediaQueriesMixins.screen-lg {
+    .name-input,
+    .locations-select {
+      width: 49%;
+    }
   }
 }
 
