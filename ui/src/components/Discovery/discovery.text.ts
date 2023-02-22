@@ -23,7 +23,7 @@ export default {
   },
   ContentEditable: {
     IP: {
-      label: 'Enter IP ranges and/or subnets *'
+      label: 'Enter IP ranges and/or subnets'
     },
     CommunityString: {
       label: 'Enter community string (optional)'
@@ -36,7 +36,7 @@ export default {
 
 export const DiscoverySNMPForm = {
   tag: 'Search/Add tags (optional)',
-  nameInputLabel: 'ICMP/SNMP name *',
+  nameInputLabel: 'ICMP/SNMP name',
   title: 'ICMP/SNMP Discovery Setup'
 }
 

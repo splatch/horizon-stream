@@ -11,7 +11,7 @@
     <!-- Search client side -->
     <FeatherAutocomplete
       class="search"
-      label="Select a location *"
+      label="Select a location"
       type="single"
       v-model="searchValue"
       :loading="loading"
