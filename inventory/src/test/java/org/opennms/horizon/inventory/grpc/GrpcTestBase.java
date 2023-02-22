@@ -33,26 +33,18 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.keycloak.common.VerificationException;
-import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.shared.constants.GrpcConstants;
-import org.opennms.taskset.service.contract.TaskSetServiceGrpc;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
-import io.grpc.BindableService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Metadata;
-import io.grpc.Server;
-import io.grpc.inprocess.InProcessServerBuilder;
 
 public abstract class GrpcTestBase {
     @DynamicPropertySource
@@ -89,37 +81,5 @@ public abstract class GrpcTestBase {
         Metadata headers = new Metadata();
         headers.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, value);
         return headers;
-    }
-    private static Server server;
-    protected static TestTaskSetGrpcService testGrpcService;
-
-    @BeforeAll
-    static void startGrpcServer() throws IOException {
-        testGrpcService = new TestTaskSetGrpcService();
-        server = startMockServer(TaskSetServiceGrpc.SERVICE_NAME, testGrpcService);
-    }
-
-    @AfterAll
-    public static void tearDown() throws InterruptedException {
-        server.shutdownNow();
-        server.awaitTermination();
-    }
-
-    private static Server startMockServer(String name, BindableService... services) throws IOException {
-        InProcessServerBuilder builder = InProcessServerBuilder
-            .forName(name).directExecutor();
-
-        if (services != null) {
-            for (BindableService service : services) {
-                builder.addService(service);
-            }
-        }
-        server = builder.build().start();
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            
-        }
-        return server;
     }
 }

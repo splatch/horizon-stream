@@ -38,19 +38,25 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.common.VerificationException;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
+import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.taskset.contract.TaskSet;
 import org.opennms.taskset.service.contract.PublishTaskSetRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest(properties = {"spring.liquibase.change-log=db/changelog/changelog-test.xml"})
 @ContextConfiguration(initializers = {SpringContextTestInitializer.class})
 class NodeGrpcStartupIntTest extends GrpcTestBase {
-
+    @Autowired
+    private ApplicationContext context;
+    private TestTaskSetGrpcService testGrpcService;
     private static final int EXPECTED_TASK_DEF_COUNT = 1;
 
     @BeforeEach
     public void prepare() throws VerificationException {
+        testGrpcService = context.getBean(TestTaskSetGrpcService.class);
         prepareServer();
     }
 

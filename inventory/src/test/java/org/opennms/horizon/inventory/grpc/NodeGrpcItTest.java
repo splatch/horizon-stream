@@ -59,6 +59,7 @@ import org.opennms.horizon.inventory.dto.NodeList;
 import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
+import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoredService;
@@ -83,6 +84,7 @@ import org.opennms.taskset.contract.TaskType;
 import org.opennms.taskset.service.contract.PublishTaskSetRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.protobuf.BoolValue;
@@ -131,9 +133,14 @@ class NodeGrpcItTest extends GrpcTestBase {
     private TagRepository tagRepository;
     @Autowired
     private DetectorTaskSetService detectorTaskSetService;
+    @Autowired
+    ApplicationContext context;
+
+    private TestTaskSetGrpcService testGrpcService;
 
     @BeforeEach
     public void prepare() throws VerificationException {
+        testGrpcService = context.getBean(TestTaskSetGrpcService.class);
         testGrpcService.reset();
         prepareServer();
         serviceStub = NodeServiceGrpc.newBlockingStub(channel);

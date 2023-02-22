@@ -56,6 +56,7 @@ import org.opennms.horizon.inventory.dto.AzureCredentialCreateDTO;
 import org.opennms.horizon.inventory.dto.AzureCredentialDTO;
 import org.opennms.horizon.inventory.dto.AzureCredentialServiceGrpc;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
+import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.inventory.model.AzureCredential;
 import org.opennms.horizon.inventory.model.Tag;
 import org.opennms.horizon.inventory.repository.AzureCredentialRepository;
@@ -70,6 +71,7 @@ import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.opennms.taskset.contract.TaskType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -84,6 +86,7 @@ import com.google.rpc.Status;
 
 import io.grpc.Context;
 import io.grpc.Metadata;
+import io.grpc.Server;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.StatusRuntimeException;
@@ -115,10 +118,15 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
     @Autowired
     private TagRepository tagRepository;
 
+    @Autowired
+    ApplicationContext context;
+
     //marking as a @Rule doesn't work, need to manually start/stop in before/after
     public WireMockRule wireMock = new WireMockRule(wireMockConfig().port(12345));
 
     private final ObjectMapper snakeCaseMapper;
+    private TestTaskSetGrpcService testGrpcService;
+    private Server server;
 
     public AzureCredentialGrpcItTest() {
         this.snakeCaseMapper = new ObjectMapper();
@@ -127,6 +135,7 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
 
     @BeforeEach
     public void prepare() throws VerificationException {
+        testGrpcService = context.getBean(TestTaskSetGrpcService.class);
         testGrpcService.reset();
         prepareServer();
         serviceStub = AzureCredentialServiceGrpc.newBlockingStub(channel);

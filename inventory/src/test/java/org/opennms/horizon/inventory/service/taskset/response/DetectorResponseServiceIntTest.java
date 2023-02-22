@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
 import org.opennms.horizon.inventory.grpc.GrpcTestBase;
+import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoredService;
 import org.opennms.horizon.inventory.model.MonitoredServiceType;
@@ -29,6 +30,7 @@ import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import io.grpc.Context;
@@ -59,9 +61,13 @@ class DetectorResponseServiceIntTest extends GrpcTestBase {
 
     @Autowired
     private MonitoredServiceRepository monitoredServiceRepository;
+    @Autowired
+    private ApplicationContext context;
+    private TestTaskSetGrpcService testGrpcService;
 
     @BeforeEach
     void beforeTest() {
+        testGrpcService = context.getBean(TestTaskSetGrpcService.class);
         testGrpcService.reset();
     }
 

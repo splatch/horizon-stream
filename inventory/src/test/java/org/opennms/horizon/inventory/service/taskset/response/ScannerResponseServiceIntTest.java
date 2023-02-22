@@ -46,6 +46,7 @@ import org.opennms.horizon.azure.api.AzureScanResponse;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.grpc.GrpcTestBase;
+import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.inventory.model.AzureCredential;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
@@ -67,6 +68,7 @@ import org.opennms.taskset.contract.ScanType;
 import org.opennms.taskset.contract.ScannerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.protobuf.Any;
@@ -101,9 +103,13 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
 
     @Autowired
     private NodeService nodeService;
+    @Autowired
+    private ApplicationContext context;
+    private TestTaskSetGrpcService testGrpcService;
 
     @BeforeEach
     void beforeTest() {
+        testGrpcService = context.getBean(TestTaskSetGrpcService.class);
         testGrpcService.reset();
     }
 
