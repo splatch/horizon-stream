@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PreDestroy;
 
@@ -71,15 +72,18 @@ import lombok.extern.slf4j.Slf4j;
 @PropertySource("classpath:application.yml")
 public class MinionHeartbeatConsumer {
 
-    private static final String DEFAULT_TASK_RESULTS_TOPIC = "task-set.results";
+    protected static final String DEFAULT_TASK_RESULTS_TOPIC = "task-set.results";
     private static final int DEFAULT_MESSAGE_SIZE = 1024;
     private static final long ECHO_TIMEOUT = 30_000;
+    protected static int MONITOR_PERIOD = 30_000;
     private final MinionRpcClient rpcClient;
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
 
-    @Value("${kafka.topics.results:" + DEFAULT_TASK_RESULTS_TOPIC + "}")
+    @Value("${kafka.topics.task-set-results:" + DEFAULT_TASK_RESULTS_TOPIC + "}")
     private String kafkaTopic;
     private final MonitoringSystemService service;
+
+    private final Map<String, Long> rpcMaps = new ConcurrentHashMap<>();
 
     @KafkaListener(topics = "${kafka.topics.minion-heartbeat}", concurrency = "1")
     public void receiveMessage(@Payload byte[] data, @Headers Map<String, Object> headers) {
@@ -90,7 +94,12 @@ public class MinionHeartbeatConsumer {
             log.info("Received heartbeat message for minion with tenant id: {}; id: {}; location: {}", tenantId, message.getIdentity().getSystemId(), message.getIdentity().getLocation());
             Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
                 service.addMonitoringSystemFromHeartbeat(message, tenantId));
-            CompletableFuture.runAsync(() -> runRpcMonitor(message.getIdentity().getSystemId(), message.getIdentity().getLocation(), tenantId));
+            String systemId = message.getIdentity().getSystemId();
+            Long lastRun = rpcMaps.get(systemId);
+            if (lastRun == null || (System.currentTimeMillis() > (lastRun + MONITOR_PERIOD))) { //prevent run too many rpc calls
+                CompletableFuture.runAsync(() -> runRpcMonitor(systemId, message.getIdentity().getLocation(), tenantId));
+                rpcMaps.put(systemId, System.currentTimeMillis());
+            }
         } catch (Exception e) {
             log.error("Error while processing heartbeat message: ", e);
         }
@@ -127,7 +136,8 @@ public class MinionHeartbeatConsumer {
             })
             .whenComplete((echoResponse, error) -> {
                     if (error != null) {
-                        log.error("Unable to complete echo request", error);
+                        log.error("Unable to complete echo request for monitoring system {} with tenant {}, location {}",
+                            systemId, tenantId, location, error);
                         return;
                     }
                     long responseTime = (System.nanoTime() - echoResponse.getTime()) / 1000000;
