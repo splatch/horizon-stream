@@ -170,6 +170,7 @@ const saveHandler = async () => {
 
   const success = await store.saveDiscoverySnmp()
   if (success) {
+    discoveryQueries.getDiscoveries()
     store.clearSnmpForm()
     resetContentEditable()
     props.successCallback(store.snmp.name)

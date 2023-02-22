@@ -164,9 +164,6 @@ const submitHandler = async () => {
   })
 
   if (results.data) {
-    /* showSnackbar({
-      msg: 'Save Successfully!'
-    }) */
     props.successCallback(results.data.saveDiscovery[0].name)
     resetForm()
   } else {

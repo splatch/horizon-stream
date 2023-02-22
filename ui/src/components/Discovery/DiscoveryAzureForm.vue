@@ -114,10 +114,10 @@ const isDisabled = computed(
 const saveAzureDiscovery = async () => {
   const success = await store.saveDiscoveryAzure()
   if (success) {
-    showSnackbar({
-      msg: `${store.azure.name} setup successfully.`
-    })
-
+    // showSnackbar({
+    //   msg: `${store.azure.name} setup successfully.`
+    // })
+    discoveryQueries.getDiscoveries()
     store.clearAzureForm()
     tagsAutocompleteRef.value.reset()
     props.successCallback(store.azure.name)
