@@ -26,10 +26,7 @@ copy-charts:
 	cp -rf ../charts .
 
 local-docker: copy-charts
-	docker build -t $(IMAGE) . --platform=arm64
-
-openshift-docker: copy-charts
-	docker build -t $(OSIMAGE) -f openshift.Dockerfile .
+	docker build -t $(IMAGE) .
 
 kind-load: local-docker
 	kind load docker-image $(IMAGE)

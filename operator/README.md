@@ -70,7 +70,7 @@ You can now interact with the OpenShift cluster using `kubectl`.
 
 If you have an M1 Macbook, follow these steps in addition to the above.
 
-OS uses Podman on ARM-based M1 architecture and, unlike Docker Desktop, it cannot run `amd64` images transparently out of the box. It must be configured to do so. 
+?????????????????????? 
 
 
 

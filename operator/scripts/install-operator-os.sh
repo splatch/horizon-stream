@@ -4,7 +4,7 @@
 echo
 echo _______________Building Docker Image_______________
 echo
-make openshift-docker
+make local-docker
 if [ $? -ne 0 ]; then exit; fi
 
 echo
@@ -14,7 +14,7 @@ echo
 eval $(crc oc-env)
 REGISTRY="$(oc get route/default-route -n openshift-image-registry -o=jsonpath='{.spec.host}')/openshift"
 docker login -u kubeadmin -p $(oc whoami -t) $REGISTRY
-docker tag opennms/operator:local-openshift $REGISTRY/opennms-operator:local
+docker tag opennms/operator:local-build $REGISTRY/opennms-operator:local
 docker push $REGISTRY/opennms-operator:local
 
 echo
