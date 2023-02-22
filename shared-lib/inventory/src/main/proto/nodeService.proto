@@ -31,6 +31,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "ipInterface.proto";
 import "snmpInterface.proto";
+import "tag.proto";
 
 package opennms.inventory;
 option java_multiple_files = true;
@@ -49,12 +50,14 @@ message NodeDTO {
   string system_location = 10;
   string system_contact = 11;
   repeated opennms.inventory.SnmpInterfaceDTO snmpInterfaces = 12;
+  string scan_type = 13;
 }
 
 message NodeCreateDTO {
   string label = 1;
   string location = 2;
   optional string management_ip = 3;
+  repeated opennms.inventory.TagCreateDTO tags = 4;
 }
 
 message NodeList {

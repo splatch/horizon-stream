@@ -48,7 +48,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.common.VerificationException;
@@ -68,6 +67,7 @@ import org.opennms.horizon.shared.azure.http.dto.error.AzureHttpError;
 import org.opennms.horizon.shared.azure.http.dto.login.AzureOAuthToken;
 import org.opennms.horizon.shared.azure.http.dto.subscription.AzureSubscription;
 import org.opennms.horizon.shared.constants.GrpcConstants;
+import org.opennms.taskset.contract.TaskType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -169,8 +169,8 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
 
         assertTrue(credentials.getId() > 0);
 
-        //2 calls because the trap listener also gets called on startup
-        await().atMost(10, TimeUnit.SECONDS).until(() -> testGrpcService.getRequests().size(), Matchers.is(3));
+        await().atMost(10, TimeUnit.SECONDS).until( () ->  testGrpcService.getTaskDefinitions(DEFAULT_LOCATION).stream()
+            .filter(taskDef -> taskDef.getType().equals(TaskType.SCANNER)).toList().size(), Matchers.is(1));
 
         assertEquals(createDTO.getClientId(), credentials.getClientId());
         assertEquals(createDTO.getSubscriptionId(), credentials.getSubscriptionId());
@@ -271,7 +271,7 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
             .setDirectoryId(TEST_DIRECTORY_ID)
             .build();
 
-        StatusRuntimeException exception = Assertions.assertThrows(StatusRuntimeException.class, () ->
+        StatusRuntimeException exception = assertThrows(StatusRuntimeException.class, () ->
             serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(headerWithoutTenant)))
                 .createCredentials(createDTO));
         assertThat(exception.getStatus().getCode()).isEqualTo(io.grpc.Status.Code.UNAUTHENTICATED);

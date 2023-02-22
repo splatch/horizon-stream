@@ -35,6 +35,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.inventory.dto.TagCreateDTO;
+import org.opennms.horizon.inventory.dto.TagCreateListDTO;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.mapper.NodeMapperImpl;
 import org.opennms.horizon.inventory.model.IpInterface;
@@ -50,6 +52,7 @@ import org.opennms.horizon.inventory.service.taskset.ScannerTaskSetService;
 import org.opennms.horizon.inventory.taskset.api.TaskSetPublisher;
 import org.opennms.horizon.inventory.repository.TagRepository;
 import org.opennms.horizon.shared.constants.GrpcConstants;
+import org.opennms.taskset.contract.ScanType;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -74,8 +77,8 @@ public class NodeServiceTest {
     private NodeRepository mockNodeRepository;
     private MonitoringLocationRepository mockMonitoringLocationRepository;
     private IpInterfaceRepository mockIpInterfaceRepository;
-    private TagRepository tagRepository;
     private ConfigUpdateService mockConfigUpdateService;
+    private TagService tagService;
     private final String tenantID = "test-tenant";
     private Node node;
 
@@ -85,20 +88,20 @@ public class NodeServiceTest {
         mockNodeRepository = mock(NodeRepository.class);
         mockMonitoringLocationRepository = mock(MonitoringLocationRepository.class);
         mockIpInterfaceRepository = mock(IpInterfaceRepository.class);
-        tagRepository = mock(TagRepository.class);
         mockConfigUpdateService = mock(ConfigUpdateService.class);
+        tagService = mock(TagService.class);
 
 
         nodeService = new NodeService(mockNodeRepository,
             mockMonitoringLocationRepository,
             mockIpInterfaceRepository,
-            tagRepository,
             mockConfigUpdateService,
             mock(DetectorTaskSetService.class),
             mock(CollectorTaskSetService.class),
             mock(MonitorTaskSetService.class),
             mock(ScannerTaskSetService.class),
             mock(TaskSetPublisher.class),
+            tagService,
             nodeMapper);
 
         node = new Node();
@@ -126,13 +129,15 @@ public class NodeServiceTest {
             .setLabel("Label")
             .setLocation("loc")
             .setManagementIp("127.0.0.1")
+            .addTags(TagCreateDTO.newBuilder().setName("tag-name").build())
             .build();
 
-        nodeService.createNode(nodeCreateDTO, tenant);
+        nodeService.createNode(nodeCreateDTO, ScanType.NODE_SCAN, tenant);
         verify(mockNodeRepository).save(any(Node.class));
         verify(mockIpInterfaceRepository).save(any(IpInterface.class));
         verify(mockMonitoringLocationRepository).save(any(MonitoringLocation.class));
         verify(mockMonitoringLocationRepository).findByLocationAndTenantId(location, tenant);
+        verify(tagService).addTags(eq(tenant), any(TagCreateListDTO.class));
         verify(mockConfigUpdateService, timeout(5000)).sendConfigUpdate(tenant, location);
     }
 
@@ -149,7 +154,7 @@ public class NodeServiceTest {
 
         doReturn(Optional.of(new MonitoringLocation())).when(mockMonitoringLocationRepository).findByLocationAndTenantId(location, tenantId);
 
-        nodeService.createNode(nodeCreateDTO, tenantId);
+        nodeService.createNode(nodeCreateDTO, ScanType.NODE_SCAN, tenantId);
         verify(mockNodeRepository).save(any(Node.class));
         verify(mockIpInterfaceRepository).save(any(IpInterface.class));
         verify(mockMonitoringLocationRepository).findByLocationAndTenantId(location, tenantId);
@@ -171,7 +176,7 @@ public class NodeServiceTest {
             .setLocation(location)
             .build();
 
-        nodeService.createNode(nodeCreateDTO, tenant);
+        nodeService.createNode(nodeCreateDTO, ScanType.NODE_SCAN, tenant);
         verify(mockNodeRepository).save(any(Node.class));
         verify(mockMonitoringLocationRepository).findByLocationAndTenantId(location, tenant);
         verify(mockMonitoringLocationRepository).save(any(MonitoringLocation.class));
@@ -185,7 +190,7 @@ public class NodeServiceTest {
             .setManagementIp("127.0.0.1").build();
         MonitoringLocation location = new MonitoringLocation();
         doReturn(Optional.of(location)).when(mockMonitoringLocationRepository).findByLocationAndTenantId(GrpcConstants.DEFAULT_LOCATION, tenantID);
-        nodeService.createNode(nodeCreate, tenantID);
+        nodeService.createNode(nodeCreate, ScanType.NODE_SCAN, tenantID);
         verify(mockMonitoringLocationRepository).findByLocationAndTenantId(GrpcConstants.DEFAULT_LOCATION, tenantID);
         verify(mockNodeRepository).save(any(Node.class));
         verify(mockIpInterfaceRepository).save(any(IpInterface.class));
@@ -199,7 +204,7 @@ public class NodeServiceTest {
         doReturn(Optional.empty()).when(mockMonitoringLocationRepository).findByLocationAndTenantId(GrpcConstants.DEFAULT_LOCATION, tenantID);
         doReturn(new MonitoringLocation()).when(mockMonitoringLocationRepository).save(any(MonitoringLocation.class));
         ArgumentCaptor<MonitoringLocation> captor = ArgumentCaptor.forClass(MonitoringLocation.class);
-        nodeService.createNode(nodeCreate, tenantID);
+        nodeService.createNode(nodeCreate, ScanType.NODE_SCAN, tenantID);
         verify(mockMonitoringLocationRepository).findByLocationAndTenantId(GrpcConstants.DEFAULT_LOCATION, tenantID);
         verify(mockMonitoringLocationRepository).save(captor.capture());
         assertThat(captor.getValue().getLocation()).isEqualTo(GrpcConstants.DEFAULT_LOCATION);

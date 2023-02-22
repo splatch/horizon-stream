@@ -63,6 +63,7 @@ import org.opennms.node.scan.contract.IpInterfaceResult;
 import org.opennms.node.scan.contract.NodeInfoResult;
 import org.opennms.node.scan.contract.NodeScanResult;
 import org.opennms.node.scan.contract.SnmpInterfaceResult;
+import org.opennms.taskset.contract.ScanType;
 import org.opennms.taskset.contract.ScannerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -148,6 +149,7 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
 
             Node node = allNodes.get(0);
             assertNotNull(node);
+            assertEquals(ScanType.AZURE_SCAN, node.getScanType());
             assertEquals(TEST_TENANT_ID, node.getTenantId());
             assertEquals("vm-name (resource-group)", node.getNodeLabel());
             assertNotNull(node.getMonitoringLocation());
@@ -203,7 +205,7 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
             .setManagementIp(ipAddress)
             .setLocation(TEST_LOCATION)
             .build();
-        return nodeService.createNode(createDTO, TEST_TENANT_ID);
+        return nodeService.createNode(createDTO, ScanType.NODE_SCAN, TEST_TENANT_ID);
     }
 
     private SnmpInterface createSnmpInterface(Node node, int ifIndex) {
