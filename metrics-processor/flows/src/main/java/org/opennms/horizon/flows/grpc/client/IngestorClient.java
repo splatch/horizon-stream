@@ -34,8 +34,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.dataplatform.flows.ingester.v1.IngesterGrpc;
 import org.opennms.dataplatform.flows.ingester.v1.StoreFlowDocumentsRequest;
-import org.opennms.dataplatform.flows.ingester.v1.StoreFlowDocumentsResponse;
 import org.opennms.horizon.shared.constants.GrpcConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.retry.support.RetryTemplate;
 
 import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
@@ -47,6 +49,10 @@ public class IngestorClient {
 
     private final ManagedChannel channel;
     private final long deadline;
+    private final RetryTemplate retryTemplate;
+
+    private static final Logger LOG = LoggerFactory.getLogger(IngestorClient.class);
+
     private IngesterGrpc.IngesterBlockingStub ingesterBlockingStub;
 
     protected void initStubs() {
@@ -66,15 +72,20 @@ public class IngestorClient {
         return metadata;
     }
 
-    public StoreFlowDocumentsResponse sendData(StoreFlowDocumentsRequest storeFlowDocumentsRequest) {
-        // TODO: use spring retry for retry mechanismus, in case of failure from ingestor
-        // TODO:set  tenantID
-        String tenantId = "";
+    public void sendData(StoreFlowDocumentsRequest storeFlowDocumentsRequest, String tenantId) {
         Metadata metadata = getMetadata(true, tenantId);
-
-        return ingesterBlockingStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
-            .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)
-            .storeFlowDocuments(storeFlowDocumentsRequest);
+        try {
+            retryTemplate.execute(context -> {
+                LOG.info("Attempt number {} to persist StoreFlowDocumentRequest. ", context.getRetryCount() + 1);
+                ingesterBlockingStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+                    .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)
+                    .storeFlowDocuments(storeFlowDocumentsRequest);
+                return true;
+            });
+        } catch (RuntimeException e) {
+            LOG.error("Failed to send StoreFlowDocumentRequest to FlowIngestor. ", e);
+            throw e;
+        }
     }
 
 }

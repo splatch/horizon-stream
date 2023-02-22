@@ -104,7 +104,7 @@ public class PipelineImpl implements Pipeline {
 
         // Push flows to persistence
         for (final var persister : this.persisters.entrySet()) {
-            persister.getValue().persist(enrichedFlows);
+            persister.getValue().persist(enrichedFlows, tenantId);
         }
     }
 
@@ -142,7 +142,7 @@ public class PipelineImpl implements Pipeline {
 
         public void persist(final Collection<FlowDocument> flows) throws FlowException {
             try (final var ctx = this.logTimer.time()) {
-                this.repository.persist(flows);
+                this.repository.persist(flows, tenantId);
             }
         }
     }

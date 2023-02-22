@@ -48,6 +48,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -82,6 +86,12 @@ public class FlowsApplicationConfig {
     @Value("${grpc.server.deadline:60000}")
     private long deadline;
 
+    @Value("${grpc.url.retry.maxAttempts}")
+    private long maxNumberOfAttempts;
+
+    @Value("${grpc.url.retry.maxDelay}")
+    private long backOffPeriod;
+
     @Bean(name = "inventoryChannel")
     public ManagedChannel createInventoryChannel() {
         return ManagedChannelBuilder.forTarget(inventoryGrpcAddress)
@@ -102,8 +112,8 @@ public class FlowsApplicationConfig {
     }
 
     @Bean(destroyMethod = "shutdown", initMethod = "initStubs")
-    public IngestorClient createIngestorClient(@Qualifier("ingestorChannel") ManagedChannel channel) {
-        return new IngestorClient(channel, deadline);
+    public IngestorClient createIngestorClient(@Qualifier("ingestorChannel") ManagedChannel channel, RetryTemplate retryTemplate) {
+        return new IngestorClient(channel, deadline, retryTemplate);
     }
 
     @Bean
@@ -138,5 +148,17 @@ public class FlowsApplicationConfig {
                                                        final ClassificationEngine classificationEngine) {
         return new DocumentEnricherImpl(metricRegistry, inventoryClient, classificationEngine,
             clockSkewCorrectionThreshold);
+    }
+
+    @Bean
+    public RetryTemplate retryTemplate() {
+        RetryTemplate retryTemplate = new RetryTemplate();
+        FixedBackOffPolicy fixedBackOffPolicy = new FixedBackOffPolicy();
+        fixedBackOffPolicy.setBackOffPeriod(2000L);
+        retryTemplate.setBackOffPolicy(fixedBackOffPolicy);
+        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+        retryPolicy.setMaxAttempts(3);
+        retryTemplate.setRetryPolicy(retryPolicy);
+        return retryTemplate;
     }
 }
