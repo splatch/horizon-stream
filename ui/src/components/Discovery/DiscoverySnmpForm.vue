@@ -27,7 +27,6 @@
         :contentType="IPs.type"
         :regexDelim="IPs.regexDelim"
         :label="IPs.label"
-        default-content="127.0.0.1"
         ref="contentEditableIPRef"
         class="ip-input"
       />
@@ -37,7 +36,7 @@
         :contentType="community.type"
         :regexDelim="community.regexDelim"
         :label="community.label"
-        default-content="someCommunityString"
+        default-content=""
         ref="contentEditableCommunityStringRef"
         class="community-input"
       />
@@ -47,7 +46,7 @@
         :contentType="udpPort.type"
         :regexDelim="udpPort.regexDelim"
         :label="udpPort.label"
-        :default-content="1234"
+        :default-content="''"
         class="udp-port-input"
         ref="contentEditableUDPPortRef"
       />

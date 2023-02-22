@@ -29,7 +29,7 @@
         />
         <DiscoveryListCard
           title=" My Active Discoveries"
-          :list="store.activeDiscoveries"
+          :list="activeDiscoveries"
           @select-discovery="showDiscovery"
         />
         <DiscoveryListCard
@@ -90,6 +90,13 @@ import { DiscoveryInput } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+import { DiscoveryConfig } from '@/types/graphql'
+
+const discoveryQueries = useDiscoveryQueries()
+onMounted(() => discoveryQueries.getDiscoveries())
+const activeDiscoveries = computed(() => discoveryQueries.discoveries)
+
 type TDiscoveryAutocomplete = DiscoveryInput & { _text: string }
 
 const store = useDiscoveryStore()
@@ -127,12 +134,13 @@ const search = (q: string) => {
   searchLoading.value = false
 }
 
-const showDiscovery = (discovery: DiscoveryInput) => {
+const showDiscovery = (discovery: DiscoveryConfig) => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = false
+  //type hardocoded for now
+  discovery.type = DiscoveryType.ICMP
+  discoverySelectedType.value = DiscoveryType.ICMP
   store.setSelectedDiscovery(discovery)
-  discoverySelectedType.value = discovery.type
-  //selectedDiscovery.value = discovery
 }
 
 const handleCancel = () => {
@@ -229,6 +237,8 @@ const handleCancel = () => {
   }
 
   @include mediaQueriesMixins.screen-md {
+    padding: var(variables.$spacing-l);
+
     flex-grow: 1;
     min-width: auto;
     margin-bottom: 0;

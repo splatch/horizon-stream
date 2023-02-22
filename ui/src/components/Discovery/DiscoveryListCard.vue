@@ -11,7 +11,7 @@
         @click="$emit('selectDiscovery', item)"
         class="discovery-name"
       >
-        {{ item.name?.toUpperCase() }}
+        {{ item.configName?.toUpperCase() }}
       </div>
     </div>
     <div

@@ -50,7 +50,6 @@
       ref="tagsAutocompleteRef"
     />
 
-    <hr />
     <div class="buttons">
       <FeatherButton
         @click="cancel"
@@ -134,7 +133,6 @@ const saveAzureDiscovery = async () => {
   display: flex;
   flex: 1;
   flex-direction: column;
-  margin-bottom: var(variables.$spacing-xl);
 
   .title {
     @include typography.headline4;

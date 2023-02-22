@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { useDiscoveryMutations } from '../Mutations/discoveryMutations'
 import { cloneDeep } from 'lodash'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
+import { DiscoveryConfig } from '@/types/graphql'
 
 const defaultAzureForm = {
   name: '',
@@ -97,17 +98,18 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
     clearSnmpForm() {
       this.snmp = cloneDeep(defaultSnmpForm)
     },
-    setSelectedDiscovery(selected: any) {
+    setSelectedDiscovery(selected: DiscoveryConfig) {
       if (!selected) {
         this.selectedDiscovery = Object.assign({ type: DiscoveryType.None })
         this.clearAzureForm()
         this.clearSnmpForm()
       } else {
-        if (selected.type === DiscoveryType.ICMP) {
-          this.snmp = cloneDeep(selected)
-          this.selectedLocations = [selected.location]
-        } else {
-          this.azure = selected
+        // add check type
+        const discovery = cloneDeep(selected)
+        if (discovery) {
+          this.snmp.name = discovery.configName || ''
+          this.ipAddresses = discovery.ipAddresses || []
+          this.udpPorts = discovery.snmpConfig?.ports || []
         }
       }
     }

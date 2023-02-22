@@ -1,12 +1,22 @@
 import { defineStore } from 'pinia'
 import { useQuery } from 'villus'
-import { ListLocationsForDiscoveryDocument, Tag, ListTagsSearchDocument } from '@/types/graphql'
+import {
+  ListLocationsForDiscoveryDocument,
+  Tag,
+  ListTagsSearchDocument,
+  ListDiscoveryConfigDocument
+} from '@/types/graphql'
 
 export const useDiscoveryQueries = defineStore('discoveryQueries', () => {
   const tagsSearched = ref([] as Tag[])
 
   const { data: locations, execute: getLocations } = useQuery({
     query: ListLocationsForDiscoveryDocument,
+    fetchOnMount: false
+  })
+
+  const { data: listDiscoveryConfig, execute: getDiscoveries } = useQuery({
+    query: ListDiscoveryConfigDocument,
     fetchOnMount: false
   })
 
@@ -31,6 +41,8 @@ export const useDiscoveryQueries = defineStore('discoveryQueries', () => {
     locations: computed(() => locations.value?.findAllLocations || []),
     getLocations,
     tagsSearched: computed(() => tagsSearched.value || []),
-    getTagsSearch
+    getTagsSearch,
+    discoveries: computed(() => listDiscoveryConfig.value?.listDiscoveryConfig || []),
+    getDiscoveries
   }
 })
