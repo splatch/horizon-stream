@@ -38,17 +38,7 @@ secret_settings(disable_scrub=True)  ## TODO: update secret values so we can ree
 # Functions #
 cluster_arch_cmd = '$(tilt get cluster default -o=jsonpath --template="{.status.arch}")'
 
-def multi_module_build(submodule, image_name, base_path):
-    submodule_flag = '-pl {}'.format(submodule)
-
-    custom_build(
-        image_name,
-        'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
-        deps=[base_path],
-        ignore=['**/target'],
-    )
-
-def single_module_build(image_name, base_path):
+def build_single_module(image_name, base_path):
     custom_build(
         image_name,
         'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, ''),
@@ -59,42 +49,54 @@ def single_module_build(image_name, base_path):
         ],
     )
 
-def jib_project(resource_name, image_name, base_path, k8s_resource_name, resource_deps=[], port_forwards=[], labels=None, submodule=None,):
+def jib_project(resource_name, image_name, base_path, k8s_resource_name, resource_deps=[], port_forwards=[], labels=None):
     if not labels:
         labels=[resource_name]
 
-    if submodule:
-        multi_module_build(submodule, image_name, base_path)
+    compile_resource_name = '{}:live-reload'.format(resource_name)
 
-        k8s_resource(
-            k8s_resource_name,
-            new_name=resource_name,
-            labels=labels,
-            resource_deps=resource_deps,
-            port_forwards=port_forwards,
-            trigger_mode=TRIGGER_MODE_MANUAL,
-        )
-    else:
-        compile_resource_name = '{}:live-reload'.format(resource_name)
+    local_resource(
+        compile_resource_name,
+        'mvn compile -f {} -am {}'.format(base_path, ''),
+        deps=['{}/src'.format(base_path, ''), '{}/pom.xml'.format(base_path, '')],
+        ignore=['**/target'],
+        labels=labels,
+    )
 
-        local_resource(
-            compile_resource_name,
-            'mvn compile -f {} -am {}'.format(base_path, ''),
-            deps=['{}/src'.format(base_path), '{}/pom.xml'.format(base_path)],
-            ignore=['**/target'],
-            labels=labels,
-        )
+    build_single_module(image_name, base_path)
 
-        single_module_build(image_name, base_path)
+    k8s_resource(
+        k8s_resource_name,
+        new_name=resource_name,
+        labels=labels,
+        resource_deps=resource_deps + [compile_resource_name],
+        port_forwards=port_forwards,
+    )
 
-        k8s_resource(
-            k8s_resource_name,
-            new_name=resource_name,
-            labels=labels,
-            resource_deps=resource_deps + [compile_resource_name],
-            port_forwards=port_forwards,
-        )
-   
+def build_multi_module(submodule, image_name, base_path):
+    submodule_flag = '-pl {}'.format(submodule)
+
+    custom_build(
+        image_name,
+        'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
+        deps=[base_path],
+        ignore=['**/target'],
+    )
+
+def jib_project_multi_module(resource_name, image_name, base_path, k8s_resource_name, resource_deps=[], port_forwards=[], labels=None, submodule=None):
+    if not labels:
+        labels=[resource_name]
+
+    build_multi_module(submodule, image_name, base_path)
+
+    k8s_resource(
+        k8s_resource_name,
+        new_name=resource_name,
+        labels=labels,
+        resource_deps=resource_deps,
+        port_forwards=port_forwards,
+        trigger_mode=TRIGGER_MODE_MANUAL,
+    )
 
 # Deployment #
 k8s_yaml(
@@ -201,7 +203,7 @@ jib_project(
 )
 
 ### Minion Gateway ###
-jib_project(
+jib_project_multi_module(
     'minion-gateway',
     'opennms/horizon-stream-minion-gateway',
     'minion-gateway',
@@ -211,7 +213,7 @@ jib_project(
 )
 
 ### Minion Gateway gRPC Proxy ###
-jib_project(
+jib_project_multi_module(
     'minion-gateway-grpc-proxy',
     'opennms/horizon-stream-minion-gateway-grpc-proxy',
     'minion-gateway-grpc-proxy',
