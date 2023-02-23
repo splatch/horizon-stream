@@ -16,11 +16,6 @@ export interface FeatherSortObject {
   value: SORT | any
 }
 
-export interface WidgetProps {
-  [x: string]: any
-  isWidget: boolean
-}
-
 export enum TimeUnit {
   Secs,
   MSecs
@@ -34,6 +29,7 @@ export interface IIcon {
   title?: string
   tooltip?: string
   size?: string
+  cursorHover?: string
 }
 
 export const enum Monitor {
