@@ -41,11 +41,11 @@ cluster_arch_cmd = '$(tilt get cluster default -o=jsonpath --template="{.status.
 def build_single_module(image_name, base_path):
     custom_build(
         image_name,
-        'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, ''),
-        deps=['{}{}/target/classes'.format(base_path, ''), '{}{}/pom.xml'.format(base_path, ''), '{}{}/src/main/resources'.format(base_path, '')],
+        'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} '.format(base_path, cluster_arch_cmd),
+        deps=['{}/target/classes'.format(base_path), '{}/pom.xml'.format(base_path), '{}/src/main/resources'.format(base_path)],
         live_update=[
-            sync('{}{}/target/classes/org/opennms'.format(base_path, ''), '/app/classes/org/opennms'),
-            sync('{}{}/src/main/resources'.format(base_path, ''), '/app/resources'),
+            sync('{}/target/classes/org/opennms'.format(base_path), '/app/classes/org/opennms'),
+            sync('{}/src/main/resources'.format(base_path), '/app/resources'),
         ],
     )
 
@@ -58,7 +58,7 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
     local_resource(
         compile_resource_name,
         'mvn compile -f {} -am {}'.format(base_path, ''),
-        deps=['{}/src'.format(base_path, ''), '{}/pom.xml'.format(base_path, '')],
+        deps=['{}/src'.format(base_path), '{}/pom.xml'.format(base_path)],
         ignore=['**/target'],
         labels=labels,
     )
