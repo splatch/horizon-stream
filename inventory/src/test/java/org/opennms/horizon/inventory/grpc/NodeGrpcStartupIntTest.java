@@ -36,7 +36,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.keycloak.common.VerificationException;
 import org.opennms.horizon.inventory.SpringContextTestInitializer;
 import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.taskset.contract.TaskSet;
@@ -55,14 +54,13 @@ class NodeGrpcStartupIntTest extends GrpcTestBase {
     private static final int EXPECTED_TASK_DEF_COUNT = 1;
 
     @BeforeEach
-    public void prepare() throws VerificationException {
+    public void prepare() {
         testGrpcService = context.getBean(TestTaskSetGrpcService.class);
-        prepareServer();
     }
 
     @AfterEach
     public void cleanUp() throws InterruptedException {
-        afterTest();
+        //this test have to clean after tests.
         testGrpcService.reset();
     }
 

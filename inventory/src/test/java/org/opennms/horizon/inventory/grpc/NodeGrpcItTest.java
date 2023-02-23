@@ -59,7 +59,6 @@ import org.opennms.horizon.inventory.dto.NodeList;
 import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
-import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoredService;
@@ -84,7 +83,6 @@ import org.opennms.taskset.contract.TaskType;
 import org.opennms.taskset.service.contract.PublishTaskSetRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.protobuf.BoolValue;
@@ -133,15 +131,10 @@ class NodeGrpcItTest extends GrpcTestBase {
     private TagRepository tagRepository;
     @Autowired
     private DetectorTaskSetService detectorTaskSetService;
-    @Autowired
-    ApplicationContext context;
-
-    private TestTaskSetGrpcService testGrpcService;
 
     @BeforeEach
     public void prepare() throws VerificationException {
-        testGrpcService = context.getBean(TestTaskSetGrpcService.class);
-        testGrpcService.reset();
+        prepareTestGrpc();
         prepareServer();
         serviceStub = NodeServiceGrpc.newBlockingStub(channel);
     }
@@ -555,13 +548,6 @@ class NodeGrpcItTest extends GrpcTestBase {
             .addAllTags(List.of(createDTO1, createDTO2)).setNodeId(node1.getId()).build();
 
         tagService.addTags(tenantId, createListDTO1);
-
-        TagCreateDTO createDTO3 = TagCreateDTO.newBuilder()
-            .setName("test-tag-name-2")
-            .build();
-
-        TagCreateListDTO createListDTO3 = TagCreateListDTO.newBuilder()
-            .addAllTags(List.of(createDTO3)).setNodeId(node2.getId()).build();
 
         serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).deleteNode(Int64Value.of(node1.getId()));
         nodeRepository.flush();

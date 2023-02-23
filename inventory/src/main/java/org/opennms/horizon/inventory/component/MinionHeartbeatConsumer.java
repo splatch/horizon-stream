@@ -95,10 +95,11 @@ public class MinionHeartbeatConsumer {
             Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
                 service.addMonitoringSystemFromHeartbeat(message, tenantId));
             String systemId = message.getIdentity().getSystemId();
-            Long lastRun = rpcMaps.get(systemId);
+            String key = tenantId + "_" + systemId;
+            Long lastRun = rpcMaps.get(key);
             if (lastRun == null || (System.currentTimeMillis() > (lastRun + MONITOR_PERIOD))) { //prevent run too many rpc calls
                 CompletableFuture.runAsync(() -> runRpcMonitor(systemId, message.getIdentity().getLocation(), tenantId));
-                rpcMaps.put(systemId, System.currentTimeMillis());
+                rpcMaps.put(key, System.currentTimeMillis());
             }
         } catch (Exception e) {
             log.error("Error while processing heartbeat message: ", e);

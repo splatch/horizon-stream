@@ -37,8 +37,11 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.keycloak.common.VerificationException;
+import org.opennms.horizon.inventory.grpc.taskset.TestTaskSetGrpcService;
 import org.opennms.horizon.shared.constants.GrpcConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
@@ -58,8 +61,16 @@ public abstract class GrpcTestBase {
     protected final String headerWithoutTenant = "Bearer esgs12345invalid";
     protected final String differentTenantHeader = "Bearer esgs12345different";
     protected ManagedChannel channel;
+    protected TestTaskSetGrpcService testGrpcService;
+    @Autowired
+    private ApplicationContext context;
     @SpyBean
     protected  InventoryServerInterceptor spyInterceptor;
+
+    protected void prepareTestGrpc() {
+        testGrpcService = context.getBean(TestTaskSetGrpcService.class);
+        testGrpcService.reset();
+    }
 
     protected void prepareServer() throws VerificationException {
         channel = ManagedChannelBuilder.forAddress("localhost", 6767)
@@ -71,8 +82,10 @@ public abstract class GrpcTestBase {
     }
 
     protected void afterTest() throws InterruptedException {
-        channel.shutdownNow();
-        channel.awaitTermination(10, TimeUnit.SECONDS);
+        if(channel != null) {
+            channel.shutdownNow();
+            channel.awaitTermination(10, TimeUnit.SECONDS);
+        }
         verifyNoMoreInteractions(spyInterceptor);
         reset(spyInterceptor);
     }

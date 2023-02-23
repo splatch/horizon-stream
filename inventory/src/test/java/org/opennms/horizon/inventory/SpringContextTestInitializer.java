@@ -46,7 +46,6 @@ import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 
 public class SpringContextTestInitializer implements ApplicationContextInitializer<GenericApplicationContext> {
-    public static String GRPC_SERVER_BEAN = "test-grpc-server";
     public static String GRPC_SERVICE_BEAN = "test-grpc-service";
 
 
@@ -89,8 +88,8 @@ public class SpringContextTestInitializer implements ApplicationContextInitializ
         registerBean(context, MinionGatewayGrpcClientConfig.MINION_GATEWAY_GRPC_CHANNEL, ManagedChannel.class,
             () -> InProcessChannelBuilder.forName(serverName).directExecutor().build()
         );
-        registerBean(context, GRPC_SERVER_BEAN, Server.class, () -> server);
         registerBean(context, GRPC_SERVICE_BEAN, TestTaskSetGrpcService.class, () -> grpcService);
+
     }
 
     private <T> void registerBean(GenericApplicationContext context, String name, Class<T> clazz, Supplier<T> supplier) {
