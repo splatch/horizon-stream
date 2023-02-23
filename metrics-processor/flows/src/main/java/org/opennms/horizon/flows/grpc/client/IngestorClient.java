@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.dataplatform.flows.ingester.v1.IngesterGrpc;
 import org.opennms.dataplatform.flows.ingester.v1.StoreFlowDocumentsRequest;
+import org.opennms.dataplatform.flows.ingester.v1.StoreFlowDocumentsResponse;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
 import io.grpc.stub.MetadataUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @RequiredArgsConstructor
 public class IngestorClient {
@@ -53,9 +55,10 @@ public class IngestorClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(IngestorClient.class);
 
+    @Setter
     private IngesterGrpc.IngesterBlockingStub ingesterBlockingStub;
 
-    protected void initStubs() {
+    public void initStubs() {
         ingesterBlockingStub = IngesterGrpc.newBlockingStub(channel);
     }
 
@@ -77,9 +80,10 @@ public class IngestorClient {
         try {
             retryTemplate.execute(context -> {
                 LOG.info("Attempt number {} to persist StoreFlowDocumentRequest. ", context.getRetryCount() + 1);
-                ingesterBlockingStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+                StoreFlowDocumentsResponse storeFlowDocumentsResponse = ingesterBlockingStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
                     .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)
                     .storeFlowDocuments(storeFlowDocumentsRequest);
+                LOG.info("StoreFlowDocumentRequest successfully persisted. ");
                 return true;
             });
         } catch (RuntimeException e) {

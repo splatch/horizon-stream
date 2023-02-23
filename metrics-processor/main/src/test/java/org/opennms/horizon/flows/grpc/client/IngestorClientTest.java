@@ -40,7 +40,7 @@ class IngestorClientTest {
 
         // When
         // TODO: verify what's failing in the call then reactivate the test
-       // assertDoesNotThrow(() -> ingestorClient.sendData(storeFlowDocumentsRequest, "test-tenant-id"));
+        //assertDoesNotThrow(() -> ingestorClient.sendData(storeFlowDocumentsRequest, "test-tenant-id"));
     }
 
 

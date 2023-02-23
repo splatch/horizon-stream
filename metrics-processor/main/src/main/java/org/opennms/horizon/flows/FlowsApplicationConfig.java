@@ -87,10 +87,10 @@ public class FlowsApplicationConfig {
     private long deadline;
 
     @Value("${grpc.url.retry.maxAttempts}")
-    private long maxNumberOfAttempts;
+    private int maxNumberOfAttempts;
 
     @Value("${grpc.url.retry.maxDelay}")
-    private long backOffPeriod;
+    private int backOffPeriod;
 
     @Bean(name = "inventoryChannel")
     public ManagedChannel createInventoryChannel() {
@@ -154,10 +154,10 @@ public class FlowsApplicationConfig {
     public RetryTemplate retryTemplate() {
         RetryTemplate retryTemplate = new RetryTemplate();
         FixedBackOffPolicy fixedBackOffPolicy = new FixedBackOffPolicy();
-        fixedBackOffPolicy.setBackOffPeriod(2000L);
+        fixedBackOffPolicy.setBackOffPeriod(backOffPeriod);
         retryTemplate.setBackOffPolicy(fixedBackOffPolicy);
         SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-        retryPolicy.setMaxAttempts(3);
+        retryPolicy.setMaxAttempts(maxNumberOfAttempts);
         retryTemplate.setRetryPolicy(retryPolicy);
         return retryTemplate;
     }
