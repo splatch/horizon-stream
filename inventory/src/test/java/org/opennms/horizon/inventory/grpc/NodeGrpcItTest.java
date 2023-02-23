@@ -563,9 +563,6 @@ class NodeGrpcItTest extends GrpcTestBase {
         TagCreateListDTO createListDTO3 = TagCreateListDTO.newBuilder()
             .addAllTags(List.of(createDTO3)).setNodeId(node2.getId()).build();
 
-        /*List<TagDTO> tagsList3 = tagService.addTags(tenantId, createListDTO3);
-        TagDTO tag3 = tagsList3.get(0);*/
-
         serviceStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createAuthHeader(authHeader))).deleteNode(Int64Value.of(node1.getId()));
         nodeRepository.flush();
         tagRepository.flush();
