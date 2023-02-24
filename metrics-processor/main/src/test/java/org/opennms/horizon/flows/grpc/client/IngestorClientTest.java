@@ -5,10 +5,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opennms.dataplatform.flows.document.FlowDocument;
+import org.opennms.dataplatform.flows.document.Locality;
+import org.opennms.dataplatform.flows.document.NodeInfo;
 import org.opennms.dataplatform.flows.ingester.v1.StoreFlowDocumentsRequest;
 import org.opennms.horizon.flows.FlowsApplicationConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +45,7 @@ class IngestorClientTest {
 
         // When
         // TODO: verify what's failing in the call then reactivate the test
-        //assertDoesNotThrow(() -> ingestorClient.sendData(storeFlowDocumentsRequest, "test-tenant-id"));
+        assertDoesNotThrow(() -> ingestorClient.sendData(storeFlowDocumentsRequest, "test-tenant-id"));
     }
 
 
@@ -60,7 +65,14 @@ class IngestorClientTest {
             .setSrcPort(UInt32Value.of(510))
             .setDstAddress(destIp)
             .setDstPort(UInt32Value.of(80))
-            .setProtocol(UInt32Value.of(6)); // TCP
+            .setProtocol(UInt32Value.of(6))
+            .setDestNode(NodeInfo.newBuilder().getDefaultInstanceForType())
+            .setSrcNode(NodeInfo.newBuilder().getDefaultInstanceForType())
+            .setExporterNode(NodeInfo.newBuilder().getDefaultInstanceForType())
+            .setLocation("test-location")
+            .setDstLocality(Locality.PUBLIC)
+            .setSrcLocality(Locality.PUBLIC)
+            .setFlowLocality(Locality.PUBLIC);
 
         return flow.build();
     }

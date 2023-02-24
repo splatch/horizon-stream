@@ -80,7 +80,7 @@ public class IngestorClient {
         try {
             retryTemplate.execute(context -> {
                 LOG.info("Attempt number {} to persist StoreFlowDocumentRequest. ", context.getRetryCount() + 1);
-                StoreFlowDocumentsResponse storeFlowDocumentsResponse = ingesterBlockingStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+                ingesterBlockingStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
                     .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)
                     .storeFlowDocuments(storeFlowDocumentsRequest);
                 LOG.info("StoreFlowDocumentRequest successfully persisted. ");
