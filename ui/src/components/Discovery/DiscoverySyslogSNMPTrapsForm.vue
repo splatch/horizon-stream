@@ -28,8 +28,8 @@
         <DiscoveryHelpConfiguring data-test="help-configuring" />
         <DiscoveryAutocomplete
           @items-selected="tagsSelectedListener"
-          :get-items="discoveryQueries.getTagsSearch"
-          :items="discoveryQueries.tagsSearched"
+          :get-items="tagQueries.getTagsSearch"
+          :items="tagQueries.tagsSearched"
           :label="Common.tagsInput"
           ref="tagsAutocompleteRef"
           data-test="tags-autocomplete"
@@ -85,7 +85,7 @@ import { IIcon } from '@/types'
 import discoveryText from './discovery.text'
 import { DiscoverySyslogSNMPTrapsForm, Common } from './discovery.text'
 import { ContentEditableType } from './discovery.constants'
-import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import useSnackbar from '@/composables/useSnackbar'
 
@@ -96,7 +96,7 @@ const props = defineProps<{
 
 const { showSnackbar } = useSnackbar()
 
-const discoveryQueries = useDiscoveryQueries()
+const tagQueries = useTagQueries()
 const discoveryMutations = useDiscoveryMutations()
 
 const isFormInvalid = ref(
@@ -193,7 +193,7 @@ const deleteHandler = () => {
 const deleteIcon: IIcon = {
   image: markRaw(DeleteIcon),
   tooltip: 'Delete',
-  size: '1.5rem',
+  size: 1.5,
   cursorHover: 'pointer'
 }
 </script>

@@ -44,8 +44,8 @@
     <DiscoveryAutocomplete
       class="tags"
       @items-selected="tagsSelectedListener"
-      :get-items="discoveryQueries.getTagsSearch"
-      :items="discoveryQueries.tagsSearched"
+      :get-items="tagQueries.getTagsSearch"
+      :items="tagQueries.tagsSearched"
       :label="Common.tagsInput"
       ref="tagsAutocompleteRef"
     />
@@ -74,10 +74,12 @@ import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 import { Azure, Common } from './discovery.text'
 import { Location } from '@/types/graphql'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 
 const store = useDiscoveryStore()
 const discoveryQueries = useDiscoveryQueries()
+const tagQueries = useTagQueries()
 const discoveryMutations = useDiscoveryMutations()
 
 const props = defineProps<{

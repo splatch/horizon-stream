@@ -18,8 +18,8 @@
     />
     <!-- <DiscoveryAutocomplete
       @items-selected="tagsSelectedListener"
-      :get-items="discoveryQueries.getTagsSearch"
-      :items="discoveryQueries.tagsSearched"
+      :get-items="tagQueries.getTagsSearch"
+      :items="tagQueries.tagsSearched"
       :label="Common.tagsInput"
       ref="tagsAutocompleteRef"
       data-test="tags-autocomplete"
@@ -78,6 +78,7 @@ import { ContentEditableType } from '@/components/Discovery/discovery.constants'
 import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
 import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+// import { useTagQueries } from '@/store/Queries/tagQueries'
 import { Location } from '@/types/graphql'
 
 import useSnackbar from '@/composables/useSnackbar'
@@ -86,6 +87,7 @@ const { showSnackbar } = useSnackbar()
 // const emit = defineEmits(['close-form'])
 
 const discoveryQueries = useDiscoveryQueries()
+// const tagQueries = useTagQueries()
 const store = useDiscoveryStore()
 const props = defineProps<{
   discovery?: DiscoveryInput | null
@@ -100,7 +102,7 @@ const selectLocation = (location: Required<Location[]>) =>
 //   console.log('valid - ', property, val)
 // }
 
-const tagsAutocompleteRef = ref()
+/* const tagsAutocompleteRef = ref()
 const tagsSelectedListener = (tags: Record<string, string>[]) => {
   const tagsSelected = tags.map((tag) => {
     delete tag._text
@@ -108,7 +110,7 @@ const tagsSelectedListener = (tags: Record<string, string>[]) => {
   })
 
   store.setTags(tagsSelected)
-}
+} */
 
 const contentEditableIPRef = ref()
 const IPs = {
