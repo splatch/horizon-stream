@@ -54,9 +54,9 @@
       <div>
         <div v-if="discoverySelectedType === DiscoveryType.ICMP">
           <DiscoverySnmpForm
-            @close-form="handleCancel"
             :successCallback="(name) => successModal.openSuccessModal(name)"
             :cancel="handleCancel"
+            :discovery="selectedDiscovery"
           />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
@@ -108,13 +108,14 @@ const addIcon: IIcon = {
 const successModal = ref()
 const isDiscoveryEditingShown = ref(false)
 const showNewDiscovery = ref(false)
-const selectedDiscovery = ref<DiscoveryInput | null>(null)
+const selectedDiscovery = ref<DiscoveryConfig | null>(null)
 const discoverySelectedType = ref(DiscoveryType.None)
 
 const handleNewDiscovery = () => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = true
-  store.setSelectedDiscovery(null)
+  selectedDiscovery.value = null
+  discoverySelectedType.value = DiscoveryType.None
 }
 
 const discoveriesResults = ref<TDiscoveryAutocomplete[]>([])
@@ -139,7 +140,7 @@ const showDiscovery = (discovery: DiscoveryConfig) => {
   showNewDiscovery.value = false
   //type hardocoded for now
   discoverySelectedType.value = DiscoveryType.ICMP
-  store.setSelectedDiscovery(discovery)
+  selectedDiscovery.value = discovery
 }
 
 const handleCancel = () => {
@@ -196,6 +197,7 @@ const handleCancel = () => {
     }
 
     @include mediaQueriesMixins.screen-md {
+      max-width: 350px;
       margin-bottom: 0;
     }
 

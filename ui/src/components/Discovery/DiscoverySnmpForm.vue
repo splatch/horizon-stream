@@ -6,7 +6,7 @@
   >
     <div class="form-title">{{ DiscoverySNMPForm.title }}</div>
     <FeatherInput
-      v-model="store.snmp.name"
+      v-model="discoveryInfo.configName"
       :label="DiscoverySNMPForm.nameInputLabel"
       class="name-input"
     />
@@ -14,43 +14,43 @@
       class="locations-select"
       type="single"
       :preLoadedlocations="props.discovery?.location"
-      @location-selected="selectLocation"
+      @location-selected="setLocation"
     />
-    <!-- <DiscoveryAutocomplete
+    <!--<DiscoveryAutocomplete
       @items-selected="tagsSelectedListener"
       :get-items="discoveryQueries.getTagsSearch"
       :items="discoveryQueries.tagsSearched"
       :label="Common.tagsInput"
       ref="tagsAutocompleteRef"
       data-test="tags-autocomplete"
-    /> -->
+    />-->
     <div class="content-editable-container">
       <DiscoveryContentEditable
         @is-content-invalid="isIPRangeInvalidListener"
-        @content-formatted="ipRangeEnteredListerner"
-        :contentType="IPs.type"
-        :regexDelim="IPs.regexDelim"
-        :label="IPs.label"
+        @content-formatted="(val) => setSnmpConfig('ipAddresses', val)"
+        :contentType="ContentEditableType.IP"
+        :regexDelim="IP_RANGE.regexDelim"
+        :label="discoveryText.ContentEditable.IP.label"
         ref="contentEditableIPRef"
         class="ip-input"
       />
       <DiscoveryContentEditable
         @is-content-invalid="isCommunityStringInvalidListerner"
-        @content-formatted="communityStringEnteredListerner"
-        :contentType="community.type"
-        :regexDelim="community.regexDelim"
-        :label="community.label"
-        default-content=""
+        @content-formatted="(val) => setSnmpConfig('snmpConfig.readCommunities', val)"
+        :contentType="ContentEditableType.CommunityString"
+        :regexDelim="COMMUNITY_STRING.regexDelim"
+        :label="discoveryText.ContentEditable.CommunityString.label"
+        :default-content="COMMUNITY_STRING.default"
         ref="contentEditableCommunityStringRef"
         class="community-input"
       />
       <DiscoveryContentEditable
         @is-content-invalid="isUDPPortInvalidListener"
-        @content-formatted="UDPPortEnteredListener"
-        :contentType="udpPort.type"
-        :regexDelim="udpPort.regexDelim"
-        :label="udpPort.label"
-        :default-content="''"
+        @content-formatted="(val) => setSnmpConfig('snmpConfig.ports', parseInt(val))"
+        :contentType="ContentEditableType.UDPPort"
+        :regexDelim="UDP_PORT.regexDelim"
+        :label="discoveryText.ContentEditable.UDPPort.label"
+        :default-content="UDP_PORT.default"
         class="udp-port-input"
         ref="contentEditableUDPPortRef"
       />
@@ -58,13 +58,15 @@
 
     <div class="footer">
       <FeatherButton
-        @click="$emit('close-form')"
+        @click="cancel"
         secondary
         >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
       >
       <ButtonWithSpinner
         type="submit"
         primary
+        :disabled="isDisabled"
+        :isFetching="isFetchingSnmp"
       >
         {{ discoveryText.Discovery.button.submit }}
       </ButtonWithSpinner>
@@ -73,87 +75,80 @@
 </template>
 
 <script lang="ts" setup>
-import { DiscoveryInput } from '@/types/discovery'
-import { ContentEditableType } from '@/components/Discovery/discovery.constants'
-import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
-import { useDiscoveryStore } from '@/store/Views/discoveryStore'
+import { ContentEditableType, UDP_PORT, COMMUNITY_STRING, IP_RANGE } from '@/components/Discovery/discovery.constants'
+import discoveryText, { DiscoverySNMPForm } from '@/components/Discovery/discovery.text'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
-import { Location } from '@/types/graphql'
-
+import { Location, DiscoveryConfig } from '@/types/graphql'
+import { set } from 'lodash'
 import useSnackbar from '@/composables/useSnackbar'
-const { showSnackbar } = useSnackbar()
+import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 
+const { createDiscoveryConfig, errorSnmp, isFetchingSnmp } = useDiscoveryMutations()
+const { showSnackbar } = useSnackbar()
 // const emit = defineEmits(['close-form'])
 
 const discoveryQueries = useDiscoveryQueries()
-const store = useDiscoveryStore()
 const props = defineProps<{
-  discovery?: DiscoveryInput | null
+  discovery?: DiscoveryConfig | null
   successCallback: (name: string) => void
+  cancel: () => void
 }>()
 
-// const isIPRangeInvalid = ref(false)
-const selectLocation = (location: Required<Location[]>) =>
-  location[0] && location[0].location && store.selectLocation(location[0].location, true)
+const discoveryInfo = ref<DiscoveryConfig>(props.discovery || {})
+//const selectedTags = ref<string[]>()
+const contentEditableIPRef = ref([])
+const contentEditableCommunityStringRef = ref()
+const contentEditableUDPPortRef = ref()
+const isDisabled = computed(() => !discoveryInfo.value.configName || !discoveryInfo.value.location)
 
-// const isContentValid = (property: string, val: boolean) => {
-//   console.log('valid - ', property, val)
+watch(props, () => {
+  discoveryInfo.value = props.discovery || {}
+})
+
+const setLocation = (location: Location[]) => {
+  discoveryInfo.value.location = location[0]?.location
+}
+
+const setSnmpConfig = (property: string, val: string | number) => {
+  set(discoveryInfo.value, property, [val])
+}
+
+//const tagsAutocompleteRef = ref()
+// const tagsSelectedListener = (tags: Record<string, string>[]) => {
+//   selectedTags.value = tags.map((tag) => tag.name)
 // }
 
-const tagsAutocompleteRef = ref()
-const tagsSelectedListener = (tags: Record<string, string>[]) => {
-  const tagsSelected = tags.map((tag) => {
-    delete tag._text
-    return tag
-  })
-
-  store.setTags(tagsSelected)
-}
-
-const contentEditableIPRef = ref()
-const IPs = {
-  type: ContentEditableType.IP,
-  regexDelim: '[,; ]+',
-  label: discoveryText.ContentEditable.IP.label
-}
 let isIPRangeInvalid = false
 const isIPRangeInvalidListener = (isInvalid: boolean) => {
   isIPRangeInvalid = isInvalid
 }
 const ipRangeEnteredListerner = (str: string) => {
-  const regexDelim = new RegExp(udpPort.regexDelim)
-  store.setIpAddresses(str.split(regexDelim))
+  //const regexDelim = new RegExp(udpPort.regexDelim)
+  //store.setIpAddresses(str.split(regexDelim))
 }
 
-const contentEditableCommunityStringRef = ref()
-const community = {
-  type: ContentEditableType.CommunityString,
-  regexDelim: '',
-  label: discoveryText.ContentEditable.CommunityString.label
-}
+// const community = {
+//   type: ContentEditableType.CommunityString,
+//   regexDelim: '',
+//   label: discoveryText.ContentEditable.CommunityString.label
+// }
 let isCommunityStringInvalid = false
 const isCommunityStringInvalidListerner = (isInvalid: boolean) => {
   isCommunityStringInvalid = isInvalid
 }
 const communityStringEnteredListerner = (str: string) => {
-  const regexDelim = new RegExp(udpPort.regexDelim)
-  store.setCommunityString(str.split(regexDelim))
+  //const regexDelim = new RegExp(udpPort.regexDelim)
+  //store.setCommunityString(str.split(regexDelim))
 }
 
-const contentEditableUDPPortRef = ref()
-const udpPort = {
-  type: ContentEditableType.UDPPort,
-  regexDelim: '[,; ]+',
-  label: discoveryText.ContentEditable.UDPPort.label
-}
 let isUDPPortInvalid = false
 const isUDPPortInvalidListener = (isInvalid: boolean) => {
   isUDPPortInvalid = isInvalid
 }
 const UDPPortEnteredListener = (str: string) => {
-  const regexDelim = new RegExp(udpPort.regexDelim)
-  const ports = str.split(regexDelim)
-  store.setUdpPorts(ports.map((p) => parseInt(p)))
+  // const regexDelim = new RegExp(udpPort.regexDelim)
+  // const ports = str.split(regexDelim)
+  // store.setUdpPorts(ports.map((p) => parseInt(p)))
 }
 
 const resetContentEditable = () => {
@@ -167,16 +162,16 @@ const saveHandler = async () => {
   contentEditableIPRef.value.validateAndFormat()
   contentEditableCommunityStringRef.value.validateAndFormat()
   contentEditableUDPPortRef.value.validateAndFormat()
-
-  const success = await store.saveDiscoverySnmp()
-  if (success) {
+  await createDiscoveryConfig({ snmpInfo: discoveryInfo.value })
+  console.info(errorSnmp)
+  if (!errorSnmp.value) {
     discoveryQueries.getDiscoveries()
-    store.clearSnmpForm()
     resetContentEditable()
-    props.successCallback(store.snmp.name)
+    props.successCallback(discoveryInfo.value.configName)
+    discoveryInfo.value = {}
   } else {
     showSnackbar({
-      msg: discoveryText.Discovery.error.errorCreate
+      msg: errorSnmp.value.response.body.errors[0].message || discoveryText.Discovery.error.errorCreate
     })
   }
 }

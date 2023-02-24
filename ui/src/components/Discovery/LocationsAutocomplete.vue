@@ -18,6 +18,7 @@
       :results="filteredLocations"
       @search="search"
       @update:modelValue="deboncedFn"
+      ref="refAutocomplete"
     ></FeatherAutocomplete>
 
     <!-- Locations selection -->
@@ -57,12 +58,13 @@ const selectedLocations = ref<TLocationAutocomplete[]>([])
 const loading = ref(false)
 const locations = ref() //locations without selected items
 const filteredLocations = ref() //results in autocomplete
+const refAutocomplete = ref()
 const computedLocations = computed(() => discoveryQueries.locations)
+
 const props = defineProps({
   type: {
     type: String,
-    required: false,
-    default: 'multiple'
+    required: false
   },
   preLoadedlocations: {
     type: Array<string>,
@@ -72,7 +74,6 @@ const props = defineProps({
 })
 
 onMounted(() => discoveryQueries.getLocations())
-
 const initLocations = () => {
   filteredLocations.value = computedLocations.value as Location[]
   locations.value = computedLocations.value as Location[]
@@ -110,6 +111,7 @@ const search = (q: string) => {
     .filter((x: any) => x.location?.toLowerCase().indexOf(query) > -1)
     .map((x: any) => ({
       _text: x?.location,
+      location: x?.location,
       id: x?.id
     }))
   loading.value = false
@@ -120,8 +122,8 @@ const deboncedFn = debounce(
   (selected: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
     if (selected) {
       const selectedLocation = selected as TLocationAutocomplete
-      selectedLocation.location = selectedLocation._text
       if (props.type === 'single') {
+        locations.value = computedLocations.value
         selectedLocations.value = [selectedLocation]
       } else {
         const exists = selectedLocations.value.find((l) => l.id == selectedLocation.id)
@@ -131,6 +133,7 @@ const deboncedFn = debounce(
       }
       locations.value = locations.value.filter((l: Location) => l.id !== selectedLocation.id)
       searchValue.value = undefined
+      refAutocomplete.value.handleOutsideClick()
       emit('location-selected', selectedLocations.value)
     }
   },
@@ -183,6 +186,11 @@ const removeLocation = (location: Location) => {
   }
   > .label {
     order: 1;
+  }
+}
+:deep(.post) {
+  &:last-child {
+    display: none !important;
   }
 }
 </style>
