@@ -34,7 +34,7 @@
           data-test="icon-action-list"
         />
       </section>
-      <InventoryNodeTaggingEditOverlay
+      <InventoryNodeTagEditOverlay
         v-if="node.isEditMode"
         @edit-tags-node="editTagsNode"
         :node="node"
@@ -73,7 +73,7 @@ import { PropType } from 'vue'
 import Storage from '@material-design-icons/svg/outlined/storage.svg'
 import { NodeContent } from '@/types/inventory'
 import { IIcon } from '@/types'
-import { useTaggingStore } from '@/store/Components/taggingStore'
+import { useTaggingStore } from '@/store/Components/tagStore'
 import { useNodeMutations } from '@/store/Mutations/nodeMutations'
 import { TagNodesType } from '@/types/tags'
 import { ModalPrimary } from '@/types/modal'

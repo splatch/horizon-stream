@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { TagNodesType } from '@/types/tags'
 
-export const useTaggingStore = defineStore('taggingStore', () => {
+export const useTagStore = defineStore('tagStore', () => {
   const selectedTags = ref([])
   const tagNodesSelected = ref(TagNodesType.Unselected)
 
@@ -10,6 +10,7 @@ export const useTaggingStore = defineStore('taggingStore', () => {
   }
 
   const toggleTag = (tag) => {
+    console.log('toggleTag', tag)
     if (selectedTags.value.includes(tag)) {
       selectedTags.value = selectedTags.value.filter((t) => t !== tag)
     } else {

@@ -41,7 +41,7 @@ import Storage from '@material-design-icons/svg/outlined/storage.svg'
 import Checkbox from '@material-design-icons/svg/outlined/check_box.svg'
 import { NodeContent } from '@/types/inventory'
 import { IIcon } from '@/types'
-import { useTaggingStore } from '@/store/Components/taggingStore'
+import { useTaggingStore } from '@/store/Components/tagStore'
 
 const props = defineProps({
   node: {
