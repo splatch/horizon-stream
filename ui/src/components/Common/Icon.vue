@@ -36,7 +36,7 @@ const props = defineProps({
   }
 })
 
-const iconSize = props.icon.size || '1rem' // FeatherIcon default width/height: 1rem
+const iconSize = `${props.icon.size || 1}rem` // FeatherIcon default width/height: 1rem
 const cursorHover = props.icon.cursorHover || 'auto'
 </script>
 

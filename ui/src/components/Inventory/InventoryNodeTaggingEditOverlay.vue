@@ -1,14 +1,35 @@
 <template>
   <div class="overlay">
-    <feather-checkbox id="tagged" v-model="isChecked" @update:model-value="editNodeTags(node.id)" class="tag-node-checkbox"/>
+    <feather-checkbox
+      id="tagged"
+      v-model="isChecked"
+      @update:model-value="editNodeTags(node.id)"
+      class="tag-node-checkbox"
+    />
     <section class="overlay-header">
-      <Icon :icon="storage" data-test="icon-storage" />
+      <Icon
+        :icon="storage"
+        data-test="icon-storage"
+      />
       <h4 data-test="heading">{{ node?.label }}</h4>
     </section>
     <section class="overlay-content">
-      <div class="title"><label for="iconCheckbox">Tagged</label><Icon :icon="checkbox" data-test="icon-checkbox" /></div>
-      <FeatherChipList condensed label="Tag list">
-        <FeatherChip v-for="tag in tagsSelected" :key="tag">{{ tag }}</FeatherChip>
+      <div class="title">
+        <label for="iconCheckbox">Tagged</label
+        ><Icon
+          :icon="checkbox"
+          data-test="icon-checkbox"
+        />
+      </div>
+      <FeatherChipList
+        condensed
+        label="Tag list"
+      >
+        <FeatherChip
+          v-for="tag in tagsSelected"
+          :key="tag"
+          >{{ tag }}</FeatherChip
+        >
       </FeatherChipList>
     </section>
   </div>
@@ -47,24 +68,24 @@ const editNodeTags = (id: number) => {
 const storage: IIcon = {
   image: Storage,
   title: 'Node',
-  size: '1.5rem'
+  size: 1.5
 }
 const checkbox: IIcon = {
   image: Checkbox,
   title: '',
-  size: '3rem'
+  size: 3
 }
 </script>
 
 <style lang="scss" scoped>
-@use "@featherds/styles/themes/variables";
-@use "@/styles/vars";
+@use '@featherds/styles/themes/variables';
+@use '@/styles/vars';
 
 .overlay {
   $color-header-title: white;
 
   position: absolute;
-  lefT: 0;
+  left: 0;
   top: 0;
   width: 100%;
   height: 100%;
@@ -83,7 +104,7 @@ const checkbox: IIcon = {
         .box {
           border-color: $color-header-title;
         }
-        &[aria-checked=true] {
+        &[aria-checked='true'] {
           .box {
             border-color: var(variables.$primary);
           }
