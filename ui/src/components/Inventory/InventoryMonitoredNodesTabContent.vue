@@ -73,7 +73,7 @@ import { PropType } from 'vue'
 import Storage from '@material-design-icons/svg/outlined/storage.svg'
 import { NodeContent } from '@/types/inventory'
 import { IIcon } from '@/types'
-import { useTaggingStore } from '@/store/Components/tagStore'
+import { useTagStore } from '@/store/Components/tagStore'
 import { useNodeMutations } from '@/store/Mutations/nodeMutations'
 import { TagNodesType } from '@/types/tags'
 import { ModalPrimary } from '@/types/modal'
@@ -90,7 +90,7 @@ const nodes = ref<NodeContent[]>(props.tabContent)
 
 const { openModal, closeModal, isVisible } = useModal()
 
-const taggingStore = useTaggingStore()
+const taggingStore = useTagStore()
 const nodeMutations = useNodeMutations()
 
 const tagNodesSelected = computed(() => taggingStore.tagNodesSelected)
