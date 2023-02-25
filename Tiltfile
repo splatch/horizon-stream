@@ -38,17 +38,6 @@ secret_settings(disable_scrub=True)  ## TODO: update secret values so we can ree
 # Functions #
 cluster_arch_cmd = '$(tilt get cluster default -o=jsonpath --template="{.status.arch}")'
 
-def build_single_module(image_name, base_path):
-    custom_build(
-        image_name,
-        'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} '.format(base_path, cluster_arch_cmd),
-        deps=['{}/target/classes'.format(base_path), '{}/pom.xml'.format(base_path), '{}/src/main/resources'.format(base_path)],
-        live_update=[
-            sync('{}/target/classes/org/opennms'.format(base_path), '/app/classes/org/opennms'),
-            sync('{}/src/main/resources'.format(base_path), '/app/resources'),
-        ],
-    )
-
 def jib_project(resource_name, image_name, base_path, k8s_resource_name, resource_deps=[], port_forwards=[], labels=None):
     if not labels:
         labels=[resource_name]
@@ -63,7 +52,15 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
         labels=labels,
     )
 
-    build_single_module(image_name, base_path)
+    custom_build(
+        image_name,
+        'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} '.format(base_path, cluster_arch_cmd),
+        deps=['{}/target/classes'.format(base_path), '{}/pom.xml'.format(base_path), '{}/src/main/resources'.format(base_path)],
+        live_update=[
+            sync('{}/target/classes/org/opennms'.format(base_path), '/app/classes/org/opennms'),
+            sync('{}/src/main/resources'.format(base_path), '/app/resources'),
+        ],
+    )
 
     k8s_resource(
         k8s_resource_name,
@@ -73,7 +70,10 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
         port_forwards=port_forwards,
     )
 
-def build_multi_module(submodule, image_name, base_path):
+def jib_project_multi_module(resource_name, image_name, base_path, k8s_resource_name, resource_deps=[], port_forwards=[], labels=None, submodule=None):
+    if not labels:
+        labels=[resource_name]
+
     submodule_flag = '-pl {}'.format(submodule)
 
     custom_build(
@@ -82,12 +82,6 @@ def build_multi_module(submodule, image_name, base_path):
         deps=[base_path],
         ignore=['**/target'],
     )
-
-def jib_project_multi_module(resource_name, image_name, base_path, k8s_resource_name, resource_deps=[], port_forwards=[], labels=None, submodule=None):
-    if not labels:
-        labels=[resource_name]
-
-    build_multi_module(submodule, image_name, base_path)
 
     k8s_resource(
         k8s_resource_name,
@@ -185,7 +179,7 @@ jib_project(
 )
 
 ### Metrics Processor ###
-jib_project(
+jib_project_multi_module(
     'metrics-processor',
     'opennms/horizon-stream-metrics-processor',
     'metrics-processor',
