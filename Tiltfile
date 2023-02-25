@@ -190,6 +190,7 @@ jib_project(
     'opennms/horizon-stream-metrics-processor',
     'metrics-processor',
     'opennms-metrics-processor',
+    submodule='main',
     port_forwards=['28080:9090', '28050:5005'],
 )
 
