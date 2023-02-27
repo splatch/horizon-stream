@@ -77,7 +77,19 @@ const validateAndFormat = () => {
 
   emit('is-content-invalid', isContentInvalid)
 
-  if (!isContentInvalid) emit('content-formatted', contentEditableRef.value.textContent)
+  if (!isContentInvalid) emit('content-formatted', splitContent(contentEditableRef.value.textContent))
+}
+
+const splitContent = (str: string) => {
+  if (!str || str.length < 2) return null
+
+  const regexDelim = new RegExp(props.regexDelim)
+  let contentEditableStrings = str.split(regexDelim)
+
+  if (props.contentType === ContentEditableType.UDPPort) {
+    contentEditableStrings = contentEditableStrings.map((p) => parseInt(p))
+  }
+  return contentEditableStrings
 }
 
 const validateContent = () => {

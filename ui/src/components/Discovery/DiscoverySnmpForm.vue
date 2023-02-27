@@ -46,7 +46,7 @@
       />
       <DiscoveryContentEditable
         @is-content-invalid="isUDPPortInvalidListener"
-        @content-formatted="(val) => setSnmpConfig('snmpConfig.ports', parseInt(val))"
+        @content-formatted="(val) => setSnmpConfig('snmpConfig.ports', val)"
         :contentType="ContentEditableType.UDPPort"
         :regexDelim="UDP_PORT.regexDelim"
         :label="discoveryText.ContentEditable.UDPPort.label"
@@ -99,7 +99,9 @@ const discoveryInfo = ref<DiscoveryConfig>(props.discovery || {})
 const contentEditableIPRef = ref([])
 const contentEditableCommunityStringRef = ref()
 const contentEditableUDPPortRef = ref()
-const isDisabled = computed(() => !discoveryInfo.value.configName || !discoveryInfo.value.location)
+const isDisabled = computed(
+  () => !discoveryInfo.value.configName || !discoveryInfo.value.location || !discoveryInfo.value.ipAddresses
+)
 
 watch(props, () => {
   discoveryInfo.value = props.discovery || {}
@@ -109,8 +111,8 @@ const setLocation = (location: Location[]) => {
   discoveryInfo.value.location = location[0]?.location
 }
 
-const setSnmpConfig = (property: string, val: string | number) => {
-  set(discoveryInfo.value, property, [val])
+const setSnmpConfig = (property: string, val: (string | number)[] | null) => {
+  set(discoveryInfo.value, property, val)
 }
 
 //const tagsAutocompleteRef = ref()
@@ -122,33 +124,15 @@ let isIPRangeInvalid = false
 const isIPRangeInvalidListener = (isInvalid: boolean) => {
   isIPRangeInvalid = isInvalid
 }
-const ipRangeEnteredListerner = (str: string) => {
-  //const regexDelim = new RegExp(udpPort.regexDelim)
-  //store.setIpAddresses(str.split(regexDelim))
-}
 
-// const community = {
-//   type: ContentEditableType.CommunityString,
-//   regexDelim: '',
-//   label: discoveryText.ContentEditable.CommunityString.label
-// }
 let isCommunityStringInvalid = false
 const isCommunityStringInvalidListerner = (isInvalid: boolean) => {
   isCommunityStringInvalid = isInvalid
-}
-const communityStringEnteredListerner = (str: string) => {
-  //const regexDelim = new RegExp(udpPort.regexDelim)
-  //store.setCommunityString(str.split(regexDelim))
 }
 
 let isUDPPortInvalid = false
 const isUDPPortInvalidListener = (isInvalid: boolean) => {
   isUDPPortInvalid = isInvalid
-}
-const UDPPortEnteredListener = (str: string) => {
-  // const regexDelim = new RegExp(udpPort.regexDelim)
-  // const ports = str.split(regexDelim)
-  // store.setUdpPorts(ports.map((p) => parseInt(p)))
 }
 
 const resetContentEditable = () => {
@@ -162,18 +146,19 @@ const saveHandler = async () => {
   contentEditableIPRef.value.validateAndFormat()
   contentEditableCommunityStringRef.value.validateAndFormat()
   contentEditableUDPPortRef.value.validateAndFormat()
-  await createDiscoveryConfig({ snmpInfo: discoveryInfo.value })
-  console.info(errorSnmp)
-  if (!errorSnmp.value) {
-    discoveryQueries.getDiscoveries()
-    resetContentEditable()
-    props.successCallback(discoveryInfo.value.configName)
-    discoveryInfo.value = {}
-  } else {
-    showSnackbar({
-      msg: errorSnmp.value.response.body.errors[0].message || discoveryText.Discovery.error.errorCreate
-    })
-  }
+  console.log(discoveryInfo.value)
+  // await createDiscoveryConfig({ snmpInfo: discoveryInfo.value })
+  // console.info(errorSnmp)
+  // if (!errorSnmp.value) {
+  //   discoveryQueries.getDiscoveries()
+  //   resetContentEditable()
+  //   props.successCallback(discoveryInfo.value.configName)
+  //   discoveryInfo.value = {}
+  // } else {
+  //   showSnackbar({
+  //     msg: errorSnmp.value.response.body.errors[0].message || discoveryText.Discovery.error.errorCreate
+  //   })
+  // }
 }
 </script>
 
