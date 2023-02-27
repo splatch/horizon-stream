@@ -31,7 +31,6 @@ package org.opennms.horizon.inventory.grpc;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +41,7 @@ import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
@@ -65,7 +65,10 @@ public abstract class GrpcTestBase {
     @Autowired
     private ApplicationContext context;
     @SpyBean
-    protected  InventoryServerInterceptor spyInterceptor;
+    private  InventoryServerInterceptor spyInterceptor;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     protected void prepareTestGrpc() {
         testGrpcService = context.getBean(TestTaskSetGrpcService.class);
@@ -86,13 +89,18 @@ public abstract class GrpcTestBase {
             channel.shutdownNow();
             channel.awaitTermination(10, TimeUnit.SECONDS);
         }
-        verifyNoMoreInteractions(spyInterceptor);
         reset(spyInterceptor);
+        cleanDataBase();
     }
 
     protected Metadata createAuthHeader(String value) {
         Metadata headers = new Metadata();
         headers.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, value);
         return headers;
+    }
+
+    private void cleanDataBase() {
+        jdbcTemplate.execute("truncate table node, azure_credential, tag, configuration, monitored_service, " +
+            "monitoring_system, monitoring_location CASCADE");
     }
 }

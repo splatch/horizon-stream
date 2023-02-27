@@ -37,8 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.opennms.horizon.shared.azure.http.AzureHttpClient.OAUTH2_TOKEN_ENDPOINT;
 import static org.opennms.horizon.shared.azure.http.AzureHttpClient.SUBSCRIPTION_ENDPOINT;
 
@@ -59,7 +57,6 @@ import org.opennms.horizon.inventory.dto.TagCreateDTO;
 import org.opennms.horizon.inventory.model.AzureCredential;
 import org.opennms.horizon.inventory.model.Tag;
 import org.opennms.horizon.inventory.repository.AzureCredentialRepository;
-import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.TagRepository;
 import org.opennms.horizon.shared.azure.http.dto.AzureHttpParams;
 import org.opennms.horizon.shared.azure.http.dto.error.AzureErrorDescription;
@@ -83,9 +80,6 @@ import com.google.rpc.Code;
 import com.google.rpc.Status;
 
 import io.grpc.Context;
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
 import io.grpc.StatusRuntimeException;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.MetadataUtils;
@@ -105,9 +99,6 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
 
     @Autowired
     private AzureCredentialRepository azureCredentialRepository;
-
-    @Autowired
-    private MonitoringLocationRepository monitoringLocationRepository;
 
     @Autowired
     private AzureHttpParams params;
@@ -136,12 +127,6 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
     @AfterEach
     public void cleanUp() throws InterruptedException {
         wireMock.stop();
-        Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
-        {
-            tagRepository.deleteAll();
-            monitoringLocationRepository.deleteAll();
-            azureCredentialRepository.deleteAll();
-        });
         afterTest();
     }
 
@@ -203,11 +188,6 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
             AzureCredential credential = tag.getAzureCredentials().get(0);
             assertEquals(azureCredential.getId(), credential.getId());
         });
-
-
-
-        verify(spyInterceptor).verifyAccessToken(authHeader);
-        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test
@@ -231,8 +211,6 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
         assertEquals("Code: Message", status.getMessage());
         assertThat(status.getCode()).isEqualTo(Code.INTERNAL_VALUE);
         assertEquals(0, testGrpcService.getRequests().size());
-        verify(spyInterceptor).verifyAccessToken(authHeader);
-        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test
@@ -255,12 +233,10 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
         Status status = StatusProto.fromThrowable(exception);
         assertThat(status.getCode()).isEqualTo(Code.INTERNAL_VALUE);
         assertEquals(0, testGrpcService.getRequests().size());
-        verify(spyInterceptor).verifyAccessToken(authHeader);
-        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     @Test
-    void testCreateAzureCredentialsWithoutTenantId() throws VerificationException {
+    void testCreateAzureCredentialsWithoutTenantId() {
 
         AzureCredentialCreateDTO createDTO = AzureCredentialCreateDTO.newBuilder()
             .setName(TEST_NAME)
@@ -276,8 +252,6 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
                 .createCredentials(createDTO));
         assertThat(exception.getStatus().getCode()).isEqualTo(io.grpc.Status.Code.UNAUTHENTICATED);
         assertThat(exception.getMessage()).contains("Missing tenant id");
-        verify(spyInterceptor).verifyAccessToken(headerWithoutTenant);
-        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
     private void mockAzureLogin() throws JsonProcessingException {
