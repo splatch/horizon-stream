@@ -83,7 +83,7 @@ public class IngestorClient {
                 ingesterBlockingStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
                     .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)
                     .storeFlowDocuments(storeFlowDocumentsRequest);
-                LOG.info("StoreFlowDocumentRequest successfully persisted. ");
+                LOG.info("FlowDocuments successfully persisted. ");
                 return true;
             });
         } catch (RuntimeException e) {

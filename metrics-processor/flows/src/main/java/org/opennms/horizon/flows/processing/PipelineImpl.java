@@ -140,7 +140,7 @@ public class PipelineImpl implements Pipeline {
             this.logTimer = Objects.requireNonNull(logTimer);
         }
 
-        public void persist(final Collection<FlowDocument> flows) throws FlowException {
+        public void persist(final Collection<FlowDocument> flows, String tenantId) throws FlowException {
             try (final var ctx = this.logTimer.time()) {
                 this.repository.persist(flows, tenantId);
             }
