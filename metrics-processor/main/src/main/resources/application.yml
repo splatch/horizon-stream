@@ -15,7 +15,11 @@ grpc:
   server:
     deadline: 60000
   url:
+<<<<<<<< HEAD:metrics-processor/main/src/main/resources/application.yml
     inventory: opennms-inventory:6565
+========
+    inventory: localhost:29065
+>>>>>>>> 4e7ffbac8 (HS-926: make springboot start with flows):metrics-processor/main-metrics/src/main/resources/application.yml
 
 flows:
   clockSkewCorrectionThreshold: 0
