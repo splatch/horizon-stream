@@ -26,9 +26,9 @@
         label="Tag list"
       >
         <FeatherChip
-          v-for="tag in tagsSelected"
-          :key="tag"
-          >{{ tag }}</FeatherChip
+          v-for="tag in node.anchor.tagValue"
+          :key="tag.id"
+          >{{ tag.name }}</FeatherChip
         >
       </FeatherChipList>
     </section>
@@ -41,7 +41,6 @@ import Storage from '@material-design-icons/svg/outlined/storage.svg'
 import Checkbox from '@material-design-icons/svg/outlined/check_box.svg'
 import { NodeContent } from '@/types/inventory'
 import { IIcon } from '@/types'
-import { useTagStore } from '@/store/Components/tagStore'
 
 const props = defineProps({
   node: {
@@ -49,9 +48,6 @@ const props = defineProps({
     required: true
   }
 })
-
-const taggingStore = useTagStore()
-const tagsSelected = computed(() => taggingStore.selectedTags)
 
 const isChecked = ref(false)
 
@@ -142,7 +138,6 @@ const checkbox: IIcon = {
       margin-top: var(variables.$spacing-s);
       :deep {
         .chip {
-          margin: 0;
           background-color: var(variables.$primary);
           .label {
             color: var(variables.$primary-text-on-color);

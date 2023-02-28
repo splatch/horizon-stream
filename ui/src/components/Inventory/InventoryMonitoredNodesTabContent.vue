@@ -48,6 +48,16 @@
   >
     <template #content>
       <p>{{ modal.content }}</p>
+      <FeatherChipList
+        condensed
+        label="Tag list"
+      >
+        <FeatherChip
+          v-for="tag in selectedTags"
+          :key="tag.id"
+          >{{ tag.name }}</FeatherChip
+        >
+      </FeatherChipList>
     </template>
     <template #footer>
       <FeatherButton
@@ -75,6 +85,7 @@ import { NodeContent } from '@/types/inventory'
 import { IIcon } from '@/types'
 import { useTagStore } from '@/store/Components/tagStore'
 import { useNodeMutations } from '@/store/Mutations/nodeMutations'
+import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
 import { TagNodesType } from '@/types/tags'
 import { ModalPrimary } from '@/types/modal'
 import useModal from '@/composables/useModal'
@@ -92,7 +103,9 @@ const { openModal, closeModal, isVisible } = useModal()
 
 const taggingStore = useTagStore()
 const nodeMutations = useNodeMutations()
+const inventoryQueries = useInventoryQueries()
 
+const selectedTags = computed(() => taggingStore.selectedTags)
 const tagNodesSelected = computed(() => taggingStore.tagNodesSelected)
 
 watch(tagNodesSelected, (type) => {
@@ -120,11 +133,17 @@ const cancelTagsAllNodes = () => {
   closeModal()
 }
 
-const saveTagsAllNodes = () => {
+const saveTagsAllNodes = async () => {
   taggingStore.selectTagNodes(TagNodesType.Unselected)
-  nodeMutations.addTagsToAllNodes()
-  // refetch nodes
-  // refetch tags
+
+  // Temp solution until the real enpoint avail
+  const tagsToAdd = selectedTags.value.map(({ name }) => ({ name }))
+  nodes.value.forEach(async ({ id }) => {
+    nodeMutations.addTagsToAllNodes({ nodeId: id, tags: tagsToAdd })
+  })
+
+  inventoryQueries.fetch()
+
   closeModal()
 }
 

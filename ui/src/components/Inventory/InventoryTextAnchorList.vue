@@ -81,7 +81,7 @@ const label = {
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 
-ul.text-anchor-list {
+.text-anchor-list {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
