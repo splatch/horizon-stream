@@ -20,12 +20,13 @@
       <div class="my-discovery-inner">
         <FeatherAutocomplete
           class="search"
-          v-model="searchValue"
+          v-model="discoverySearchValue"
           :loading="searchLoading"
           :results="discoveriesResults"
           @search="search"
           label="Search Discovery"
           type="single"
+          @update:model-value="showDiscovery"
         />
         <DiscoveryListCard
           title=" My Active Discoveries"
@@ -89,17 +90,17 @@ import { IIcon } from '@/types'
 import { DiscoveryInput } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
-import { useDiscoveryStore } from '@/store/Views/discoveryStore'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { DiscoveryConfig } from '@/types/graphql'
+import { IAutocompleteItemType } from '@featherds/autocomplete'
 
 const discoveryQueries = useDiscoveryQueries()
 onMounted(() => discoveryQueries.getDiscoveries())
 const activeDiscoveries = computed(() => discoveryQueries.discoveries)
 
 type TDiscoveryAutocomplete = DiscoveryInput & { _text: string }
-
-const store = useDiscoveryStore()
+//change when location will be added to type
+type TDiscoveryConfig = DiscoveryConfig & { location: string }
 
 const addIcon: IIcon = {
   image: markRaw(AddIcon)
@@ -108,7 +109,7 @@ const addIcon: IIcon = {
 const successModal = ref()
 const isDiscoveryEditingShown = ref(false)
 const showNewDiscovery = ref(false)
-const selectedDiscovery = ref<DiscoveryConfig | null>(null)
+const selectedDiscovery = ref<TDiscoveryConfig | null>(null)
 const discoverySelectedType = ref(DiscoveryType.None)
 
 const handleNewDiscovery = () => {
@@ -120,27 +121,31 @@ const handleNewDiscovery = () => {
 
 const discoveriesResults = ref<TDiscoveryAutocomplete[]>([])
 const searchLoading = ref(false)
-const searchValue = ref(undefined)
+const discoverySearchValue = ref(undefined)
 
 const search = (q: string) => {
+  if (!q) return
   searchLoading.value = true
-  const results = store.activeDiscoveries
-    .filter((x) => x.name.toLowerCase().indexOf(q) > -1)
-    .map((x) => ({
-      _text: x.name,
-      id: x.id,
-      name: x.name
+  const results = activeDiscoveries.value
+    .filter((x: any) => x.configName?.toLowerCase().indexOf(q) > -1)
+    .map((x: any) => ({
+      _text: x.configName,
+      ...x
     }))
   discoveriesResults.value = results as TDiscoveryAutocomplete[]
   searchLoading.value = false
 }
 
-const showDiscovery = (discovery: DiscoveryConfig) => {
-  isDiscoveryEditingShown.value = true
-  showNewDiscovery.value = false
-  //type hardocoded for now
-  discoverySelectedType.value = DiscoveryType.ICMP
-  selectedDiscovery.value = discovery
+const showDiscovery = (discovery: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
+  if (discovery) {
+    isDiscoveryEditingShown.value = true
+    showNewDiscovery.value = false
+    //type hardocoded for now
+    discoverySelectedType.value = DiscoveryType.ICMP
+    selectedDiscovery.value = discovery as TDiscoveryConfig
+  } else {
+    discoverySearchValue.value = undefined
+  }
 }
 
 const handleCancel = () => {
@@ -251,5 +256,9 @@ const handleCancel = () => {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+:deep(.feather-input-sub-text) {
+  display: none !important;
 }
 </style>

@@ -67,19 +67,24 @@ const props = defineProps({
     required: false
   },
   preLoadedlocations: {
-    type: Array<string>,
+    type: Array<string | undefined>,
     required: false,
     default: []
   }
 })
 
 onMounted(() => discoveryQueries.getLocations())
+
 const initLocations = () => {
   filteredLocations.value = computedLocations.value as Location[]
   locations.value = computedLocations.value as Location[]
-  if (props.preLoadedlocations.length) {
-    selectedLocations.value = locations.value.filter((l: Location) => props.preLoadedlocations.includes(l.id))
-    locations.value = locations.value.filter((l: Location) => !props.preLoadedlocations.includes(l.id))
+  if (props.preLoadedlocations.length && props.preLoadedlocations[0]) {
+    selectedLocations.value = locations.value.filter(
+      (l: Location) => l.location && props.preLoadedlocations.includes(l.location)
+    )
+    locations.value = locations.value.filter(
+      (l: Location) => l.location && !props.preLoadedlocations.includes(l.location)
+    )
     filteredLocations.value = locations.value
   } else {
     if (computedLocations.value.length == 1) {
@@ -133,7 +138,7 @@ const deboncedFn = debounce(
       }
       locations.value = locations.value.filter((l: Location) => l.id !== selectedLocation.id)
       searchValue.value = undefined
-      refAutocomplete.value.handleOutsideClick()
+      refAutocomplete.value?.handleOutsideClick()
       emit('location-selected', selectedLocations.value)
     }
   },

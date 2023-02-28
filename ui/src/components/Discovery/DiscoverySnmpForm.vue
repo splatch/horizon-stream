@@ -10,10 +10,10 @@
       :label="DiscoverySNMPForm.nameInputLabel"
       class="name-input"
     />
-    <LocationsAutocomplete
+    <DiscoveryLocationsAutocomplete
       class="locations-select"
       type="single"
-      :preLoadedlocations="props.discovery?.location"
+      :preLoadedlocations="[props.discovery?.location]"
       @location-selected="setLocation"
     />
     <!--<DiscoveryAutocomplete
@@ -63,6 +63,7 @@
         >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
       >
       <ButtonWithSpinner
+        v-if="!props.discovery"
         type="submit"
         primary
         :disabled="isDisabled"
@@ -82,33 +83,38 @@ import { Location, DiscoveryConfig } from '@/types/graphql'
 import { set } from 'lodash'
 import useSnackbar from '@/composables/useSnackbar'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
+import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
+
+//change when location will be added to type
+type TDiscoveryConfig = DiscoveryConfig & { location: string }
 
 const { createDiscoveryConfig, errorSnmp, isFetchingSnmp } = useDiscoveryMutations()
 const { showSnackbar } = useSnackbar()
-// const emit = defineEmits(['close-form'])
 
 const discoveryQueries = useDiscoveryQueries()
 const props = defineProps<{
-  discovery?: DiscoveryConfig | null
+  discovery?: TDiscoveryConfig | null
   successCallback: (name: string) => void
   cancel: () => void
 }>()
 
-const discoveryInfo = ref<DiscoveryConfig>(props.discovery || {})
+const discoveryInfo = ref<TDiscoveryConfig>(props.discovery || ({} as TDiscoveryConfig))
 //const selectedTags = ref<string[]>()
-const contentEditableIPRef = ref([])
-const contentEditableCommunityStringRef = ref()
-const contentEditableUDPPortRef = ref()
+const contentEditableIPRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
+const contentEditableCommunityStringRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
+const contentEditableUDPPortRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const isDisabled = computed(
   () => !discoveryInfo.value.configName || !discoveryInfo.value.location || !discoveryInfo.value.ipAddresses
 )
 
 watch(props, () => {
-  discoveryInfo.value = props.discovery || {}
+  discoveryInfo.value = props.discovery || ({} as TDiscoveryConfig)
 })
 
 const setLocation = (location: Location[]) => {
-  discoveryInfo.value.location = location[0]?.location
+  if (location[0] && location[0].location) {
+    discoveryInfo.value.location = location[0]?.location
+  }
 }
 
 const setSnmpConfig = (property: string, val: (string | number)[] | null) => {
@@ -120,45 +126,41 @@ const setSnmpConfig = (property: string, val: (string | number)[] | null) => {
 //   selectedTags.value = tags.map((tag) => tag.name)
 // }
 
-let isIPRangeInvalid = false
 const isIPRangeInvalidListener = (isInvalid: boolean) => {
-  isIPRangeInvalid = isInvalid
+  console.log(isInvalid)
 }
 
-let isCommunityStringInvalid = false
 const isCommunityStringInvalidListerner = (isInvalid: boolean) => {
-  isCommunityStringInvalid = isInvalid
+  console.log(isInvalid)
 }
 
-let isUDPPortInvalid = false
 const isUDPPortInvalidListener = (isInvalid: boolean) => {
-  isUDPPortInvalid = isInvalid
+  console.log(isInvalid)
 }
 
 const resetContentEditable = () => {
   // tagsAutocompleteRef.value.reset()
-  contentEditableIPRef.value.reset()
-  contentEditableCommunityStringRef.value.reset()
-  contentEditableUDPPortRef.value.reset()
+  contentEditableIPRef.value?.reset()
+  contentEditableCommunityStringRef.value?.reset()
+  contentEditableUDPPortRef.value?.reset()
 }
 
 const saveHandler = async () => {
-  contentEditableIPRef.value.validateAndFormat()
-  contentEditableCommunityStringRef.value.validateAndFormat()
-  contentEditableUDPPortRef.value.validateAndFormat()
+  contentEditableIPRef.value?.validateAndFormat()
+  contentEditableCommunityStringRef.value?.validateAndFormat()
+  contentEditableUDPPortRef.value?.validateAndFormat()
   console.log(discoveryInfo.value)
-  // await createDiscoveryConfig({ snmpInfo: discoveryInfo.value })
-  // console.info(errorSnmp)
-  // if (!errorSnmp.value) {
-  //   discoveryQueries.getDiscoveries()
-  //   resetContentEditable()
-  //   props.successCallback(discoveryInfo.value.configName)
-  //   discoveryInfo.value = {}
-  // } else {
-  //   showSnackbar({
-  //     msg: errorSnmp.value.response.body.errors[0].message || discoveryText.Discovery.error.errorCreate
-  //   })
-  // }
+  await createDiscoveryConfig({ snmpInfo: discoveryInfo.value })
+  if (!errorSnmp.value && discoveryInfo.value.configName) {
+    discoveryQueries.getDiscoveries()
+    resetContentEditable()
+    props.successCallback(discoveryInfo.value.configName)
+    discoveryInfo.value = {} as TDiscoveryConfig
+  } else {
+    showSnackbar({
+      msg: errorSnmp.value?.response?.body.errors[0].message || discoveryText.Discovery.error.errorCreate
+    })
+  }
 }
 </script>
 

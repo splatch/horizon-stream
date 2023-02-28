@@ -36,7 +36,7 @@
       />
     </div>
 
-    <LocationsAutocomplete
+    <DiscoveryLocationsAutocomplete
       @locationSelected="selectLocation"
       class="locations"
     />

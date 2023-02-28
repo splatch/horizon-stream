@@ -13,13 +13,6 @@ const defaultAzureForm = {
   directoryId: ''
 }
 
-// const defaultSnmpForm = {
-//   id: 0,
-//   name: '',
-//   location: [],
-//   type: DiscoveryType.ICMP
-// }
-
 export const useDiscoveryStore = defineStore('discoveryStore', {
   state: () => ({
     selectedLocations: <string[]>[],
@@ -68,31 +61,6 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
     clearAzureForm() {
       this.azure = cloneDeep(defaultAzureForm)
     },
-    // setTags(tags: Record<string, string>[]) {
-    //   this.tags = tags
-    // },
-    // setIpAddresses(ips: string[]) {
-    //   this.ipAddresses = ips
-    // },
-    // setUdpPorts(ports: number[]) {
-    //   this.udpPorts = ports
-    // },
-    // setCommunityString(str: string[]) {
-    //   this.communiyString = str
-    // },
-    // async saveDiscoverySnmp() {
-    //   const { createDiscoveryConfig, errorSnmp } = useDiscoveryMutations()
-    //   await createDiscoveryConfig({
-    //     snmpInfo: {
-    //       configName: this.snmp.name,
-    //       // tags: this.tags,
-    //       ipAddresses: this.ipAddresses,
-    //       location: this.selectedLocations[0],
-    //       snmpConfig: { readCommunities: this.communiyString, ports: this.udpPorts }
-    //     }
-    //   })
-    //   return !errorSnmp.value
-    // },
 
     setSelectedDiscovery(selected: DiscoveryConfig | null) {
       if (!selected) {
