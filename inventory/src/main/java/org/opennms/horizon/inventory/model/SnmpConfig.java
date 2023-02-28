@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,42 @@
 
 package org.opennms.horizon.inventory.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-@RequiredArgsConstructor
+import java.net.InetAddress;
+
 @Getter
-public class MonitoringSystemBean {
-    private final String systemId;
-    private final String tenantId;
-    private final String location;
+@Setter
+@RequiredArgsConstructor
+@Entity(name = "snmp_config")
+public class SnmpConfig extends TenantAwareEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @NotNull
+    @Column(name = "location")
+    private String location;
+
+    @NotNull
+    @Column(name = "ip_address", columnDefinition = "inet")
+    private InetAddress ipAddress;
+
+    @NotNull
+    @Column(name = "agent_config", columnDefinition = "jsonb")
+    @JdbcTypeCode( SqlTypes.JSON )
+    private SnmpAgentConfig snmpAgentConfig;
+
+
 }

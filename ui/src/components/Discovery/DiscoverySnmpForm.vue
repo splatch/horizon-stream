@@ -13,7 +13,7 @@
     <DiscoveryLocationsAutocomplete
       class="locations-select"
       type="single"
-      :preLoadedlocations="[props.discovery?.location]"
+      :preLoadedlocations="[discoveryInfo?.location]"
       @location-selected="setLocation"
     />
     <!--<DiscoveryAutocomplete
@@ -86,7 +86,7 @@ import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
 
 //change when location will be added to type
-type TDiscoveryConfig = DiscoveryConfig & { location: string }
+type TDiscoveryConfig = DiscoveryConfig & { location?: string }
 
 const { createDiscoveryConfig, errorSnmp, isFetchingSnmp } = useDiscoveryMutations()
 const { showSnackbar } = useSnackbar()
@@ -114,6 +114,8 @@ watch(props, () => {
 const setLocation = (location: Location[]) => {
   if (location[0] && location[0].location) {
     discoveryInfo.value.location = location[0]?.location
+  } else {
+    discoveryInfo.value.location = undefined
   }
 }
 
@@ -149,7 +151,6 @@ const saveHandler = async () => {
   contentEditableIPRef.value?.validateAndFormat()
   contentEditableCommunityStringRef.value?.validateAndFormat()
   contentEditableUDPPortRef.value?.validateAndFormat()
-  console.log(discoveryInfo.value)
   await createDiscoveryConfig({ snmpInfo: discoveryInfo.value })
   if (!errorSnmp.value && discoveryInfo.value.configName) {
     discoveryQueries.getDiscoveries()

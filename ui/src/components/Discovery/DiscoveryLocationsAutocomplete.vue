@@ -18,7 +18,8 @@
       :results="filteredLocations"
       @search="search"
       @update:modelValue="deboncedFn"
-      ref="refAutocomplete"
+      :schema="locationV"
+      ref="inputRef"
     ></FeatherAutocomplete>
 
     <!-- Locations selection -->
@@ -47,6 +48,8 @@ import { debounce } from 'lodash'
 import { Location } from '@/types/graphql'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { watchOnce } from '@vueuse/core'
+import { object } from 'yup'
+
 const Icons = markRaw({
   Cancel
 })
@@ -58,7 +61,8 @@ const selectedLocations = ref<TLocationAutocomplete[]>([])
 const loading = ref(false)
 const locations = ref() //locations without selected items
 const filteredLocations = ref() //results in autocomplete
-const refAutocomplete = ref()
+const inputRef = ref() // actual autocomplete input
+const errMsgDisplay = ref('none') // for sub text css display
 const computedLocations = computed(() => discoveryQueries.locations)
 
 const props = defineProps({
@@ -78,6 +82,7 @@ onMounted(() => discoveryQueries.getLocations())
 const initLocations = () => {
   filteredLocations.value = computedLocations.value as Location[]
   locations.value = computedLocations.value as Location[]
+  selectedLocations.value = []
   if (props.preLoadedlocations.length && props.preLoadedlocations[0]) {
     selectedLocations.value = locations.value.filter(
       (l: Location) => l.location && props.preLoadedlocations.includes(l.location)
@@ -86,18 +91,18 @@ const initLocations = () => {
       (l: Location) => l.location && !props.preLoadedlocations.includes(l.location)
     )
     filteredLocations.value = locations.value
-  } else {
+    console.log(selectedLocations.value)
+  }
+}
+watchOnce(computedLocations, () => {
+  if (computedLocations) {
+    initLocations()
     if (computedLocations.value.length == 1) {
       selectedLocations.value = computedLocations.value as TLocationAutocomplete[]
       locations.value = []
       filteredLocations.value = []
       emit('location-selected', selectedLocations.value)
     }
-  }
-}
-watchOnce(computedLocations, () => {
-  if (computedLocations) {
-    initLocations()
   }
 })
 
@@ -138,8 +143,9 @@ const deboncedFn = debounce(
       }
       locations.value = locations.value.filter((l: Location) => l.id !== selectedLocation.id)
       searchValue.value = undefined
-      refAutocomplete.value?.handleOutsideClick()
+      inputRef.value?.handleOutsideClick()
       emit('location-selected', selectedLocations.value)
+      handleErrDisplay()
     }
   },
   200,
@@ -154,7 +160,24 @@ const removeLocation = (location: Location) => {
     selectedLocations.value = selectedLocations.value.filter((l: Location) => l.id !== location.id)
     locations.value.push(location)
     emit('location-selected', selectedLocations.value)
+    handleErrDisplay()
   }
+}
+
+const locationErrMsg = 'Location is required.'
+const locationV = object().test({
+  name: 'has-location',
+  test: () => Boolean(selectedLocations.value.length),
+  message: locationErrMsg
+})
+const handleErrDisplay = () => {
+  inputRef.value.handleInputBlur() // runs yup validate
+
+  nextTick(() => {
+    // add/remove the feather input subtext display
+    errMsgDisplay.value =
+      document.getElementById(inputRef.value.subTextId)?.children[0].innerHTML === locationErrMsg ? 'flex' : 'none'
+  })
 }
 </script>
 
@@ -174,7 +197,7 @@ const removeLocation = (location: Location) => {
   }
 }
 :deep(.feather-input-sub-text) {
-  display: none !important;
+  display: v-bind(errMsgDisplay) !important;
 }
 :deep(.chip-label-button) {
   display: flex;
