@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.dataplatform.flows.ingester.v1.IngesterGrpc;
 import org.opennms.dataplatform.flows.ingester.v1.StoreFlowDocumentsRequest;
-import org.opennms.dataplatform.flows.ingester.v1.StoreFlowDocumentsResponse;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +79,8 @@ public class IngestorClient {
         try {
             retryTemplate.execute(context -> {
                 LOG.info("Attempt number {} to persist StoreFlowDocumentRequest. ", context.getRetryCount() + 1);
-                ingesterBlockingStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+                ingesterBlockingStub
+                    .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
                     .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)
                     .storeFlowDocuments(storeFlowDocumentsRequest);
                 LOG.info("FlowDocuments successfully persisted. ");
@@ -93,3 +93,5 @@ public class IngestorClient {
     }
 
 }
+
+

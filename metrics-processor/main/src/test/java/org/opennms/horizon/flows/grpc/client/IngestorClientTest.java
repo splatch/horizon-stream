@@ -1,19 +1,20 @@
 package org.opennms.horizon.flows.grpc.client;
 
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.opennms.dataplatform.flows.document.Direction;
 import org.opennms.dataplatform.flows.document.FlowDocument;
 import org.opennms.dataplatform.flows.document.Locality;
+import org.opennms.dataplatform.flows.document.NetflowVersion;
 import org.opennms.dataplatform.flows.document.NodeInfo;
+import org.opennms.dataplatform.flows.document.SamplingAlgorithm;
 import org.opennms.dataplatform.flows.ingester.v1.StoreFlowDocumentsRequest;
 import org.opennms.horizon.flows.FlowsApplicationConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,6 @@ class IngestorClientTest {
             .build();
 
         // When
-        // TODO: verify what's failing in the call then reactivate the test
         assertDoesNotThrow(() -> ingestorClient.sendData(storeFlowDocumentsRequest, "test-tenant-id"));
     }
 
@@ -66,11 +66,16 @@ class IngestorClientTest {
             .setDstAddress(destIp)
             .setDstPort(UInt32Value.of(80))
             .setProtocol(UInt32Value.of(6))
-            .setDestNode(NodeInfo.newBuilder().getDefaultInstanceForType())
+            .setDestNode(NodeInfo.newBuilder().addAllCategories(Arrays.asList("any", "more", "last")).setForeignSource("foreign source"))
             .setSrcNode(NodeInfo.newBuilder().getDefaultInstanceForType())
             .setExporterNode(NodeInfo.newBuilder().getDefaultInstanceForType())
+            .setApplication("any application")
+            .setDirection(Direction.INGRESS)
+            .setHost("any host")
+            .setSamplingAlgorithm(SamplingAlgorithm.UNASSIGNED)
             .setLocation("test-location")
             .setDstLocality(Locality.PUBLIC)
+            .setNetflowVersion(NetflowVersion.V5)
             .setSrcLocality(Locality.PUBLIC)
             .setFlowLocality(Locality.PUBLIC);
 

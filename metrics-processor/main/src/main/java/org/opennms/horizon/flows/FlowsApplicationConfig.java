@@ -29,8 +29,13 @@
 package org.opennms.horizon.flows;
 
 import com.codahale.metrics.MetricRegistry;
+
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+
 import org.opennms.horizon.flows.classification.ClassificationEngine;
 import org.opennms.horizon.flows.classification.ClassificationRuleProvider;
 import org.opennms.horizon.flows.classification.FilterService;
@@ -53,6 +58,9 @@ import org.springframework.retry.support.RetryTemplate;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLException;
 
 @Configuration
 public class FlowsApplicationConfig {
@@ -98,10 +106,12 @@ public class FlowsApplicationConfig {
     }
 
     @Bean(name = "ingestorChannel")
-    public ManagedChannel createIngestorChannel() {
-        return ManagedChannelBuilder.forTarget(ingestorGrpcAddress)
-            .keepAliveWithoutCalls(true)
-            .usePlaintext().build();
+    public ManagedChannel createIngestorChannel() throws SSLException {
+        return NettyChannelBuilder.forTarget(ingestorGrpcAddress)
+            .sslContext(GrpcSslContexts.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build())
+            .keepAliveTime(10, TimeUnit.SECONDS)
+            .keepAliveTimeout(15, TimeUnit.SECONDS)
+            .build();
     }
 
     @Bean(destroyMethod = "shutdown", initMethod = "initialStubs")
