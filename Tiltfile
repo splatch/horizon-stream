@@ -54,8 +54,8 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
 
     custom_build(
         image_name,
-        'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} '.format(base_path, cluster_arch_cmd),
-        deps=['{}/target/classes'.format(base_path), '{}/pom.xml'.format(base_path), '{}/src/main/resources'.format(base_path)],
+        'mvn clean package jib:dockerBuild -DskipTests -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} '.format(base_path, cluster_arch_cmd),
+        deps=['{}/target/classes/org/opennms'.format(base_path), '{}/pom.xml'.format(base_path), '{}/src/main/resources'.format(base_path)],
         live_update=[
             sync('{}/target/classes/org/opennms'.format(base_path), '/app/classes/org/opennms'),
             sync('{}/src/main/resources'.format(base_path), '/app/resources'),
@@ -74,11 +74,13 @@ def jib_project_multi_module(resource_name, image_name, base_path, k8s_resource_
     if not labels:
         labels=[resource_name]
 
-    submodule_flag = '-pl {}'.format(submodule)
+    submodule_flag = ''
+    if (submodule):
+        submodule_flag = '-pl {}'.format(submodule)
 
     custom_build(
         image_name,
-        'mvn clean package jib:dockerBuild -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
+        'mvn clean package jib:dockerBuild -DskipTests -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
         deps=[base_path],
         ignore=['**/target'],
     )
@@ -184,7 +186,6 @@ jib_project_multi_module(
     'opennms/horizon-stream-metrics-processor',
     'metrics-processor',
     'opennms-metrics-processor',
-    submodule='main',
     port_forwards=['28080:9090', '28050:5005'],
 )
 
@@ -203,7 +204,6 @@ jib_project_multi_module(
     'opennms/horizon-stream-minion-gateway',
     'minion-gateway',
     'opennms-minion-gateway',
-    submodule='main',
     port_forwards=['16080:9090', '16050:5005'],
 )
 
@@ -213,7 +213,6 @@ jib_project_multi_module(
     'opennms/horizon-stream-minion-gateway-grpc-proxy',
     'minion-gateway-grpc-proxy',
     'opennms-minion-gateway-grpc-proxy',
-    submodule='main',
     port_forwards=['31089:8990', '31050:5005'],
 )
 
@@ -229,7 +228,7 @@ jib_project(
 ### Minion ###
 custom_build(
     'opennms/horizon-stream-minion',
-    'mvn install -f minion -Dapplication.docker.image=$EXPECTED_REF -Dtest=false -DfailIfNoTests=false -DskipITs=true -DskipTests=true',
+    'mvn install -f minion -Dapplication.docker.image=$EXPECTED_REF -Dtest=false -DfailIfNoTests=false -DskipITs=true -DskipTests=true -Dfeatures.verify.skip=true',
     deps=['./minion'],
     ignore=['**/target', '**/dependency-reduced-pom.xml'],
 )
