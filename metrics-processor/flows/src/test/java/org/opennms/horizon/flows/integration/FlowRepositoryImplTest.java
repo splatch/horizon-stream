@@ -44,10 +44,11 @@ class FlowRepositoryImplTest {
     @Test
     void testCorrectNumberOfInteractionsWithIngesterStub() {
         // Given
-        List<FlowDocument> flows = Collections.singletonList(FlowDocument.newBuilder().getDefaultInstanceForType());
+        List<FlowDocument> flows = Collections.singletonList(FlowDocument.newBuilder().setTenantId("any-tenant-id")
+            .getDefaultInstanceForType());
 
         // When
-        flowRepository.persist(flows, "test-tenant-id");
+        flowRepository.persist(flows);
 
         // Then
         Mockito.verify(ingesterBlockingStub, Mockito.times(3));

@@ -46,5 +46,5 @@ public interface FlowRepository {
      *
      * @throws FlowException on any error happening during processing.
      */
-    void persist(final Collection<FlowDocument> enrichedFlows, String tenantId) throws FlowException;
+    void persist(final Collection<FlowDocument> enrichedFlows) throws FlowException;
 }

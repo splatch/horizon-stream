@@ -70,6 +70,7 @@ public class IngestorClient {
     private Metadata getMetadata(boolean bypassAuthorization, String tenantId) {
         var metadata = new Metadata();
         metadata.put(GrpcConstants.AUTHORIZATION_BYPASS_KEY, String.valueOf(bypassAuthorization));
+        // TODO: Still not sure if the tenant id(s) is needed in the metadata, to be clarified
         metadata.put(GrpcConstants.TENANT_ID_BYPASS_KEY, tenantId);
         return metadata;
     }
@@ -78,7 +79,7 @@ public class IngestorClient {
         Metadata metadata = getMetadata(true, tenantId);
         try {
             retryTemplate.execute(context -> {
-                LOG.info("Attempt number {} to persist StoreFlowDocumentRequest for tenantId {}. ", tenantId, context.getRetryCount() + 1);
+                LOG.debug("Attempt number {} to persist StoreFlowDocumentRequest for tenantId {}. ", tenantId, context.getRetryCount() + 1);
                 ingesterBlockingStub
                     .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
                     .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)

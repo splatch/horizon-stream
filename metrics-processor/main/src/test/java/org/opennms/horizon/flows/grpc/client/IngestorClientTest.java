@@ -39,7 +39,7 @@ class IngestorClientTest {
     @Test
     void sendData() {
         // Given
-        FlowDocument flowDocument = createFlowDocument("test-ip", "test-dest-ip");
+        FlowDocument flowDocument = createFlowDocument("test-ip", "test-dest-ip"); 
         StoreFlowDocumentsRequest storeFlowDocumentsRequest = StoreFlowDocumentsRequest.newBuilder()
             .addDocuments(flowDocument)
             .build();

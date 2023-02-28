@@ -1,5 +1,6 @@
 package org.opennms.horizon.flows.integration;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opennms.dataplatform.flows.document.FlowDocument;
 import org.opennms.dataplatform.flows.ingester.v1.StoreFlowDocumentsRequest;
 
@@ -18,11 +19,11 @@ public class FlowRepositoryImpl implements FlowRepository {
     private final IngestorClient ingestorClient;
 
     @Override
-    public void persist(Collection<FlowDocument> enrichedFlows, String tenantId) {
+    public void persist(Collection<FlowDocument> enrichedFlows) {
         LOG.info("Persisting flow data: {}", enrichedFlows.toString());
 
         if (CollectionUtils.isEmpty(enrichedFlows)) {
-            LOG.info("No EnrichedFlow present, skipping flow data persisting step. ");
+            LOG.trace("No EnrichedFlow present, skipping flow data persisting step. ");
             return;
         }
 
@@ -30,6 +31,6 @@ public class FlowRepositoryImpl implements FlowRepository {
             .addAllDocuments(enrichedFlows)
             .build();
 
-        ingestorClient.sendData(storeFlowDocumentsRequest, tenantId);
+        ingestorClient.sendData(storeFlowDocumentsRequest, StringUtils.join(enrichedFlows.stream().map(FlowDocument::getTenantId), ","));
     }
 }

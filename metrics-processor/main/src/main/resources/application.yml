@@ -14,9 +14,10 @@ kafka:
 grpc:
   server:
     deadline: 60000
-  url:
-    inventory: localhost:29065
-    ingestor: flows.onms-dp-dev.dev.nonprod.dataservice.opennms.com:443
+  inventory:
+    url: opennms-inventory:6565
+  ingestor:
+    url: flows.onms-dp-dev.dev.nonprod.dataservice.opennms.com:443
     retry:
       maxAttempts: 3
       maxDelay: 5000

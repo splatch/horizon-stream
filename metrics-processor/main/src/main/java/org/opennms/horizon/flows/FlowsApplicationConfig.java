@@ -83,19 +83,19 @@ public class FlowsApplicationConfig {
     @Value("${flows.nodeCache.recordStats:true}")
     private boolean nodeCacheRecordStats;
 
-    @Value("${grpc.url.inventory}")
+    @Value("${grpc.inventory.url}")
     private String inventoryGrpcAddress;
 
-    @Value("${grpc.url.ingestor}")
+    @Value("${grpc.ingestor.url}")
     private String ingestorGrpcAddress;
 
     @Value("${grpc.server.deadline:60000}")
     private long deadline;
 
-    @Value("${grpc.url.retry.maxAttempts}")
+    @Value("${grpc.ingestor.retry.maxAttempts}")
     private int maxNumberOfAttempts;
 
-    @Value("${grpc.url.retry.maxDelay}")
+    @Value("${grpc.ingestor.retry.maxDelay}")
     private int backOffPeriod;
 
     @Bean(name = "inventoryChannel")
