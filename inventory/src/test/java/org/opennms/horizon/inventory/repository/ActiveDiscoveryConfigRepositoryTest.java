@@ -34,7 +34,7 @@ public class ActiveDiscoveryConfigRepositoryTest {
         {
             var discoveryConfig = new DiscoveryConfig();
             discoveryConfig.setSnmpPorts(Collections.singletonList(1161));
-            discoveryConfig.setCommunityString("OpenNMS");
+            discoveryConfig.setCommunityString(Collections.singletonList("OpenNMS"));
             discoveryConfig.setIpAddresses(Arrays.asList("127.0.0.1", "127.0.0.2"));
             var activeDiscoveryConfig = new ActiveDiscoveryConfig();
             activeDiscoveryConfig.setLocation("MINION");
@@ -45,7 +45,7 @@ public class ActiveDiscoveryConfigRepositoryTest {
             Assertions.assertNotNull(persisted);
             Assertions.assertEquals("MINION", activeDiscoveryConfig.getLocation());
             Assertions.assertEquals("Profile-1", activeDiscoveryConfig.getProfileName());
-            Assertions.assertEquals("OpenNMS", activeDiscoveryConfig.getDiscoveryConfig().getCommunityString());
+            Assertions.assertEquals("OpenNMS", activeDiscoveryConfig.getDiscoveryConfig().getCommunityString().get(0));
             Assertions.assertEquals("127.0.0.1", activeDiscoveryConfig.getDiscoveryConfig().getIpAddresses().get(0));
             Assertions.assertEquals("127.0.0.2", activeDiscoveryConfig.getDiscoveryConfig().getIpAddresses().get(1));
             Assertions.assertEquals(1161, activeDiscoveryConfig.getDiscoveryConfig().getSnmpPorts().get(0));

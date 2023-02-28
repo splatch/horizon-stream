@@ -39,7 +39,7 @@ public class DiscoveryConfig {
 
     private List<String> ipAddresses;
 
-    private String communityString;
+    private List<String> communityString;
 
     private List<Integer> snmpPorts;
 }
