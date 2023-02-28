@@ -78,7 +78,7 @@ public class IngestorClient {
         Metadata metadata = getMetadata(true, tenantId);
         try {
             retryTemplate.execute(context -> {
-                LOG.info("Attempt number {} to persist StoreFlowDocumentRequest. ", context.getRetryCount() + 1);
+                LOG.info("Attempt number {} to persist StoreFlowDocumentRequest for tenantId {}. ", tenantId, context.getRetryCount() + 1);
                 ingesterBlockingStub
                     .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
                     .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)
@@ -87,7 +87,7 @@ public class IngestorClient {
                 return true;
             });
         } catch (RuntimeException e) {
-            LOG.error("Failed to send StoreFlowDocumentRequest to FlowIngestor. ", e);
+            LOG.error("Failed to send StoreFlowDocumentRequest for tenant-id {} to FlowIngestor. ", tenantId, e);
             throw e;
         }
     }
