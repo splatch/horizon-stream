@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,33 +25,26 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-import "google/protobuf/wrappers.proto";
+package org.opennms.horizon.inventory.model;
 
-package opennms.inventory;
-option java_multiple_files = true;
-option java_package = "org.opennms.horizon.inventory.dto";
+import lombok.Getter;
+import lombok.Setter;
 
-message MonitoringLocationDTO {
-  int64 id = 1;
-  string tenant_id = 2;
-  string location = 3;
-}
+@Getter
+@Setter
+public class SnmpAgentConfig {
 
-message MonitoringLocationList {
-  repeated MonitoringLocationDTO locations = 1;
-}
+    private int port = 161;
 
-message IdList {
-  repeated google.protobuf.Int64Value ids = 1;
-}
+    private int retries = 3;
 
-service MonitoringLocationService {
-  rpc listLocations(google.protobuf.Empty) returns (MonitoringLocationList) {};
-  rpc getLocationByName(google.protobuf.StringValue) returns (MonitoringLocationDTO) {};
-  rpc getLocationById(google.protobuf.Int64Value) returns (MonitoringLocationDTO) {};
-  rpc listLocationsByIds(IdList) returns (MonitoringLocationList) {};
-  rpc searchLocations(google.protobuf.StringValue) returns (MonitoringLocationList);
+    private int timeout = 800;
+
+    private String readCommunity = "public";
+
+    private String writeCommunity = "private";
+
+    private String version = "v1";
+
 }

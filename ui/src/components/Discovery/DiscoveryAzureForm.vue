@@ -8,6 +8,7 @@
       label="Azure Name"
       v-model="store.azure.name"
       class="name"
+      :schema="nameV"
     />
 
     <div class="row">
@@ -15,11 +16,13 @@
         v-model="store.azure.clientId"
         label="ClientID"
         class="column"
+        :schema="clientIdV"
       />
       <FeatherProtectedInput
         v-model="store.azure.clientSecret"
         label="Client Secret"
         class="column"
+        :schema="clientSecretV"
       />
     </div>
 
@@ -28,11 +31,13 @@
         v-model="store.azure.subscriptionId"
         label="SubscriptionID"
         class="column"
+        :schema="subIdV"
       />
       <FeatherInput
         v-model="store.azure.directoryId"
         label="DirectoryID"
         class="column"
+        :schema="dirIdV"
       />
     </div>
 
@@ -59,7 +64,6 @@
       </FeatherButton>
       <ButtonWithSpinner
         :isFetching="discoveryMutations.isFetching.value"
-        :disabled="isDisabled"
         @click="saveAzureDiscovery"
         primary
       >
@@ -76,11 +80,14 @@ import { Location } from '@/types/graphql'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
+import { useForm } from "@featherds/input-helper"
+import { string } from "yup"
 
 const store = useDiscoveryStore()
 const discoveryQueries = useDiscoveryQueries()
 const tagQueries = useTagQueries()
 const discoveryMutations = useDiscoveryMutations()
+const form = useForm()
 
 const props = defineProps<{
   successCallback: (name: string) => void
@@ -102,16 +109,8 @@ const tagsSelectedListener = (tags: Record<string, string>[]) => {
   store.selectTags(tagsSelected)
 }
 
-const isDisabled = computed(
-  () =>
-    !store.azure.name ||
-    !store.azure.clientId ||
-    !store.azure.clientSecret ||
-    !store.azure.directoryId ||
-    !store.azure.subscriptionId
-)
-
 const saveAzureDiscovery = async () => {
+  if (form.validate().length) return
   const success = await store.saveDiscoveryAzure()
   if (success) {
     discoveryQueries.getDiscoveries()
@@ -120,6 +119,12 @@ const saveAzureDiscovery = async () => {
     props.successCallback(store.azure.name)
   }
 }
+
+const nameV = string().required("Name is required.")
+const clientIdV = string().required("Client ID is required.")
+const clientSecretV = string().required("Client secret is required.")
+const subIdV = string().required("Subscription ID is required.")
+const dirIdV = string().required("Directory ID is required.")
 </script>
 
 <style scoped lang="scss">
