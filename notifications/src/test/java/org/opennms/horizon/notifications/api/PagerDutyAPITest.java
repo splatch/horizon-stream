@@ -40,9 +40,9 @@ import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
 import org.springframework.web.client.RestTemplate;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PagerDutyAPIImplTest {
+public class PagerDutyAPITest {
     @InjectMocks
-    PagerDutyAPIImpl pagerDutyAPI;
+    PagerDutyAPI pagerDutyAPI;
 
     @Mock
     RestTemplate restTemplate;

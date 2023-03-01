@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.tenant;
 
-import org.opennms.horizon.alerts.proto.Alert;
-import org.opennms.horizon.notifications.api.PagerDutyAPI;
-import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.exceptions.NotificationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Service
-public class NotificationServiceImpl implements NotificationService {
+public final class TenantContext implements AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(TenantContext.class);
 
-    @Autowired
-    private PagerDutyAPI pagerDutyAPI;
+    private TenantContext() {}
 
-    @Override
-    public void postNotification(Alert alert) throws NotificationException {
-        pagerDutyAPI.postNotification(alert);
+    private static InheritableThreadLocal<String> currentTenant = new InheritableThreadLocal<>();
+
+    public static void setTenantId(String tenantId) {
+        LOG.trace("Setting tenantId to: {}.", tenantId);
+        currentTenant.set(tenantId);
+    }
+
+    public static String getTenantId() {
+        return currentTenant.get();
+    }
+
+    public static void clear(){
+        currentTenant.remove();
+    }
+
+    public static TenantContext withTenantId(String tenantId) {
+        setTenantId(tenantId);
+        return new TenantContext();
     }
 
     @Override
-    public void postPagerDutyConfig(PagerDutyConfigDTO config) {
-        pagerDutyAPI.saveConfig(config);
+    public void close() {
+        clear();
     }
 }

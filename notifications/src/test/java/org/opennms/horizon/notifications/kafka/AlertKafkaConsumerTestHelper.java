@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.notifications.kafka;
 
-import org.opennms.horizon.alerts.proto.Alert;
-import org.opennms.horizon.notifications.api.PagerDutyAPI;
-import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.exceptions.NotificationException;
+import org.opennms.horizon.notifications.service.NotificationService;
+import org.opennms.horizon.notifications.tenant.TenantContext;
 import org.opennms.horizon.notifications.tenant.WithTenant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
 
-@Service
-public class NotificationService {
+@Component
+public class AlertKafkaConsumerTestHelper {
 
     @Autowired
-    private PagerDutyAPI pagerDutyAPI;
+    private NotificationService notificationService;
 
-    @WithTenant(tenantIdArg = 0, tenantIdArgInternalMethod = "getTenantId", tenantIdArgInternalClass = "org.opennms.horizon.alerts.proto.Alert")
-    public void postNotification(Alert alert) throws NotificationException {
-        pagerDutyAPI.postNotification(alert);
-    }
+    @WithTenant(tenantIdArg = 0)
+    public void setupConfig(String tenantId) {
+        // WithTenant annotation does not function for calls that are internal to the class, hence the need for a helper.
+        // It's due to the fact that Aspects use proxies that are only available for calls between different classes.
+        // If you really wish to use an internal method, don't use the aspect, and use the line below:
+        // try (TenantContext tc = TenantContext.withTenantId(tenantId)) {
+        String integrationKey = "not_verified";
 
-    public void postPagerDutyConfig(PagerDutyConfigDTO config) {
-        pagerDutyAPI.saveConfig(config);
+        PagerDutyConfigDTO config = PagerDutyConfigDTO.newBuilder().setIntegrationKey(integrationKey).build();
+        notificationService.postPagerDutyConfig(config);
     }
 }
