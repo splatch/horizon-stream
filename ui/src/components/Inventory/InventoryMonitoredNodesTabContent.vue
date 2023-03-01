@@ -143,7 +143,7 @@ const saveTagsAllNodes = async () => {
   })
 
   inventoryQueries.fetch()
-
+  taggingStore.selectAllTags(false)
   closeModal()
 }
 

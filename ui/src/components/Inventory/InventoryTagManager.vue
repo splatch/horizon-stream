@@ -62,7 +62,7 @@
         <FeatherChip
           v-for="(tag, index) in tags"
           :key="index"
-          @click="tagStore.toggleTag(tag.name)"
+          @click="tagStore.toggleTag(tag)"
           :class="{ selected: isTagSelected(tag.name as string) }"
           class="pointer"
         >
@@ -131,18 +131,14 @@ const tagsSelectedListener = (tags: Record<string, string>[]) => {
   })
 }
 
-const isTagSelected = (name: string): boolean => selectedTags.value.some((t) => t.name?.includes(name))
+const isTagSelected = (name: string): boolean =>
+  selectedTags.value.some(({ name: selectedTagName }) => selectedTagName === name)
 
 const selectAllToggle = () => {
-  // select all
-  /* if (isSelectingAll.value) {
-
-  } else {
-    // deselect all
-  } */
   isSelectingAll.value = !isSelectingAll.value
   tagStore.selectAllTags(isSelectingAll.value)
 }
+
 const addTag = (val: string) => {
   tagMutations.editTag(val, true)
   // cannot be added if already exists

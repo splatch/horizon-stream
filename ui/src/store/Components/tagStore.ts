@@ -8,10 +8,6 @@ export const useTagStore = defineStore('tagStore', () => {
   const selectedTags = ref([] as Tag[])
   const tagNodesSelected = ref(TagNodesType.Unselected)
 
-  /* const { data: fetchedTags, execute: fetchTags } = useQuery({
-    query: ListTagsDocument,
-    fetchOnMount: false
-  }) */
   const fetchTags = () => {
     const { data, execute } = useQuery({
       query: ListTagsDocument,
@@ -22,9 +18,6 @@ export const useTagStore = defineStore('tagStore', () => {
     execute()
 
     watchEffect(() => {
-      console.log('data', data.value?.tags)
-      // tags.value = mockTags
-      // return data.value?.tags || []
       tags.value = data.value?.tags || []
     })
   }
@@ -38,17 +31,17 @@ export const useTagStore = defineStore('tagStore', () => {
   }
 
   const toggleTag = (tag) => {
-    if (selectedTags.value.includes(tag)) {
-      selectedTags.value = selectedTags.value.filter((t) => t !== tag)
+    const isInSelectedList = selectedTags.value.some(({ name }) => name === tag.name)
+
+    if (isInSelectedList) {
+      selectedTags.value = selectedTags.value.filter(({ name }) => name !== tag.name)
     } else {
       selectedTags.value.push(tag)
     }
   }
 
   const selectAllTags = (selectAll: boolean) => {
-    console.log('selectAllTags', selectAll)
     selectedTags.value = selectAll ? tags.value : []
-    console.log('selectAllTags', selectedTags.value)
   }
 
   const selectTagNodes = (type: TagNodesType) => {
@@ -57,7 +50,7 @@ export const useTagStore = defineStore('tagStore', () => {
 
   return {
     fetchTags,
-    tags, //: fetchedTags.value?.tags || [],
+    tags,
     resetTags,
     selectAllTags,
     selectedTags,
