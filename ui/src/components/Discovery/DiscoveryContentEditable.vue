@@ -20,8 +20,6 @@
       <FeatherTooltip
         :title="props.tooltipText"
         v-slot="{ attrs, on }"
-        :pointer-alignment="alignment"
-        :placement="placement"
         v-if="props.tooltipText"
       >
         <FeatherButton
