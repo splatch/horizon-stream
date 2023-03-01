@@ -28,21 +28,39 @@
 
 package org.opennms.horizon.alarmservice.service;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.opennms.horizon.alarmservice.api.AlarmLifecyleListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-@SpringBootConfiguration
-@SpringBootApplication
-@ComponentScan(basePackages = "org.opennms.horizon.alarmservice")
-@EnableJpaRepositories(basePackages = "org.opennms.horizon.alarmservice.db.repository")
-@EntityScan(basePackages = "org.opennms.horizon.alarmservice.db.entity")
-public class AlarmServiceMain {
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
-    public static void main(String[] args) {
-        SpringApplication.run(AlarmServiceMain.class, args);
+/**
+ * Helper class used to track and interact with {@link AlarmLifecyleListener}s.
+ */
+@Service
+public class AlarmListenerRegistry {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmListenerRegistry.class);
+
+    private final List<AlarmLifecyleListener> listeners = new CopyOnWriteArrayList<>();
+
+    public void addListener(AlarmLifecyleListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(AlarmLifecyleListener listener) {
+        listeners.remove(listener);
+    }
+
+    public void forEachListener(Consumer<AlarmLifecyleListener> callback) {
+        for (AlarmLifecyleListener listener : listeners) {
+            try {
+                callback.accept(listener);
+            } catch (Exception e) {
+                LOG.error("Error occurred while invoking listener: {}. Skipping.", listener, e);
+            }
+        }
     }
 }

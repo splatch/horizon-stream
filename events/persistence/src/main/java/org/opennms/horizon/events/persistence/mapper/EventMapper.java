@@ -15,6 +15,8 @@ import java.util.List;
 public interface EventMapper extends DateTimeMapper {
 
     @Mapping(source = "eventUei", target = "uei")
+    @Mapping(source = "producedTime", target = "producedTimeMs")
+    @Mapping(source = "eventInfo", target = "info")
     org.opennms.horizon.events.proto.Event modelToDTO(Event event);
 
     default org.opennms.horizon.events.proto.Event modelToDtoWithParams(Event event) {
@@ -27,7 +29,7 @@ public interface EventMapper extends DateTimeMapper {
 
             List<EventParameter> parameters = eventParams.getParameters();
             for (EventParameter param : parameters) {
-                builder.addEventParams(modelToDTO(param));
+                builder.addParameters(modelToDTO(param));
             }
         }
         return builder.build();

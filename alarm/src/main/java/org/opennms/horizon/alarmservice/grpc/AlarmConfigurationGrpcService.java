@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.alarmservice.grpc;
 
-import org.opennms.horizon.alarms.proto.Alarm;
-import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.exceptions.NotificationException;
+import org.opennms.horizon.alarms.proto.AlarmConfigurationServiceGrpc;
+import org.springframework.stereotype.Component;
 
-public interface NotificationService {
-
-    void postNotification(Alarm alarm) throws NotificationException;
-
-    void postPagerDutyConfig(PagerDutyConfigDTO config);
+/**
+ * A temporary noop implementation of the service.
+ *
+ * Will evolve with the data model as necessary.
+ */
+@Component
+public class AlarmConfigurationGrpcService extends AlarmConfigurationServiceGrpc.AlarmConfigurationServiceImplBase {
 }
