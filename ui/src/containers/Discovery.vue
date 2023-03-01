@@ -209,6 +209,10 @@ const handleCancel = () => {
     .search {
       background-color: var(variables.$surface);
       margin-bottom: var(variables.$spacing-m);
+
+      :deep(.feather-input-sub-text) {
+        display: none !important;
+      }
     }
   }
 
@@ -256,9 +260,5 @@ const handleCancel = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-:deep(.feather-input-sub-text) {
-  display: none !important;
 }
 </style>
