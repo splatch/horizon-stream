@@ -14,7 +14,25 @@
  -->
 <template>
   <div class="content-editable-wrapper">
-    <label for="contentEditable">{{ props.label }}</label>
+    <div class="label">
+      <label for="contentEditable">{{ props.label }}</label>
+
+      <FeatherTooltip
+        :title="props.tooltipText"
+        v-slot="{ attrs, on }"
+        :pointer-alignment="alignment"
+        :placement="placement"
+        v-if="props.tooltipText"
+      >
+        <FeatherButton
+          v-bind="attrs"
+          v-on="on"
+          icon="info"
+          class="icon-help"
+          ><FeatherIcon :icon="Help"> </FeatherIcon
+        ></FeatherButton>
+      </FeatherTooltip>
+    </div>
     <div
       v-html="htmlString"
       @keyup="contentChange"
@@ -38,6 +56,7 @@ import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
 import { ContentEditableType } from '@/components/Discovery/discovery.constants'
 import { PropType } from 'vue'
+import Help from '@featherds/icon/action/Help'
 
 const emit = defineEmits(['is-content-invalid', 'content-formatted'])
 
@@ -57,6 +76,9 @@ const props = defineProps({
   defaultContent: {
     type: [String, Number],
     default: ''
+  },
+  tooltipText: {
+    type: String
   }
 })
 
@@ -148,6 +170,22 @@ defineExpose({
 .content-editable-wrapper {
   // TODO: mimic FeatherDS input component; label inside input box and animate it to be on top on the box when focus
   position: relative;
+  > .label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    > .icon-help {
+      height: 20px;
+      color: var(variables.$secondary-variant);
+      width: 20px;
+      min-width: 20px !important;
+      border: none;
+      padding: 0;
+      > svg {
+        font-size: 1.2rem !important;
+      }
+    }
+  }
   > .content-editable {
     border: 1px solid var(variables.$secondary-text-on-surface);
     border-radius: vars.$border-radius-xs;
@@ -167,6 +205,7 @@ defineExpose({
       width: 1.5rem;
       height: 1.5rem;
       outline: none;
+      color: var(variables.$success);
       &:hover {
         cursor: pointer;
       }
