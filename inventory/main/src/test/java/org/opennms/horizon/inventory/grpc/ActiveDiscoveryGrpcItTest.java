@@ -76,7 +76,6 @@ public class ActiveDiscoveryGrpcItTest extends GrpcTestBase {
 
     @AfterEach
     public void cleanUp() throws InterruptedException {
-        configRepo.deleteAll();
         afterTest();
     }
 

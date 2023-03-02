@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.inventory.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -49,8 +50,10 @@ public class MonitoringLocation {
     private long id;
 
     @NotNull
+    @Column(name = "tenant_id")
     private String tenantId;
 
     @NotNull
+    @Column(name = "location")
     private String location;
 }

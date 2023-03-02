@@ -36,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +71,7 @@ import org.opennms.taskset.contract.ScanType;
 import org.opennms.taskset.contract.ScannerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.google.protobuf.Any;
@@ -123,9 +125,7 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
         credentialRepository.deleteAll();
         locationRepository.deleteAll();
     }
-
     @Test
-    @Transactional
     void testAzureAccept() throws Exception {
         AzureCredential credential = createAzureCredential();
 
@@ -259,7 +259,8 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
             .build();
     }
 
-    private AzureCredential createAzureCredential() {
+    @Transactional
+    public AzureCredential createAzureCredential() {
 
         MonitoringLocation location = new MonitoringLocation();
         location.setLocation(TEST_LOCATION);
@@ -278,6 +279,7 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
         credential = credentialRepository.save(credential);
 
         Tag tag = new Tag();
+        tag.setTenantId(TEST_TENANT_ID);
         tag.setName("tag-name");
         tag.getAzureCredentials().add(credential);
         tagRepository.save(tag);
