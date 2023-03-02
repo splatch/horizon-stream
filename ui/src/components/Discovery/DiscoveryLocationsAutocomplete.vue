@@ -91,18 +91,15 @@ const initLocations = () => {
       (l: Location) => l.location && !props.preLoadedlocations.includes(l.location)
     )
     filteredLocations.value = locations.value
-    console.log(selectedLocations.value)
   }
 }
 watchOnce(computedLocations, () => {
-  if (computedLocations) {
-    initLocations()
-    if (computedLocations.value.length == 1) {
-      selectedLocations.value = computedLocations.value as TLocationAutocomplete[]
-      locations.value = []
-      filteredLocations.value = []
-      emit('location-selected', selectedLocations.value)
-    }
+  initLocations()
+  if (computedLocations.value.length == 1) {
+    selectedLocations.value = computedLocations.value as TLocationAutocomplete[]
+    locations.value = []
+    filteredLocations.value = []
+    emit('location-selected', selectedLocations.value)
   }
 })
 

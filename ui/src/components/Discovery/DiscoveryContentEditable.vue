@@ -68,9 +68,6 @@ const htmlString = ref(props.defaultContent) // to render string as html
 
 const contentChange = () => {
   isContentNotEmpty.value = contentEditableRef.value.textContent.length as boolean
-  if (!contentEditableRef.value.textContent.length) {
-    emit('content-formatted', null)
-  }
 }
 
 const validateAndFormat: fncArgVoid = () => {

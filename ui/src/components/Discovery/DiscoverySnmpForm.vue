@@ -103,9 +103,7 @@ const discoveryInfo = ref<TDiscoveryConfig>(props.discovery || ({} as TDiscovery
 const contentEditableIPRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableCommunityStringRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableUDPPortRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
-const isDisabled = computed(
-  () => !discoveryInfo.value.configName || !discoveryInfo.value.location || !discoveryInfo.value.ipAddresses
-)
+const isDisabled = computed(() => !discoveryInfo.value.configName || !discoveryInfo.value.ipAddresses)
 
 watch(props, () => {
   discoveryInfo.value = props.discovery || ({} as TDiscoveryConfig)
