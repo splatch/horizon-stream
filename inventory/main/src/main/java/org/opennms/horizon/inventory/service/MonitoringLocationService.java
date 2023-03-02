@@ -11,9 +11,6 @@ import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +47,8 @@ public class MonitoringLocationService {
             .collect(Collectors.toList());
     }
 
-    public List<MonitoringLocationDTO> searchLocations(String location) {
-        return modelRepo.findByLocationContainingIgnoreCase(location)
+    public List<MonitoringLocationDTO> searchLocationsByTenantId(String location, String tenantId) {
+        return modelRepo.findByLocationContainingIgnoreCaseAndTenantId(location, tenantId)
             .stream().map(mapper::modelToDTO).toList();
     }
 }

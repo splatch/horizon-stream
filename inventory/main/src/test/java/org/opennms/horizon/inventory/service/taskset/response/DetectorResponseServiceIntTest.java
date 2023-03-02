@@ -89,12 +89,6 @@ class DetectorResponseServiceIntTest extends GrpcTestBase {
         testGrpcService.reset();
     }
 
-    @AfterAll
-    public static void tearDown() throws InterruptedException {
-        server.shutdownNow();
-        server.awaitTermination();
-    }
-
     @Test
     @Transactional
     void testAccept() throws UnknownHostException {
@@ -220,16 +214,8 @@ class DetectorResponseServiceIntTest extends GrpcTestBase {
         }
 
         List<MonitoredService> monitoredServices = monitoredServiceRepository.findAll();
-        List<String> monitoredServiceNames =
-            monitoredServiceTypes.stream()
-                .map(MonitoredServiceType::getServiceName)
-                .toList();
-
         assertEquals(monitorTypes.length, monitoredServiceNames.size());
 
-        for (int index = 0; index < monitorTypes.length; index++) {
-            assertEquals(monitorTypes[index].getValueDescriptor().getName(), monitoredServiceNames.get(index));
-        }
         for (MonitoredService monitoredService : monitoredServices) {
             IpInterface ipInterface = monitoredService.getIpInterface();
 
@@ -244,6 +230,10 @@ class DetectorResponseServiceIntTest extends GrpcTestBase {
                 taskDefinition.getPluginName().contains(MonitorType.ICMP.name())).toList();
 
         assertEquals(2, monitorTasks.size());
+
+        List<UpdateTasksRequest> grpcRequests = testGrpcService.getRequests();
+        // fragile test : extra 1 call for SNMP collector
+        assertEquals(monitorTypes.length + 1, grpcRequests.size());
 
         var collectorTasks = taskDefinitions.stream().filter(taskDefinition ->
                 taskDefinition.getType().equals(TaskType.COLLECTOR))

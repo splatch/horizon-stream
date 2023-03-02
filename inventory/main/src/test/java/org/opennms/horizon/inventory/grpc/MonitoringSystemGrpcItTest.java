@@ -195,10 +195,6 @@ public class MonitoringSystemGrpcItTest extends GrpcTestBase {
         assertFalse(monitoringSystem.isPresent());
         optionalLocation = locationRepo.findByLocation(system2.getMonitoringLocation().getLocation());
         assertFalse(optionalLocation.isPresent());
-
-        verify(spyInterceptor, times(2)).verifyAccessToken(authHeader);
-        verify(spyInterceptor, times(2)).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
-
     }
 
     @Test

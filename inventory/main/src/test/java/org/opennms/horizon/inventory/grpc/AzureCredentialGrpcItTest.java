@@ -173,9 +173,6 @@ class AzureCredentialGrpcItTest extends GrpcTestBase {
     @AfterEach
     public void cleanUp() throws InterruptedException {
         wireMock.stop();
-        monitoringLocationRepository.deleteAll();
-        azureCredentialRepository.deleteAll();
-        testGrpcService.reset();
         afterTest();
     }
 

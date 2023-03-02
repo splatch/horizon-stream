@@ -76,6 +76,7 @@ import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.grpc.Context;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @SpringBootTest

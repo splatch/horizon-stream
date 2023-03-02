@@ -130,7 +130,7 @@ public class MonitoringLocationRepoTest {
 
     @Test
     void testSearchLocation() {
-        List<MonitoringLocation> result = repository.findByLocationContainingIgnoreCase("locaT");
+        List<MonitoringLocation> result = repository.findByLocationContainingIgnoreCaseAndTenantId("locaT", tenantId);
         assertThat(result).hasSize(2);
     }
 }
