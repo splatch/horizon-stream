@@ -176,11 +176,11 @@ defineExpose({
       height: 20px;
       color: var(variables.$secondary-variant);
       width: 20px;
-      min-width: 20px !important;
+      min-width: 20px;
       border: none;
       padding: 0;
       > svg {
-        font-size: 1.2rem !important;
+        font-size: 1.2rem;
       }
     }
   }
