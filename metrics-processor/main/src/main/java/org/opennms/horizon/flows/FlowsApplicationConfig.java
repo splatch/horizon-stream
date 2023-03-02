@@ -86,16 +86,16 @@ public class FlowsApplicationConfig {
     @Value("${grpc.inventory.url}")
     private String inventoryGrpcAddress;
 
-    @Value("${grpc.ingestor.url}")
+    @Value("${grpc.flow-ingestor.url}")
     private String ingestorGrpcAddress;
 
     @Value("${grpc.server.deadline:60000}")
     private long deadline;
 
-    @Value("${grpc.ingestor.retry.maxAttempts}")
+    @Value("${grpc.flow-ingestor.retry.maxAttempts}")
     private int maxNumberOfAttempts;
 
-    @Value("${grpc.ingestor.retry.maxDelay}")
+    @Value("${grpc.flow-ingestor.retry.maxDelay}")
     private int backOffPeriod;
 
     @Bean(name = "inventoryChannel")

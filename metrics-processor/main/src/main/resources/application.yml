@@ -16,7 +16,8 @@ grpc:
     deadline: 60000
   inventory:
     url: opennms-inventory:6565
-  ingestor:
+  flow-ingestor:
+    # Temporary URL
     url: flows.onms-dp-dev.dev.nonprod.dataservice.opennms.com:443
     retry:
       maxAttempts: 3

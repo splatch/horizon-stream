@@ -41,7 +41,7 @@ import io.grpc.testing.GrpcCleanupRule;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = IngestorApplicationConfigTest.class)
 @ContextConfiguration(classes = MetricRegistry.class)
-@TestPropertySource(locations = "classpath:test-application.yml")
+@TestPropertySource(locations = "classpath:application.yml")
 @DirtiesContext
 class IngestorClientTest {
 
