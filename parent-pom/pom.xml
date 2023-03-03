@@ -130,7 +130,7 @@
         <zjsonpatch.version>0.4.12</zjsonpatch.version>
         <mockito.version>4.8.0</mockito.version>
         <jupiter.version>5.9.0</jupiter.version>
-        <jib.version>3.2.1</jib.version>
+        <jib.version>3.3.1</jib.version>
         <surefire.version>3.0.0-M7</surefire.version>
         <failsafe.version>3.0.0-M7</failsafe.version>
         <zjsonpatch.version>0.4.12</zjsonpatch.version>
@@ -957,7 +957,9 @@
                     <version>${jib.version}</version>
                     <configuration>
                         <from>
-                            <image>eclipse-temurin:17-jre@sha256:592f2d372afeb13bc3c5a28e49c7ca6b5e5688e767cb0b9e21a70caaacfc4cec</image>
+                            <!-- Make sure to use the hash of the manifest list (multi-arch) vs the hash of a particular manifest (single-arch) when updating
+                                 See https://github.com/docker/roadmap/issues/262#issuecomment-1161515179 for an example on how to do this -->
+                            <image>eclipse-temurin:17-jre@sha256:c61c6a48364d05ea89504489aecddd8af8c32dba6df2257da4131fe244284f50</image>
                         </from>
                         <!--suppress MavenModelInspection -->
                         <skip>${application.docker.skip}</skip>
