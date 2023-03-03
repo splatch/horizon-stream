@@ -48,7 +48,7 @@ import { debounce } from 'lodash'
 import { Location } from '@/types/graphql'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { watchOnce } from '@vueuse/core'
-import { object } from "yup"
+import { object } from 'yup'
 
 const Icons = markRaw({
   Cancel
@@ -64,14 +64,14 @@ const filteredLocations = ref() //results in autocomplete
 const inputRef = ref() // actual autocomplete input
 const errMsgDisplay = ref('none') // for sub text css display
 const computedLocations = computed(() => discoveryQueries.locations)
+
 const props = defineProps({
   type: {
     type: String,
-    required: false,
-    default: 'multiple'
+    required: false
   },
   preLoadedlocations: {
-    type: Array<string>,
+    type: Array<string | undefined>,
     required: false,
     default: []
   }
@@ -82,22 +82,24 @@ onMounted(() => discoveryQueries.getLocations())
 const initLocations = () => {
   filteredLocations.value = computedLocations.value as Location[]
   locations.value = computedLocations.value as Location[]
-  if (props.preLoadedlocations.length) {
-    selectedLocations.value = locations.value.filter((l: Location) => props.preLoadedlocations.includes(l.id))
-    locations.value = locations.value.filter((l: Location) => !props.preLoadedlocations.includes(l.id))
+  selectedLocations.value = []
+  if (props.preLoadedlocations.length && props.preLoadedlocations[0]) {
+    selectedLocations.value = locations.value.filter(
+      (l: Location) => l.location && props.preLoadedlocations.includes(l.location)
+    )
+    locations.value = locations.value.filter(
+      (l: Location) => l.location && !props.preLoadedlocations.includes(l.location)
+    )
     filteredLocations.value = locations.value
-  } else {
-    if (computedLocations.value.length == 1) {
-      selectedLocations.value = computedLocations.value as TLocationAutocomplete[]
-      locations.value = []
-      filteredLocations.value = []
-      emit('location-selected', selectedLocations.value)
-    }
   }
 }
 watchOnce(computedLocations, () => {
-  if (computedLocations) {
-    initLocations()
+  initLocations()
+  if (computedLocations.value.length == 1) {
+    selectedLocations.value = computedLocations.value as TLocationAutocomplete[]
+    locations.value = []
+    filteredLocations.value = []
+    emit('location-selected', selectedLocations.value)
   }
 })
 
@@ -116,6 +118,7 @@ const search = (q: string) => {
     .filter((x: any) => x.location?.toLowerCase().indexOf(query) > -1)
     .map((x: any) => ({
       _text: x?.location,
+      location: x?.location,
       id: x?.id
     }))
   loading.value = false
@@ -126,8 +129,8 @@ const deboncedFn = debounce(
   (selected: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
     if (selected) {
       const selectedLocation = selected as TLocationAutocomplete
-      selectedLocation.location = selectedLocation._text
       if (props.type === 'single') {
+        locations.value = computedLocations.value
         selectedLocations.value = [selectedLocation]
       } else {
         const exists = selectedLocations.value.find((l) => l.id == selectedLocation.id)
@@ -137,6 +140,7 @@ const deboncedFn = debounce(
       }
       locations.value = locations.value.filter((l: Location) => l.id !== selectedLocation.id)
       searchValue.value = undefined
+      inputRef.value?.handleOutsideClick()
       emit('location-selected', selectedLocations.value)
       handleErrDisplay()
     }
@@ -168,8 +172,8 @@ const handleErrDisplay = () => {
 
   nextTick(() => {
     // add/remove the feather input subtext display
-    errMsgDisplay.value = 
-      (document.getElementById(inputRef.value.subTextId)?.children[0].innerHTML === locationErrMsg) ? 'flex' : 'none'
+    errMsgDisplay.value =
+      document.getElementById(inputRef.value.subTextId)?.children[0].innerHTML === locationErrMsg ? 'flex' : 'none'
   })
 }
 </script>
@@ -207,6 +211,11 @@ const handleErrDisplay = () => {
   }
   > .label {
     order: 1;
+  }
+}
+:deep(.post) {
+  &:last-child {
+    display: none !important;
   }
 }
 </style>

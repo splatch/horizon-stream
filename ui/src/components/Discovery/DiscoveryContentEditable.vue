@@ -54,6 +54,7 @@ import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
 import { ContentEditableType } from '@/components/Discovery/discovery.constants'
 import { PropType } from 'vue'
+import { fncArgVoid } from '@/types'
 import Help from '@featherds/icon/action/Help'
 
 const emit = defineEmits(['is-content-invalid', 'content-formatted'])
@@ -89,7 +90,7 @@ const contentChange = () => {
   isContentNotEmpty.value = contentEditableRef.value.textContent.length as boolean
 }
 
-const validateAndFormat = () => {
+const validateAndFormat: fncArgVoid = () => {
   isContentInvalid = validateContent()
 
   const highlightedString = highlightInvalid()
@@ -97,7 +98,19 @@ const validateAndFormat = () => {
 
   emit('is-content-invalid', isContentInvalid)
 
-  if (!isContentInvalid) emit('content-formatted', contentEditableRef.value.textContent)
+  if (!isContentInvalid) emit('content-formatted', splitContent(contentEditableRef.value.textContent))
+}
+
+const splitContent = (str: string): (string | number)[] | null => {
+  if (!str || str.length < 2) return null
+
+  const regexDelim = new RegExp(props.regexDelim)
+  let contentEditableStrings = str.split(regexDelim)
+
+  if (props.contentType === ContentEditableType.UDPPort) {
+    return contentEditableStrings.map((p) => parseInt(p))
+  }
+  return contentEditableStrings
 }
 
 const validateContent = () => {
@@ -115,7 +128,6 @@ const validateContent = () => {
       break
     default:
   }
-
   return isInvalid
 }
 
@@ -145,7 +157,7 @@ const highlightInvalid = () => {
   return highlightInvalidString
 }
 
-const reset = () => {
+const reset: fncArgVoid = () => {
   contentEditableRef.value.textContent = props.defaultContent
 }
 
