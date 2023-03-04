@@ -139,9 +139,8 @@
                 <executions>
                     <execution>
                         <id>build-docker-image</id>
-                        <phase>install</phase>
                         <goals>
-                            <!-- Always dockerBuild - no need to push (at least for now) -->
+                            <!-- Always dockerBuild - no need to push -->
                             <goal>dockerBuild</goal>
                         </goals>
                     </execution>
