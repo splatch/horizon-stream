@@ -46,7 +46,7 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
 
     local_resource(
         compile_resource_name,
-        'mvn compile -f {} -am'.format(base_path),
+        'mvn clean compile -f {} -am'.format(base_path),
         deps=['{}/src'.format(base_path), '{}/pom.xml'.format(base_path)],
         ignore=['**/target'],
         labels=labels,
@@ -54,7 +54,7 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
 
     custom_build(
         image_name,
-        'mvn clean package jib:dockerBuild -DskipTests -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} '.format(base_path, cluster_arch_cmd),
+        'mvn clean install -DskipTests -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} '.format(base_path, cluster_arch_cmd),
         deps=['{}/target/classes/org/opennms'.format(base_path), '{}/pom.xml'.format(base_path), '{}/src/main/resources'.format(base_path)],
         live_update=[
             sync('{}/target/classes/org/opennms'.format(base_path), '/app/classes/org/opennms'),
@@ -80,7 +80,7 @@ def jib_project_multi_module(resource_name, image_name, base_path, k8s_resource_
 
     custom_build(
         image_name,
-        'mvn clean package jib:dockerBuild -DskipTests -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
+        'mvn clean install -DskipTests -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
         deps=[base_path],
         ignore=['**/target'],
     )
