@@ -39,11 +39,32 @@ secret_settings(disable_scrub=True)  ## TODO: update secret values so we can ree
 cluster_arch_cmd = '$(tilt get cluster default -o=jsonpath --template="{.status.arch}")'
 
 def jib_project(resource_name, image_name, base_path, k8s_resource_name, resource_deps=[], port_forwards=[], labels=None):
+    """
+    Builds and streams log output for our single-module Maven/Jib projects. Supports rapid development.
+
+    NOTE: Do not use this function wtih multi-module Maven projects, use the jib_project_multi_module function instead.
+    Rapid development does not work with multi-module Maven builds so it will appear to be broken.
+
+    :param resource_name: Name of the Tilt resources to create.
+    :param image_name: Name of the Docker image to build.
+    :param base_path: Path to the project's main folder thats contains the root POM file.
+    :param k8s_resource_name: Name of the Kubernetes Pod or Deployment to attach to the main Tilt resource.
+    :param resource_deps: Adds extra dependencies to the main Tilt resource, which can be used for things like startup order.
+    :param port_forwards: Specifies the port forwards to use on the main Tilt resource.
+    :param labels: Adds labels to the Tilt resources to create categories in the sidebar.
+    """
     if not labels:
         labels=[resource_name]
 
+
     compile_resource_name = '{}:live-reload'.format(resource_name)
 
+    # This is the Tilt resource that compiles code for the purpose of rapid development.
+    #
+    # Triggers compilation when source files are changed. This produces compiled class files, which are copied in to the
+    # running container by the main Tilt resource.
+    #
+    # Disable this resource to turn off live reload. Trigger the main Tilt resource for full builds instead.
     local_resource(
         compile_resource_name,
         'mvn clean compile -f {} -am'.format(base_path),
@@ -52,6 +73,17 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
         labels=labels,
     )
 
+
+    # This is the image build part of the main Tilt resource.
+    #
+    # It will perform a full build and produces an image using Jib. This can be triggered manually when needed.
+    #
+    # Its live_update rules copy the project's resouces and compiled class files into the container. The web server
+    # should be running spring-boot-devtools to trigger a restart when it detects these files changed. The "live-reload"
+    # Tilt resource is responsible for triggering the compilation.
+    #
+    # Multi-module builds don't work with this function. The project's submodules are built into the container as jar
+    # files and spring-boot-devtools's "restart" classloader needs to be configured with those jars. This varies per project.
     custom_build(
         image_name,
         'mvn clean install -DskipTests -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} '.format(base_path, cluster_arch_cmd),
@@ -62,6 +94,10 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
         ],
     )
 
+    # This is the Kubernetes part of the main Tilt resource.
+    #
+    # Configures the name of the resource in Tilt, Kubernetes objects that should be part of it, and other settings.
+    # The `k8s_resource_name` param should reference the Pod or Deployment.
     k8s_resource(
         k8s_resource_name,
         new_name=resource_name,
@@ -71,6 +107,18 @@ def jib_project(resource_name, image_name, base_path, k8s_resource_name, resourc
     )
 
 def jib_project_multi_module(resource_name, image_name, base_path, k8s_resource_name, resource_deps=[], port_forwards=[], labels=None, submodule=None):
+    """
+    Builds our multi-module Maven/Jib projects. Does not support rapid development.
+
+    :param resource_name: Name of the Tilt resource to create.
+    :param image_name: Name of the Docker image to build.
+    :param base_path: Path to the project's main folder thats contains the root POM file.
+    :param k8s_resource_name: Name of the Kubernetes Pod or Deployment to attach to the main Tilt resource.
+    :param resource_deps: Adds extra dependencies to the Tilt resource, which can be used for things like startup order.
+    :param port_forwards: Specifies the port forwards to use on the Tilt resource.
+    :param labels: Adds labels to the Tilt resource to create categories in the sidebar.
+    :param submodule: Specify a submodule of the Maven project, if needed.
+    """
     if not labels:
         labels=[resource_name]
 
@@ -78,6 +126,10 @@ def jib_project_multi_module(resource_name, image_name, base_path, k8s_resource_
     if (submodule):
         submodule_flag = '-pl {}'.format(submodule)
 
+    # This is the image build part of the main Tilt resource.
+    #
+    # It will perform a full build and produces an image using Jib. This is triggered manually by default, but can be
+    # triggered automatically on file change by changing the resource to "Auto" mode.
     custom_build(
         image_name,
         'mvn clean install -DskipTests -Dapplication.docker.image=$EXPECTED_REF -f {} -Djib.from.platforms=linux/{} {}'.format(base_path, cluster_arch_cmd, submodule_flag),
@@ -85,6 +137,10 @@ def jib_project_multi_module(resource_name, image_name, base_path, k8s_resource_
         ignore=['**/target'],
     )
 
+    # This is the Kubernetes part of the main Tilt resource.
+    #
+    # Configures the name of the resource in Tilt, Kubernetes objects that should be part of it, and other settings.
+    # The `k8s_resource_name` param should reference the Pod or Deployment.
     k8s_resource(
         k8s_resource_name,
         new_name=resource_name,
