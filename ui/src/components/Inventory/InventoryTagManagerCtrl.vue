@@ -1,28 +1,38 @@
 <template>
-  <FeatherButton @click="taggingBoxToggle" class="btn-as-input">
+  <FeatherButton
+    @click="toggleTagManager"
+    class="btn-as-input"
+  >
     <template v-slot:icon>
       <label for="tagging">Tagging</label>
-      <FeatherIcon id="tagging" :icon="taggingBoxIsOpen ? upIcon : downIcon" aria-hidden="true" focusable="false" flex />
+      <FeatherIcon
+        id="tagging"
+        :icon="isTagManagerOpen ? icon.ExpandLess : icon.ExpandMore"
+        aria-hidden="true"
+        focusable="false"
+        flex
+      />
     </template>
   </FeatherButton>
 </template>
 
 <script setup lang="ts">
+import ExpandMore from '@featherds/icon/navigation/ExpandMore'
+import ExpandLess from '@featherds/icon/navigation/ExpandLess'
 import { useInventoryStore } from '@/store/Views/inventoryStore'
-import ArrowDown from '@featherds/icon/navigation/ExpandMore'
-import ArrowUp from '@featherds/icon/navigation/ExpandLess'
 
 const inventoryStore = useInventoryStore()
 
-const taggingBoxIsOpen = computed(() => inventoryStore.isTaggingBoxOpen)
-const taggingBoxToggle = () => inventoryStore.toggleTaggingBox()
+const isTagManagerOpen = computed(() => inventoryStore.isTagManagerOpen)
+const toggleTagManager = () => {
+  inventoryStore.toggleTagManager()
+}
 
-const upIcon = markRaw(ArrowUp)
-const downIcon = markRaw(ArrowDown)
+const icon = markRaw({ ExpandLess, ExpandMore })
 </script>
 
 <style lang="scss" scoped>
-@use "@/styles/btns.scss";
+@use '@/styles/btns.scss';
 
 .btn-as-input {
   @include btns.btn-looks-as-select-input;

@@ -1,21 +1,16 @@
 <template>
-  <div
-    class="tag-manager-box"
-    v-if="isTaggingBoxOpen"
-  >
+  <div class="tag-manager">
     <section class="select-tags">
       <div class="top">
         <div class="heading-total-selected">
           <h4>Select Tags:</h4>
           <div class="total-selected">
             <div class="total">
-              <!-- TOTAL: <span>{{ tags.length ? tags.length : '' }}</span> -->
               TOTAL: <span>{{ tags.length }}</span>
               <span class="pipe">|</span>
             </div>
             <div class="selected">
-              <!-- SELECTED: <span>{{ selectedTags.length ? selectedTags.length : '' }}</span> -->
-              SELECTED: <span>{{ selectedTags.length }}</span>
+              SELECTED: <span>{{ tagsSelected.length }}</span>
             </div>
           </div>
         </div>
@@ -36,7 +31,7 @@
           /> -->
           <!-- <FeatherButton text>Deselect all</FeatherButton> -->
           <FeatherButton
-            @click="selectAllToggle"
+            @click="toggleSelectAll"
             secondary
             class="select-all-btn"
             >{{ isSelectingAll ? 'Deselect all' : 'Select all' }}</FeatherButton
@@ -54,7 +49,7 @@
       </div>
       <FeatherChipList
         v-if="tags.length"
-        :key="selectedTags.toString()"
+        :key="tagsSelected.toString()"
         condensed
         label="Tags"
         class="tag-chip-list"
@@ -72,100 +67,56 @@
     </section>
     <section class="tag-nodes">
       <h4>Tag Nodes:</h4>
-      <FeatherRadioGroup
-        label=""
-        v-model="tagStore.tagNodesSelected"
-        class="select-tag-nodes"
+      <FeatherButton
+        data-test="cancel-btn"
+        secondary
+        @click="setTagEditMode(false)"
       >
-        <FeatherRadio
-          :value="TagNodesType.All"
-          :disabled="selectedTags.length === 0"
-          >All</FeatherRadio
-        >
-        <FeatherRadio
-          :value="TagNodesType.Individual"
-          :disabled="selectedTags.length === 0"
-          >Individual</FeatherRadio
-        >
-        <FeatherRadio :value="TagNodesType.Clear">Clear</FeatherRadio>
-      </FeatherRadioGroup>
+        Cancel
+      </FeatherButton>
+      <FeatherButton
+        data-test="save-btn"
+        primary
+        @click="setTagEditMode(true)"
+      >
+        Add tags to node
+      </FeatherButton>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useInventoryStore } from '@/store/Views/inventoryStore'
+import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
+import { useNodeMutations } from '@/store/Mutations/nodeMutations'
 import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useTagStore } from '@/store/Components/tagStore'
 import { useTagMutations } from '@/store/Mutations/tagMutations'
-import { TagNodesType } from '@/types/tags'
-// import Add from '@featherds/icon/action/Add'
 
 const inventoryStore = useInventoryStore()
 const tagQueries = useTagQueries()
 const tagStore = useTagStore()
-const tagMutations = useTagMutations()
 
 const searchValue = ref()
 const tags = computed(() => tagStore.tags)
-const selectedTags = computed(() => tagStore.selectedTags)
+const tagsSelected = computed(() => tagStore.tagsSelected)
 const isSelectingAll = ref(false)
 
-watchEffect(() => {
-  // console.log('tagQueries.tags', tagQueries.tags)
-  tags.value = tagQueries.tags
-})
-
-const isTaggingBoxOpen = computed(() => {
-  inventoryStore.isTaggingBoxOpen ? tagStore.fetchTags() : tagStore.resetTags()
-
-  return inventoryStore.isTaggingBoxOpen
-})
-
-const tagsAutocompleteRef = ref()
-let tagsSelected: Record<string, string>[] = []
-const tagsSelectedListener = (tags: Record<string, string>[]) => {
-  tagsSelected = tags.map((tag) => {
-    delete tag._text
-    return tag
-  })
+const setTagEditMode = (isEdit: boolean) => {
+  tagStore.setTagEditMode(isEdit)
 }
 
 const isTagSelected = (name: string): boolean =>
-  selectedTags.value.some(({ name: selectedTagName }) => selectedTagName === name)
+  tagsSelected.value.some(({ name: selectedTagName }) => selectedTagName === name)
 
-const selectAllToggle = () => {
+const toggleSelectAll = () => {
   isSelectingAll.value = !isSelectingAll.value
   tagStore.selectAllTags(isSelectingAll.value)
 }
 
-const addTag = (val: string) => {
-  tagMutations.editTag(val, true)
-  // cannot be added if already exists
-  // tag list should be updated
-  // input popover should be auto-closed once added?
-  // if adding fail, show snackabr
-  // reset: on close
-  // acts as list filter
-  // when pop
-}
-
-const tagsFiltering = (val: string) => {
-  console.log('val', val)
-  console.log('tagQueries.tags', tagQueries.tags)
-  if (!val?.length) {
-    tags.value = tagQueries.tags
-  } else {
-    tags.value = tagQueries.tags.filter((tag) => tag.name?.includes(val))
-  }
-  console.log('tags.value', tags.value)
-}
-
-/* const inputIcon = {
-  image: markRaw(Add),
-  size: 2,
-  cursorHover: 'pointer'
-} */
+watchEffect(() => {
+  if (inventoryStore.isTagManagerOpen) tagQueries.fetchTags()
+})
 </script>
 
 <style scoped lang="scss">
@@ -174,7 +125,7 @@ const tagsFiltering = (val: string) => {
 @use '@/styles/vars';
 @use '@/styles/mediaQueries';
 
-.tag-manager-box {
+.tag-manager {
   display: flex;
   flex-direction: row;
   flex-flow: wrap;

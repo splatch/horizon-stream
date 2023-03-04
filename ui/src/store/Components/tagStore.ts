@@ -1,62 +1,46 @@
 import { defineStore } from 'pinia'
 import { useQuery } from 'villus'
 import { ListTagsDocument, Tag } from '@/types/graphql'
-import { TagNodesType } from '@/types/tags'
 
 export const useTagStore = defineStore('tagStore', () => {
   const tags = ref([] as Tag[])
-  const selectedTags = ref([] as Tag[])
-  const tagNodesSelected = ref(TagNodesType.Unselected)
+  const tagsSelected = ref([] as Tag[])
+  const isTagEditMode = ref(false)
 
-  const fetchTags = () => {
-    const { data, execute } = useQuery({
-      query: ListTagsDocument,
-      fetchOnMount: false,
-      cachePolicy: 'network-only'
-    })
-
-    execute()
-
-    watchEffect(() => {
-      tags.value = data.value?.tags || []
-    })
+  const setTags = (tagList: Tag[]) => {
+    tags.value = tagList
   }
 
-  const resetTags = () => {
-    tags.value = []
+  const setTagEditMode = (isEdit: boolean) => {
+    isTagEditMode.value = isEdit
   }
 
-  const updateSelectedTags = (tags) => {
-    selectedTags.value = tags
+  const updateTagsSelected = (tags) => {
+    tagsSelected.value = tags
   }
 
   const toggleTag = (tag) => {
-    const isInSelectedList = selectedTags.value.some(({ name }) => name === tag.name)
+    const isInSelectedList = tagsSelected.value.some(({ name }) => name === tag.name)
 
     if (isInSelectedList) {
-      selectedTags.value = selectedTags.value.filter(({ name }) => name !== tag.name)
+      tagsSelected.value = tagsSelected.value.filter(({ name }) => name !== tag.name)
     } else {
-      selectedTags.value.push(tag)
+      tagsSelected.value.push(tag)
     }
   }
 
   const selectAllTags = (selectAll: boolean) => {
-    selectedTags.value = selectAll ? tags.value : []
-  }
-
-  const selectTagNodes = (type: TagNodesType) => {
-    tagNodesSelected.value = type
+    tagsSelected.value = selectAll ? tags.value : []
   }
 
   return {
-    fetchTags,
     tags,
-    resetTags,
+    setTags,
+    isTagEditMode,
+    setTagEditMode,
     selectAllTags,
-    selectedTags,
-    tagNodesSelected,
-    updateSelectedTags,
-    toggleTag,
-    selectTagNodes
+    tagsSelected,
+    updateTagsSelected,
+    toggleTag
   }
 })

@@ -1,4 +1,20 @@
 <template>
+  <div class="ctrls">
+    <FeatherButton
+      data-test="toggle-select-all-btn"
+      pimary
+      @click="toggleSelectAllNodes"
+    >
+      {{ areAllNodesSelected ? 'Deselect all' : 'Select all' }}
+    </FeatherButton>
+    <FeatherButton
+      data-test="open-modal-btn"
+      primary
+      @click="openModalSaveTags"
+    >
+      Save
+    </FeatherButton>
+  </div>
   <ul class="cards">
     <li
       v-for="node in nodes"
@@ -35,8 +51,7 @@
         />
       </section>
       <InventoryNodeTagEditOverlay
-        v-if="node.isEditMode"
-        @edit-tags-node="editTagsNode"
+        v-if="isNodeEditMode"
         :node="node"
       />
     </li>
@@ -53,7 +68,7 @@
         label="Tag list"
       >
         <FeatherChip
-          v-for="tag in selectedTags"
+          v-for="tag in tagsSelected"
           :key="tag.id"
           >{{ tag.name }}</FeatherChip
         >
@@ -63,14 +78,14 @@
       <FeatherButton
         data-testid="cancel-btn"
         secondary
-        @click="cancelTagsAllNodes"
+        @click="closeModal"
       >
         {{ modal.cancelLabel }}
       </FeatherButton>
       <FeatherButton
         data-testid="save-btn"
         primary
-        @click="saveTagsAllNodes"
+        @click="saveTagsToSelectedNodes"
       >
         {{ modal.saveLabel }}
       </FeatherButton>
@@ -86,7 +101,7 @@ import { IIcon } from '@/types'
 import { useTagStore } from '@/store/Components/tagStore'
 import { useNodeMutations } from '@/store/Mutations/nodeMutations'
 import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
-import { TagNodesType } from '@/types/tags'
+import { useInventoryStore } from '@/store/Views/inventoryStore'
 import { ModalPrimary } from '@/types/modal'
 import useModal from '@/composables/useModal'
 
@@ -101,65 +116,68 @@ const nodes = ref<NodeContent[]>(props.tabContent)
 
 const { openModal, closeModal, isVisible } = useModal()
 
-const taggingStore = useTagStore()
+const tagStore = useTagStore()
 const nodeMutations = useNodeMutations()
 const inventoryQueries = useInventoryQueries()
+const inventoryStore = useInventoryStore()
 
-const selectedTags = computed(() => taggingStore.selectedTags)
-const tagNodesSelected = computed(() => taggingStore.tagNodesSelected)
+const nodeSelected = computed(() => inventoryStore.nodeSelected)
+const tagsSelected = computed(() => tagStore.tagsSelected)
 
-watch(tagNodesSelected, (type) => {
-  let isTaggingChecked = false
-  let isEditMode = false
+const isNodeEditMode = computed(() => tagStore.isTagEditMode)
 
-  if (type === TagNodesType.All) {
-    isTaggingChecked = true
-    isEditMode = true
-    openModal()
-  } else if (type === TagNodesType.Individual) {
-    isTaggingChecked = false
-    isEditMode = true
+const areAllNodesSelected = ref(false)
+const toggleSelectAllNodes = () => (areAllNodesSelected.value = !areAllNodesSelected.value)
+
+watch(areAllNodesSelected, (isAllSelected) => {
+  let isNodeOverlayChecked = false
+
+  if (isAllSelected) {
+    isNodeOverlayChecked = true
+
+    nodes.value.forEach((node) => {
+      inventoryStore.setNodeSelection(node, true)
+    })
   }
 
   nodes.value = nodes.value.map((node) => ({
     ...node,
-    isTaggingChecked,
-    isEditMode
+    isNodeOverlayChecked
   }))
+  console.log(nodes.value)
 })
 
-const cancelTagsAllNodes = () => {
-  taggingStore.selectTagNodes(TagNodesType.Unselected)
-  closeModal()
+const openModalSaveTags = () => {
+  const selectedNodesLabels = nodeSelected.value.map(({ label }) => label)
+  const modalContent = areAllNodesSelected.value ? 'Add tags to all nodes?' : `Add tags to ${selectedNodesLabels}`
+  modal.value = {
+    ...modal.value,
+    content: modalContent
+  }
+
+  openModal()
 }
 
-const saveTagsAllNodes = async () => {
-  taggingStore.selectTagNodes(TagNodesType.Unselected)
-
-  // Temp solution until the real enpoint avail
-  const tagsToAdd = selectedTags.value.map(({ name }) => ({ name }))
-  nodes.value.forEach(async ({ id }) => {
-    nodeMutations.addTagsToAllNodes({ nodeId: id, tags: tagsToAdd })
+const saveTagsToSelectedNodes = () => {
+  // call inventoryMutatons
+  inventoryStore.nodeSelected.forEach(({ id }) => {
+    nodeMutations.addTagsToNode({ nodeId: id, tags: tagStore.tagsSelected })
   })
 
   inventoryQueries.fetch()
-  taggingStore.selectAllTags(false)
+  tagStore.selectAllTags(false)
   closeModal()
 }
 
-const editTagsNode = (args: { id: number; toAdd: boolean; toDelete: boolean }) => {
-  nodeMutations.editTagsToNode(args.id, args.toAdd)
-}
-
-const modal: ModalPrimary = {
-  title: 'Add tags to all nodes?',
+const modal = ref<ModalPrimary>({
+  title: '',
   cssClass: '',
   content: '',
   id: '',
   cancelLabel: 'cancel',
   saveLabel: 'ok',
   hideTitle: true
-}
+})
 
 const storageIcon: IIcon = {
   image: Storage,

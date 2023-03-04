@@ -3,7 +3,7 @@
     <feather-checkbox
       id="tagged"
       v-model="isChecked"
-      @update:model-value="editNodeTags(node.id)"
+      @update:model-value="nodeSelect(node)"
       class="tag-node-checkbox"
     />
     <section class="overlay-header">
@@ -41,24 +41,28 @@ import Storage from '@material-design-icons/svg/outlined/storage.svg'
 import Checkbox from '@material-design-icons/svg/outlined/check_box.svg'
 import { NodeContent } from '@/types/inventory'
 import { IIcon } from '@/types'
+import { useInventoryStore } from '@/store/Views/inventoryStore'
+
+const inventoryStore = useInventoryStore()
 
 const props = defineProps({
   node: {
     type: Object as PropType<NodeContent>,
     required: true
+  },
+  isSelected: {
+    type: Boolean,
+    default: false
   }
 })
 
 const isChecked = ref(false)
-
 watchEffect(() => {
-  isChecked.value = props.node.isTaggingChecked as boolean
+  isChecked.value = props.node.isNodeOverlayChecked as boolean
 })
 
-const emit = defineEmits(['editTagsNode'])
-
-const editNodeTags = (id: number) => {
-  emit('editTagsNode', { id, toAdd: isChecked.value })
+const nodeSelect = (node: NodeContent) => {
+  inventoryStore.setNodeSelection(node, isChecked.value)
 }
 
 const storage: IIcon = {
