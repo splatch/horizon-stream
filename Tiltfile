@@ -163,7 +163,7 @@ jib_project(
 )
 
 ### Inventory ###
-jib_project(
+jib_project_multi_module(
     'inventory',
     'opennms/horizon-stream-inventory',
     'inventory',
@@ -190,7 +190,7 @@ jib_project_multi_module(
 )
 
 ### Events ###
-jib_project(
+jib_project_multi_module(
     'events',
     'opennms/horizon-stream-events',
     'events',
