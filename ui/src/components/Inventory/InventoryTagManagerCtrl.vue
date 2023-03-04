@@ -4,7 +4,7 @@
     class="btn-as-input"
   >
     <template v-slot:icon>
-      <label for="tagging">Tagging</label>
+      <label for="tagging">Tag manager</label>
       <FeatherIcon
         id="tagging"
         :icon="isTagManagerOpen ? icon.ExpandLess : icon.ExpandMore"

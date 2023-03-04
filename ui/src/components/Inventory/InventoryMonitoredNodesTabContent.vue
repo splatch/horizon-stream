@@ -159,13 +159,14 @@ const openModalSaveTags = () => {
 }
 
 const saveTagsToSelectedNodes = () => {
-  // call inventoryMutatons
+  const tagsPayload = tagStore.tagsSelected.map(({ name }) => ({ name }))
   inventoryStore.nodeSelected.forEach(({ id }) => {
-    nodeMutations.addTagsToNode({ nodeId: id, tags: tagStore.tagsSelected })
+    nodeMutations.addTagsToNode({ nodeId: id, tags: tagsPayload })
   })
 
   inventoryQueries.fetch()
   tagStore.selectAllTags(false)
+  tagStore.setTagEditMode(false)
   closeModal()
 }
 
@@ -191,30 +192,40 @@ const storageIcon: IIcon = {
 @use '@/styles/vars';
 @use '@/styles/mediaQueriesMixins';
 
+.ctrls {
+  display: flex;
+  justify-content: end;
+  padding: var(variables.$spacing-l) 0;
+  min-width: vars.$min-width-smallest-screen;
+}
 ul.cards {
   display: flex;
   flex-flow: row wrap;
-  gap: 1rem;
+  justify-content: space-between;
   > li {
     position: relative;
     padding: var(variables.$spacing-l) var(variables.$spacing-l);
     border: 1px solid var(variables.$secondary-text-on-surface);
     border-radius: 10px;
     border-left: 10px solid var(variables.$secondary-text-on-surface); // TODO set color dynamically to the node's status
-    min-width: 400px;
+    width: 100%;
+    min-width: vars.$min-width-smallest-screen;
+    margin-bottom: var(variables.$spacing-m);
 
     @include mediaQueriesMixins.screen-sm {
       width: 100%;
     }
     @include mediaQueriesMixins.screen-md {
-      max-width: 480px;
-      width: 100%;
+      width: 49%;
+      min-width: auto;
     }
     @include mediaQueriesMixins.screen-lg {
       width: 48%;
     }
     @include mediaQueriesMixins.screen-xl {
       width: 32%;
+      min-width: 350px;
+      max-width: none;
     }
     @include mediaQueriesMixins.screen-xxl {
       width: 24%;
