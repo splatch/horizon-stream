@@ -144,8 +144,9 @@
                 <executions>
                     <execution>
                         <id>build-docker-image</id>
+                        <phase>install</phase>
                         <goals>
-                            <!-- Always dockerBuild - no need to push -->
+                            <!-- Always dockerBuild - no need to push (at least for now) -->
                             <goal>dockerBuild</goal>
                         </goals>
                     </execution>
@@ -154,6 +155,7 @@
                     <to>
                         <image>${mock-gateway.docker.image}</image>
                     </to>
+                    <skip>false</skip>
                 </configuration>
             </plugin>
             <plugin>

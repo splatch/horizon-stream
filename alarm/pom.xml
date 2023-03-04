@@ -264,6 +264,16 @@
                         </jvmFlags>
                     </container>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>build-docker-image</id>
+<!--                        Must be in package phase before docker runs-->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>${application.jib.defaultGoal}</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
