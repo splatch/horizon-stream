@@ -54,6 +54,19 @@
               :metric="metric"
             />
           </FeatherChipList>
+          <FeatherChipList
+            v-if="node.anchor.tagValue.length"
+            condensed
+            label="Tags"
+            class="tag-chip-list"
+          >
+            <FeatherChip
+              v-for="(tag, index) in node.anchor.tagValue"
+              :key="index"
+            >
+              {{ tag.name }}
+            </FeatherChip>
+          </FeatherChipList>
           <InventoryTextAnchorList
             :anchor="node?.anchor"
             data-test="text-anchor-list"

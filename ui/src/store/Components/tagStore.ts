@@ -10,12 +10,16 @@ export const useTagStore = defineStore('tagStore', () => {
     tags.value = tagList
   }
 
-  const setTagEditMode = (isEdit: boolean) => {
-    isTagEditMode.value = isEdit
+  const addNewTag = (newTag: Record<string, string>) => {
+    const tagExists = tags.value.some(({ name }) => name === newTag.name)
+    if (!tagExists) tags.value.push(newTag as Tag)
+
+    const tagSelectedExists = tagsSelected.value.some(({ name }) => name === newTag.name)
+    if (!tagSelectedExists) tagsSelected.value.push(newTag as Tag)
   }
 
-  const updateTagsSelected = (tags: Tag[]) => {
-    tagsSelected.value = tags
+  const setTagEditMode = (isEdit: boolean) => {
+    isTagEditMode.value = isEdit
   }
 
   const toggleTagsSelected = (tag: Tag) => {
@@ -35,11 +39,11 @@ export const useTagStore = defineStore('tagStore', () => {
   return {
     tags,
     setTags,
+    addNewTag,
     isTagEditMode,
     setTagEditMode,
     selectAllTags,
     tagsSelected,
-    updateTagsSelected,
     toggleTagsSelected
   }
 })

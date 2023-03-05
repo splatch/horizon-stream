@@ -9,7 +9,7 @@ export const useTagQueries = defineStore('tagQueries', () => {
   const tagStore = useTagStore()
 
   const fetchTags = async () => {
-    const { data, execute, isFetching } = useQuery({
+    const { data, execute } = useQuery({
       query: ListTagsDocument,
       fetchOnMount: false,
       cachePolicy: 'network-only'

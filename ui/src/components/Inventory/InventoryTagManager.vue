@@ -40,6 +40,7 @@
             @items-selected="tagsSelectedListener"
             :get-items="tagQueries.getTagsSearch"
             :items="tagQueries.tagsSearched"
+            :show-list="false"
             label="Search/Add tags (optional)"
             ref="tagsAutocompleteRef"
             class="tags-autocomplete"
@@ -97,10 +98,14 @@ const inventoryStore = useInventoryStore()
 const tagQueries = useTagQueries()
 const tagStore = useTagStore()
 
-const searchValue = ref()
+const tagsAutocompleteRef = ref()
 const tags = computed(() => tagStore.tags)
 const tagsSelected = computed(() => tagStore.tagsSelected)
 const areAllTagsSelected = ref(false)
+
+const tagsSelectedListener = (selectedTags: Record<string, string>[]) => {
+  selectedTags.forEach((newTag) => tagStore.addNewTag(newTag))
+}
 
 const setTagEditMode = (isEdit: boolean) => {
   tagStore.setTagEditMode(isEdit)
@@ -121,8 +126,10 @@ const toggleTagsSelected = (tag: Tag) => {
 }
 
 const resetState = () => {
+  tagQueries.fetchTags()
   areAllTagsSelected.value = false
   inventoryStore.isTagManagerReset = true
+  tagsAutocompleteRef.value.reset()
 }
 
 watchEffect(() => {

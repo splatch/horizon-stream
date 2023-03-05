@@ -33,24 +33,6 @@
         >{{ anchor.managementIpValue }}</span
       >
     </li>
-    <li
-      data-test="tag"
-      class="tag-list"
-    >
-      <label :for="label.tag">{{ label.tag }}: </label>
-      <ul
-        v-if="anchor.tagValue.length"
-        :id="label.tag"
-      >
-        <li
-          v-for="tag in anchor.tagValue"
-          :key="tag.id"
-        >
-          <span>{{ tag.name }}</span>
-        </li>
-      </ul>
-      <span v-else>--</span>
-    </li>
   </ul>
 </template>
 
@@ -73,8 +55,7 @@ const goto = (path: string | undefined) => {
 const label = {
   profile: 'Monitoring Profile',
   location: 'Monitoring Location',
-  managementIp: 'Management IP',
-  tag: 'Tag'
+  managementIp: 'Management IP'
 }
 </script>
 
