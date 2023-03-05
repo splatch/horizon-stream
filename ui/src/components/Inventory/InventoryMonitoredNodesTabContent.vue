@@ -1,16 +1,31 @@
 <template>
-  <div class="ctrls">
+  <div
+    v-if="isTagManagerOpen"
+    class="ctrls"
+  >
     <FeatherButton
-      data-test="toggle-select-all-btn"
-      pimary
-      @click="toggleSelectAllNodes"
+      v-if="!areAllNodesSelected"
+      @click="selectDeselectAllNodes(true)"
+      :disabled="!isNodeEditMode"
+      secondary
+      data-test="select-all-btn"
     >
-      {{ areAllNodesSelected ? 'Deselect all' : 'Select all' }}
+      Select all
     </FeatherButton>
     <FeatherButton
-      data-test="open-modal-btn"
-      primary
+      v-else
+      @click="selectDeselectAllNodes(false)"
+      :disabled="!isNodeEditMode"
+      secondary
+      data-test="deselect-all-btn"
+    >
+      Deselect all
+    </FeatherButton>
+    <FeatherButton
       @click="openModalSaveTags"
+      :disabled="!nodeSelected.length"
+      primary
+      data-test="open-modal-btn"
     >
       Save
     </FeatherButton>
@@ -121,31 +136,24 @@ const nodeMutations = useNodeMutations()
 const inventoryQueries = useInventoryQueries()
 const inventoryStore = useInventoryStore()
 
+const isTagManagerOpen = computed(() => inventoryStore.isTagManagerOpen)
 const nodeSelected = computed(() => inventoryStore.nodeSelected)
 const tagsSelected = computed(() => tagStore.tagsSelected)
-
 const isNodeEditMode = computed(() => tagStore.isTagEditMode)
 
 const areAllNodesSelected = ref(false)
-const toggleSelectAllNodes = () => (areAllNodesSelected.value = !areAllNodesSelected.value)
+const selectDeselectAllNodes = (areSelected: boolean) => {
+  areAllNodesSelected.value = areSelected
 
-watch(areAllNodesSelected, (isAllSelected) => {
-  let isNodeOverlayChecked = false
-
-  if (isAllSelected) {
-    isNodeOverlayChecked = true
-
-    nodes.value.forEach((node) => {
-      inventoryStore.setNodeSelection(node, true)
-    })
-  }
+  nodes.value.forEach((node) => {
+    inventoryStore.addRemoveNodeSelected(node, areSelected)
+  })
 
   nodes.value = nodes.value.map((node) => ({
     ...node,
-    isNodeOverlayChecked
+    isNodeOverlayChecked: areSelected
   }))
-  console.log(nodes.value)
-})
+}
 
 const openModalSaveTags = () => {
   const selectedNodesLabels = nodeSelected.value.map(({ label }) => label)
@@ -160,6 +168,7 @@ const openModalSaveTags = () => {
 
 const saveTagsToSelectedNodes = () => {
   const tagsPayload = tagStore.tagsSelected.map(({ name }) => ({ name }))
+  // TODO: BE should be providing a different endpoint for save all nodes, instead of looping to save single node at a time.
   inventoryStore.nodeSelected.forEach(({ id }) => {
     nodeMutations.addTagsToNode({ nodeId: id, tags: tagsPayload })
   })
@@ -167,6 +176,7 @@ const saveTagsToSelectedNodes = () => {
   inventoryQueries.fetch()
   tagStore.selectAllTags(false)
   tagStore.setTagEditMode(false)
+  inventoryStore.resetSelectedNode()
   closeModal()
 }
 

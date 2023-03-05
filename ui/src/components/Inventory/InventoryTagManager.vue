@@ -68,16 +68,18 @@
     <section class="tag-nodes">
       <!-- <h4>Tag Nodes:</h4> -->
       <FeatherButton
-        data-test="save-btn"
-        primary
         @click="setTagEditMode(true)"
+        :disabled="!tagsSelected.length"
+        primary
+        data-test="save-btn"
       >
         Add tags to node
       </FeatherButton>
       <FeatherButton
-        data-test="cancel-btn"
+        @click="resetTagSelection"
+        :disabled="!tagsSelected.length"
         secondary
-        @click="setTagEditMode(false)"
+        data-test="cancel-btn"
       >
         Cancel
       </FeatherButton>
@@ -109,6 +111,12 @@ const isTagSelected = (name: string): boolean =>
 const toggleSelectAll = () => {
   isSelectingAll.value = !isSelectingAll.value
   tagStore.selectAllTags(isSelectingAll.value)
+}
+
+const resetTagSelection = () => {
+  setTagEditMode(false)
+  tagStore.selectAllTags(false)
+  isSelectingAll.value = false
 }
 
 watchEffect(() => {
@@ -248,6 +256,5 @@ watchEffect(() => {
   min-width: 445px;
   margin-top: var(variables.$spacing-m);
   padding-top: var(variables.$spacing-m);
-  border-top: 1px solid var(variables.$secondary-text-on-surface);
 }
 </style>

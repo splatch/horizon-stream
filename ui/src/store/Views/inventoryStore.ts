@@ -15,23 +15,20 @@ export const useInventoryStore = defineStore('inventoryStore', {
     toggleFilter() {
       this.isFilterOpen = !this.isFilterOpen
     },
-    addSelectedNode(node: NodeContent) {
-      this.nodeSelected.push(node)
-    },
-    resetSelectedNode() {
-      this.nodeSelected = []
-    },
     toggleNodeEditMode() {
       this.isEditMode = !this.isEditMode
     },
     resetNodeEditMode() {
       this.isEditMode = false
     },
-    setNodeSelection(node: NodeContent, isSelected: boolean) {
+    addRemoveNodeSelected(node: NodeContent, isSelected: boolean) {
       if (isSelected) this.nodeSelected.push(node)
       else {
         this.nodeSelected = this.nodeSelected.filter(({ id }) => id !== node.id)
       }
+    },
+    resetSelectedNode() {
+      this.nodeSelected = []
     }
   }
 })
