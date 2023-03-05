@@ -37,14 +37,9 @@ export const useTagQueries = defineStore('tagQueries', () => {
     })
   }
 
-  const searchTag = (searchTag: string) => {
-    // TODO: add gql query
-  }
-
   return {
     fetchTags,
     tagsSearched: computed(() => tagsSearched.value || []),
-    getTagsSearch,
-    searchTag
+    getTagsSearch
   }
 })
