@@ -34,7 +34,7 @@
             @click="toggleSelectAll"
             secondary
             class="select-all-btn"
-            >{{ isSelectingAll ? 'Deselect all' : 'Select all' }}</FeatherButton
+            >{{ areAllTagsSelected ? 'Deselect all' : 'Select all' }}</FeatherButton
           >
           <DiscoveryAutocomplete
             @items-selected="tagsSelectedListener"
@@ -57,7 +57,7 @@
         <FeatherChip
           v-for="(tag, index) in tags"
           :key="index"
-          @click="tagStore.toggleTag(tag)"
+          @click="toggleTagsSelected(tag)"
           :class="{ selected: isTagSelected(tag.name as string) }"
           class="pointer"
         >
@@ -76,7 +76,7 @@
         Add tags to node
       </FeatherButton>
       <FeatherButton
-        @click="resetTagSelection"
+        @click="resetState"
         :disabled="!tagsSelected.length"
         secondary
         data-test="cancel-btn"
@@ -88,6 +88,7 @@
 </template>
 
 <script setup lang="ts">
+import { Tag } from '@/types/graphql'
 import { useInventoryStore } from '@/store/Views/inventoryStore'
 import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useTagStore } from '@/store/Components/tagStore'
@@ -99,7 +100,7 @@ const tagStore = useTagStore()
 const searchValue = ref()
 const tags = computed(() => tagStore.tags)
 const tagsSelected = computed(() => tagStore.tagsSelected)
-const isSelectingAll = ref(false)
+const areAllTagsSelected = ref(false)
 
 const setTagEditMode = (isEdit: boolean) => {
   tagStore.setTagEditMode(isEdit)
@@ -109,14 +110,19 @@ const isTagSelected = (name: string): boolean =>
   tagsSelected.value.some(({ name: selectedTagName }) => selectedTagName === name)
 
 const toggleSelectAll = () => {
-  isSelectingAll.value = !isSelectingAll.value
-  tagStore.selectAllTags(isSelectingAll.value)
+  areAllTagsSelected.value = !areAllTagsSelected.value
+  tagStore.selectAllTags(areAllTagsSelected.value)
 }
 
-const resetTagSelection = () => {
-  setTagEditMode(false)
-  tagStore.selectAllTags(false)
-  isSelectingAll.value = false
+const toggleTagsSelected = (tag: Tag) => {
+  tagStore.toggleTagsSelected(tag)
+
+  areAllTagsSelected.value = tagsSelected.value.length === tags.value.length
+}
+
+const resetState = () => {
+  areAllTagsSelected.value = false
+  inventoryStore.isTagManagerReset = true
 }
 
 watchEffect(() => {

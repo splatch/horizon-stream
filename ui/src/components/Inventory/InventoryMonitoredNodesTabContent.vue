@@ -23,7 +23,7 @@
     </FeatherButton>
     <FeatherButton
       @click="openModalSaveTags"
-      :disabled="!nodeSelected.length"
+      :disabled="!nodesSelected.length"
       primary
       data-test="open-modal-btn"
     >
@@ -77,7 +77,6 @@
     :class="modal.cssClass"
   >
     <template #content>
-      <p>{{ modal.content }}</p>
       <FeatherChipList
         condensed
         label="Tag list"
@@ -137,7 +136,17 @@ const inventoryQueries = useInventoryQueries()
 const inventoryStore = useInventoryStore()
 
 const isTagManagerOpen = computed(() => inventoryStore.isTagManagerOpen)
-const nodeSelected = computed(() => inventoryStore.nodeSelected)
+const isTagManagerReset = computed(() => inventoryStore.isTagManagerReset)
+watch(isTagManagerReset, (isReset) => {
+  if (isReset) resetState()
+})
+
+const nodesSelected = computed(() => {
+  // in case of single node selection toggling
+  areAllNodesSelected.value = inventoryStore.nodesSelected.length === nodes.value.length
+
+  return inventoryStore.nodesSelected
+})
 const tagsSelected = computed(() => tagStore.tagsSelected)
 const isNodeEditMode = computed(() => tagStore.isTagEditMode)
 
@@ -146,7 +155,7 @@ const selectDeselectAllNodes = (areSelected: boolean) => {
   areAllNodesSelected.value = areSelected
 
   nodes.value.forEach((node) => {
-    inventoryStore.addRemoveNodeSelected(node, areSelected)
+    inventoryStore.addRemoveNodesSelected(node, areSelected)
   })
 
   nodes.value = nodes.value.map((node) => ({
@@ -156,11 +165,13 @@ const selectDeselectAllNodes = (areSelected: boolean) => {
 }
 
 const openModalSaveTags = () => {
-  const selectedNodesLabels = nodeSelected.value.map(({ label }) => label)
-  const modalContent = areAllNodesSelected.value ? 'Add tags to all nodes?' : `Add tags to ${selectedNodesLabels}`
+  const selectedNodesLabels = nodesSelected.value.map(({ label }) => label).join(', ')
+  const modalContent = areAllNodesSelected.value
+    ? 'Add tags to all nodes?'
+    : `Add tags to node${inventoryStore.nodesSelected.length > 1 ? '(s)' : ''}: ${selectedNodesLabels}?`
   modal.value = {
     ...modal.value,
-    content: modalContent
+    title: modalContent
   }
 
   openModal()
@@ -168,16 +179,27 @@ const openModalSaveTags = () => {
 
 const saveTagsToSelectedNodes = () => {
   const tagsPayload = tagStore.tagsSelected.map(({ name }) => ({ name }))
-  // TODO: BE should be providing a different endpoint for save all nodes, instead of looping to save single node at a time.
-  inventoryStore.nodeSelected.forEach(({ id }) => {
+  // TODO: BE will provide a different endpoint for all nodes saving, instead of looping to save single node at a time.
+  inventoryStore.nodesSelected.forEach(({ id }) => {
     nodeMutations.addTagsToNode({ nodeId: id, tags: tagsPayload })
   })
 
   inventoryQueries.fetch()
+  resetState()
+  closeModal()
+}
+
+const resetState = () => {
   tagStore.selectAllTags(false)
   tagStore.setTagEditMode(false)
   inventoryStore.resetSelectedNode()
-  closeModal()
+
+  nodes.value = nodes.value.map((node) => ({
+    ...node,
+    isNodeOverlayChecked: false
+  }))
+
+  inventoryStore.isTagManagerReset = false
 }
 
 const modal = ref<ModalPrimary>({

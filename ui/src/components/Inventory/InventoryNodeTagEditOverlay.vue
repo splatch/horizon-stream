@@ -62,7 +62,7 @@ watchEffect(() => {
 })
 
 const nodeSelect = (node: NodeContent) => {
-  inventoryStore.addRemoveNodeSelected(node, isChecked.value)
+  inventoryStore.addRemoveNodesSelected(node, isChecked.value)
 }
 
 const storage: IIcon = {

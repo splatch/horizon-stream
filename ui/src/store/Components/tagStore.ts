@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { Tag } from '@/types/graphql'
 
 export const useTagStore = defineStore('tagStore', () => {
   const tags = ref([] as Tag[])
@@ -13,14 +14,14 @@ export const useTagStore = defineStore('tagStore', () => {
     isTagEditMode.value = isEdit
   }
 
-  const updateTagsSelected = (tags) => {
+  const updateTagsSelected = (tags: Tag[]) => {
     tagsSelected.value = tags
   }
 
-  const toggleTag = (tag) => {
-    const isInSelectedList = tagsSelected.value.some(({ name }) => name === tag.name)
+  const toggleTagsSelected = (tag: Tag) => {
+    const isTagAlreadySelected = tagsSelected.value.some(({ name }) => name === tag.name)
 
-    if (isInSelectedList) {
+    if (isTagAlreadySelected) {
       tagsSelected.value = tagsSelected.value.filter(({ name }) => name !== tag.name)
     } else {
       tagsSelected.value.push(tag)
@@ -39,6 +40,6 @@ export const useTagStore = defineStore('tagStore', () => {
     selectAllTags,
     tagsSelected,
     updateTagsSelected,
-    toggleTag
+    toggleTagsSelected
   }
 })

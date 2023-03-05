@@ -4,8 +4,9 @@ import { NodeContent } from '@/types/inventory'
 export const useInventoryStore = defineStore('inventoryStore', {
   state: () => ({
     isTagManagerOpen: false,
+    isTagManagerReset: false,
     isFilterOpen: false,
-    nodeSelected: [] as NodeContent[],
+    nodesSelected: [] as NodeContent[],
     isEditMode: false
   }),
   actions: {
@@ -21,14 +22,16 @@ export const useInventoryStore = defineStore('inventoryStore', {
     resetNodeEditMode() {
       this.isEditMode = false
     },
-    addRemoveNodeSelected(node: NodeContent, isSelected: boolean) {
-      if (isSelected) this.nodeSelected.push(node)
-      else {
-        this.nodeSelected = this.nodeSelected.filter(({ id }) => id !== node.id)
+    addRemoveNodesSelected(node: NodeContent, isSelected: boolean) {
+      if (isSelected) {
+        const isNodeAlreadySelected = this.nodesSelected.some(({ id }) => id === node.id)
+        if (!isNodeAlreadySelected) this.nodesSelected.push(node)
+      } else {
+        this.nodesSelected = this.nodesSelected.filter(({ id }) => id !== node.id)
       }
     },
     resetSelectedNode() {
-      this.nodeSelected = []
+      this.nodesSelected = []
     }
   }
 })
