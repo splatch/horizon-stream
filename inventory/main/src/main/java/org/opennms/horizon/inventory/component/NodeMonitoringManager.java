@@ -28,9 +28,8 @@
 
 package org.opennms.horizon.inventory.component;
 
-import java.util.Map;
-import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.events.proto.Event;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
@@ -48,8 +47,8 @@ import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -72,13 +71,13 @@ public class NodeMonitoringManager {
                 var tenantId = Optional.ofNullable(headers.get(GrpcConstants.TENANT_ID_KEY)).map(obj -> new String((byte[]) obj)).orElseThrow(() ->
                     new InventoryRuntimeException("Missing tenant id"));
                 log.debug("Create new node from event with interface: {}, location: {} and tenant: {}", event.getIpAddress(), event.getLocation(), tenantId);
+
                 NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
                     .setLocation(event.getLocation())
                     .setManagementIp(event.getIpAddress())
                     .setLabel("trap-" + event.getIpAddress())
                     .build();
                 Node newNode = nodeService.createNode(createDTO, ScanType.NODE_SCAN, tenantId);
-                detectorService.sendDetectorTasks(newNode);
             }
         } catch (Exception e) {
             log.error("Error while processing a kafka message for the event: ", e);
