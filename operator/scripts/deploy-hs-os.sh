@@ -2,7 +2,7 @@
 
 bash scripts/install-operator-os.sh
 
-bash scripts/create-instance.sh
+bash scripts/create-os-instance.sh
 
 kubectl config set-context --current --namespace=opennms-instance
 
