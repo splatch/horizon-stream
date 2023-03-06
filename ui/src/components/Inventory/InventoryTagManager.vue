@@ -36,7 +36,7 @@
             class="select-all-btn"
             >{{ areAllTagsSelected ? 'Deselect all' : 'Select all' }}</FeatherButton
           >
-          <DiscoveryAutocomplete
+          <BasicAutocomplete
             @items-selected="tagsSelectedListener"
             :get-items="tagQueries.getTagsSearch"
             :items="tagQueries.tagsSearched"

@@ -40,10 +40,10 @@ export const useTagStore = defineStore('tagStore', () => {
     tags,
     setTags,
     addNewTag,
-    isTagEditMode,
+    isTagEditMode: computed(() => isTagEditMode.value),
     setTagEditMode,
     selectAllTags,
-    tagsSelected,
+    tagsSelected: computed(() => tagsSelected.value),
     toggleTagsSelected
   }
 })

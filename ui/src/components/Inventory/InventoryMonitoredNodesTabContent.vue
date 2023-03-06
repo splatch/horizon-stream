@@ -6,7 +6,7 @@
     <FeatherButton
       v-if="!areAllNodesSelected"
       @click="selectDeselectAllNodes(true)"
-      :disabled="!isNodeEditMode"
+      :disabled="!tagStore.isTagEditMode"
       secondary
       data-test="select-all-btn"
     >
@@ -15,7 +15,7 @@
     <FeatherButton
       v-else
       @click="selectDeselectAllNodes(false)"
-      :disabled="!isNodeEditMode"
+      :disabled="!tagStore.isTagEditMode"
       secondary
       data-test="deselect-all-btn"
     >
@@ -79,7 +79,7 @@
         />
       </section>
       <InventoryNodeTagEditOverlay
-        v-if="isNodeEditMode"
+        v-if="tagStore.isTagEditMode"
         :node="node"
       />
     </li>
@@ -95,7 +95,7 @@
         label="Tag list"
       >
         <FeatherChip
-          v-for="tag in tagsSelected"
+          v-for="tag in tagStore.tagsSelected"
           :key="tag.id"
           >{{ tag.name }}</FeatherChip
         >
@@ -160,8 +160,6 @@ const nodesSelected = computed(() => {
 
   return inventoryStore.nodesSelected
 })
-const tagsSelected = computed(() => tagStore.tagsSelected)
-const isNodeEditMode = computed(() => tagStore.isTagEditMode)
 
 const areAllNodesSelected = ref(false)
 const selectDeselectAllNodes = (areSelected: boolean) => {
