@@ -55,7 +55,6 @@ public abstract class GrpcTestBase {
     }
 
     protected final String tenantId = "test-tenant";
-    protected final String invalidTenantId = "invalid-tenant";
     protected final String authHeader = "Bearer esgs12345";
     protected final String headerWithoutTenant = "Bearer esgs12345invalid";
     protected final String differentTenantHeader = "Bearer esgs12345different";
@@ -78,7 +77,7 @@ public abstract class GrpcTestBase {
         channel = ManagedChannelBuilder.forAddress("localhost", 6767)
                 .usePlaintext().build();
         doReturn(Optional.of(tenantId)).when(spyInterceptor).verifyAccessToken(authHeader);
-        doReturn(Optional.of(invalidTenantId)).when(spyInterceptor).verifyAccessToken(differentTenantHeader);
+        doReturn(Optional.of("invalid-tenant")).when(spyInterceptor).verifyAccessToken(differentTenantHeader);
         doReturn(Optional.empty()).when(spyInterceptor).verifyAccessToken(headerWithoutTenant);
         doThrow(new VerificationException()).when(spyInterceptor).verifyAccessToken(null);
     }

@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.inventory.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -43,11 +44,16 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 @Entity
-public class MonitoringLocation extends TenantAwareEntity {
+public class MonitoringLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NotNull
+    @Column(name = "tenant_id")
+    private String tenantId;
+
+    @NotNull
+    @Column(name = "location")
     private String location;
 }

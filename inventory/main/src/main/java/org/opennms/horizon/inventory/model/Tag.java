@@ -48,11 +48,15 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 @Entity
-public class Tag extends TenantAwareEntity {
+public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @NotNull
+    @Column(name = "tenant_id")
+    private String tenantId;
 
     @NotNull
     @Column(name = "name")
