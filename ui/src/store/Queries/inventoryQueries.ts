@@ -86,7 +86,8 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
               managementIpValue: '',
               managementIpLink: '',
               tagValue: []
-            }
+            },
+            isNodeOverlayChecked: false
           })
           return
         }
@@ -130,8 +131,7 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
               managementIpLink: '',
               tagValue: tagData.value.tagsByNodeId || []
             },
-            isTaggingChecked: false, // to control the checkmark in the overlay of a node (tagging mode)
-            isEditMode: false // to control dispplay of node overlay
+            isNodeOverlayChecked: false // to control the checkmark in the overlay of a node (tagging mode)
           })
         }
       })

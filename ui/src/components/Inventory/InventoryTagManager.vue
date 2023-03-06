@@ -1,21 +1,16 @@
 <template>
-  <div
-    class="tag-manager-box"
-    v-if="isTaggingBoxOpen"
-  >
+  <div class="tag-manager">
     <section class="select-tags">
       <div class="top">
         <div class="heading-total-selected">
           <h4>Select Tags:</h4>
           <div class="total-selected">
             <div class="total">
-              <!-- TOTAL: <span>{{ tags.length ? tags.length : '' }}</span> -->
               TOTAL: <span>{{ tags.length }}</span>
               <span class="pipe">|</span>
             </div>
             <div class="selected">
-              <!-- SELECTED: <span>{{ selectedTags.length ? selectedTags.length : '' }}</span> -->
-              SELECTED: <span>{{ selectedTags.length }}</span>
+              SELECTED: <span>{{ tagsSelected.length }}</span>
             </div>
           </div>
         </div>
@@ -36,15 +31,16 @@
           /> -->
           <!-- <FeatherButton text>Deselect all</FeatherButton> -->
           <FeatherButton
-            @click="selectAllToggle"
+            @click="toggleSelectAll"
             secondary
             class="select-all-btn"
-            >{{ isSelectingAll ? 'Deselect all' : 'Select all' }}</FeatherButton
+            >{{ areAllTagsSelected ? 'Deselect all' : 'Select all' }}</FeatherButton
           >
-          <DiscoveryAutocomplete
+          <BasicAutocomplete
             @items-selected="tagsSelectedListener"
             :get-items="tagQueries.getTagsSearch"
             :items="tagQueries.tagsSearched"
+            :show-list="false"
             label="Search/Add tags (optional)"
             ref="tagsAutocompleteRef"
             class="tags-autocomplete"
@@ -54,7 +50,7 @@
       </div>
       <FeatherChipList
         v-if="tags.length"
-        :key="selectedTags.toString()"
+        :key="tagsSelected.toString()"
         condensed
         label="Tags"
         class="tag-chip-list"
@@ -62,7 +58,7 @@
         <FeatherChip
           v-for="(tag, index) in tags"
           :key="index"
-          @click="tagStore.toggleTag(tag.name)"
+          @click="toggleTagsSelected(tag)"
           :class="{ selected: isTagSelected(tag.name as string) }"
           class="pointer"
         >
@@ -71,105 +67,74 @@
       </FeatherChipList>
     </section>
     <section class="tag-nodes">
-      <h4>Tag Nodes:</h4>
-      <FeatherRadioGroup
-        label=""
-        v-model="tagStore.tagNodesSelected"
-        class="select-tag-nodes"
+      <!-- <h4>Tag Nodes:</h4> -->
+      <FeatherButton
+        @click="setTagEditMode(true)"
+        :disabled="!tagsSelected.length"
+        primary
+        data-test="save-btn"
       >
-        <FeatherRadio
-          :value="TagNodesType.All"
-          :disabled="selectedTags.length === 0"
-          >All</FeatherRadio
-        >
-        <FeatherRadio
-          :value="TagNodesType.Individual"
-          :disabled="selectedTags.length === 0"
-          >Individual</FeatherRadio
-        >
-        <FeatherRadio :value="TagNodesType.Clear">Clear</FeatherRadio>
-      </FeatherRadioGroup>
+        Add tags to node
+      </FeatherButton>
+      <FeatherButton
+        @click="resetState"
+        :disabled="!tagsSelected.length"
+        secondary
+        data-test="cancel-btn"
+      >
+        Cancel
+      </FeatherButton>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Tag } from '@/types/graphql'
 import { useInventoryStore } from '@/store/Views/inventoryStore'
 import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useTagStore } from '@/store/Components/tagStore'
-import { useTagMutations } from '@/store/Mutations/tagMutations'
-import { TagNodesType } from '@/types/tags'
-// import Add from '@featherds/icon/action/Add'
 
 const inventoryStore = useInventoryStore()
 const tagQueries = useTagQueries()
 const tagStore = useTagStore()
-const tagMutations = useTagMutations()
-
-const searchValue = ref()
-const tags = computed(() => tagStore.tags)
-const selectedTags = computed(() => tagStore.selectedTags)
-const isSelectingAll = ref(false)
-
-watchEffect(() => {
-  // console.log('tagQueries.tags', tagQueries.tags)
-  tags.value = tagQueries.tags
-})
-
-const isTaggingBoxOpen = computed(() => {
-  inventoryStore.isTaggingBoxOpen ? tagStore.fetchTags() : tagStore.resetTags()
-
-  return inventoryStore.isTaggingBoxOpen
-})
 
 const tagsAutocompleteRef = ref()
-let tagsSelected: Record<string, string>[] = []
-const tagsSelectedListener = (tags: Record<string, string>[]) => {
-  tagsSelected = tags.map((tag) => {
-    delete tag._text
-    return tag
-  })
+const tags = computed(() => tagStore.tags)
+const tagsSelected = computed(() => tagStore.tagsSelected)
+const areAllTagsSelected = ref(false)
+
+const tagsSelectedListener = (selectedTags: Record<string, string>[]) => {
+  selectedTags.forEach((newTag) => tagStore.addNewTag(newTag))
 }
 
-const isTagSelected = (name: string): boolean => selectedTags.value.some((t) => t.name?.includes(name))
-
-const selectAllToggle = () => {
-  // select all
-  /* if (isSelectingAll.value) {
-
-  } else {
-    // deselect all
-  } */
-  isSelectingAll.value = !isSelectingAll.value
-  tagStore.selectAllTags(isSelectingAll.value)
-}
-const addTag = (val: string) => {
-  tagMutations.editTag(val, true)
-  // cannot be added if already exists
-  // tag list should be updated
-  // input popover should be auto-closed once added?
-  // if adding fail, show snackabr
-  // reset: on close
-  // acts as list filter
-  // when pop
+const setTagEditMode = (isEdit: boolean) => {
+  tagStore.setTagEditMode(isEdit)
 }
 
-const tagsFiltering = (val: string) => {
-  console.log('val', val)
-  console.log('tagQueries.tags', tagQueries.tags)
-  if (!val?.length) {
-    tags.value = tagQueries.tags
-  } else {
-    tags.value = tagQueries.tags.filter((tag) => tag.name?.includes(val))
-  }
-  console.log('tags.value', tags.value)
+const isTagSelected = (name: string): boolean =>
+  tagsSelected.value.some(({ name: selectedTagName }) => selectedTagName === name)
+
+const toggleSelectAll = () => {
+  areAllTagsSelected.value = !areAllTagsSelected.value
+  tagStore.selectAllTags(areAllTagsSelected.value)
 }
 
-/* const inputIcon = {
-  image: markRaw(Add),
-  size: 2,
-  cursorHover: 'pointer'
-} */
+const toggleTagsSelected = (tag: Tag) => {
+  tagStore.toggleTagsSelected(tag)
+
+  areAllTagsSelected.value = tagsSelected.value.length === tags.value.length
+}
+
+const resetState = () => {
+  tagQueries.fetchTags()
+  areAllTagsSelected.value = false
+  inventoryStore.isTagManagerReset = true
+  tagsAutocompleteRef.value.reset()
+}
+
+watchEffect(() => {
+  if (inventoryStore.isTagManagerOpen) tagQueries.fetchTags()
+})
 </script>
 
 <style scoped lang="scss">
@@ -178,7 +143,7 @@ const tagsFiltering = (val: string) => {
 @use '@/styles/vars';
 @use '@/styles/mediaQueries';
 
-.tag-manager-box {
+.tag-manager {
   display: flex;
   flex-direction: row;
   flex-flow: wrap;
@@ -186,12 +151,9 @@ const tagsFiltering = (val: string) => {
   border: 1px solid var(variables.$secondary-text-on-surface);
   border-radius: vars.$border-radius-m;
   padding: var(variables.$spacing-m);
-  margin-bottom: var(variables.$spacing-xxl);
+  margin-bottom: var(variables.$spacing-xl);
   background-color: var(variables.$disabled-text-on-color);
   min-width: 480px;
-  h4 {
-    padding-top: 3px;
-  }
 }
 
 .select-tags {
@@ -203,7 +165,12 @@ const tagsFiltering = (val: string) => {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: var(variables.$spacing-m);
+    h4 {
+      padding-top: 3px;
+      margin-right: var(variables.$spacing-m);
+    }
     .heading-total-selected {
       width: 35%;
       .total-selected {
@@ -227,20 +194,40 @@ const tagsFiltering = (val: string) => {
           }
         }
       }
+
+      @include mediaQueries.screen-lg {
+        width: 50%;
+      }
     }
 
     .search-add {
-      width: 50%;
+      width: 60%;
       display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+      flex-direction: column;
+      align-items: flex-end;
       .select-all-btn {
+        margin-bottom: 25px;
+        display: flex;
         order: 2;
       }
       .tags-autocomplete {
-        min-width: 265px;
+        display: flex;
         order: 1;
+        :deep(.feather-input-wrapper) {
+          min-width: 265px;
+        }
+      }
+
+      @include mediaQueries.screen-lg {
+        flex-direction: row;
+        justify-content: flex-end;
+        .select-all-btn {
+          margin-right: var(variables.$spacing-m);
+          order: 1;
+        }
+        .tags-autocomplete {
+          order: 2;
+        }
       }
     }
 
@@ -256,29 +243,11 @@ const tagsFiltering = (val: string) => {
           }
         }
       }
-      .search-add {
-        width: 70%;
-        .select-all-btn {
-          order: 1;
-          margin-top: 2px;
-          margin-right: var(variables.$spacing-m);
-        }
-        .tags-autocomplete {
-          order: 2;
-        }
-      }
     }
-
-    @include mediaQueries.screen-xl {
+    @include mediaQueries.screen-lg {
       .heading-total-selected {
-        width: 50%;
         display: flex;
         flex-direction: row;
-        .total-selected {
-          .total {
-            margin-left: var(variables.$spacing-m);
-          }
-        }
       }
     }
   }
@@ -288,46 +257,17 @@ const tagsFiltering = (val: string) => {
   }
 
   @include mediaQueries.screen-lg {
-    width: 75%;
     min-width: 0;
-  }
-  @include mediaQueries.screen-xxl {
-    width: 80%;
   }
 }
 
 .tag-nodes {
   display: flex;
   flex-direction: row;
+  justify-content: end;
   width: 100%;
   min-width: 445px;
   margin-top: var(variables.$spacing-m);
   padding-top: var(variables.$spacing-m);
-  border-top: 1px solid var(variables.$secondary-text-on-surface);
-
-  :deep(.select-tag-nodes) {
-    margin-left: var(variables.$spacing-m);
-    > label {
-      display: none;
-    }
-    .feather-input-sub-text {
-      display: none;
-    }
-  }
-
-  @include mediaQueries.screen-lg {
-    width: 20%;
-    min-width: 0;
-    margin-top: 0;
-    padding-top: 0;
-    border-top: 0;
-    border-left: 1px solid var(variables.$secondary-text-on-surface);
-    padding-left: var(variables.$spacing-l);
-    display: block;
-  }
-
-  @include mediaQueries.screen-xxl {
-    width: 15%;
-  }
 }
 </style>

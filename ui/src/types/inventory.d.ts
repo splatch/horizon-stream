@@ -16,6 +16,5 @@ interface NodeContent {
   status: string
   metrics: Chip[]
   anchor: Anchor
-  isTaggingChecked?: boolean
-  isEditMode?: boolean
+  isNodeOverlayChecked?: boolean
 }
