@@ -20,13 +20,13 @@
       data-test="form"
     >
       <div class="form-content">
-        <LocationsAutocomplete
+        <DiscoveryLocationsAutocomplete
           @location-selected="locationsSelectedListener"
           ref="locationsAutocompleteRef"
           data-test="locations-autocomplete"
         />
         <DiscoveryHelpConfiguring data-test="help-configuring" />
-        <DiscoveryAutocomplete
+        <BasicAutocomplete
           @items-selected="tagsSelectedListener"
           :get-items="tagQueries.getTagsSearch"
           :items="tagQueries.tagsSearched"
