@@ -5,6 +5,7 @@
       v-model="isChecked"
       @update:model-value="editNodeTags(node.id)"
       class="tag-node-checkbox"
+      data-test="tab-node-checkbox"
     />
     <section class="overlay-header">
       <Icon
