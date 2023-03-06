@@ -1,69 +1,49 @@
 import { defineStore } from 'pinia'
-import { useQuery } from 'villus'
-import { ListTagsDocument, Tag } from '@/types/graphql'
-import { TagNodesType } from '@/types/tags'
+import { Tag } from '@/types/graphql'
 
 export const useTagStore = defineStore('tagStore', () => {
   const tags = ref([] as Tag[])
-  const selectedTags = ref([] as Tag[])
-  const tagNodesSelected = ref(TagNodesType.Unselected)
+  const tagsSelected = ref([] as Tag[])
+  const isTagEditMode = ref(false)
 
-  /* const { data: fetchedTags, execute: fetchTags } = useQuery({
-    query: ListTagsDocument,
-    fetchOnMount: false
-  }) */
-  const fetchTags = () => {
-    const { data, execute } = useQuery({
-      query: ListTagsDocument,
-      fetchOnMount: false,
-      cachePolicy: 'network-only'
-    })
-
-    execute()
-
-    watchEffect(() => {
-      console.log('data', data.value?.tags)
-      // tags.value = mockTags
-      // return data.value?.tags || []
-      tags.value = data.value?.tags || []
-    })
+  const setTags = (tagList: Tag[]) => {
+    tags.value = tagList
   }
 
-  const resetTags = () => {
-    tags.value = []
+  const addNewTag = (newTag: Record<string, string>) => {
+    const tagExists = tags.value.some(({ name }) => name === newTag.name)
+    if (!tagExists) tags.value.push(newTag as Tag)
+
+    const tagSelectedExists = tagsSelected.value.some(({ name }) => name === newTag.name)
+    if (!tagSelectedExists) tagsSelected.value.push(newTag as Tag)
   }
 
-  const updateSelectedTags = (tags) => {
-    selectedTags.value = tags
+  const setTagEditMode = (isEdit: boolean) => {
+    isTagEditMode.value = isEdit
   }
 
-  const toggleTag = (tag) => {
-    if (selectedTags.value.includes(tag)) {
-      selectedTags.value = selectedTags.value.filter((t) => t !== tag)
+  const toggleTagsSelected = (tag: Tag) => {
+    const isTagAlreadySelected = tagsSelected.value.some(({ name }) => name === tag.name)
+
+    if (isTagAlreadySelected) {
+      tagsSelected.value = tagsSelected.value.filter(({ name }) => name !== tag.name)
     } else {
-      selectedTags.value.push(tag)
+      tagsSelected.value.push(tag)
     }
   }
 
   const selectAllTags = (selectAll: boolean) => {
-    console.log('selectAllTags', selectAll)
-    selectedTags.value = selectAll ? tags.value : []
-    console.log('selectAllTags', selectedTags.value)
-  }
-
-  const selectTagNodes = (type: TagNodesType) => {
-    tagNodesSelected.value = type
+    tagsSelected.value = selectAll ? tags.value : []
   }
 
   return {
-    fetchTags,
-    tags, //: fetchedTags.value?.tags || [],
-    resetTags,
+    tags,
+    setTags,
+    addNewTag,
+    isTagEditMode: computed(() => isTagEditMode.value),
+    setTagEditMode,
     selectAllTags,
-    selectedTags,
-    tagNodesSelected,
-    updateSelectedTags,
-    toggleTag,
-    selectTagNodes
+    tagsSelected: computed(() => tagsSelected.value),
+    toggleTagsSelected
   }
 })

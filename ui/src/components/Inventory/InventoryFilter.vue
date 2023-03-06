@@ -45,7 +45,6 @@
         data-test="severity"
       />
     </li>
-    <!-- Tagging -->
     <li>
       <InventoryTagManagerCtrl data-test="tag-manager-ctrl" />
     </li>
@@ -73,7 +72,7 @@
       <Icon :icon="expandCollapse" />
     </li>
   </ul>
-  <InventoryTagManager />
+  <InventoryTagManager v-if="isTagManagerOpen" />
 </template>
 
 <script lang="ts" setup>
@@ -194,6 +193,8 @@ const sortAlphaIcon: IIcon = {
   title: 'Sort Alpha',
   size: 2
 }
+
+const isTagManagerOpen = computed(() => inventoryStore.isTagManagerOpen)
 
 // Expand/Collapse
 const expandCollapseBtn = ref('expand-btn')

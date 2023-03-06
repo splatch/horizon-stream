@@ -1,4 +1,35 @@
 <template>
+  <div
+    v-if="isTagManagerOpen"
+    class="ctrls"
+  >
+    <FeatherButton
+      v-if="!areAllNodesSelected"
+      @click="selectDeselectAllNodes(true)"
+      :disabled="!tagStore.isTagEditMode"
+      secondary
+      data-test="select-all-btn"
+    >
+      Select all
+    </FeatherButton>
+    <FeatherButton
+      v-else
+      @click="selectDeselectAllNodes(false)"
+      :disabled="!tagStore.isTagEditMode"
+      secondary
+      data-test="deselect-all-btn"
+    >
+      Deselect all
+    </FeatherButton>
+    <FeatherButton
+      @click="openModalSaveTags"
+      :disabled="!nodesSelected.length"
+      primary
+      data-test="open-modal-btn"
+    >
+      Save
+    </FeatherButton>
+  </div>
   <ul class="cards">
     <li
       v-for="node in nodes"
@@ -23,6 +54,19 @@
               :metric="metric"
             />
           </FeatherChipList>
+          <FeatherChipList
+            v-if="node.anchor.tagValue.length"
+            condensed
+            label="Tags"
+            class="tag-chip-list"
+          >
+            <FeatherChip
+              v-for="(tag, index) in node.anchor.tagValue"
+              :key="index"
+            >
+              {{ tag.name }}
+            </FeatherChip>
+          </FeatherChipList>
           <InventoryTextAnchorList
             :anchor="node?.anchor"
             data-test="text-anchor-list"
@@ -35,8 +79,7 @@
         />
       </section>
       <InventoryNodeTagEditOverlay
-        v-if="node.isEditMode"
-        @edit-tags-node="editTagsNode"
+        v-if="tagStore.isTagEditMode"
         :node="node"
       />
     </li>
@@ -47,13 +90,12 @@
     :class="modal.cssClass"
   >
     <template #content>
-      <p>{{ modal.content }}</p>
       <FeatherChipList
         condensed
         label="Tag list"
       >
         <FeatherChip
-          v-for="tag in selectedTags"
+          v-for="tag in tagStore.tagsSelected"
           :key="tag.id"
           >{{ tag.name }}</FeatherChip
         >
@@ -63,14 +105,14 @@
       <FeatherButton
         data-testid="cancel-btn"
         secondary
-        @click="cancelTagsAllNodes"
+        @click="closeModal"
       >
         {{ modal.cancelLabel }}
       </FeatherButton>
       <FeatherButton
         data-testid="save-btn"
         primary
-        @click="saveTagsAllNodes"
+        @click="saveTagsToSelectedNodes"
       >
         {{ modal.saveLabel }}
       </FeatherButton>
@@ -86,7 +128,7 @@ import { IIcon } from '@/types'
 import { useTagStore } from '@/store/Components/tagStore'
 import { useNodeMutations } from '@/store/Mutations/nodeMutations'
 import { useInventoryQueries } from '@/store/Queries/inventoryQueries'
-import { TagNodesType } from '@/types/tags'
+import { useInventoryStore } from '@/store/Views/inventoryStore'
 import { ModalPrimary } from '@/types/modal'
 import useModal from '@/composables/useModal'
 
@@ -101,65 +143,85 @@ const nodes = ref<NodeContent[]>(props.tabContent)
 
 const { openModal, closeModal, isVisible } = useModal()
 
-const taggingStore = useTagStore()
+const tagStore = useTagStore()
 const nodeMutations = useNodeMutations()
 const inventoryQueries = useInventoryQueries()
+const inventoryStore = useInventoryStore()
 
-const selectedTags = computed(() => taggingStore.selectedTags)
-const tagNodesSelected = computed(() => taggingStore.tagNodesSelected)
+const isTagManagerOpen = computed(() => inventoryStore.isTagManagerOpen)
+const isTagManagerReset = computed(() => inventoryStore.isTagManagerReset)
+watch(isTagManagerReset, (isReset) => {
+  if (isReset) resetState()
+})
 
-watch(tagNodesSelected, (type) => {
-  let isTaggingChecked = false
-  let isEditMode = false
+const nodesSelected = computed(() => {
+  // in case of single node selection toggling
+  areAllNodesSelected.value = inventoryStore.nodesSelected.length === nodes.value.length
 
-  if (type === TagNodesType.All) {
-    isTaggingChecked = true
-    isEditMode = true
-    openModal()
-  } else if (type === TagNodesType.Individual) {
-    isTaggingChecked = false
-    isEditMode = true
-  }
+  return inventoryStore.nodesSelected
+})
+
+const areAllNodesSelected = ref(false)
+const selectDeselectAllNodes = (areSelected: boolean) => {
+  areAllNodesSelected.value = areSelected
+
+  nodes.value.forEach((node) => {
+    inventoryStore.addRemoveNodesSelected(node, areSelected)
+  })
 
   nodes.value = nodes.value.map((node) => ({
     ...node,
-    isTaggingChecked,
-    isEditMode
+    isNodeOverlayChecked: areSelected
   }))
-})
-
-const cancelTagsAllNodes = () => {
-  taggingStore.selectTagNodes(TagNodesType.Unselected)
-  closeModal()
 }
 
-const saveTagsAllNodes = async () => {
-  taggingStore.selectTagNodes(TagNodesType.Unselected)
+const openModalSaveTags = () => {
+  const selectedNodesLabels = nodesSelected.value.map(({ label }) => label).join(', ')
+  const modalContent = areAllNodesSelected.value
+    ? 'Add tags to all nodes?'
+    : `Add tags to node${inventoryStore.nodesSelected.length > 1 ? '(s)' : ''}: ${selectedNodesLabels}?`
+  modal.value = {
+    ...modal.value,
+    title: modalContent
+  }
 
-  // Temp solution until the real enpoint avail
-  const tagsToAdd = selectedTags.value.map(({ name }) => ({ name }))
-  nodes.value.forEach(async ({ id }) => {
-    nodeMutations.addTagsToAllNodes({ nodeId: id, tags: tagsToAdd })
+  openModal()
+}
+
+const saveTagsToSelectedNodes = () => {
+  const tagsPayload = tagStore.tagsSelected.map(({ name }) => ({ name }))
+  // TODO: BE will provide a different endpoint for all nodes saving, instead of looping to save single node at a time.
+  inventoryStore.nodesSelected.forEach(({ id }) => {
+    nodeMutations.addTagsToNode({ nodeId: id, tags: tagsPayload })
   })
 
   inventoryQueries.fetch()
-
+  resetState()
   closeModal()
 }
 
-const editTagsNode = (args: { id: number; toAdd: boolean; toDelete: boolean }) => {
-  nodeMutations.editTagsToNode(args.id, args.toAdd)
+const resetState = () => {
+  tagStore.selectAllTags(false)
+  tagStore.setTagEditMode(false)
+  inventoryStore.resetSelectedNode()
+
+  nodes.value = nodes.value.map((node) => ({
+    ...node,
+    isNodeOverlayChecked: false
+  }))
+
+  inventoryStore.isTagManagerReset = false
 }
 
-const modal: ModalPrimary = {
-  title: 'Add tags to all nodes?',
+const modal = ref<ModalPrimary>({
+  title: '',
   cssClass: '',
   content: '',
   id: '',
   cancelLabel: 'cancel',
   saveLabel: 'ok',
   hideTitle: true
-}
+})
 
 const storageIcon: IIcon = {
   image: Storage,
@@ -173,30 +235,40 @@ const storageIcon: IIcon = {
 @use '@/styles/vars';
 @use '@/styles/mediaQueriesMixins';
 
+.ctrls {
+  display: flex;
+  justify-content: end;
+  padding: var(variables.$spacing-l) 0;
+  min-width: vars.$min-width-smallest-screen;
+}
 ul.cards {
   display: flex;
   flex-flow: row wrap;
-  gap: 1rem;
+  justify-content: space-between;
   > li {
     position: relative;
     padding: var(variables.$spacing-l) var(variables.$spacing-l);
     border: 1px solid var(variables.$secondary-text-on-surface);
     border-radius: 10px;
     border-left: 10px solid var(variables.$secondary-text-on-surface); // TODO set color dynamically to the node's status
-    min-width: 400px;
+    width: 100%;
+    min-width: vars.$min-width-smallest-screen;
+    margin-bottom: var(variables.$spacing-m);
 
     @include mediaQueriesMixins.screen-sm {
       width: 100%;
     }
     @include mediaQueriesMixins.screen-md {
-      max-width: 480px;
-      width: 100%;
+      width: 49%;
+      min-width: auto;
     }
     @include mediaQueriesMixins.screen-lg {
       width: 48%;
     }
     @include mediaQueriesMixins.screen-xl {
       width: 32%;
+      min-width: 350px;
+      max-width: none;
     }
     @include mediaQueriesMixins.screen-xxl {
       width: 24%;
