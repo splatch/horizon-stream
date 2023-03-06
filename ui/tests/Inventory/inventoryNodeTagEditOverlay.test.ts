@@ -1,8 +1,9 @@
-import { mount } from '@vue/test-utils'
+// import { mount } from '@vue/test-utils'
+import mountWithPiniaVillus from 'tests/mountWithPiniaVillus'
 import InventoryNodeTagEditOverlay from '@/components/Inventory/InventoryNodeTagEditOverlay.vue'
-import { TimeUnit, NodeContent } from '@/types'
+import { TimeUnit } from '@/types'
 
-const node: NodeContent = {
+const nodeMock = {
   id: 1,
   label: 'Monitored Node 1',
   status: '',
@@ -35,21 +36,34 @@ const node: NodeContent = {
     managementIpValue: '0.0.0.0',
     managementIpLink: 'goto',
     tagValue: []
-  }
+  },
+  isNodeOverlayChecked: false
 }
 
 let wrapper: any
 
 describe('InventoryNodeTagEditOverlay.vue', () => {
   beforeAll(() => {
-    wrapper = mount(InventoryNodeTagEditOverlay, {
-      props: { node },
+    wrapper = mountWithPiniaVillus({
+      component: InventoryNodeTagEditOverlay,
+      props: { node: nodeMock },
       shallow: true
     })
   })
 
-  test('should have required elements', () => {
-    const elem = wrapper.get('[data-test="tab-node-checkbox"]')
+  test('Mount', () => {
+    expect(wrapper).toBeTruthy()
+  })
+
+  const requiredElems = [
+    ['checkbox', 'tab-node-checkbox'],
+    ['icon', 'icon-storage'],
+    ['heading', 'heading'],
+    ['title', 'title-label'],
+    ['tag list', 'tag-list']
+  ]
+  test.each(requiredElems)('should have the "%s" element', (_, dataTest) => {
+    const elem = wrapper.get(`[data-test="${dataTest}"]`)
     expect(elem.exists()).toBe(true)
   })
 })

@@ -16,15 +16,16 @@
     </section>
     <section class="overlay-content">
       <div class="title">
-        <label for="iconCheckbox">Tagged</label
-        ><Icon
-          :icon="checkbox"
-          data-test="icon-checkbox"
-        />
+        <label
+          for="iconCheckbox"
+          data-test="title-label"
+          >Tagged</label
+        >
       </div>
       <FeatherChipList
         condensed
         label="Tag list"
+        data-test="tag-list"
       >
         <FeatherChip
           v-for="tag in node.anchor.tagValue"
@@ -39,7 +40,6 @@
 <script lang="ts" setup>
 import { PropType } from 'vue'
 import Storage from '@material-design-icons/svg/outlined/storage.svg'
-import Checkbox from '@material-design-icons/svg/outlined/check_box.svg'
 import { NodeContent } from '@/types/inventory'
 import { IIcon } from '@/types'
 import { useInventoryStore } from '@/store/Views/inventoryStore'
@@ -71,11 +71,6 @@ const storage: IIcon = {
   title: 'Node',
   size: 1.5
 }
-const checkbox: IIcon = {
-  image: Checkbox,
-  title: '',
-  size: 3
-}
 </script>
 
 <style lang="scss" scoped>
@@ -90,7 +85,7 @@ const checkbox: IIcon = {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(10, 12, 27, 0.75); // darker than shade-1
+  background-color: rgba(10, 12, 27, 0.9);
   padding: var(variables.$spacing-l) var(variables.$spacing-l);
   border-radius: 0 vars.$border-radius-m vars.$border-radius-m 0;
   .tag-node-checkbox {
@@ -114,7 +109,7 @@ const checkbox: IIcon = {
     }
   }
   > .overlay-header {
-    margin-bottom: var(variables.$spacing-xs);
+    margin-bottom: var(variables.$spacing-m);
     margin-right: var(variables.$spacing-s);
     display: flex;
     flex-direction: row;
@@ -133,11 +128,8 @@ const checkbox: IIcon = {
       color: $color-header-title;
     }
     label {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       font-weight: bold;
-    }
-    :deep(svg) {
-      margin-left: var(variables.$spacing-xs);
     }
     .chip-list {
       margin-top: var(variables.$spacing-s);

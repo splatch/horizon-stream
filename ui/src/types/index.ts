@@ -1,8 +1,5 @@
 import { SORT } from '@featherds/table'
 import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
-import { NodeContent } from '@/types/inventory.d'
-
-// export declare type NodeContent
 
 export declare type fncVoid = () => void
 export declare type fncArgVoid = (...args: unknown[]) => void
@@ -49,5 +46,3 @@ export const enum Monitor {
   SNMP = 'SNMP',
   ECHO = 'ECHO'
 }
-
-export { NodeContent }
