@@ -59,7 +59,7 @@ spec:
   grafana:
     image: opennms/horizon-stream-grafana
   postgres:
-    image: rhel8/postgresql-12
+    image: postgres:14.5-alpine
   credentials:
     adminPassword: admin
     userPassword: passw0rd

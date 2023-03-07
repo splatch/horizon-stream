@@ -33,7 +33,7 @@ type IngressHandler struct {
 
 func (h *IngressHandler) UpdateConfig(values values.TemplateValues) error {
 
-	if !values.Values.Cortex.Enabled { //Vanilla Mode
+	if !values.Values.OpenShift { //Vanilla Mode
 		//INGRESS CONTROLLER CONFIGS
 		var controllerServiceAccount corev1.ServiceAccount
 		var controllerClusterRole rbacv1.ClusterRole
@@ -87,17 +87,16 @@ func (h *IngressHandler) UpdateConfig(values values.TemplateValues) error {
 
 		h.AddToTemplates(handlers.Filepath("ingress/jobs/job-createsecret.yaml"), values, &createSecret)
 		h.AddToTemplates(handlers.Filepath("ingress/jobs/job-patchwebhook.yaml"), values, &patchWebhook)
+
+		//INGRESSES
+		var opennmsIngress netv1.Ingress
+
+		h.AddToTemplates(handlers.Filepath("ingress/ingresses/opennms-ingress.yaml"), values, &opennmsIngress)
 	} else { //Cortex Mode
 		//var minionRoute Route
 
 		//h.AddToTemplates(handlers.Filepath("ingress/openshift/minion-route.yaml"), values, &minionRoute)
 	}
 
-	//INGRESSES
-	var opennmsIngress netv1.Ingress
-
-	h.AddToTemplates(handlers.Filepath("ingress/ingresses/opennms-ingress.yaml"), values, &opennmsIngress)
-
 	return h.LoadTemplates()
-
 }
