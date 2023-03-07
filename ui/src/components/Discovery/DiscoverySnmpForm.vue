@@ -16,14 +16,15 @@
       :preLoadedlocations="[discoveryInfo?.location]"
       @location-selected="setLocation"
     />
-    <!--<BasicAutocomplete
+    <BasicAutocomplete
       @items-selected="tagsSelectedListener"
       :get-items="discoveryQueries.getTagsSearch"
       :items="discoveryQueries.tagsSearched"
       :label="Common.tagsInput"
       ref="tagsAutocompleteRef"
+      class="tags-autocomplete"
       data-test="tags-autocomplete"
-    />-->
+    />
     <div class="content-editable-container">
       <DiscoveryContentEditable
         @is-content-invalid="isIPRangeInvalidListener"
@@ -78,7 +79,7 @@
 
 <script lang="ts" setup>
 import { ContentEditableType, UDP_PORT, COMMUNITY_STRING, IP_RANGE } from '@/components/Discovery/discovery.constants'
-import discoveryText, { DiscoverySNMPForm } from '@/components/Discovery/discovery.text'
+import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { Location, ActiveDiscovery } from '@/types/graphql'
 import { set } from 'lodash'
@@ -95,7 +96,6 @@ const props = defineProps<{
 }>()
 
 const discoveryInfo = ref<ActiveDiscovery>(props.discovery || ({} as ActiveDiscovery))
-//const selectedTags = ref<string[]>()
 const contentEditableIPRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableCommunityStringRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableUDPPortRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
@@ -116,10 +116,14 @@ const setSnmpConfig = (property: string, val: (string | number)[] | null) => {
   set(discoveryInfo.value, property, val)
 }
 
-//const tagsAutocompleteRef = ref()
-// const tagsSelectedListener = (tags: Record<string, string>[]) => {
-//   selectedTags.value = tags.map((tag) => tag.name)
-// }
+const tagsAutocompleteRef = ref()
+const tagsSelectedListener = (tags: Record<string, string>[]) => {
+  // TODO: add tags once BE supports it in payload
+  /* discoveryInfo.value.tags = tags.map((tag) => {
+    delete tag._text
+    return tag
+  }) */
+}
 
 const isIPRangeInvalidListener = (isInvalid: boolean) => {
   console.log(isInvalid)
@@ -134,7 +138,7 @@ const isUDPPortInvalidListener = (isInvalid: boolean) => {
 }
 
 const resetContentEditable = () => {
-  // tagsAutocompleteRef.value.reset()
+  tagsAutocompleteRef.value.reset()
   contentEditableIPRef.value?.reset()
   contentEditableCommunityStringRef.value?.reset()
   contentEditableUDPPortRef.value?.reset()
@@ -175,7 +179,8 @@ const saveHandler = async () => {
 
   @include mediaQueriesMixins.screen-lg {
     .name-input,
-    .locations-select {
+    .locations-select,
+    .tags-autocomplete {
       width: 49%;
     }
   }
@@ -186,10 +191,10 @@ const saveHandler = async () => {
   justify-content: flex-end;
 }
 
-.discovery-autocomplete {
-  :deep(.chip-list) {
-    margin-top: var(variables.$spacing-s);
-    margin-bottom: var(variables.$spacing-s);
+.tags-autocomplete {
+  margin-bottom: var(variables.$spacing-l);
+  :deep(.feather-input-sub-text) {
+    display: none;
   }
 }
 
@@ -209,9 +214,5 @@ const saveHandler = async () => {
       width: 32%;
     }
   }
-}
-
-:deep(.feather-input-sub-text) {
-  display: none !important;
 }
 </style>
