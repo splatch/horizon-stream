@@ -193,9 +193,6 @@ const saveHandler = async () => {
 
 .tags-autocomplete {
   margin-bottom: var(variables.$spacing-l);
-  :deep(.feather-input-sub-text) {
-    display: none;
-  }
 }
 
 .content-editable-container {
@@ -214,5 +211,9 @@ const saveHandler = async () => {
       width: 32%;
     }
   }
+}
+
+:deep(.feather-input-sub-text) {
+  display: none;
 }
 </style>

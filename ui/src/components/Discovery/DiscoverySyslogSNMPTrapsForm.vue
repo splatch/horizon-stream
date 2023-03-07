@@ -195,9 +195,6 @@ const cancelHandler = () => {
 
 .tags-autocomplete {
   width: 100%;
-  :deep(.feather-input-sub-text) {
-    display: none;
-  }
 
   @include mediaQueriesMixins.screen-xl {
     width: 49%;
@@ -226,5 +223,9 @@ const cancelHandler = () => {
   justify-content: flex-end;
   border-top: 1px solid var(variables.$border-on-surface);
   padding-top: var(variables.$spacing-m);
+}
+
+:deep(.feather-input-sub-text) {
+  display: none;
 }
 </style>
