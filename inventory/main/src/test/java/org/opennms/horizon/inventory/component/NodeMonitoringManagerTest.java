@@ -69,18 +69,16 @@ class NodeMonitoringManagerTest {
 
     private final String tenantId = "test-tenant";
     private Event event;
-    private Map<String, Object> headers;
     private Node node;
 
     @BeforeEach
     public void prepare(){
         event = Event.newBuilder()
+            .setTenantId(tenantId)
             .setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI)
             .setLocation("test-location")
             .setIpAddress("127.0.0.1")
             .build();
-        headers = new HashMap<>();
-        headers.put(GrpcConstants.TENANT_ID_KEY, tenantId.getBytes(StandardCharsets.UTF_8));
         node = new Node();
     }
 
@@ -94,7 +92,7 @@ class NodeMonitoringManagerTest {
     void testReceiveEventAndCreateNewNode() {
         doReturn(node).when(nodeService).createNode(any(NodeCreateDTO.class), eq(ScanType.NODE_SCAN), eq(tenantId));
         ArgumentCaptor<NodeCreateDTO> argumentCaptor = ArgumentCaptor.forClass(NodeCreateDTO.class);
-        consumer.receiveTrapEvent(event.toByteArray(), headers);
+        consumer.receiveTrapEvent(event.toByteArray());
         verify(nodeService).createNode(argumentCaptor.capture(), eq(ScanType.NODE_SCAN), eq(tenantId));
         NodeCreateDTO createDTO = argumentCaptor.getValue();
         assertThat(createDTO.getLocation()).isEqualTo(event.getLocation());
@@ -106,7 +104,7 @@ class NodeMonitoringManagerTest {
     void testReceiveEventWithDifferentUEI() {
         var anotherEvent = Event.newBuilder()
                 .setUei("something else").build();
-        consumer.receiveTrapEvent(anotherEvent.toByteArray(), headers);
+        consumer.receiveTrapEvent(anotherEvent.toByteArray());
         verifyNoInteractions(detectorService);
         verifyNoInteractions(nodeService);
     }
