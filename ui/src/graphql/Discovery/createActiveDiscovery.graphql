@@ -7,6 +7,6 @@ mutation CreateActiveDiscovery($CreateDiscoveryConfigRequestInput: CreateDiscove
       ports
       readCommunities
     }
-    tags
+    # tags // not avail yet
   }
 }

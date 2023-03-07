@@ -12,7 +12,6 @@ query ListDiscoveries {
       ports
       readCommunities
     }
-    # tags // not avail yet
   }
   passiveDiscoveries {
     id
