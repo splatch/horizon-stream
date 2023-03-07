@@ -84,6 +84,7 @@
 import discoveryText from './discovery.text'
 import { DiscoverySyslogSNMPTrapsForm, Common } from './discovery.text'
 import { ContentEditableType, COMMUNITY_STRING, UDP_PORT } from './discovery.constants'
+import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import { Location } from '@/types/graphql'
@@ -93,6 +94,7 @@ const props = defineProps<{
   cancel: () => void
 }>()
 
+const tagQueries = useTagQueries()
 const discoveryQueries = useDiscoveryQueries()
 const discoveryMutations = useDiscoveryMutations()
 const name = ref()
@@ -122,21 +124,21 @@ const contentEditableCommunityStringRef = ref()
 const contentEditableUDPPortRef = ref()
 
 let isCommunityStringInvalid = false
-const isCommunityStringInvalidListerner = (isInvalid: boolean) => isCommunityStringInvalid = isInvalid
+const isCommunityStringInvalidListerner = (isInvalid: boolean) => (isCommunityStringInvalid = isInvalid)
 
 let communityStringEntered: string[] = []
-const communityStringEnteredListerner = (val: string[]) => communityStringEntered = val
+const communityStringEnteredListerner = (val: string[]) => (communityStringEntered = val)
 
 let isUDPPortInvalid = false
-const isUDPPortInvalidListener = (isInvalid: boolean) => isUDPPortInvalid = isInvalid
+const isUDPPortInvalidListener = (isInvalid: boolean) => (isUDPPortInvalid = isInvalid)
 
 let UDPPortEntered: number[] = []
-const UDPPortEnteredListener = (val: number[]) => UDPPortEntered = val
+const UDPPortEnteredListener = (val: number[]) => (UDPPortEntered = val)
 
 const submitHandler = async () => {
   contentEditableCommunityStringRef.value.validateAndFormat()
   contentEditableUDPPortRef.value.validateAndFormat()
-  
+
   const passiveDiscovery = {
     location: locationsSelected,
     name: name.value,
