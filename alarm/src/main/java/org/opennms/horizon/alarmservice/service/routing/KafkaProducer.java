@@ -56,6 +56,6 @@ public class KafkaProducer implements AlarmLifecyleListener {
     }
 
     private String toKey(Alarm alarm) {
-        return alarm.getTenantId() + "-" + alarm.getLocation() + "-" + alarm.getReductionKey();
+        return alarm.getTenantId() + "-" + alarm.getLocation();
     }
 }
