@@ -38,6 +38,7 @@
           title=" My Passive Discoveries"
           :list="discoveryQueries.passiveDiscoveries"
           @toggle-discovery="toggleDiscovery"
+          @select-discovery="showDiscovery"
         />
       </div>
     </section>
@@ -59,19 +60,21 @@
           <DiscoverySnmpForm
             :successCallback="(name) => successModal.openSuccessModal(name)"
             :cancel="handleCancel"
-            :discovery="selectedDiscovery as ActiveDiscovery"
+            :discovery="(selectedDiscovery as ActiveDiscovery)"
           />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
           <DiscoveryAzureForm
             :successCallback="(name) => successModal.openSuccessModal(name)"
             :cancel="handleCancel"
+            :discovery="(selectedDiscovery as ActiveDiscovery)"
           />
         </div>
         <DiscoverySyslogSNMPTrapsForm
           v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
           :successCallback="(name) => successModal.openSuccessModal(name)"
           :cancel="handleCancel"
+          :discovery="(selectedDiscovery as PassiveDiscovery)"
         />
         <div
           v-else
@@ -124,10 +127,10 @@ const discoverySearchValue = ref(undefined)
 const search = (q: string) => {
   if (!q) return
   searchLoading.value = true
-  const results = discoveryQueries.activeDiscoveries
-    .filter((x: any) => x.configName?.toLowerCase().indexOf(q) > -1)
+  const results = [...discoveryQueries.activeDiscoveries, ...discoveryQueries.passiveDiscoveries]
+    .filter((x: any) => x.configName?.toLowerCase().indexOf(q) > -1 || x.name?.toLowerCase().indexOf(q) > -1)
     .map((x: any) => ({
-      _text: x.configName,
+      _text: x.configName || x.name,
       ...x
     }))
   discoveriesResults.value = results as TDiscoveryAutocomplete[]
@@ -138,9 +141,14 @@ const showDiscovery = (discovery: IAutocompleteItemType | IAutocompleteItemType[
   if (discovery) {
     isDiscoveryEditingShown.value = true
     showNewDiscovery.value = false
-    //type hardocoded for now
-    discoverySelectedType.value = DiscoveryType.ICMP
-    selectedDiscovery.value = discovery as ActiveDiscovery
+    //replace with type guard
+    if (discovery.configName) {
+      discoverySelectedType.value = DiscoveryType.ICMP
+      selectedDiscovery.value = discovery as ActiveDiscovery
+    } else {
+      discoverySelectedType.value = DiscoveryType.SyslogSNMPTraps
+      selectedDiscovery.value = discovery as PassiveDiscovery
+    }
   } else {
     discoverySearchValue.value = undefined
   }

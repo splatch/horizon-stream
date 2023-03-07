@@ -76,6 +76,10 @@ const props = defineProps({
     type: [String, Number],
     default: ''
   },
+  content: {
+    type: [String, Number],
+    default: ''
+  },
   tooltipText: {
     type: String
   }
@@ -84,7 +88,11 @@ const props = defineProps({
 let isContentInvalid = true
 const isContentNotEmpty = ref(false)
 const contentEditableRef = ref()
-const htmlString = ref(props.defaultContent) // to render string as html
+const htmlString = ref(props.content || props.defaultContent) // to render string as html
+
+watch(props, () => {
+  htmlString.value = props.content
+})
 
 const contentChange = () => {
   isContentNotEmpty.value = contentEditableRef.value.textContent.length as boolean

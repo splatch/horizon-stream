@@ -13,8 +13,8 @@
     <DiscoveryLocationsAutocomplete
       class="locations-select"
       type="single"
-      :preLoadedlocations="[discoveryInfo?.location]"
-      @location-selected="setLocation"
+      :preLoadedlocation="props.discovery?.location"
+      @location-selected="(val) => setSnmpConfig('location', val)"
     />
     <!--<BasicAutocomplete
       @items-selected="tagsSelectedListener"
@@ -34,6 +34,7 @@
         ref="contentEditableIPRef"
         class="ip-input"
         :tooltipText="DiscoverySNMPForm.IPHelpTooltp"
+        :content="props.discovery?.ipAddresses?.join(', ')"
       />
       <DiscoveryContentEditable
         @is-content-invalid="isCommunityStringInvalidListerner"
@@ -44,6 +45,7 @@
         :default-content="COMMUNITY_STRING.default"
         ref="contentEditableCommunityStringRef"
         class="community-input"
+        :content="props.discovery?.snmpConfig?.readCommunities?.join(', ')"
       />
       <DiscoveryContentEditable
         @is-content-invalid="isUDPPortInvalidListener"
@@ -55,6 +57,7 @@
         class="udp-port-input"
         ref="contentEditableUDPPortRef"
         :tooltipText="DiscoverySNMPForm.PortHelpTooltp"
+        :content="props.discovery?.snmpConfig?.ports?.join(', ')"
       />
     </div>
 
@@ -80,7 +83,7 @@
 import { ContentEditableType, UDP_PORT, COMMUNITY_STRING, IP_RANGE } from '@/components/Discovery/discovery.constants'
 import discoveryText, { DiscoverySNMPForm } from '@/components/Discovery/discovery.text'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
-import { Location, ActiveDiscovery } from '@/types/graphql'
+import { ActiveDiscovery } from '@/types/graphql'
 import { set } from 'lodash'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
@@ -104,22 +107,9 @@ watch(props, () => {
   discoveryInfo.value = props.discovery || ({} as ActiveDiscovery)
 })
 
-const setLocation = (location: Location[]) => {
-  if (location[0] && location[0].location) {
-    discoveryInfo.value.location = location[0]?.location
-  } else {
-    discoveryInfo.value.location = undefined
-  }
-}
-
 const setSnmpConfig = (property: string, val: (string | number)[] | null) => {
   set(discoveryInfo.value, property, val)
 }
-
-//const tagsAutocompleteRef = ref()
-// const tagsSelectedListener = (tags: Record<string, string>[]) => {
-//   selectedTags.value = tags.map((tag) => tag.name)
-// }
 
 const isIPRangeInvalidListener = (isInvalid: boolean) => {
   console.log(isInvalid)
