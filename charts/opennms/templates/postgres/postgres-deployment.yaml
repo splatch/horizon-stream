@@ -37,7 +37,7 @@ spec:
       {{- end }}
       volumes:
         - name: postgres-volume
-            persistentVolumeClaim:
+          persistentVolumeClaim:
             claimName: postgres-pvc
         - name: postgres-initial-script
           secret:
