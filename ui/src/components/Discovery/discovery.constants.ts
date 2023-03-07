@@ -17,7 +17,7 @@ export const UDP_PORT = {
 }
 
 export const COMMUNITY_STRING = {
-  regexDelim: '[,;]',
+  regexDelim: '[,; ]',
   default: 'public'
 }
 
