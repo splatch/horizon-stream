@@ -27,7 +27,7 @@
       primary
       data-test="open-modal-btn"
     >
-      Save
+      {{ `Save tags to node${nodesSelected.length > 1 ? 's' : ''}` }}
     </FeatherButton>
   </div>
   <ul class="cards">

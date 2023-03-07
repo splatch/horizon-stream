@@ -5,35 +5,27 @@
         <div class="heading-total-selected">
           <h4>Select Tags:</h4>
           <div class="total-selected">
-            <div class="total">
+            <div
+              class="total"
+              data-test="total"
+            >
               TOTAL: <span>{{ tags.length }}</span>
               <span class="pipe">|</span>
             </div>
-            <div class="selected">
+            <div
+              class="selected"
+              data-test="selected"
+            >
               SELECTED: <span>{{ tagsSelected.length }}</span>
             </div>
           </div>
         </div>
         <div class="search-add">
-          <!-- Add tag -->
-          <!-- <InputButtonPopover
-            :icon="inputIcon"
-            :handler="addTag"
-            label="Add Tag"
-          /> -->
-          <!-- Search tags input -->
-          <!-- <FeatherInput
-            :modelValue="searchValue"
-            @update:model-value="tagsFiltering"
-            clear="clear"
-            label="Search Tags"
-            class="search"
-          /> -->
-          <!-- <FeatherButton text>Deselect all</FeatherButton> -->
           <FeatherButton
             @click="toggleSelectAll"
             secondary
             class="select-all-btn"
+            data-test="select-deselect-all"
             >{{ areAllTagsSelected ? 'Deselect all' : 'Select all' }}</FeatherButton
           >
           <BasicAutocomplete
@@ -54,6 +46,7 @@
         condensed
         label="Tags"
         class="tag-chip-list"
+        data-test="tag-chip-list"
       >
         <FeatherChip
           v-for="(tag, index) in tags"
@@ -67,7 +60,6 @@
       </FeatherChipList>
     </section>
     <section class="tag-nodes">
-      <!-- <h4>Tag Nodes:</h4> -->
       <FeatherButton
         @click="setTagEditMode(true)"
         :disabled="!tagsSelected.length"
