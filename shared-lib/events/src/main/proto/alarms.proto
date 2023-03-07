@@ -128,12 +128,12 @@ message ManagedObjectInstance {
 }
 
 message ListAlarmsRequest {
-  // A possibly paginated list of Alarms that are associated with the calling tenant.
-  repeated Alarm alarms = 1;
+  // Optional. The maximum number of alarms to return in the response.
+  int32 page_size = 1;
 
-  // A pagination token returned from a previous call to `ListAlarms`
-  // that indicates from where listing should continue.
-  string next_page_token = 2;
+  // Optional. A pagination token returned from a previous call to `listAlarms`
+  // that indicates where this listing should continue from.
+  string next_page_token = 3;
 }
 
 message ListAlarmsResponse {
