@@ -1,5 +1,5 @@
-mutation CreateActiveDiscovery($activeDiscovery: CreateDiscoveryConfigRequestInput!) {
-  createActiveDiscovery(request: $activeDiscovery) {
+mutation CreateActiveDiscovery($CreateDiscoveryConfigRequestInput: CreateDiscoveryConfigRequestInput!) {
+  createActiveDiscovery(request: $CreateDiscoveryConfigRequestInput) {
     configName
     ipAddresses
     location
@@ -7,5 +7,6 @@ mutation CreateActiveDiscovery($activeDiscovery: CreateDiscoveryConfigRequestInp
       ports
       readCommunities
     }
+    tags
   }
 }

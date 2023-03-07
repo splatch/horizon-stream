@@ -80,8 +80,8 @@ import { Azure, Common } from './discovery.text'
 import { Location } from '@/types/graphql'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
-import { useForm } from "@featherds/input-helper"
-import { string } from "yup"
+import { useForm } from '@featherds/input-helper'
+import { string } from 'yup'
 
 const store = useDiscoveryStore()
 const discoveryQueries = useDiscoveryQueries()
@@ -98,13 +98,7 @@ const selectLocation = (location: Required<Location[]>) =>
 
 const tagsAutocompleteRef = ref()
 const tagsSelectedListener = (tags: Record<string, string>[]) => {
-  const tagsSelected = tags.map((tag) => {
-    delete tag._text
-    delete tag.id
-    delete tag.tenantId
-    return tag
-  })
-
+  const tagsSelected = tags.map((name) => ({ ...name }))
   store.selectTags(tagsSelected)
 }
 
@@ -119,11 +113,11 @@ const saveAzureDiscovery = async () => {
   }
 }
 
-const nameV = string().required("Name is required.")
-const clientIdV = string().required("Client ID is required.")
-const clientSecretV = string().required("Client secret is required.")
-const subIdV = string().required("Subscription ID is required.")
-const dirIdV = string().required("Directory ID is required.")
+const nameV = string().required('Name is required.')
+const clientIdV = string().required('Client ID is required.')
+const clientSecretV = string().required('Client secret is required.')
+const subIdV = string().required('Subscription ID is required.')
+const dirIdV = string().required('Directory ID is required.')
 </script>
 
 <style scoped lang="scss">

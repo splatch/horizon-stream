@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import { useMutation } from 'villus'
-import { AddAzureCredentialDocument, CreateActiveDiscoveryDocument, UpsertPassiveDiscoveryDocument } from '@/types/graphql'
+import {
+  AddAzureCredentialDocument,
+  CreateActiveDiscoveryDocument,
+  UpsertPassiveDiscoveryDocument
+} from '@/types/graphql'
 
 export const useDiscoveryMutations = defineStore('discoveryMutations', () => {
   // Create Azure
@@ -29,6 +33,6 @@ export const useDiscoveryMutations = defineStore('discoveryMutations', () => {
     isFetchingActiveDiscovery: computed(() => isFetchingActiveDiscovery.value),
     upsertPassiveDiscovery,
     passiveDiscoveryError: computed(() => passiveDiscoveryError.value),
-    isFetchingPassiveDiscovery: computed(() => isFetchingPassiveDiscovery.value),
+    isFetchingPassiveDiscovery: computed(() => isFetchingPassiveDiscovery.value)
   }
 })
