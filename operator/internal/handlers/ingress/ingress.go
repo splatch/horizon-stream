@@ -17,7 +17,6 @@ package ingress
 import (
 	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
 	"github.com/OpenNMS-Cloud/opennms-operator/internal/model/values"
-	routev1 "github.com/openshift/client-go/route/applyconfigurations/route/v1"
 	adminv1 "k8s.io/api/admissionregistration/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
@@ -29,7 +28,8 @@ import (
 type IngressHandler struct {
 	handlers.ServiceHandlerObject
 }
-type Route routev1.RouteApplyConfiguration
+
+//type Route routev1.RouteApplyConfiguration
 
 func (h *IngressHandler) UpdateConfig(values values.TemplateValues) error {
 
@@ -88,9 +88,9 @@ func (h *IngressHandler) UpdateConfig(values values.TemplateValues) error {
 		h.AddToTemplates(handlers.Filepath("ingress/jobs/job-createsecret.yaml"), values, &createSecret)
 		h.AddToTemplates(handlers.Filepath("ingress/jobs/job-patchwebhook.yaml"), values, &patchWebhook)
 	} else { //Cortex Mode
-		var minionRoute Route
+		//var minionRoute Route
 
-		h.AddToTemplates(handlers.Filepath("ingress/openshift/minion-route.yaml"), values, &minionRoute)
+		//h.AddToTemplates(handlers.Filepath("ingress/openshift/minion-route.yaml"), values, &minionRoute)
 	}
 
 	//INGRESSES
