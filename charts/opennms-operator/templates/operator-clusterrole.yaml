@@ -42,6 +42,7 @@ rules:
       - secrets
       - endpoints
       - pods
+      - persistentvolumeclaims
     verbs:
       - create
       - delete
