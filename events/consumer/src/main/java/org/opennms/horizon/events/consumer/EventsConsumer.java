@@ -82,7 +82,7 @@ public class EventsConsumer {
     }
 
     List<Event> mapEventsFromLog(EventLog eventLog) {
-        return eventLog.getEventList().stream()
+        return eventLog.getEventsList().stream()
             .map(this::mapEventFromProto)
             .collect(Collectors.toList());
     }
@@ -100,10 +100,10 @@ public class EventsConsumer {
         event.setNodeId(eventProto.getNodeId());
         event.setProducedTime(LocalDateTime.now());
         var eventParameters = new EventParameters();
-        var paramsList = eventProto.getEventParamsList().stream().map(this::mapEventParam).collect(Collectors.toList());
+        var paramsList = eventProto.getParametersList().stream().map(this::mapEventParam).collect(Collectors.toList());
         eventParameters.setParameters(paramsList);
         event.setEventParameters(eventParameters);
-        event.setEventInfo(eventProto.getEventInfo().toByteArray());
+        event.setEventInfo(eventProto.getInfo().toByteArray());
         return event;
     }
 

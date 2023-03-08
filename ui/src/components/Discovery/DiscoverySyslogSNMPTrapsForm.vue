@@ -33,6 +33,7 @@
           :items="tagQueries.tagsSearched"
           :label="Common.tagsInput"
           ref="tagsAutocompleteRef"
+          class="tags-autocomplete"
           data-test="tags-autocomplete"
         />
         <div class="content-editable-container">
@@ -194,7 +195,7 @@ const cancelHandler = () => {
   }
 }
 
-.discovery-autocomplete {
+.tags-autocomplete {
   width: 100%;
 
   @include mediaQueriesMixins.screen-xl {
@@ -224,5 +225,9 @@ const cancelHandler = () => {
   justify-content: flex-end;
   border-top: 1px solid var(variables.$border-on-surface);
   padding-top: var(variables.$spacing-m);
+}
+
+:deep(.feather-input-sub-text) {
+  display: none;
 }
 </style>

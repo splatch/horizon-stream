@@ -32,13 +32,11 @@ import com.google.common.base.Strings;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.grpc.Context;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.alarmservice.api.AlarmService;
 import org.opennms.horizon.events.proto.EventLog;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -48,20 +46,19 @@ import java.util.Arrays;
 
 @RequiredArgsConstructor
 @Component
-@Slf4j
 @PropertySource("classpath:application.yaml")
 public class EventConsumer {
     private static final Logger LOG = LoggerFactory.getLogger(EventConsumer.class);
 
-    @Autowired
-    private AlarmService alarmService;
+    private final AlarmService alarmService;
 
     @KafkaListener(topics = "${kafka.topics.alarm-events}", concurrency = "1")
     public void receiveMessage(@Payload byte[] data) {
         try {
             EventLog eventLog = EventLog.parseFrom(data);
 
-            eventLog.getEventList().forEach(e -> {
+
+            eventLog.getEventsList().forEach(e -> {
                 if (Strings.isNullOrEmpty(e.getTenantId())) {
                     LOG.warn("TenantId is empty, dropping event: {}", e);
                     return;
@@ -69,11 +66,11 @@ public class EventConsumer {
 
                 // As this isn't a grpc call, there isn't a grpc context. Create one, and place the tenantId in it.
                 Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, e.getTenantId()).run(()-> {
-                    alarmService.process(e);
+                    alarmService.reduceEvent(e);
                 });
             });
         } catch (InvalidProtocolBufferException e) {
-            log.error("Error while parsing EventLog. Payload: {}", Arrays.toString(data), e);
+            LOG.error("Error while parsing EventLog. Payload: {}", Arrays.toString(data), e);
         }
     }
 }

@@ -81,8 +81,8 @@ import { Location } from '@/types/graphql'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
-import { useForm } from "@featherds/input-helper"
-import { string } from "yup"
+import { useForm } from '@featherds/input-helper'
+import { string } from 'yup'
 
 const store = useDiscoveryStore()
 const discoveryQueries = useDiscoveryQueries()
@@ -106,7 +106,6 @@ const tagsSelectedListener = (tags: Record<string, string>[]) => {
     delete tag.tenantId
     return tag
   })
-
   store.selectTags(tagsSelected)
 }
 
@@ -121,11 +120,11 @@ const saveAzureDiscovery = async () => {
   }
 }
 
-const nameV = string().required("Name is required.")
-const clientIdV = string().required("Client ID is required.")
-const clientSecretV = string().required("Client secret is required.")
-const subIdV = string().required("Subscription ID is required.")
-const dirIdV = string().required("Directory ID is required.")
+const nameV = string().required('Name is required.')
+const clientIdV = string().required('Client ID is required.')
+const clientSecretV = string().required('Client secret is required.')
+const subIdV = string().required('Subscription ID is required.')
+const dirIdV = string().required('Directory ID is required.')
 </script>
 
 <style scoped lang="scss">

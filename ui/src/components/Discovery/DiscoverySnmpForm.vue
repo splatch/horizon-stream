@@ -16,14 +16,15 @@
       :preLoadedlocations="[discoveryInfo?.location]"
       @location-selected="setLocation"
     />
-    <!--<BasicAutocomplete
+    <BasicAutocomplete
       @items-selected="tagsSelectedListener"
       :get-items="tagQueries.getTagsSearch"
       :items="tagQueries.tagsSearched"
       :label="Common.tagsInput"
       ref="tagsAutocompleteRef"
+      class="tags-autocomplete"
       data-test="tags-autocomplete"
-    />-->
+    />
     <div class="content-editable-container">
       <DiscoveryContentEditable
         @is-content-invalid="isIPRangeInvalidListener"
@@ -78,9 +79,9 @@
 
 <script lang="ts" setup>
 import { ContentEditableType, UDP_PORT, COMMUNITY_STRING, IP_RANGE } from '@/components/Discovery/discovery.constants'
-import discoveryText, { DiscoverySNMPForm } from '@/components/Discovery/discovery.text'
+import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
-import { Location, ActiveDiscovery } from '@/types/graphql'
+import { Location, CreateDiscoveryConfigRequestInput } from '@/types/graphql'
 import { set } from 'lodash'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
@@ -89,19 +90,20 @@ const { createDiscoveryConfig, activeDiscoveryError, isFetchingActiveDiscovery }
 
 const discoveryQueries = useDiscoveryQueries()
 const props = defineProps<{
-  discovery?: ActiveDiscovery | null
+  discovery?: CreateDiscoveryConfigRequestInput | null
   successCallback: (name: string) => void
   cancel: () => void
 }>()
 
-const discoveryInfo = ref<ActiveDiscovery>(props.discovery || ({} as ActiveDiscovery))
-//const selectedTags = ref<string[]>()
+const discoveryInfo = ref<CreateDiscoveryConfigRequestInput>(
+  props.discovery || ({} as CreateDiscoveryConfigRequestInput)
+)
 const contentEditableIPRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableCommunityStringRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableUDPPortRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 
 watch(props, () => {
-  discoveryInfo.value = props.discovery || ({} as ActiveDiscovery)
+  discoveryInfo.value = props.discovery || ({} as CreateDiscoveryConfigRequestInput)
 })
 
 const setLocation = (location: Location[]) => {
@@ -116,10 +118,10 @@ const setSnmpConfig = (property: string, val: (string | number)[] | null) => {
   set(discoveryInfo.value, property, val)
 }
 
-//const tagsAutocompleteRef = ref()
-// const tagsSelectedListener = (tags: Record<string, string>[]) => {
-//   selectedTags.value = tags.map((tag) => tag.name)
-// }
+const tagsAutocompleteRef = ref()
+const tagsSelectedListener = (tags: Record<string, string>[]) => {
+  discoveryInfo.value.tags = tags.map(({ name }) => ({ name }))
+}
 
 const isIPRangeInvalidListener = (isInvalid: boolean) => {
   console.log(isInvalid)
@@ -134,7 +136,7 @@ const isUDPPortInvalidListener = (isInvalid: boolean) => {
 }
 
 const resetContentEditable = () => {
-  // tagsAutocompleteRef.value.reset()
+  tagsAutocompleteRef.value.reset()
   contentEditableIPRef.value?.reset()
   contentEditableCommunityStringRef.value?.reset()
   contentEditableUDPPortRef.value?.reset()
@@ -149,7 +151,7 @@ const saveHandler = async () => {
     discoveryQueries.getDiscoveries()
     resetContentEditable()
     props.successCallback(discoveryInfo.value.configName)
-    discoveryInfo.value = {} as ActiveDiscovery
+    discoveryInfo.value = {} as CreateDiscoveryConfigRequestInput
   }
 }
 </script>
@@ -175,7 +177,8 @@ const saveHandler = async () => {
 
   @include mediaQueriesMixins.screen-lg {
     .name-input,
-    .locations-select {
+    .locations-select,
+    .tags-autocomplete {
       width: 49%;
     }
   }
@@ -186,11 +189,8 @@ const saveHandler = async () => {
   justify-content: flex-end;
 }
 
-.discovery-autocomplete {
-  :deep(.chip-list) {
-    margin-top: var(variables.$spacing-s);
-    margin-bottom: var(variables.$spacing-s);
-  }
+.tags-autocomplete {
+  margin-bottom: var(variables.$spacing-l);
 }
 
 .content-editable-container {
@@ -212,6 +212,6 @@ const saveHandler = async () => {
 }
 
 :deep(.feather-input-sub-text) {
-  display: none !important;
+  display: none;
 }
 </style>

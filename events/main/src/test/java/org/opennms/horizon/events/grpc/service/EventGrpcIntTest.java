@@ -2,6 +2,7 @@ package org.opennms.horizon.events.grpc.service;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
+import com.google.protobuf.UInt64Value;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,8 +93,7 @@ class EventGrpcIntTest extends GrpcTestBase {
         }
 
         EventLog eventLog = serviceStub.listEvents(Empty.getDefaultInstance());
-
-        List<org.opennms.horizon.events.proto.Event> events = eventLog.getEventList();
+        List<org.opennms.horizon.events.proto.Event> events = eventLog.getEventsList();
         assertEquals(count, events.size());
 
         for (int index = 0; index < events.size(); index++) {
@@ -115,8 +115,7 @@ class EventGrpcIntTest extends GrpcTestBase {
         }
 
         EventLog eventLog = serviceStub.listEvents(Empty.getDefaultInstance());
-
-        List<org.opennms.horizon.events.proto.Event> events = eventLog.getEventList();
+        List<org.opennms.horizon.events.proto.Event> events = eventLog.getEventsList();
         assertEquals(0, events.size());
     }
 
@@ -132,10 +131,10 @@ class EventGrpcIntTest extends GrpcTestBase {
             populateDatabase(2);
         }
 
-        EventLog eventLog1 = serviceStub.getEventsByNodeId(Int64Value
-            .newBuilder().setValue(1).build());
 
-        List<org.opennms.horizon.events.proto.Event> eventsNode1 = eventLog1.getEventList();
+        EventLog eventLog1 = serviceStub.getEventsByNodeId(UInt64Value.of(1));
+        List<org.opennms.horizon.events.proto.Event> eventsNode1 = eventLog1.getEventsList();
+
         assertNotNull(eventsNode1);
         assertEquals(3, eventsNode1.size());
         for (org.opennms.horizon.events.proto.Event event : eventsNode1) {
@@ -143,10 +142,9 @@ class EventGrpcIntTest extends GrpcTestBase {
             assertEvent(event);
         }
 
-        EventLog eventLog2 = serviceStub.getEventsByNodeId(Int64Value
-            .newBuilder().setValue(2).build());
+        EventLog eventLog2 = serviceStub.getEventsByNodeId(UInt64Value.of(2));
+        List<org.opennms.horizon.events.proto.Event> eventsNode2 = eventLog2.getEventsList();
 
-        List<org.opennms.horizon.events.proto.Event> eventsNode2 = eventLog2.getEventList();
         assertNotNull(eventsNode2);
         assertEquals(5, eventsNode2.size());
         for (org.opennms.horizon.events.proto.Event event : eventsNode2) {
@@ -164,10 +162,9 @@ class EventGrpcIntTest extends GrpcTestBase {
             populateDatabase(1);
         }
 
-        EventLog eventLog = serviceStub.getEventsByNodeId(Int64Value
-            .newBuilder().setValue(1).build());
+        EventLog eventLog = serviceStub.getEventsByNodeId(UInt64Value.of(1));
+        List<org.opennms.horizon.events.proto.Event> eventsNode1 = eventLog.getEventsList();
 
-        List<org.opennms.horizon.events.proto.Event> eventsNode1 = eventLog.getEventList();
         assertEquals(0, eventsNode1.size());
     }
 
@@ -206,18 +203,18 @@ class EventGrpcIntTest extends GrpcTestBase {
     private void assertEvent(org.opennms.horizon.events.proto.Event event) {
         assertEquals(tenantId, event.getTenantId());
         assertEquals(TEST_UEI, event.getUei());
-        assertNotEquals(0, event.getProducedTime());
+        assertNotEquals(0, event.getProducedTimeMs());
         assertEquals(TEST_IP_ADDRESS, event.getIpAddress());
 
-        assertNotNull(event.getEventParamsList());
-        event.getEventParamsList().forEach(parameter -> {
+        assertNotNull(event.getParametersList());
+        event.getParametersList().forEach(parameter -> {
             assertEquals(TEST_NAME, parameter.getName());
             assertEquals(TEST_TYPE, parameter.getType());
             assertEquals(TEST_VALUE, parameter.getValue());
             assertEquals(TEST_ENCODING, parameter.getEncoding());
         });
 
-        EventInfo eventInfo = event.getEventInfo();
+        EventInfo eventInfo = event.getInfo();
         assertNotNull(eventInfo);
 
         SnmpInfo snmpInfo = eventInfo.getSnmp();
