@@ -154,7 +154,8 @@ const search = (q: string) => {
   searchLoading.value = false
 }
 
-const showDiscovery = (discovery: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
+const showDiscovery = (selected: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
+  const discovery = selected as IAutocompleteItemType
   if (discovery) {
     isDiscoveryEditingShown.value = true
     showNewDiscovery.value = false

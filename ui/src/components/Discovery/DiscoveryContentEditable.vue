@@ -17,6 +17,7 @@
     <div class="label">
       <label for="contentEditable">{{ props.label }}</label>
       <FeatherTooltip
+        v-if="props.tooltipText"
         :title="props.tooltipText"
         v-slot="{ attrs, on }"
       >

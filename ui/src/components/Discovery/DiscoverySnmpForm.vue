@@ -34,7 +34,7 @@
         :label="discoveryText.ContentEditable.IP.label"
         ref="contentEditableIPRef"
         class="ip-input"
-        :tooltipText="DiscoverySNMPForm.IPHelpTooltp"
+        :tooltipText="Common.tooltip.IPHelpTooltp"
         :content="props.discovery?.ipAddresses?.join(', ')"
       />
       <DiscoveryContentEditable
@@ -57,7 +57,7 @@
         :default-content="UDP_PORT.default"
         class="udp-port-input"
         ref="contentEditableUDPPortRef"
-        :tooltipText="DiscoverySNMPForm.PortHelpTooltp"
+        :tooltipText="Common.tooltip.PortHelpTooltp"
         :content="props.discovery?.snmpConfig?.ports?.join(', ')"
       />
     </div>
@@ -163,7 +163,7 @@ const saveHandler = async () => {
   }
   .locations-select {
     margin-top: var(variables.$spacing-xl);
-    margin-bottom: var(variables.$spacing-s);
+    margin-bottom: var(variables.$spacing-l);
     width: 100%;
   }
 

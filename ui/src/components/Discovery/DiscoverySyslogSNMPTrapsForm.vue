@@ -60,6 +60,7 @@
             class="udp-port-input"
             ref="contentEditableUDPPortRef"
             :content="props.discovery?.snmpPorts?.join(', ')"
+            :tooltipText="Common.tooltip.PortHelpTooltp"
           />
         </div>
       </div>
@@ -90,7 +91,7 @@ import { DiscoverySyslogSNMPTrapsForm, Common } from './discovery.text'
 import { ContentEditableType, COMMUNITY_STRING, UDP_PORT } from './discovery.constants'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
-import { PassiveDiscovery } from '@/types/graphql'
+import { PassiveDiscovery, PassiveDiscoveryUpsertInput } from '@/types/graphql'
 import { set } from 'lodash'
 
 const props = defineProps<{
@@ -101,7 +102,7 @@ const props = defineProps<{
 
 const discoveryQueries = useDiscoveryQueries()
 const discoveryMutations = useDiscoveryMutations()
-const discoveryInfo = ref<PassiveDiscovery>(props.discovery || ({} as PassiveDiscovery))
+const discoveryInfo = ref<PassiveDiscoveryUpsertInput>(props.discovery || ({} as PassiveDiscoveryUpsertInput))
 const isFormInvalid = ref(
   computed(() => {
     return isCommunityStringInvalid || isUDPPortInvalid
@@ -109,13 +110,13 @@ const isFormInvalid = ref(
 )
 
 watch(props, () => {
-  discoveryInfo.value = props.discovery || ({} as PassiveDiscovery)
+  discoveryInfo.value = props.discovery || ({} as PassiveDiscoveryUpsertInput)
 })
 
 const tagsAutocompleteRef = ref()
 //let tagsSelected: Record<string, string>[] = []
 const tagsSelectedListener = (tags: Record<string, string>[]) => {
-  discoveryInfo.tags = tags.map((tag) => {
+  discoveryInfo.value.tags = tags.map((tag) => {
     delete tag._text
     return tag
   })
@@ -142,11 +143,11 @@ const submitHandler = async () => {
   contentEditableUDPPortRef.value.validateAndFormat()
   await discoveryMutations.upsertPassiveDiscovery({ passiveDiscovery: discoveryInfo.value })
 
-  if (!discoveryMutations.passiveDiscoveryError) {
+  if (!discoveryMutations.passiveDiscoveryError && discoveryInfo.value.name) {
     props.successCallback(discoveryInfo.value.name)
     resetForm()
     discoveryQueries.getDiscoveries()
-    discoveryInfo.value = {} as PassiveDiscovery
+    discoveryInfo.value = {} as PassiveDiscoveryUpsertInput
   }
 }
 
@@ -154,7 +155,7 @@ const resetForm = () => {
   tagsAutocompleteRef.value.reset()
   contentEditableCommunityStringRef.value.reset()
   contentEditableUDPPortRef.value.reset()
-  name.value = ''
+  discoveryInfo.value = {} as PassiveDiscoveryUpsertInput
 }
 
 const cancelHandler = () => {

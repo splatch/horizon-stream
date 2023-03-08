@@ -42,7 +42,7 @@
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import { markRaw } from 'vue'
-import { debounce } from 'lodash'
+import { debounce, first } from 'lodash'
 import { Location } from '@/types/graphql'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { watchOnce } from '@vueuse/core'
@@ -52,10 +52,10 @@ const Icons = markRaw({
   Cancel
 })
 const emit = defineEmits(['location-selected'])
-type TLocationAutocomplete = Location & { _text: string }
+type TLocationAutocomplete = Location & { _text?: string }
 const discoveryQueries = useDiscoveryQueries()
 const searchValue = ref<Location | undefined>()
-const selectedLocation = ref<TLocationAutocomplete>(null)
+const selectedLocation = ref<TLocationAutocomplete | null>(null)
 const loading = ref(false)
 const locations = ref() //locations without selected items
 const filteredLocations = ref() //results in autocomplete
@@ -82,7 +82,7 @@ const initLocations = () => {
 watchOnce(computedLocations, () => {
   initLocations()
   if (computedLocations.value.length == 1) {
-    selectedLocation.value = computedLocations.value as TLocationAutocomplete[]
+    selectedLocation.value = first(computedLocations.value) as Location
     locations.value = []
     filteredLocations.value = []
     emit('location-selected', selectedLocation.value)
@@ -112,10 +112,11 @@ const search = (q: string) => {
 
 //using debounce temporary because of bug in feather/autocomplete
 const deboncedFn = debounce(
-  (selected: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
+  (item: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
+    const selected = item as IAutocompleteItemType
     if (selected && selected._text) {
       selectedLocation.value = selected as TLocationAutocomplete
-      locations.value = computedLocations.value.filter((l: Location) => l.id !== selectedLocation.value.id)
+      locations.value = computedLocations.value.filter((l: Location) => l.id !== selectedLocation.value?.id)
       searchValue.value = undefined
       inputRef.value?.handleOutsideClick()
       emit('location-selected', selectedLocation.value.location)
