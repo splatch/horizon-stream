@@ -38,6 +38,7 @@
           title=" My Passive Discoveries"
           :list="discoveryQueries.passiveDiscoveries"
           @toggle-discovery="toggleDiscovery"
+          @select-discovery="showDiscovery"
         />
       </div>
     </section>
@@ -57,21 +58,38 @@
       <div>
         <div v-if="discoverySelectedType === DiscoveryType.ICMP">
           <DiscoverySnmpForm
-            :successCallback="(name) => successModal.openSuccessModal(name)"
-            :cancel="handleCancel"
-            :discovery="selectedDiscovery as ActiveDiscovery"
+            :successCallback="
+              (name) => {
+                successModal.openSuccessModal(name)
+                handleClose()
+              }
+            "
+            :cancel="handleClose"
+            :discovery="(selectedDiscovery as ActiveDiscovery)"
           />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
           <DiscoveryAzureForm
-            :successCallback="(name) => successModal.openSuccessModal(name)"
-            :cancel="handleCancel"
+            :successCallback="
+              (name) => {
+                successModal.openSuccessModal(name)
+                handleClose()
+              }
+            "
+            :cancel="handleClose"
+            :discovery="(selectedDiscovery as ActiveDiscovery)"
           />
         </div>
         <DiscoverySyslogSNMPTrapsForm
           v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
-          :successCallback="(name) => successModal.openSuccessModal(name)"
-          :cancel="handleCancel"
+          :successCallback="
+            (name) => {
+              successModal.openSuccessModal(name)
+              handleClose()
+            }
+          "
+          :cancel="handleClose"
+          :discovery="(selectedDiscovery as PassiveDiscovery)"
         />
         <div
           v-else
@@ -126,35 +144,41 @@ const discoverySearchValue = ref(undefined)
 const search = (q: string) => {
   if (!q) return
   searchLoading.value = true
-  const results = discoveryQueries.activeDiscoveries
-    .filter((x: any) => x.configName?.toLowerCase().indexOf(q) > -1)
+  const results = [...discoveryQueries.activeDiscoveries, ...discoveryQueries.passiveDiscoveries]
+    .filter((x: any) => x.configName?.toLowerCase().indexOf(q) > -1 || x.name?.toLowerCase().indexOf(q) > -1)
     .map((x: any) => ({
-      _text: x.configName,
+      _text: x.configName || x.name,
       ...x
     }))
   discoveriesResults.value = results as TDiscoveryAutocomplete[]
   searchLoading.value = false
 }
 
-const showDiscovery = (discovery: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
+const showDiscovery = (selected: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
+  const discovery = selected as IAutocompleteItemType
   if (discovery) {
     isDiscoveryEditingShown.value = true
     showNewDiscovery.value = false
-    //type hardocoded for now
-    discoverySelectedType.value = DiscoveryType.ICMP
-    selectedDiscovery.value = discovery as ActiveDiscovery
+    //replace with type guard
+    if (discovery.configName) {
+      discoverySelectedType.value = DiscoveryType.ICMP
+      selectedDiscovery.value = discovery as ActiveDiscovery
+    } else {
+      discoverySelectedType.value = DiscoveryType.SyslogSNMPTraps
+      selectedDiscovery.value = discovery as PassiveDiscovery
+    }
   } else {
     discoverySearchValue.value = undefined
   }
 }
 
 const toggleDiscovery = (id: string, toggle: boolean) => {
-  discoveryMutations.togglePassiveDiscovery({ 
+  discoveryMutations.togglePassiveDiscovery({
     toggle: { id, toggle }
   })
 }
 
-const handleCancel = () => {
+const handleClose = () => {
   isDiscoveryEditingShown.value = false
   discoverySelectedType.value = DiscoveryType.None
 }
@@ -190,16 +214,16 @@ const handleCancel = () => {
   .add-btn {
     width: 100%;
     margin-bottom: var(variables.$spacing-l);
-    border-bottom: 1px solid var(variables.$border-on-surface);
-    > button {
-      margin-bottom: var(variables.$spacing-l);
-    }
   }
   > .my-discovery-inner {
     width: 100%;
     display: flex;
     flex-direction: column;
     margin-bottom: var(variables.$spacing-l);
+    margin-top: var(variables.$spacing-l);
+    border-top: 1px solid var(variables.$border-on-surface);
+    padding-top: var(variables.$spacing-l);
+
     > * {
       margin-bottom: var(variables.$spacing-m);
       &:last-child {
@@ -254,7 +278,7 @@ const handleCancel = () => {
 
   @include mediaQueriesMixins.screen-md {
     padding: var(variables.$spacing-l);
-
+    height: fit-content;
     flex-grow: 1;
     min-width: auto;
     margin-bottom: 0;

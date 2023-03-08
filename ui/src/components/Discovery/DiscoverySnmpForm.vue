@@ -13,8 +13,8 @@
     <DiscoveryLocationsAutocomplete
       class="locations-select"
       type="single"
-      :preLoadedlocations="[discoveryInfo?.location]"
-      @location-selected="setLocation"
+      :preLoadedlocation="props.discovery?.location"
+      @location-selected="(val) => setSnmpConfig('location', val)"
     />
     <BasicAutocomplete
       @items-selected="tagsSelectedListener"
@@ -34,7 +34,8 @@
         :label="discoveryText.ContentEditable.IP.label"
         ref="contentEditableIPRef"
         class="ip-input"
-        :tooltipText="DiscoverySNMPForm.IPHelpTooltp"
+        :tooltipText="Common.tooltip.IPHelpTooltp"
+        :content="props.discovery?.ipAddresses?.join(', ')"
       />
       <DiscoveryContentEditable
         @is-content-invalid="isCommunityStringInvalidListerner"
@@ -45,6 +46,7 @@
         :default-content="COMMUNITY_STRING.default"
         ref="contentEditableCommunityStringRef"
         class="community-input"
+        :content="props.discovery?.snmpConfig?.readCommunities?.join(', ')"
       />
       <DiscoveryContentEditable
         @is-content-invalid="isUDPPortInvalidListener"
@@ -55,7 +57,8 @@
         :default-content="UDP_PORT.default"
         class="udp-port-input"
         ref="contentEditableUDPPortRef"
-        :tooltipText="DiscoverySNMPForm.PortHelpTooltp"
+        :tooltipText="Common.tooltip.PortHelpTooltp"
+        :content="props.discovery?.snmpConfig?.ports?.join(', ')"
       />
     </div>
 
@@ -81,7 +84,7 @@
 import { ContentEditableType, UDP_PORT, COMMUNITY_STRING, IP_RANGE } from '@/components/Discovery/discovery.constants'
 import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
-import { Location, CreateDiscoveryConfigRequestInput } from '@/types/graphql'
+import { CreateDiscoveryConfigRequestInput } from '@/types/graphql'
 import { set } from 'lodash'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
@@ -105,14 +108,6 @@ const contentEditableUDPPortRef = ref<InstanceType<typeof DiscoveryContentEditab
 watch(props, () => {
   discoveryInfo.value = props.discovery || ({} as CreateDiscoveryConfigRequestInput)
 })
-
-const setLocation = (location: Location[]) => {
-  if (location[0] && location[0].location) {
-    discoveryInfo.value.location = location[0]?.location
-  } else {
-    discoveryInfo.value.location = undefined
-  }
-}
 
 const setSnmpConfig = (property: string, val: (string | number)[] | null) => {
   set(discoveryInfo.value, property, val)
@@ -166,12 +161,9 @@ const saveHandler = async () => {
     @include typography.headline4;
     margin-bottom: var(variables.$spacing-m);
   }
-  .name-input {
-    width: 100%;
-  }
   .locations-select {
     margin-top: var(variables.$spacing-xl);
-    margin-bottom: var(variables.$spacing-s);
+    margin-bottom: var(variables.$spacing-l);
     width: 100%;
   }
 

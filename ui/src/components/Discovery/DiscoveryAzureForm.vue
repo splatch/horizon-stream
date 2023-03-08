@@ -151,7 +151,7 @@ const dirIdV = string().required('Directory ID is required.')
   }
 
   .locations {
-    margin-bottom: var(variables.$spacing-s);
+    margin-bottom: var(variables.$spacing-l);
   }
 
   @include mediaQueriesMixins.screen-md {
