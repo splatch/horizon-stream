@@ -34,6 +34,7 @@
           :items="discoveryQueries.tagsSearched"
           :label="Common.tagsInput"
           ref="tagsAutocompleteRef"
+          class="tags-autocomplete"
           data-test="tags-autocomplete"
         />
         <div class="content-editable-container">
@@ -126,6 +127,9 @@ const contentEditableUDPPortRef = ref()
 let isCommunityStringInvalid = false
 const isCommunityStringInvalidListerner = (isInvalid: boolean) => (isCommunityStringInvalid = isInvalid)
 
+let communityStringEntered: string[] = []
+const communityStringEnteredListerner = (val: string[]) => (communityStringEntered = val)
+
 let isUDPPortInvalid = false
 const isUDPPortInvalidListener = (isInvalid: boolean) => (isUDPPortInvalid = isInvalid)
 
@@ -184,7 +188,7 @@ const cancelHandler = () => {
   }
 }
 
-.discovery-autocomplete {
+.tags-autocomplete {
   width: 100%;
 
   @include mediaQueriesMixins.screen-xl {
@@ -212,7 +216,10 @@ const cancelHandler = () => {
 .form-footer {
   display: flex;
   justify-content: flex-end;
-  border-top: 1px solid var(variables.$border-on-surface);
-  padding-top: var(variables.$spacing-m);
+  padding-top: var(variables.$spacing-s);
+}
+
+:deep(.feather-input-sub-text) {
+  display: none;
 }
 </style>

@@ -12,15 +12,15 @@ export enum ContentEditableType {
 }
 
 export const UDP_PORT = {
-  regexDelim: '[,; ]',
+  regexDelim: '[,;]',
   default: 161
 }
 
 export const COMMUNITY_STRING = {
-  regexDelim: '[,; ]',
+  regexDelim: '[,;]',
   default: 'public'
 }
 
 export const IP_RANGE = {
-  regexDelim: '[,; ]+'
+  regexDelim: '[,;]+'
 }

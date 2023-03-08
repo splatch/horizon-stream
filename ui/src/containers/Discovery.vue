@@ -58,22 +58,37 @@
       <div>
         <div v-if="discoverySelectedType === DiscoveryType.ICMP">
           <DiscoverySnmpForm
-            :successCallback="(name) => successModal.openSuccessModal(name)"
-            :cancel="handleCancel"
+            :successCallback="
+              (name) => {
+                successModal.openSuccessModal(name)
+                handleClose()
+              }
+            "
+            :cancel="handleClose"
             :discovery="(selectedDiscovery as ActiveDiscovery)"
           />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
           <DiscoveryAzureForm
-            :successCallback="(name) => successModal.openSuccessModal(name)"
-            :cancel="handleCancel"
+            :successCallback="
+              (name) => {
+                successModal.openSuccessModal(name)
+                handleClose()
+              }
+            "
+            :cancel="handleClose"
             :discovery="(selectedDiscovery as ActiveDiscovery)"
           />
         </div>
         <DiscoverySyslogSNMPTrapsForm
           v-else-if="discoverySelectedType === DiscoveryType.SyslogSNMPTraps"
-          :successCallback="(name) => successModal.openSuccessModal(name)"
-          :cancel="handleCancel"
+          :successCallback="
+            (name) => {
+              successModal.openSuccessModal(name)
+              handleClose()
+            }
+          "
+          :cancel="handleClose"
           :discovery="(selectedDiscovery as PassiveDiscovery)"
         />
         <div
@@ -96,10 +111,12 @@ import { DiscoveryInput } from '@/types/discovery'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import discoveryText from '@/components/Discovery/discovery.text'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { ActiveDiscovery, PassiveDiscovery } from '@/types/graphql'
 
 const discoveryQueries = useDiscoveryQueries()
+const discoveryMutations = useDiscoveryMutations()
 
 type TDiscoveryAutocomplete = DiscoveryInput & { _text: string }
 
@@ -154,11 +171,13 @@ const showDiscovery = (discovery: IAutocompleteItemType | IAutocompleteItemType[
   }
 }
 
-const toggleDiscovery = (item: any, isToggled: boolean) => {
-  // call mutation to turn on / off passive discovery, when available.
+const toggleDiscovery = (id: string, toggle: boolean) => {
+  discoveryMutations.togglePassiveDiscovery({
+    toggle: { id, toggle }
+  })
 }
 
-const handleCancel = () => {
+const handleClose = () => {
   isDiscoveryEditingShown.value = false
   discoverySelectedType.value = DiscoveryType.None
 }
@@ -194,16 +213,16 @@ const handleCancel = () => {
   .add-btn {
     width: 100%;
     margin-bottom: var(variables.$spacing-l);
-    border-bottom: 1px solid var(variables.$border-on-surface);
-    > button {
-      margin-bottom: var(variables.$spacing-l);
-    }
   }
   > .my-discovery-inner {
     width: 100%;
     display: flex;
     flex-direction: column;
     margin-bottom: var(variables.$spacing-l);
+    margin-top: var(variables.$spacing-l);
+    border-top: 1px solid var(variables.$border-on-surface);
+    padding-top: var(variables.$spacing-l);
+
     > * {
       margin-bottom: var(variables.$spacing-m);
       &:last-child {
@@ -258,7 +277,7 @@ const handleCancel = () => {
 
   @include mediaQueriesMixins.screen-md {
     padding: var(variables.$spacing-l);
-
+    height: fit-content;
     flex-grow: 1;
     min-width: auto;
     margin-bottom: 0;

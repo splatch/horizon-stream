@@ -16,11 +16,9 @@
   <div class="content-editable-wrapper">
     <div class="label">
       <label for="contentEditable">{{ props.label }}</label>
-
       <FeatherTooltip
         :title="props.tooltipText"
         v-slot="{ attrs, on }"
-        v-if="props.tooltipText"
       >
         <FeatherButton
           v-bind="attrs"
@@ -172,6 +170,11 @@ const reset: fncArgVoid = () => {
 const checkCircleIcon: IIcon = {
   image: markRaw(CheckCircleIcon),
   tooltip: 'Validate'
+}
+const iconHelp: IIcon = {
+  image: markRaw(Help),
+  tooltip: props.tooltipText,
+  size: '1.2rem'
 }
 
 defineExpose({
