@@ -1,4 +1,5 @@
 Changes:
+* fc2fc110a Merge pull request #822 from OpenNMS-Cloud/jw/simplify-alarms
 * 6c9c76feb Merge pull request #793 from OpenNMS-Cloud/jw/events
 * ec3873563 Merge pull request #816 from OpenNMS-Cloud/feature/HS-1142
 * 2480f0055 Merge pull request #697 from OpenNMS-Cloud/HS-572-tilt-multimodule
