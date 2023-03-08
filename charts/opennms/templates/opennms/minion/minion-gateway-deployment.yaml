@@ -19,9 +19,6 @@ spec:
         ignite-cluster: core
     spec:
       serviceAccountName: {{ .Values.OpenNMS.Minion.ServiceName }}-sa
-      volumes:
-        - name: ignite-volume
-          emptyDir: {}
       {{- if .Values.NodeRestrictions.Enabled }}
       nodeSelector:
         {{ .Values.NodeRestrictions.Key }}: {{ .Values.NodeRestrictions.Value }}
@@ -45,6 +42,8 @@ spec:
         - name: minion-gateway-ignite-config-volume
           configMap:
             name: minion-gateway-ignite-config
+        - name: ignite-volume
+          emptyDir: {}
       containers:
         - name: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
           image: {{ .Values.OpenNMS.MinionGateway.Image }}
