@@ -133,7 +133,7 @@ watchEffect(() => {
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
 @use '@/styles/vars';
-@use '@/styles/mediaQueries';
+@use '@/styles/mediaQueriesMixins';
 
 .tag-manager {
   display: flex;
@@ -187,7 +187,7 @@ watchEffect(() => {
         }
       }
 
-      @include mediaQueries.screen-lg {
+      @include mediaQueriesMixins.screen-lg {
         width: 50%;
       }
     }
@@ -210,7 +210,7 @@ watchEffect(() => {
         }
       }
 
-      @include mediaQueries.screen-lg {
+      @include mediaQueriesMixins.screen-lg {
         flex-direction: row;
         justify-content: flex-end;
         .select-all-btn {
@@ -223,7 +223,7 @@ watchEffect(() => {
       }
     }
 
-    @include mediaQueries.screen-md {
+    @include mediaQueriesMixins.screen-md {
       margin-bottom: 0;
       .heading-total-selected {
         .total-selected {
@@ -236,7 +236,7 @@ watchEffect(() => {
         }
       }
     }
-    @include mediaQueries.screen-lg {
+    @include mediaQueriesMixins.screen-lg {
       .heading-total-selected {
         display: flex;
         flex-direction: row;
@@ -248,7 +248,7 @@ watchEffect(() => {
     overflow-y: scroll;
   }
 
-  @include mediaQueries.screen-lg {
+  @include mediaQueriesMixins.screen-lg {
     min-width: 0;
   }
 }

@@ -10,8 +10,15 @@
   background: none;
   line-height: inherit;
   > label {
+    font-family: var(variables.$font-family);
+    font-size: var(variables.$body-small-font-size);
+    line-height: var(variables.$body-small-line-height);
+    letter-spacing: var(variables.$body-small-letter-spacing);
+    font-weight: var(variables.$body-small-font-weight);
+    text-transform: var(variables.$body-small-text-transform);
+    font-style: var(variables.$body-small-font-style);
     color: var(variables.$secondary-text-on-surface);
-    font-weight: normal;
+    cursor: text;
     text-transform: capitalize;
     border-left: 2px solid transparent;
     padding: 0 0.75rem;

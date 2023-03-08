@@ -39,3 +39,9 @@ java/bin/
 *.iml
 idea/
 
+# local
+compile.DskipTests.sh
+.vscode
+*.bk
+*.orig
+*copy*

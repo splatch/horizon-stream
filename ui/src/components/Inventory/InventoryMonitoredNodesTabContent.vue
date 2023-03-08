@@ -244,7 +244,7 @@ const storageIcon: IIcon = {
 ul.cards {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
+  gap: 1%;
   > li {
     position: relative;
     padding: var(variables.$spacing-l) var(variables.$spacing-l);
@@ -285,6 +285,7 @@ ul.cards {
       }
     }
   }
+
   .content {
     display: flex;
     flex-direction: row;

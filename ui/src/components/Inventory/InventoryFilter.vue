@@ -1,6 +1,5 @@
 <template>
   <ul class="filter-container">
-    <!-- Search -->
     <li class="autocomplete">
       <FeatherAutocomplete
         v-model="search.value"
@@ -12,7 +11,6 @@
         data-test="search"
       />
     </li>
-    <!-- Node type -->
     <li>
       <FeatherSelect
         v-model="nodeTypeState"
@@ -23,7 +21,6 @@
         data-test="node-type"
       />
     </li>
-    <!-- Monitoring Location -->
     <li>
       <FeatherSelect
         v-model="monitoringLocationState"
@@ -34,7 +31,6 @@
         data-test="monitoring-location"
       />
     </li>
-    <!-- Severity -->
     <li>
       <FeatherSelect
         v-model="severityState"
@@ -218,6 +214,7 @@ const expandCollapse = ref(
 
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
+@use '@/styles/btns.scss';
 
 .filter-container {
   margin: var(variables.$spacing-l) 0;
