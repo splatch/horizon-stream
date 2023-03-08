@@ -9,6 +9,7 @@
       v-model="discoveryInfo.configName"
       :label="DiscoverySNMPForm.nameInputLabel"
       class="name-input"
+      :schema="nameV"
     />
     <DiscoveryLocationsAutocomplete
       class="locations-select"
@@ -36,6 +37,7 @@
         class="ip-input"
         :tooltipText="Common.tooltip.IPHelpTooltp"
         :content="props.discovery?.ipAddresses?.join(', ')"
+        isRequired
       />
       <DiscoveryContentEditable
         @is-content-invalid="isCommunityStringInvalidListerner"
@@ -59,6 +61,7 @@
         ref="contentEditableUDPPortRef"
         :tooltipText="Common.tooltip.PortHelpTooltp"
         :content="props.discovery?.snmpConfig?.ports?.join(', ')"
+        isRequired
       />
     </div>
 
@@ -88,6 +91,9 @@ import { CreateDiscoveryConfigRequestInput } from '@/types/graphql'
 import { set } from 'lodash'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
+import { useForm } from '@featherds/input-helper'
+
+const form = useForm()
 
 const { createDiscoveryConfig, activeDiscoveryError, isFetchingActiveDiscovery } = useDiscoveryMutations()
 
@@ -141,14 +147,19 @@ const saveHandler = async () => {
   contentEditableIPRef.value?.validateAndFormat()
   contentEditableCommunityStringRef.value?.validateAndFormat()
   contentEditableUDPPortRef.value?.validateAndFormat()
-  await createDiscoveryConfig({ activeDiscovery: discoveryInfo.value })
-  if (!activeDiscoveryError && discoveryInfo.value.configName) {
-    discoveryQueries.getDiscoveries()
-    resetContentEditable()
-    props.successCallback(discoveryInfo.value.configName)
-    discoveryInfo.value = {} as CreateDiscoveryConfigRequestInput
-  }
+  if (form.validate().length) return
+  alert('valid')
+  // await createDiscoveryConfig({ activeDiscovery: discoveryInfo.value })
+  // if (!activeDiscoveryError && discoveryInfo.value.configName) {
+  //   discoveryQueries.getDiscoveries()
+  //   resetContentEditable()
+  //   props.successCallback(discoveryInfo.value.configName)
+  //   discoveryInfo.value = {} as CreateDiscoveryConfigRequestInput
+  // }
 }
+
+import { string } from 'yup'
+const nameV = string().required('Name is required.')
 </script>
 
 <style scoped lang="scss">
@@ -162,8 +173,8 @@ const saveHandler = async () => {
     margin-bottom: var(variables.$spacing-m);
   }
   .locations-select {
-    margin-top: var(variables.$spacing-xl);
-    margin-bottom: var(variables.$spacing-l);
+    margin-top: var(variables.$spacing-xs);
+    margin-bottom: var(variables.$spacing-xl);
     width: 100%;
   }
 
@@ -183,6 +194,7 @@ const saveHandler = async () => {
 
 .tags-autocomplete {
   margin-bottom: var(variables.$spacing-l);
+  margin-top: var(variables.$spacing-m);
 }
 
 .content-editable-container {
@@ -196,14 +208,10 @@ const saveHandler = async () => {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: flex-start;
     > div {
       width: 32%;
     }
   }
-}
-
-:deep(.feather-input-sub-text) {
-  display: none;
 }
 </style>

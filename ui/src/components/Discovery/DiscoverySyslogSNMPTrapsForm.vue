@@ -72,6 +72,7 @@
           >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
         >
         <ButtonWithSpinner
+          v-if="!props.discovery"
           :isFetching="discoveryMutations.isFetchingPassiveDiscovery"
           :disabled="isFormInvalid"
           primary
