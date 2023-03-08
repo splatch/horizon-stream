@@ -4,6 +4,7 @@ import { useDiscoveryMutations } from '../Mutations/discoveryMutations'
 import { cloneDeep } from 'lodash'
 import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 import { ActiveDiscovery, PassiveDiscovery } from '@/types/graphql'
+import { TagCreateInput } from '@/types/graphql'
 
 const defaultAzureForm = {
   name: '',
@@ -16,7 +17,7 @@ const defaultAzureForm = {
 export const useDiscoveryStore = defineStore('discoveryStore', {
   state: () => ({
     selectedLocations: <string[]>[],
-    selectedTags: [] as Record<string, string>[],
+    selectedTags: [] as TagCreateInput[],
     ipAddresses: <string[]>[],
     ipRange: {
       cidr: '',
@@ -43,7 +44,7 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
         this.selectedLocations.push(location)
       }
     },
-    selectTags(tags: Record<string, string>[]) {
+    selectTags(tags: TagCreateInput[]) {
       this.selectedTags = tags
     },
     async saveDiscoveryAzure() {
