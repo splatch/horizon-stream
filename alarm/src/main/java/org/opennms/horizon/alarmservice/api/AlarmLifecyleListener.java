@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.alarmservice.api;
+
 
 import org.opennms.horizon.alarms.proto.Alarm;
-import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.exceptions.NotificationException;
 
-public interface NotificationService {
+/**
+ * Used to be notified of updates/changes made to the set of alarms.
+ *
+ * Implementation should register the listeners with the {@link AlarmService} to receive callbacks.
+ *
+ * Listeners are invoked serially and the implementors should avoid blocking when possible.
+ */
+public interface AlarmLifecyleListener {
+    /**
+     * Called when an alarm has been created or updated.
+     *
+     * @param alarm a newly created or updated alarm
+     */
+    void handleNewOrUpdatedAlarm(Alarm alarm);
 
-    void postNotification(Alarm alarm) throws NotificationException;
-
-    void postPagerDutyConfig(PagerDutyConfigDTO config);
+    /**
+     * Called when an alarm has been deleted.
+     *
+     * @param alarm the deleted alarm
+     */
+    void handleDeletedAlarm(Alarm alarm);
 }

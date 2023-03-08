@@ -62,7 +62,7 @@ public class TrapEventForwarder {
     }
 
     public void sendEvents(EventLog eventLog) {
-        LOG.info("Sending {} events to events topic for tenant: {}", eventLog.getEventCount(), eventLog.getTenantId());
+        LOG.info("Sending {} events to events topic for tenant: {}", eventLog.getEventsCount(), eventLog.getTenantId());
         var record = new ProducerRecord<String, byte[]>(kafkaTopic, eventLog.toByteArray());
         kafkaTemplate.send(record);
     }

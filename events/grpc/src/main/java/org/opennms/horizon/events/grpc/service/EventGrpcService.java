@@ -29,7 +29,7 @@
 package org.opennms.horizon.events.grpc.service;
 
 import com.google.protobuf.Empty;
-import com.google.protobuf.Int64Value;
+import com.google.protobuf.UInt64Value;
 import io.grpc.Context;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,6 @@ import org.opennms.horizon.events.proto.EventServiceGrpc;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -56,20 +55,20 @@ public class EventGrpcService extends EventServiceGrpc.EventServiceImplBase {
         List<Event> events = eventService.findEvents(tenantId);
         EventLog eventList = EventLog.newBuilder()
             .setTenantId(tenantId)
-            .addAllEvent(events).build();
+            .addAllEvents(events).build();
 
         responseObserver.onNext(eventList);
         responseObserver.onCompleted();
     }
 
     @Override
-    public void getEventsByNodeId(Int64Value nodeId, StreamObserver<EventLog> responseObserver) {
+    public void getEventsByNodeId(UInt64Value nodeId, StreamObserver<EventLog> responseObserver) {
         String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
 
         List<Event> events = eventService.findEventsByNodeId(tenantId, nodeId.getValue());
         EventLog eventList = EventLog.newBuilder()
             .setTenantId(tenantId)
-            .addAllEvent(events).build();
+            .addAllEvents(events).build();
 
         responseObserver.onNext(eventList);
         responseObserver.onCompleted();

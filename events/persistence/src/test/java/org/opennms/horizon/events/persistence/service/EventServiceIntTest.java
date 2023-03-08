@@ -179,18 +179,18 @@ class EventServiceIntTest {
     private static void assertEvent(org.opennms.horizon.events.proto.Event event) {
         assertEquals(TEST_TENANT_ID, event.getTenantId());
         assertEquals(TEST_UEI, event.getUei());
-        assertNotEquals(0, event.getProducedTime());
+        assertNotEquals(0, event.getProducedTimeMs());
         assertEquals(TEST_IP_ADDRESS, event.getIpAddress());
 
-        assertNotNull(event.getEventParamsList());
-        event.getEventParamsList().forEach(parameter -> {
+        assertNotNull(event.getParametersList());
+        event.getParametersList().forEach(parameter -> {
             assertEquals(TEST_NAME, parameter.getName());
             assertEquals(TEST_TYPE, parameter.getType());
             assertEquals(TEST_VALUE, parameter.getValue());
             assertEquals(TEST_ENCODING, parameter.getEncoding());
         });
 
-        EventInfo eventInfo = event.getEventInfo();
+        EventInfo eventInfo = event.getInfo();
         assertNotNull(eventInfo);
 
         SnmpInfo snmpInfo = eventInfo.getSnmp();
