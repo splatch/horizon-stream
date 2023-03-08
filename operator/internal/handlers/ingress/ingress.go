@@ -92,7 +92,7 @@ func (h *IngressHandler) UpdateConfig(values values.TemplateValues) error {
 		var opennmsIngress netv1.Ingress
 
 		h.AddToTemplates(handlers.Filepath("ingress/ingresses/opennms-ingress.yaml"), values, &opennmsIngress)
-	} else { //Cortex Mode
+	} else { //Cortex Mode //TODO
 		//var minionRoute Route
 
 		//h.AddToTemplates(handlers.Filepath("ingress/openshift/minion-route.yaml"), values, &minionRoute)
