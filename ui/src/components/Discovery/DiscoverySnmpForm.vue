@@ -81,6 +81,7 @@
 import { ContentEditableType, UDP_PORT, COMMUNITY_STRING, IP_RANGE } from '@/components/Discovery/discovery.constants'
 import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
+import { useTagQueries } from '@/store/Queries/tagQueries'
 import { Location, CreateDiscoveryConfigRequestInput } from '@/types/graphql'
 import { set } from 'lodash'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
@@ -88,6 +89,7 @@ import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEdi
 
 const { createDiscoveryConfig, activeDiscoveryError, isFetchingActiveDiscovery } = useDiscoveryMutations()
 
+const tagQueries = useTagQueries()
 const discoveryQueries = useDiscoveryQueries()
 const props = defineProps<{
   discovery?: CreateDiscoveryConfigRequestInput | null

@@ -116,9 +116,12 @@ const tagsAutocompleteRef = ref()
 let tagsSelected: Record<string, string>[] = []
 const tagsSelectedListener = (tags: Record<string, string>[]) => {
   tagsSelected = tags.map((tag) => {
+    delete tag.id
+    delete tag.tenantId
     delete tag._text
     return tag
   })
+  console.log('tagsSelected', tagsSelected)
 }
 
 const contentEditableCommunityStringRef = ref()
