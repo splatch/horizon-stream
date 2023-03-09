@@ -59,10 +59,8 @@
     >
       <Icon :icon="sortAlphaIcon" />
     </li>
-    <!-- Expand/Collapse -->
     <li
       @click="inventoryStore.toggleFilter"
-      :data-test="expandCollapseBtn"
       class="action-btn"
     >
       <Icon :icon="expandCollapse" />
@@ -83,7 +81,6 @@ import { useInventoryStore } from '@/store/Views/inventoryStore'
 
 const inventoryStore = useInventoryStore()
 
-// Search
 const search = {
   timeout: -1,
   loading: false,
@@ -104,7 +101,6 @@ const search = {
   }
 }
 
-// Node Type
 const nodeTypeState = ref(undefined)
 const onNodeTypeSelect: fncArgVoid = (selectedType: any) => {
   // use store to query new list
@@ -128,7 +124,6 @@ const nodeType: ISelectDropdown = {
   optionText: 'name'
 }
 
-// Monitoring Location
 const monitoringLocationState = ref(undefined)
 const onMonitoringLocationSelect: fncArgVoid = (selectedItem: any) => {
   // use store to query new list
@@ -152,7 +147,6 @@ const monitoringLocation: ISelectDropdown = {
   optionText: 'name'
 }
 
-// Severity
 const severityState = ref(undefined)
 const onSeveritySelect: fncArgVoid = (selectedItem: any) => {
   // use store to query new list
@@ -192,8 +186,6 @@ const sortAlphaIcon: IIcon = {
 
 const isTagManagerOpen = computed(() => inventoryStore.isTagManagerOpen)
 
-// Expand/Collapse
-const expandCollapseBtn = ref('expand-btn')
 const expandIcon: IIcon = {
   image: KeyboardDoubleArrowDown,
   title: 'Expand',
@@ -204,12 +196,7 @@ const collapseIcon: IIcon = {
   title: 'Collapse',
   size: 2
 }
-const expandCollapse = ref(
-  computed<IIcon>(() => {
-    expandCollapseBtn.value = inventoryStore.isFilterOpen ? 'collapse-btn' : 'expand-btn'
-    return inventoryStore.isFilterOpen ? collapseIcon : expandIcon
-  })
-)
+const expandCollapse = ref(computed<IIcon>(() => (inventoryStore.isFilterOpen ? collapseIcon : expandIcon)))
 </script>
 
 <style lang="scss" scoped>

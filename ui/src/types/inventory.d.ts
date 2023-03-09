@@ -16,5 +16,5 @@ interface NodeContent {
   status: string
   metrics: Chip[]
   anchor: Anchor
-  isNodeOverlayChecked?: boolean
+  isNodeOverlayChecked: boolean
 }

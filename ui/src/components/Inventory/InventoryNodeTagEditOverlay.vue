@@ -59,7 +59,7 @@ const props = defineProps({
 
 const isChecked = ref(false)
 watchEffect(() => {
-  isChecked.value = props.node.isNodeOverlayChecked as boolean
+  isChecked.value = props.node.isNodeOverlayChecked
 })
 
 const nodeSelect = (node: NodeContent) => {
