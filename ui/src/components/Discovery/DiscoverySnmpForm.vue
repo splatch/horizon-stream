@@ -17,15 +17,15 @@
       :preLoadedlocation="props.discovery?.location"
       @location-selected="(val) => setSnmpConfig('location', val)"
     />
-    <BasicAutocomplete
+    <!--<BasicAutocomplete
       @items-selected="tagsSelectedListener"
-      :get-items="discoveryQueries.getTagsSearch"
-      :items="discoveryQueries.tagsSearched"
+      :get-items="tagQueries.getTagsSearch"
+      :items="tagQueries.tagsSearched"
       :label="Common.tagsInput"
       ref="tagsAutocompleteRef"
       class="tags-autocomplete"
       data-test="tags-autocomplete"
-    />
+    /> -->
     <div class="content-editable-container">
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('ipAddresses', val)"
@@ -83,7 +83,8 @@
 import { ContentEditableType, UDP_PORT, COMMUNITY_STRING, IP_RANGE } from '@/components/Discovery/discovery.constants'
 import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
-import { CreateDiscoveryConfigRequestInput } from '@/types/graphql'
+import { useTagQueries } from '@/store/Queries/tagQueries'
+import { Location, CreateDiscoveryConfigRequestInput } from '@/types/graphql'
 import { set } from 'lodash'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
@@ -95,6 +96,7 @@ const form = useForm()
 
 const { createDiscoveryConfig, activeDiscoveryError, isFetchingActiveDiscovery } = useDiscoveryMutations()
 
+const tagQueries = useTagQueries()
 const discoveryQueries = useDiscoveryQueries()
 const props = defineProps<{
   discovery?: CreateDiscoveryConfigRequestInput | null
@@ -136,7 +138,7 @@ const saveHandler = async () => {
   const isIpInvalid = contentEditableIPRef.value?.validateContent()
   const isPortInvalid = contentEditableUDPPortRef.value?.validateContent()
   if (form.validate().length || isIpInvalid || isPortInvalid) return
-  await createDiscoveryConfig({ activeDiscovery: discoveryInfo.value })
+  await createDiscoveryConfig({ CreateDiscoveryConfigRequestInput: discoveryInfo.value })
   if (!activeDiscoveryError && discoveryInfo.value.configName) {
     discoveryQueries.getDiscoveries()
     resetContentEditable()

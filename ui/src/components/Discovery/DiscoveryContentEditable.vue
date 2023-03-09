@@ -186,7 +186,6 @@ const highlightInvalid = () => {
       break
     default:
   }
-
   return highlightInvalidString
 }
 
