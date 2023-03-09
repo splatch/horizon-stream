@@ -59,20 +59,14 @@
 import ipRegex from 'ip-regex'
 import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
-import { ContentEditableType } from '@/components/Discovery/discovery.constants'
+import { ContentEditableType, REGEX_PORT } from '@/components/Discovery/discovery.constants'
 import { PropType } from 'vue'
 import { fncArgVoid } from '@/types'
 import discoveryText from '@/components/Discovery/discovery.text'
 
 import Help from '@featherds/icon/action/Help'
-const isContentNotEmpty = ref(false)
-const contentEditableRef = ref()
-const htmlString = ref(props.content || props.defaultContent) // to render string as html
-const isContentInvalid = ref(false)
-const errorMsg = ref('')
 
 const emit = defineEmits(['is-content-invalid', 'content-formatted'])
-
 const props = defineProps({
   contentType: {
     type: Number as PropType<ContentEditableType>,
@@ -103,6 +97,12 @@ const props = defineProps({
   }
 })
 
+const isContentNotEmpty = ref(false)
+const contentEditableRef = ref()
+const isContentInvalid = ref(false)
+const errorMsg = ref('')
+const htmlString = ref(props.content || props.defaultContent) // to render string as html
+
 watch(props, () => {
   htmlString.value = props.content
 })
@@ -114,9 +114,11 @@ const contentChange = () => {
 const validateAndFormat: fncArgVoid = () => {
   isContentInvalid.value = validateContent()
   if (isContentInvalid.value) {
-    errorMsg.value = isContentNotEmpty.value
-      ? discoveryText.ContentEditable.errorInvalidValue
-      : discoveryText.ContentEditable.errorRequired
+    if (!isContentNotEmpty.value && props.isRequired) {
+      errorMsg.value = discoveryText.ContentEditable.errorRequired
+    } else {
+      errorMsg.value = discoveryText.ContentEditable.errorInvalidValue
+    }
   }
   const highlightedString = highlightInvalid()
   if (highlightedString.length) htmlString.value = highlightedString
@@ -142,7 +144,7 @@ const validateContent = () => {
   const regexDelim = new RegExp(props.regexDelim)
   const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim)
   let isInvalid = false
-
+  const regexPorts = new RegExp(REGEX_PORT.listPorts)
   switch (props.contentType) {
     case ContentEditableType.IP:
       isInvalid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
@@ -150,7 +152,7 @@ const validateContent = () => {
     case ContentEditableType.CommunityString:
       break
     case ContentEditableType.UDPPort:
-      isInvalid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
+      isInvalid = !regexPorts.test(contentEditableRef.value.textContent)
       break
     default:
   }
@@ -162,20 +164,25 @@ const highlightInvalid = () => {
   const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim)
   let highlightInvalidString = ''
   let errorStr = '<span style="color: #ff555e">{{}}</span>'
-
+  const portRegex = new RegExp(REGEX_PORT.onePort)
   switch (props.contentType) {
     case ContentEditableType.IP:
-      /* highlightInvalidString = contentEditableStrings
+      highlightInvalidString = contentEditableStrings
         .map((str: string) => {
           if (ipRegex({ exact: true }).test(str)) return str
-
           return errorStr.replace('{{}}', str)
         })
-        .join(';') */
+        .join(';')
       break
     case ContentEditableType.CommunityString:
       break
     case ContentEditableType.UDPPort:
+      highlightInvalidString = contentEditableStrings
+        .map((str: string) => {
+          if (portRegex.test(str)) return str
+          return errorStr.replace('{{}}', str)
+        })
+        .join(';')
       break
     default:
   }
@@ -191,14 +198,10 @@ const checkCircleIcon: IIcon = {
   image: markRaw(CheckCircleIcon),
   tooltip: 'Validate'
 }
-const iconHelp: IIcon = {
-  image: markRaw(Help),
-  tooltip: props.tooltipText,
-  size: '1.2rem'
-}
 
 defineExpose({
   validateAndFormat,
+  validateContent,
   reset
 })
 </script>

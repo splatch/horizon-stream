@@ -28,7 +28,6 @@
     />
     <div class="content-editable-container">
       <DiscoveryContentEditable
-        @is-content-invalid="isIPRangeInvalidListener"
         @content-formatted="(val) => setSnmpConfig('ipAddresses', val)"
         :contentType="ContentEditableType.IP"
         :regexDelim="IP_RANGE.regexDelim"
@@ -40,7 +39,6 @@
         isRequired
       />
       <DiscoveryContentEditable
-        @is-content-invalid="isCommunityStringInvalidListerner"
         @content-formatted="(val) => setSnmpConfig('snmpConfig.readCommunities', val)"
         :contentType="ContentEditableType.CommunityString"
         :regexDelim="COMMUNITY_STRING.regexDelim"
@@ -51,7 +49,6 @@
         :content="props.discovery?.snmpConfig?.readCommunities?.join(', ')"
       />
       <DiscoveryContentEditable
-        @is-content-invalid="isUDPPortInvalidListener"
         @content-formatted="(val) => setSnmpConfig('snmpConfig.ports', val)"
         :contentType="ContentEditableType.UDPPort"
         :regexDelim="UDP_PORT.regexDelim"
@@ -61,7 +58,6 @@
         ref="contentEditableUDPPortRef"
         :tooltipText="Common.tooltip.PortHelpTooltp"
         :content="props.discovery?.snmpConfig?.ports?.join(', ')"
-        isRequired
       />
     </div>
 
@@ -92,6 +88,8 @@ import { set } from 'lodash'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
 import { useForm } from '@featherds/input-helper'
+import { string } from 'yup'
+const nameV = string().required('Name is required.')
 
 const form = useForm()
 
@@ -124,18 +122,6 @@ const tagsSelectedListener = (tags: Record<string, string>[]) => {
   discoveryInfo.value.tags = tags.map(({ name }) => ({ name }))
 }
 
-const isIPRangeInvalidListener = (isInvalid: boolean) => {
-  console.log(isInvalid)
-}
-
-const isCommunityStringInvalidListerner = (isInvalid: boolean) => {
-  console.log(isInvalid)
-}
-
-const isUDPPortInvalidListener = (isInvalid: boolean) => {
-  console.log(isInvalid)
-}
-
 const resetContentEditable = () => {
   tagsAutocompleteRef.value.reset()
   contentEditableIPRef.value?.reset()
@@ -147,19 +133,17 @@ const saveHandler = async () => {
   contentEditableIPRef.value?.validateAndFormat()
   contentEditableCommunityStringRef.value?.validateAndFormat()
   contentEditableUDPPortRef.value?.validateAndFormat()
-  if (form.validate().length) return
-  alert('valid')
-  // await createDiscoveryConfig({ activeDiscovery: discoveryInfo.value })
-  // if (!activeDiscoveryError && discoveryInfo.value.configName) {
-  //   discoveryQueries.getDiscoveries()
-  //   resetContentEditable()
-  //   props.successCallback(discoveryInfo.value.configName)
-  //   discoveryInfo.value = {} as CreateDiscoveryConfigRequestInput
-  // }
+  const isIpInvalid = contentEditableIPRef.value?.validateContent()
+  const isPortInvalid = contentEditableUDPPortRef.value?.validateContent()
+  if (form.validate().length || isIpInvalid || isPortInvalid) return
+  await createDiscoveryConfig({ activeDiscovery: discoveryInfo.value })
+  if (!activeDiscoveryError && discoveryInfo.value.configName) {
+    discoveryQueries.getDiscoveries()
+    resetContentEditable()
+    props.successCallback(discoveryInfo.value.configName)
+    discoveryInfo.value = {} as CreateDiscoveryConfigRequestInput
+  }
 }
-
-import { string } from 'yup'
-const nameV = string().required('Name is required.')
 </script>
 
 <style scoped lang="scss">
