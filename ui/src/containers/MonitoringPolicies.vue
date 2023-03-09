@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <PageHeader heading="Monitoring Policies" />
+    <PageHeadline text="Monitoring Policies" />
     <div class="title-rule">Policies</div>
     <FeatherTabContainer class="tab-container">
       <template v-slot:tabs>
