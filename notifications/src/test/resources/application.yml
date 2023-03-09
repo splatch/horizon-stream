@@ -15,8 +15,8 @@ spring:
 
 horizon:
   kafka:
-    alarms:
-      topic: alarms
+    alerts:
+      topic: alerts
       concurrency: 1
 
   pagerduty:

@@ -57,7 +57,7 @@ public abstract class EventConstants {
     /**
      * The situation event UEI.
      */
-    public static final String SITUATION_EVENT_UEI = "uei.opennms.org/alarms/situation";
+    public static final String SITUATION_EVENT_UEI = "uei.opennms.org/alerts/situation";
 
     /**
      * The new suspect event UEI.
@@ -500,12 +500,12 @@ public abstract class EventConstants {
 
     public static final String PARM_IMPORT_RESCAN_EXISTING = "importRescanExisting";
     
-    /** Constant <code>PARM_ALARM_ID="alarmId"</code> */
-    public static final String PARM_ALARM_ID = "alarmId";
-    /** Constant <code>PARM_ALARM_UEI="alarmUei"</code> */
-    public static final String PARM_ALARM_UEI = "alarmUei";
-    /** Constant <code>PARM_ALARM_REDUCTION_KEY="alarmReductionKey"</code> */
-    public static final String PARM_ALARM_REDUCTION_KEY = "alarmReductionKey";
+    /** Constant <code>PARM_ALARM_ID="alertId"</code> */
+    public static final String PARM_ALARM_ID = "alertId";
+    /** Constant <code>PARM_ALARM_UEI="alertUei"</code> */
+    public static final String PARM_ALARM_UEI = "alertUei";
+    /** Constant <code>PARM_ALARM_REDUCTION_KEY="alertReductionKey"</code> */
+    public static final String PARM_ALARM_REDUCTION_KEY = "alertReductionKey";
     /** Constant <code>PARM_TROUBLE_TICKET="troubleTicket"</code> */
     public static final String PARM_TROUBLE_TICKET = "troubleTicket";
 
@@ -973,7 +973,7 @@ public abstract class EventConstants {
     public static final String NODE_CONFIG_CHANGE_UEI = "uei.opennms.org/internal/translator/entityConfigChanged";
 
     /**
-     * Used for indicating a reason message in an event or alarm.
+     * Used for indicating a reason message in an event or alert.
      */
     public static final String PARM_REASON = "reason";
     
