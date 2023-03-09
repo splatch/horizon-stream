@@ -14,7 +14,7 @@ export const useLocationsQueries = defineStore('locationsQueries', () => {
   watchEffect(() => {
     if (!error.value) {
       if (!isFetching.value) {
-        locations.value = data.value?.findAllLocations as Location[]
+        locations.value = data.value?.findAllLocations || []
       }
     } else {
       // TODO: what kind of errors and how to handle them
@@ -23,6 +23,6 @@ export const useLocationsQueries = defineStore('locationsQueries', () => {
 
   return {
     fetchLocations: execute,
-    locations: computed(() => locations.value || [])
+    locations: computed(() => locations.value)
   }
 })
