@@ -260,5 +260,6 @@ defineExpose({
   height: 24px;
   @include typography.caption;
   color: var(variables.$error);
+  padding-top: var(variables.$spacing-xs);
 }
 </style>
