@@ -1,10 +1,9 @@
 <!--
     Autocomplete locations
     props: 
-        type: single or multiple
-        preLoadedlocations: array of IDs - optional
+        preLoadedlocation: location name
     emits: 
-        location-selected: list of locations
+        location-selected: location name
 -->
 <template>
   <div class="search-location">
@@ -23,16 +22,15 @@
     ></FeatherAutocomplete>
 
     <!-- Locations selection -->
-    <FeatherChipList label="Locations">
-      <FeatherChip
-        v-for="location in selectedLocations"
-        :key="location.id"
-        class="location-chip"
-      >
-        <span>{{ location.location }}</span>
+    <FeatherChipList
+      v-if="selectedLocation && selectedLocation.location"
+      label="Locations"
+    >
+      <FeatherChip class="location-chip">
+        <span>{{ selectedLocation.location }}</span>
         <template v-slot:icon
           ><FeatherIcon
-            @click="removeLocation(location)"
+            @click="removeLocation"
             :icon="Icons.Cancel"
         /></template>
       </FeatherChip>
@@ -44,7 +42,7 @@
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import { markRaw } from 'vue'
-import { debounce } from 'lodash'
+import { debounce, first } from 'lodash'
 import { Location } from '@/types/graphql'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { watchOnce } from '@vueuse/core'
@@ -54,10 +52,10 @@ const Icons = markRaw({
   Cancel
 })
 const emit = defineEmits(['location-selected'])
-type TLocationAutocomplete = Location & { _text: string }
+type TLocationAutocomplete = Location & { _text?: string }
 const discoveryQueries = useDiscoveryQueries()
 const searchValue = ref<Location | undefined>()
-const selectedLocations = ref<TLocationAutocomplete[]>([])
+const selectedLocation = ref<TLocationAutocomplete | null>(null)
 const loading = ref(false)
 const locations = ref() //locations without selected items
 const filteredLocations = ref() //results in autocomplete
@@ -65,41 +63,29 @@ const inputRef = ref() // actual autocomplete input
 const errMsgDisplay = ref('none') // for sub text css display
 const computedLocations = computed(() => discoveryQueries.locations)
 
-const props = defineProps({
-  type: {
-    type: String,
-    required: false
-  },
-  preLoadedlocations: {
-    type: Array<string | undefined>,
-    required: false,
-    default: []
-  }
-})
+const props = defineProps<{
+  preLoadedlocation?: string
+}>()
 
 onMounted(() => discoveryQueries.getLocations())
 
 const initLocations = () => {
   filteredLocations.value = computedLocations.value as Location[]
   locations.value = computedLocations.value as Location[]
-  selectedLocations.value = []
-  if (props.preLoadedlocations.length && props.preLoadedlocations[0]) {
-    selectedLocations.value = locations.value.filter(
-      (l: Location) => l.location && props.preLoadedlocations.includes(l.location)
-    )
-    locations.value = locations.value.filter(
-      (l: Location) => l.location && !props.preLoadedlocations.includes(l.location)
-    )
+  selectedLocation.value = null
+  if (props.preLoadedlocation) {
+    selectedLocation.value = locations.value.filter((l: Location) => l.location == props.preLoadedlocation)[0]
+    locations.value = locations.value.filter((l: Location) => l.location !== props.preLoadedlocation)
     filteredLocations.value = locations.value
   }
 }
 watchOnce(computedLocations, () => {
   initLocations()
   if (computedLocations.value.length == 1) {
-    selectedLocations.value = computedLocations.value as TLocationAutocomplete[]
+    selectedLocation.value = first(computedLocations.value) as Location
     locations.value = []
     filteredLocations.value = []
-    emit('location-selected', selectedLocations.value)
+    emit('location-selected', selectedLocation.value)
   }
 })
 
@@ -126,22 +112,14 @@ const search = (q: string) => {
 
 //using debounce temporary because of bug in feather/autocomplete
 const deboncedFn = debounce(
-  (selected: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
-    if (selected) {
-      const selectedLocation = selected as TLocationAutocomplete
-      if (props.type === 'single') {
-        locations.value = computedLocations.value
-        selectedLocations.value = [selectedLocation]
-      } else {
-        const exists = selectedLocations.value.find((l) => l.id == selectedLocation.id)
-        if (!exists) {
-          selectedLocations.value.push(selectedLocation)
-        }
-      }
-      locations.value = locations.value.filter((l: Location) => l.id !== selectedLocation.id)
+  (item: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
+    const selected = item as IAutocompleteItemType
+    if (selected && selected._text) {
+      selectedLocation.value = selected as TLocationAutocomplete
+      locations.value = computedLocations.value.filter((l: Location) => l.id !== selectedLocation.value?.id)
       searchValue.value = undefined
       inputRef.value?.handleOutsideClick()
-      emit('location-selected', selectedLocations.value)
+      emit('location-selected', selectedLocation.value.location)
       handleErrDisplay()
     }
   },
@@ -152,19 +130,20 @@ const deboncedFn = debounce(
   }
 )
 
-const removeLocation = (location: Location) => {
-  if (location?.id) {
-    selectedLocations.value = selectedLocations.value.filter((l: Location) => l.id !== location.id)
-    locations.value.push(location)
-    emit('location-selected', selectedLocations.value)
+const removeLocation = () => {
+  if (selectedLocation.value) {
+    locations.value.push(selectedLocation.value)
+    emit('location-selected', selectedLocation.value.location)
     handleErrDisplay()
+    selectedLocation.value = null
+    searchValue.value = undefined
   }
 }
 
 const locationErrMsg = 'Location is required.'
 const locationV = object().test({
   name: 'has-location',
-  test: () => Boolean(selectedLocations.value.length),
+  test: () => Boolean(selectedLocation.value),
   message: locationErrMsg
 })
 const handleErrDisplay = () => {
