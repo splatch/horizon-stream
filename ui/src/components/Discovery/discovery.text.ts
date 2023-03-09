@@ -37,10 +37,7 @@ export default {
 export const DiscoverySNMPForm = {
   tag: 'Search/Add tags (optional)',
   nameInputLabel: 'ICMP/SNMP name',
-  title: 'ICMP/SNMP Discovery Setup',
-  IPHelpTooltp: 'IP list or IP ranges separated by: ,; or space. Examples: 127.0.0.1;127.0.0.2,127.0.0.1-127.0.0.12',
-  CommunityStringHelpTooltp: '',
-  PortHelpTooltp: 'It accepts list of ports, separated by space, ",", ":" '
+  title: 'ICMP/SNMP Discovery Setup'
 }
 
 export const DiscoverySyslogSNMPTrapsForm = {
@@ -91,7 +88,12 @@ export const DiscoverySyslogSNMPTrapsForm = {
 }
 
 export const Common = {
-  tagsInput: 'Search/Add tags (optional)'
+  tagsInput: 'Search/Add tags (optional)',
+  tooltip: {
+    IPHelpTooltp: 'IP list or IP ranges separated by:,;. Examples: 127.0.0.1;127.0.0.2,127.0.0.1-127.0.0.12',
+    CommunityStringHelpTooltp: '',
+    PortHelpTooltp: 'It accepts list of ports, separated by space, ",",":" '
+  }
 }
 
 export const Azure = {

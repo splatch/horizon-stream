@@ -16,10 +16,19 @@
   <div class="content-editable-wrapper">
     <div class="label">
       <label for="contentEditable">{{ props.label }}</label>
-      <Icon
+      <FeatherTooltip
         v-if="props.tooltipText"
-        :icon="iconHelp"
-      />
+        :title="props.tooltipText"
+        v-slot="{ attrs, on }"
+      >
+        <FeatherButton
+          v-bind="attrs"
+          v-on="on"
+          icon="info"
+          class="icon-help"
+          ><FeatherIcon :icon="Help"> </FeatherIcon
+        ></FeatherButton>
+      </FeatherTooltip>
     </div>
     <div
       v-html="htmlString"
@@ -66,6 +75,10 @@ const props = defineProps({
     type: [String, Number],
     default: ''
   },
+  content: {
+    type: [String, Number],
+    default: ''
+  },
   tooltipText: {
     type: String
   }
@@ -74,7 +87,11 @@ const props = defineProps({
 let isContentInvalid = true
 const isContentNotEmpty = ref(false)
 const contentEditableRef = ref()
-const htmlString = ref(props.defaultContent) // to render string as html
+const htmlString = ref(props.content || props.defaultContent) // to render string as html
+
+watch(props, () => {
+  htmlString.value = props.content
+})
 
 const contentChange = () => {
   isContentNotEmpty.value = contentEditableRef.value.textContent.length as boolean

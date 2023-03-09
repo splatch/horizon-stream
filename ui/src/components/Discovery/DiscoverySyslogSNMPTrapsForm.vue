@@ -18,12 +18,13 @@
       <div class="form-content">
         <FeatherInput
           label="Name"
-          v-model="name"
+          v-model="discoveryInfo.name"
         />
         <DiscoveryLocationsAutocomplete
-          @location-selected="locationsSelectedListener"
+          @location-selected="(val) => setDiscoveryValues('location', val)"
           ref="locationsAutocompleteRef"
           data-test="locations-autocomplete"
+          :preLoadedlocation="props.discovery?.location"
           type="single"
         />
         <DiscoveryHelpConfiguring data-test="help-configuring" />
@@ -39,7 +40,7 @@
         <div class="content-editable-container">
           <DiscoveryContentEditable
             @is-content-invalid="isCommunityStringInvalidListerner"
-            @content-formatted="communityStringEnteredListerner"
+            @content-formatted="(val) => setDiscoveryValues('snmpCommunities', val)"
             :contentType="ContentEditableType.CommunityString"
             :regexDelim="COMMUNITY_STRING.regexDelim"
             :default-content="COMMUNITY_STRING.default"
@@ -47,16 +48,19 @@
             class="community-string-input"
             ref="contentEditableCommunityStringRef"
             data-test="cmmunity-string-content-editable"
+            :content="props.discovery?.snmpCommunities?.join(', ')"
           />
           <DiscoveryContentEditable
             @is-content-invalid="isUDPPortInvalidListener"
-            @content-formatted="UDPPortEnteredListener"
+            @content-formatted="(val) => setDiscoveryValues('snmpPorts', val)"
             :contentType="ContentEditableType.UDPPort"
             :regexDelim="UDP_PORT.regexDelim"
             :default-content="UDP_PORT.default"
             :label="discoveryText.ContentEditable.UDPPort.label"
             class="udp-port-input"
             ref="contentEditableUDPPortRef"
+            :content="props.discovery?.snmpPorts?.join(', ')"
+            :tooltipText="Common.tooltip.PortHelpTooltp"
           />
         </div>
       </div>
@@ -88,9 +92,11 @@ import { ContentEditableType, COMMUNITY_STRING, UDP_PORT } from './discovery.con
 import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
-import { Location } from '@/types/graphql'
+import { PassiveDiscovery, PassiveDiscoveryUpsertInput } from '@/types/graphql'
+import { set } from 'lodash'
 
 const props = defineProps<{
+  discovery?: PassiveDiscovery | null
   successCallback: (name: string) => void
   cancel: () => void
 }>()
@@ -98,30 +104,23 @@ const props = defineProps<{
 const tagQueries = useTagQueries()
 const discoveryQueries = useDiscoveryQueries()
 const discoveryMutations = useDiscoveryMutations()
-const name = ref()
-
+const discoveryInfo = ref<PassiveDiscoveryUpsertInput>(props.discovery || ({} as PassiveDiscoveryUpsertInput))
 const isFormInvalid = ref(
   computed(() => {
     return isCommunityStringInvalid || isUDPPortInvalid
   })
 )
 
-const locationsAutocompleteRef = ref()
-let locationsSelected = ''
-const locationsSelectedListener = (locations: Location[]) => {
-  if (locations[0].location) locationsSelected = locations[0].location
-}
+watch(props, () => {
+  discoveryInfo.value = props.discovery || ({} as PassiveDiscoveryUpsertInput)
+})
 
 const tagsAutocompleteRef = ref()
-let tagsSelected: Record<string, string>[] = []
 const tagsSelectedListener = (tags: Record<string, string>[]) => {
-  tagsSelected = tags.map((tag) => {
-    delete tag.id
-    delete tag.tenantId
+  discoveryInfo.value.tags = tags.map((tag) => {
     delete tag._text
     return tag
   })
-  console.log('tagsSelected', tagsSelected)
 }
 
 const contentEditableCommunityStringRef = ref()
@@ -136,27 +135,20 @@ const communityStringEnteredListerner = (val: string[]) => (communityStringEnter
 let isUDPPortInvalid = false
 const isUDPPortInvalidListener = (isInvalid: boolean) => (isUDPPortInvalid = isInvalid)
 
-let UDPPortEntered: number[] = []
-const UDPPortEnteredListener = (val: number[]) => (UDPPortEntered = val)
+const setDiscoveryValues = (property: string, val: (string | number)[] | null) => {
+  set(discoveryInfo.value, property, val)
+}
 
 const submitHandler = async () => {
   contentEditableCommunityStringRef.value.validateAndFormat()
   contentEditableUDPPortRef.value.validateAndFormat()
+  await discoveryMutations.upsertPassiveDiscovery({ passiveDiscovery: discoveryInfo.value })
 
-  const passiveDiscovery = {
-    location: locationsSelected,
-    name: name.value,
-    snmpCommunities: communityStringEntered,
-    snmpPorts: UDPPortEntered,
-    tags: tagsSelected
-  }
-
-  await discoveryMutations.upsertPassiveDiscovery({ passiveDiscovery })
-
-  if (!discoveryMutations.passiveDiscoveryError) {
-    props.successCallback(name.value)
+  if (!discoveryMutations.passiveDiscoveryError && discoveryInfo.value.name) {
+    props.successCallback(discoveryInfo.value.name)
     resetForm()
     discoveryQueries.getDiscoveries()
+    discoveryInfo.value = {} as PassiveDiscoveryUpsertInput
   }
 }
 
@@ -164,7 +156,7 @@ const resetForm = () => {
   tagsAutocompleteRef.value.reset()
   contentEditableCommunityStringRef.value.reset()
   contentEditableUDPPortRef.value.reset()
-  name.value = ''
+  discoveryInfo.value = {} as PassiveDiscoveryUpsertInput
 }
 
 const cancelHandler = () => {
@@ -226,8 +218,7 @@ const cancelHandler = () => {
 .form-footer {
   display: flex;
   justify-content: flex-end;
-  border-top: 1px solid var(variables.$border-on-surface);
-  padding-top: var(variables.$spacing-m);
+  padding-top: var(variables.$spacing-s);
 }
 
 :deep(.feather-input-sub-text) {
