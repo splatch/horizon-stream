@@ -62,8 +62,9 @@
     <li
       @click="inventoryStore.toggleFilter"
       class="action-btn"
+      :data-test="expandCollapseBtn"
     >
-      <Icon :icon="expandCollapse" />
+      <Icon :icon="expandCollapseIcon" />
     </li>
   </ul>
   <InventoryTagManager v-if="isTagManagerOpen" />
@@ -186,6 +187,7 @@ const sortAlphaIcon: IIcon = {
 
 const isTagManagerOpen = computed(() => inventoryStore.isTagManagerOpen)
 
+const expandCollapseBtn = ref('expand-btn')
 const expandIcon: IIcon = {
   image: KeyboardDoubleArrowDown,
   title: 'Expand',
@@ -196,7 +198,7 @@ const collapseIcon: IIcon = {
   title: 'Collapse',
   size: 2
 }
-const expandCollapse = ref(computed<IIcon>(() => (inventoryStore.isFilterOpen ? collapseIcon : expandIcon)))
+const expandCollapseIcon = ref(computed<IIcon>(() => (inventoryStore.isFilterOpen ? collapseIcon : expandIcon)))
 </script>
 
 <style lang="scss" scoped>
