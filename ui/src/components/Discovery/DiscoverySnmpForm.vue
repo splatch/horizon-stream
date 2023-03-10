@@ -37,7 +37,6 @@
         :tooltipText="Common.tooltip.IPHelpTooltp"
         :content="props.discovery?.ipAddresses?.join(', ')"
         isRequired
-        tabindex="4"
       />
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('snmpConfig.readCommunities', val)"
@@ -48,7 +47,6 @@
         ref="contentEditableCommunityStringRef"
         class="community-input"
         :content="props.discovery?.snmpConfig?.readCommunities?.join(', ')"
-        tabindex="5"
       />
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('snmpConfig.ports', val)"
@@ -60,7 +58,6 @@
         ref="contentEditableUDPPortRef"
         :tooltipText="Common.tooltip.PortHelpTooltp"
         :content="props.discovery?.snmpConfig?.ports?.join(', ')"
-        tabindex="6"
       />
     </div>
 
@@ -93,9 +90,12 @@ import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
 import { useForm } from '@featherds/input-helper'
 import { string } from 'yup'
+import useTabStroke from '@/composables/useTabStroke'
+
 const nameV = string().required('Name is required.')
 
 const form = useForm()
+useTabStroke()
 
 const { createDiscoveryConfig, activeDiscoveryError, isFetchingActiveDiscovery } = useDiscoveryMutations()
 

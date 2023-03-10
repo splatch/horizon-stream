@@ -1,5 +1,5 @@
 <template>
-  <div class="azure-container">
+  <div class="azure-container form">
     <div class="title">
       {{ Azure.title }}
     </div>
@@ -64,6 +64,7 @@
         {{ Azure.cancelBtnText }}
       </FeatherButton>
       <ButtonWithSpinner
+        type="submit"
         :isFetching="discoveryMutations.isFetching.value"
         @click="saveAzureDiscovery"
         primary
@@ -83,6 +84,8 @@ import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import { useForm } from '@featherds/input-helper'
 import { string } from 'yup'
+import useTabStroke from '@/composables/useTabStroke'
+useTabStroke()
 
 const store = useDiscoveryStore()
 const discoveryQueries = useDiscoveryQueries()
