@@ -3,6 +3,7 @@
     @submit.prevent="saveHandler"
     novalidate
     v-tabindex
+    class="form"
   >
     <div class="form-title">{{ DiscoverySNMPForm.title }}</div>
     <FeatherInput
