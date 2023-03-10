@@ -40,7 +40,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Object used to identify which alarm fields should be updated during Alarm reduction.
+ * Object used to identify which alert fields should be updated during Alert reduction.
  * 
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  */

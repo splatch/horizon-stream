@@ -103,8 +103,8 @@ spec:
                     image:
                       description: Docker Image tag for the service
                       type: string
-                alarm:
-                  description: Defines cpu,mem and disk size for the Alarm service
+                alert:
+                  description: Defines cpu,mem and disk size for the Alert service
                   type: object
                   properties:
                     cpu:

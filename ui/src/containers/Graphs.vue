@@ -1,8 +1,7 @@
 <template>
   <div class="header-container">
-    <PageHeader
-      heading="Graphs"
-      class="header"
+    <PageHeadline
+      text="Graphs"
       data-test="page-header"
     />
     <FeatherButton
@@ -106,7 +105,7 @@ onMounted(async () => {
   justify-content: space-between;
   margin: var(variables.$spacing-xl) var(variables.$spacing-l);
 
-  :deep(.spacing) {
+  :deep(.headline) {
     margin: 0;
   }
 }

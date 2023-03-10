@@ -9,7 +9,7 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.stub.MetadataUtils;
 import org.keycloak.common.VerificationException;
-import org.opennms.horizon.alarms.proto.Alarm;
+import org.opennms.horizon.alerts.proto.Alert;
 import org.opennms.horizon.model.common.proto.Severity;
 import org.opennms.horizon.notifications.api.PagerDutyDao;
 import org.opennms.horizon.notifications.dto.NotificationServiceGrpc;
@@ -133,14 +133,14 @@ public class NotificationCucumberTestSteps extends GrpcTestBase {
         notificationService.postPagerDutyConfig(configDTO);
     }
 
-    @Given("Alarm posted via service")
-    public void postAlarmViaService() throws Exception{
-        postAlarm();
+    @Given("Alert posted via service")
+    public void postAlertViaService() throws Exception{
+        postAlert();
     }
 
-    private void postAlarm() throws NotificationException {
-        Alarm alarm = Alarm.newBuilder().setLogMessage("Hello").build();
-        notificationService.postNotification(alarm);
+    private void postAlert() throws NotificationException {
+        Alert alert = Alert.newBuilder().setLogMessage("Hello").build();
+        notificationService.postNotification(alert);
     }
 
     @Then("verify key is {string}")
@@ -180,10 +180,10 @@ public class NotificationCucumberTestSteps extends GrpcTestBase {
         verify(restTemplate).exchange(any(URI.class), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class));
     }
 
-    @Given("Alarm posted via service with no config")
+    @Given("Alert posted via service with no config")
     public void postNotificationWithNoConfig() {
         try {
-            postAlarm();
+            postAlert();
         } catch (Exception ex) {
             caught = ex;
         }

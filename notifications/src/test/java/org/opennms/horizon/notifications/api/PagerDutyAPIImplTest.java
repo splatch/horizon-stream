@@ -34,7 +34,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opennms.horizon.alarms.proto.Alarm;
+import org.opennms.horizon.alerts.proto.Alert;
 import org.opennms.horizon.model.common.proto.Severity;
 import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
 import org.springframework.web.client.RestTemplate;
@@ -53,8 +53,8 @@ public class PagerDutyAPIImplTest {
     @Test
     public void postNotifications() throws Exception {
         Mockito.when(pagerDutyDao.getConfig()).thenReturn(getConfigDTO());
-        Alarm alarm = getAlarm();
-        pagerDutyAPI.postNotification(alarm);
+        Alert alert = getAlert();
+        pagerDutyAPI.postNotification(alert);
     }
 
     @Test
@@ -66,8 +66,8 @@ public class PagerDutyAPIImplTest {
         return PagerDutyConfigDTO.newBuilder().setIntegrationKey("integration_key").build();
     }
 
-    private Alarm getAlarm() {
-        return Alarm.newBuilder()
+    private Alert getAlert() {
+        return Alert.newBuilder()
             .setLogMessage("Exciting message to go here")
             .setReductionKey("srv01/mysql")
             .setSeverity(Severity.MAJOR)
