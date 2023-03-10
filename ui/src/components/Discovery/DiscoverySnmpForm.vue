@@ -2,7 +2,7 @@
   <form
     @submit.prevent="saveHandler"
     novalidate
-    class="form"
+    v-tabindex
   >
     <div class="form-title">{{ DiscoverySNMPForm.title }}</div>
     <FeatherInput
@@ -90,12 +90,10 @@ import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
 import { useForm } from '@featherds/input-helper'
 import { string } from 'yup'
-import useTabStroke from '@/composables/useTabStroke'
 
 const nameV = string().required('Name is required.')
 
 const form = useForm()
-useTabStroke()
 
 const { createDiscoveryConfig, activeDiscoveryError, isFetchingActiveDiscovery } = useDiscoveryMutations()
 

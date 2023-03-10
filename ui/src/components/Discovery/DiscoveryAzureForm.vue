@@ -1,5 +1,8 @@
 <template>
-  <div class="azure-container form">
+  <div
+    v-tabindex
+    class="azure-container"
+  >
     <div class="title">
       {{ Azure.title }}
     </div>
@@ -84,8 +87,6 @@ import { useTagQueries } from '@/store/Queries/tagQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import { useForm } from '@featherds/input-helper'
 import { string } from 'yup'
-import useTabStroke from '@/composables/useTabStroke'
-useTabStroke()
 
 const store = useDiscoveryStore()
 const discoveryQueries = useDiscoveryQueries()
