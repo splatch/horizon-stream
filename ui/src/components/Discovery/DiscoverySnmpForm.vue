@@ -17,7 +17,7 @@
       :preLoadedlocation="props.discovery?.location"
       @location-selected="(val) => setSnmpConfig('location', val)"
     />
-    <!--<BasicAutocomplete
+    <BasicAutocomplete
       @items-selected="tagsSelectedListener"
       :get-items="tagQueries.getTagsSearch"
       :items="tagQueries.tagsSearched"
@@ -25,7 +25,7 @@
       ref="tagsAutocompleteRef"
       class="tags-autocomplete"
       data-test="tags-autocomplete"
-    /> -->
+    />
     <div class="content-editable-container">
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('ipAddresses', val)"
@@ -37,6 +37,7 @@
         :tooltipText="Common.tooltip.IPHelpTooltp"
         :content="props.discovery?.ipAddresses?.join(', ')"
         isRequired
+        tabindex="4"
       />
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('snmpConfig.readCommunities', val)"
@@ -47,6 +48,7 @@
         ref="contentEditableCommunityStringRef"
         class="community-input"
         :content="props.discovery?.snmpConfig?.readCommunities?.join(', ')"
+        tabindex="5"
       />
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('snmpConfig.ports', val)"
@@ -58,6 +60,7 @@
         ref="contentEditableUDPPortRef"
         :tooltipText="Common.tooltip.PortHelpTooltp"
         :content="props.discovery?.snmpConfig?.ports?.join(', ')"
+        tabindex="6"
       />
     </div>
 

@@ -32,6 +32,7 @@
           title=" My Active Discoveries"
           :list="discoveryQueries.activeDiscoveries"
           @select-discovery="showDiscovery"
+          :selectedId="discoverySelectedType !== DiscoveryType.SyslogSNMPTraps && selectedDiscovery?.id"
         />
         <DiscoveryListCard
           passive
@@ -39,6 +40,7 @@
           :list="discoveryQueries.passiveDiscoveries"
           @toggle-discovery="toggleDiscovery"
           @select-discovery="showDiscovery"
+          :selectedId="discoverySelectedType === DiscoveryType.SyslogSNMPTraps && selectedDiscovery?.id"
         />
       </div>
     </section>

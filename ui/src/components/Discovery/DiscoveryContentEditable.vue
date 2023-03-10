@@ -38,6 +38,7 @@
         contenteditable="true"
         id="contentEditable"
         class="content-editable"
+        @blur="validateAndFormat"
       />
       <span
         v-if="props.regexDelim && isContentNotEmpty"
@@ -191,6 +192,8 @@ const highlightInvalid = () => {
 
 const reset: fncArgVoid = () => {
   contentEditableRef.value.textContent = props.defaultContent
+  errorMsg.value = ''
+  isContentInvalid.value = false
 }
 
 const checkCircleIcon: IIcon = {
