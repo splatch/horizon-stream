@@ -28,7 +28,7 @@
 
 package org.opennms.horizon.notifications.service;
 
-import org.opennms.horizon.alarms.proto.Alarm;
+import org.opennms.horizon.alerts.proto.Alert;
 import org.opennms.horizon.notifications.api.PagerDutyAPI;
 import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.exceptions.NotificationException;
@@ -42,8 +42,8 @@ public class NotificationServiceImpl implements NotificationService {
     private PagerDutyAPI pagerDutyAPI;
 
     @Override
-    public void postNotification(Alarm alarm) throws NotificationException {
-        pagerDutyAPI.postNotification(alarm);
+    public void postNotification(Alert alert) throws NotificationException {
+        pagerDutyAPI.postNotification(alert);
     }
 
     @Override

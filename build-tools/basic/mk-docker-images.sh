@@ -49,7 +49,7 @@ time {
   	echo "==="
   	echo "=== ALARM SERVICE IMAGE"
   	echo "==="
-  	mvn -f alarm jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dapplication.docker.image=opennms/horizon-stream-alarm:local-basic
+  	mvn -f alert jib:dockerBuild -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dapplication.docker.image=opennms/horizon-stream-alert:local-basic
 
 	echo ""
 	echo "==="

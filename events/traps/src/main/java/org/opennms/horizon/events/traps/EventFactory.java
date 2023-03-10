@@ -34,7 +34,7 @@ import org.opennms.horizon.events.conf.xml.Event;
 import org.opennms.horizon.events.conf.xml.LogDestType;
 import org.opennms.horizon.events.conf.xml.Logmsg;
 import org.opennms.horizon.events.grpc.client.InventoryClient;
-import org.opennms.horizon.events.xml.AlarmData;
+import org.opennms.horizon.events.xml.AlertData;
 import org.opennms.horizon.events.xml.ManagedObject;
 import org.opennms.horizon.events.xml.UpdateField;
 import org.opennms.horizon.grpc.traps.contract.TrapDTO;
@@ -129,36 +129,36 @@ public class EventFactory {
             LOG.debug("Trap discarded due to matching event having logmsg dest == discardtraps");
             return null;
         }
-        expandEventWithAlarmData(event, econf);
+        expandEventWithAlertData(event, econf);
         return event;
     }
 
-    static void expandEventWithAlarmData(org.opennms.horizon.events.xml.Event event, Event econf) {
-        if (econf != null && econf.getAlarmData() != null) {
-            AlarmData alarmData = new AlarmData();
-            final var econfAlarmData = econf.getAlarmData();
-            alarmData.setAlarmType(econfAlarmData.getAlarmType());
-            alarmData.setReductionKey(econfAlarmData.getReductionKey());
-            alarmData.setAutoClean(econfAlarmData.getAutoClean());
-            alarmData.setX733AlarmType(econfAlarmData.getX733AlarmType());
-            alarmData.setX733ProbableCause(econfAlarmData.getX733ProbableCause());
-            alarmData.setClearKey(econfAlarmData.getClearKey());
+    static void expandEventWithAlertData(org.opennms.horizon.events.xml.Event event, Event econf) {
+        if (econf != null && econf.getAlertData() != null) {
+            AlertData alertData = new AlertData();
+            final var econfAlertData = econf.getAlertData();
+            alertData.setAlertType(econfAlertData.getAlertType());
+            alertData.setReductionKey(econfAlertData.getReductionKey());
+            alertData.setAutoClean(econfAlertData.getAutoClean());
+            alertData.setX733AlertType(econfAlertData.getX733AlertType());
+            alertData.setX733ProbableCause(econfAlertData.getX733ProbableCause());
+            alertData.setClearKey(econfAlertData.getClearKey());
 
             List<UpdateField> updateFields = new ArrayList<>();
-            econfAlarmData.getUpdateFields().forEach((updateField -> {
+            econfAlertData.getUpdateFields().forEach((updateField -> {
                 UpdateField eventField = new UpdateField();
                 eventField.setFieldName(updateField.getFieldName());
                 eventField.setUpdateOnReduction(updateField.getUpdateOnReduction());
                 updateFields.add(eventField);
             }));
-            alarmData.setUpdateField(updateFields);
-            final var econfMo = econfAlarmData.getManagedObject();
+            alertData.setUpdateField(updateFields);
+            final var econfMo = econfAlertData.getManagedObject();
             if (econfMo != null) {
                 final ManagedObject mo = new ManagedObject();
                 mo.setType(econfMo.getType());
-                alarmData.setManagedObject(mo);
+                alertData.setManagedObject(mo);
             }
-            event.setAlarmData(alarmData);
+            event.setAlertData(alertData);
         }
     }
 

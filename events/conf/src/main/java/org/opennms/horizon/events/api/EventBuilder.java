@@ -30,7 +30,7 @@ package org.opennms.horizon.events.api;
 
 import org.opennms.horizon.events.EventConstants;
 import org.opennms.horizon.events.util.StringUtils;
-import org.opennms.horizon.events.xml.AlarmData;
+import org.opennms.horizon.events.xml.AlertData;
 import org.opennms.horizon.events.xml.Event;
 import org.opennms.horizon.events.xml.Events;
 import org.opennms.horizon.events.xml.Header;
@@ -457,14 +457,14 @@ public class EventBuilder {
     }
 
     /**
-     * <p>setAlarmData</p>
+     * <p>setAlertData</p>
      *
-     * @param alarmData a {@link AlarmData} object.
+     * @param alertData a {@link AlertData} object.
      * @return a {@link EventBuilder} object.
      */
-    public EventBuilder setAlarmData(final AlarmData alarmData) {
-        if (alarmData != null) {
-            m_event.setAlarmData(alarmData);
+    public EventBuilder setAlertData(final AlertData alertData) {
+        if (alertData != null) {
+            m_event.setAlertData(alertData);
         }
         return this;
     }

@@ -32,8 +32,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.util.JsonFormat;
-import org.opennms.horizon.alarms.proto.Alarm;
-import org.opennms.horizon.alarms.proto.AlarmType;
+import org.opennms.horizon.alerts.proto.Alert;
+import org.opennms.horizon.alerts.proto.AlertType;
 import org.opennms.horizon.model.common.proto.Severity;
 import org.opennms.horizon.notifications.api.dto.PagerDutyEventAction;
 import org.opennms.horizon.notifications.api.dto.PagerDutyEventDTO;
@@ -80,9 +80,9 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void postNotification(Alarm alarm) throws NotificationException {
+    public void postNotification(Alert alert) throws NotificationException {
         try {
-            PagerDutyEventDTO event = getEvent(alarm);
+            PagerDutyEventDTO event = getEvent(alert);
 
             String baseUrl = "https://events.pagerduty.com/v2/enqueue";
             URI uri = new URI(baseUrl);
@@ -94,16 +94,16 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
             String eventJson = objectMapper.writeValueAsString(event);
             HttpEntity<String> requestEntity = new HttpEntity<>(eventJson, headers);
 
-            LOG.info("Posting alarm with id={} for tenant={} to PagerDuty", alarm.getDatabaseId(), alarm.getTenantId());
+            LOG.info("Posting alert with id={} for tenant={} to PagerDuty", alert.getDatabaseId(), alert.getTenantId());
             restTemplate.exchange(uri, HttpMethod.POST, requestEntity, String.class);
         } catch (URISyntaxException e) {
             throw new NotificationInternalException("Bad PagerDuty url", e);
         } catch (JsonProcessingException e) {
-            throw new NotificationBadDataException("JSON error processing alarmDTO", e);
+            throw new NotificationBadDataException("JSON error processing alertDTO", e);
         } catch (RestClientException e) {
             throw new NotificationAPIException("PagerDuty API exception", e);
         } catch (InvalidProtocolBufferException e) {
-            throw new NotificationInternalException("Failed to encode/decode alarm: " + alarm, e);
+            throw new NotificationInternalException("Failed to encode/decode alert: " + alert, e);
         }
     }
 
@@ -117,34 +117,34 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
         return config.getIntegrationKey();
     }
 
-    private PagerDutyEventDTO getEvent(Alarm alarm) throws NotificationConfigUninitializedException, JsonProcessingException, InvalidProtocolBufferException {
+    private PagerDutyEventDTO getEvent(Alert alert) throws NotificationConfigUninitializedException, JsonProcessingException, InvalidProtocolBufferException {
         Instant now = Instant.now();
 
         PagerDutyEventDTO event = new PagerDutyEventDTO();
         PagerDutyPayloadDTO payload = new PagerDutyPayloadDTO();
 
-        payload.setSummary(alarm.getLogMessage().trim());
+        payload.setSummary(alert.getLogMessage().trim());
         payload.setTimestamp(now.toString());
-        payload.setSeverity(PagerDutySeverity.fromAlarmSeverity(alarm.getSeverity()));
+        payload.setSeverity(PagerDutySeverity.fromAlertSeverity(alert.getSeverity()));
 
         // Source: unique location of affected system
         payload.setSource(JsonFormat.printer()
             .omittingInsignificantWhitespace()
             .sortingMapKeys()
-            .print(alarm.getManagedObject()));
+            .print(alert.getManagedObject()));
         // Component: component responsible for the event
-        payload.setComponent(alarm.getManagedObject().getType().name());
+        payload.setComponent(alert.getManagedObject().getType().name());
         // Group: logical grouping
-        payload.setGroup(alarm.getLocation());
+        payload.setGroup(alert.getLocation());
         // Class: type of event
-        payload.setClazz(alarm.getUei());
+        payload.setClazz(alert.getUei());
 
         event.setRoutingKey(getPagerDutyIntegrationKey());
-        event.setDedupKey(alarm.getReductionKey());
+        event.setDedupKey(alert.getReductionKey());
 
-        if (Severity.CLEARED.equals(alarm.getSeverity()) || AlarmType.CLEAR.equals(alarm.getType())) {
+        if (Severity.CLEARED.equals(alert.getSeverity()) || AlertType.CLEAR.equals(alert.getType())) {
             event.setEventAction(PagerDutyEventAction.RESOLVE);
-        } else if (alarm.getIsAcknowledged()) {
+        } else if (alert.getIsAcknowledged()) {
             event.setEventAction(PagerDutyEventAction.ACKNOWLEDGE);
         } else {
             event.setEventAction(PagerDutyEventAction.TRIGGER);
@@ -155,8 +155,8 @@ public class PagerDutyAPIImpl implements PagerDutyAPI {
         event.setClientUrl(clientURL);
 
         payload.setCustomDetails(new HashMap<>());
-        // Put the whole alarm in the payload
-        payload.getCustomDetails().put("alarm", JsonFormat.printer().includingDefaultValueFields().print(alarm));
+        // Put the whole alert in the payload
+        payload.getCustomDetails().put("alert", JsonFormat.printer().includingDefaultValueFields().print(alert));
 
         event.setPayload(payload);
         return event;
