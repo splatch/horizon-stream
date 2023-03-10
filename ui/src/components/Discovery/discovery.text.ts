@@ -30,7 +30,9 @@ export default {
     },
     UDPPort: {
       label: 'Enter UDP port'
-    }
+    },
+    errorRequired: 'The field is required.',
+    errorInvalidValue: 'The field has invalid value.'
   }
 }
 

@@ -61,21 +61,6 @@ export const useDiscoveryStore = defineStore('discoveryStore', {
     },
     clearAzureForm() {
       this.azure = cloneDeep(defaultAzureForm)
-    },
-
-    setSelectedDiscovery(selected: ActiveDiscovery | PassiveDiscovery | null) {
-      if (!selected) {
-        this.selectedDiscovery = Object.assign({ type: DiscoveryType.None })
-        this.clearAzureForm()
-      } else {
-        // add check type
-        const discovery = cloneDeep(selected)
-        if (discovery) {
-          // Todo: add type guards
-          // this.ipAddresses = discovery.ipAddresses || []
-          // this.udpPorts = discovery.snmpConfig?.ports || []
-        }
-      }
     }
   }
 })

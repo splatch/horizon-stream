@@ -9,20 +9,24 @@
         v-for="item in list"
         :key="item.id"
         class="discovery-name"
+        :class="{ selected: selectedId == item.id }"
       >
-        <div @click="$emit('selectDiscovery', item)" class="name pointer">
+        <div
+          @click="$emit('selectDiscovery', item)"
+          class="name pointer"
+        >
           {{ item.configName?.toUpperCase() || item.name?.toUpperCase() }}
         </div>
         <FeatherTooltip
           :title="`Toggle ${item.name?.toUpperCase()} on/off`"
           v-slot="{ attrs, on }"
         >
-          <BasicToggle 
-            v-bind="attrs" 
-            v-on="on" 
-            v-if="passive" 
-            :toggle="item.toggle" 
-            @toggle="(isToggled) => $emit('toggleDiscovery', item.id, isToggled)" 
+          <BasicToggle
+            v-bind="attrs"
+            v-on="on"
+            v-if="passive"
+            :toggle="item.toggle"
+            @toggle="(isToggled) => $emit('toggleDiscovery', item.id, isToggled)"
           />
         </FeatherTooltip>
       </div>
@@ -34,7 +38,7 @@
       <FeatherIcon
         :icon="Warning"
         class="icon"
-      />You have no {{ passive? 'passive' : 'active '}} discovery
+      />You have no {{ passive ? 'passive' : 'active ' }} discovery
     </div>
   </div>
 </template>
@@ -46,6 +50,7 @@ defineProps<{
   title: string
   list?: any
   passive?: boolean
+  selectedId?: number
 }>()
 </script>
 
@@ -85,6 +90,10 @@ defineProps<{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  &.selected {
+    color: var(variables.$secondary);
+  }
 
   .name {
     overflow: hidden;

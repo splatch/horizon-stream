@@ -72,6 +72,7 @@
           >{{ discoveryText.Discovery.button.cancel }}</FeatherButton
         >
         <ButtonWithSpinner
+          v-if="!props.discovery"
           :isFetching="discoveryMutations.isFetchingPassiveDiscovery"
           :disabled="isFormInvalid"
           primary
@@ -208,7 +209,7 @@ const cancelHandler = () => {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: flex-start;
     > div {
       width: 49%;
     }
