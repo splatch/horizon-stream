@@ -1,6 +1,6 @@
 <template>
-  <PageHeader
-    :heading="heading"
+  <PageHeadline
+    :text="heading"
     class="header"
     data-test="page-header"
   />
