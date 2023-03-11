@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { useMutations } from 'villus'
+import { useMutation } from 'villus'
 
 export const useAlertsMutations = defineStore('alertsMutations', () => {
   // acknowledge alert

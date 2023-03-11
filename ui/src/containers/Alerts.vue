@@ -1,15 +1,22 @@
 <template>
   <div class="container">
     <div class="header">
-      <PageHeadline text="Alerts" />
-      <FeatherButton secondary>clear all filters</FeatherButton>
+      <PageHeadline
+        text="Alerts"
+        data-test="headline"
+      />
+      <FeatherButton
+        secondary
+        data-test="clear-all-filters-btn"
+        >clear all filters</FeatherButton
+      >
     </div>
     <!-- severity filter -->
     <div>
       <!-- sort by date-->
       <!-- search filter -->
     </div>
-    <ACardList />
+    <ACardList data-test="card-list" />
   </div>
 </template>
 
