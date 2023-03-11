@@ -1,6 +1,13 @@
 <template>
   <div class="container">
     <PageHeadline text="Alerts" />
+    <!-- severity filter -->
+    <div>
+      <!-- sort -->
+      <!-- search -->
+    </div>
+    <!-- severity chip list -->
+    <ACardList />
   </div>
 </template>
 

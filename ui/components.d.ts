@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    ACard: typeof import('./src/components/Alerts/ACard.vue')['default']
     AddNewPolicy: typeof import('./src/components/MonitoringPolicies/AddNewPolicy.vue')['default']
     AddNewRule: typeof import('./src/components/MonitoringPolicies/AddNewRule.vue')['default']
     AlertConditions: typeof import('./src/components/MonitoringPolicies/AlertConditions.vue')['default']
@@ -48,8 +49,8 @@ declare module '@vue/runtime-core' {
     FeatherChip: typeof import('@featherds/chips')['FeatherChip']
     FeatherChipList: typeof import('@featherds/chips')['FeatherChipList']
     FeatherDialog: typeof import('@featherds/dialog')['FeatherDialog']
-    FeatherExpansionPanel: typeof import('@featherds/expansion')['FeatherExpansionPanel']
     FeatherDropdown: typeof import('@featherds/dropdown')['FeatherDropdown']
+    FeatherExpansionPanel: typeof import('@featherds/expansion')['FeatherExpansionPanel']
     FeatherIcon: typeof import('@featherds/icon')['FeatherIcon']
     FeatherInput: typeof import('@featherds/input')['FeatherInput']
     FeatherListSwitch: typeof import('@featherds/list')['FeatherListSwitch']
