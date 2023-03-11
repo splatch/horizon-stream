@@ -27,8 +27,6 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     }
   }
 
-  // clear alert from list
-
   return {
     severitiesSelected,
     toggleSeverity,

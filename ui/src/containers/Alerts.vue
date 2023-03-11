@@ -1,12 +1,14 @@
 <template>
   <div class="container">
-    <PageHeadline text="Alerts" />
+    <div class="header">
+      <PageHeadline text="Alerts" />
+      <FeatherButton secondary>clear all filters</FeatherButton>
+    </div>
     <!-- severity filter -->
     <div>
-      <!-- sort -->
-      <!-- search -->
+      <!-- sort by date-->
+      <!-- search filter -->
     </div>
-    <!-- severity chip list -->
     <ACardList />
   </div>
 </template>
