@@ -2,7 +2,7 @@
   <div class="flows-container">
     <PageHeadline
     text="Flows"
-    data-test="page-header"
+    data-test="flows-page-header"
     />
     <!-- Filter Area -->
     <div class="filters"></div>
