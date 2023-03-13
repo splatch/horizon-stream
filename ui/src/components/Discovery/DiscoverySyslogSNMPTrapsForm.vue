@@ -1,5 +1,6 @@
 <template>
   <div
+    v-tabindex
     class="syslog-snmp-traps-form"
     data-test="syslog-snmp-traps-form"
   >
