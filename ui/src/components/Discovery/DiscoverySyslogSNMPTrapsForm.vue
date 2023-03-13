@@ -130,7 +130,6 @@ const submitHandler = async () => {
   contentEditableCommunityStringRef.value.validateAndFormat()
   contentEditableUDPPortRef.value.validateAndFormat()
   const isPortInvalid = contentEditableUDPPortRef.value?.validateContent()
-  console.log(discoveryInfo.value)
   if (form.validate().length || isPortInvalid) return
   await discoveryMutations.upsertPassiveDiscovery({ passiveDiscovery: discoveryInfo.value })
 
