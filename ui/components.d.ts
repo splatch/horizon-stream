@@ -7,11 +7,11 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    ACard: typeof import('./src/components/Alerts/AlertsCard.vue')['default']
-    ACardList: typeof import('./src/components/Alerts/AlertsCardList.vue')['default']
     AddNewPolicy: typeof import('./src/components/MonitoringPolicies/AddNewPolicy.vue')['default']
     AddNewRule: typeof import('./src/components/MonitoringPolicies/AddNewRule.vue')['default']
     AlertConditions: typeof import('./src/components/MonitoringPolicies/AlertConditions.vue')['default']
+    AlertsCard: typeof import('./src/components/Alerts/AlertsCard.vue')['default']
+    AlertsCardList: typeof import('./src/components/Alerts/AlertsCardList.vue')['default']
     AppliancesAddNodeCtrl: typeof import('./src/components/Appliances/AppliancesAddNodeCtrl.vue')['default']
     AppliancesMinionsTable: typeof import('./src/components/Appliances/AppliancesMinionsTable.vue')['default']
     AppliancesNodesTable: typeof import('./src/components/Appliances/AppliancesNodesTable.vue')['default']

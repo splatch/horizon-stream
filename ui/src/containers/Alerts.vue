@@ -23,7 +23,7 @@
         <div data-test="sort-date">sort by date</div>
         <div data-test="search-filter">search filter</div>
       </div>
-      <ACardList data-test="card-list" />
+      <AlertsCardList data-test="card-list" />
     </div>
   </div>
 </template>

@@ -36,7 +36,7 @@
         v-if="mock.length"
         data-test="alert-list"
       >
-        <ACard
+        <AlertsCard
           v-for="alert in alerts"
           :key="alert.id"
           :alert="alert"
