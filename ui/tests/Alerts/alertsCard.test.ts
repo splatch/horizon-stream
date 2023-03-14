@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import ACard from '@/components/Alerts/ACard.vue'
+import AlertsCard from '@/components/Alerts/AlertsCard.vue'
 
 const mock = {
   id: 1,
@@ -18,7 +18,7 @@ let wrapper: any
 
 describe('Alert card', () => {
   beforeAll(() => {
-    wrapper = mount(ACard, {
+    wrapper = mount(AlertsCard, {
       shallow: true,
       props: {
         alert: mock

@@ -23,12 +23,13 @@
           >acknowledge</FeatherButton
         >
       </div>
-      <div
-        class="list-count"
-        data-test="list-count-top"
-      >
-        1-50 of 100
-      </div>
+      <FeatherPagination
+        v-model="page"
+        :pageSize="pageSize"
+        :total="total"
+        @update:pageSize="updatePageSize"
+        data-test="pagination-top"
+      />
     </div>
     <div class="content">
       <div
@@ -52,14 +53,13 @@
       </div>
     </div>
     <div class="card-list-bottom">
-      <div>Row per page...</div>
-      <div
-        class="list-count"
-        data-test="list-count-bottom"
-      >
-        1-50 of 100
-      </div>
-      <div>pagination</div>
+      <FeatherPagination
+        v-model="page"
+        :pageSize="pageSize"
+        :total="total"
+        @update:pageSize="updatePageSize"
+        data-test="pagination-bottom"
+      />
     </div>
   </div>
 </template>
@@ -93,6 +93,14 @@ const mock = [
       'Sit lorem kasd diam clita tempor ipsum justo invidunt. Elitr ut labore clita ea nonumy vero sanctus lorem. Dolores ipsum justo kasd consetetur. Dolore diam sit dolor amet clita nonumy lorem sanctus, diam voluptua kasd labore eos sadipscing, sit erat est invidunt sit stet erat et sit dolore, sit labore sadipscing nonumy diam aliquyam sanctus ea, ipsum et labore sanctus et duo sed labore amet, dolor tempor stet at sea. Stet dolores et est aliquyam. Et accusam kasd amet justo ut gubergren. Magna rebum duo sadipscing lorem kasd. Eirmod tempor dolor lorem amet at takimata consetetur voluptua. Diam labore at sanctus accusam. Accusam at lorem et amet rebum dolor at ipsum, sanctus clita lorem eirmod sit magna accusam, clita dolor no ut ea dolores no eirmod ut stet, diam sadipscing no takimata amet ipsum amet. Accusam dolor dolores takimata ut dolor sed rebum. Lorem eos consetetur ea nonumy diam nonumy gubergren invidunt consetetur. Duo labore voluptua takimata sit ipsum eirmod, consetetur vero sed at eirmod ea dolor est nonumy ipsum. Duo et accusam lorem sit dolor est dolor dolor, eirmod sea aliquyam clita et erat eos kasd est amet. Sed consetetur accusam elitr diam duo clita ut diam. Lorem magna.'
   }
 ]
+
+const page = ref(1)
+const pageSize = ref(10)
+const total = 100
+
+const updatePageSize = (v: number) => {
+  pageSize.value = v
+}
 
 const alerts = ref(mock.map((a) => ({ ...a, isSelected: false })))
 const atLeastOneAlertSelected = computed(() => alerts.value.some(({ isSelected }) => isSelected))
@@ -136,6 +144,20 @@ const acknowledgeSelectedAlerts = () => {
   background-color: var(variables.$background);
   border: 1px solid var(variables.$border-on-surface);
   border-radius: vars.$border-radius-s vars.$border-radius-s 0 0;
+  :deep(> .feather-pagination) {
+    border: 0;
+    min-height: auto;
+    padding-left: 0;
+    > .range-text {
+      margin-right: 0;
+      min-width: auto;
+    }
+    > .per-page-text,
+    > .page-size-select,
+    > nav {
+      display: none;
+    }
+  }
 }
 
 .select-all-checkbox-btns {
@@ -151,13 +173,17 @@ const acknowledgeSelectedAlerts = () => {
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  padding: var(variables.$spacing-s) var(variables.$spacing-xl);
+  padding: var(variables.$spacing-s) 0 var(variables.$spacing-s) var(variables.$spacing-xl);
   border-width: 0 1px 1px;
   border-style: solid;
   border-color: var(variables.$border-on-surface);
   border-radius: 0 0 vars.$border-radius-s vars.$border-radius-s;
   > * {
     margin-left: var(variables.$spacing-xl);
+  }
+  :deep(> .feather-pagination) {
+    border: 0;
+    min-height: auto;
   }
 }
 
