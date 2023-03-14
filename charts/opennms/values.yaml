@@ -318,3 +318,18 @@ Prometheus:
       Requests:
         Cpu: 100m
         Memory: 100Mi
+Pebble:
+  ServiceName: pebble
+  Port: 14000
+  ControllerPort: 15000
+  Image: letsencrypt/pebble:v2.3.1
+  ImagePullPolicy: IfNotPresent
+  Replicas: 1
+  Resources:
+    Limits:
+      Cpu: "1"
+      Memory: 1000Mi
+    Requests:
+      Cpu: 100m
+      Memory: 500Mi
+

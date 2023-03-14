@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.Pebble.ServiceName }}
+  labels:
+    app: pebble
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.Pebble.ServiceName }}
+  replicas: {{ .Values.Pebble.Replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.Pebble.ServiceName }}
+    spec:
+      {{- if .Values.NodeRestrictions.Enabled }}
+      nodeSelector:                                                                                    
+        {{ .Values.NodeRestrictions.Key }}: {{ .Values.NodeRestrictions.Value }}                       
+      tolerations:
+        - effect: "NoSchedule"                                                                         
+          key: "{{ .Values.NodeRestrictions.Key }}"                                                    
+          operator: "Equal"
+          value: {{ .Values.NodeRestrictions.Value }} 
+      affinity: 
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:                                             
+          - weight: 1                                                                                  
+            preference:                                                                                
+              matchExpressions:                                                                        
+              - key: "{{ .Values.NodeRestrictions.Key }}"                                              
+                operator: In
+                values:                                                                                
+                - {{ .Values.NodeRestrictions.Value }}                                                 
+      {{- end }}
+      containers:
+        - name: {{ .Values.Pebble.ServiceName }}
+          image: {{ .Values.Pebble.Image }}
+          imagePullPolicy: {{ .Values.Pebble.ImagePullPolicy }}
+          env:
+          - name: PEBBLE_VA_NOSLEEP
+            value: "1"
+          - name: PEBBLE_VA_ALWAYS_VALID
+            value: "1"
+          resources:
+            limits:
+              cpu: "{{ .Values.Pebble.Resources.Limits.Cpu }}"
+              memory: "{{ .Values.Pebble.Resources.Limits.Memory }}"
+            requests:
+              cpu: "{{ .Values.Pebble.Resources.Requests.Cpu }}"
+              memory: "{{ .Values.Pebble.Resources.Requests.Memory }}"
+          ports:
+            - name: client
+              containerPort: {{ .Values.Pebble.Port }}
+            - name: controller
+              containerPort: {{ .Values.Pebble.ControllerPort }}
+          livenessProbe:
+            failureThreshold: 15
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: client
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 15
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: client
+            timeoutSeconds: 5

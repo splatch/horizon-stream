@@ -342,6 +342,13 @@ k8s_resource(
     port_forwards=['24092:59092'],
 )
 
+### Pebble ###
+k8s_resource(
+    'pebble',
+    port_forwards=['15000:15000', '14000:14000'],
+)
+
+
 ### Others ###
 k8s_resource(
     'ingress-nginx-controller',

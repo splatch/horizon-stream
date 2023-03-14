@@ -81,6 +81,7 @@ load_images_to_kind_using_slow_kind () {
     kind load docker-image --name "$KIND_CLUSTER_NAME" "${IMAGE_PREFIX}/horizon-stream-grafana:${IMAGE_TAG}" &
     kind load docker-image --name "$KIND_CLUSTER_NAME" "${IMAGE_PREFIX}/horizon-stream-inventory:${IMAGE_TAG}" &
     kind load docker-image --name "$KIND_CLUSTER_NAME" "${IMAGE_PREFIX}/horizon-stream-keycloak:${IMAGE_TAG}" &
+    kind load docker-image --name "$KIND_CLUSTER_NAME" "${IMAGE_PREFIX}/horizon-stream-pebble:${IMAGE_TAG}" &
     kind load docker-image --name "$KIND_CLUSTER_NAME" "${IMAGE_PREFIX}/horizon-stream-metrics-processor:${IMAGE_TAG}" &
     kind load docker-image --name "$KIND_CLUSTER_NAME" "${IMAGE_PREFIX}/horizon-stream-minion:${IMAGE_TAG}" &
     kind load docker-image --name "$KIND_CLUSTER_NAME" "${IMAGE_PREFIX}/horizon-stream-minion-gateway:${IMAGE_TAG}" &
@@ -98,6 +99,7 @@ pull_docker_images () {
 		"${IMAGE_PREFIX}/horizon-stream-grafana:${IMAGE_TAG}" \
 		"${IMAGE_PREFIX}/horizon-stream-inventory:${IMAGE_TAG}" \
 		"${IMAGE_PREFIX}/horizon-stream-keycloak:${IMAGE_TAG}" \
+		"${IMAGE_PREFIX}/horizon-stream-pebble:${IMAGE_TAG}" \
 		"${IMAGE_PREFIX}/horizon-stream-metrics-processor:${IMAGE_TAG}" \
 		"${IMAGE_PREFIX}/horizon-stream-minion-gateway-grpc-proxy:${IMAGE_TAG}" \
 		"${IMAGE_PREFIX}/horizon-stream-minion-gateway:${IMAGE_TAG}" \
@@ -123,6 +125,7 @@ save_part_of_normal_docker_image_load () {
 		"${IMAGE_PREFIX}/horizon-stream-grafana:${IMAGE_TAG}" \
 		"${IMAGE_PREFIX}/horizon-stream-inventory:${IMAGE_TAG}" \
 		"${IMAGE_PREFIX}/horizon-stream-keycloak:${IMAGE_TAG}" \
+		"${IMAGE_PREFIX}/horizon-stream-pebble:${IMAGE_TAG}" \
 		"${IMAGE_PREFIX}/horizon-stream-metrics-processor:${IMAGE_TAG}" \
 		"${IMAGE_PREFIX}/horizon-stream-minion-gateway-grpc-proxy:${IMAGE_TAG}" \
 		"${IMAGE_PREFIX}/horizon-stream-minion-gateway:${IMAGE_TAG}" \
@@ -162,6 +165,7 @@ install_helm_chart_custom_images () {
   --set Grafana.Image=${IMAGE_PREFIX}/horizon-stream-grafana:${IMAGE_TAG} \
   --set OpenNMS.Inventory.Image=${IMAGE_PREFIX}/horizon-stream-inventory:${IMAGE_TAG} \
   --set Keycloak.Image=${IMAGE_PREFIX}/horizon-stream-keycloak:${IMAGE_TAG} \
+  --set Pebble.Image=${IMAGE_PREFIX}/horizon-stream-pebble:${IMAGE_TAG} \
   --set OpenNMS.MetricsProcessor.Image=${IMAGE_PREFIX}/horizon-stream-metrics-processor:${IMAGE_TAG} \
   --set OpenNMS.Minion.Image=${IMAGE_PREFIX}/horizon-stream-minion:${IMAGE_TAG} \
   --set OpenNMS.MinionGateway.Image=${IMAGE_PREFIX}/horizon-stream-minion-gateway:${IMAGE_TAG} \
