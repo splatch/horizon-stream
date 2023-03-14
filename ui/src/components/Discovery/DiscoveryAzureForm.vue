@@ -1,5 +1,8 @@
 <template>
-  <div class="azure-container">
+  <div
+    v-tabindex
+    class="azure-container"
+  >
     <div class="title">
       {{ Azure.title }}
     </div>
@@ -64,6 +67,7 @@
         {{ Azure.cancelBtnText }}
       </FeatherButton>
       <ButtonWithSpinner
+        type="submit"
         :isFetching="discoveryMutations.isFetching.value"
         @click="saveAzureDiscovery"
         primary

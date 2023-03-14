@@ -10,6 +10,7 @@ import '@featherds/styles'
 import '@featherds/styles/themes/open-light.css'
 import dateFormatDirective from './directives/v-date'
 import featherInputFocusDirective from './directives/v-focus'
+import tabIndexDirective from './directives/v-tabindex'
 import { getGqlClient } from './services/gqlService'
 
 // dark / light mode
@@ -42,3 +43,4 @@ const app = createApp(App)
   })
   .directive('date', dateFormatDirective)
   .directive('focus', featherInputFocusDirective)
+  .directive('tabindex', tabIndexDirective)

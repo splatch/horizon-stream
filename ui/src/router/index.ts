@@ -73,6 +73,11 @@ const router = createRouter({
       component: NodeStatus
     },
     {
+      path: '/flows',
+      name: 'Flows',
+      component: () => import('@/containers/Flows.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
