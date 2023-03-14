@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { AlertSort, AlertType } from '@/components/Alerts/alerts.enum'
+import { AlertSort, AlertType } from '@/components/Alerts/alerts.constant'
 
 export const useAlertsStore = defineStore('alertsStore', () => {
   const severitiesSelected = ref([AlertType.CRITICAL]) // default

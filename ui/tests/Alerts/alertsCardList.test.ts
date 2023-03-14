@@ -1,11 +1,11 @@
 import { mount } from '@vue/test-utils'
-import ACardList from '@/components/Alerts/ACardList.vue'
+import AlertsCardList from '@/components/Alerts/AlertsCardList.vue'
 
 let wrapper: any
 
 describe('Alerts list', () => {
   beforeAll(() => {
-    wrapper = mount(ACardList, {
+    wrapper = mount(AlertsCardList, {
       shallow: true
     })
   })
