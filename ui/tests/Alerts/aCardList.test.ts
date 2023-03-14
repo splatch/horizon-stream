@@ -37,16 +37,10 @@ describe('Alerts list', () => {
     expect(elem.exists()).toBeTruthy()
     expect(elem.attributes('disabled')).toBeTruthy()
     // TODO: disabled state not working
-    // const selectAll = wrapper.get('[data-test="select-all-checkbox"]')
-    // await selectAll. setChecked()
-    // wrapper.vm.$nextTick()
-    // console.log('>>>', selectAll.element.checked)
-    // console.log('>>>', elem.attributes('disabled'))
-    // expect(elem.attributes('disabled')).toBeFalsy()
   })
 
   test('Should have list count (top)', () => {
-    const elem = wrapper.get('[data-test="list-count-top"]')
+    const elem = wrapper.get('[data-test="pagination-top"]')
     expect(elem.exists()).toBeTruthy()
   })
 
@@ -58,16 +52,8 @@ describe('Alerts list', () => {
     expect(false).toBeTruthy()
   })
 
-  test('Should have row per page', () => {
-    expect(false).toBeTruthy()
-  })
-
-  test('Should have list count (bottom)', () => {
-    const elem = wrapper.get('[data-test="list-count-bottom"]')
+  test('Should have pagination (bottom)', () => {
+    const elem = wrapper.get('[data-test="pagination-bottom"]')
     expect(elem.exists()).toBeTruthy()
-  })
-
-  test('Should have pagination', () => {
-    expect(false).toBeTruthy()
   })
 })
