@@ -34,6 +34,7 @@ type Values struct {
 	Keycloak         KeycloakValues         `yaml:"Keycloak"`
 	Kafka            KafkaValues            `yaml:"Kafka"`
 	MailServer       MailServerValues       `yaml:"MailServer"`
+	Prometheus       PrometheusValues       `yaml:"Prometheus`
 	NodeRestrictions NodeRestrictionsValues `yaml:"NodeRestrictions"`
 	Operator         OperatorValues         `yaml:"Operator"`
 	CustomErrors     CustomErrorsValues     `yaml:"CustomErrors"`

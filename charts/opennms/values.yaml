@@ -306,16 +306,15 @@ CustomErrors:
 Prometheus:
   Enabled: true
   Path: /prometheus
-  Server:
-    ServiceName: prometheus
-    Port: 9090
-    Image: prom/prometheus:v2.39.1
-    ImagePullPolicy: IfNotPresent
-    Replicas: 1
-    Resources:
-      Limits:
-        Cpu: "1"
-        Memory: 512Mi
-      Requests:
-        Cpu: 100m
-        Memory: 100Mi
+  ServiceName: prometheus
+  Port: 9090
+  Image: prom/prometheus:v2.39.1
+  ImagePullPolicy: IfNotPresent
+  Replicas: 1
+  Resources:
+    Limits:
+      Cpu: "1"
+      Memory: 512Mi
+    Requests:
+      Cpu: 100m
+      Memory: 100Mi

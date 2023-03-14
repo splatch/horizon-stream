@@ -48,8 +48,7 @@ type APIValues struct {
 }
 
 type UIValues struct {
-	ServiceValues      `yaml:",inline"`
-	PrivateRepoEnabled bool `yaml:"PrivateRepoEnabled"`
+	ServiceValues `yaml:",inline"`
 }
 
 type MGGPValues struct {
