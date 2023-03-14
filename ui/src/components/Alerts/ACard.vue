@@ -1,47 +1,80 @@
 <template>
   <div class="card">
     <FeatherExpansionPanel>
-      <div class="description">{{ alert.description }}</div>
+      <div
+        class="description"
+        data-test="description"
+      >
+        {{ alert.description }}
+      </div>
     </FeatherExpansionPanel>
     <div class="expansion-title">
       <FeatherCheckbox
         :model-value="alert.isSelected"
         @update:model-value="alertSelectedHandler(alert.id)"
+        data-test="checkbox"
       />
       <div class="content">
-        <div class="left">
-          <div class="name">{{ alert.name }}</div>
-          <div class="severity">{{ alert.severity }}</div>
-          <div class="cause">{{ alert.cause }}</div>
-        </div>
-        <div class="center">
-          <!-- duration: hrs, days, weeks. months? -->
-          <div class="duration">{{ alert.duration }}</div>
-          <div class="node">
-            <Icon
-              :icon="storageIcon"
-              data-test="icon-storage"
-            />
-            <span>{{ alert.node }}</span>
-          </div>
-          <div class="date">{{ alert.date }}</div>
-          <div class="time">{{ alert.time }}</div>
-        </div>
-        <div class="right">
-          <FeatherCheckbox
-            :model-value="acknowledgedChecked"
-            @update:model-value="acknowledgeHandler(alert.id)"
-            >Acknowledged</FeatherCheckbox
+        <div>
+          <div
+            class="name headline"
+            data-test="name"
           >
+            {{ alert.name }}
+          </div>
+          <div
+            class="node"
+            data-test="node"
+          >
+            {{ alert.node }}
+          </div>
         </div>
+        <div
+          class="severity error"
+          data-test="severity"
+        >
+          <FeatherChip>{{ alert.severity }}</FeatherChip>
+        </div>
+        <div
+          class="cause headline"
+          data-test="cause"
+        >
+          {{ alert.cause }}
+        </div>
+        <!-- duration: hrs, days, weeks. months? -->
+        <div
+          class="duration headline"
+          data-test="duration"
+        >
+          {{ alert.duration }}
+        </div>
+        <div>
+          <div
+            class="date headline"
+            data-test="date"
+          >
+            {{ alert.date }}
+          </div>
+          <div
+            class="time"
+            data-test="time"
+          >
+            {{ alert.time }}
+          </div>
+        </div>
+        <FeatherIcon
+          :icon="CheckCircle"
+          :class="alert.isAcknowledged ? 'acknowledged' : ''"
+          class="acknowledged-check-circle"
+          data-test="check-icon"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import Storage from '@material-design-icons/svg/outlined/storage.svg'
-import { IIcon } from '@/types'
+import CheckCircle from '@featherds/icon/action/CheckCircle'
 
 const emits = defineEmits(['alert-selected'])
 const props = defineProps({
@@ -60,28 +93,36 @@ const acknowledgeHandler = (id: number) => {
   acknowledgedChecked.value = !acknowledgedChecked.value
   // send request
 }
-
-const storageIcon: IIcon = {
-  image: Storage,
-  title: 'Node'
-}
 </script>
 
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
+@use '@featherds/styles/mixins/typography';
 @use '@/styles/vars.scss';
 @use '@/styles/mixins.scss';
 
+.headline {
+  @include typography.headline4();
+}
+
+.acknowledged-check-circle {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 1rem;
+  color: var(variables.$shade-3);
+  &.acknowledged {
+    color: var(variables.$success);
+  }
+}
+
 .card {
   position: relative;
-  margin-bottom: var(variables.$spacing-xs);
 }
 
 .expansion-title {
   position: absolute;
-  top: 7px;
-  left: var(variables.$spacing-m);
-  width: 94%;
+  top: 13px;
+  left: var(variables.$spacing-xl);
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -90,8 +131,6 @@ const storageIcon: IIcon = {
     margin-bottom: 0;
     .feather-checkbox {
       padding-right: var(variables.$spacing-xs);
-      border-right: 5px solid red;
-      margin-right: var(variables.$spacing-s);
       label {
         display: none;
       }
@@ -100,42 +139,11 @@ const storageIcon: IIcon = {
 }
 
 .content {
-  width: 95%;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.left {
-  width: 42%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.center {
-  width: 30%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.right {
-  width: 15%;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  :deep(.layout-container) {
-    margin-bottom: 0;
-    .feather-checkbox {
-      padding-right: var(variables.$spacing-xs);
-      margin-right: var(variables.$spacing-s);
-    }
-  }
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 2rem;
 }
 
 .name {
@@ -143,10 +151,12 @@ const storageIcon: IIcon = {
 }
 
 .severity {
-  padding: 3px 6px;
-  border-radius: vars.$border-radius-xs;
-  color: red;
-  background-color: rgba(255, 0, 0, 0.3);
+  &.error {
+    :deep(.chip) {
+      color: var(variables.$primary-text-on-color);
+      background-color: var(variables.$error);
+    }
+  }
 }
 
 .node {
@@ -160,11 +170,20 @@ const storageIcon: IIcon = {
 }
 
 :deep(.feather-expansion) {
+  box-shadow: none;
+  background-color: unset;
+  border-width: 0 1px 1px;
+  border-style: solid;
+  border-color: var(variables.$border-on-surface);
+  .feather-expansion-header-button {
+    height: 5rem;
+  }
   .feather-expansion-header-button.expanded {
-    height: 3rem;
+    height: 5rem;
   }
   .description {
-    margin-left: var(variables.$spacing-xxl);
+    margin-top: 1rem;
+    margin-left: 2.1rem;
   }
 }
 </style>

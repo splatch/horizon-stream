@@ -15,7 +15,7 @@ describe('Alerts', () => {
   })
 
   test('Should have the required elements', () => {
-    const elems = ['headline', 'clear-all-filters-btn', 'card-list']
+    const elems = ['headline', 'clear-all-filters-btn', 'severity-filter', 'sort-date', 'search-filter', 'card-list']
     elems.forEach((elem) => {
       const el = wrapper.get(`[data-test="${elem}"]`)
       expect(el.exists()).toBeTruthy()

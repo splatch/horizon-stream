@@ -12,11 +12,16 @@
         >clear all filters</FeatherButton
       >
     </div>
-    <!-- severity filter -->
+    <div
+      class="severity-filter"
+      data-test="severity-filter"
+    >
+      severity filter
+    </div>
     <div class="content">
-      <div>
-        <!-- sort by date-->
-        <!-- search filter -->
+      <div class="sort-search">
+        <div data-test="sort-date">sort by date</div>
+        <div data-test="search-filter">search filter</div>
       </div>
       <ACardList data-test="card-list" />
     </div>
@@ -29,7 +34,7 @@
 @use '@featherds/styles/themes/variables';
 
 .container {
-  min-width: 1130px;
+  min-width: 1100px;
   margin-right: var(variables.$spacing-l);
   margin-left: var(variables.$spacing-l);
 }
@@ -41,8 +46,15 @@
   align-items: center;
 }
 
+.sort-search {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: var(variables.$spacing-l);
+}
+
 .content {
   background: white;
-  padding: var(variables.$spacing-l) var(variables.$spacing-xs);
+  padding: var(variables.$spacing-l);
 }
 </style>
