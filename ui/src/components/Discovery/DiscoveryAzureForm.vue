@@ -1,5 +1,8 @@
 <template>
-  <div class="azure-container">
+  <div
+    v-tabindex
+    class="azure-container"
+  >
     <div class="title">
       {{ Azure.title }}
     </div>
@@ -64,6 +67,7 @@
         {{ Azure.cancelBtnText }}
       </FeatherButton>
       <ButtonWithSpinner
+        type="submit"
         :isFetching="discoveryMutations.isFetching.value"
         @click="saveAzureDiscovery"
         primary
@@ -95,8 +99,8 @@ const props = defineProps<{
   cancel: () => void
 }>()
 
-const selectLocation = (location: Required<Location[]>) =>
-  location[0] && location[0].location && store.selectLocation(location[0].location, true)
+const selectLocation = (location: Required<Location>) =>
+  location.location && store.selectLocation(location.location, true)
 
 const tagsAutocompleteRef = ref()
 const tagsSelectedListener = (tags: Record<string, string>[]) => {

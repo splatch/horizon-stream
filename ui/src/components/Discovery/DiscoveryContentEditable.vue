@@ -13,37 +13,46 @@
         - the input box is not empty
  -->
 <template>
-  <div class="content-editable-wrapper">
-    <div class="label">
-      <label for="contentEditable">{{ props.label }}</label>
-      <FeatherTooltip
-        v-if="props.tooltipText"
-        :title="props.tooltipText"
-        v-slot="{ attrs, on }"
-      >
-        <FeatherButton
-          v-bind="attrs"
-          v-on="on"
-          icon="info"
-          class="icon-help"
-          ><FeatherIcon :icon="Help"> </FeatherIcon
-        ></FeatherButton>
-      </FeatherTooltip>
+  <div>
+    <div class="content-editable-wrapper">
+      <div class="label">
+        <label for="contentEditable">{{ props.label }}</label>
+        <FeatherTooltip
+          v-if="props.tooltipText"
+          :title="props.tooltipText"
+          v-slot="{ attrs, on }"
+        >
+          <FeatherButton
+            v-bind="attrs"
+            v-on="on"
+            icon="info"
+            class="icon-help"
+            ><FeatherIcon :icon="Help"> </FeatherIcon
+          ></FeatherButton>
+        </FeatherTooltip>
+      </div>
+      <div
+        v-html="htmlString"
+        @keyup="contentChange"
+        ref="contentEditableRef"
+        contenteditable="true"
+        id="contentEditable"
+        class="content-editable"
+        @blur="validateAndFormat"
+      />
+      <span
+        v-if="props.regexDelim && isContentNotEmpty"
+        @click="validateAndFormat"
+        class="validate-format"
+        ><Icon :icon="checkCircleIcon"
+      /></span>
     </div>
     <div
-      v-html="htmlString"
-      @keyup="contentChange"
-      ref="contentEditableRef"
-      contenteditable="true"
-      id="contentEditable"
-      class="content-editable"
-    />
-    <span
-      v-if="props.regexDelim && isContentNotEmpty"
-      @click="validateAndFormat"
-      class="validate-format"
-      ><Icon :icon="checkCircleIcon"
-    /></span>
+      v-if="isContentInvalid"
+      class="errorMsgBox"
+    >
+      {{ errorMsg }}
+    </div>
   </div>
 </template>
 
@@ -51,13 +60,14 @@
 import ipRegex from 'ip-regex'
 import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
-import { ContentEditableType } from '@/components/Discovery/discovery.constants'
+import { ContentEditableType, REGEX_PORT } from '@/components/Discovery/discovery.constants'
 import { PropType } from 'vue'
 import { fncArgVoid } from '@/types'
+import discoveryText from '@/components/Discovery/discovery.text'
+
 import Help from '@featherds/icon/action/Help'
 
 const emit = defineEmits(['is-content-invalid', 'content-formatted'])
-
 const props = defineProps({
   contentType: {
     type: Number as PropType<ContentEditableType>,
@@ -81,12 +91,17 @@ const props = defineProps({
   },
   tooltipText: {
     type: String
+  },
+  isRequired: {
+    type: Boolean,
+    required: false
   }
 })
 
-let isContentInvalid = true
 const isContentNotEmpty = ref(false)
 const contentEditableRef = ref()
+const isContentInvalid = ref(false)
+const errorMsg = ref('')
 const htmlString = ref(props.content || props.defaultContent) // to render string as html
 
 watch(props, () => {
@@ -98,14 +113,20 @@ const contentChange = () => {
 }
 
 const validateAndFormat: fncArgVoid = () => {
-  isContentInvalid = validateContent()
-
+  isContentInvalid.value = validateContent()
+  if (isContentInvalid.value) {
+    if (!isContentNotEmpty.value && props.isRequired) {
+      errorMsg.value = discoveryText.ContentEditable.errorRequired
+    } else {
+      errorMsg.value = discoveryText.ContentEditable.errorInvalidValue
+    }
+  }
   const highlightedString = highlightInvalid()
   if (highlightedString.length) htmlString.value = highlightedString
 
-  emit('is-content-invalid', isContentInvalid)
+  emit('is-content-invalid', isContentInvalid.value)
 
-  if (!isContentInvalid) emit('content-formatted', splitContent(contentEditableRef.value.textContent))
+  if (!isContentInvalid.value) emit('content-formatted', splitContent(contentEditableRef.value.textContent))
 }
 
 const splitContent = (str: string): (string | number)[] | null => {
@@ -124,14 +145,15 @@ const validateContent = () => {
   const regexDelim = new RegExp(props.regexDelim)
   const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim)
   let isInvalid = false
-
+  const regexPorts = new RegExp(REGEX_PORT.listPorts)
   switch (props.contentType) {
     case ContentEditableType.IP:
-      // isInvalid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
+      isInvalid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
       break
     case ContentEditableType.CommunityString:
       break
     case ContentEditableType.UDPPort:
+      isInvalid = !regexPorts.test(contentEditableRef.value.textContent)
       break
     default:
   }
@@ -143,43 +165,45 @@ const highlightInvalid = () => {
   const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim)
   let highlightInvalidString = ''
   let errorStr = '<span style="color: #ff555e">{{}}</span>'
-
+  const portRegex = new RegExp(REGEX_PORT.onePort)
   switch (props.contentType) {
     case ContentEditableType.IP:
-      /* highlightInvalidString = contentEditableStrings
+      highlightInvalidString = contentEditableStrings
         .map((str: string) => {
           if (ipRegex({ exact: true }).test(str)) return str
-
           return errorStr.replace('{{}}', str)
         })
-        .join(';') */
+        .join(';')
       break
     case ContentEditableType.CommunityString:
       break
     case ContentEditableType.UDPPort:
+      highlightInvalidString = contentEditableStrings
+        .map((str: string) => {
+          if (portRegex.test(str)) return str
+          return errorStr.replace('{{}}', str)
+        })
+        .join(';')
       break
     default:
   }
-
   return highlightInvalidString
 }
 
 const reset: fncArgVoid = () => {
   contentEditableRef.value.textContent = props.defaultContent
+  errorMsg.value = ''
+  isContentInvalid.value = false
 }
 
 const checkCircleIcon: IIcon = {
   image: markRaw(CheckCircleIcon),
   tooltip: 'Validate'
 }
-const iconHelp: IIcon = {
-  image: markRaw(Help),
-  tooltip: props.tooltipText,
-  size: 1.2
-}
 
 defineExpose({
   validateAndFormat,
+  validateContent,
   reset
 })
 </script>
@@ -188,6 +212,7 @@ defineExpose({
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
 @use '@/styles/vars.scss';
+@use '@featherds/styles/mixins/typography';
 
 .content-editable-wrapper {
   // TODO: mimic FeatherDS input component; label inside input box and animate it to be on top on the box when focus
@@ -233,5 +258,11 @@ defineExpose({
       }
     }
   }
+}
+.errorMsgBox {
+  height: 24px;
+  @include typography.caption;
+  color: var(variables.$error);
+  padding-top: var(variables.$spacing-xs);
 }
 </style>

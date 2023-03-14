@@ -2,6 +2,7 @@
   <form
     @submit.prevent="saveHandler"
     novalidate
+    v-tabindex
     class="form"
   >
     <div class="form-title">{{ DiscoverySNMPForm.title }}</div>
@@ -9,6 +10,7 @@
       v-model="discoveryInfo.configName"
       :label="DiscoverySNMPForm.nameInputLabel"
       class="name-input"
+      :schema="nameV"
     />
     <DiscoveryLocationsAutocomplete
       class="locations-select"
@@ -27,7 +29,6 @@
     />
     <div class="content-editable-container">
       <DiscoveryContentEditable
-        @is-content-invalid="isIPRangeInvalidListener"
         @content-formatted="(val) => setSnmpConfig('ipAddresses', val)"
         :contentType="ContentEditableType.IP"
         :regexDelim="IP_RANGE.regexDelim"
@@ -36,9 +37,9 @@
         class="ip-input"
         :tooltipText="Common.tooltip.IPHelpTooltp"
         :content="props.discovery?.ipAddresses?.join(', ')"
+        isRequired
       />
       <DiscoveryContentEditable
-        @is-content-invalid="isCommunityStringInvalidListerner"
         @content-formatted="(val) => setSnmpConfig('snmpConfig.readCommunities', val)"
         :contentType="ContentEditableType.CommunityString"
         :regexDelim="COMMUNITY_STRING.regexDelim"
@@ -49,7 +50,6 @@
         :content="props.discovery?.snmpConfig?.readCommunities?.join(', ')"
       />
       <DiscoveryContentEditable
-        @is-content-invalid="isUDPPortInvalidListener"
         @content-formatted="(val) => setSnmpConfig('snmpConfig.ports', val)"
         :contentType="ContentEditableType.UDPPort"
         :regexDelim="UDP_PORT.regexDelim"
@@ -89,6 +89,12 @@ import { Location, CreateDiscoveryConfigRequestInput } from '@/types/graphql'
 import { set } from 'lodash'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
+import { useForm } from '@featherds/input-helper'
+import { string } from 'yup'
+
+const nameV = string().required('Name is required.')
+
+const form = useForm()
 
 const { createDiscoveryConfig, activeDiscoveryError, isFetchingActiveDiscovery } = useDiscoveryMutations()
 
@@ -120,18 +126,6 @@ const tagsSelectedListener = (tags: Record<string, string>[]) => {
   discoveryInfo.value.tags = tags.map(({ name }) => ({ name }))
 }
 
-const isIPRangeInvalidListener = (isInvalid: boolean) => {
-  console.log(isInvalid)
-}
-
-const isCommunityStringInvalidListerner = (isInvalid: boolean) => {
-  console.log(isInvalid)
-}
-
-const isUDPPortInvalidListener = (isInvalid: boolean) => {
-  console.log(isInvalid)
-}
-
 const resetContentEditable = () => {
   tagsAutocompleteRef.value.reset()
   contentEditableIPRef.value?.reset()
@@ -143,8 +137,10 @@ const saveHandler = async () => {
   contentEditableIPRef.value?.validateAndFormat()
   contentEditableCommunityStringRef.value?.validateAndFormat()
   contentEditableUDPPortRef.value?.validateAndFormat()
+  const isIpInvalid = contentEditableIPRef.value?.validateContent()
+  const isPortInvalid = contentEditableUDPPortRef.value?.validateContent()
+  if (form.validate().length || isIpInvalid || isPortInvalid) return
   await createDiscoveryConfig({ CreateDiscoveryConfigRequestInput: discoveryInfo.value })
-
   if (!activeDiscoveryError.value && discoveryInfo.value.configName) {
     discoveryQueries.getDiscoveries()
     resetContentEditable()
@@ -165,8 +161,8 @@ const saveHandler = async () => {
     margin-bottom: var(variables.$spacing-m);
   }
   .locations-select {
-    margin-top: var(variables.$spacing-xl);
-    margin-bottom: var(variables.$spacing-l);
+    margin-top: var(variables.$spacing-xs);
+    margin-bottom: var(variables.$spacing-xl);
     width: 100%;
   }
 
@@ -186,6 +182,7 @@ const saveHandler = async () => {
 
 .tags-autocomplete {
   margin-bottom: var(variables.$spacing-l);
+  margin-top: var(variables.$spacing-m);
 }
 
 .content-editable-container {
@@ -199,14 +196,10 @@ const saveHandler = async () => {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: flex-start;
     > div {
       width: 32%;
     }
   }
-}
-
-:deep(.feather-input-sub-text) {
-  display: none;
 }
 </style>
