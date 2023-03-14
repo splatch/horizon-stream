@@ -17,6 +17,7 @@ package ingress
 import (
 	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
 	"github.com/OpenNMS-Cloud/opennms-operator/internal/model/values"
+	routev1 "github.com/openshift/api/route/v1"
 	adminv1 "k8s.io/api/admissionregistration/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
@@ -28,8 +29,6 @@ import (
 type IngressHandler struct {
 	handlers.ServiceHandlerObject
 }
-
-//type Route routev1.RouteApplyConfiguration
 
 func (h *IngressHandler) UpdateConfig(values values.TemplateValues) error {
 
@@ -57,7 +56,6 @@ func (h *IngressHandler) UpdateConfig(values values.TemplateValues) error {
 		h.AddToTemplates(handlers.Filepath("ingress/nginx-controller/controller-grpc-service.yaml"), values, &controllerGRPCService)
 		h.AddToTemplates(handlers.Filepath("ingress/nginx-controller/controller-service-admission.yaml"), values, &controllerServiceAdmission)
 		h.AddToTemplates(handlers.Filepath("ingress/nginx-controller/controller-ingress-class.yaml"), values, &controllerIngressClass)
-		h.AddToTemplates(handlers.Filepath("ingress/nginx-controller/controller-deployment.yaml"), values, &controllerDeployment)
 
 		//CUSTOM ERRORS CONFIGS
 		var customErrorsDeployment appsv1.Deployment
@@ -86,16 +84,25 @@ func (h *IngressHandler) UpdateConfig(values values.TemplateValues) error {
 		var patchWebhook batchv1.Job
 
 		h.AddToTemplates(handlers.Filepath("ingress/jobs/job-createsecret.yaml"), values, &createSecret)
+		h.AddToTemplates(handlers.Filepath("ingress/nginx-controller/controller-deployment.yaml"), values, &controllerDeployment)
 		h.AddToTemplates(handlers.Filepath("ingress/jobs/job-patchwebhook.yaml"), values, &patchWebhook)
 
 		//INGRESSES
 		var opennmsIngress netv1.Ingress
 
 		h.AddToTemplates(handlers.Filepath("ingress/ingresses/opennms-ingress.yaml"), values, &opennmsIngress)
-	} else { //Cortex Mode //TODO
-		//var minionRoute Route
+	} else { //OpenShift Mode
+		var minionRoute routev1.Route
+		var uiRoute routev1.Route
+		var apiRoute routev1.Route
+		var kcRoute routev1.Route
+		var grafanaRoute routev1.Route
 
-		//h.AddToTemplates(handlers.Filepath("ingress/openshift/minion-route.yaml"), values, &minionRoute)
+		h.AddToTemplates(handlers.Filepath("ingress/openshift/onms-minion-route.yaml"), values, &minionRoute)
+		h.AddToTemplates(handlers.Filepath("ingress/openshift/onms-ui-route.yaml"), values, &uiRoute)
+		h.AddToTemplates(handlers.Filepath("ingress/openshift/onms-api-route.yaml"), values, &apiRoute)
+		h.AddToTemplates(handlers.Filepath("ingress/openshift/onms-keycloak-route.yaml"), values, &kcRoute)
+		h.AddToTemplates(handlers.Filepath("ingress/openshift/onms-grafana-route.yaml"), values, &grafanaRoute)
 	}
 
 	return h.LoadTemplates()
