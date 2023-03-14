@@ -63,7 +63,6 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (re
 		for _, resource := range handler.GetConfig() {
 			kind := reflect.ValueOf(resource).Elem().Type().String()
 			deployedResource, exists := r.getResourceFromCluster(ctx, resource)
-			r.Log.Info("deployed resource", "namespace", resource.GetNamespace(), "name", resource.GetName(), "kind", kind, "exists", exists)
 			if !exists {
 				r.updateStatus(ctx, &instance.CRD, false, "instance starting")
 				r.Log.Info("creating resource", "namespace", resource.GetNamespace(), "name", resource.GetName(), "kind", kind)
