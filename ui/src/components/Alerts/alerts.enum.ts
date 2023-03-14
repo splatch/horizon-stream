@@ -3,7 +3,7 @@ export const enum AlertType {
   MAJOR,
   MINOR,
   WARNING,
-  INTERMITTEN
+  INTERMITTENT
 }
 
 export const enum AlertStatus {
