@@ -17,6 +17,10 @@ package reconciler
 import (
 	"context"
 	"fmt"
+	"log"
+	"reflect"
+	"time"
+
 	"github.com/OpenNMS-Cloud/opennms-operator/api/v1alpha1"
 	"github.com/OpenNMS-Cloud/opennms-operator/config"
 	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
@@ -27,12 +31,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/apimachinery/pkg/types"
-	"log"
-	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"time"
 )
 
 // OpenNMSReconciler - reconciles a OpenNMS object
@@ -62,6 +63,7 @@ func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (re
 		for _, resource := range handler.GetConfig() {
 			kind := reflect.ValueOf(resource).Elem().Type().String()
 			deployedResource, exists := r.getResourceFromCluster(ctx, resource)
+			r.Log.Info("deployed resource", "namespace", resource.GetNamespace(), "name", resource.GetName(), "kind", kind, "exists", exists)
 			if !exists {
 				r.updateStatus(ctx, &instance.CRD, false, "instance starting")
 				r.Log.Info("creating resource", "namespace", resource.GetNamespace(), "name", resource.GetName(), "kind", kind)
