@@ -6,7 +6,7 @@
     />
     <!-- Filter Area -->
     <div class="filters">
-      <BasicSelect
+      <BasicChipSelect
           :list="timeOptions"
           :size="160"
           :show-chip="true"
