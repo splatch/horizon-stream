@@ -12,5 +12,3 @@ query alertList {
     description
   }
 }
-
-# fetch search alert list
