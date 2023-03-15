@@ -18,7 +18,18 @@ casual.define('alert', function () {
 })
 
 casual.define('alertList', function () {
-  return [casual.alert, casual.alert, casual.alert, casual.alert, casual.alert]
+  return [
+    casual.alert,
+    casual.alert,
+    casual.alert,
+    casual.alert,
+    casual.alert,
+    casual.alert,
+    casual.alert,
+    casual.alert,
+    casual.alert,
+    casual.alert
+  ]
 })
 
 const alert = casual.alert

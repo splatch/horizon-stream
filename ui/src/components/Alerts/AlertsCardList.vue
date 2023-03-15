@@ -37,7 +37,7 @@
         data-test="alert-list"
       >
         <AlertsCard
-          v-for="alert in alerts"
+          v-for="alert in alertsStore.alertList"
           :key="alert.id"
           :alert="alert"
           @alert-selected="alertSelectedListener"
@@ -82,7 +82,6 @@ const alerts = ref([] as IAlert[])
 
 onMounted(async () => {
   await alertsStore.fetchAlerts()
-
   alerts.value = alertsStore.alertList.map((a: IAlert) => ({ ...a, isSelected: false }))
 })
 
