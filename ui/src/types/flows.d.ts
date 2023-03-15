@@ -1,4 +1,4 @@
-export const enum GraphTypes {
+export const enum ChartTypes {
   BAR = 'bar',
   LINE = 'line',
   SCATTER = 'scatter',

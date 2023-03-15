@@ -1,10 +1,10 @@
 <!-- 
-Generic graph using ChartJS.   
+Generic chart using ChartJS.   
   - Props
     - id: id used for canvas ID and used for error handling
     - chartData: ChartData object from chartjs.
     - chartOptions: ChartOptions object from chartjs
-    - chartType: GraphType enum to select the type of chart you want to use.
+    - chartType: ChartType enum to select the type of chart you want to use.
   
   TODO:
     - Allow user to render the chart when they want on the parent component/store.
@@ -17,7 +17,7 @@ Generic graph using ChartJS.
 import { ChartOptions, ChartData, ChartType } from 'chart.js'
 import Chart from 'chart.js/auto'
 import { PropType } from 'vue'
-import { GraphTypes } from '@/types'
+import { ChartTypes } from '@/types'
 
 const props = defineProps({
   id: {
@@ -34,8 +34,8 @@ const props = defineProps({
   },
   chartType: {
     required: true,
-    type: String as PropType<GraphTypes>,
-    default: GraphTypes.BAR
+    type: String as PropType<ChartTypes>,
+    default: ChartTypes.BAR
   }
 })
 
@@ -58,7 +58,7 @@ const render = async (update?: boolean) => {
     }
   } catch (error) {
     console.log(error)
-    console.log('Could not render graph for ', props.id)
+    console.log('Could not render chart for ', props.id)
   }
 }
 

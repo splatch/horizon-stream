@@ -33,13 +33,12 @@
     </div>
     <!-- Chart Area -->
     <div class="flows">
-      <TableGraph
-      :id="'tableGraph'"
+      <TableChart
+      :id="'tableChart'"
       :selected-filter-range="flowsStore.dateFilter"
       :chart-data="flowsStore.tableChartData"
-      :chart-type="GraphTypes.BAR"
       :table-data="flowsStore.datasets">
-      </TableGraph>
+      </TableChart>
     </div>
   </div>
   
@@ -47,7 +46,6 @@
 
 <script setup lang="ts">
 import { useFlowsStore } from '@/store/Views/flowsStore'
-import { GraphTypes } from '@/types'
 
 const flowsStore = useFlowsStore()
 

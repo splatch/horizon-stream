@@ -1,12 +1,12 @@
 <template>
-  <div class="table-graph-container">
+  <div class="table-chart-container">
     <div class="chart-container">
-      <BasicGraph
+      <BasicChart
       :id="id"
       :chart-options="chartOptions"
       :chart-data="chartData"
-      :chart-type="GraphTypes.BAR">
-      </BasicGraph>
+      :chart-type="ChartTypes.BAR">
+      </BasicChart>
     </div>
     
     <div class="table-container">
@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { ChartOptions, ChartData } from 'chart.js'
 import { PropType } from 'vue'
-import { GraphTypes } from '@/types'
+import { ChartTypes } from '@/types'
 
 
 const props = defineProps({
@@ -149,7 +149,7 @@ const postFixGB = (value: any) => value.toString() + ' GB'
 @use '@featherds/styles/mixins/typography';
 @import "@featherds/table/scss/table";
 
-.table-graph-container{
+.table-chart-container{
   display: flex;
   justify-content: flex-start;
   align-items: stretch;
