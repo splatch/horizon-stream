@@ -15,7 +15,7 @@
         data-test="checkbox"
       />
       <div class="content">
-        <div>
+        <div class="name-node-type">
           <div
             class="name headline"
             data-test="name"
@@ -23,10 +23,10 @@
             {{ alert.name }}
           </div>
           <div
-            class="node"
-            data-test="node"
+            class="node-type"
+            data-test="node-type"
           >
-            {{ alert.node }}
+            {{ alert.nodeType }}
           </div>
         </div>
         <div
@@ -39,21 +39,21 @@
           class="cause headline"
           data-test="cause"
         >
-          {{ alert.cause }}
+          <div>{{ alert.cause }}</div>
         </div>
         <!-- duration: hrs, days, weeks. months? -->
         <div
           class="duration headline"
           data-test="duration"
         >
-          {{ alert.duration }}
+          <div>{{ alert.duration }}</div>
         </div>
-        <div>
+        <div class="date-time">
           <div
             class="date headline"
             data-test="date"
           >
-            {{ alert.date }}
+            <span>{{ alert.date }}</span>
           </div>
           <div
             class="time"
@@ -62,12 +62,14 @@
             {{ alert.time }}
           </div>
         </div>
-        <FeatherIcon
-          :icon="CheckCircle"
-          :class="alert.isAcknowledged ? 'acknowledged' : ''"
-          class="acknowledged-check-circle"
-          data-test="check-icon"
-        />
+        <div class="check-circle">
+          <FeatherIcon
+            :icon="CheckCircle"
+            :class="alert.isAcknowledged ? 'acknowledged' : ''"
+            class="acknowledged-icon"
+            data-test="check-icon"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -105,16 +107,6 @@ const acknowledgeHandler = (id: number) => {
   @include typography.headline4();
 }
 
-.acknowledged-check-circle {
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-top: 1rem;
-  color: var(variables.$shade-3);
-  &.acknowledged {
-    color: var(variables.$success);
-  }
-}
-
 .card {
   position: relative;
 }
@@ -123,6 +115,7 @@ const acknowledgeHandler = (id: number) => {
   position: absolute;
   top: 13px;
   left: var(variables.$spacing-xl);
+  width: 900px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -139,34 +132,76 @@ const acknowledgeHandler = (id: number) => {
 }
 
 .content {
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 2rem;
 }
 
-.name {
-  @include mixins.truncate-text();
+.name-node-type {
+  width: 20%;
+  margin-right: 2%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  .name {
+    @include mixins.truncate-text();
+  }
 }
 
 .severity {
+  width: 20%;
+  display: flex;
+  justify-content: center;
+  margin-right: 2%;
   &.error {
     :deep(.chip) {
       color: var(variables.$primary-text-on-color);
       background-color: var(variables.$error);
+      margin: 0;
     }
   }
 }
 
-.node {
-  > span {
-    margin-left: var(variables.$spacing-xs);
+.cause {
+  width: 20%;
+  margin-right: 2%;
+  display: flex;
+  justify-content: flex-start;
+  > div {
+    @include mixins.truncate-text();
   }
 }
 
-.cause {
-  font-weight: bold;
+.duration {
+  width: 8%;
+  margin-right: 2%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.date-time {
+  width: 15%;
+  margin-right: 2%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.check-circle {
+  width: 4%;
+  display: flex;
+  justify-content: center;
+  .acknowledged-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.8rem;
+    color: var(variables.$shade-3);
+    &.acknowledged {
+      color: var(variables.$success);
+    }
+  }
 }
 
 :deep(.feather-expansion) {

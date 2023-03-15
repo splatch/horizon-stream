@@ -1,4 +1,4 @@
-@mixin truncate-text($width: 200px) {
+@mixin truncate-text($width: 100%) {
   width: $width;
   white-space: nowrap;
   overflow: hidden;

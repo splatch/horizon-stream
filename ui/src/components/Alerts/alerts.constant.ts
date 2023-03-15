@@ -14,6 +14,6 @@ export const enum AlertStatus {
 export const enum AlertSort {
   DATE,
   TIME,
-  NODE,
+  NODE_TYPE,
   WATCHING
 }

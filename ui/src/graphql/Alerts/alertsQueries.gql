@@ -1,3 +1,16 @@
-# fetch alert list
+query alertList {
+  alertList {
+    id
+    name
+    severity
+    cause
+    duration
+    nodeType
+    date
+    time
+    isAcknowledged
+    description
+  }
+}
 
 # fetch search alert list
