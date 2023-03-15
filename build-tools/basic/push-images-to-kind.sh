@@ -24,12 +24,11 @@ kind load docker-image opennms/minion:29.0.10
 kind load docker-image postgres:13.3-alpine
 kind load docker-image busybox
 kind load docker-image "opennms/horizon-stream-grafana-dev:local-basic"
-kind load docker-image "opennms/horizon-stream-core:local-basic"
 kind load docker-image "opennms/horizon-stream-minion:local-basic"
 kind load docker-image "opennms/horizon-stream-ui:local-basic"
 kind load docker-image "opennms/horizon-stream-keycloak-dev:local-basic"
 kind load docker-image "opennms/horizon-stream-inventory:local-basic"
-kind load docker-image "opennms/horizon-stream-alarm:local-basic"
+kind load docker-image "opennms/horizon-stream-alert:local-basic"
 kind load docker-image "opennms/horizon-stream-notification:local-basic"
 kind load docker-image "opennms/horizon-stream-rest-server:local-basic"
 kind load docker-image "opennms/horizon-stream-minion-gateway:local-basic"
@@ -43,7 +42,7 @@ kind load docker-image "opennms/horizon-stream-datachoices:local-basic"
 ###
 # (
 # 	docker save \
-# 		"opennms/horizon-stream-alarm:local-basic" \
+# 		"opennms/horizon-stream-alert:local-basic" \
 # 		"opennms/horizon-stream-datachoices:local-basic" \
 # 		"opennms/horizon-stream-events:local-basic" \
 # 		"opennms/horizon-stream-grafana:local-basic" \
