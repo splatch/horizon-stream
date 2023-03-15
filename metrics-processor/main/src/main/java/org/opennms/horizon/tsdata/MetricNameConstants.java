@@ -26,25 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.metrics;
+package org.opennms.horizon.tsdata;
 
-import com.codahale.metrics.MetricRegistry;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
-import org.springframework.retry.annotation.EnableRetry;
+public interface MetricNameConstants {
+    String METRICS_NAME_PREFIX_MONITOR = "monitor_";
+    String METRICS_NAME_RESPONSE = "response_time_msec";
+    String METRIC_NAME_LABEL = "__name__";
 
-@SpringBootApplication(scanBasePackages = "org.opennms.horizon.*")
-@EnableCaching(proxyTargetClass = true)
-@EnableRetry
-public class MetricsProcessorApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(MetricsProcessorApplication.class, args);
-	}
+    String[] MONITOR_METRICS_LABEL_NAMES = {
+        "instance",
+        "location",
+        "system_id",
+        "monitor",
+        "node_id"
+    };
 
-	@Bean
-    public MetricRegistry metricRegistry(){
-	    return new MetricRegistry();
-    }
 }

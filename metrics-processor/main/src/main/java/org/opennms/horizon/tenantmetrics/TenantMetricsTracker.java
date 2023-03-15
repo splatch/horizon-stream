@@ -26,25 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.metrics;
+package org.opennms.horizon.tenantmetrics;
 
-import com.codahale.metrics.MetricRegistry;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
-import org.springframework.retry.annotation.EnableRetry;
+public interface TenantMetricsTracker {
+    void addTenantMetricSampleCount(String tenant, int count);
 
-@SpringBootApplication(scanBasePackages = "org.opennms.horizon.*")
-@EnableCaching(proxyTargetClass = true)
-@EnableRetry
-public class MetricsProcessorApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(MetricsProcessorApplication.class, args);
-	}
-
-	@Bean
-    public MetricRegistry metricRegistry(){
-	    return new MetricRegistry();
-    }
+    void addTenantFlowSampleCount(String tenant, int count);
 }

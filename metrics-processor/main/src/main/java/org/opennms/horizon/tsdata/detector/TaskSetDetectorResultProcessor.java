@@ -26,25 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.metrics;
+package org.opennms.horizon.tsdata.detector;
 
-import com.codahale.metrics.MetricRegistry;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
-import org.springframework.retry.annotation.EnableRetry;
+import org.opennms.taskset.contract.DetectorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-@SpringBootApplication(scanBasePackages = "org.opennms.horizon.*")
-@EnableCaching(proxyTargetClass = true)
-@EnableRetry
-public class MetricsProcessorApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(MetricsProcessorApplication.class, args);
-	}
+import java.io.IOException;
 
-	@Bean
-    public MetricRegistry metricRegistry(){
-	    return new MetricRegistry();
+@Component
+public class TaskSetDetectorResultProcessor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TaskSetDetectorResultProcessor.class);
+
+    public void processDetectorResponse(String tenantId, String taskId, DetectorResponse detectorResponse) throws IOException {
+            LOG.info("Have detector response, tenant-id: {}; task-id={}; detected={}", tenantId, taskId, detectorResponse.getDetected());
     }
 }

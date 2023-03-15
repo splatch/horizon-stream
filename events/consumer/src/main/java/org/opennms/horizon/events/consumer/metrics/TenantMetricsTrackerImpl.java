@@ -26,25 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.metrics;
+package org.opennms.horizon.events.consumer.metrics;
 
-import com.codahale.metrics.MetricRegistry;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
-import org.springframework.retry.annotation.EnableRetry;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@SpringBootApplication(scanBasePackages = "org.opennms.horizon.*")
-@EnableCaching(proxyTargetClass = true)
-@EnableRetry
-public class MetricsProcessorApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(MetricsProcessorApplication.class, args);
-	}
+@Component
+public class TenantMetricsTrackerImpl implements TenantMetricsTracker {
 
-	@Bean
-    public MetricRegistry metricRegistry(){
-	    return new MetricRegistry();
+    public static final String EVENT_SAMPLE_COUNT_NAME = "event_sample_count";
+    public static final String SAMPLE_COUNT_TENANT_LABEL_NAME = "tenant";
+
+    @Autowired
+    private MeterRegistry meterRegistry;
+
+    @Override
+    public void addTenantEventSampleCount(String tenant, int count) {
+        Counter counter =
+            meterRegistry.counter(EVENT_SAMPLE_COUNT_NAME,
+                List.of(
+                    Tag.of(SAMPLE_COUNT_TENANT_LABEL_NAME, tenant)
+                ));
+
+        counter.increment(count);
     }
+
 }
