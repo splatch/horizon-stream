@@ -54,8 +54,10 @@ public class GrpcAlertService {
     private final AlertMapper mapper;
 
     @GraphQLQuery(name = "findAllAlerts")
-    public Flux<Alert> findAllAlerts(@GraphQLEnvironment ResolutionEnvironment env) {
-        return Flux.fromIterable(alertsClient.listAlerts(headerUtil.getAuthHeader(env)).stream().map(mapper::protoToAlert).toList());
+    public Flux<Alert> findAllAlerts(@GraphQLArgument(name = "first") Integer pageSize,
+                                     @GraphQLArgument(name = "after") String after,
+                                     @GraphQLEnvironment ResolutionEnvironment env) {
+        return Flux.fromIterable(alertsClient.listAlerts(pageSize, after, headerUtil.getAuthHeader(env)).stream().map(mapper::protoToAlert).toList());
     }
 
     @GraphQLMutation

@@ -38,6 +38,13 @@ public class AlertsClient {
         return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).listAlerts(ListAlertsRequest.newBuilder().build()).getAlertsList();
     }
 
+    public List<Alert> listAlerts(int pageSize, String nextPage, String accessToken) {
+        Metadata metadata = new Metadata();
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        ListAlertsRequest request = ListAlertsRequest.newBuilder().setPageSize(pageSize).setNextPageToken(nextPage).build();
+        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).listAlerts(request).getAlertsList();
+    }
+
     public Alert acknowledgeAlert(long alertId, String accessToken) {
         Metadata metadata = new Metadata();
         metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
