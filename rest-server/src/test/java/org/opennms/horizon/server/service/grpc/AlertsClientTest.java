@@ -129,65 +129,65 @@ public class AlertsClientTest {
         mockInterceptor.reset();
     }
 
-//    @Test
-//    public void testListAlerts() {
-//        String methodName = new Object() {
-//        }.getClass().getEnclosingMethod().getName();
-//        ArgumentCaptor<ListAlertsRequest> captor = ArgumentCaptor.forClass(ListAlertsRequest.class);
-//        List<Alert> result = client.listAlerts(accessToken + methodName);
-//        assertThat(result.isEmpty()).isTrue();
-//        verify(mockAlertService).listAlerts(captor.capture(), any());
-//        assertThat(captor.getValue()).isNotNull();
-//        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
-//    }
-//
-//    @Test
-//    public void testAcknowledgeAlert() {
-//        String methodName = new Object() {
-//        }.getClass().getEnclosingMethod().getName();
-//        ArgumentCaptor<UInt64Value> captor = ArgumentCaptor.forClass(UInt64Value.class);
-//        Alert result = client.acknowledgeAlert(1l, accessToken + methodName);
-//        assertThat(result).isNotNull();
-//        verify(mockAlertService).acknowledgeAlert(captor.capture(), any());
-//        assertThat(captor.getValue()).isNotNull();
-//        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
-//    }
-//
-//    @Test
-//    public void testUnacknowledgeAlert() {
-//        String methodName = new Object() {
-//        }.getClass().getEnclosingMethod().getName();
-//        ArgumentCaptor<UInt64Value> captor = ArgumentCaptor.forClass(UInt64Value.class);
-//        Alert result = client.unacknowledgeAlert(1l, accessToken + methodName);
-//        assertThat(result).isNotNull();
-//        verify(mockAlertService).unacknowledgeAlert(captor.capture(), any());
-//        assertThat(captor.getValue()).isNotNull();
-//        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
-//    }
-//
-//    @Test
-//    public void testClearAlert() {
-//        String methodName = new Object() {
-//        }.getClass().getEnclosingMethod().getName();
-//        ArgumentCaptor<UInt64Value> captor = ArgumentCaptor.forClass(UInt64Value.class);
-//        Alert result = client.clearAlert(1l, accessToken + methodName);
-//        assertThat(result).isNotNull();
-//        verify(mockAlertService).clearAlert(captor.capture(), any());
-//        assertThat(captor.getValue()).isNotNull();
-//        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
-//    }
-//
-//    @Test
-//    public void testEscalateAlert() {
-//        String methodName = new Object() {
-//        }.getClass().getEnclosingMethod().getName();
-//        ArgumentCaptor<UInt64Value> captor = ArgumentCaptor.forClass(UInt64Value.class);
-//        Alert result = client.escalateAlert(1l, accessToken + methodName);
-//        assertThat(result).isNotNull();
-//        verify(mockAlertService).escalateAlert(captor.capture(), any());
-//        assertThat(captor.getValue()).isNotNull();
-//        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
-//    }
+    @Test
+    public void testListAlerts() {
+        String methodName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        ArgumentCaptor<ListAlertsRequest> captor = ArgumentCaptor.forClass(ListAlertsRequest.class);
+        List<Alert> result = client.listAlerts(accessToken + methodName);
+        assertThat(result.isEmpty()).isTrue();
+        verify(mockAlertService).listAlerts(captor.capture(), any());
+        assertThat(captor.getValue()).isNotNull();
+        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
+    }
+
+    @Test
+    public void testAcknowledgeAlert() {
+        String methodName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        ArgumentCaptor<UInt64Value> captor = ArgumentCaptor.forClass(UInt64Value.class);
+        Alert result = client.acknowledgeAlert(1l, accessToken + methodName);
+        assertThat(result).isNotNull();
+        verify(mockAlertService).acknowledgeAlert(captor.capture(), any());
+        assertThat(captor.getValue()).isNotNull();
+        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
+    }
+
+    @Test
+    public void testUnacknowledgeAlert() {
+        String methodName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        ArgumentCaptor<UInt64Value> captor = ArgumentCaptor.forClass(UInt64Value.class);
+        Alert result = client.unacknowledgeAlert(1l, accessToken + methodName);
+        assertThat(result).isNotNull();
+        verify(mockAlertService).unacknowledgeAlert(captor.capture(), any());
+        assertThat(captor.getValue()).isNotNull();
+        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
+    }
+
+    @Test
+    public void testClearAlert() {
+        String methodName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        ArgumentCaptor<UInt64Value> captor = ArgumentCaptor.forClass(UInt64Value.class);
+        Alert result = client.clearAlert(1l, accessToken + methodName);
+        assertThat(result).isNotNull();
+        verify(mockAlertService).clearAlert(captor.capture(), any());
+        assertThat(captor.getValue()).isNotNull();
+        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
+    }
+
+    @Test
+    public void testEscalateAlert() {
+        String methodName = new Object() {
+        }.getClass().getEnclosingMethod().getName();
+        ArgumentCaptor<UInt64Value> captor = ArgumentCaptor.forClass(UInt64Value.class);
+        Alert result = client.escalateAlert(1l, accessToken + methodName);
+        assertThat(result).isNotNull();
+        verify(mockAlertService).escalateAlert(captor.capture(), any());
+        assertThat(captor.getValue()).isNotNull();
+        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
+    }
 
     private static class MockServerInterceptor implements ServerInterceptor {
         private String authHeader;
