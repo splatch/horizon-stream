@@ -18,7 +18,7 @@
 <script lang="ts" setup>
 import { AlertType } from '@/components/Alerts/alerts.constant'
 import { useAlertsStore } from '@/store/Views/alertsStore'
-import { groupBy, values } from 'lodash'
+import { groupBy } from 'lodash'
 const store = useAlertsStore()
 const severitiesGrouped = computed(() => groupBy(store.allAlertsList, 'severity'))
 </script>
@@ -30,5 +30,6 @@ const severitiesGrouped = computed(() => groupBy(store.allAlertsList, 'severity'
   display: flex;
   gap: var(variables.$spacing-m);
   margin-bottom: var(variables.$spacing-l);
+  flex-wrap: wrap;
 }
 </style>

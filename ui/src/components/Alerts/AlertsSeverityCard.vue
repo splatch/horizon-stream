@@ -42,14 +42,18 @@ const addSeverityFilter = () => {
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
+@use '@/styles/mediaQueriesMixins.scss';
 
 .card {
   background-color: var(variables.$surface);
   min-width: 165px;
-  height: 130px;
+  height: 85px;
   padding: var(variables.$spacing-s);
   border-radius: 5px;
   width: fit-content;
+  @include mediaQueriesMixins.screen-md {
+    height: 130px;
+  }
   &.selected {
     background-color: var(variables.$shade-4);
     border-color: var(variables.$secondary-variant);
@@ -67,7 +71,10 @@ const addSeverityFilter = () => {
 
   > .count {
     margin-top: var(variables.$spacing-xs);
-    @include typography.display2();
+    @include typography.headline2();
+    @include mediaQueriesMixins.screen-md {
+      @include typography.display2();
+    }
   }
 }
 
