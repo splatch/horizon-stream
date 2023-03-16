@@ -5,7 +5,7 @@ import { IAlert } from '@/types/alerts'
 
 export const useAlertsStore = defineStore('alertsStore', () => {
   const severitiesSelected = ref<string[]>([])
-  const timeSelected = ref(TimeType.ALL)
+  const timeSelected = ref()
   const alertList = ref()
   const allAlertsList = ref()
   const alertListSearched = ref([])
@@ -34,7 +34,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     }
   }
 
-  const selectTimeFilter = (selected: TimeType): void => {
+  const selectTime = (selected: TimeType | undefined): void => {
     timeSelected.value = selected
   }
 
@@ -45,6 +45,6 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     severitiesSelected,
     toggleSeverity,
     timeSelected,
-    selectTimeFilter
+    selectTime
   }
 })

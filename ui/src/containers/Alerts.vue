@@ -20,23 +20,23 @@
           data-test="time-filter"
         >
           <span
-            @click="selectTimeFilter(TimeType.ALL)"
-            :class="dateFilterSelected === TimeType.ALL ? 'selected' : ''"
+            @click="selectTimeFilter(undefined)"
+            :class="!timeFilterSelected ? 'selected' : ''"
             >All</span
           >
           <span
             @click="selectTimeFilter(TimeType.TODAY)"
-            :class="dateFilterSelected === TimeType.TODAY ? 'selected' : ''"
+            :class="timeFilterSelected === TimeType.TODAY ? 'selected' : ''"
             >Today</span
           >
           <span
             @click="selectTimeFilter(TimeType.DAY)"
-            :class="dateFilterSelected === TimeType.DAY ? 'selected' : ''"
+            :class="timeFilterSelected === TimeType.DAY ? 'selected' : ''"
             >24H</span
           >
           <span
             @click="selectTimeFilter(TimeType.SEVEN_DAY)"
-            :class="dateFilterSelected === TimeType.SEVEN_DAY ? 'selected' : ''"
+            :class="timeFilterSelected === TimeType.SEVEN_DAY ? 'selected' : ''"
             >7D</span
           >
         </div>
@@ -66,11 +66,9 @@ onMounted(async () => {
   await alertsStore.fetchAlerts()
 })
 
-// const dateFilterSelected = ref(TimeType.ALL)
-const dateFilterSelected = computed(() => alertsStore.timeSelected)
-const selectTimeFilter = (type: TimeType) => {
-  // dateFilterSelected.value = type
-  alertsStore.selectTimeFilter(type)
+const timeFilterSelected = computed(() => alertsStore.timeSelected)
+const selectTimeFilter = (type: TimeType | undefined) => {
+  alertsStore.selectTime(type)
 }
 
 const searchAlerts = ref('')

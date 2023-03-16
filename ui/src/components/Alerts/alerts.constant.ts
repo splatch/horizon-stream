@@ -12,7 +12,6 @@ export const enum AlertStatus {
 }
 
 export const enum TimeType {
-  ALL,
   TODAY,
   DAY,
   SEVEN_DAY
