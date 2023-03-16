@@ -74,13 +74,13 @@ You can now interact with the OpenShift cluster using `kubectl`.
 
 #### Installing OpenNMS Horizon Stream to Openshift
 
-Run the following to build the Operator's docker image
+Run the following to build the Operator's docker image:
 
 ```
 make local-docker
 ```
 
-Then run the following commands. They extract the OS cluster's internal image registry URL, and pushes the built Docker image to it. 
+Then run the following commands: 
 
 ```
 REGISTRY="$(oc get route/default-route -n openshift-image-registry -o=jsonpath='{.spec.host}')/openshift"
@@ -89,19 +89,21 @@ docker tag opennms/operator:local-build $REGISTRY/opennms-operator:local
 docker push $REGISTRY/opennms-operator:local
 ```
 
-Then install the Operator to the cluster using Helm
+They extract the OS cluster's internal image registry URL, and pushes the built Docker image to it.
+
+Then install the Operator to the cluster using Helm:
 
 ```
 helm upgrade -i operator-local ../charts/opennms-operator -f scripts/openshift-operator-values.yaml --namespace opennms --create-namespace
 ```
 
-And give it the following OpenShift permission, which allows its K8s Pod to pull from the above internal image registry
+And give it the following OpenShift permission, which allows its K8s Pod to pull from the above internal image registry:
 
 ```
 oc adm policy add-role-to-user system:image-pullers system:serviceaccount:opennms-operator -n opennms
 ```
 
-And then create the OpenNMS instance.
+And then create the OpenNMS instance:
 
 ```
 kubectl apply -f scripts/local-os-onms-instance.yaml
