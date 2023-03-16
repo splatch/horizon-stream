@@ -21,7 +21,7 @@
         >
           <span
             @click="selectTimeFilter(undefined)"
-            :class="!timeFilterSelected ? 'selected' : ''"
+            :class="timeFilterSelected === undefined ? 'selected' : ''"
             >All</span
           >
           <span
