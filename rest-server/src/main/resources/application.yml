@@ -18,6 +18,7 @@ graphql:
     base-packages:
       - org.opennms.horizon.server.model.inventory
       - org.opennms.horizon.server.model.events
+      - org.opennms.horizon.server.model.alerts
 
 logging:
   file.path: /var/log/restServer
