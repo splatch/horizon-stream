@@ -23,10 +23,10 @@ kind load docker-image nginx:1.21.6-alpine
 kind load docker-image opennms/minion:29.0.10
 kind load docker-image postgres:13.3-alpine
 kind load docker-image busybox
-kind load docker-image "opennms/horizon-stream-grafana-dev:local-basic"
+kind load docker-image "opennms/horizon-stream-grafana:local-basic"
 kind load docker-image "opennms/horizon-stream-minion:local-basic"
 kind load docker-image "opennms/horizon-stream-ui:local-basic"
-kind load docker-image "opennms/horizon-stream-keycloak-dev:local-basic"
+kind load docker-image "opennms/horizon-stream-keycloak:local-basic"
 kind load docker-image "opennms/horizon-stream-inventory:local-basic"
 kind load docker-image "opennms/horizon-stream-alert:local-basic"
 kind load docker-image "opennms/horizon-stream-notification:local-basic"

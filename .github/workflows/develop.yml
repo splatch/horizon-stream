@@ -229,7 +229,10 @@ jobs:
 
   update:
     name: Update
-    #needs: external-it
+    needs: external-it
+    # Need this to trigger only when PR is merged or there is a push to
+    # develop (default) branch. All testing is already complete.
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
 
@@ -242,10 +245,6 @@ jobs:
           # <url>' in this checkout? This would save us from pulling more than
           # what we need.
       - name: update
-        # Need this to trigger only when PR is merged or there is a push to
-        # develop (default) branch. All testing is already complete.
-        #if: github.ref == 'refs/heads/develop'
-        if: github.ref == 'refs/heads/develop-ignore'
         shell: bash
         run: |
 
