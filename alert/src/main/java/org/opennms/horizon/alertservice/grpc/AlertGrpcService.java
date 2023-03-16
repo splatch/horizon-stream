@@ -28,10 +28,8 @@
 
 package org.opennms.horizon.alertservice.grpc;
 
-import com.google.protobuf.BoolValue;
-import com.google.protobuf.UInt64Value;
-import io.grpc.stub.StreamObserver;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.opennms.horizon.alerts.proto.Alert;
 import org.opennms.horizon.alerts.proto.AlertServiceGrpc;
 import org.opennms.horizon.alerts.proto.ListAlertsRequest;
@@ -39,9 +37,15 @@ import org.opennms.horizon.alerts.proto.ListAlertsResponse;
 import org.opennms.horizon.alertservice.api.AlertService;
 import org.opennms.horizon.alertservice.db.repository.AlertRepository;
 import org.opennms.horizon.alertservice.service.AlertMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.google.protobuf.BoolValue;
+import com.google.protobuf.UInt64Value;
+
+import io.grpc.stub.StreamObserver;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -52,13 +56,32 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
 
     @Override
     public void listAlerts(ListAlertsRequest request, StreamObserver<ListAlertsResponse> responseObserver) {
-        List<Alert> alerts = alertRepository.findAll().stream()
+        // Extract the page size and next page token values from the request
+        int pageSize = request.getPageSize() != 0 ? request.getPageSize() : 10; // default page size is 10
+        String nextPageToken = !request.getNextPageToken().isEmpty() ? request.getNextPageToken() : "0"; // default page is 0
+
+        // Create a PageRequest object based on the page size and next page token
+        PageRequest pageRequest = PageRequest.of(0, pageSize);
+        if (!nextPageToken.isEmpty()) {
+            pageRequest = PageRequest.of(Integer.parseInt(nextPageToken), pageSize);
+        }
+
+        Page<org.opennms.horizon.alertservice.db.entity.Alert> alertPage = alertRepository.findAll(pageRequest);
+
+        List<Alert> alerts = alertPage.getContent().stream()
             .map(alertMapper::toProto)
             .toList();
 
-        ListAlertsResponse response = ListAlertsResponse.newBuilder()
-            .addAllAlerts(alerts)
-            .build();
+        ListAlertsResponse.Builder responseBuilder = ListAlertsResponse.newBuilder()
+            .addAllAlerts(alerts);
+
+        // If there is a next page, add the page number to the response's next_page_token field
+        if (alertPage.hasNext()) {
+            responseBuilder.setNextPageToken(String.valueOf(alertPage.nextPageable().getPageNumber()));
+        }
+
+        // Build the final ListAlertsResponse object and send it to the client using the responseObserver
+        ListAlertsResponse response = responseBuilder.build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }

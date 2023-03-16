@@ -139,15 +139,15 @@ public class AlertTestSteps {
         log.info("Using Kafka base URL: {}", this.kafkaBootstrapUrl);
     }
 
-    @Then("Send event with UEI {string} with tenant {string}")
-    public void sendMessageToKafkaAtTopic(String eventUei, String tenantId) {
+    @Then("Send event with UEI {string} with tenant {string} with node {int}")
+    public void sendMessageToKafkaAtTopic(String eventUei, String tenantId, int nodeId) {
         EventLog eventLog = EventLog.newBuilder()
             .setTenantId(tenantId)
             .addEvents(Event.newBuilder()
                 .setTenantId(tenantId)
                 .setSeverity(Severity.MINOR)
                 .setProducedTimeMs(System.currentTimeMillis())
-                .setNodeId(10L)
+                .setNodeId(nodeId)
                 .setUei(eventUei))
             .build();
 
@@ -206,9 +206,10 @@ public class AlertTestSteps {
     }
 
     @Then("Verify alert topic has {int} messages with tenant {string}")
-    public void verifyTopicContainsTenant(int expectedMessages, String tenant) {
+    public void verifyTopicContainsTenant(int expectedMessages, String tenant) throws InterruptedException {
         int foundMessages = 0;
 
+        Thread.sleep(1000);
         List<ConsumerRecord<String, byte[]>> records = kafkaTestHelper.getConsumedMessages(alertTopic);
         for (ConsumerRecord<String, byte[]> record: records) {
             if (record.value() == null) {
@@ -236,6 +237,24 @@ public class AlertTestSteps {
         } else {
             firstAlertFromLastResponse = null;
         }
+    }
+
+    @Then("List alerts for tenant {string} with page size {int}, with timeout {int}ms, until JSON response matches the following JSON path expressions")
+    public void listAlertsForTenantWithPageSize(String tenantId, int pageSize, int timeout, List<String> jsonPathExpressions) throws InterruptedException {
+        Supplier<MessageOrBuilder> call = () -> {
+            clientUtils.setTenantId(tenantId);
+            ListAlertsResponse listAlertsResponse = clientUtils.getAlertServiceStub()
+                .listAlerts(ListAlertsRequest.newBuilder().setPageSize(pageSize).build());
+            alertsFromLastResponse = listAlertsResponse.getAlertsList();
+            return listAlertsResponse;
+        };
+        boolean success = retryUtils.retry(
+            () -> this.doRequestThenCheckJsonPathMatch(call, jsonPathExpressions),
+            result -> result,
+            100,
+            timeout,
+            false);
+        assertTrue("GET request expected to return JSON response matching JSON path expression(s)", success);
     }
 
 //========================================
