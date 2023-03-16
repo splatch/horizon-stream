@@ -101,8 +101,6 @@ const alertSelectedListener = (id: string) => {
 
     return a
   })
-
-  console.log('alerts.value', alerts.value)
 }
 
 const clearAlerts = () => {
