@@ -11,11 +11,11 @@ on:
     branches:
       - 'develop'
     paths-ignore:
-      - '!CHANGELOG/**'
-      - '!build-tools/**'
-      - '!doc/**'
-      - '!tooling/**'
-      - '!tools/**'
+      - 'CHANGELOG/**'
+      - 'build-tools/**'
+      - 'doc/**'
+      - 'tooling/**'
+      - 'tools/**'
   workflow_call:
     inputs:
       image-tag:
