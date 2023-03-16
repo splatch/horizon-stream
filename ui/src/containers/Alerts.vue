@@ -14,8 +14,32 @@
     </div>
     <AlertsSeverityFilters data-test="severity-filter" />
     <div class="content">
-      <div class="sort-search">
-        <div data-test="sort-date">sort by date</div>
+      <div class="time-search-filter">
+        <div
+          class="time-filter"
+          data-test="time-filter"
+        >
+          <span
+            @click="selectTimeFilter(TimeType.ALL)"
+            :class="dateFilterSelected === TimeType.ALL ? 'selected' : ''"
+            >All</span
+          >
+          <span
+            @click="selectTimeFilter(TimeType.TODAY)"
+            :class="dateFilterSelected === TimeType.TODAY ? 'selected' : ''"
+            >Today</span
+          >
+          <span
+            @click="selectTimeFilter(TimeType.DAY)"
+            :class="dateFilterSelected === TimeType.DAY ? 'selected' : ''"
+            >24H</span
+          >
+          <span
+            @click="selectTimeFilter(TimeType.SEVEN_DAY)"
+            :class="dateFilterSelected === TimeType.SEVEN_DAY ? 'selected' : ''"
+            >7D</span
+          >
+        </div>
         <div class="search-filter">
           <FeatherInput
             v-model="searchAlerts"
@@ -34,12 +58,20 @@
 
 <script lang="ts" setup>
 import { useAlertsStore } from '@/store/Views/alertsStore'
+import { TimeType } from '@/components/Alerts/alerts.constant'
 
 const alertsStore = useAlertsStore()
 
 onMounted(async () => {
   await alertsStore.fetchAlerts()
 })
+
+// const dateFilterSelected = ref(TimeType.ALL)
+const dateFilterSelected = computed(() => alertsStore.timeSelected)
+const selectTimeFilter = (type: TimeType) => {
+  // dateFilterSelected.value = type
+  alertsStore.selectTimeFilter(type)
+}
 
 const searchAlerts = ref('')
 const searchAlertsListener = (v: any) => {
@@ -49,6 +81,7 @@ const searchAlertsListener = (v: any) => {
 
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
+@use '@/styles/vars.scss';
 
 .container {
   min-width: 1100px;
@@ -63,18 +96,49 @@ const searchAlertsListener = (v: any) => {
   align-items: center;
 }
 
-.sort-search {
+.time-search-filter {
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-bottom: var(variables.$spacing-l);
+}
+
+.time-filter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: vars.$border-radius-xs;
+  border: 1px solid var(variables.$border-on-surface);
+  background-color: var(variables.$background);
+  height: 2.5rem;
+  padding: 3px;
+  > span {
+    padding: 4px 15px;
+    border-right: 1px solid var(variables.$border-on-surface);
+    &:last-child {
+      border-right: none;
+    }
+    &.selected {
+      border-right-color: var(variables.$background);
+      background-color: var(variables.$border-on-surface);
+    }
+    &:hover {
+      cursor: pointer;
+    }
+  }
 }
 
 .search-filter {
   width: 30%;
   .search-alerts-input {
     width: 100%;
+    :deep(.feather-input-border) {
+      .pre-border,
+      .label-border,
+      .post-border {
+        border-color: var(variables.$border-on-surface);
+      }
+    }
   }
 }
 

@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
-import { AlertSort, AlertType } from '@/components/Alerts/alerts.constant'
+import { TimeType, AlertType } from '@/components/Alerts/alerts.constant'
 import { useAlertsQueries } from '../Queries/alertsQueries'
 import { IAlert } from '@/types/alerts'
 
 export const useAlertsStore = defineStore('alertsStore', () => {
   const severitiesSelected = ref<string[]>([])
-  const sortSelected = ref(<AlertSort[]>[])
+  const timeSelected = ref(TimeType.ALL)
   const alertList = ref()
   const allAlertsList = ref()
   const alertListSearched = ref([])
@@ -34,14 +34,8 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     }
   }
 
-  const toggleSort = (selected: AlertSort): void => {
-    const exists = sortSelected.value.some((s) => s === selected)
-
-    if (exists) {
-      sortSelected.value = sortSelected.value.filter((s) => s !== selected)
-    } else {
-      sortSelected.value.push(selected)
-    }
+  const selectTimeFilter = (selected: TimeType): void => {
+    timeSelected.value = selected
   }
 
   return {
@@ -50,7 +44,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     fetchAlerts,
     severitiesSelected,
     toggleSeverity,
-    sortSelected,
-    toggleSort
+    timeSelected,
+    selectTimeFilter
   }
 })

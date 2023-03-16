@@ -11,9 +11,9 @@ export const enum AlertStatus {
   UNACKNOWLEDGED
 }
 
-export const enum AlertSort {
-  DATE,
-  TIME,
-  NODE_TYPE,
-  WATCHING
+export const enum TimeType {
+  ALL,
+  TODAY,
+  DAY,
+  SEVEN_DAY
 }
