@@ -1,13 +1,17 @@
-import { mount } from '@vue/test-utils'
+import mount from '../mountWithPiniaVillus'
 import Alerts from '@/containers/Alerts.vue'
 
 let wrapper: any
 
 describe('Alerts', () => {
   beforeAll(() => {
-    wrapper = mount(Alerts, {
+    wrapper = mount({
+      component: Alerts,
       shallow: true
     })
+  })
+  afterAll(() => {
+    wrapper.unmount()
   })
 
   test('Mount', () => {
