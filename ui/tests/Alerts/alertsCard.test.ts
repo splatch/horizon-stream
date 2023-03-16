@@ -25,6 +25,9 @@ describe('Alert card', () => {
       }
     })
   })
+  afterAll(() => {
+    wrapper.unmount()
+  })
 
   test('Mount', () => {
     expect(wrapper).toBeTruthy()

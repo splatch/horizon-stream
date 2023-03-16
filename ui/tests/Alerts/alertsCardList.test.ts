@@ -1,5 +1,4 @@
-// import { mount } from '@vue/test-utils'
-import mountWithPiniaVillus from 'tests/mountWithPiniaVillus'
+import mount from 'tests/mountWithPiniaVillus'
 
 import AlertsCardList from '@/components/Alerts/AlertsCardList.vue'
 
@@ -7,10 +6,13 @@ let wrapper: any
 
 describe('Alerts list', () => {
   beforeAll(() => {
-    wrapper = mountWithPiniaVillus({
+    wrapper = mount({
       component: AlertsCardList,
       shallow: true
     })
+  })
+  afterAll(() => {
+    wrapper.unmount()
   })
 
   test('Mount', () => {
