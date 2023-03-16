@@ -1,9 +1,9 @@
-export const enum AlertType {
+export enum AlertType {
   CRITICAL,
   MAJOR,
   MINOR,
   WARNING,
-  INTERMITTENT
+  INDETERMINATE
 }
 
 export const enum AlertStatus {

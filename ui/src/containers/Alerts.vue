@@ -12,12 +12,7 @@
         >clear all filters</FeatherButton
       >
     </div>
-    <div
-      class="severity-filter"
-      data-test="severity-filter"
-    >
-      severity filter
-    </div>
+    <AlertsSeverityFilters data-test="severity-filter" />
     <div class="content">
       <div class="sort-search">
         <div data-test="sort-date">sort by date</div>

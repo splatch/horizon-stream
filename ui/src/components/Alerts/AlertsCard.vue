@@ -30,7 +30,7 @@
           class="severity error"
           data-test="severity"
         >
-          <FeatherChip>{{ alert.severity }}</FeatherChip>
+          <AlertsSeverityLabel :severity="alert.severity" />
         </div>
         <div
           class="cause headline"
