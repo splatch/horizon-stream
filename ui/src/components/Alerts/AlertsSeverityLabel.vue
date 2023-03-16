@@ -16,6 +16,8 @@ defineProps<{
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
+@use '@/styles/_severities';
+
 .severity-status {
   padding: 2px 8px;
   font-size: 11px;

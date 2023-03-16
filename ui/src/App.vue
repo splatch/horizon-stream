@@ -34,5 +34,4 @@ if (route.query.theme) router.replace(route.path)
 
 <style lang="scss">
 @use '@/styles/_app';
-@use '@/styles/_severities';
 </style>
