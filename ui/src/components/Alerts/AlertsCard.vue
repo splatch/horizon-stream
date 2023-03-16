@@ -22,10 +22,7 @@
           >
             {{ alert.name }}
           </div>
-          <div
-            class="node-type"
-            data-test="node-type"
-          >
+          <div data-test="node-type">
             {{ alert.nodeType }}
           </div>
         </div>
@@ -64,7 +61,7 @@
         </div>
         <div class="check-circle">
           <FeatherIcon
-            :icon="CheckCircle"
+            :icon="checkCircleIcon"
             :class="alert.isAcknowledged ? 'acknowledged' : ''"
             class="acknowledged-icon"
             data-test="check-icon"
@@ -95,6 +92,8 @@ const acknowledgeHandler = (id: number) => {
   acknowledgedChecked.value = !acknowledgedChecked.value
   // send request
 }
+
+const checkCircleIcon = markRaw(CheckCircle)
 </script>
 
 <style lang="scss" scoped>

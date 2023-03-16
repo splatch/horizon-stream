@@ -78,27 +78,25 @@ const updatePageSize = (v: number) => {
   pageSize.value = v
 }
 
-const alerts = ref([] as IAlert[])
-
-onMounted(async () => {
-  await alertsStore.fetchAlerts()
-  alerts.value = alertsStore.alertList.map((a: IAlert) => ({ ...a, isSelected: false }))
+const alerts = ref()
+watchEffect(() => {
+  alerts.value = alertsStore.alertList?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
 })
 
-const atLeastOneAlertSelected = computed(() => alerts.value.some(({ isSelected }) => isSelected))
+const atLeastOneAlertSelected = computed(() => alerts.value.some((a: IAlert) => a.isSelected))
 
 const isAllAlertsSelected = ref(false)
 watch(isAllAlertsSelected, (isSelected) => {
-  alerts.value = alerts.value.map((a) => ({
+  alerts.value = alerts.value.map((a: IAlert) => ({
     ...a,
-    isSelected: isSelected
+    isSelected
   }))
 })
 
 const alertSelectedListener = (id: string) => {
-  alerts.value = alerts.value.map((a) => {
+  alerts.value = alerts.value.map((a: IAlert) => {
     if (a.id === id) {
-      a.isSelected = !a.isSelected // selection toggle
+      a.isSelected = !a.isSelected // toggle selection
     }
 
     return a
