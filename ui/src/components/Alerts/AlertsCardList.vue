@@ -37,7 +37,7 @@
         data-test="alert-list"
       >
         <AlertsCard
-          v-for="alert in alertsStore.alertList"
+          v-for="alert in alerts"
           :key="alert.id"
           :alert="alert"
           @alert-selected="alertSelectedListener"

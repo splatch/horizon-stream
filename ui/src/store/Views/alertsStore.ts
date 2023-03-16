@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { AlertSort, AlertType } from '@/components/Alerts/alerts.constant'
 import { useAlertsQueries } from '../Queries/alertsQueries'
+import { IAlert } from '@/types/alerts'
 
 export const useAlertsStore = defineStore('alertsStore', () => {
-  const severitiesSelected = ref([])
+  const severitiesSelected = ref<string[]>([])
   const sortSelected = ref(<AlertSort[]>[])
   const alertList = ref()
   const allAlertsList = ref()
@@ -18,7 +19,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     allAlertsList.value = alertsQueries.fetchAlertsData
   }
 
-  const toggleSeverity = (selected: AlertType): void => {
+  const toggleSeverity = (selected: string): void => {
     const exists = severitiesSelected.value.some((s) => s === selected)
 
     if (exists) {
@@ -29,7 +30,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     if (!severitiesSelected.value.length) {
       alertList.value = allAlertsList.value
     } else {
-      alertList.value = allAlertsList.value.filter((a) => severitiesSelected.value.includes(a.severity))
+      alertList.value = allAlertsList.value.filter((a: IAlert) => severitiesSelected.value.includes(a.severity))
     }
   }
 

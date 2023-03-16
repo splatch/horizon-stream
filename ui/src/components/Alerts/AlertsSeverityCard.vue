@@ -23,13 +23,12 @@
 import Add from '@featherds/icon/action/Add'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import { useAlertsStore } from '@/store/Views/alertsStore'
-import { AlertType } from '@/components/Alerts/alerts.constant'
 
 const store = useAlertsStore()
 
 const isAdd = ref(true)
 const props = defineProps<{
-  severity: AlertType
+  severity: string
   count: number
 }>()
 
@@ -50,7 +49,6 @@ const addSeverityFilter = () => {
   height: 85px;
   padding: var(variables.$spacing-s);
   border-radius: 5px;
-  width: fit-content;
   @include mediaQueriesMixins.screen-md {
     height: 130px;
   }
@@ -74,6 +72,7 @@ const addSeverityFilter = () => {
     @include typography.headline2();
     @include mediaQueriesMixins.screen-md {
       @include typography.display2();
+      font-weight: 300;
     }
   }
 }
