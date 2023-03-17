@@ -1,0 +1,15 @@
+query TagsByActiveDiscoveryId($discoveryId: Long!) {
+  tagsByActiveDiscoveryId(activeDiscoveryId: $discoveryId) {
+    id
+    name
+    tenantId
+  }
+}
+
+query TagsByPassiveDiscoveryId($discoveryId: Long!) {
+  tagsByPassiveDiscoveryId(passiveDiscoveryId: $discoveryId) {
+    id
+    name
+    tenantId
+  }
+}

@@ -26,6 +26,7 @@
       ref="tagsAutocompleteRef"
       class="tags-autocomplete"
       data-test="tags-autocomplete"
+      :preselectedItems="tags"
     />
     <div class="content-editable-container">
       <DiscoveryContentEditable
@@ -97,7 +98,6 @@ const nameV = string().required('Name is required.')
 const form = useForm()
 
 const { createDiscoveryConfig, activeDiscoveryError, isFetchingActiveDiscovery } = useDiscoveryMutations()
-
 const tagQueries = useTagQueries()
 const discoveryQueries = useDiscoveryQueries()
 const props = defineProps<{
@@ -106,14 +106,24 @@ const props = defineProps<{
   cancel: () => void
 }>()
 
-const discoveryInfo = ref<IcmpActiveDiscoveryCreateInput>(
-  props.discovery || ({} as IcmpActiveDiscoveryCreateInput)
-)
+const discoveryInfo = ref<IcmpActiveDiscoveryCreateInput>(props.discovery || ({} as IcmpActiveDiscoveryCreateInput))
 const contentEditableIPRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableCommunityStringRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableUDPPortRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
+const tags = computed(() => (props.discovery?.id ? discoveryQueries.tagsByActiveDiscoveryId : []))
+
+onMounted(() => {
+  if (props.discovery?.id) {
+    discoveryQueries.getTagsByActiveDiscoveryId(props.discovery?.id)
+  }
+})
 
 watch(props, () => {
+  if (props.discovery?.id) {
+    discoveryQueries.getTagsByActiveDiscoveryId(props.discovery?.id)
+  } else {
+    tags.value = []
+  }
   discoveryInfo.value = props.discovery || ({} as IcmpActiveDiscoveryCreateInput)
 })
 

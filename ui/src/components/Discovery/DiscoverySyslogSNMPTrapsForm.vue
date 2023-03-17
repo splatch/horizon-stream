@@ -38,6 +38,7 @@
           ref="tagsAutocompleteRef"
           class="tags-autocomplete"
           data-test="tags-autocomplete"
+          :preselectedItems="tags"
         />
         <div class="content-editable-container">
           <DiscoveryContentEditable
@@ -109,8 +110,20 @@ const tagQueries = useTagQueries()
 const discoveryQueries = useDiscoveryQueries()
 const discoveryMutations = useDiscoveryMutations()
 const discoveryInfo = ref<PassiveDiscoveryUpsertInput>(props.discovery || ({} as PassiveDiscoveryUpsertInput))
+const tags = computed(() => (props.discovery?.id ? discoveryQueries.getTagsByPassiveDiscoveryId : []))
+
+onMounted(() => {
+  if (props.discovery?.id) {
+    discoveryQueries.getTagsByPassiveDiscoveryId(props.discovery?.id)
+  }
+})
 
 watch(props, () => {
+  if (props.discovery?.id) {
+    discoveryQueries.getTagsByPassiveDiscoveryId(props.discovery?.id)
+  } else {
+    tags.value = []
+  }
   discoveryInfo.value = props.discovery || ({} as PassiveDiscoveryUpsertInput)
 })
 

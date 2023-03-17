@@ -89,6 +89,10 @@ const props = defineProps({
   showList: {
     type: Boolean,
     default: true
+  },
+  preselectedItems: {
+    type: [Object],
+    reqired: false
   }
 })
 
@@ -96,12 +100,26 @@ const loading = ref(false)
 const selectedItems = ref<IAutocomplete[]>([])
 
 const results = computed(() => {
+  const ids = props.preselectedItems?.length > 0 ? props.preselectedItems.map((i) => i.id) : []
   loading.value = false
+  return props.items
+    ?.map((item: any) => ({
+      ...item,
+      _text: item.name
+    }))
+    .filter((item) => !ids.includes(item.id))
+})
 
-  return props.items?.map((item: any) => ({
-    ...item,
-    _text: item.name
-  }))
+onMounted(() => {
+  props.getItems()
+})
+
+watch(props, () => {
+  if (props.preselectedItems?.length > 0) {
+    selectedItems.value = props.preselectedItems
+  } else {
+    selectedItems.value = []
+  }
 })
 
 const modelValue = ref<IAutocomplete[] | undefined>()
@@ -109,7 +127,6 @@ const modelValue = ref<IAutocomplete[] | undefined>()
 const updateModelValue = (selected: any) => {
   if (props.renderType === 'single') {
     const exists = selectedItems.value.some(({ name }) => name === selected.name)
-
     if (!exists) {
       selectedItems.value.push(selected)
 
@@ -124,9 +141,7 @@ const updateModelValue = (selected: any) => {
 
 const search = (q: string) => {
   if (!q) return // prevent making request on focus
-
   loading.value = true
-
   props.getItems(q)
 }
 
@@ -177,5 +192,9 @@ defineExpose({
   > .label {
     order: 1;
   }
+}
+
+:deep(.feather-input-sub-text) {
+  display: none;
 }
 </style>
