@@ -9,6 +9,10 @@ Feature: Minion Monitoring via Echo Messages Logged in Prometheus
     Given Keycloak client-id in environment variable "KEYCLOAK_CLIENT_ID"
     Then login to Keycloak with timeout 120000ms
 
+  Scenario: Create a Node and check it status
+    Then Create a new node with label "NodeOne" IP address "127.1.0.1" and location "Default"
+    Then Check the status of the Node "UP"
+
   Scenario: Wait for at least one minion to connect from location Default
     Given At least one Minion is running with location "Default"
     # NOTE: there is redundant processing between this step and the ones that follow it

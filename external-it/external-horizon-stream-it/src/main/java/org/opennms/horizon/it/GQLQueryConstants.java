@@ -11,4 +11,11 @@ public abstract class GQLQueryConstants {
 
     public static final String CREATE_NODE_QUERY =
         "mutation AddNode($node: NodeCreateInput!) { addNode(node: $node) { createTime id monitoringLocationId nodeLabel tenantId }}";
+
+    public static final String LIST_NODE_METRICS =
+        "query NodeStatusParts($id: Long!) {nodeStatus(id: $id) {id status  }}";
+
+    public static final String LIST_NODE_ID =
+        "query NodesTableParts { findAllNodes { id nodeLabel}}";
+
 }

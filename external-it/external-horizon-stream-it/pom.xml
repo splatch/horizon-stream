@@ -29,6 +29,7 @@
         <keycloak.version>20.0.3</keycloak.version>
         <rest-assured.version>4.3.3</rest-assured.version>
         <slf4j.version>1.7.33</slf4j.version>
+        <testcontainer.version>1.15.2</testcontainer.version>
     </properties>
 
     <dependencies>
@@ -108,6 +109,11 @@
             <artifactId>awaitility</artifactId>
             <version>4.1.1</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainer.version}</version>
         </dependency>
 
     </dependencies>
