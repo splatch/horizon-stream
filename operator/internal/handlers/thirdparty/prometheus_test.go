@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package ingress
+package thirdparty
 
 import (
 	"github.com/OpenNMS-Cloud/opennms-operator/internal/handlers"
@@ -23,19 +23,13 @@ import (
 	"testing"
 )
 
-func TestIngressUpdateConfig(t *testing.T) {
+func TestPrometheusUpdateConfig(t *testing.T) {
 	handlers.ConfigFilePath = "./../../../charts/opennms/templates/"
-	handler := IngressHandler{}
+	handler := PrometheusHandler{}
+	vals := testutil.DefaultTestValues()
+	vals.Values.Prometheus.Enabled = true
 	assert.Nil(t, handler.GetConfig(), "config should start as nil")
-	err := handler.UpdateConfig(testutil.DefaultTestValues())
-	assert.Nil(t, err)
-	assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
-
-	handler = IngressHandler{}
-	values := testutil.DefaultTestValues()
-	values.Values.OpenShift = true
-	assert.Nil(t, handler.GetConfig(), "config should start as nil")
-	err = handler.UpdateConfig(values)
+	err := handler.UpdateConfig(vals)
 	assert.Nil(t, err)
 	assert.NotNil(t, handler.GetConfig(), "config should no longer be nil")
 }
