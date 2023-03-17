@@ -21,22 +21,22 @@
         >
           <span
             @click="selectTimeFilter(undefined)"
-            :class="timeFilterSelected === undefined ? 'selected' : ''"
+            :class="{ selected: timeFilterSelected === undefined }"
             >All</span
           >
           <span
             @click="selectTimeFilter(TimeType.TODAY)"
-            :class="timeFilterSelected === TimeType.TODAY ? 'selected' : ''"
+            :class="{ selected: timeFilterSelected === TimeType.TODAY }"
             >Today</span
           >
           <span
             @click="selectTimeFilter(TimeType.DAY)"
-            :class="timeFilterSelected === TimeType.DAY ? 'selected' : ''"
+            :class="{ selected: timeFilterSelected === TimeType.DAY }"
             >24H</span
           >
           <span
             @click="selectTimeFilter(TimeType.SEVEN_DAY)"
-            :class="timeFilterSelected === TimeType.SEVEN_DAY ? 'selected' : ''"
+            :class="{ selected: timeFilterSelected === TimeType.SEVEN_DAY }"
             >7D</span
           >
         </div>
