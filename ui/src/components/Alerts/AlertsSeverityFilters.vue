@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="list"
-    v-if="store.allAlertsList"
-  >
+  <div class="list">
     <div
       v-for="severity in Object.keys(AlertType).filter((a: string | number) => isNaN(Number(a)))"
       :key="severity"

@@ -27,7 +27,7 @@ const typeDefs = `
   }
   type Query {
     listAzureDiscoveries: [AzureDiscovery!]!
-    alertList: [Alert!]!
+    alertsList: [Alert!]!
   }
 `
 export default typeDefs
