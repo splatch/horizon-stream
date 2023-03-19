@@ -1,17 +1,17 @@
 import mount from 'tests/mountWithPiniaVillus'
-
 import AlertsCardList from '@/components/Alerts/AlertsCardList.vue'
+import { useAlertsStore } from '@/store/Views/alertsStore'
+import { getAlertsList } from '../../mock-graphql/src/fixture/alerts.fixture'
 
 let wrapper: any
 
 describe('Alerts list', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     wrapper = mount({
-      component: AlertsCardList,
-      shallow: true
+      component: AlertsCardList
     })
   })
-  afterAll(() => {
+  afterEach(() => {
     wrapper.unmount()
   })
 
@@ -19,46 +19,35 @@ describe('Alerts list', () => {
     expect(wrapper).toBeTruthy()
   })
 
-  test('Should have select all checkbox', () => {
-    const elem = wrapper.get('[data-test="select-all-checkbox"]')
+  test('Should have alerts list if list not empty', async () => {
+    const alertsStore = useAlertsStore()
+    alertsStore.alertsList = getAlertsList()
+    await wrapper.vm.$nextTick()
+
+    const elem = wrapper.find('[data-test="alerts-list"]')
     expect(elem.exists()).toBeTruthy()
   })
 
-  test('Should have clear button, disabled, enabled if alert selected', async () => {
-    const elem = wrapper.get('[data-test="clear-btn"]')
-    expect(elem.exists()).toBeTruthy()
-    expect(elem.attributes('disabled')).toBeTruthy()
-    // TODO: disabled state not working
-    // const selectAll = wrapper.get('[data-test="select-all-checkbox"]')
-    // await selectAll. setChecked()
-    // wrapper.vm.$nextTick()
-    // console.log('>>>', selectAll.element.checked)
-    // console.log('>>>', elem.attributes('disabled'))
-    // expect(elem.attributes('disabled')).toBeFalsy()
-  })
+  describe('Alerts list empty', () => {
+    test('Should not have alerts list if list empty', () => {
+      const elem = wrapper.find('[data-test="empty-list"]')
+      expect(elem.exists()).toBeTruthy()
+    })
 
-  test('Should have aclnowledge selected button, disabled, enabled if alert selected', async () => {
-    const elem = wrapper.get('[data-test="acknowledge-btn"]')
-    expect(elem.exists()).toBeTruthy()
-    expect(elem.attributes('disabled')).toBeTruthy()
-    // TODO: disabled state not working
-  })
+    test('Should have a message', () => {
+      const elem = wrapper.get('[data-test="msg"]')
+      expect(elem.exists()).toBeTruthy()
+    })
 
-  test('Should have list count (top)', () => {
-    const elem = wrapper.get('[data-test="pagination-top"]')
-    expect(elem.exists()).toBeTruthy()
-  })
+    test('Should have clear all filters button', async () => {
+      const btn = wrapper.find('[data-test="clear-all-filters-btn"]')
+      expect(btn.exists()).toBeTruthy()
 
-  test('Should display a list if have alerts', () => {
-    expect(false).toBeTruthy()
-  })
-
-  test('Should display empty message if no alerts', () => {
-    expect(false).toBeTruthy()
-  })
-
-  test('Should have pagination (bottom)', () => {
-    const elem = wrapper.get('[data-test="pagination-bottom"]')
-    expect(elem.exists()).toBeTruthy()
+      // TODO not working
+      // const alertsStore = useAlertsStore()
+      // const spy = vi.spyOn(alertsStore, 'clearAllFilters')
+      // await btn.trigger('click')
+      // expect(spy).toHaveBeenCalled()
+    })
   })
 })

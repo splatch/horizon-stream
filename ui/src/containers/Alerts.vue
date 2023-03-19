@@ -116,7 +116,7 @@ onMounted(async () => {
 
 const alertsStore = useAlertsStore()
 
-const alerts = ref()
+const alerts = ref([] as IAlert[])
 watchEffect(() => {
   alerts.value = alertsStore.alertsList?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
 })

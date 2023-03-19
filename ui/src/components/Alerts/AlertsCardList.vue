@@ -15,10 +15,10 @@
     class="empty-list"
     data-test="empty-list"
   >
-    <div>No results found. Refine or reduce filter criteria.</div>
+    <div data-test="msg">No results found. Refine or reduce filter criteria.</div>
     <FeatherButton
-      @click="alertsStore.clearAllFilters"
       secondary
+      @click="alertsStore.clearAllFilters"
       data-test="clear-all-filters-btn"
       >clear all filters</FeatherButton
     >
@@ -27,15 +27,12 @@
 
 <script lang="ts" setup>
 import { useAlertsStore } from '@/store/Views/alertsStore'
-import { IAlert } from '@/types/alerts'
-
-defineProps<{
-  alerts: IAlert[]
-}>()
-
-const emits = defineEmits(['alert-selected'])
 
 const alertsStore = useAlertsStore()
+
+const alerts = computed(() => alertsStore.alertsList || [])
+
+const emits = defineEmits(['alert-selected'])
 </script>
 
 <style lang="scss" scoped>
@@ -56,9 +53,5 @@ const alertsStore = useAlertsStore()
   > button {
     margin-top: var(variables.$spacing-l);
   }
-}
-
-:deep(.layout-container) {
-  margin-bottom: 0;
 }
 </style>
