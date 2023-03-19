@@ -8,7 +8,8 @@ let wrapper: any
 describe('Alerts', () => {
   beforeEach(() => {
     wrapper = mount({
-      component: Alerts
+      component: Alerts,
+      shallow: false
     })
   })
   afterEach(() => {
