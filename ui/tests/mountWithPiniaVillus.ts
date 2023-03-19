@@ -19,6 +19,7 @@ import { VILLUS_CLIENT, createClient } from 'villus'
  *              stubs
  *              plugins
  *              provide
+ *                directives
  *            attachTo
  * @returns mounted component
  */
