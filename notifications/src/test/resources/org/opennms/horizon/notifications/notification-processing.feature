@@ -4,6 +4,12 @@ Feature: Notification Processing
     Given clean setup
     Given grpc setup
 
+  # Throws org.springframework.dao.DataIntegrityViolationException: assigned tenant id differs from current tenant id: test-tenant!=other-tenant : org.opennms.horizon.notifications.model.PagerDutyConfig.tenantId
+  # which is then wrapped by the grpc
+  Scenario: Populate config via grpc with different tenant
+    Given Integration "test-tenant" key set to "abc" via grpc with token tenant "other-tenant"
+    Then verify exception "StatusRuntimeException" thrown with message "UNKNOWN"
+
   Scenario: Populate config via grpc
     Given Integration "test-tenant" key set to "abc" via grpc
     Then verify "test-tenant" key is "abc"
@@ -21,9 +27,9 @@ Feature: Notification Processing
     Then verify "other-tenant" key is "abcd"
     Then tear down grpc setup
 
-  Scenario: Populate config with tenantId
+  Scenario: Populate config without tenantId
     Given Integration key set to "abc" without tenantId
-    Then verify exception "CannotCreateTransactionException" thrown
+    Then verify exception "JpaSystemException" thrown with message "SessionFactory configured for multi-tenancy, but no tenant identifier specified"
 
   Scenario: Post notification
     Given Integration "test-tenant" key set to "abc" via grpc
@@ -32,4 +38,4 @@ Feature: Notification Processing
 
   Scenario: Try to post notification with no config
     Given Alert posted via service with no config with tenant "test-tenant"
-    Then verify exception "NotificationConfigUninitializedException" thrown
+    Then verify exception "NotificationConfigUninitializedException" thrown with message "PagerDuty config not initialized. Row count=0"

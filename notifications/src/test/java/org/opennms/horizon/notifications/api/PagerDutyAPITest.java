@@ -39,6 +39,8 @@ import org.opennms.horizon.model.common.proto.Severity;
 import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
 import org.springframework.web.client.RestTemplate;
 
+import static org.mockito.ArgumentMatchers.any;
+
 @RunWith(MockitoJUnitRunner.class)
 public class PagerDutyAPITest {
     @InjectMocks
@@ -52,7 +54,7 @@ public class PagerDutyAPITest {
 
     @Test
     public void postNotifications() throws Exception {
-        Mockito.when(pagerDutyDao.getConfig()).thenReturn(getConfigDTO());
+        Mockito.when(pagerDutyDao.getConfig(any())).thenReturn(getConfigDTO());
         Alert alert = getAlert();
         pagerDutyAPI.postNotification(alert);
     }

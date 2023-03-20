@@ -49,7 +49,7 @@ public class AlertKafkaConsumerTestHelper {
         // try (TenantContext tc = TenantContext.withTenantId(tenantId)) {
         String integrationKey = "not_verified";
 
-        PagerDutyConfigDTO config = PagerDutyConfigDTO.newBuilder().setIntegrationKey(integrationKey).build();
+        PagerDutyConfigDTO config = PagerDutyConfigDTO.newBuilder().setIntegrationKey(integrationKey).setTenantId(tenantId).build();
         notificationService.postPagerDutyConfig(config);
     }
 }

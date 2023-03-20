@@ -9,7 +9,6 @@ import io.grpc.ServerCallHandler;
 import io.grpc.stub.MetadataUtils;
 import org.keycloak.common.VerificationException;
 import org.opennms.horizon.alerts.proto.Alert;
-import org.opennms.horizon.model.common.proto.Severity;
 import org.opennms.horizon.notifications.api.PagerDutyDao;
 import org.opennms.horizon.notifications.dto.NotificationServiceGrpc;
 import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
@@ -88,6 +87,16 @@ public class NotificationCucumberTestSteps extends GrpcTestBase {
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
     }
 
+    @Given("Integration {string} key set to {string} via grpc with token tenant {string}")
+    public void setIntegrationKeyGrpcDifferentTenant(String tenantId, String key, String differentTenantId) throws VerificationException {
+        caught = null;
+        try {
+            saveConfigWithDifferentTokenTenant(tenantId, key, differentTenantId);
+        } catch (Exception ex) {
+            caught = ex;
+        }
+    }
+
     @Given("Integration {string} key set to {string} then {string} via grpc")
     public void setIntegrationKeyGrpcTwice(String tenantId, String key, String secondKey) throws VerificationException {
         saveConfig(tenantId, key);
@@ -109,7 +118,16 @@ public class NotificationCucumberTestSteps extends GrpcTestBase {
 
     private void saveConfig(String tenantId, String key) {
         String header = getAuthHeader(tenantId);
-        PagerDutyConfigDTO config = PagerDutyConfigDTO.newBuilder().setIntegrationKey(key).build();
+        PagerDutyConfigDTO config = PagerDutyConfigDTO.newBuilder().setIntegrationKey(key).setTenantId(tenantId).build();
+
+        serviceStub.withInterceptors(MetadataUtils
+                .newAttachHeadersInterceptor(createAuthHeader(header)))
+            .postPagerDutyConfig(config);
+    }
+
+    private void saveConfigWithDifferentTokenTenant(String tenantId, String key, String tokenTenantId) {
+        String header = getAuthHeader(tokenTenantId);
+        PagerDutyConfigDTO config = PagerDutyConfigDTO.newBuilder().setIntegrationKey(key).setTenantId(tenantId).build();
 
         serviceStub.withInterceptors(MetadataUtils
                 .newAttachHeadersInterceptor(createAuthHeader(header)))
@@ -151,7 +169,7 @@ public class NotificationCucumberTestSteps extends GrpcTestBase {
     @WithTenant(tenantIdArg = 0)
     public void verifyKey(String tenantId, String key) {
         try {
-            PagerDutyConfigDTO configDTO = pagerDutyDao.getConfig();
+            PagerDutyConfigDTO configDTO = pagerDutyDao.getConfig(tenantId);
             assertEquals(key, configDTO.getIntegrationKey());
         } catch (NotificationConfigUninitializedException e) {
             fail("Config is not initialised as expected");
@@ -162,7 +180,7 @@ public class NotificationCucumberTestSteps extends GrpcTestBase {
     @WithTenant(tenantIdArg = 0)
     public void verifyKeyIsNotSet(String tenantId) {
         try {
-            pagerDutyDao.getConfig();
+            pagerDutyDao.getConfig(tenantId);
             fail("Config should not be initialised");
         } catch (NotificationConfigUninitializedException e) {
             assertEquals("PagerDuty config not initialized. Row count=0", e.getMessage());
@@ -184,12 +202,13 @@ public class NotificationCucumberTestSteps extends GrpcTestBase {
         }
     }
 
-    @Then("verify exception {string} thrown")
-    public void verifyException(String exceptionName) {
+    @Then("verify exception {string} thrown with message {string}")
+    public void verifyException(String exceptionName, String message) {
         if (caught == null) {
             fail("No exception caught");
         } else {
             assertEquals(exceptionName, caught.getClass().getSimpleName(), "Exception mismatch");
+            assertEquals(message, caught.getMessage());
         }
     }
 }

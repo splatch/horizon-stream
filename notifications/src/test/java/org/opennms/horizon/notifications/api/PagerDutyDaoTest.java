@@ -39,6 +39,7 @@ import org.opennms.horizon.notifications.exceptions.NotificationConfigUninitiali
 import org.opennms.horizon.notifications.mapper.PagerDutyConfigMapper;
 import org.opennms.horizon.notifications.model.PagerDutyConfig;
 import org.opennms.horizon.notifications.repository.PagerDutyConfigRepository;
+import org.opennms.horizon.notifications.tenant.WithTenant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +64,7 @@ public class PagerDutyDaoTest {
 
     @Test
     public void updateConfig() throws Exception {
-        Mockito.when(pagerDutyConfigRepository.findAll()).thenReturn(Arrays.asList(new PagerDutyConfig()));
+        Mockito.when(pagerDutyConfigRepository.findByTenantId(any())).thenReturn(Arrays.asList(new PagerDutyConfig()));
         PagerDutyConfigDTO config = getConfigDTO();
         pagerDutyDao.saveConfig(config);
 
@@ -71,7 +72,7 @@ public class PagerDutyDaoTest {
     }
     @Test
     public void insertConfig() throws Exception {
-        Mockito.when(pagerDutyConfigRepository.findAll()).thenReturn(new ArrayList<>());
+        Mockito.when(pagerDutyConfigRepository.findByTenantId(any())).thenReturn(new ArrayList<>());
         PagerDutyConfigDTO config = getConfigDTO();
         pagerDutyDao.saveConfig(config);
 
@@ -79,20 +80,22 @@ public class PagerDutyDaoTest {
     }
 
     @Test
-    public void getUninitialisedConfig() throws Exception {
+    @WithTenant(tenantId = "any")
+    public void getUninitialisedConfig() {
         try {
-            pagerDutyDao.getConfig();
+            pagerDutyDao.getConfig("any");
         } catch (NotificationConfigUninitializedException e) {
             assertEquals("PagerDuty config not initialized. Row count=0", e.getMessage());
         }
     }
 
     @Test
+    @WithTenant(tenantId = "any")
     public void getInitialisedConfig() throws Exception {
         List<PagerDutyConfig> configs = Arrays.asList(new PagerDutyConfig());
-        Mockito.when(pagerDutyConfigRepository.findAll()).thenReturn(configs);
+        Mockito.when(pagerDutyConfigRepository.findByTenantId("any")).thenReturn(configs);
         Mockito.when(pagerDutyConfigMapper.modelToDTO(any())).thenReturn(getConfigDTO());
-        PagerDutyConfigDTO config = pagerDutyDao.getConfig();
+        PagerDutyConfigDTO config = pagerDutyDao.getConfig("any");
 
         assertEquals("integration_key", config.getIntegrationKey());
     }

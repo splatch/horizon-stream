@@ -50,8 +50,8 @@ public class PagerDutyDao {
     @Autowired
     private PagerDutyConfigMapper pagerDutyConfigMapper;
 
-    public PagerDutyConfigDTO getConfig() throws NotificationConfigUninitializedException {
-        List<PagerDutyConfig> configList = pagerDutyConfigRepository.findAll();
+    public PagerDutyConfigDTO getConfig(String tenantId) throws NotificationConfigUninitializedException {
+        List<PagerDutyConfig> configList = pagerDutyConfigRepository.findByTenantId(tenantId);
 
         if (configList.size() != 1) {
             throw new NotificationConfigUninitializedException("PagerDuty config not initialized. Row count=" + configList.size());
@@ -61,7 +61,7 @@ public class PagerDutyDao {
     }
 
     public void saveConfig(PagerDutyConfigDTO configDTO) {
-        List<PagerDutyConfig> configList = pagerDutyConfigRepository.findAll();
+        List<PagerDutyConfig> configList = pagerDutyConfigRepository.findByTenantId(configDTO.getTenantId());
 
         if (configList.isEmpty()) {
             PagerDutyConfig config = pagerDutyConfigMapper.dtoToModel(configDTO);

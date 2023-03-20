@@ -110,8 +110,8 @@ public class PagerDutyAPI {
         pagerDutyDao.saveConfig(config);
     }
 
-    private String getPagerDutyIntegrationKey() throws NotificationConfigUninitializedException {
-        PagerDutyConfigDTO config = pagerDutyDao.getConfig();
+    private String getPagerDutyIntegrationKey(String tenantId) throws NotificationConfigUninitializedException {
+        PagerDutyConfigDTO config = pagerDutyDao.getConfig(tenantId);
         return config.getIntegrationKey();
     }
 
@@ -137,7 +137,7 @@ public class PagerDutyAPI {
         // Class: type of event
         payload.setClazz(alert.getUei());
 
-        event.setRoutingKey(getPagerDutyIntegrationKey());
+        event.setRoutingKey(getPagerDutyIntegrationKey(alert.getTenantId()));
         event.setDedupKey(alert.getReductionKey());
 
         if (Severity.CLEARED.equals(alert.getSeverity()) || AlertType.CLEAR.equals(alert.getType())) {
