@@ -136,7 +136,7 @@ const addValues = (a: number, b: number) => {
   const total = (a + b).toString()
   return (parseFloat(total).toPrecision(3))
 }
-const postFixGB = (value: any) => value.toString() + ' GB'
+const postFixGB = (value: any) => value + ' GB'
 
 
 
