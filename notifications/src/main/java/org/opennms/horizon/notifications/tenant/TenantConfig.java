@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.grpc.config;
+package org.opennms.horizon.notifications.tenant;
 
-import org.opennms.horizon.notifications.tenant.TenantContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import java.util.Optional;
-
-public class TenantContextLookupImpl implements TenantLookup {
-    @Override
-    public Optional<String> lookupTenantId() {
-        return Optional.ofNullable(TenantContext.getTenantId());
+@Configuration
+public class TenantConfig {
+    @Bean
+    public TenantLookup createTenantLookup(){
+        return new TenantContextLookupImpl();
     }
 }

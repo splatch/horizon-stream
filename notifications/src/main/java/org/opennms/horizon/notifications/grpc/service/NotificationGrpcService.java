@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.notifications.dto.NotificationServiceGrpc;
 import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.grpc.config.TenantLookup;
+import org.opennms.horizon.notifications.tenant.TenantLookup;
 import org.opennms.horizon.notifications.service.NotificationService;
 import org.springframework.stereotype.Component;
 

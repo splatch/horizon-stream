@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.grpc.config;
+package org.opennms.horizon.notifications.tenant;
 
 import lombok.RequiredArgsConstructor;
 import org.hibernate.cfg.AvailableSettings;
