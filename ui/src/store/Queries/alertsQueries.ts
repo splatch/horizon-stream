@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { useQuery } from 'villus'
-import { AlertListDocument } from '@/types/graphql-mocks'
+import { AlertsListDocument } from '@/types/graphql-mocks'
 
 export const useAlertsQueries = defineStore('alertsQueries', () => {
   const { data: fetchAlertsData, execute: fetchAlerts } = useQuery({
-    query: AlertListDocument,
+    query: AlertsListDocument,
     fetchOnMount: false,
     cachePolicy: 'network-only'
   })
@@ -13,6 +13,6 @@ export const useAlertsQueries = defineStore('alertsQueries', () => {
 
   return {
     fetchAlerts,
-    fetchAlertsData: computed(() => fetchAlertsData.value?.alertList || [])
+    fetchAlertsData: computed(() => fetchAlertsData.value?.alertsList || [])
   }
 })

@@ -1,5 +1,5 @@
-query alertList {
-  alertList {
+query alertsList {
+  alertsList {
     id
     name
     severity

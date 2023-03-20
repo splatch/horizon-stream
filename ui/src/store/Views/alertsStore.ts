@@ -6,16 +6,16 @@ import { IAlert } from '@/types/alerts'
 export const useAlertsStore = defineStore('alertsStore', () => {
   const severitiesSelected = ref<string[]>([])
   const timeSelected = ref()
-  const alertList = ref()
+  const alertsList = ref()
   const allAlertsList = ref()
-  const alertListSearched = ref([])
+  const alertsListSearched = ref([])
 
   const alertsQueries = useAlertsQueries()
 
   const fetchAlerts = async () => {
     await alertsQueries.fetchAlerts()
 
-    alertList.value = alertsQueries.fetchAlertsData
+    alertsList.value = alertsQueries.fetchAlertsData
     allAlertsList.value = alertsQueries.fetchAlertsData
   }
 
@@ -28,9 +28,9 @@ export const useAlertsStore = defineStore('alertsStore', () => {
       severitiesSelected.value.push(selected)
     }
     if (!severitiesSelected.value.length) {
-      alertList.value = allAlertsList.value
+      alertsList.value = allAlertsList.value
     } else {
-      alertList.value = allAlertsList.value.filter((a: IAlert) => severitiesSelected.value.includes(a.severity))
+      alertsList.value = allAlertsList.value.filter((a: IAlert) => severitiesSelected.value.includes(a.severity))
     }
   }
 
@@ -38,13 +38,29 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     timeSelected.value = selected
   }
 
+  const clearAllFilters = () => {
+    severitiesSelected.value = []
+    timeSelected.value = undefined
+  }
+
+  const clearAlerts = () => {
+    // send query
+  }
+
+  const acknowledgedSelectedAlerts = () => {
+    // send query
+  }
+
   return {
-    alertList: computed(() => alertList.value),
+    alertsList,
     allAlertsList: computed(() => allAlertsList.value),
     fetchAlerts,
     severitiesSelected,
     toggleSeverity,
     timeSelected,
-    selectTime
+    selectTime,
+    clearAllFilters,
+    clearAlerts,
+    acknowledgedSelectedAlerts
   }
 })

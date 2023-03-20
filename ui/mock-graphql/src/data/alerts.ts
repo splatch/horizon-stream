@@ -17,7 +17,7 @@ casual.define('alert', function () {
   }
 })
 
-casual.define('alertList', function () {
+casual.define('alertsList', function () {
   return [
     casual.alert,
     casual.alert,
@@ -33,6 +33,6 @@ casual.define('alertList', function () {
 })
 
 const alert = casual.alert
-const alertList = casual.alertList
+const alertsList = casual.alertsList
 
-export { alert, alertList }
+export { alert, alertsList }

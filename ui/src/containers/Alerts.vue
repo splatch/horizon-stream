@@ -7,17 +7,17 @@
       />
       <FeatherButton
         secondary
-        class="clear-all-filters-btn"
+        @click="alertsStore.clearAllFilters"
         data-test="clear-all-filters-btn"
         >clear all filters</FeatherButton
       >
     </div>
-    <AlertsSeverityFilters data-test="severity-filter" />
+    <AlertsSeverityFilters data-test="severity-filters" />
     <div class="content">
-      <div class="time-search-filter">
+      <div class="time-search-filters">
         <div
-          class="time-filter"
-          data-test="time-filter"
+          class="time-filters"
+          data-test="time-filters"
         >
           <span
             @click="selectTimeFilter(undefined)"
@@ -43,15 +43,63 @@
         <div class="search-filter">
           <FeatherInput
             v-model="searchAlerts"
-            @update:model-value="searchAlertsListener"
             label="Search Alerts"
             type="search"
+            @update:model-value="searchAlertsListener"
             class="search-alerts-input"
             data-test="search-filter"
           />
         </div>
       </div>
-      <AlertsCardList data-test="card-list" />
+      <div class="card-list-top">
+        <div class="select-all-checkbox-btns">
+          <FeatherCheckbox
+            v-model="isAllAlertsSelected"
+            :disabled="!alerts.length"
+            data-test="select-all-checkbox"
+            >Select All</FeatherCheckbox
+          >
+          <FeatherButton
+            :disabled="!atLeastOneAlertSelected"
+            text
+            @click="clearAlerts"
+            data-test="clear-btn"
+            >clear</FeatherButton
+          >
+          <FeatherButton
+            :disabled="!atLeastOneAlertSelected"
+            text
+            @click="acknowledgeSelectedAlerts"
+            data-test="acknowledge-btn"
+            >acknowledge</FeatherButton
+          >
+        </div>
+        <FeatherPagination
+          v-if="alerts.length"
+          v-model="page"
+          :pageSize="pageSize"
+          :total="total"
+          @update:pageSize="updatePageSize"
+          data-test="list-count"
+        />
+      </div>
+      <AlertsCardList
+        :alerts="alerts"
+        @alert-selected="alertSelectedListener"
+        data-test="alerts-list"
+      />
+      <div
+        class="card-list-bottom"
+        v-if="alerts.length"
+      >
+        <FeatherPagination
+          v-model="page"
+          :pageSize="pageSize"
+          :total="total"
+          @update:pageSize="updatePageSize"
+          data-test="pagination"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -59,12 +107,55 @@
 <script lang="ts" setup>
 import { useAlertsStore } from '@/store/Views/alertsStore'
 import { TimeType } from '@/components/Alerts/alerts.constant'
+import { IAlert } from '@/types/alerts'
+
+onMounted(async () => {
+  // console.log('onMounted')
+  await alertsStore.fetchAlerts()
+})
 
 const alertsStore = useAlertsStore()
 
-onMounted(async () => {
-  await alertsStore.fetchAlerts()
+const alerts = ref([] as IAlert[])
+watchEffect(() => {
+  alerts.value = alertsStore.alertsList?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
 })
+
+const page = ref(1)
+const pageSize = ref(10)
+const total = 100
+
+const updatePageSize = (v: number) => {
+  pageSize.value = v
+}
+
+const atLeastOneAlertSelected = computed(() => alerts.value.some((a: IAlert) => a.isSelected))
+
+const isAllAlertsSelected = ref(false)
+watch(isAllAlertsSelected, (isSelected) => {
+  alerts.value = alerts.value.map((a: IAlert) => ({
+    ...a,
+    isSelected
+  }))
+})
+
+const clearAlerts = () => {
+  alertsStore.clearAlerts
+}
+const acknowledgeSelectedAlerts = () => {
+  alertsStore.acknowledgedSelectedAlerts
+}
+
+const alertSelectedListener = (id: string) => {
+  console.log('id', id)
+  alerts.value = alerts.value.map((a: IAlert) => {
+    if (a.id === id) {
+      a.isSelected = !a.isSelected // toggle selection
+    }
+
+    return a
+  })
+}
 
 const timeFilterSelected = computed(() => alertsStore.timeSelected)
 const selectTimeFilter = (type: TimeType | undefined) => {
@@ -94,14 +185,14 @@ const searchAlertsListener = (v: any) => {
   align-items: center;
 }
 
-.time-search-filter {
+.time-search-filters {
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
-.time-filter {
+.time-filters {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -143,5 +234,57 @@ const searchAlertsListener = (v: any) => {
 .content {
   background: white;
   padding: var(variables.$spacing-l);
+}
+
+.card-list-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(variables.$spacing-s) var(variables.$spacing-xl);
+  background-color: var(variables.$background);
+  border: 1px solid var(variables.$border-on-surface);
+  border-radius: vars.$border-radius-s vars.$border-radius-s 0 0;
+  :deep(> .feather-pagination) {
+    border: 0;
+    min-height: auto;
+    padding-left: 0;
+    > .range-text {
+      margin-right: 0;
+      min-width: auto;
+    }
+    > .per-page-text,
+    > .page-size-select,
+    > nav {
+      display: none;
+    }
+  }
+}
+
+.select-all-checkbox-btns {
+  display: flex;
+  flex-direction: row;
+  > button {
+    margin-left: var(variables.$spacing-xl);
+  }
+}
+
+.card-list-bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  padding: var(variables.$spacing-s) 0 var(variables.$spacing-s) var(variables.$spacing-xl);
+  border-width: 0 1px 1px;
+  border-style: solid;
+  border-color: var(variables.$border-on-surface);
+  border-radius: 0 0 vars.$border-radius-s vars.$border-radius-s;
+  > * {
+    margin-left: var(variables.$spacing-xl);
+  }
+  :deep(> .feather-pagination) {
+    border: 0;
+    min-height: auto;
+  }
 }
 </style>

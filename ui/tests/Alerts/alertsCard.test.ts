@@ -1,27 +1,14 @@
 import { mount } from '@vue/test-utils'
 import AlertsCard from '@/components/Alerts/AlertsCard.vue'
-
-const mock = {
-  id: 1,
-  name: 'alert1',
-  severity: 'Critical',
-  cause: 'Power supply failure',
-  duration: '3hrs',
-  node: 'Server',
-  date: '99-99-9999',
-  time: '00:00:00',
-  isAcknowledged: true,
-  description: 'Sit lorem kasd diam....'
-}
+import { getAlert } from 'mock-graphql/src/fixture/alerts.fixture'
 
 let wrapper: any
 
 describe('Alert card', () => {
   beforeAll(() => {
     wrapper = mount(AlertsCard, {
-      shallow: true,
       props: {
-        alert: mock
+        alert: getAlert()
       }
     })
   })
@@ -39,5 +26,14 @@ describe('Alert card', () => {
       const el = wrapper.get(`[data-test="${elem}"]`)
       expect(el.exists()).toBeTruthy()
     })
+  })
+
+  test('Should have description when card expanded', async () => {
+    const ahref = wrapper.get('.feather-expansion-header-button')
+    expect(ahref.exists()).toBeTruthy()
+
+    await ahref.trigger('click')
+    const elem = wrapper.get('[data-test="description"]')
+    expect(elem.exists()).toBeTruthy()
   })
 })
