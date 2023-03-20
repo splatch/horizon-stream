@@ -28,9 +28,20 @@ export const useMonitoringPoliciesQueries = defineStore('monitoringPoliciesQueri
           conditions: [{
             id: '1',
             level: 'above',
-            percentage: 90,
-            duration: '3 minutes',
-            period: '10 minutes',
+            percentage: 50,
+            forAny: 10,
+            durationUnit: 'seconds',
+            duringLast: 15,
+            periodUnit: 'minutes',
+            severity: 'major'
+          },{
+            id: '2',
+            level: 'above',
+            percentage: 50,
+            forAny: 10,
+            durationUnit: 'minutes',
+            duringLast: 15,
+            periodUnit: 'minutes',
             severity: 'critical'
           }]
         },
@@ -38,14 +49,16 @@ export const useMonitoringPoliciesQueries = defineStore('monitoringPoliciesQueri
           id: '2',
           name: 'errors',
           componentType: 'interface',
-          detectionMethod: 'events',
+          detectionMethod: 'event',
           metricName: 'errors',
           conditions: [{
             id: '1',
             level: 'above',
             percentage: 90,
-            duration: '3 minutes',
-            period: '10 minutes',
+            forAny: 10,
+            durationUnit: 'seconds',
+            duringLast: 15,
+            periodUnit: 'minutes',
             severity: 'critical'
           }]
         },
