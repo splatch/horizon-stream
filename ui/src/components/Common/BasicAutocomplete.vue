@@ -117,8 +117,6 @@ onMounted(() => {
 watch(props, () => {
   if (props.preselectedItems?.length > 0) {
     selectedItems.value = props.preselectedItems
-  } else {
-    selectedItems.value = []
   }
 })
 
