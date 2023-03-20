@@ -32,9 +32,11 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.opennms.horizon.inventory.dto.MonitoredState;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
+import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
@@ -43,6 +45,7 @@ import org.opennms.horizon.inventory.model.Tag;
 import org.opennms.horizon.inventory.repository.IpInterfaceRepository;
 import org.opennms.horizon.inventory.repository.MonitoringLocationRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
+import org.opennms.horizon.inventory.service.discovery.active.IcmpActiveDiscoveryService;
 import org.opennms.horizon.inventory.service.taskset.CollectorTaskSetService;
 import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 import org.opennms.horizon.inventory.service.taskset.MonitorTaskSetService;
@@ -90,7 +93,7 @@ public class NodeService {
     private final TaskSetPublisher taskSetPublisher;
     private final TagService tagService;
     private final NodeMapper mapper;
-    private final ActiveDiscoveryService activeDiscoveryService;
+    private final IcmpActiveDiscoveryService icmpActiveDiscoveryService;
 
     @Transactional(readOnly = true)
     public List<NodeDTO> findByTenantId(String tenantId) {
@@ -104,6 +107,12 @@ public class NodeService {
     @Transactional(readOnly = true)
     public Optional<NodeDTO> getByIdAndTenantId(long id, String tenantId) {
         return nodeRepository.findByIdAndTenantId(id, tenantId).map(mapper::modelToDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public List<NodeDTO> findByMonitoredState(String tenantId, MonitoredState monitoredState) {
+        return nodeRepository.findByTenantIdAndMonitoredStateEquals(tenantId, monitoredState)
+            .stream().map(mapper::modelToDTO).toList();
     }
 
     private void saveIpInterfaces(NodeCreateDTO request, Node node, String tenantId) {
@@ -148,6 +157,9 @@ public class NodeService {
         node.setTenantId(tenantId);
         node.setNodeLabel(request.getLabel());
         node.setScanType(scanType);
+        if (request.hasMonitoredState()) {
+            node.setMonitoredState(request.getMonitoredState());
+        }
         node.setCreateTime(LocalDateTime.now());
         node.setMonitoringLocation(monitoringLocation);
         node.setMonitoringLocationId(monitoringLocation.getId());
@@ -162,22 +174,12 @@ public class NodeService {
         saveIpInterfaces(request, node, tenantId);
 
         tagService.addTags(tenantId, TagCreateListDTO.newBuilder()
-            .setNodeId(node.getId())
+            .addEntityIds(TagEntityIdDTO.newBuilder()
+                .setNodeId(node.getId()))
             .addAllTags(request.getTagsList())
             .build());
 
         return node;
-    }
-
-    @Transactional
-    public Map<String, Map<String, List<NodeDTO>>> listAllNodeForMonitoring() {
-        Map<String, Map<String, List<NodeDTO>>> nodesByTenantLocation = new HashMap<>();
-        nodeRepository.findAll().forEach(node -> {
-            Map<String, List<NodeDTO>> nodeByLocation = nodesByTenantLocation.computeIfAbsent(node.getTenantId(), (tenantId) -> new HashMap<>());
-            List<NodeDTO> nodeList = nodeByLocation.computeIfAbsent(node.getMonitoringLocation().getLocation(), location -> new ArrayList<>());
-            nodeList.add(mapper.modelToDTO(node));
-        });
-        return nodesByTenantLocation;
     }
 
     @Transactional
@@ -245,7 +247,7 @@ public class NodeService {
         List<SnmpConfiguration> snmpConfigs = new ArrayList<>();
 
         try {
-            var optional = activeDiscoveryService.getDiscoveryConfigById(activeDiscoveryId, node.getTenantId());
+            var optional = icmpActiveDiscoveryService.getDiscoveryById(activeDiscoveryId, node.getTenantId());
             if (optional.isPresent()) {
                 var activeDiscoveryDTO = optional.get();
                 var snmpConf = activeDiscoveryDTO.getSnmpConf();

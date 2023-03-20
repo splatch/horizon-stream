@@ -37,17 +37,23 @@ import org.opennms.horizon.azure.api.AzureScanResponse;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
-import org.opennms.horizon.inventory.model.AzureCredential;
+import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.model.SnmpInterface;
-import org.opennms.horizon.inventory.repository.AzureCredentialRepository;
+import org.opennms.horizon.inventory.model.discovery.PassiveDiscovery;
+import org.opennms.horizon.inventory.model.discovery.active.AzureActiveDiscovery;
+import org.opennms.horizon.inventory.repository.discovery.PassiveDiscoveryRepository;
+import org.opennms.horizon.inventory.repository.discovery.active.AzureActiveDiscoveryRepository;
 import org.opennms.horizon.inventory.repository.NodeRepository;
 import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.SnmpInterfaceService;
 import org.opennms.horizon.inventory.service.TagService;
+import org.opennms.horizon.inventory.service.taskset.DetectorTaskSetService;
 import org.opennms.horizon.inventory.service.taskset.TaskSetHandler;
+import org.opennms.node.scan.contract.IpInterfaceResult;
 import org.opennms.node.scan.contract.NodeScanResult;
+import org.opennms.node.scan.contract.SnmpInterfaceResult;
 import org.opennms.taskset.contract.DiscoveryScanResult;
 import org.opennms.taskset.contract.PingResponse;
 import org.opennms.taskset.contract.ScanType;
@@ -65,13 +71,15 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class ScannerResponseService {
-    private final AzureCredentialRepository azureCredentialRepository;
+    private final AzureActiveDiscoveryRepository azureActiveDiscoveryRepository;
     private final NodeRepository nodeRepository;
     private final NodeService nodeService;
     private final TaskSetHandler taskSetHandler;
     private final IpInterfaceService ipInterfaceService;
     private final SnmpInterfaceService snmpInterfaceService;
     private final TagService tagService;
+    private final PassiveDiscoveryRepository passiveDiscoveryRepository;
+    private final DetectorTaskSetService detectorTaskSetService;
 
     @Transactional
     public void accept(String tenantId, String location, ScannerResponse response) throws InvalidProtocolBufferException {
@@ -134,13 +142,13 @@ public class ScannerResponseService {
     }
 
     private void processAzureScanItem(String tenantId, String location, String ipAddress, AzureScanItem item) {
-        Optional<AzureCredential> azureCredentialOpt = azureCredentialRepository.findByTenantIdAndId(tenantId, item.getCredentialId());
-        if (azureCredentialOpt.isEmpty()) {
-            log.warn("No Azure Credential found for id: {}", item.getCredentialId());
+        Optional<AzureActiveDiscovery> discoveryOpt = azureActiveDiscoveryRepository.findByTenantIdAndId(tenantId, item.getActiveDiscoveryId());
+        if (discoveryOpt.isEmpty()) {
+            log.warn("No Azure Active Discovery found for id: {}", item.getActiveDiscoveryId());
             return;
         }
 
-        AzureCredential credential = azureCredentialOpt.get();
+        AzureActiveDiscovery discovery = discoveryOpt.get();
 
         String nodeLabel = String.format("%s (%s)", item.getName(), item.getResourceGroup());
         Optional<Node> nodeOpt = nodeRepository.findByTenantLocationAndNodeLabel(tenantId, location, nodeLabel);
@@ -157,26 +165,45 @@ public class ScannerResponseService {
                 .build();
             node = nodeService.createNode(createDTO, ScanType.AZURE_SCAN, tenantId);
 
-            taskSetHandler.sendAzureMonitorTasks(credential, item, ipAddress, node.getId());
-            taskSetHandler.sendAzureCollectorTasks(credential, item, ipAddress, node.getId());
+            taskSetHandler.sendAzureMonitorTasks(discovery, item, ipAddress, node.getId());
+            taskSetHandler.sendAzureCollectorTasks(discovery, item, ipAddress, node.getId());
         }
-        List<TagCreateDTO> tags = credential.getTags().stream()
+        List<TagCreateDTO> tags = discovery.getTags().stream()
             .map(tag -> TagCreateDTO.newBuilder().setName(tag.getName()).build())
             .toList();
         tagService.addTags(tenantId, TagCreateListDTO.newBuilder()
-            .setNodeId(node.getId()).addAllTags(tags).build());
+            .addEntityIds(TagEntityIdDTO.newBuilder()
+                .setNodeId(node.getId()))
+            .addAllTags(tags).build());
     }
 
     private void processNodeScanResponse(String tenantId, NodeScanResult result ) {
-        nodeRepository.findByIdAndTenantId(result.getNodeId(), tenantId)
-            .ifPresentOrElse(node -> {
-                Map<Integer, SnmpInterface> ifIndexSNMPMap = new HashMap<>();
-                nodeService.updateNodeInfo(node, result.getNodeInfo());
-                result.getSnmpInterfacesList().forEach(snmpIfResult -> {
-                    SnmpInterface snmpInterface = snmpInterfaceService.createOrUpdateFromScanResult(tenantId, node, snmpIfResult);
-                    ifIndexSNMPMap.put(snmpInterface.getIfIndex(), snmpInterface);
-                });
-                result.getIpInterfacesList().forEach(ipIfResult -> ipInterfaceService.creatUpdateFromScanResult(tenantId, node, ipIfResult, ifIndexSNMPMap));
-            }, () -> log.error("Error while process node scan results, node with id {} doesn't exist", result.getNodeId()));
+        Optional<Node> nodeOpt = nodeRepository.findByIdAndTenantId(result.getNodeId(), tenantId);
+        if (nodeOpt.isPresent()) {
+            Node node = nodeOpt.get();
+            Map<Integer, SnmpInterface> ifIndexSNMPMap = new HashMap<>();
+            nodeService.updateNodeInfo(node, result.getNodeInfo());
+
+            for (SnmpInterfaceResult snmpIfResult : result.getSnmpInterfacesList()) {
+                SnmpInterface snmpInterface = snmpInterfaceService.createOrUpdateFromScanResult(tenantId, node, snmpIfResult);
+                ifIndexSNMPMap.put(snmpInterface.getIfIndex(), snmpInterface);
+            }
+            for (IpInterfaceResult ipIfResult : result.getIpInterfacesList()) {
+                ipInterfaceService.creatUpdateFromScanResult(tenantId, node, ipIfResult, ifIndexSNMPMap);
+            }
+
+            if (result.hasPassiveDiscoveryId()) {
+                Optional<PassiveDiscovery> passiveDiscoveryOpt = passiveDiscoveryRepository
+                    .findByTenantIdAndId(tenantId, result.getPassiveDiscoveryId());
+
+                if (passiveDiscoveryOpt.isPresent()) {
+
+                    PassiveDiscovery discovery = passiveDiscoveryOpt.get();
+                    //todo: use snmp agent config for detection, monitor and collection
+                }
+            }
+        } else {
+            log.error("Error while process node scan results, node with id {} doesn't exist", result.getNodeId());
+        }
     }
 }
