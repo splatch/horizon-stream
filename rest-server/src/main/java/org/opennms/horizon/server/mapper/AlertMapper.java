@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,19 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.model.inventory.tag;
+package org.opennms.horizon.server.mapper;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.mapstruct.Mapper;
+import org.opennms.horizon.server.model.alerts.Alert;
 
-import java.util.ArrayList;
-import java.util.List;
+@Mapper(componentModel = "spring")
+public interface AlertMapper {
 
-@Getter
-@Setter
-public class TagListNodeRemove {
-
-    private long nodeId;
-
-    private List<Long> tagIds = new ArrayList<>();
+    Alert protoToAlert(org.opennms.horizon.alerts.proto.Alert alertProto);
 }
