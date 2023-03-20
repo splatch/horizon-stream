@@ -26,15 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.service.taskset;
+package org.opennms.horizon.minion.snmp;
 
-// TODO: Make this common for Minion/Inventory
-public interface PingConstants {
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
+import org.opennms.horizon.snmp.api.SnmpConfiguration;
 
-    int DEFAULT_RETRIES = 2;
-    int DEFAULT_TIMEOUT = 800;
-    int DEFAULT_PACKET_SIZE = 64;
-    double DEFAULT_PACKETS_PER_SECOND = 100.0;
-    boolean DEFAULT_ALLOW_FRAGMENTATION = true;
-    int DEFAULT_DSCP = 0;
+public class SnmpConfigUtils {
+
+    static SnmpAgentConfig mapAgentConfig(String host, SnmpConfiguration snmpConfiguration) {
+        var agentConfig = new SnmpAgentConfig(InetAddressUtils.getInetAddress(host), SnmpAgentConfig.DEFAULTS);
+        if(snmpConfiguration != null) {
+            if (snmpConfiguration.hasReadCommunity()) {
+                agentConfig.setReadCommunity(snmpConfiguration.getReadCommunity());
+            }
+            if (snmpConfiguration.hasPort()) {
+                agentConfig.setPort(snmpConfiguration.getPort());
+            }
+            //TODO: Expand config further.
+        }
+        return agentConfig;
+    }
 }

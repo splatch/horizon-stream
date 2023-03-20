@@ -26,15 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.service.taskset;
+package org.opennms.horizon.inventory.mapper;
 
-// TODO: Make this common for Minion/Inventory
-public interface PingConstants {
+import org.mapstruct.Mapper;
+import org.opennms.horizon.inventory.model.SnmpAgentConfig;
+import org.opennms.horizon.snmp.api.SnmpConfiguration;
 
-    int DEFAULT_RETRIES = 2;
-    int DEFAULT_TIMEOUT = 800;
-    int DEFAULT_PACKET_SIZE = 64;
-    double DEFAULT_PACKETS_PER_SECOND = 100.0;
-    boolean DEFAULT_ALLOW_FRAGMENTATION = true;
-    int DEFAULT_DSCP = 0;
+@Mapper(componentModel = "spring")
+public interface SnmpConfigMapper {
+
+    SnmpConfiguration mapModelToProto(SnmpAgentConfig snmpAgentConfig);
+
+    SnmpAgentConfig mapProtoToModel(SnmpConfiguration snmpConfiguration);
 }
