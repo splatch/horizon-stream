@@ -149,32 +149,32 @@ public class InventoryTestSteps {
     }
 
 
-    @Then("Check the status of the Node {string}")
-    public void checkTheStatusOfTheNodeTest(String status) throws MalformedURLException {
+    @Then("Check the status of the Node with expected status {string}")
+    public void checkTheStatusOfTheFirstNodeTest(String status) {
         LOG.info("Test to check the status of the node");
 
         try {
             Awaitility
                 .await()
                 .atMost(120000, TimeUnit.MILLISECONDS)
-                .until(() -> checkTheStatusOfTheNode(status) )
+                .until(() -> checkTheStatusOfTheFirstNode(status) )
             ;
             assertTrue(true);
         } catch (Exception e) {
-            LOG.info("Test status: ", e.getMessage());
+            LOG.info("Test check the status failed with the error: ", e.getMessage());
             assertTrue(false);
         }
     }
 
-    @Then("Delete created node from inventory")
-    public void deleteNodeFromInventory() throws MalformedURLException {
-        LOG.info("");
+    @Then("Delete the first node from inventory")
+    public void deleteFirstNodeFromInventory() throws MalformedURLException {
+        LOG.info("Deleting the first node from the inventory.");
         URL url = formatIngressUrl("/api/graphql");
         String accessToken = userAccessTokenSupplier.get();
 
         String queryList = GQLQueryConstants.DELETE_NODE_BY_ID;
 
-        int nodeId = getNodeId();
+        int nodeId = getFirstNodeId();
 
         Map<String, Object> queryVariables = Map.of("id", nodeId);
 
@@ -187,9 +187,8 @@ public class InventoryTestSteps {
         JsonPath jsonPathEvaluator = response.jsonPath();
         LinkedHashMap lhm = jsonPathEvaluator.get("data");
         Boolean done = (Boolean) lhm.get("deleteNode");
-
+        System.out.println("node id is: " + nodeId);
         assertTrue(done);
-
     }
 
 //========================================
@@ -275,19 +274,19 @@ public class InventoryTestSteps {
     }
 
     /**
-     * Method to chec the status of the node during the test
-     * @param status Expected status of the node
-     * @return If the status is equals tot eh expected one
+     * Method to check the expected status of the first node during the test
+     * @param expectedStatus Expected expectedStatus of the node
+     * @return If the expectedStatus is equals tot eh expected one
      * @throws MalformedURLException
      */
-    public boolean checkTheStatusOfTheNode(String status) throws MalformedURLException {
+    public boolean checkTheStatusOfTheFirstNode(String expectedStatus) throws MalformedURLException {
         LOG.info("checkTheStatusOfTheNode");
         URL url = formatIngressUrl("/api/graphql");
         String accessToken = userAccessTokenSupplier.get();
 
         String queryList = GQLQueryConstants.LIST_NODE_METRICS;
 
-        int nodeId = getNodeId();
+        int nodeId = getFirstNodeId();
 
         Map<String, Object> queryVariables = Map.of("id", nodeId);
 
@@ -301,15 +300,15 @@ public class InventoryTestSteps {
         LinkedHashMap lhm = jsonPathEvaluator.get("data");
         LinkedHashMap map = (LinkedHashMap) lhm.get("nodeStatus");
         String currentStatus = (String) map.get("status");
-        return currentStatus.equals(status);
+        return currentStatus.equals(expectedStatus);
     }
 
     /**
-     * Method to get the node ID from DB
-     * @return Node ID as Int
+     * Method to get the ID of the first node in the inventory
+     * @return The First Node ID as Int
      * @throws MalformedURLException
      */
-    public int getNodeId() throws MalformedURLException {
+    public int getFirstNodeId() throws MalformedURLException {
         URL url = formatIngressUrl("/api/graphql");
         String accessToken = userAccessTokenSupplier.get();
 

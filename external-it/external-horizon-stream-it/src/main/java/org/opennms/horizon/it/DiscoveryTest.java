@@ -106,11 +106,11 @@ public class DiscoveryTest {
     }
 
     /**
-     * Method to get the node ID from DB
-     * @return Node ID as Int
+     * Method to get the first node ID from DB
+     * @return Node ID as Int first in the list
      * @throws MalformedURLException
      */
-    public int getNodeId() throws MalformedURLException {
+    public int getFirstNodeId() throws MalformedURLException {
         URL url = formatIngressUrl("/api/graphql");
         String accessToken = userAccessTokenSupplier.get();
 
@@ -129,19 +129,19 @@ public class DiscoveryTest {
     }
 
     /**
-     * Method to chec the status of the node during the test
-     * @param status Expected status of the node
+     * Method to check the expected status of the first node during the test
+     * @param expectedStatus Expected status of the node
      * @return If the status is equals tot eh expected one
      * @throws MalformedURLException
      */
-    public boolean checkTheStatusOfTheNode(String status) throws MalformedURLException {
+    public boolean checkTheStatusOfTheFirstNode(String expectedStatus) throws MalformedURLException {
         LOG.info("checkTheStatusOfTheNode");
         URL url = formatIngressUrl("/api/graphql");
         String accessToken = userAccessTokenSupplier.get();
 
         String queryList = GQLQueryConstants.LIST_NODE_METRICS;
 
-        int nodeId = getNodeId();
+        int nodeId = getFirstNodeId();
 
         Map<String, Object> queryVariables = Map.of("id", nodeId);
 
@@ -155,7 +155,7 @@ public class DiscoveryTest {
         LinkedHashMap lhm = jsonPathEvaluator.get("data");
         LinkedHashMap map = (LinkedHashMap) lhm.get("nodeStatus");
         String currentStatus = (String) map.get("status");
-        return currentStatus.equals(status);
+        return currentStatus.equals(expectedStatus);
     }
 
 //========================================
