@@ -7,7 +7,7 @@ import { VILLUS_CLIENT, createClient } from 'villus'
  * Usage:
  *  wrapper = mountWithPiniaVillus({
  *    component: SomeComponent,
- *    shallow: true,
+ *    shallow: true, // by default
  *    props,
  *    ...
  *  })
@@ -19,6 +19,7 @@ import { VILLUS_CLIENT, createClient } from 'villus'
  *              stubs
  *              plugins
  *              provide
+ *                directives
  *            attachTo
  * @returns mounted component
  */
