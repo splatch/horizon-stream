@@ -10,19 +10,12 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.entity.ContentType;
 import org.apache.http.protocol.HTTP;
-import org.junit.Test;
+import org.awaitility.Awaitility;
 import org.opennms.horizon.it.gqlmodels.CreateNodeData;
 import org.opennms.horizon.it.gqlmodels.GQLQuery;
 import org.opennms.horizon.it.gqlmodels.querywrappers.CreateNodeResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
-import org.testcontainers.Testcontainers;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.net.MalformedURLException;
@@ -30,6 +23,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
@@ -120,7 +115,7 @@ public class DiscoveryTest {
         String accessToken = userAccessTokenSupplier.get();
 
         GQLQuery gqlQuery = new GQLQuery();
-        gqlQuery.setQuery(GQLQueryConstants.LIST_NODE_ID);
+        gqlQuery.setQuery(GQLQueryConstants.GET_NODE_ID);
 
         Response response = executePost(url, accessToken, gqlQuery);
 
@@ -133,44 +128,14 @@ public class DiscoveryTest {
         return id;
     }
 
-//========================================
-// Test Step Definitions
-//----------------------------------------
-
-    @Then("Create a new node with label {string} IP address {string} and location {string}")
-    public void createNode(String label, String ipAddress, String location) throws MalformedURLException {
-        URL url = formatIngressUrl("/api/graphql");
-        String accessToken = userAccessTokenSupplier.get();
-
-        String query = GQLQueryConstants.CREATE_NODE_QUERY;
-
-        CreateNodeData nodeVariable = new CreateNodeData();
-        nodeVariable.setLabel(label);
-        nodeVariable.setLocation(location);
-        nodeVariable.setManagementIp(ipAddress);
-
-        Map<String, Object> queryVariables = Map.of("node", nodeVariable);
-
-        GQLQuery gqlQuery = new GQLQuery();
-        gqlQuery.setQuery(query);
-        gqlQuery.setVariables(queryVariables);
-
-        Response restAssuredResponse = executePost(url, accessToken, gqlQuery);
-
-        LOG.debug("createNode response: payload={}", restAssuredResponse.getBody().asString());
-
-        assertEquals("add-device query failed: status=" + restAssuredResponse.getStatusCode() + "; body=" + restAssuredResponse.getBody().asString(),
-            200, restAssuredResponse.getStatusCode());
-
-        CreateNodeResult createNodeResult = restAssuredResponse.getBody().as(CreateNodeResult.class);
-
-        // GRAPHQL errors result in 200 http response code and a body with "errors" detail
-        assertTrue("create-node errors: " + createNodeResult.getErrors(),
-            ( createNodeResult.getErrors() == null ) || ( createNodeResult.getErrors().isEmpty() ));
-    }
-
-    @Then("Check the status of the Node {string}")
-    public void checkTheStatusOfTheNode(String status) throws MalformedURLException {
+    /**
+     * Method to chec the status of the node during the test
+     * @param status Expected status of the node
+     * @return If the status is equals tot eh expected one
+     * @throws MalformedURLException
+     */
+    public boolean checkTheStatusOfTheNode(String status) throws MalformedURLException {
+        LOG.info("checkTheStatusOfTheNode");
         URL url = formatIngressUrl("/api/graphql");
         String accessToken = userAccessTokenSupplier.get();
 
@@ -190,11 +155,11 @@ public class DiscoveryTest {
         LinkedHashMap lhm = jsonPathEvaluator.get("data");
         LinkedHashMap map = (LinkedHashMap) lhm.get("nodeStatus");
         String currentStatus = (String) map.get("status");
-
-        assertEquals(status, currentStatus);
+        return currentStatus.equals(status);
     }
 
-
-
+//========================================
+// Test Step Definitions
+//----------------------------------------
 
 }

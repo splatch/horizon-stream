@@ -15,7 +15,10 @@ public abstract class GQLQueryConstants {
     public static final String LIST_NODE_METRICS =
         "query NodeStatusParts($id: Long!) {nodeStatus(id: $id) {id status  }}";
 
-    public static final String LIST_NODE_ID =
+    public static final String GET_NODE_ID =
         "query NodesTableParts { findAllNodes { id nodeLabel}}";
+
+    public static final String DELETE_NODE_BY_ID =
+        "mutation DeleteNode($id: Long!) {  deleteNode(id: $id)}";
 
 }

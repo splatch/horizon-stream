@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.config.SSLConfig;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.entity.ContentType;
@@ -23,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.HttpHeaders;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -145,6 +148,50 @@ public class InventoryTestSteps {
             ( createNodeResult.getErrors() == null ) || ( createNodeResult.getErrors().isEmpty() ));
     }
 
+
+    @Then("Check the status of the Node {string}")
+    public void checkTheStatusOfTheNodeTest(String status) throws MalformedURLException {
+        LOG.info("Test to check the status of the node");
+
+        try {
+            Awaitility
+                .await()
+                .atMost(120000, TimeUnit.MILLISECONDS)
+                .until(() -> checkTheStatusOfTheNode(status) )
+            ;
+            assertTrue(true);
+        } catch (Exception e) {
+            LOG.info("Test status: ", e.getMessage());
+            assertTrue(false);
+        }
+    }
+
+    @Then("Delete created node from inventory")
+    public void deleteNodeFromInventory() throws MalformedURLException {
+        LOG.info("");
+        URL url = formatIngressUrl("/api/graphql");
+        String accessToken = userAccessTokenSupplier.get();
+
+        String queryList = GQLQueryConstants.DELETE_NODE_BY_ID;
+
+        int nodeId = getNodeId();
+
+        Map<String, Object> queryVariables = Map.of("id", nodeId);
+
+        GQLQuery gqlQuery = new GQLQuery();
+        gqlQuery.setQuery(queryList);
+        gqlQuery.setVariables(queryVariables);
+
+        Response response = executePost(url, accessToken, gqlQuery);
+
+        JsonPath jsonPathEvaluator = response.jsonPath();
+        LinkedHashMap lhm = jsonPathEvaluator.get("data");
+        Boolean done = (Boolean) lhm.get("deleteNode");
+
+        assertTrue(done);
+
+    }
+
 //========================================
 // Internals
 //----------------------------------------
@@ -225,6 +272,59 @@ public class InventoryTestSteps {
         LOG.debug("MINIONS for location: count={}; location={}", minionsAtLocation.size(), minionLocation);
 
         return minionsAtLocation;
+    }
+
+    /**
+     * Method to chec the status of the node during the test
+     * @param status Expected status of the node
+     * @return If the status is equals tot eh expected one
+     * @throws MalformedURLException
+     */
+    public boolean checkTheStatusOfTheNode(String status) throws MalformedURLException {
+        LOG.info("checkTheStatusOfTheNode");
+        URL url = formatIngressUrl("/api/graphql");
+        String accessToken = userAccessTokenSupplier.get();
+
+        String queryList = GQLQueryConstants.LIST_NODE_METRICS;
+
+        int nodeId = getNodeId();
+
+        Map<String, Object> queryVariables = Map.of("id", nodeId);
+
+        GQLQuery gqlQuery = new GQLQuery();
+        gqlQuery.setQuery(queryList);
+        gqlQuery.setVariables(queryVariables);
+
+        Response response = executePost(url, accessToken, gqlQuery);
+
+        JsonPath jsonPathEvaluator = response.jsonPath();
+        LinkedHashMap lhm = jsonPathEvaluator.get("data");
+        LinkedHashMap map = (LinkedHashMap) lhm.get("nodeStatus");
+        String currentStatus = (String) map.get("status");
+        return currentStatus.equals(status);
+    }
+
+    /**
+     * Method to get the node ID from DB
+     * @return Node ID as Int
+     * @throws MalformedURLException
+     */
+    public int getNodeId() throws MalformedURLException {
+        URL url = formatIngressUrl("/api/graphql");
+        String accessToken = userAccessTokenSupplier.get();
+
+        GQLQuery gqlQuery = new GQLQuery();
+        gqlQuery.setQuery(GQLQueryConstants.GET_NODE_ID);
+
+        Response response = executePost(url, accessToken, gqlQuery);
+
+        JsonPath jsonPathEvaluator = response.jsonPath();
+        LinkedHashMap lhm = jsonPathEvaluator.get("data");
+        ArrayList map = (ArrayList) lhm.get("findAllNodes");
+        LinkedHashMap nodesData = (LinkedHashMap) map.get(0);
+        int id = (int) nodesData.get("id");
+
+        return id;
     }
 
 }
