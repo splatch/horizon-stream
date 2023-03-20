@@ -33,7 +33,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
 import org.opennms.horizon.inventory.dto.TagDTO;
 import org.opennms.horizon.inventory.dto.TagListDTO;
@@ -191,15 +190,15 @@ class GraphQLTagServiceTest {
     }
 
     @Test
-    void testGetTagsFromAzureCredential() throws JSONException {
+    void testGetTagsFromActiveDiscovery() throws JSONException {
 
         TagDTO tagDTO1 = TagDTO.newBuilder().setName(TEST_TAG_NAME_1).setTenantId(TEST_TENANT_ID).setId(1L).build();
         TagDTO tagDTO2 = TagDTO.newBuilder().setName(TEST_TAG_NAME_2).setTenantId(TEST_TENANT_ID).setId(2L).build();
         TagListDTO tagListDTO = TagListDTO.newBuilder().addTags(tagDTO1).addTags(tagDTO2).build();
-        when(mockClient.getTagsByAzureCredentialId(anyLong(), any(), anyString())).thenReturn(tagListDTO);
+        when(mockClient.getTagsByActiveDiscoveryId(anyLong(), any(), anyString())).thenReturn(tagListDTO);
 
         String getRequest = "query { " +
-            "    tagsByAzureCredentialId (azureCredentialId: 1) { " +
+            "    tagsByActiveDiscoveryId (activeDiscoveryId: 1) { " +
             "        id, " +
             "        tenantId, " +
             "        name " +
@@ -213,27 +212,27 @@ class GraphQLTagServiceTest {
             .exchange()
             .expectStatus().isOk()
             .expectBody()
-            .jsonPath("$.data.tagsByAzureCredentialId[0].id").isEqualTo(1)
-            .jsonPath("$.data.tagsByAzureCredentialId[0].tenantId").isNotEmpty()
-            .jsonPath("$.data.tagsByAzureCredentialId[0].name").isEqualTo(TEST_TAG_NAME_1)
-            .jsonPath("$.data.tagsByAzureCredentialId[1].id").isEqualTo(2)
-            .jsonPath("$.data.tagsByAzureCredentialId[1].tenantId").isNotEmpty()
-            .jsonPath("$.data.tagsByAzureCredentialId[1].name").isEqualTo(TEST_TAG_NAME_2);
+            .jsonPath("$.data.tagsByActiveDiscoveryId[0].id").isEqualTo(1)
+            .jsonPath("$.data.tagsByActiveDiscoveryId[0].tenantId").isNotEmpty()
+            .jsonPath("$.data.tagsByActiveDiscoveryId[0].name").isEqualTo(TEST_TAG_NAME_1)
+            .jsonPath("$.data.tagsByActiveDiscoveryId[1].id").isEqualTo(2)
+            .jsonPath("$.data.tagsByActiveDiscoveryId[1].tenantId").isNotEmpty()
+            .jsonPath("$.data.tagsByActiveDiscoveryId[1].name").isEqualTo(TEST_TAG_NAME_2);
 
-        verify(mockClient, times(1)).getTagsByAzureCredentialId(1L, null, accessToken);
+        verify(mockClient, times(1)).getTagsByActiveDiscoveryId(1L, null, accessToken);
         verify(mockHeaderUtil, times(1)).getAuthHeader(any(ResolutionEnvironment.class));
     }
 
     @Test
-    void testGetTagsFromAzureCredentialWithSearchTerm() throws JSONException {
+    void testGetTagsFromActiveDiscoveryWithSearchTerm() throws JSONException {
 
         TagDTO tagDTO1 = TagDTO.newBuilder().setName(TEST_TAG_NAME_1).setTenantId(TEST_TENANT_ID).setId(1L).build();
         TagDTO tagDTO2 = TagDTO.newBuilder().setName(TEST_TAG_NAME_2).setTenantId(TEST_TENANT_ID).setId(2L).build();
         TagListDTO tagListDTO = TagListDTO.newBuilder().addTags(tagDTO1).addTags(tagDTO2).build();
-        when(mockClient.getTagsByAzureCredentialId(anyLong(), anyString(), anyString())).thenReturn(tagListDTO);
+        when(mockClient.getTagsByActiveDiscoveryId(anyLong(), anyString(), anyString())).thenReturn(tagListDTO);
 
         String getRequest = "query { " +
-            "    tagsByAzureCredentialId (azureCredentialId: 1, searchTerm: \"abc\") { " +
+            "    tagsByActiveDiscoveryId (activeDiscoveryId: 1, searchTerm: \"abc\") { " +
             "        id, " +
             "        tenantId, " +
             "        name " +
@@ -247,14 +246,82 @@ class GraphQLTagServiceTest {
             .exchange()
             .expectStatus().isOk()
             .expectBody()
-            .jsonPath("$.data.tagsByAzureCredentialId[0].id").isEqualTo(1)
-            .jsonPath("$.data.tagsByAzureCredentialId[0].tenantId").isNotEmpty()
-            .jsonPath("$.data.tagsByAzureCredentialId[0].name").isEqualTo(TEST_TAG_NAME_1)
-            .jsonPath("$.data.tagsByAzureCredentialId[1].id").isEqualTo(2)
-            .jsonPath("$.data.tagsByAzureCredentialId[1].tenantId").isNotEmpty()
-            .jsonPath("$.data.tagsByAzureCredentialId[1].name").isEqualTo(TEST_TAG_NAME_2);
+            .jsonPath("$.data.tagsByActiveDiscoveryId[0].id").isEqualTo(1)
+            .jsonPath("$.data.tagsByActiveDiscoveryId[0].tenantId").isNotEmpty()
+            .jsonPath("$.data.tagsByActiveDiscoveryId[0].name").isEqualTo(TEST_TAG_NAME_1)
+            .jsonPath("$.data.tagsByActiveDiscoveryId[1].id").isEqualTo(2)
+            .jsonPath("$.data.tagsByActiveDiscoveryId[1].tenantId").isNotEmpty()
+            .jsonPath("$.data.tagsByActiveDiscoveryId[1].name").isEqualTo(TEST_TAG_NAME_2);
 
-        verify(mockClient, times(1)).getTagsByAzureCredentialId(1L, "abc", accessToken);
+        verify(mockClient, times(1)).getTagsByActiveDiscoveryId(1L, "abc", accessToken);
+        verify(mockHeaderUtil, times(1)).getAuthHeader(any(ResolutionEnvironment.class));
+    }
+
+    @Test
+    void testGetTagsFromPassiveDiscovery() throws JSONException {
+
+        TagDTO tagDTO1 = TagDTO.newBuilder().setName(TEST_TAG_NAME_1).setTenantId(TEST_TENANT_ID).setId(1L).build();
+        TagDTO tagDTO2 = TagDTO.newBuilder().setName(TEST_TAG_NAME_2).setTenantId(TEST_TENANT_ID).setId(2L).build();
+        TagListDTO tagListDTO = TagListDTO.newBuilder().addTags(tagDTO1).addTags(tagDTO2).build();
+        when(mockClient.getTagsByPassiveDiscoveryId(anyLong(), any(), anyString())).thenReturn(tagListDTO);
+
+        String getRequest = "query { " +
+            "    tagsByPassiveDiscoveryId (passiveDiscoveryId: 1) { " +
+            "        id, " +
+            "        tenantId, " +
+            "        name " +
+            "    }" +
+            "}";
+        webClient.post()
+            .uri(GRAPHQL_PATH)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(createPayload(getRequest))
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[0].id").isEqualTo(1)
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[0].tenantId").isNotEmpty()
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[0].name").isEqualTo(TEST_TAG_NAME_1)
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[1].id").isEqualTo(2)
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[1].tenantId").isNotEmpty()
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[1].name").isEqualTo(TEST_TAG_NAME_2);
+
+        verify(mockClient, times(1)).getTagsByPassiveDiscoveryId(1L, null, accessToken);
+        verify(mockHeaderUtil, times(1)).getAuthHeader(any(ResolutionEnvironment.class));
+    }
+
+    @Test
+    void testGetTagsFromPassiveDiscoveryWithSearchTerm() throws JSONException {
+
+        TagDTO tagDTO1 = TagDTO.newBuilder().setName(TEST_TAG_NAME_1).setTenantId(TEST_TENANT_ID).setId(1L).build();
+        TagDTO tagDTO2 = TagDTO.newBuilder().setName(TEST_TAG_NAME_2).setTenantId(TEST_TENANT_ID).setId(2L).build();
+        TagListDTO tagListDTO = TagListDTO.newBuilder().addTags(tagDTO1).addTags(tagDTO2).build();
+        when(mockClient.getTagsByPassiveDiscoveryId(anyLong(), anyString(), anyString())).thenReturn(tagListDTO);
+
+        String getRequest = "query { " +
+            "    tagsByPassiveDiscoveryId (passiveDiscoveryId: 1, searchTerm: \"abc\") { " +
+            "        id, " +
+            "        tenantId, " +
+            "        name " +
+            "    }" +
+            "}";
+        webClient.post()
+            .uri(GRAPHQL_PATH)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(createPayload(getRequest))
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[0].id").isEqualTo(1)
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[0].tenantId").isNotEmpty()
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[0].name").isEqualTo(TEST_TAG_NAME_1)
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[1].id").isEqualTo(2)
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[1].tenantId").isNotEmpty()
+            .jsonPath("$.data.tagsByPassiveDiscoveryId[1].name").isEqualTo(TEST_TAG_NAME_2);
+
+        verify(mockClient, times(1)).getTagsByPassiveDiscoveryId(1L, "abc", accessToken);
         verify(mockHeaderUtil, times(1)).getAuthHeader(any(ResolutionEnvironment.class));
     }
 

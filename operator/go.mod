@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/go-logr/logr v1.2.2
+	github.com/openshift/api v3.9.0+incompatible
 	github.com/spf13/viper v1.10.1
 	github.com/stretchr/testify v1.8.0
 	go.uber.org/config v1.4.0
@@ -13,6 +14,7 @@ require (
 	k8s.io/apimachinery v0.24.3
 	k8s.io/client-go v0.24.3
 	sigs.k8s.io/controller-runtime v0.12.1
+//github.com/openshift/client-go v3.9.0+incompatible
 )
 
 require (
