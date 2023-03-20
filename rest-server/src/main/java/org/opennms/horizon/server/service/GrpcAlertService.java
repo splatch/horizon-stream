@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,7 +53,7 @@ public class GrpcAlertService {
     private final ServerHeaderUtil headerUtil;
     private final AlertMapper mapper;
 
-    @GraphQLQuery(name = "findAllAlerts")
+    @GraphQLQuery
     public Flux<Alert> findAllAlerts(@GraphQLArgument(name = "first") Integer pageSize,
                                      @GraphQLArgument(name = "after") String after,
                                      @GraphQLEnvironment ResolutionEnvironment env) {

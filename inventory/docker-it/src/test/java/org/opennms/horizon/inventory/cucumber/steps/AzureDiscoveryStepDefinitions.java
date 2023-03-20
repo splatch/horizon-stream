@@ -34,11 +34,12 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.opennms.horizon.inventory.cucumber.InventoryBackgroundHelper;
-import org.opennms.horizon.inventory.dto.AzureCredentialCreateDTO;
-import org.opennms.horizon.inventory.dto.AzureCredentialDTO;
+import org.opennms.horizon.inventory.dto.AzureActiveDiscoveryCreateDTO;
+import org.opennms.horizon.inventory.dto.AzureActiveDiscoveryDTO;
 import org.opennms.horizon.inventory.dto.ListTagsByEntityIdParamsDTO;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
 import org.opennms.horizon.inventory.dto.TagDTO;
+import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
 import org.opennms.horizon.inventory.dto.TagListDTO;
 
 import java.util.List;
@@ -50,8 +51,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AzureDiscoveryStepDefinitions {
     private static InventoryBackgroundHelper backgroundHelper;
-    private AzureCredentialCreateDTO createCredentialsDto;
-    private AzureCredentialDTO azureCredentialsDto;
+    private AzureActiveDiscoveryCreateDTO createDiscoveryDto;
+    private AzureActiveDiscoveryDTO discoveryDto;
     private TagCreateDTO tagCreateDto1;
     private TagListDTO tagList;
 
@@ -88,11 +89,11 @@ public class AzureDiscoveryStepDefinitions {
      * SCENARIO GIVEN
      * *********************************************************************************
      */
-    @Given("Azure Test Credentials")
-    public void generatedTestCredentials() {
+    @Given("Azure Test Active Discovery")
+    public void generatedTestActiveDiscovery() {
         tagCreateDto1 = TagCreateDTO.newBuilder()
             .setName("test-tag-name-1").build();
-        createCredentialsDto = AzureCredentialCreateDTO.newBuilder()
+        createDiscoveryDto = AzureActiveDiscoveryCreateDTO.newBuilder()
             .setLocation("Default")
             .setName("test-azure-discovery-name")
             .setClientId("test-client-id")
@@ -107,17 +108,18 @@ public class AzureDiscoveryStepDefinitions {
      * SCENARIO WHEN
      * *********************************************************************************
      */
-    @When("A GRPC request to create azure credentials")
-    public void aGRPCRequestToCreateAzureCredentials() {
-        var azureCredentialServiceBlockingStub = backgroundHelper.getAzureCredentialServiceBlockingStub();
-        azureCredentialsDto = azureCredentialServiceBlockingStub.createCredentials(createCredentialsDto);
+    @When("A GRPC request to create azure active discovery")
+    public void aGRPCRequestToCreateAzureActiveDiscovery() {
+        var azureActiveDiscoveryServiceBlockingStub = backgroundHelper.getAzureActiveDiscoveryServiceBlockingStub();
+        discoveryDto = azureActiveDiscoveryServiceBlockingStub.createDiscovery(createDiscoveryDto);
     }
 
-    @And("A GRPC request to get tags for azure credentials")
-    public void aGRPCRequestToGetTagsForAzureCredentials() {
+    @And("A GRPC request to get tags for azure active discovery")
+    public void aGRPCRequestToGetTagsForAzureActiveDiscovery() {
         var tagServiceBlockingStub = backgroundHelper.getTagServiceBlockingStub();
         ListTagsByEntityIdParamsDTO params = ListTagsByEntityIdParamsDTO.newBuilder()
-            .setAzureCredentialId(azureCredentialsDto.getId()).build();
+            .setEntityId(TagEntityIdDTO.newBuilder()
+                .setActiveDiscoveryId(discoveryDto.getId())).build();
         tagList = tagServiceBlockingStub.getTagsByEntityId(params);
     }
 
@@ -127,16 +129,18 @@ public class AzureDiscoveryStepDefinitions {
      */
     @Then("The response should assert for relevant fields")
     public void theResponseShouldAssertForRelevantFields() {
-        assertTrue(azureCredentialsDto.getId() > 0);
-        assertEquals(createCredentialsDto.getName(), azureCredentialsDto.getName());
-        assertEquals(createCredentialsDto.getClientId(), azureCredentialsDto.getClientId());
-        assertEquals(createCredentialsDto.getSubscriptionId(), azureCredentialsDto.getSubscriptionId());
-        assertEquals(createCredentialsDto.getDirectoryId(), azureCredentialsDto.getDirectoryId());
-        assertNotNull(azureCredentialsDto.getLocation());
-        assertTrue(azureCredentialsDto.getCreateTimeMsec() > 0);
+        assertTrue(discoveryDto.getId() > 0);
+        assertEquals(createDiscoveryDto.getName(), discoveryDto.getName());
+        assertEquals(createDiscoveryDto.getClientId(), discoveryDto.getClientId());
+        assertEquals(createDiscoveryDto.getSubscriptionId(), discoveryDto.getSubscriptionId());
+        assertEquals(createDiscoveryDto.getDirectoryId(), discoveryDto.getDirectoryId());
+        assertNotNull(discoveryDto.getLocation());
+        assertTrue(discoveryDto.getCreateTimeMsec() > 0);
 
         assertEquals(1, tagList.getTagsCount());
         TagDTO tagDTO = tagList.getTags(0);
         assertEquals(tagCreateDto1.getName(), tagDTO.getName());
     }
+
+
 }
