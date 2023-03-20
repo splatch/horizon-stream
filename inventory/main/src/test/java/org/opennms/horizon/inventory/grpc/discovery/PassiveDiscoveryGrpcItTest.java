@@ -44,6 +44,7 @@ import org.opennms.horizon.inventory.dto.PassiveDiscoveryUpsertDTO;
 import org.opennms.horizon.inventory.dto.PassiveDiscoveryToggleDTO;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
 import org.opennms.horizon.inventory.dto.TagDTO;
+import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
 import org.opennms.horizon.inventory.dto.TagListDTO;
 import org.opennms.horizon.inventory.dto.TagServiceGrpc;
 import org.opennms.horizon.inventory.grpc.GrpcTestBase;
@@ -102,7 +103,9 @@ class PassiveDiscoveryGrpcItTest extends GrpcTestBase {
 
         TagListDTO tagListDto = tagServiceStub.withInterceptors(MetadataUtils
             .newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .getTagsByEntityId(ListTagsByEntityIdParamsDTO.newBuilder().setPassiveDiscoveryId(passiveDiscovery.getId()).build());
+            .getTagsByEntityId(ListTagsByEntityIdParamsDTO.newBuilder()
+                .setEntityId(TagEntityIdDTO.newBuilder()
+                    .setPassiveDiscoveryId(passiveDiscovery.getId())).build());
         List<TagDTO> tagsList = tagListDto.getTagsList();
         assertEquals(upsertDTO.getTagsCount(), tagsList.size());
 
@@ -155,7 +158,9 @@ class PassiveDiscoveryGrpcItTest extends GrpcTestBase {
 
         TagListDTO tagListDto = tagServiceStub.withInterceptors(MetadataUtils
                 .newAttachHeadersInterceptor(createAuthHeader(authHeader)))
-            .getTagsByEntityId(ListTagsByEntityIdParamsDTO.newBuilder().setPassiveDiscoveryId(passiveDiscovery2.getId()).build());
+            .getTagsByEntityId(ListTagsByEntityIdParamsDTO.newBuilder()
+                .setEntityId(TagEntityIdDTO.newBuilder()
+                    .setPassiveDiscoveryId(passiveDiscovery2.getId())).build());
         List<TagDTO> tagsList = tagListDto.getTagsList();
         assertEquals(upsertDTO2.getTagsCount(), tagsList.size());
 
