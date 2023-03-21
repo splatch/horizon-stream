@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2023 The OpenNMS Group, Inc.
@@ -24,18 +24,17 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *
- */
+ *******************************************************************************/
 
-package org.opennms.horizon.inventory;
+package org.opennms.horizon.notifications.tenant;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@SpringBootApplication
-public class InventoryApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(InventoryApplication.class, args);
+@Configuration
+public class TenantConfig {
+    @Bean
+    public TenantLookup createTenantLookup(){
+        return new TenantContextLookupImpl();
     }
 }

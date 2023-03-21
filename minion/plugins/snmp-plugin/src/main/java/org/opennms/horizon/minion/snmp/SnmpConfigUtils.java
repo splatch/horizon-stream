@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,28 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.service;
+package org.opennms.horizon.minion.snmp;
 
-import org.opennms.horizon.alerts.proto.Alert;
-import org.opennms.horizon.notifications.api.PagerDutyAPI;
-import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
-import org.opennms.horizon.notifications.exceptions.NotificationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.opennms.horizon.shared.snmp.SnmpAgentConfig;
+import org.opennms.horizon.shared.utils.InetAddressUtils;
+import org.opennms.horizon.snmp.api.SnmpConfiguration;
 
-@Service
-public class NotificationServiceImpl implements NotificationService {
+public class SnmpConfigUtils {
 
-    @Autowired
-    private PagerDutyAPI pagerDutyAPI;
-
-    @Override
-    public void postNotification(Alert alert) throws NotificationException {
-        pagerDutyAPI.postNotification(alert);
-    }
-
-    @Override
-    public void postPagerDutyConfig(PagerDutyConfigDTO config) {
-        pagerDutyAPI.saveConfig(config);
+    static SnmpAgentConfig mapAgentConfig(String host, SnmpConfiguration snmpConfiguration) {
+        var agentConfig = new SnmpAgentConfig(InetAddressUtils.getInetAddress(host), SnmpAgentConfig.DEFAULTS);
+        if(snmpConfiguration != null) {
+            if (snmpConfiguration.hasReadCommunity()) {
+                agentConfig.setReadCommunity(snmpConfiguration.getReadCommunity());
+            }
+            if (snmpConfiguration.hasPort()) {
+                agentConfig.setPort(snmpConfiguration.getPort());
+            }
+            //TODO: Expand config further.
+        }
+        return agentConfig;
     }
 }
