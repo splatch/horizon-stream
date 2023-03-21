@@ -60,7 +60,7 @@
 import ipRegex from 'ip-regex'
 import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
-import { ContentEditableType, REGEX_PORT } from '@/components/Discovery/discovery.constants'
+import { ContentEditableType, REGEX_EXPRESSIONS } from '@/components/Discovery/discovery.constants'
 import { PropType } from 'vue'
 import { fncArgVoid } from '@/types'
 import discoveryText from '@/components/Discovery/discovery.text'
@@ -103,7 +103,7 @@ const contentEditableRef = ref()
 const isContentInvalid = ref(false)
 const errorMsg = ref('')
 const htmlString = ref(props.content || props.defaultContent) // to render string as html
-
+const ERROR_STR = '<span style="color: #ff555e">{{}}</span>'
 watch(props, () => {
   htmlString.value = props.content
 })
@@ -112,8 +112,33 @@ const contentChange = () => {
   isContentNotEmpty.value = contentEditableRef.value.textContent.length as boolean
 }
 
+// const validateAndFormat: fncArgVoid = () => {
+//   isContentInvalid.value = validateContent()
+//   if (isContentInvalid.value) {
+//     if (!isContentNotEmpty.value && props.isRequired) {
+//       errorMsg.value = discoveryText.ContentEditable.errorRequired
+//     } else {
+//       errorMsg.value = discoveryText.ContentEditable.errorInvalidValue
+//     }
+//   }
+//   const highlightedString = highlightInvalid()
+//   if (highlightedString.length) htmlString.value = highlightedString
+
+//   emit('is-content-invalid', isContentInvalid.value)
+
+//   if (!isContentInvalid.value) emit('content-formatted', splitContent(contentEditableRef.value.textContent))
+// }
+
 const validateAndFormat: fncArgVoid = () => {
-  isContentInvalid.value = validateContent()
+  const validSplitContent = validateContent()
+  showErrorMsg()
+  if (!isContentInvalid.value) {
+    console.log(validSplitContent)
+    emit('content-formatted', validSplitContent)
+  }
+}
+
+const showErrorMsg = () => {
   if (isContentInvalid.value) {
     if (!isContentNotEmpty.value && props.isRequired) {
       errorMsg.value = discoveryText.ContentEditable.errorRequired
@@ -121,73 +146,100 @@ const validateAndFormat: fncArgVoid = () => {
       errorMsg.value = discoveryText.ContentEditable.errorInvalidValue
     }
   }
-  const highlightedString = highlightInvalid()
-  if (highlightedString.length) htmlString.value = highlightedString
-
-  emit('is-content-invalid', isContentInvalid.value)
-
-  if (!isContentInvalid.value) emit('content-formatted', splitContent(contentEditableRef.value.textContent))
 }
 
-const splitContent = (str: string): (string | number)[] | null => {
-  if (!str || str.length < 2) return null
+// const splitContent = (str: string): (string | number)[] | null => {
+//   if (!str || str.length < 2) return null
 
-  const regexDelim = new RegExp(props.regexDelim)
-  let contentEditableStrings = str.split(regexDelim)
+//   const regexDelim = new RegExp(props.regexDelim)
+//   let contentEditableStrings = str.split(regexDelim)
 
-  if (props.contentType === ContentEditableType.UDPPort) {
-    return contentEditableStrings.map((p) => parseInt(p))
-  }
-  return contentEditableStrings
+//   if (props.contentType === ContentEditableType.UDPPort) {
+//     return contentEditableStrings.map((p) => parseInt(p))
+//   }
+//   return contentEditableStrings
+// }
+
+// const validateContent = () => {
+//   const regexDelim = new RegExp(props.regexDelim)
+//   const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim)
+//   let isInvalid = false
+//   const regexPorts = new RegExp(REGEX_PORT.listPorts)
+//   switch (props.contentType) {
+//     case ContentEditableType.IP:
+//       isInvalid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
+//       break
+//     case ContentEditableType.CommunityString:
+//       break
+//     case ContentEditableType.UDPPort:
+//       isInvalid = !regexPorts.test(contentEditableRef.value.textContent)
+//       break
+//     default:
+//   }
+//   return isInvalid
+// }
+
+const validateContentByRegex = (contentEditableStrings: string, regexExpression) => {
+  const validSplitContent = []
+  isContentInvalid.value = false
+  const regexp = regexExpression.map((r) => new RegExp(r))
+  const highlightInvalidString = contentEditableStrings
+    .map((str: string) => {
+      if (regexp.map((t) => t.test(str)).includes(true)) {
+        validSplitContent.push(str)
+        return str
+      } else {
+        isContentInvalid.value = true
+        return ERROR_STR.replace('{{}}', str)
+      }
+    })
+    .join(';')
+  htmlString.value = highlightInvalidString
+  emit('is-content-invalid', isContentInvalid.value)
+  return validSplitContent
 }
 
 const validateContent = () => {
+  let validSplitContent = []
   const regexDelim = new RegExp(props.regexDelim)
   const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim)
-  let isInvalid = false
-  const regexPorts = new RegExp(REGEX_PORT.listPorts)
-  switch (props.contentType) {
-    case ContentEditableType.IP:
-      //isInvalid = contentEditableStrings.some((str: string) => !ipRegex({ exact: true }).test(str))
-      break
-    case ContentEditableType.CommunityString:
-      break
-    case ContentEditableType.UDPPort:
-      isInvalid = !regexPorts.test(contentEditableRef.value.textContent)
-      break
-    default:
-  }
-  return isInvalid
-}
+  //let errorStr = '<span style="color: #ff555e">{{}}</span>'
 
-const highlightInvalid = () => {
-  const regexDelim = new RegExp(props.regexDelim)
-  const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim)
-  let highlightInvalidString = ''
-  let errorStr = '<span style="color: #ff555e">{{}}</span>'
-  const portRegex = new RegExp(REGEX_PORT.onePort)
   switch (props.contentType) {
     case ContentEditableType.IP:
-      highlightInvalidString = contentEditableStrings
-        .map((str: string) => {
-          if (ipRegex({ exact: true }).test(str)) return str
-          return errorStr.replace('{{}}', str)
-        })
-        .join(';')
+      // highlightInvalidString = contentEditableStrings
+      //   .map((str: string) => {
+      //     if (ipRegex({ exact: true }).test(str)) {
+      //       validSplitContent.push(str)
+      //       return str
+      //     } else {
+      //       isContentInvalid.value = true
+      //       return errorStr.replace('{{}}', str)
+      //     }
+      //   })
+      //   .join(';')
+      validSplitContent = validateContentByRegex(contentEditableStrings, REGEX_EXPRESSIONS.IP)
       break
     case ContentEditableType.CommunityString:
       break
     case ContentEditableType.UDPPort:
-      highlightInvalidString = contentEditableStrings
-        .map((str: string) => {
-          if (portRegex.test(str)) return str
-          return errorStr.replace('{{}}', str)
-        })
-        .join(';')
+      // highlightInvalidString = contentEditableStrings
+      //   .map((str: string) => {
+      //     if (portRegex.test(str)) {
+      //       validSplitContent.push(str)
+      //       return str
+      //     } else {
+      //       isContentInvalid.value = true
+      //       return errorStr.replace('{{}}', str)
+      //     }
+      //   })
+      //   .join(';')
+      validSplitContent = validateContentByRegex(contentEditableStrings, REGEX_EXPRESSIONS.PORT)
       break
     default:
   }
-  return highlightInvalidString
+  //htmlString.value = highlightInvalidString
+  return validSplitContent
 }
 
 const reset: fncArgVoid = () => {
