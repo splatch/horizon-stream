@@ -81,8 +81,6 @@ export const useFlowsStore = defineStore('flowsStore', {
       }
     },
     filterDialogToggle(event: Event, isAppFilter: boolean) {
-      event.preventDefault()
-      event.stopPropagation()
       isAppFilter
         ? (this.applications.filterDialogOpen = !this.applications.filterDialogOpen)
         : (this.exporters.filterDialogOpen = !this.exporters.filterDialogOpen)

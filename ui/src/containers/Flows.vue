@@ -73,6 +73,7 @@
     <FeatherCheckboxGroup
       label=""
       vertical
+      class="chart-dialog-group"
     >
       <FeatherCheckbox v-model="flowsStore.applications.dialogFilters.http">HTTP</FeatherCheckbox>
       <FeatherCheckbox v-model="flowsStore.applications.dialogFilters.https">HTTPS</FeatherCheckbox>
@@ -97,6 +98,7 @@
     <FeatherCheckboxGroup
       label=""
       vertical
+      class="chart-dialog-group"
     >
       <FeatherCheckbox v-model="flowsStore.exporters.dialogFilters.http">HTTP</FeatherCheckbox>
       <FeatherCheckbox v-model="flowsStore.exporters.dialogFilters.https">HTTPS</FeatherCheckbox>
@@ -119,12 +121,12 @@
 import { useFlowsStore } from '@/store/Views/flowsStore'
 
 const flowsStore = useFlowsStore()
-const appDialogLabels = ref({
+const appDialogLabels = {
   title: 'Top Ten Applications (24 Hrs) - Total'
-})
-const expDialogLabels = ref({
+}
+const expDialogLabels = {
   title: 'Top Ten Exporters (24 Hrs) - Total'
-})
+}
 
 onBeforeMount(async () => {
   flowsStore.generateTableChart()
@@ -190,5 +192,8 @@ const getAppliications = () => {
   :deep(.feather-input-wrapper-container) {
     background-color: var(variables.$surface);
   }
+}
+.chart-dialog-group {
+  min-width: 325px;
 }
 </style>
