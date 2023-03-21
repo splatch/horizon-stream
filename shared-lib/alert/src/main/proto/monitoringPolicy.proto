@@ -27,22 +27,25 @@
  *******************************************************************************/
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
 package opennms.inventory;
 option java_multiple_files = true;
-option java_package = "org.opennms.horizon.alert.policy";
+option java_package = "org.opennms.horizon.shared.alert.policy";
 
-message MonitoringPolicyProto {
+message MonitorPolicyProto {
   int64 id = 1;
   string tenantId = 2;
   string name = 3;
   string memo = 4;
-  repeated PolicyRule rules = 5;
+  repeated PolicyRuleProto rules = 5;
   repeated string tags = 6;
   //Notification
   bool notifyByEmail = 7;
   bool notifyByPagerDuty = 8;
-  bool notifyByWebHooks = 9;
-  string notifyInstructions = 10;
+  bool notifyByWebhooks = 9;
+  string notifyInstruction = 10;
 }
 
 enum ComponentType {
@@ -52,21 +55,21 @@ enum ComponentType {
   NODE = 3;
 }
 
-message PolicyRule {
+message PolicyRuleProto {
   int64 id = 1;
   string tenantId = 2;
   string name = 3;
   ComponentType componentType = 4;
-  repeated SNMPTriggerEvent snmpEvents = 5;
+  repeated SNMPEventProto snmpEvents = 5;
 }
 
-message SNMPTriggerEvent {
+message SNMPEventProto {
   int64 id = 1;
   string tenantId = 2;
   SNMPEventType triggerEvent = 3;
   int32 count = 4;
   int32 overtime = 5;
-  string overtimeUnit = 6;
+  TimeUnit overtimeUnit = 6;
   Severity severity = 7;
   SNMPEventType clearEvent = 8;
 }
@@ -75,6 +78,12 @@ message SNMPTriggerEvent {
 /*message InternalTriggerEvent {
 
 }*/
+
+enum TimeUnit {
+  SECOND = 0;
+  MINUTE = 1;
+  HOUR = 2;
+}
 
 enum SNMPEventType {
   COLD_REBOOT = 0;
@@ -88,6 +97,16 @@ enum Severity {
   MINOR = 1;
   MAJOR = 2;
   CRITICAL = 3;
+}
+
+message MonitorPolicyList {
+  repeated MonitorPolicyProto policies = 1;
+}
+
+service MonitorPolicyService {
+  rpc createPolicy(MonitorPolicyProto) returns(MonitorPolicyProto);
+  rpc listPolicies(google.protobuf.Empty) returns(MonitorPolicyList);
+  rpc getPolicyById(google.protobuf.Int64Value) returns(MonitorPolicyProto);
 }
 
 

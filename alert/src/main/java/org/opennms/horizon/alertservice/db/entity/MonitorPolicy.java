@@ -28,19 +28,45 @@
 
 package org.opennms.horizon.alertservice.db.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.TenantId;
 
+@Entity
+@Table(name = "monitoring_policy")
 @Getter
 @Setter
-@MappedSuperclass
-public abstract class TenantAwareEntity {
-
-    @TenantId
-    @Column (name = "tenant_id")
-    private String tenantId;
-
+public class MonitorPolicy extends TenantAwareEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "policy_name")
+    private String name;
+    private String memo;
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "tags", columnDefinition = "text[]")
+    private List<String> tags = new ArrayList<>();
+    @Column(name = "notify_email")
+    private Boolean notifyByEmail;
+    @Column(name = "notify_pagerduty")
+    private Boolean notifyByPagerDuty;
+    @Column(name = "notify_webhooks")
+    private Boolean notifyByWebhooks;
+    @Column(name = "notify_instruction")
+    private String notifyInstruction;
+    @OneToMany(mappedBy = "policy", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<PolicyRule> rules = new ArrayList<>();
 }

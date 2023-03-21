@@ -60,7 +60,7 @@
             <column name="trigger_event_type" type="text">
                 <constraints nullable="false" />
             </column>
-            <column name="eventCount" type="int" />
+            <column name="event_count" type="int" />
             <column name="over_time" type="int" />
             <column name="over_time_unit" type="text" defaultValue="minute">
                 <constraints nullable="false" />

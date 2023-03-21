@@ -3,6 +3,8 @@ package org.opennms.horizon.alertservice;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import org.opennms.horizon.alerts.proto.AlertServiceGrpc;
+import org.opennms.horizon.alertservice.grpc.MonitorPolicyGrpc;
+import org.opennms.horizon.shared.alert.policy.MonitorPolicyServiceGrpc;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,13 +15,14 @@ public class AlertGrpcClientUtils {
     private final DynamicTenantIdInterceptor dynamicTenantIdInterceptor = new DynamicTenantIdInterceptor(
         // Pull private key directly from container
         CucumberRunnerIT.testContainerRunnerClassRule.getJwtKeyPair());
-    private final AlertServiceGrpc.AlertServiceBlockingStub alertServiceStub;
+    private AlertServiceGrpc.AlertServiceBlockingStub alertServiceStub;
+    private MonitorPolicyServiceGrpc.MonitorPolicyServiceBlockingStub policyStub;
 
     public AlertGrpcClientUtils() {
-        alertServiceStub = createGrpcConnectionForInventory();
+        initStubs();
     }
 
-    private AlertServiceGrpc.AlertServiceBlockingStub createGrpcConnectionForInventory() {
+    private void initStubs () {
         NettyChannelBuilder channelBuilder =
             NettyChannelBuilder.forAddress(LOCALHOST,
                 // Pull gRPC server port directly from container
@@ -27,7 +30,10 @@ public class AlertGrpcClientUtils {
 
         ManagedChannel managedChannel = channelBuilder.usePlaintext().build();
         managedChannel.getState(true);
-        return AlertServiceGrpc.newBlockingStub(managedChannel)
+        alertServiceStub = AlertServiceGrpc.newBlockingStub(managedChannel)
+            .withInterceptors(dynamicTenantIdInterceptor)
+            .withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS);
+        policyStub = MonitorPolicyServiceGrpc.newBlockingStub(managedChannel)
             .withInterceptors(dynamicTenantIdInterceptor)
             .withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS);
     }
@@ -40,4 +46,7 @@ public class AlertGrpcClientUtils {
         return alertServiceStub;
     }
 
+    public MonitorPolicyServiceGrpc.MonitorPolicyServiceBlockingStub getPolicyStub() {
+        return policyStub;
+    }
 }

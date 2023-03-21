@@ -26,21 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alertservice.db.entity;
+package org.opennms.horizon.alertservice.db.repository;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.TenantId;
+import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Getter
-@Setter
-@MappedSuperclass
-public abstract class TenantAwareEntity {
-
-    @TenantId
-    @Column (name = "tenant_id")
-    private String tenantId;
-
+public interface MonitorPolicyRepository extends JpaRepository<MonitorPolicy, Long> {
 }
