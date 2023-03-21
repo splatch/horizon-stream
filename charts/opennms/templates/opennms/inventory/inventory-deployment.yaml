@@ -74,3 +74,7 @@ spec:
               containerPort: {{ .Values.OpenNMS.Inventory.Port }}
             - name: grpc
               containerPort: {{ .Values.OpenNMS.Inventory.GrpcPort }}
+      {{- if .Values.Inventory.PrivateRepoEnabled }}
+      imagePullSecrets:
+        - name: image-credentials
+      {{- end }}
