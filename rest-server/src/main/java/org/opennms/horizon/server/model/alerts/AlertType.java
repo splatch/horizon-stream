@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,12 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.grpc.config;
+package org.opennms.horizon.server.model.alerts;
 
-import io.grpc.Context;
+public enum AlertType {
+    ALARM_TYPE_UNDEFINED(0),
+    PROBLEM_WITH_CLEAR(1),
+    CLEAR(2),
+    PROBLEM_WITHOUT_CLEAR(3),
+    UNRECOGNIZED(4);
 
-import java.util.Optional;
+    private final int value;
 
-public interface TenantLookup {
-    Optional<String> lookupTenantId(Context context);
+    AlertType(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
 }

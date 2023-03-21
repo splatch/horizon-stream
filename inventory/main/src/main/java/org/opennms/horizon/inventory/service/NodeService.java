@@ -36,6 +36,7 @@ import org.opennms.horizon.inventory.dto.MonitoredState;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
+import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
@@ -60,6 +61,7 @@ import org.opennms.taskset.contract.TaskDefinition;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,6 +114,23 @@ public class NodeService {
     public List<NodeDTO> findByMonitoredState(String tenantId, MonitoredState monitoredState) {
         return nodeRepository.findByTenantIdAndMonitoredStateEquals(tenantId, monitoredState)
             .stream().map(mapper::modelToDTO).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Node> getNode(String tenantId, String location, InetAddress primaryIpAddress) {
+
+        var list = nodeRepository.findByTenantId(tenantId);
+        if (list.isEmpty()) {
+            return Optional.empty();
+        }
+        var listOfNodesOnLocation = list.stream().filter(node -> node.getMonitoringLocation().getLocation().equals(location)).toList();
+        if (listOfNodesOnLocation.isEmpty()) {
+            return Optional.empty();
+        }
+        return listOfNodesOnLocation.stream().filter(node ->
+            node.getIpInterfaces().stream().anyMatch(ipInterface -> ipInterface.getSnmpPrimary() &&
+                ipInterface.getIpAddress().equals(primaryIpAddress))).findFirst();
+
     }
 
     private void saveIpInterfaces(NodeCreateDTO request, Node node, String tenantId) {
@@ -173,7 +192,8 @@ public class NodeService {
         saveIpInterfaces(request, node, tenantId);
 
         tagService.addTags(tenantId, TagCreateListDTO.newBuilder()
-            .setNodeId(node.getId())
+            .addEntityIds(TagEntityIdDTO.newBuilder()
+                .setNodeId(node.getId()))
             .addAllTags(request.getTagsList())
             .build());
 
@@ -216,9 +236,9 @@ public class NodeService {
             ipInterface.getMonitoredServices().forEach((ms) -> {
                 String serviceName = ms.getMonitoredServiceType().getServiceName();
                 var monitorType = MonitorType.valueOf(serviceName);
-                var monitorTask = monitorTaskSetService.getMonitorTask(monitorType, ipInterface, node.getId());
+                var monitorTask = monitorTaskSetService.getMonitorTask(monitorType, ipInterface, node.getId(), null);
                 Optional.ofNullable(monitorTask).ifPresent(tasks::add);
-                var collectorTask = collectorTaskSetService.getCollectorTask(monitorType, ipInterface, node.getId());
+                var collectorTask = collectorTaskSetService.getCollectorTask(monitorType, ipInterface, node.getId(), null);
                 Optional.ofNullable(collectorTask).ifPresent(tasks::add);
             });
         });
@@ -260,7 +280,6 @@ public class NodeService {
                     snmpConfigs.add(builder.build());
                 });
             }
-            detectorTaskSetService.sendDetectorTasks(node);
             scannerTaskSetService.sendNodeScannerTask(mapper.modelToDTO(node),
                 node.getMonitoringLocation().getLocation(), snmpConfigs);
         } catch (Exception e) {

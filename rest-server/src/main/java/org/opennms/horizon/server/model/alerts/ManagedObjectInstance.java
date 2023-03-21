@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,18 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.model.inventory.tag;
+package org.opennms.horizon.server.model.alerts;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
-public class TagListNodeAdd {
-
-    private long nodeId;
-
-    private List<TagCreate> tags;
+public class ManagedObjectInstance {
+    private NodeRef nodeVal;
+    private SnmpInterfaceRef snmpInterfaceVal;
+    private SnmpInterfaceLinkRef snmpInterfaceLinkVal;
 }

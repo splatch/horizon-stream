@@ -26,16 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.grpc.config;
+package org.opennms.horizon.notifications.tenant;
 
 import io.grpc.Context;
-import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import java.util.Optional;
 
-public class GrpcTenantLookupImpl implements TenantLookup {
-    @Override
-    public Optional<String> lookupTenantId(Context context) {
-        return Optional.ofNullable(GrpcConstants.TENANT_ID_CONTEXT_KEY.get());
-    }
+public interface TenantLookup {
+    Optional<String> lookupTenantId();
 }
