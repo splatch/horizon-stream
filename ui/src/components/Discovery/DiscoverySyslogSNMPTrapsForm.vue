@@ -110,7 +110,7 @@ const tagQueries = useTagQueries()
 const discoveryQueries = useDiscoveryQueries()
 const discoveryMutations = useDiscoveryMutations()
 const discoveryInfo = ref<PassiveDiscoveryUpsertInput>(props.discovery || ({} as PassiveDiscoveryUpsertInput))
-const tags = computed(() => (props.discovery?.id ? discoveryQueries.getTagsByPassiveDiscoveryId : []))
+const tags = computed(() => (props.discovery?.id ? discoveryQueries.tagsByPassiveDiscoveryId : []))
 
 onMounted(() => {
   if (props.discovery?.id) {
