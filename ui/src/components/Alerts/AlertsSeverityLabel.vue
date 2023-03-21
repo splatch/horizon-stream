@@ -3,6 +3,7 @@
     v-if="severity"
     class="severity-status"
     :class="[`${severity.toLowerCase()}-color`]"
+    data-test="severity-status"
     >{{ severity }}</span
   >
 </template>

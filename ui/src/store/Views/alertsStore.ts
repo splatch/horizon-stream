@@ -7,7 +7,6 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   const severitiesSelected = ref<string[]>([])
   const timeSelected = ref()
   const alertsList = ref()
-  const allAlertsList = ref()
   const alertsListSearched = ref([])
 
   const alertsQueries = useAlertsQueries()
@@ -16,7 +15,6 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     await alertsQueries.fetchAlerts()
 
     alertsList.value = alertsQueries.fetchAlertsData
-    allAlertsList.value = alertsQueries.fetchAlertsData
   }
 
   const toggleSeverity = (selected: string): void => {
@@ -26,11 +24,6 @@ export const useAlertsStore = defineStore('alertsStore', () => {
       severitiesSelected.value = severitiesSelected.value.filter((s) => s !== selected)
     } else {
       severitiesSelected.value.push(selected)
-    }
-    if (!severitiesSelected.value.length) {
-      alertsList.value = allAlertsList.value
-    } else {
-      alertsList.value = allAlertsList.value.filter((a: IAlert) => severitiesSelected.value.includes(a.severity))
     }
   }
 
@@ -53,7 +46,6 @@ export const useAlertsStore = defineStore('alertsStore', () => {
 
   return {
     alertsList,
-    allAlertsList: computed(() => allAlertsList.value),
     fetchAlerts,
     severitiesSelected,
     toggleSeverity,

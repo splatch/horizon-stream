@@ -1,23 +1,52 @@
 <template>
   <div
-    class="card border pointer"
-    :class="{ selected: !isAdd }"
+    v-if="count"
     @click="addSeverityFilter"
+    :class="{ selected: !isAdd }"
+    class="card border pointer"
+    data-test="severity-card"
   >
     <div class="label-add-icon">
-      <AlertsSeverityLabel :severity="severity" />
+      <AlertsSeverityLabel
+        :severity="severity"
+        data-test="severity-label"
+      />
       <Transition name="icon-anim">
         <FeatherIcon
           :icon="isAdd ? Add : Cancel"
           class="icon"
           focusable="false"
+          data-test="add-cancel-icon"
         />
       </Transition>
     </div>
-    <div class="count">{{ count }}</div>
-    <div>
+    <div
+      class="count"
+      data-test="count"
+    >
+      {{ count }}
+    </div>
+    <div data-test="percentage-time">
       <span class="percentage">%5</span>
       <span>Past 24 Hours</span>
+    </div>
+  </div>
+  <div
+    v-else
+    class="card border pointer"
+    data-test="severity-card"
+  >
+    <div class="label-add-icon">
+      <AlertsSeverityLabel
+        :severity="severity"
+        data-test="severity-label"
+      />
+    </div>
+    <div
+      class="count"
+      data-test="count"
+    >
+      {{ count }}
     </div>
   </div>
 </template>

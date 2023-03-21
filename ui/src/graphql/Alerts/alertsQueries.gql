@@ -1,5 +1,5 @@
-query alertList {
-  alertList {
+fragment AlertsList on Query {
+  alertsList {
     id
     name
     severity
@@ -11,6 +11,10 @@ query alertList {
     isAcknowledged
     description
   }
+}
+
+query Alerts {
+  ...AlertsList
 }
 
 # fetch search alert list
