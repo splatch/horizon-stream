@@ -35,54 +35,52 @@ import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.horizon.minion.plugin.api.registries.ScannerRegistry;
+import org.opennms.horizon.minion.plugin.api.CollectorRequestImpl;
+import org.opennms.horizon.minion.plugin.api.registries.CollectorRegistry;
 import org.opennms.horizon.snmp.api.SnmpConfiguration;
-import org.opennms.node.scan.contract.NodeScanRequest;
-import org.opennms.node.scan.contract.NodeScanResult;
+import org.opennms.horizon.snmp.api.SnmpResponseMetric;
+import org.opennms.snmp.contract.SnmpCollectorRequest;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-@Command(scope = "opennms", name = "node-scan", description = "NodeScan for a given IP Address")
+@Command(scope = "opennms", name = "snmp-collect", description = "Snmp Collection for a given IP Address")
 @Service
-public class NodeScanCommand implements Action {
+public class SnmpCollectCommand implements Action {
 
     @Reference
-    private ScannerRegistry scannerRegistry;
+    private CollectorRegistry collectorRegistry;
 
-    @Argument(index = 0, name = "ipAddress", description = "IP Address for Scan", required = true, multiValued = false)
+    @Argument(index = 0, name = "ipAddress", description = "Host Address for Collector", required = true, multiValued = false)
     String ipAddress;
 
     @Argument(index = 1, name = "Snmp community String", description = "Snmp Communitry String to be used", required = false, multiValued = false)
     String communityString;
 
-
     @Override
     public Object execute() throws Exception {
+        var snmpCollectorManager = collectorRegistry.getService("SNMPCollector");
+        var snmpCollector = snmpCollectorManager.create();
 
-        var scannerManager = scannerRegistry.getService("NodeScanner");
-        var scanner = scannerManager.create();
-
-        var scanRequestBuilder = NodeScanRequest.newBuilder()
-            .setPrimaryIp(ipAddress);
+        var requestBuilder = SnmpCollectorRequest.newBuilder().setHost(ipAddress);
         if (!Strings.isNullOrEmpty(communityString)) {
-            scanRequestBuilder.addSnmpConfigs(SnmpConfiguration.newBuilder().setReadCommunity(communityString).build());
+           requestBuilder.setAgentConfig(SnmpConfiguration.newBuilder().setReadCommunity(communityString).build());
         }
-        var config = Any.pack(scanRequestBuilder.build());
-        var future = scanner.scan(config);
+        CollectorRequestImpl collectorRequest = CollectorRequestImpl.builder().ipAddress(ipAddress)
+                .nodeId(1L).build();
+        var future = snmpCollector.collect(collectorRequest, Any.pack(requestBuilder.build()));
         while (true) {
             try {
                 try {
                     var response = future.get(1, TimeUnit.SECONDS);
                     Any result = Any.pack(response.getResults());
-                    NodeScanResult nodeScanResult = result.unpack(NodeScanResult.class);
-
-                    System.out.printf("Node Scan result : \n  %s ", nodeScanResult.toString());
+                    var collectionResults = result.unpack(SnmpResponseMetric.class);
+                    System.out.println(collectionResults);
                 } catch (InterruptedException e) {
                     System.out.println("\n\nInterrupted.");
                 } catch (ExecutionException e) {
-                    System.out.printf("\n\n Node Scan failed with: %s\n", e);
+                    System.out.printf("\n\n Snmp Collection failed with: %s\n", e);
                 }
                 break;
             } catch (TimeoutException e) {

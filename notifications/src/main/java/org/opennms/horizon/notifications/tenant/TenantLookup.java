@@ -26,12 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.notifications.grpc.config;
+package org.opennms.horizon.notifications.tenant;
 
 import io.grpc.Context;
 
 import java.util.Optional;
 
 public interface TenantLookup {
-    Optional<String> lookupTenantId(Context context);
+    Optional<String> lookupTenantId();
 }

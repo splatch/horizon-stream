@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2023 The OpenNMS Group, Inc.
@@ -24,18 +24,18 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *
- */
+ *******************************************************************************/
 
-package org.opennms.horizon.inventory;
+package org.opennms.horizon.inventory.mapper;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.mapstruct.Mapper;
+import org.opennms.horizon.inventory.model.SnmpAgentConfig;
+import org.opennms.horizon.snmp.api.SnmpConfiguration;
 
-@SpringBootApplication
-public class InventoryApplication {
+@Mapper(componentModel = "spring")
+public interface SnmpConfigMapper {
 
-    public static void main(String[] args) {
-        SpringApplication.run(InventoryApplication.class, args);
-    }
+    SnmpConfiguration mapModelToProto(SnmpAgentConfig snmpAgentConfig);
+
+    SnmpAgentConfig mapProtoToModel(SnmpConfiguration snmpConfiguration);
 }
