@@ -171,7 +171,7 @@
 
 <script setup lang="ts">
 import { useFlowsStore } from '@/store/Views/flowsStore'
-import { FeatherBasicObject } from '@/types'
+import { FeatherRadioObject } from '@/types'
 import Download from '@featherds/icon/action/DownloadFile'
 import Refresh from '@featherds/icon/navigation/Refresh'
 const flowsStore = useFlowsStore()
@@ -180,12 +180,12 @@ const trafficRadios = ref([
   { name: 'Total', value: 'total' },
   { name: 'Inbound', value: 'inbound' },
   { name: 'Outbound', value: 'outbound' }
-] as FeatherBasicObject[])
+] as FeatherRadioObject[])
 
 const dataStyleRadios = ref([
   { name: 'Line Chart', value: 'line' },
   { name: 'Table Chart', value: 'table' }
-] as FeatherBasicObject[])
+] as FeatherRadioObject[])
 
 const appDialogLabels = {
   title: 'Top Ten Applications (24 Hrs) - Total'

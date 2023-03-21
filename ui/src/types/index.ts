@@ -21,7 +21,7 @@ export interface FeatherSortObject {
   value: SORT | any
 }
 
-export interface FeatherBasicObject {
+export interface FeatherRadioObject {
   name: string
   value: any
 }
