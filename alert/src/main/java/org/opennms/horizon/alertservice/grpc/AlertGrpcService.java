@@ -50,6 +50,8 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
+    public static final int PAGE_SIZE = 10;
+    public static final String PAGE = "0";
     private final AlertMapper alertMapper;
     private final AlertRepository alertRepository;
     private final AlertService alertService;
@@ -57,14 +59,11 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
     @Override
     public void listAlerts(ListAlertsRequest request, StreamObserver<ListAlertsResponse> responseObserver) {
         // Extract the page size and next page token values from the request
-        int pageSize = request.getPageSize() != 0 ? request.getPageSize() : 10; // default page size is 10
-        String nextPageToken = !request.getNextPageToken().isEmpty() ? request.getNextPageToken() : "0"; // default page is 0
+        int pageSize = request.getPageSize() != 0 ? request.getPageSize() : PAGE_SIZE;
+        String nextPageToken = !request.getNextPageToken().isEmpty() ? request.getNextPageToken() : PAGE;
 
         // Create a PageRequest object based on the page size and next page token
-        PageRequest pageRequest = PageRequest.of(0, pageSize);
-        if (!nextPageToken.isEmpty()) {
-            pageRequest = PageRequest.of(Integer.parseInt(nextPageToken), pageSize);
-        }
+        PageRequest pageRequest = PageRequest.of(Integer.parseInt(nextPageToken), pageSize);
 
         Page<org.opennms.horizon.alertservice.db.entity.Alert> alertPage = alertRepository.findAll(pageRequest);
 

@@ -43,6 +43,7 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -207,27 +208,14 @@ public class AlertTestSteps {
 
     @Then("Verify alert topic has {int} messages with tenant {string}")
     public void verifyTopicContainsTenant(int expectedMessages, String tenant) throws InterruptedException {
-        int foundMessages = 0;
+         boolean success = retryUtils.retry(
+            () -> this.checkNumberOfMessageForOneTenant(tenant, expectedMessages),
+            result -> result,
+            100,
+            10000,
+            false);
 
-        Thread.sleep(1000);
-        List<ConsumerRecord<String, byte[]>> records = kafkaTestHelper.getConsumedMessages(alertTopic);
-        for (ConsumerRecord<String, byte[]> record: records) {
-            if (record.value() == null) {
-                continue;
-            }
-            Alert alert;
-            try {
-                alert = Alert.parseFrom(record.value());
-            } catch (InvalidProtocolBufferException e) {
-                throw new RuntimeException(e);
-            }
-
-            if (tenant.equals(alert.getTenantId())) {
-                foundMessages++;
-            }
-        }
-
-        assertEquals(expectedMessages, foundMessages);
+        assertTrue("Verify alert topic has the right number of message(s)", success);
     }
 
     @Then("Remember the first alert from the last response")
@@ -349,5 +337,26 @@ public class AlertTestSteps {
         } catch (Throwable thrown) { // Assertions extend Error
             throw new RuntimeException(thrown);
         }
+    }
+
+    private boolean checkNumberOfMessageForOneTenant(String tenant, int expectedMessages) {
+        int foundMessages = 0;
+        List<ConsumerRecord<String, byte[]>> records = kafkaTestHelper.getConsumedMessages(alertTopic);
+        for (ConsumerRecord<String, byte[]> record: records) {
+            if (record.value() == null) {
+                continue;
+            }
+            Alert alert;
+            try {
+                alert = Alert.parseFrom(record.value());
+            } catch (InvalidProtocolBufferException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (tenant.equals(alert.getTenantId())) {
+                foundMessages++;
+            }
+        }
+        return foundMessages == expectedMessages;
     }
 }
