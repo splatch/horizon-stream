@@ -245,6 +245,9 @@ const searchAlertsListener = (v: any) => {
   background-color: var(variables.$background);
   border: 1px solid var(variables.$border-on-surface);
   border-radius: vars.$border-radius-s vars.$border-radius-s 0 0;
+  :deep(.layout-container) {
+    margin-bottom: 0;
+  }
   :deep(> .feather-pagination) {
     border: 0;
     min-height: auto;

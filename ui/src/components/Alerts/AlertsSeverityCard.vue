@@ -4,9 +4,8 @@
     :class="{ selected: !isAdd }"
     @click="addSeverityFilter"
   >
-    <div class="row">
-      <div><AlertsSeverityLabel :severity="severity" /></div>
-
+    <div class="label-add-icon">
+      <AlertsSeverityLabel :severity="severity" />
       <Transition name="icon-anim">
         <FeatherIcon
           :icon="isAdd ? Add : Cancel"
@@ -16,6 +15,10 @@
       </Transition>
     </div>
     <div class="count">{{ count }}</div>
+    <div>
+      <span class="percentage">%5</span>
+      <span>Past 24 Hours</span>
+    </div>
   </div>
 </template>
 
@@ -42,39 +45,44 @@ const addSeverityFilter = () => {
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
 @use '@/styles/mediaQueriesMixins.scss';
+@use '@/styles/vars.scss';
 
 .card {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
   background-color: var(variables.$surface);
-  min-width: 165px;
-  height: 85px;
   padding: var(variables.$spacing-s);
-  border-radius: 5px;
-  @include mediaQueriesMixins.screen-md {
-    height: 130px;
-  }
+  border-radius: vars.$border-radius-s;
   &.selected {
     background-color: var(variables.$shade-4);
     border-color: var(variables.$secondary-variant);
   }
+}
 
-  > .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    > .icon {
-      font-size: 24px;
-    }
+.label-add-icon {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--feather-spacing-xl);
+  > .icon {
+    font-size: 24px;
   }
-
-  > .count {
-    margin-top: var(variables.$spacing-xs);
-    @include typography.headline2();
-    @include mediaQueriesMixins.screen-md {
-      @include typography.display2();
-      font-weight: 300;
-    }
+  > *:first-child {
+    margin-right: var(variables.$spacing-l);
   }
+}
+
+.count {
+  font-size: var(variables.$display3-font-size);
+  margin-bottom: var(variables.$spacing-l);
+  font-family: var(variables.$header-font-family);
+  color: var(variables.$primary-text-on-surface);
+}
+
+.percentage {
+  margin-right: var(variables.$spacing-xs);
 }
 
 .icon-anim-enter-active {

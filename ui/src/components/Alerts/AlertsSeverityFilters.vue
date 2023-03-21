@@ -25,8 +25,11 @@ const severitiesGrouped = computed(() => groupBy(store.allAlertsList, 'severity'
 
 .list {
   display: flex;
+  flex-direction: row;
   gap: var(variables.$spacing-m);
   margin-bottom: var(variables.$spacing-l);
-  flex-wrap: wrap;
+  > * {
+    flex-grow: 1;
+  }
 }
 </style>

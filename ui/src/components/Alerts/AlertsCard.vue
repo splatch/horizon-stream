@@ -1,74 +1,81 @@
 <template>
   <div class="card">
     <FeatherExpansionPanel>
-      <div
-        class="description"
-        data-test="description"
-      >
-        {{ alert.description }}
-      </div>
+      <template #title>
+        <div class="content">
+          <div class="top">
+            <FeatherCheckbox
+              :model-value="alert.isSelected"
+              @update:model-value="alertSelectedHandler(alert.id)"
+              data-test="checkbox"
+            />
+            <div class="name-node-type">
+              <div
+                class="name headline"
+                data-test="name"
+              >
+                {{ alert.name }}
+              </div>
+              <div data-test="node-type">
+                {{ alert.nodeType }}
+              </div>
+            </div>
+            <div
+              class="severity"
+              data-test="severity"
+            >
+              <AlertsSeverityLabel :severity="alert.severity" />
+              <div>&nbsp;</div>
+            </div>
+            <div
+              class="cause headline"
+              data-test="cause"
+            >
+              <div>{{ alert.cause }}</div>
+              <div>&nbsp;</div>
+            </div>
+            <!-- duration: hrs, days, weeks. months? -->
+            <div
+              class="duration headline"
+              data-test="duration"
+            >
+              <div>{{ alert.duration }}</div>
+              <div>&nbsp;</div>
+            </div>
+            <div class="date-time">
+              <div
+                class="date headline"
+                data-test="date"
+              >
+                <span>{{ alert.date }}</span>
+              </div>
+              <div
+                class="time"
+                data-test="time"
+              >
+                {{ alert.time }}
+              </div>
+            </div>
+            <div class="check-circle">
+              <FeatherIcon
+                :icon="checkCircleIcon"
+                :class="alert.isAcknowledged ? 'acknowledged' : ''"
+                class="acknowledged-icon"
+                data-test="check-icon"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
+      <slot>
+        <div
+          class="description"
+          data-test="description"
+        >
+          {{ alert.description }}
+        </div>
+      </slot>
     </FeatherExpansionPanel>
-    <div class="expansion-title">
-      <FeatherCheckbox
-        :model-value="alert.isSelected"
-        @update:model-value="alertSelectedHandler(alert.id)"
-        data-test="checkbox"
-      />
-      <div class="content">
-        <div class="name-node-type">
-          <div
-            class="name headline"
-            data-test="name"
-          >
-            {{ alert.name }}
-          </div>
-          <div data-test="node-type">
-            {{ alert.nodeType }}
-          </div>
-        </div>
-        <div
-          class="severity error"
-          data-test="severity"
-        >
-          <AlertsSeverityLabel :severity="alert.severity" />
-        </div>
-        <div
-          class="cause headline"
-          data-test="cause"
-        >
-          <div>{{ alert.cause }}</div>
-        </div>
-        <!-- duration: hrs, days, weeks. months? -->
-        <div
-          class="duration headline"
-          data-test="duration"
-        >
-          <div>{{ alert.duration }}</div>
-        </div>
-        <div class="date-time">
-          <div
-            class="date headline"
-            data-test="date"
-          >
-            <span>{{ alert.date }}</span>
-          </div>
-          <div
-            class="time"
-            data-test="time"
-          >
-            {{ alert.time }}
-          </div>
-        </div>
-        <div class="check-circle">
-          <FeatherIcon
-            :icon="checkCircleIcon"
-            :class="alert.isAcknowledged ? 'acknowledged' : ''"
-            class="acknowledged-icon"
-            data-test="check-icon"
-          />
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -103,30 +110,31 @@ const checkCircleIcon = markRaw(CheckCircle)
 @use '@/styles/mixins.scss';
 
 .headline {
-  @include typography.headline4();
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .card {
-  position: relative;
+  min-width: 900px;
 }
 
-.expansion-title {
-  position: absolute;
-  top: 13px;
-  left: var(variables.$spacing-xl);
-  width: 900px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  :deep(> .layout-container) {
-    margin-bottom: 0;
-    .feather-checkbox {
-      padding-right: var(variables.$spacing-xs);
-      label {
-        display: none;
-      }
+.feather-expansion {
+  box-shadow: none;
+  background-color: unset;
+  padding: 1rem;
+  border-width: 0 1px 1px;
+  border-style: solid;
+  border-color: var(variables.$border-on-surface);
+  :deep(.feather-expansion-header-button) {
+    height: auto;
+    padding: 0;
+    &.expanded {
+      height: auto;
     }
+  }
+  :deep(.panel-content) {
+    padding: 1rem 0 0 3.5rem !important;
+    width: 90%;
   }
 }
 
@@ -135,89 +143,72 @@ const checkCircleIcon = markRaw(CheckCircle)
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
 }
 
-.name-node-type {
-  width: 20%;
-  margin-right: 2%;
+.top {
+  width: 95%;
   display: flex;
+  flex-direction: row;
   justify-content: flex-start;
-  flex-direction: column;
-  .name {
-    @include mixins.truncate-text();
-  }
-}
+  align-items: center;
 
-.severity {
-  width: 20%;
-  display: flex;
-  justify-content: center;
-  margin-right: 2%;
-  &.error {
-    :deep(.chip) {
-      color: var(variables.$primary-text-on-color);
-      background-color: var(variables.$error);
+  > * {
+    margin-right: 2%;
+  }
+
+  :deep(> .layout-container) {
+    margin-bottom: 0;
+    display: flex;
+    .feather-checkbox {
       margin: 0;
+      .checkbox {
+        height: auto;
+      }
+      label {
+        display: none;
+      }
     }
   }
-}
 
-.cause {
-  width: 20%;
-  margin-right: 2%;
-  display: flex;
-  justify-content: flex-start;
-  > div {
-    @include mixins.truncate-text();
-  }
-}
-
-.duration {
-  width: 8%;
-  margin-right: 2%;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.date-time {
-  width: 15%;
-  margin-right: 2%;
-  display: flex;
-  justify-content: flex-start;
-  flex-direction: column;
-}
-
-.check-circle {
-  width: 4%;
-  display: flex;
-  justify-content: center;
-  .acknowledged-icon {
-    width: 1.5rem;
-    height: 1.5rem;
-    margin-top: 0.8rem;
-    color: var(variables.$shade-3);
-    &.acknowledged {
-      color: var(variables.$success);
+  .name-node-type {
+    width: 23%;
+    .name {
+      @include mixins.truncate-text();
     }
   }
-}
 
-:deep(.feather-expansion) {
-  box-shadow: none;
-  background-color: unset;
-  border-width: 0 1px 1px;
-  border-style: solid;
-  border-color: var(variables.$border-on-surface);
-  .feather-expansion-header-button {
-    height: 5rem;
+  .severity {
+    width: 12%;
+    text-align: center;
   }
-  .feather-expansion-header-button.expanded {
-    height: 5rem;
+
+  .cause {
+    width: 20%;
+    margin-right: 6%;
+    > div {
+      @include mixins.truncate-text();
+    }
   }
-  .description {
-    margin-top: 1rem;
-    margin-left: 2.1rem;
+
+  .duration {
+    width: 8%;
+  }
+
+  .date-time {
+    width: 12%;
+  }
+
+  .check-circle {
+    width: 4%;
+    .acknowledged-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: var(variables.$shade-3);
+      &.acknowledged {
+        color: var(variables.$success);
+      }
+    }
   }
 }
 </style>
