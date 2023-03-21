@@ -46,6 +46,7 @@ declare module '@vue/runtime-core' {
     DrawerBtn: typeof import('./src/components/Topology/DrawerBtn.vue')['default']
     EventsTable: typeof import('./src/components/NodeStatus/EventsTable.vue')['default']
     ExistingItems: typeof import('./src/components/MonitoringPolicies/ExistingItems.vue')['default']
+    ExpandingChartWrapper: typeof import('./src/components/Flows/ExpandingChartWrapper.vue')['default']
     FeatherAppBar: typeof import('@featherds/app-bar')['FeatherAppBar']
     FeatherAppLayout: typeof import('@featherds/app-layout')['FeatherAppLayout']
     FeatherAppRail: typeof import('@featherds/app-rail')['FeatherAppRail']
