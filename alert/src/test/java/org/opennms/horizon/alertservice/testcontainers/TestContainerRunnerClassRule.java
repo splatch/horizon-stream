@@ -69,8 +69,7 @@ public class TestContainerRunnerClassRule extends ExternalResource {
     public TestContainerRunnerClassRule() {
         kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka").withTag(confluentPlatformVersion));
         applicationContainer = new GenericContainer(DockerImageName.parse(dockerImage));
-        postgreSQLContainer = new PostgreSQLContainer(DockerImageName.parse("citusdata/citus").asCompatibleSubstituteFor("postgres")
-            .withTag("postgres_14"));
+        postgreSQLContainer = new PostgreSQLContainer("postgres:14.5-alpine");
     }
 
     @Override
