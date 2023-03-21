@@ -50,6 +50,7 @@ import org.opennms.taskset.contract.MonitorResponse;
 import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskResult;
 import org.opennms.taskset.contract.TaskSetResults;
+import org.opennms.taskset.contract.TenantedTaskSetResults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -148,6 +149,7 @@ public class MinionHeartbeatConsumer {
     }
 
     private void publishResult(String systemId, String location, String tenantId, long responseTime) {
+        // TODO: use a separate structure from TaskSetResult - this is not the result of processing a TaskSet
         MonitorResponse monitorResponse = MonitorResponse.newBuilder()
             .setStatus("UP")
             .setResponseTimeMs(responseTime)
@@ -160,11 +162,12 @@ public class MinionHeartbeatConsumer {
             .setLocation(location)
             .setMonitorResponse(monitorResponse)
             .build();
-        TaskSetResults results = TaskSetResults.newBuilder()
+        TenantedTaskSetResults results = TenantedTaskSetResults.newBuilder()
+            .setTenantId(tenantId)
             .addResults(result)
             .build();
+
         ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(kafkaTopic, results.toByteArray());
-        producerRecord.headers().add(new RecordHeader(GrpcConstants.TENANT_ID_KEY, tenantId.getBytes()));
         kafkaTemplate.send(producerRecord);
     }
 }
