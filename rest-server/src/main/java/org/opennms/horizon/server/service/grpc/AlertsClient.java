@@ -59,12 +59,6 @@ public class AlertsClient {
         }
     }
 
-    public List<Alert> listAlerts(String accessToken) {
-        Metadata metadata = new Metadata();
-        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
-        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).listAlerts(ListAlertsRequest.newBuilder().build()).getAlertsList();
-    }
-
     public List<Alert> listAlerts(int pageSize, String nextPage, String accessToken) {
         Metadata metadata = new Metadata();
         metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
