@@ -121,8 +121,6 @@ onMounted(() => {
 watch(props, () => {
   if (props.discovery?.id) {
     discoveryQueries.getTagsByPassiveDiscoveryId(props.discovery?.id)
-  } else {
-    tags.value = []
   }
   discoveryInfo.value = props.discovery || ({} as PassiveDiscoveryUpsertInput)
 })

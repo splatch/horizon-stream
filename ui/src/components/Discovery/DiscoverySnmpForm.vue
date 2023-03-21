@@ -86,7 +86,7 @@ import { ContentEditableType, UDP_PORT, COMMUNITY_STRING, IP_RANGE } from '@/com
 import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useTagQueries } from '@/store/Queries/tagQueries'
-import { IcmpActiveDiscoveryCreateInput } from '@/types/graphql'
+import { IcmpActiveDiscovery, IcmpActiveDiscoveryCreateInput } from '@/types/graphql'
 import { set } from 'lodash'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
@@ -101,12 +101,14 @@ const { createDiscoveryConfig, activeDiscoveryError, isFetchingActiveDiscovery }
 const tagQueries = useTagQueries()
 const discoveryQueries = useDiscoveryQueries()
 const props = defineProps<{
-  discovery?: IcmpActiveDiscoveryCreateInput | null
+  discovery?: IcmpActiveDiscovery | null
   successCallback: (name: string) => void
   cancel: () => void
 }>()
 
-const discoveryInfo = ref<IcmpActiveDiscoveryCreateInput>(props.discovery || ({} as IcmpActiveDiscoveryCreateInput))
+const discoveryInfo = ref<IcmpActiveDiscovery | IcmpActiveDiscoveryCreateInput>(
+  props.discovery || ({} as IcmpActiveDiscoveryCreateInput)
+)
 const contentEditableIPRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableCommunityStringRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableUDPPortRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
@@ -121,8 +123,6 @@ onMounted(() => {
 watch(props, () => {
   if (props.discovery?.id) {
     discoveryQueries.getTagsByActiveDiscoveryId(props.discovery?.id)
-  } else {
-    tags.value = []
   }
   discoveryInfo.value = props.discovery || ({} as IcmpActiveDiscoveryCreateInput)
 })
@@ -133,7 +133,7 @@ const setSnmpConfig = (property: string, val: (string | number)[] | null) => {
 
 const tagsAutocompleteRef = ref()
 const tagsSelectedListener = (tags: Record<string, string>[]) => {
-  discoveryInfo.value.tags = tags.map(({ name }) => ({ name }))
+  ;(discoveryInfo.value as IcmpActiveDiscoveryCreateInput).tags = tags.map(({ name }) => ({ name }))
 }
 
 const resetContentEditable = () => {

@@ -67,7 +67,7 @@
               }
             "
             :cancel="handleClose"
-            :discovery="(selectedDiscovery)"
+            :discovery="(selectedDiscovery as IcmpActiveDiscovery)"
           />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
@@ -160,7 +160,7 @@ const search = (q: string) => {
 const showDiscovery = (selected: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
   const discovery = selected as IAutocompleteItemType
   discoverySearchValue.value = undefined
-  
+
   if (discovery) {
     isDiscoveryEditingShown.value = true
     showNewDiscovery.value = false
@@ -168,8 +168,7 @@ const showDiscovery = (selected: IAutocompleteItemType | IAutocompleteItemType[]
     //replace with type guard
     if (discovery.discoveryType === DiscoveryType.ICMP) {
       discoverySelectedType.value = DiscoveryType.ICMP
-    }
-    else if (discovery.discoveryType === DiscoveryType.Azure) {
+    } else if (discovery.discoveryType === DiscoveryType.Azure) {
       discoverySelectedType.value = DiscoveryType.Azure
     } else {
       discoverySelectedType.value = DiscoveryType.SyslogSNMPTraps

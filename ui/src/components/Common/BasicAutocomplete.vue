@@ -9,6 +9,7 @@
       - multi: 
         - does not allow to add new value if not exists in the list
         - selected item is displayed in the input box
+    - preselectedItems: the list of items that was previously selected
   
   - Options
     - allow-new: to add new value, if not exists in the list (applicable only to 'single' render-type)
@@ -58,7 +59,7 @@ import { PropType } from 'vue'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import CancelIcon from '@featherds/icon/navigation/Cancel'
 
-type IAutocomplete = IAutocompleteItemType & { _text: string }
+type IAutocomplete = IAutocompleteItemType & { _text?: string }
 type TypeSingle = 'single'
 type TypeMulti = 'multi'
 
@@ -100,14 +101,11 @@ const loading = ref(false)
 const selectedItems = ref<IAutocomplete[]>([])
 
 const results = computed(() => {
-  const ids = props.preselectedItems?.length > 0 ? props.preselectedItems.map((i) => i.id) : []
   loading.value = false
-  return props.items
-    ?.map((item: any) => ({
-      ...item,
-      _text: item.name
-    }))
-    .filter((item) => !ids.includes(item.id))
+  return props.items?.map((item: any) => ({
+    ...item,
+    _text: item.name
+  }))
 })
 
 onMounted(() => {
@@ -116,7 +114,7 @@ onMounted(() => {
 
 watch(props, () => {
   if (props.preselectedItems?.length > 0) {
-    selectedItems.value = props.preselectedItems
+    selectedItems.value = props.preselectedItems as IAutocomplete[]
   }
 })
 
