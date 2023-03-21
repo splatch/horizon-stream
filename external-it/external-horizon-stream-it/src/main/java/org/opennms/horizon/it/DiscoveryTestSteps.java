@@ -1,3 +1,30 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 package org.opennms.horizon.it;
 
 import io.cucumber.java.en.Then;
@@ -10,10 +37,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.entity.ContentType;
 import org.apache.http.protocol.HTTP;
-import org.awaitility.Awaitility;
-import org.opennms.horizon.it.gqlmodels.CreateNodeData;
 import org.opennms.horizon.it.gqlmodels.GQLQuery;
-import org.opennms.horizon.it.gqlmodels.querywrappers.CreateNodeResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,18 +47,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.opennms.horizon.it.InventoryTestSteps.DEFAULT_HTTP_SOCKET_TIMEOUT;
 
-public class DiscoveryTest {
+public class DiscoveryTestSteps {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryTest.class);
-
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryTestSteps.class);
 
 //========================================
 // Variables
@@ -43,7 +63,7 @@ public class DiscoveryTest {
     private Supplier<String> ingressUrlSupplier;
 
 
-//========================================
+    //========================================
 // Getters and Setters
 //----------------------------------------
     public Supplier<String> getUserAccessTokenSupplier() {
@@ -62,10 +82,10 @@ public class DiscoveryTest {
         this.ingressUrlSupplier = ingressUrlSupplier;
     }
 
-//========================================
+    //========================================
 // Additional methods
 //----------------------------------------
-    private Response executePost(URL url, String accessToken, Object body) {
+    public Response executePost(URL url, String accessToken, Object body) {
         RestAssuredConfig restAssuredConfig = createRestAssuredTestConfig();
 
         RequestSpecification requestSpecification =
@@ -86,11 +106,11 @@ public class DiscoveryTest {
         return restAssuredResponse;
     }
 
-    private String formatAuthorizationHeader(String token) {
+    public String formatAuthorizationHeader(String token) {
         return "Bearer " + token;
     }
 
-    private RestAssuredConfig createRestAssuredTestConfig() {
+    public RestAssuredConfig createRestAssuredTestConfig() {
         return RestAssuredConfig.config()
             .sslConfig(SSLConfig.sslConfig().relaxedHTTPSValidation("SSL"))
             .httpClient(HttpClientConfig.httpClientConfig()
@@ -99,7 +119,7 @@ public class DiscoveryTest {
             );
     }
 
-    private URL formatIngressUrl(String path) throws MalformedURLException {
+    public URL formatIngressUrl(String path) throws MalformedURLException {
         String baseUrl = ingressUrlSupplier.get();
 
         return new URL(new URL(baseUrl), path);
@@ -161,5 +181,31 @@ public class DiscoveryTest {
 //========================================
 // Test Step Definitions
 //----------------------------------------
+
+    /**
+     * This test step is to create a new discovery
+     * @param name Name of the discovery
+     * @param location Rather Default or behind the Minion
+     * @param ipaddress Ip address or range of addresses separated by -
+     * @param port port or array of ports separated by comma
+     * @param communities Community string
+     * @throws MalformedURLException
+     */
+    @Then("Add a new active discovery for the name {string} at location {string} with ip address {string} and port {int}, readCommunities {string}")
+    public void addANewActiveDiscovery(String name, String location, String ipaddress, int port, String communities) throws MalformedURLException {
+        LOG.info("Add a new discovery query execution steps");
+        URL url = formatIngressUrl("/api/graphql");
+        String accessToken = getUserAccessTokenSupplier().get();
+
+        String query = String.format(GQLQueryConstants.ADD_DISCOVERY_QUERY, name, location, ipaddress, communities, port);
+
+        GQLQuery gqlQuery = new GQLQuery();
+        gqlQuery.setQuery(query);
+
+        Response response = executePost(url, accessToken, gqlQuery);
+
+        assertEquals("add-discovery query failed: status=" + response.getStatusCode() + "; body=" + response.getBody().asString(),
+            200, response.getStatusCode());
+    }
 
 }

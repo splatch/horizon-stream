@@ -40,3 +40,8 @@ Feature: Minion Monitoring via Echo Messages Logged in Prometheus
     Then Add a device with label "NodeDown" IP address "192.168.0.4" and location "Default"
     Then Check the status of the Node with expected status "DOWN"
     Then Delete the first node from inventory
+
+  Scenario: Create discovery and check the status of the discovered node
+    Then Add a new active discovery for the name "Cucumber Tests" at location "Default" with ip address "127.1.0.5" and port 161, readCommunities "public"
+    Then Check the status of the Node with expected status "UP"
+    Then Delete the first node from inventory

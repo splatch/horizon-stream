@@ -12,7 +12,7 @@ public class HorizonStreamTestSteps {
     private final KeycloakTestSteps keycloakTestSteps;
     private final InventoryTestSteps inventoryTestSteps;
     private final MetricsTestSteps metricsTestSteps;
-    private final DiscoveryTest discoveryTestSteps;
+    private final DiscoveryTestSteps discoveryTestSteps;
 
     private String ingressBaseUrl;
 
@@ -20,7 +20,7 @@ public class HorizonStreamTestSteps {
 // Constructor
 //----------------------------------------
 
-    public HorizonStreamTestSteps(KeycloakTestSteps keycloakTestSteps, InventoryTestSteps inventoryTestSteps, MetricsTestSteps metricsTestSteps, DiscoveryTest discoveryTestSteps) {
+    public HorizonStreamTestSteps(KeycloakTestSteps keycloakTestSteps, InventoryTestSteps inventoryTestSteps, MetricsTestSteps metricsTestSteps, DiscoveryTestSteps discoveryTestSteps) {
         this.keycloakTestSteps = keycloakTestSteps;
         this.inventoryTestSteps = inventoryTestSteps;
         this.metricsTestSteps = metricsTestSteps;
@@ -28,6 +28,7 @@ public class HorizonStreamTestSteps {
 
         this.inventoryTestSteps.setUserAccessTokenSupplier(this.keycloakTestSteps::getKeycloakAccessToken);
         this.inventoryTestSteps.setIngressUrlSupplier(this::getIngressBaseUrl);
+
 
         this.discoveryTestSteps.setUserAccessTokenSupplier(this.keycloakTestSteps::getKeycloakAccessToken);
         this.discoveryTestSteps.setIngressUrlSupplier(this::getIngressBaseUrl);
