@@ -46,7 +46,7 @@ spec:
               value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
             - name: CORTEX_WRITE_URL
               value: http://{{ .Values.Cortex.ServiceName }}:{{ .Values.Cortex.Port }}/api/v1/push
-      {{- if .Values.MetricsProcessor.PrivateRepoEnabled }}
+      {{- if .Values.OpenNMS.MetricsProcessor.PrivateRepoEnabled }}
       imagePullSecrets:
         - name: image-credentials
       {{- end }}
