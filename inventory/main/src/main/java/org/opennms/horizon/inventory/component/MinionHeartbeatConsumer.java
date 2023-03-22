@@ -92,8 +92,7 @@ public class MinionHeartbeatConsumer {
             String tenantId = Optional.ofNullable(headers.get(GrpcConstants.TENANT_ID_KEY)).map(o -> new String((byte[])o))
                 .orElseThrow(()->new InventoryRuntimeException("Missing tenant id"));
             log.info("Received heartbeat message for minion with tenant id: {}; id: {}; location: {}", tenantId, message.getIdentity().getSystemId(), message.getIdentity().getLocation());
-            Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
-                service.addMonitoringSystemFromHeartbeat(message, tenantId));
+            service.addMonitoringSystemFromHeartbeat(message, tenantId);
             String systemId = message.getIdentity().getSystemId();
             String key = tenantId + "_" + systemId;
             Long lastRun = rpcMaps.get(key);
