@@ -58,6 +58,7 @@
 import { PropType } from 'vue'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import CancelIcon from '@featherds/icon/navigation/Cancel'
+import { isEqual } from 'lodash'
 
 type IAutocomplete = IAutocompleteItemType & { _text?: string }
 type TypeSingle = 'single'
@@ -99,7 +100,6 @@ const props = defineProps({
 
 const loading = ref(false)
 const selectedItems = ref<IAutocomplete[]>([])
-
 const results = computed(() => {
   loading.value = false
   return props.items?.map((item: any) => ({
@@ -112,11 +112,14 @@ onMounted(() => {
   props.getItems()
 })
 
-watch(props, () => {
-  if (props.preselectedItems?.length > 0) {
-    selectedItems.value = props.preselectedItems as IAutocomplete[]
+watch(
+  () => props.preselectedItems,
+  (newVal, oldVal) => {
+    if (!isEqual(newVal, oldVal)) {
+      selectedItems.value = props.preselectedItems as IAutocomplete[]
+    }
   }
-})
+)
 
 const modelValue = ref<IAutocomplete[] | undefined>()
 
@@ -146,7 +149,6 @@ const addValue = (q: string) => {
 
   if (!exists) {
     selectedItems.value?.push({ name: q, _text: q })
-
     emits('items-selected', selectedItems.value)
   }
 }

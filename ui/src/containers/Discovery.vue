@@ -55,7 +55,10 @@
         class="type-selector"
       >
         <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
-        <DiscoveryTypeSelector @discovery-option-selected="(type: DiscoveryType) => (discoverySelectedType = type)" />
+        <DiscoveryTypeSelector
+          ref="discoveryTypeSelector"
+          @discovery-option-selected="(type: DiscoveryType) => (discoverySelectedType = type)"
+        />
       </div>
       <div>
         <div v-if="discoverySelectedType === DiscoveryType.ICMP">
@@ -116,8 +119,7 @@ import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { AzureActiveDiscovery, IcmpActiveDiscovery, PassiveDiscovery } from '@/types/graphql'
-import { hasOwnProperty } from '@antfu/utils'
-
+import DiscoveryTypeSelector from '@/components/Discovery/DiscoveryTypeSelector.vue'
 const discoveryQueries = useDiscoveryQueries()
 const discoveryMutations = useDiscoveryMutations()
 
@@ -132,17 +134,18 @@ const isDiscoveryEditingShown = ref(false)
 const showNewDiscovery = ref(false)
 const selectedDiscovery = ref<PassiveDiscovery | AzureActiveDiscovery | IcmpActiveDiscovery | null>(null)
 const discoverySelectedType = ref(DiscoveryType.None)
+const discoveryTypeSelector = ref<InstanceType<typeof DiscoveryTypeSelector>>()
+const discoveriesResults = ref<TDiscoveryAutocomplete[]>([])
+const searchLoading = ref(false)
+const discoverySearchValue = ref(undefined)
 
 const handleNewDiscovery = () => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = true
   selectedDiscovery.value = null
   discoverySelectedType.value = DiscoveryType.None
+  discoveryTypeSelector.value?.reset()
 }
-
-const discoveriesResults = ref<TDiscoveryAutocomplete[]>([])
-const searchLoading = ref(false)
-const discoverySearchValue = ref(undefined)
 
 const search = (q: string) => {
   if (!q) return

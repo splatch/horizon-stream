@@ -114,13 +114,13 @@ const tags = computed(() => (props.discovery?.id ? discoveryQueries.tagsByPassiv
 
 onMounted(() => {
   if (props.discovery?.id) {
-    discoveryQueries.getTagsByPassiveDiscoveryId(props.discovery?.id)
+    discoveryQueries.getTagsByPassiveDiscoveryId(props.discovery.id)
   }
 })
 
 watch(props, () => {
   if (props.discovery?.id) {
-    discoveryQueries.getTagsByPassiveDiscoveryId(props.discovery?.id)
+    discoveryQueries.getTagsByPassiveDiscoveryId(props.discovery.id)
   }
   discoveryInfo.value = props.discovery || ({} as PassiveDiscoveryUpsertInput)
 })

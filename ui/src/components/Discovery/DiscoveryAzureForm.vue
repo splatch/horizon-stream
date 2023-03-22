@@ -105,7 +105,7 @@ const tags = computed(() => (props.discovery?.id ? discoveryQueries.tagsByActive
 
 onMounted(() => {
   if (props.discovery?.id) {
-    discoveryQueries.getTagsByActiveDiscoveryId(props.discovery?.id)
+    discoveryQueries.getTagsByActiveDiscoveryId(props.discovery.id)
   }
 })
 

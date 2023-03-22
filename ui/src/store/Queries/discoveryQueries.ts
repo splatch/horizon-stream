@@ -6,12 +6,9 @@ import {
   ListTagsSearchDocument,
   ListDiscoveriesDocument,
   ActiveDiscovery,
-  IcmpActiveDiscovery,
-  AzureActiveDiscovery,
   TagsByActiveDiscoveryIdDocument,
   TagsByPassiveDiscoveryIdDocument
 } from '@/types/graphql'
-import { DiscoveryType } from '@/components/Discovery/discovery.constants'
 
 export const useDiscoveryQueries = defineStore('discoveryQueries', () => {
   const tagsSearched = ref([] as Tag[])
