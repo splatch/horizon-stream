@@ -72,7 +72,7 @@
           <FeatherRadioGroup
             :label="'Traffic:'"
             v-model="flowsStore.filters.traffic.selectedItem"
-            @update:model-value="(e: any) => flowsStore.trafficRadioOnChange(e)"
+            @update:model-value="flowsStore.trafficRadioOnChange"
           >
             <FeatherRadio
               v-for="item in trafficRadios"
