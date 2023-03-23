@@ -132,7 +132,7 @@ public class TestContainerRunnerClassRule extends ExternalResource {
             .withEnv("KEYCLOAK_PUBLIC_KEY", Base64.encodeBytes(jwtKeyPair.getPublic().getEncoded()))
             .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("APPLICATION"))
             .waitingFor(Wait.forLogMessage(".*Started AlertServiceMain.*", 1)
-            .withStartupTimeout(Duration.ofMinutes(1))
+            .withStartupTimeout(Duration.ofMinutes(3))
         );
 
         // DEBUGGING: uncomment to force local port 5005

@@ -54,11 +54,9 @@ import com.google.protobuf.UInt64Value;
 
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
     public static final int PAGE_SIZE_DEFAULT = 10;
     public static final String PAGE_DEFAULT = "0";
@@ -82,20 +80,15 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
         Sort.Direction sortDirection = sortAscending ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(Integer.parseInt(nextPageToken), pageSize, Sort.by(sortDirection, sortBy));
         Date[] timeRange;
-        log.info("pageRequest: {}", pageRequest);
         Page<org.opennms.horizon.alertservice.db.entity.Alert> alertPage =
             switch (filter) {
                 case "severity":
                     yield alertRepository.findBySeverityIn(filterValue.stream().map(Severity::valueOf).toList(), pageRequest);
                 case "time":
                     timeRange = getTimeRange(filterValue);
-                    log.info("Start Date: {}", timeRange[0]);
-                    log.info("End Date: {}", timeRange[1]);
                     yield alertRepository.findByLastEventTimeBetween(timeRange[0], timeRange[1], pageRequest);
                 case "severityAndTime":
                     timeRange = getTimeRange(filterValue);
-                    log.info("Start Date: {}", timeRange[0]);
-                    log.info("End Date: {}", timeRange[1]);
                     yield alertRepository.findBySeverityInAndLastEventTimeBetween(filterValue.stream().limit(filterValue.size() - 1).map(Severity::valueOf).toList(), timeRange[0], timeRange[1], pageRequest);
                 default:
                     // Fetch a page of alerts without applying any filters
