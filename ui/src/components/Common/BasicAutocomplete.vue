@@ -114,8 +114,8 @@ onMounted(() => {
 
 watch(
   () => props.preselectedItems,
-  (newVal, oldVal) => {
-    if (!isEqual(newVal, oldVal)) {
+  (newVal) => {
+    if (!isEqual(newVal, selectedItems.value)) {
       selectedItems.value = props.preselectedItems as IAutocomplete[]
     }
   }
