@@ -93,10 +93,15 @@
           :id="'tableChartExporters'"
           :selected-filter-range="flowsStore.filters.dateFilter"
           :chart-data="flowsStore.exporters.tableChartData"
-          :table-data="flowsStore.datasets"
-        >
-        </TableChart>
-        <div v-if="flowsStore.filters.dataStyle.selectedItem === 'line'">Line Chart will be here</div>
+          :table-data="flowsStore.tableDatasets"
+        />
+        <LineChart
+          v-if="flowsStore.filters.dataStyle.selectedItem === 'line'"
+          :id="'lineChartExporters'"
+          :selected-filter-range="flowsStore.filters.dateFilter"
+          :chart-data="flowsStore.exporters.lineChartData"
+          :table-data="flowsStore.tableDatasets"
+        />
       </ExpandingChartWrapper>
 
       <ExpandingChartWrapper
@@ -109,10 +114,15 @@
           :id="'tableChartApplications'"
           :selected-filter-range="flowsStore.filters.dateFilter"
           :chart-data="flowsStore.applications.tableChartData"
-          :table-data="flowsStore.datasets"
-        >
-        </TableChart>
-        <div v-if="flowsStore.filters.dataStyle.selectedItem === 'line'">Line Chart will be here</div>
+          :table-data="flowsStore.tableDatasets"
+        />
+        <LineChart
+          v-if="flowsStore.filters.dataStyle.selectedItem === 'line'"
+          :id="'lineChartApplications'"
+          :selected-filter-range="flowsStore.filters.dateFilter"
+          :chart-data="flowsStore.applications.lineChartData"
+          :table-data="flowsStore.tableDatasets"
+        />
       </ExpandingChartWrapper>
     </div>
   </div>

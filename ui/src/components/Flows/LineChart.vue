@@ -5,31 +5,9 @@
         :id="id"
         :chart-options="chartOptions"
         :chart-data="chartData"
-        :chart-type="ChartTypes.BAR"
+        :chart-type="ChartTypes.LINE"
       >
       </BasicChart>
-    </div>
-
-    <div class="table-container">
-      <table class="condensed">
-        <thead>
-          <tr>
-            <th scope="col">Total</th>
-            <th scope="col">Inbound</th>
-            <th scope="col">Outbound</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(data, index) in tableData"
-            :key="index"
-          >
-            <td>{{ formatBytes(addValues(data.bytesIn, data.bytesOut)) }}</td>
-            <td>{{ formatBytes(data.bytesIn) }}</td>
-            <td>{{ formatBytes(data.bytesOut) }}</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </template>
@@ -38,6 +16,7 @@
 import { ChartOptions, ChartData } from 'chart.js'
 import { PropType } from 'vue'
 import { ChartTypes } from '@/types'
+import { parseISO } from 'date-fns'
 
 const props = defineProps({
   id: {
@@ -60,8 +39,9 @@ const props = defineProps({
 
 const chartOptions = computed<ChartOptions<any>>(() => {
   return {
-    indexAxis: 'y',
+    indexAxis: 'x',
     responsive: true,
+    cubicInterpolationMode: 'monotone',
     maintainAspectRatio: false,
     plugins: {
       legend: {
@@ -92,13 +72,7 @@ const chartOptions = computed<ChartOptions<any>>(() => {
         footerColor: '#4F4F4F',
         titleColor: '#4F4F4F',
         callbacks: {
-          title: () => props.selectedFilterRange,
-          label: (context: any) => {
-            const value = context.dataset.data[context.dataIndex]
-            const labelAbbrev = context.dataset.label.substring(0, 3).toLowerCase()
-            const appName = context.label
-            return `${appName}(${labelAbbrev}): ` + formatBytes(value)
-          }
+          // title: () => props.selectedFilterRange
         }
       }
     },
@@ -108,16 +82,17 @@ const chartOptions = computed<ChartOptions<any>>(() => {
         grid: {
           display: true
         },
-        ticks: {
-          callback: function (value: any) {
-            return formatBytes(value, 0)
-          }
-        }
+        ticks: {}
       },
       y: {
         stacked: true,
         grid: {
           display: false
+        },
+        ticks: {
+          // callback: function (value: any) {
+          //   return value < 0 ? -value : value
+          // }
         },
         title: {
           display: true,
@@ -134,7 +109,6 @@ const addValues = (a: number, b: number) => {
   const total = (a + b).toString()
   return parseFloat(total).toPrecision(3)
 }
-
 const formatBytes = (bytes: any, decimals = 2) => {
   if (!+bytes) return '0 Bytes'
 
@@ -145,6 +119,10 @@ const formatBytes = (bytes: any, decimals = 2) => {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+}
+
+function fnsFormat(date: any, formatString: any, arg2: { timeZone: any }) {
+  throw new Error('Function not implemented.')
 }
 </script>
 
@@ -163,11 +141,9 @@ const formatBytes = (bytes: any, decimals = 2) => {
   flex-direction: row;
   min-width: 0;
   flex-wrap: wrap;
-  .table-container {
-    flex: 1 1 0;
-  }
   .chart-container {
     flex: 1 1 0;
+    min-height: 280px;
   }
 }
 table {
