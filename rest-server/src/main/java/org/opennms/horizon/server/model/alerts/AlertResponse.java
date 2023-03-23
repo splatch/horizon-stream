@@ -26,18 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.mapper;
+package org.opennms.horizon.server.model.alerts;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.opennms.horizon.server.model.alerts.Alert;
-import org.opennms.horizon.server.model.alerts.AlertResponse;
+import java.util.List;
 
-@Mapper(componentModel = "spring")
-public interface AlertMapper {
+import lombok.Getter;
+import lombok.Setter;
 
-    @Mapping(source = "alertsList", target = "alerts")
-    AlertResponse protoToAlertResponse(org.opennms.horizon.alerts.proto.ListAlertsResponse listAlertsResponse);
-
-    Alert protoToAlert(org.opennms.horizon.alerts.proto.Alert alertProto);
+@Getter
+@Setter
+public class AlertResponse {
+    private List<Alert> alerts;
+    private String nextPageToken;
+    private String lastPageToken;
 }

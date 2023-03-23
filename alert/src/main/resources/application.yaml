@@ -51,3 +51,8 @@ kafka:
   topics:
     alert-events: "events"
     new-alerts: "alerts"
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: DEBUG

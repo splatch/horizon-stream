@@ -28,8 +28,11 @@
 
 package org.opennms.horizon.server.service;
 
+import java.util.List;
+
 import org.opennms.horizon.server.mapper.AlertMapper;
 import org.opennms.horizon.server.model.alerts.Alert;
+import org.opennms.horizon.server.model.alerts.AlertResponse;
 import org.opennms.horizon.server.service.grpc.AlertsClient;
 import org.opennms.horizon.server.utils.ServerHeaderUtil;
 import org.springframework.stereotype.Service;
@@ -41,7 +44,6 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.RequiredArgsConstructor;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
@@ -54,10 +56,14 @@ public class GrpcAlertService {
     private final AlertMapper mapper;
 
     @GraphQLQuery
-    public Flux<Alert> findAllAlerts(@GraphQLArgument(name = "pageSize") Integer pageSize,
-                                     @GraphQLArgument(name = "page") String page,
-                                     @GraphQLEnvironment ResolutionEnvironment env) {
-        return Flux.fromIterable(alertsClient.listAlerts(pageSize, page, headerUtil.getAuthHeader(env)).stream().map(mapper::protoToAlert).toList());
+    public Mono<AlertResponse> findAllAlerts(@GraphQLArgument(name = "pageSize") Integer pageSize,
+                                             @GraphQLArgument(name = "page") String page,
+                                             @GraphQLArgument(name = "filter") String filter,
+                                             @GraphQLArgument(name = "filterValues") List<String> filterValues,
+                                             @GraphQLArgument(name = "sortBy") String sortBy,
+                                             @GraphQLArgument(name = "sortAscending") boolean sortAscending,
+                                             @GraphQLEnvironment ResolutionEnvironment env) {
+        return Mono.just(mapper.protoToAlertResponse(alertsClient.listAlerts(pageSize, page, filter, filterValues, sortBy, sortAscending, headerUtil.getAuthHeader(env))));
     }
 
     @GraphQLMutation

@@ -116,12 +116,12 @@ public class AlertEngine implements AlertLifecyleListener {
     }
 
     private synchronized void tick() {
-        LOG.info("Tick with: {}", alertsByReductionKeyByTenantId);
-        // Delete alerts more than 1 hour old
+        LOG.debug("Tick with: {}", alertsByReductionKeyByTenantId);
+        // Delete alerts more than 2 weeks old
         alertsByReductionKeyByTenantId.forEach((tenantId, alertsByReductionKey) -> {
             Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()-> {
                 alertsByReductionKey.values().stream()
-                    .filter(a -> a.getLastUpdateTimeMs() < (System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1)))
+                    .filter(a -> a.getLastUpdateTimeMs() < (System.currentTimeMillis() - TimeUnit.DAYS.toMillis(14)))
                     .forEach(this::deleteAlert);
             });
         });

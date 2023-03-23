@@ -134,6 +134,10 @@ message ListAlertsRequest {
   // Optional. A pagination token returned from a previous call to `listAlerts`
   // that indicates where this listing should continue from.
   string next_page_token = 3;
+  string filter = 4;
+  string sortBy = 5;
+  bool sortAscending = 6;
+  repeated string filterValues = 7;
 }
 
 message ListAlertsResponse {
@@ -143,6 +147,7 @@ message ListAlertsResponse {
   // A pagination token returned from a previous call to `ListAlerts`
   // that indicates from where listing should continue.
   string next_page_token = 2;
+  string lastPage_token = 3;
 }
 
 message ListAlertDefinitionsRequest {

@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.horizon.alerts.proto.Alert;
 import org.opennms.horizon.alerts.proto.AlertServiceGrpc;
 import org.opennms.horizon.alerts.proto.ListAlertsRequest;
+import org.opennms.horizon.alerts.proto.ListAlertsResponse;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import com.google.protobuf.UInt64Value;
@@ -59,11 +60,18 @@ public class AlertsClient {
         }
     }
 
-    public List<Alert> listAlerts(int pageSize, String nextPage, String accessToken) {
+    public ListAlertsResponse listAlerts(int pageSize, String nextPage, String filter, List<String> filterValues, String sortBy, boolean sortAscending, String accessToken) {
         Metadata metadata = new Metadata();
         metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
-        ListAlertsRequest request = ListAlertsRequest.newBuilder().setPageSize(pageSize).setNextPageToken(nextPage).build();
-        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).listAlerts(request).getAlertsList();
+        ListAlertsRequest request = ListAlertsRequest.newBuilder()
+            .setPageSize(pageSize)
+            .setNextPageToken(nextPage)
+            .setFilter(filter)
+            .addAllFilterValues(filterValues)
+            .setSortBy(sortBy)
+            .setSortAscending(sortAscending)
+            .build();
+        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).listAlerts(request);
     }
 
     public Alert acknowledgeAlert(long alertId, String accessToken) {
