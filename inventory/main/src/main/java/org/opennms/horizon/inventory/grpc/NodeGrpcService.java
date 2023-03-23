@@ -320,24 +320,18 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
     }
 
     private void sendDetectorTasksToMinion(Node node, String tenantId) {
-        Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
-        {
-            try {
-                taskSetService.sendDetectorTasks(node);
-                scannerService.sendNodeScannerTask(List.of(nodeMapper.modelToDTO(node)),
-                    node.getMonitoringLocation().getLocation(), node.getTenantId());
-            } catch (Exception e) {
-                LOG.error("Error while sending detector task for node with label {}", node.getNodeLabel(), e);
-            }
-        });
+        try {
+            taskSetService.sendDetectorTasks(node);
+            scannerService.sendNodeScannerTask(List.of(nodeMapper.modelToDTO(node)),
+                node.getMonitoringLocation().getLocation(), node.getTenantId());
+        } catch (Exception e) {
+            LOG.error("Error while sending detector task for node with label {}", node.getNodeLabel(), e);
+        }
     }
 
     private void sendScannerTasksToMinion(Map<String, List<NodeDTO>> locationNodes, String tenantId) {
-        Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tenantId).run(()->
-        {
-            for(String location: locationNodes.keySet()) {
-                scannerService.sendNodeScannerTask(locationNodes.get(location), location, tenantId);
-            }
-        });
+        for(String location: locationNodes.keySet()) {
+            scannerService.sendNodeScannerTask(locationNodes.get(location), location, tenantId);
+        }
     }
 }
