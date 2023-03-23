@@ -16,7 +16,6 @@
 import { ChartOptions, ChartData } from 'chart.js'
 import { PropType } from 'vue'
 import { ChartTypes } from '@/types'
-import { parseISO } from 'date-fns'
 
 const props = defineProps({
   id: {

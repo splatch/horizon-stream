@@ -10,6 +10,7 @@
         :list="timeOptions"
         :size="160"
         :show-chip="true"
+        @item-selected="flowsStore.onDateFilterUpdate"
       />
       <div class="filters-divider"></div>
       <BasicAutocomplete
@@ -212,7 +213,7 @@ onBeforeMount(async () => {
 const timeOptions = [
   { id: 'today', name: 'Today' },
   { id: '24h', name: 'Last 24 hours' },
-  { id: 'week', name: 'Last 7 days' }
+  { id: '7d', name: 'Last 7 days' }
 ]
 const applicationsAutoComplete = ref([
   { id: 'app1', name: 'Application 1' },

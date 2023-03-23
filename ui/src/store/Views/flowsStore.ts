@@ -1,6 +1,6 @@
-import { FlowsLineChartItem } from '@/types'
+import { formatTimestamp } from '@/components/Graphs/utils'
 import { ChartData } from 'chart.js'
-import { fromUnixTime, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 import { defineStore } from 'pinia'
 
 export const useFlowsStore = defineStore('flowsStore', {
@@ -10,12 +10,12 @@ export const useFlowsStore = defineStore('flowsStore', {
     tableChartOptions: {},
     totalFlows: '1,957',
     filters: {
-      dateFilter: '2023-1-14 to 2023-1-15',
+      dateFilter: 'today',
       traffic: {
         selectedItem: 'total'
       },
       dataStyle: {
-        selectedItem: 'line'
+        selectedItem: 'table'
       }
     },
     applications: {
@@ -94,22 +94,22 @@ export const useFlowsStore = defineStore('flowsStore', {
           label: 'app0',
           data: [
             {
-              timestamp: '+55191-01-10T01:01:25Z',
+              timestamp: '2023-03-23T01:01:25Z',
               value: 138790.1750375429,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T01:09:47Z',
+              timestamp: '2023-03-23T01:09:47Z',
               value: 216861.9119974472,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T01:18:07Z',
+              timestamp: '2023-03-23T01:18:07Z',
               value: 202966.96568806906,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T01:26:27Z',
+              timestamp: '2023-03-23T01:26:27Z',
               value: 264173.0346710393,
               direction: 'EGRESS'
             }
@@ -119,47 +119,47 @@ export const useFlowsStore = defineStore('flowsStore', {
           label: 'app1',
           data: [
             {
-              timestamp: '+55191-01-10T01:09:47Z',
+              timestamp: '2023-03-23T01:09:47Z',
               value: 675859.8717571729,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T01:18:07Z',
+              timestamp: '2023-03-23T01:18:07Z',
               value: 703441.1031400502,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T01:26:27Z',
+              timestamp: '2023-03-23T01:26:27Z',
               value: 277710.0783393889,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T01:34:47Z',
+              timestamp: '2023-03-23T01:34:47Z',
               value: 928133.4566595472,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T01:43:07Z',
+              timestamp: '2023-03-23T01:43:07Z',
               value: 299538.99195372575,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T01:51:27Z',
+              timestamp: '2023-03-23T01:51:27Z',
               value: 264867.46362876357,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T01:59:47Z',
+              timestamp: '2023-03-23T01:59:47Z',
               value: 738735.9705331036,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T02:08:07Z',
+              timestamp: '2023-03-23T02:08:07Z',
               value: 761950.6966375934,
               direction: 'EGRESS'
             },
             {
-              timestamp: '+55191-01-10T02:16:27Z',
+              timestamp: '2023-03-23T02:16:27Z',
               value: 995884.662063265,
               direction: 'EGRESS'
             }
@@ -218,7 +218,7 @@ export const useFlowsStore = defineStore('flowsStore', {
             label: element.label,
             data: element.data.map((data: any) => {
               return {
-                x: data.timestamp,
+                x: this.convertToDate(data.timestamp),
                 y: data.value
               }
             }),
@@ -263,9 +263,23 @@ export const useFlowsStore = defineStore('flowsStore', {
       this.generateTableChart()
     },
     convertToDate(ts: string) {
-      const x = parseISO(ts)
-      console.log(x)
-      return x
+      const dateFormat = () => {
+        switch (this.filters.dateFilter) {
+          case 'today':
+            return 'HH:mm'
+          case '24h':
+            return 'HH:mm'
+          case '7d':
+            return 'dd/MMM HH:mm'
+          default:
+            return 'dd/MMM HH:mm'
+        }
+      }
+      return format(new Date(ts), dateFormat())
+    },
+    onDateFilterUpdate(e: any) {
+      this.filters.dateFilter = e
+      this.generateTableChart()
     }
   }
 })
