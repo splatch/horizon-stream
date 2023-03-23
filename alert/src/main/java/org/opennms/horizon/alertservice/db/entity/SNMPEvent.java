@@ -28,9 +28,9 @@
 
 package org.opennms.horizon.alertservice.db.entity;
 
+import org.opennms.horizon.shared.alert.policy.OverTimeUnit;
 import org.opennms.horizon.shared.alert.policy.SNMPEventType;
 import org.opennms.horizon.shared.alert.policy.Severity;
-import org.opennms.horizon.shared.alert.policy.TimeUnit;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -63,7 +63,7 @@ public class SNMPEvent extends TenantAwareEntity {
     private Integer overtime;
     @Enumerated(EnumType.STRING)
     @Column(name = "over_time_unit")
-    private TimeUnit overtimeUnit;
+    private OverTimeUnit overtimeUnit;
     @Enumerated(EnumType.STRING)
     private Severity severity;
     @Enumerated(EnumType.STRING)

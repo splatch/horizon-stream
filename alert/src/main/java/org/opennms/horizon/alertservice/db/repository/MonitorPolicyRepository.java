@@ -28,8 +28,13 @@
 
 package org.opennms.horizon.alertservice.db.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MonitorPolicyRepository extends JpaRepository<MonitorPolicy, Long> {
+    List<MonitorPolicy> findAllByTenantId(String tenantId);
+    Optional<MonitorPolicy> findByIdAndTenantId(Long id, String tenantId);
 }

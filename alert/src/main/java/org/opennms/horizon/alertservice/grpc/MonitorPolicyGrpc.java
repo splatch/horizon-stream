@@ -28,12 +28,18 @@
 
 package org.opennms.horizon.alertservice.grpc;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.opennms.horizon.alertservice.db.tenant.TenantLookup;
 import org.opennms.horizon.alertservice.service.MonitorPolicyService;
+import org.opennms.horizon.shared.alert.policy.MonitorPolicyList;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyServiceGrpc;
 import org.springframework.stereotype.Component;
 
+import com.google.protobuf.Empty;
+import com.google.protobuf.Int64Value;
 import com.google.rpc.Code;
 import com.google.rpc.Status;
 
@@ -41,9 +47,11 @@ import io.grpc.Context;
 import io.grpc.protobuf.StatusProto;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class MonitorPolicyGrpc extends MonitorPolicyServiceGrpc.MonitorPolicyServiceImplBase {
     private final MonitorPolicyService service;
     private final TenantLookup tenantLookup;
@@ -52,10 +60,47 @@ public class MonitorPolicyGrpc extends MonitorPolicyServiceGrpc.MonitorPolicySer
     public void createPolicy(MonitorPolicyProto request, StreamObserver<MonitorPolicyProto> responseObserver) {
         tenantLookup.lookupTenantId(Context.current())
             .ifPresentOrElse(tenentId -> {
-                MonitorPolicyProto created = service.creatPolicy(request, tenentId);
-                responseObserver.onNext(created);
+                try {
+                    MonitorPolicyProto created = service.creatPolicy(request, tenentId);
+                    responseObserver.onNext(created);
+                    responseObserver.onCompleted();
+                } catch (IOException e) {
+                    log.error("Error while creating policy {}", request, e);
+                    responseObserver.onError(StatusProto.toStatusRuntimeException(createStatus(Code.INTERNAL_VALUE, "Error while creating policy: " + e.getMessage())));
+                }
+            }, () -> responseObserver.onError(StatusProto.toStatusRuntimeException(badTenant())));
+    }
+
+    @Override
+    public void listPolicies(Empty request, StreamObserver<MonitorPolicyList> responseObserver) {
+        tenantLookup.lookupTenantId(Context.current())
+            .ifPresentOrElse(tenantId -> {
+                List<MonitorPolicyProto> list = service.listAll(tenantId);
+                responseObserver.onNext(MonitorPolicyList.newBuilder().addAllPolicies(list).build());
                 responseObserver.onCompleted();
-            }, () -> responseObserver.onError(StatusProto.toStatusRuntimeException(createStatus(Code.INVALID_ARGUMENT_VALUE, "Tenant Id can't be empty"))));
+            }, () -> responseObserver.onError(StatusProto.toStatusRuntimeException(badTenant())));
+    }
+
+    @Override
+    public void getPolicyById(Int64Value request, StreamObserver<MonitorPolicyProto> responseObserver) {
+        tenantLookup.lookupTenantId(Context.current())
+            .ifPresentOrElse(tenantId -> {
+                try {
+                    service.findById(request.getValue(), tenantId)
+                        .ifPresentOrElse(policy -> {
+                            responseObserver.onNext(policy);
+                            responseObserver.onCompleted();
+                        }, () -> responseObserver.onError(StatusProto.toStatusRuntimeException(createStatus(Code.NOT_FOUND_VALUE,
+                            "Policy with ID (" + request.getValue() + ") doesn't exist"))));
+                } catch (IOException e) {
+                    log.error("Error while find the policy by id {}", request.getValue(), e);
+                    responseObserver.onError(StatusProto.toStatusRuntimeException(createStatus(Code.INTERNAL_VALUE, "Error happened while find policy by ID: " + request.getValue())));
+                }
+            }, () -> responseObserver.onError(StatusProto.toStatusRuntimeException(badTenant())));
+    }
+
+    private Status badTenant() {
+        return createStatus(Code.INVALID_ARGUMENT_VALUE, "Tenant Id can't be empty");
     }
 
     private Status createStatus(int code, String msg) {

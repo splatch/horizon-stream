@@ -69,7 +69,7 @@ message SNMPEventProto {
   SNMPEventType triggerEvent = 3;
   int32 count = 4;
   int32 overtime = 5;
-  TimeUnit overtimeUnit = 6;
+  OverTimeUnit overtimeUnit = 6;
   Severity severity = 7;
   SNMPEventType clearEvent = 8;
 }
@@ -79,7 +79,7 @@ message SNMPEventProto {
 
 }*/
 
-enum TimeUnit {
+enum OverTimeUnit {
   SECOND = 0;
   MINUTE = 1;
   HOUR = 2;

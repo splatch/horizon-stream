@@ -1,12 +1,12 @@
 package org.opennms.horizon.alertservice;
 
-import io.grpc.ManagedChannel;
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import java.util.concurrent.TimeUnit;
+
 import org.opennms.horizon.alerts.proto.AlertServiceGrpc;
-import org.opennms.horizon.alertservice.grpc.MonitorPolicyGrpc;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyServiceGrpc;
 
-import java.util.concurrent.TimeUnit;
+import io.grpc.ManagedChannel;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 
 public class AlertGrpcClientUtils {
     private static final int DEADLINE_DURATION = 30;
@@ -34,8 +34,7 @@ public class AlertGrpcClientUtils {
             .withInterceptors(dynamicTenantIdInterceptor)
             .withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS);
         policyStub = MonitorPolicyServiceGrpc.newBlockingStub(managedChannel)
-            .withInterceptors(dynamicTenantIdInterceptor)
-            .withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS);
+            .withInterceptors(dynamicTenantIdInterceptor);
     }
 
     public void setTenantId(String tenantId) {

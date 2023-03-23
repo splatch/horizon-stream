@@ -20,7 +20,7 @@
                 <constraints nullable="true" />
             </column>
             <column name="memo" type="text" />
-            <column name="tags" type="text[]" />
+            <column name="tags" type="jsonb" />
             <column name="notify_email" type="boolean" />
             <column name="notify_pagerduty" type="boolean" />
             <column name="notify_webhooks" type="boolean" />

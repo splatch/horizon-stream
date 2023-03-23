@@ -123,7 +123,7 @@ public class TestContainerRunnerClassRule extends ExternalResource {
             .withNetworkAliases("application", "application-host")
             .dependsOn(kafkaContainer, postgreSQLContainer)
             .withExposedPorts(8080, 6565, 5005)
-            .withEnv("JAVA_TOOL_OPTIONS", "-Djava.security.egd=file:/dev/./urandom -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005")
+            .withEnv("JAVA_TOOL_OPTIONS", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005")
             .withEnv("SPRING_KAFKA_BOOTSTRAP_SERVERS", "kafka-host:9092")
             .withEnv("SPRING_DATASOURCE_URL", "jdbc:postgresql://postgres:5432/" + postgreSQLContainer.getDatabaseName())
             .withEnv("SPRING_DATASOURCE_USERNAME", postgreSQLContainer.getUsername())

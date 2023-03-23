@@ -34,6 +34,8 @@ import java.util.List;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,9 +58,9 @@ public class MonitorPolicy extends TenantAwareEntity {
     @Column(name = "policy_name")
     private String name;
     private String memo;
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(name = "tags", columnDefinition = "text[]")
-    private List<String> tags = new ArrayList<>();
+    @Column(name = "tags", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private JsonNode tags;
     @Column(name = "notify_email")
     private Boolean notifyByEmail;
     @Column(name = "notify_pagerduty")

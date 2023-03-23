@@ -156,7 +156,6 @@
             <artifactId>alert-dto</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <!-- test -->
 
         <dependency>
