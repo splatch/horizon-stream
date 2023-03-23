@@ -63,8 +63,8 @@ import { ContentEditableType } from '@/components/Discovery/discovery.constants'
 import { PropType } from 'vue'
 import { fncArgVoid } from '@/types'
 import discoveryText from '@/components/Discovery/discovery.text'
-
 import Help from '@featherds/icon/action/Help'
+import { isEmpty } from 'lodash'
 
 const emit = defineEmits(['content-formatted'])
 const props = defineProps({
@@ -138,7 +138,7 @@ const formatContent = (contentEditableStrings, regexp) => {
 
 const validateContent = () => {
   const regexDelim = new RegExp(props.regexDelim)
-  const contentEditableStrings = contentEditableRef.value.textContent.replace(/\s/g, '').split(regexDelim)
+  const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim).filter((s) => !isEmpty(s))
   const regexp = props.regexExpression?.map((r) => new RegExp(r))
   isContentInvalid.value = false
 
