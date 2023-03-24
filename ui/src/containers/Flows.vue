@@ -206,7 +206,10 @@ const expDialogLabels = {
 }
 
 onBeforeMount(async () => {
+  //Get Table data first as line data will take some time to get.
+  //Show Table chart first for same reason
   flowsStore.generateTableChart()
+  flowsStore.generateLineChart()
 })
 
 // DUMMY DATA

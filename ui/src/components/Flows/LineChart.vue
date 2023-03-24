@@ -42,37 +42,23 @@ const chartOptions = computed<ChartOptions<any>>(() => {
     responsive: true,
     cubicInterpolationMode: 'monotone',
     maintainAspectRatio: false,
+    interaction: {
+      mode: 'x'
+    },
     plugins: {
       legend: {
-        display: true,
-        align: 'start',
-        position: 'top',
-        labels: {
-          boxWidth: 13,
-          boxHeight: 13,
-          usePointStyle: true,
-          useBorderRadius: true,
-          borderRadius: 8,
-          color: 'black',
-          font: {
-            weight: 700
-          }
-        },
-        onClick: (e: Event) => e.stopPropagation()
+        display: false
       },
       tooltip: {
         xAlign: 'left',
         yAlign: 'bottom',
         position: 'nearest',
-        backgroundColor: 'rgba(255, 255, 255, 0.78)',
+        backgroundColor: 'rgba(255, 255, 255, 1)',
         borderColor: 'rgba(0, 0, 0, )',
         borderWidth: 0.1,
         bodyColor: '#4F4F4F',
         footerColor: '#4F4F4F',
-        titleColor: '#4F4F4F',
-        callbacks: {
-          // title: () => props.selectedFilterRange
-        }
+        titleColor: '#4F4F4F'
       }
     },
     scales: {
@@ -88,41 +74,14 @@ const chartOptions = computed<ChartOptions<any>>(() => {
         grid: {
           display: false
         },
-        ticks: {
-          // callback: function (value: any) {
-          //   return value < 0 ? -value : value
-          // }
-        },
         title: {
           display: true,
-          align: 'center',
-          text: 'Host'
+          align: 'center'
         }
       }
     }
   }
 })
-
-//Potentially handled by BE
-const addValues = (a: number, b: number) => {
-  const total = (a + b).toString()
-  return parseFloat(total).toPrecision(3)
-}
-const formatBytes = (bytes: any, decimals = 2) => {
-  if (!+bytes) return '0 Bytes'
-
-  const k = 1024
-  const dm = decimals < 0 ? 0 : decimals
-  const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
-}
-
-function fnsFormat(date: any, formatString: any, arg2: { timeZone: any }) {
-  throw new Error('Function not implemented.')
-}
 </script>
 
 <style lang="scss" scoped>

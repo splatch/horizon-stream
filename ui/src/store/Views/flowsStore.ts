@@ -1,4 +1,3 @@
-import { formatTimestamp } from '@/components/Graphs/utils'
 import { ChartData } from 'chart.js'
 import { format } from 'date-fns'
 import { defineStore } from 'pinia'
@@ -35,6 +34,7 @@ export const useFlowsStore = defineStore('flowsStore', {
   }),
   actions: {
     getDatasets() {
+      //Will be replaced with a BE call
       const returnedTableDataSets = [
         {
           label: 'app_0',
@@ -89,6 +89,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       ]
       this.tableDatasets = returnedTableDataSets
 
+      //Will be replaced with a BE call
       const returnedLineDataSets = [
         {
           label: 'app0',
@@ -135,7 +136,7 @@ export const useFlowsStore = defineStore('flowsStore', {
             },
             {
               timestamp: '2023-03-23T01:34:47Z',
-              value: 928133.4566595472,
+              value: -928133.4566595472,
               direction: 'EGRESS'
             },
             {
@@ -226,9 +227,7 @@ export const useFlowsStore = defineStore('flowsStore', {
           }
         })
       }
-
       this.applications.lineChartData = datasetArr
-
       this.exporters.lineChartData = datasetArr
     },
     filterDialogToggle(event: Event, isAppFilter: boolean) {
@@ -239,6 +238,9 @@ export const useFlowsStore = defineStore('flowsStore', {
     generateTableChart() {
       this.getDatasets()
       this.createTableChartData()
+    },
+    generateLineChart() {
+      this.getDatasets()
       this.createLineChartData()
     },
     appDialogRefreshClick(e: Event) {
@@ -279,7 +281,8 @@ export const useFlowsStore = defineStore('flowsStore', {
     },
     onDateFilterUpdate(e: any) {
       this.filters.dateFilter = e
-      this.generateTableChart()
+      this.createLineChartData()
+      this.createTableChartData()
     }
   }
 })
