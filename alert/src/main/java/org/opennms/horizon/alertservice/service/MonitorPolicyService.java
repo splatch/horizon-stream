@@ -28,8 +28,6 @@
 
 package org.opennms.horizon.alertservice.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +48,7 @@ public class MonitorPolicyService {
     private final MonitorPolicyMapper policyMapper;
     private final MonitorPolicyRepository repository;
 
-    public MonitorPolicyProto createPolicy(MonitorPolicyProto request, String tenantId) throws IOException {
+    public MonitorPolicyProto createPolicy(MonitorPolicyProto request, String tenantId) {
         MonitorPolicy policy = policyMapper.protoToEntity(request);
         updateData(policy, tenantId);
         MonitorPolicy newPolicy = repository.save(policy);
@@ -59,28 +57,14 @@ public class MonitorPolicyService {
 
     @Transactional
     public List<MonitorPolicyProto> listAll(String tenantId) {
-        List<MonitorPolicyProto> result = new ArrayList<>();
-        repository.findAllByTenantId(tenantId).forEach(policy -> {
-            try {
-                result.add(policyMapper.entityToProto(policy));
-            } catch (IOException e) {
-                log.error("Error while converting policy to proto: {}", policy, e);
-            }
-        });
-        return result;
+        return repository.findAllByTenantId(tenantId)
+            .stream().map(policyMapper::entityToProto).toList();
     }
 
     @Transactional
-    public Optional<MonitorPolicyProto> findById(Long id, String tenantId) throws IOException {
+    public Optional<MonitorPolicyProto> findById(Long id, String tenantId) {
         return repository.findByIdAndTenantId(id, tenantId)
-            .map(p -> {
-                try {
-                    return policyMapper.entityToProto(p);
-                } catch (IOException e) {
-                    log.error("Error while converting policy to proto: {}", p, e);
-                    return null;
-                }
-            });
+            .map(policyMapper::entityToProto);
     }
 
     private void updateData(MonitorPolicy policy, String tenantId) {
