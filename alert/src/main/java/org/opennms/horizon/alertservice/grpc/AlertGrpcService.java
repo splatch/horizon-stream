@@ -160,4 +160,18 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
         }
         return new Date[]{startDate, endDate};
     }
+
+    @Override
+    public void countAlerts(ListAlertsRequest request, StreamObserver<UInt64Value> responseObserver) {
+        String filter = !request.getFilter().isEmpty() ? request.getFilter() : "";
+        List<String> filterValue = !request.getFilterValuesList().isEmpty() ? request.getFilterValuesList() : List.of();
+        long count = switch (filter) {
+            case "severity":
+                yield alertRepository.countAlertBySeverityIn(filterValue.stream().map(Severity::valueOf).toList());
+            default:
+                yield alertRepository.count();
+        };
+        responseObserver.onNext(UInt64Value.of(count));
+        responseObserver.onCompleted();
+    }
 }

@@ -378,6 +378,25 @@ public class AlertTestSteps {
         assertTrue("GET request expected to return JSON response matching JSON path expression(s)", success);
     }
 
+    @Then("Count alerts for tenant {string}, assert response is {int}")
+    public void countAlertsForTenantWithTimeoutMsUntilJSONResponseMatchesTheFollowingJSONPathExpressions(String tenantId, int expected) {
+        clientUtils.setTenantId(tenantId);
+        ListAlertsRequest listAlertsRequest = ListAlertsRequest.newBuilder().build();
+        UInt64Value countAlertsResponse = clientUtils.getAlertServiceStub()
+            .countAlerts(listAlertsRequest);
+        assertEquals(expected, countAlertsResponse.getValue());
+
+    }
+
+    @Then("Count alerts for tenant {string} filtered by severity {string}, assert response is {int}")
+    public void countAlertsForTenantFilteredBySeverity(String tenantId, String severity, int expected) {
+        clientUtils.setTenantId(tenantId);
+        ListAlertsRequest listAlertsRequest = ListAlertsRequest.newBuilder().setFilter("severity").addFilterValues(severity).build();
+        UInt64Value countAlertsResponse = clientUtils.getAlertServiceStub()
+            .countAlerts(listAlertsRequest);
+        assertEquals(expected, countAlertsResponse.getValue());
+    }
+
 //========================================
 // Internals
 //----------------------------------------

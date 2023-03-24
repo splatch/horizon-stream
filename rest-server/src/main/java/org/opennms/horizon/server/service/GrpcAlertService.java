@@ -66,6 +66,18 @@ public class GrpcAlertService {
         return Mono.just(mapper.protoToAlertResponse(alertsClient.listAlerts(pageSize, page, filter, filterValues, sortBy, sortAscending, headerUtil.getAuthHeader(env))));
     }
 
+    @GraphQLQuery
+    public Mono<Long> countAlerts(@GraphQLArgument(name = "filter") String filter,
+                                  @GraphQLArgument(name = "filterValues") List<String> filterValues,
+                                  @GraphQLEnvironment ResolutionEnvironment env) {
+        return Mono.just(alertsClient.countAlerts(filter, filterValues, headerUtil.getAuthHeader(env)));
+    }
+
+    @GraphQLQuery
+    public Mono<Long> countAlerts(@GraphQLEnvironment ResolutionEnvironment env) {
+        return Mono.just(alertsClient.countAlerts(null, null, headerUtil.getAuthHeader(env)));
+    }
+
     @GraphQLMutation
     public Mono<Alert> acknowledgeAlert(@GraphQLArgument(name = "id") long id, @GraphQLEnvironment ResolutionEnvironment env) {
         return Mono.just(mapper.protoToAlert(alertsClient.acknowledgeAlert(id, headerUtil.getAuthHeader(env))));

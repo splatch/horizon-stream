@@ -103,4 +103,13 @@ public class AlertsClient {
         metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).deleteAlert(UInt64Value.of(alertId)).getValue();
     }
+
+    public long countAlerts(String filter, List<String> filterValues, String accessToken) {
+        Metadata metadata = new Metadata();
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).countAlerts(ListAlertsRequest.newBuilder()
+            .setFilter(filter)
+            .addAllFilterValues(filterValues)
+            .build()).getValue();
+    }
 }

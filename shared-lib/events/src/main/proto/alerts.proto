@@ -175,6 +175,7 @@ service AlertService {
   rpc clearAlert(google.protobuf.UInt64Value) returns (Alert) {};
   rpc escalateAlert(google.protobuf.UInt64Value) returns (Alert) {};
   rpc deleteAlert(google.protobuf.UInt64Value) returns(google.protobuf.BoolValue) {};
+  rpc countAlerts(ListAlertsRequest) returns (google.protobuf.UInt64Value) {};
 }
 
 service AlertConfigurationService {

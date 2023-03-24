@@ -42,9 +42,11 @@ import org.springframework.stereotype.Repository;
 public interface AlertRepository extends JpaRepository<Alert, Long> {
     Alert findByReductionKey(String reductionKey);
 
-    Page<Alert> findBySeverityIn(List<Severity> severity, Pageable pageable);
+    Page<Alert> findBySeverityIn(List<Severity> severityList, Pageable pageable);
 
     Page<Alert> findByLastEventTimeBetween(Date start, Date end, Pageable pageable);
 
-    Page<Alert> findBySeverityInAndLastEventTimeBetween(List<Severity> severity, Date start, Date end, Pageable pageable);
+    Page<Alert> findBySeverityInAndLastEventTimeBetween(List<Severity> severityList, Date start, Date end, Pageable pageable);
+
+    int countAlertBySeverityIn(List<Severity> severityList);
 }

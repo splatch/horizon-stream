@@ -167,3 +167,19 @@ Feature: Alert Service Basic Functionality
       | alerts[0].severity == MINOR     |
       | alerts[1].severity == MAJOR     |
     Then Verify alert topic has 4 messages with tenant "tenantJ"
+
+    Scenario: Verify count alerts
+    Then Send event with UEI "uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down" with tenant "tenantK" with node 10 with severity "MINOR"
+    Then List alerts for tenant "tenantK", with timeout 5000ms, until JSON response matches the following JSON path expressions
+      | alerts.size() == 1 |
+      | alerts[0].counter == 1 |
+      | alerts[0].severity == MINOR |
+    Then Send event with UEI "uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down" with tenant "tenantK" with node 11 with severity "MAJOR"
+    Then List alerts for tenant "tenantK", with timeout 5000ms, until JSON response matches the following JSON path expressions
+      | alerts.size() == 2          |
+      | alerts[0].counter == 1      |
+      | alerts[0].severity == MINOR |
+      | alerts[1].severity == MAJOR |
+    Then Count alerts for tenant "tenantK", assert response is 2
+    Then Count alerts for tenant "tenantK" filtered by severity "MAJOR", assert response is 1
+    Then Verify alert topic has 2 messages with tenant "tenantK"
