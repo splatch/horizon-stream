@@ -51,6 +51,7 @@
             ref="contentEditableCommunityStringRef"
             data-test="cmmunity-string-content-editable"
             :content="props.discovery?.snmpCommunities?.join(', ')"
+            :id="1"
           />
           <DiscoveryContentEditable
             @content-formatted="(val) => setDiscoveryValues('snmpPorts', val)"
@@ -62,6 +63,7 @@
             ref="contentEditableUDPPortRef"
             :content="props.discovery?.snmpPorts?.join(', ')"
             :tooltipText="Common.tooltip.PortHelpTooltp"
+            :id="2"
           />
         </div>
       </div>

@@ -40,6 +40,7 @@
         :tooltipText="Common.tooltip.IPHelpTooltp"
         :content="props.discovery?.ipAddresses?.join(', ')"
         isRequired
+        :id="1"
       />
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('snmpConfig.readCommunities', val)"
@@ -50,6 +51,7 @@
         ref="contentEditableCommunityStringRef"
         class="community-input"
         :content="props.discovery?.snmpConfig?.readCommunities?.join(', ')"
+        :id="2"
       />
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('snmpConfig.ports', val)"
@@ -62,6 +64,7 @@
         ref="contentEditableUDPPortRef"
         :tooltipText="Common.tooltip.PortHelpTooltp"
         :content="props.discovery?.snmpConfig?.ports?.join(', ')"
+        :id="3"
       />
     </div>
 

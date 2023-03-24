@@ -36,7 +36,7 @@
         @keyup="contentChange"
         ref="contentEditableRef"
         contenteditable="true"
-        id="contentEditable"
+        :id="'contentEditable_' + id"
         class="content-editable"
         @blur="validateContent"
       />
@@ -97,6 +97,10 @@ const props = defineProps({
   isRequired: {
     type: Boolean,
     required: false
+  },
+  id: {
+    type: Number,
+    required: true
   }
 })
 
@@ -122,29 +126,45 @@ const splitContent = (str: string[]): (string | number)[] | null => {
 }
 
 const formatContent = (contentEditableStrings, regexp) => {
-  const ERROR_STR = '<span style="color: #ff555e">{{}}</span>'
-
-  return contentEditableStrings
+  const parent = document.getElementById('contentEditable_' + props.id)
+  contentEditableStrings
     .map((str: string) => {
-      if (regexp.map((t) => t.test(str)).includes(true)) {
-        return str
-      } else {
+      const node = document.createElement('div')
+      node.textContent = str
+      if (!regexp.map((t) => t.test(str)).includes(true)) {
         isContentInvalid.value = true
-        return ERROR_STR.replace('{{}}', str)
+        node.setAttribute('style', 'color: #ff555e')
       }
+      parent.appendChild(node)
     })
     .join(';')
 }
 
+const extractTextFromNodes = (ceNode) => {
+  const rows = []
+  let textElement = ceNode.innerHTML
+  if (ceNode.innerHTML.indexOf('<') !== -1) {
+    textElement = ceNode.innerHTML.substring(0, ceNode.innerHTML.indexOf('<'))
+  }
+  rows.push(textElement)
+
+  const children = ceNode.children
+  for (let child of children) {
+    rows.push(child.innerText)
+  }
+  return rows.filter((s) => !isEmpty(s)).join(',')
+}
+
 const validateContent = () => {
   const regexDelim = new RegExp(props.regexDelim)
-  const contentEditableStrings = contentEditableRef.value.textContent.split(regexDelim).filter((s) => !isEmpty(s))
+  const ceNode = document.getElementById('contentEditable_' + props.id)
+  const textFromNodes = extractTextFromNodes(ceNode)
+  const contentEditableStrings = textFromNodes.split(regexDelim)
   const regexp = props.regexExpression?.map((r) => new RegExp(r))
   isContentInvalid.value = false
-
   if (regexp) {
-    const formattedString = formatContent(contentEditableStrings, regexp)
-    htmlString.value = formattedString
+    ceNode.innerHTML = ''
+    formatContent(contentEditableStrings, regexp)
   }
 
   if (!isContentInvalid.value) {
@@ -218,6 +238,9 @@ defineExpose({
       color: red;
     }
   }
+  .errorData {
+    color: #ff555e;
+  }
   > .validate-format {
     position: absolute;
     right: 5px;
@@ -233,6 +256,7 @@ defineExpose({
     }
   }
 }
+
 .errorMsgBox {
   height: 24px;
   @include typography.caption;
