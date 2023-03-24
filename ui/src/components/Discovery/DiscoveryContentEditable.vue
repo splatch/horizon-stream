@@ -41,7 +41,7 @@
         @blur="validateContent"
       />
       <span
-        v-if="props.regexDelim && isContentNotEmpty"
+        v-if="props.regexExpression && isContentNotEmpty"
         @click="validateContent"
         class="validate-format"
         ><Icon :icon="checkCircleIcon"
@@ -237,9 +237,6 @@ defineExpose({
     > .error {
       color: red;
     }
-  }
-  .errorData {
-    color: #ff555e;
   }
   > .validate-format {
     position: absolute;
