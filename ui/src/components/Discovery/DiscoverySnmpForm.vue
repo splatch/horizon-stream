@@ -45,7 +45,6 @@
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('snmpConfig.readCommunities', val)"
         :contentType="ContentEditableType.CommunityString"
-        :regexDelim="COMMUNITY_STRING.regexDelim"
         :label="discoveryText.ContentEditable.CommunityString.label"
         :default-content="COMMUNITY_STRING.default"
         ref="contentEditableCommunityStringRef"
