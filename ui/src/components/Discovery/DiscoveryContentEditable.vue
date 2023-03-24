@@ -159,7 +159,7 @@ const validateContent = () => {
   const regexDelim = new RegExp(props.regexDelim)
   const ceNode = document.getElementById('contentEditable_' + props.id)
   const textFromNodes = extractTextFromNodes(ceNode)
-  const contentEditableStrings = textFromNodes.split(regexDelim)
+  const contentEditableStrings = textFromNodes.replace(/\s/g, '').split(regexDelim)
   const regexp = props.regexExpression?.map((r) => new RegExp(r))
   isContentInvalid.value = false
   if (regexp) {
