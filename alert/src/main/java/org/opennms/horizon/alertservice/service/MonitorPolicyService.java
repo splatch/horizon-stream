@@ -55,13 +55,13 @@ public class MonitorPolicyService {
         return policyMapper.entityToProto(newPolicy);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MonitorPolicyProto> listAll(String tenantId) {
         return repository.findAllByTenantId(tenantId)
             .stream().map(policyMapper::entityToProto).toList();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<MonitorPolicyProto> findById(Long id, String tenantId) {
         return repository.findByIdAndTenantId(id, tenantId)
             .map(policyMapper::entityToProto);
