@@ -33,11 +33,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.inventory.discovery.IcmpActiveDiscoveryCreateDTO;
 import org.opennms.horizon.inventory.discovery.IcmpActiveDiscoveryDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
+import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
 import org.opennms.horizon.inventory.mapper.discovery.IcmpActiveDiscoveryMapper;
 import org.opennms.horizon.inventory.model.discovery.active.IcmpActiveDiscovery;
 import org.opennms.horizon.inventory.repository.discovery.active.IcmpActiveDiscoveryRepository;
 import org.opennms.horizon.inventory.service.TagService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,26 +53,29 @@ public class IcmpActiveDiscoveryService {
     private final IcmpActiveDiscoveryMapper mapper;
     private final TagService tagService;
 
+    @Transactional
     public IcmpActiveDiscoveryDTO createActiveDiscovery(IcmpActiveDiscoveryCreateDTO request, String tenantId) {
 
         IcmpActiveDiscovery discovery = mapper.dtoToModel(request);
         discovery.setTenantId(tenantId);
         discovery.setCreateTime(LocalDateTime.now());
         discovery = repository.save(discovery);
-
         tagService.addTags(tenantId, TagCreateListDTO.newBuilder()
-            .setActiveDiscoveryId(discovery.getId())
+            .addEntityIds(TagEntityIdDTO.newBuilder()
+                .setActiveDiscoveryId(discovery.getId()))
             .addAllTags(request.getTagsList())
             .build());
 
         return mapper.modelToDto(discovery);
     }
 
+    @Transactional(readOnly = true)
     public List<IcmpActiveDiscoveryDTO> getActiveDiscoveries(String tenantId) {
         var entities = repository.findByTenantId(tenantId);
         return entities.stream().map(mapper::modelToDto).toList();
     }
 
+    @Transactional(readOnly = true)
     public Optional<IcmpActiveDiscoveryDTO> getDiscoveryById(long id, String tenantId) {
         var optional = repository.findByIdAndTenantId(id, tenantId);
         return optional.map(mapper::modelToDto);

@@ -39,6 +39,7 @@ import org.opennms.horizon.inventory.dto.AzureActiveDiscoveryDTO;
 import org.opennms.horizon.inventory.dto.ListTagsByEntityIdParamsDTO;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
 import org.opennms.horizon.inventory.dto.TagDTO;
+import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
 import org.opennms.horizon.inventory.dto.TagListDTO;
 
 import java.util.List;
@@ -49,15 +50,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class AzureDiscoveryStepDefinitions {
-    private static InventoryBackgroundHelper backgroundHelper;
+    private final InventoryBackgroundHelper backgroundHelper;
     private AzureActiveDiscoveryCreateDTO createDiscoveryDto;
     private AzureActiveDiscoveryDTO discoveryDto;
     private TagCreateDTO tagCreateDto1;
     private TagListDTO tagList;
 
-    @BeforeAll
-    public static void beforeAll() {
-        backgroundHelper = new InventoryBackgroundHelper();
+    public AzureDiscoveryStepDefinitions(InventoryBackgroundHelper backgroundHelper) {
+        this.backgroundHelper = backgroundHelper;
     }
 
     /*
@@ -117,7 +117,8 @@ public class AzureDiscoveryStepDefinitions {
     public void aGRPCRequestToGetTagsForAzureActiveDiscovery() {
         var tagServiceBlockingStub = backgroundHelper.getTagServiceBlockingStub();
         ListTagsByEntityIdParamsDTO params = ListTagsByEntityIdParamsDTO.newBuilder()
-            .setActiveDiscoveryId(discoveryDto.getId()).build();
+            .setEntityId(TagEntityIdDTO.newBuilder()
+                .setActiveDiscoveryId(discoveryDto.getId())).build();
         tagList = tagServiceBlockingStub.getTagsByEntityId(params);
     }
 
@@ -139,4 +140,6 @@ public class AzureDiscoveryStepDefinitions {
         TagDTO tagDTO = tagList.getTags(0);
         assertEquals(tagCreateDto1.getName(), tagDTO.getName());
     }
+
+
 }
