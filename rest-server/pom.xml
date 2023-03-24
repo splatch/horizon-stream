@@ -50,11 +50,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
-        <!--<dependency>
-            <groupId>org.opennms.horizon.shared</groupId>
-            <artifactId>dto-model</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>grpc-common-constants</artifactId>
@@ -100,6 +95,11 @@
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>notifications</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>alert-dto</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
