@@ -37,9 +37,9 @@ import org.opennms.horizon.shared.alert.policy.PolicyRuleProto;
 @Mapper(componentModel = "spring", uses = {SNMPEventMapper.class},
     collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
 public interface PolicyRuleMapper {
-    @Mapping(target = "snmpEventsList", source = "snmpEvents")
+    @Mapping(target = "snmpEventsList", source = "triggerEvents")
     PolicyRuleProto entityToProto(PolicyRule rule);
 
-    @Mapping(target = "snmpEvents", source = "snmpEventsList")
+    @Mapping(target = "triggerEvents", source = "snmpEventsList")
     PolicyRule protoToEntity(PolicyRuleProto proto);
 }

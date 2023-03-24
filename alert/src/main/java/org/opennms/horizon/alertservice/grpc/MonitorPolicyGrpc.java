@@ -61,7 +61,7 @@ public class MonitorPolicyGrpc extends MonitorPolicyServiceGrpc.MonitorPolicySer
         tenantLookup.lookupTenantId(Context.current())
             .ifPresentOrElse(tenentId -> {
                 try {
-                    MonitorPolicyProto created = service.creatPolicy(request, tenentId);
+                    MonitorPolicyProto created = service.createPolicy(request, tenentId);
                     responseObserver.onNext(created);
                     responseObserver.onCompleted();
                 } catch (IOException e) {

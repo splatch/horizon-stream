@@ -50,7 +50,7 @@ public class MonitorPolicyService {
     private final MonitorPolicyMapper policyMapper;
     private final MonitorPolicyRepository repository;
 
-    public MonitorPolicyProto creatPolicy(MonitorPolicyProto request, String tenantId) throws IOException {
+    public MonitorPolicyProto createPolicy(MonitorPolicyProto request, String tenantId) throws IOException {
         MonitorPolicy policy = policyMapper.protoToEntity(request);
         updateData(policy, tenantId);
         MonitorPolicy newPolicy = repository.save(policy);
@@ -88,7 +88,7 @@ public class MonitorPolicyService {
         policy.getRules().forEach(r -> {
             r.setTenantId(tenantId);
             r.setPolicy(policy);
-            r.getSnmpEvents().forEach(e -> {
+            r.getTriggerEvents().forEach(e -> {
                 e.setTenantId(tenantId);
                 e.setRule(r);
             });

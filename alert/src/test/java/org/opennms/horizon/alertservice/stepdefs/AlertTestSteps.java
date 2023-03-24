@@ -70,7 +70,7 @@ public class AlertTestSteps {
     private RetryUtils retryUtils;
     private KafkaTestHelper kafkaTestHelper;
     private AlertGrpcClientUtils clientUtils;
-    private BackGroundSteps backGround;
+    private BackgroundSteps background;
 
     //
     // Test Runtime Data
@@ -86,18 +86,18 @@ public class AlertTestSteps {
 // Constructor
 //----------------------------------------
 
-    public AlertTestSteps(RetryUtils retryUtils, KafkaTestHelper kafkaTestHelper, AlertGrpcClientUtils clientUtils, BackGroundSteps bgSteps) {
+    public AlertTestSteps(RetryUtils retryUtils, KafkaTestHelper kafkaTestHelper, AlertGrpcClientUtils clientUtils, BackgroundSteps bgSteps) {
         this.retryUtils = retryUtils;
         this.kafkaTestHelper = kafkaTestHelper;
         this.clientUtils = clientUtils;
-        this.backGround = bgSteps;
+        this.background = bgSteps;
         initKafka();
     }
 
     private void initKafka() {
-        kafkaTestHelper.setKafkaBootstrapUrl(backGround.getKafkaBootstrapUrl());
-        kafkaTestHelper.startConsumerAndProducer(backGround.getEventTopic(), backGround.getEventTopic());
-        kafkaTestHelper.startConsumerAndProducer(backGround.getAlertTopic(), backGround.getAlertTopic());
+        kafkaTestHelper.setKafkaBootstrapUrl(background.getKafkaBootstrapUrl());
+        kafkaTestHelper.startConsumerAndProducer(background.getEventTopic(), background.getEventTopic());
+        kafkaTestHelper.startConsumerAndProducer(background.getAlertTopic(), background.getAlertTopic());
     }
 
 //========================================
@@ -115,7 +115,7 @@ public void sendMessageToKafkaAtTopic(String eventUei, String tenantId, int node
                 .setUei(eventUei))
             .build();
 
-        kafkaTestHelper.sendToTopic(backGround.getEventTopic(), eventLog.toByteArray());
+        kafkaTestHelper.sendToTopic(background.getEventTopic(), eventLog.toByteArray());
     }
 
     @Then("List alerts for tenant {string}, with timeout {int}ms, until JSON response matches the following JSON path expressions")
@@ -236,7 +236,7 @@ public void sendMessageToKafkaAtTopic(String eventUei, String tenantId, int node
     }
 
     private void commonSendGetRequestToApplication(String path) throws MalformedURLException {
-        URL requestUrl = new URL(new URL(backGround.getApplicationBaseHttpUrl()), path);
+        URL requestUrl = new URL(new URL(background.getApplicationBaseHttpUrl()), path);
 
         RestAssuredConfig restAssuredConfig = this.createRestAssuredTestConfig();
 
@@ -304,7 +304,7 @@ public void sendMessageToKafkaAtTopic(String eventUei, String tenantId, int node
 
     private boolean checkNumberOfMessageForOneTenant(String tenant, int expectedMessages) {
         int foundMessages = 0;
-        List<ConsumerRecord<String, byte[]>> records = kafkaTestHelper.getConsumedMessages(backGround.getAlertTopic());
+        List<ConsumerRecord<String, byte[]>> records = kafkaTestHelper.getConsumedMessages(background.getAlertTopic());
         for (ConsumerRecord<String, byte[]> record: records) {
             if (record.value() == null) {
                 continue;

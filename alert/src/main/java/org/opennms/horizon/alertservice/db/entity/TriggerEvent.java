@@ -50,7 +50,7 @@ import lombok.Setter;
 @Table(name = "trigger_event")
 @Getter
 @Setter
-public class SNMPEvent extends TenantAwareEntity {
+public class TriggerEvent extends TenantAwareEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

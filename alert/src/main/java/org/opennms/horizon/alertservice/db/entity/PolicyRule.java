@@ -58,7 +58,7 @@ public class PolicyRule extends TenantAwareEntity {
     @Column(name = "component_type")
     private String componentType;
     @OneToMany(mappedBy = "rule", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<SNMPEvent> snmpEvents = new ArrayList<>();
+    private List<TriggerEvent> triggerEvents = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "policy_id", referencedColumnName = "id")

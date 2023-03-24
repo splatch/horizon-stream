@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
-public class BackGroundSteps {
+public class BackgroundSteps {
     //Test configuration
     private String applicationBaseHttpUrl;
     private String applicationBaseGrpcUrl;
