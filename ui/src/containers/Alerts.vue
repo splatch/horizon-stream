@@ -13,6 +13,7 @@
       >
     </div>
     <AlertsSeverityFilters data-test="severity-filters" />
+    <!-- <pre>{{ alerts }}</pre> -->
     <div class="content">
       <div class="time-search-filters">
         <div
@@ -118,7 +119,8 @@ const alertsStore = useAlertsStore()
 
 const alerts = ref([] as IAlert[])
 watchEffect(() => {
-  alerts.value = alertsStore.alertsList?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
+  // console.log('alertsStore.alertsList', alertsStore.alertsList)
+  alerts.value = alertsStore.alertsList?.map((a: IAlert) => ({ ...a, isSelected: true })) || []
 })
 
 const page = ref(1)

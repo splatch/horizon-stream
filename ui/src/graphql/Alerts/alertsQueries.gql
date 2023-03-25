@@ -1,20 +1,72 @@
-fragment AlertsList on Query {
-  alertsList {
-    id
-    name
-    severity
-    cause
-    duration
-    nodeType
-    date
-    time
-    isAcknowledged
-    description
+fragment AlertsParts on Query {
+  # findAllAlerts(filter: "", filterValues: [], page: "0", pageSize: 6, sortAscending: true, sortBy: "alertId") {
+  findAllAlerts(
+    filter: $filter
+    filterValues: $filterValues
+    page: $page
+    pageSize: $pageSize
+    sortAscending: $sortAscending
+    sortBy: $sortBy
+  ) {
+    alerts {
+      ackTimeMs
+      ackUser
+      acknowledged
+      clearKey
+      counter
+      databaseId
+      description
+      firstEventTimeMs
+      lastEventId
+      lastUpdateTimeMs
+      location
+      logMessage
+      managedObject {
+        instance {
+          nodeVal {
+            nodeID
+          }
+        }
+        type
+      }
+      reductionKey
+      severity
+      tenantId
+      type
+      uei
+    }
+    nextPageToken
+    lastPageToken
   }
 }
 
-query Alerts {
-  ...AlertsList
+query Alerts(
+  $filter: String
+  $filterValues: [String]
+  $page: String
+  $pageSize: Int
+  $sortAscending: Boolean!
+  $sortBy: String
+) {
+  ...AlertsParts
 }
+
+query AcknowledgeAlerts($alertId: Int!) {
+  acknowledgeAlert(id: $alertId)
+}
+
+# query countAlerts {
+
+# }
+
+# query {
+#   countAlerts(filter: "severity"
+#     filterValues: ["CRITICAL"])
+# }
+
+# query {
+#   countAlerts(filter: "severity"
+#     filterValues: ["CRITICAL", "MAJOR"])
+# }
 
 # fetch search alert list

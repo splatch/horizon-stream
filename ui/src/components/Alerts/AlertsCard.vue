@@ -14,10 +14,10 @@
                 class="name headline"
                 data-test="name"
               >
-                {{ alert.name }}
+                {{ alert.name || 'Unknown' }}
               </div>
               <div data-test="node-type">
-                {{ alert.nodeType }}
+                {{ alert.nodeType || 'Unknown' }}
               </div>
             </div>
             <div
@@ -31,15 +31,14 @@
               class="cause headline"
               data-test="cause"
             >
-              <div>{{ alert.cause }}</div>
+              <div>{{ alert.type }}</div>
               <div>&nbsp;</div>
             </div>
-            <!-- duration: hrs, days, weeks. months? -->
             <div
               class="duration headline"
               data-test="duration"
             >
-              <div>{{ alert.duration }}</div>
+              <div>{{ fnsFormatDistanceToNow(alert.lastUpdateTimeMs) }}</div>
               <div>&nbsp;</div>
             </div>
             <div class="date-time">
@@ -47,19 +46,19 @@
                 class="date headline"
                 data-test="date"
               >
-                <span>{{ alert.date }}</span>
+                <span>{{ fnsFormat(alert.lastUpdateTimeMs, 'M/dd/yyyy') }}</span>
               </div>
               <div
                 class="time"
                 data-test="time"
               >
-                {{ alert.time }}
+                <span>{{ fnsFormat(alert.lastUpdateTimeMs, 'HH:mm:ssxxx') }}</span>
               </div>
             </div>
             <div class="check-circle">
               <FeatherIcon
                 :icon="checkCircleIcon"
-                :class="alert.isAcknowledged ? 'acknowledged' : ''"
+                :class="{ acknowledged: alert.acknowledged }"
                 class="acknowledged-icon"
                 data-test="check-icon"
               />
@@ -81,6 +80,7 @@
 
 <script lang="ts" setup>
 import CheckCircle from '@featherds/icon/action/CheckCircle'
+import { format as fnsFormat, formatDistanceToNow as fnsFormatDistanceToNow } from 'date-fns'
 
 const emits = defineEmits(['alert-selected'])
 const props = defineProps({
