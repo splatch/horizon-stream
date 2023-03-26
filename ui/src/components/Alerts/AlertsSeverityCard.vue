@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="count"
-    @click="addSeverityFilter"
+    @click="toggleSeverityFilter"
     :class="{ selected: !isAdd }"
     class="card border pointer"
     data-test="severity-card"
@@ -55,16 +55,23 @@
 import Add from '@featherds/icon/action/Add'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import { useAlertsStore } from '@/store/Views/alertsStore'
+import { useAlertsQueries } from '@/store/Queries/alertsQueries'
 
 const alertsStore = useAlertsStore()
+const alertsQueries = useAlertsQueries()
 
 const isAdd = ref(true)
 const props = defineProps<{
   severity: string
-  count: number
 }>()
 
-const addSeverityFilter = () => {
+const count = ref(0)
+onMounted(async () => {
+  const { data } = await alertsQueries.fetchCountAlerts('severity', [props.severity])
+  count.value = data.value?.countAlerts
+})
+
+const toggleSeverityFilter = () => {
   isAdd.value = !isAdd.value
   alertsStore.toggleSeverity(props.severity)
 }
