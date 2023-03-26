@@ -82,7 +82,6 @@ const isTypeAdded = computed(() => alertsStore.alertsFilter.filterValues.include
 .card {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
   background-color: var(variables.$surface);
   padding: var(variables.$spacing-s);
   border-radius: vars.$border-radius-s;
