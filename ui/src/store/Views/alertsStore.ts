@@ -10,7 +10,7 @@ const alertsFilterDefault: AlertsFilters = {
   time: TimeType.ALL,
   search: '',
   pagination: {
-    page: '0',
+    page: '0', // api base 0 (first page)
     pageSize: 10
   },
   sortAscending: true,
@@ -65,19 +65,33 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     }
   }
 
-  const setPageSize = (pageSize: number) => {
-    if (pageSize !== alertsFilter.value.pagination.pageSize) {
+  const setPage = (page: number): void => {
+    const apiPage = page - 1 // pagination component base 1; hence first page is 1 - 1 = 0 for BE payload
+
+    if (apiPage !== Number(alertsFilter.value.pagination.page)) {
       alertsFilter.value = {
         ...alertsFilter.value,
         pagination: {
           ...alertsFilter.value.pagination,
-          pageSize: pageSize
+          page: apiPage.toString()
         }
       }
     }
   }
 
-  const clearAllFilters = () => {
+  const setPageSize = (pageSize: number): void => {
+    if (pageSize !== alertsFilter.value.pagination.pageSize) {
+      alertsFilter.value = {
+        ...alertsFilter.value,
+        pagination: {
+          page: '0',
+          pageSize
+        }
+      }
+    }
+  }
+
+  const clearAllFilters = (): void => {
     alertsFilter.value = {
       filter: '',
       filterValues: [],
@@ -114,6 +128,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     alertsFilter,
     toggleSeverity,
     selectTime,
+    setPage,
     setPageSize,
     clearAllFilters,
     clearSelectedAlerts,

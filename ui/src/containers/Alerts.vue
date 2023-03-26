@@ -97,7 +97,7 @@
           v-model="page"
           :pageSize="pageSize"
           :total="total"
-          @update:pageSize="alertsStore.setPageSize"
+          @update:pageSize="updatePageSize"
           data-test="pagination"
         />
       </div>
@@ -107,7 +107,7 @@
 
 <script lang="ts" setup>
 import { useAlertsStore } from '@/store/Views/alertsStore'
-import { useAlertsQueries } from '@/store/Queries/alertsQueries'
+// import { useAlertsQueries } from '@/store/Queries/alertsQueries'
 import { TimeType } from '@/components/Alerts/alerts.constant'
 import { IAlert } from '@/types/alerts'
 
@@ -116,26 +116,23 @@ onMounted(async () => {
 })
 
 const alertsStore = useAlertsStore()
-const alertsQueries = useAlertsQueries()
+// const alertsQueries = useAlertsQueries()
 
 const alerts = ref([] as IAlert[])
 watchEffect(() => {
   alerts.value = alertsStore.alertsList?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
 })
-// const page = computed(() => Number(alertsStore.alertsFilter.pagination.page)) // TODO get this config as number
-const page = 1
-const pageSize = computed(() => alertsStore.alertsFilter.pagination.pageSize)
-const total = ref(10)
-onMounted(async () => {
-  const { data } = await alertsQueries.fetchCountAlerts()
-  // console.log(data.value)
-  total.value = Number(data.value?.countAlerts)
-})
 
-const updatePageSize = (v: number) => {
-  // console.log('v', v)
-  alertsStore.setPageSize(v)
+const page = ref(1)
+watch(page, (val) => {
+  alertsStore.setPage(val)
+})
+const pageSize = ref(10)
+const updatePageSize = (ps: number) => {
+  pageSize.value = ps
+  alertsStore.setPageSize(ps)
 }
+const total = 100 // TODO get BE to add countAlerts to 'findAllAlerts' or use 'countAlerts' to get count on alertsFilter change
 
 const atLeastOneAlertSelected = computed(() => alerts.value.some((a: IAlert) => a.isSelected))
 

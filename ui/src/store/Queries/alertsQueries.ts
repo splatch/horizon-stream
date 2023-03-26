@@ -12,7 +12,7 @@ export const useAlertsQueries = defineStore('alertsQueries', () => {
       variables: {
         filter: alertsFilters.filter,
         filterValues: alertsFilters.filterValues,
-        page: alertsFilters.pagination.page,
+        page: alertsFilters.pagination.page as string,
         pageSize: alertsFilters.pagination.pageSize,
         sortAscending: alertsFilters.sortAscending,
         sortBy: alertsFilters.sortBy
