@@ -1,68 +1,66 @@
 <template>
   <div class="card">
+    <FeatherCheckbox
+      :model-value="alert.isSelected"
+      @update:model-value="alertSelectedHandler(alert.databaseId)"
+      data-test="checkbox"
+    />
     <FeatherExpansionPanel>
       <template #title>
         <div class="content">
-          <div class="top">
-            <FeatherCheckbox
-              :model-value="alert.isSelected"
-              @update:model-value="alertSelectedHandler(alert.id)"
-              data-test="checkbox"
+          <div class="name-node-type">
+            <div
+              class="name headline"
+              data-test="name"
+            >
+              {{ alert.label || 'Unknown' }}
+            </div>
+            <div data-test="node-type">
+              {{ alert.nodeType || 'Unknown' }}
+            </div>
+          </div>
+          <div
+            class="severity"
+            data-test="severity"
+          >
+            <AlertsSeverityLabel :severity="alert.severity" />
+            <div>&nbsp;</div>
+          </div>
+          <div
+            class="cause headline"
+            data-test="cause"
+          >
+            <div>{{ alert.type }}</div>
+            <div>&nbsp;</div>
+          </div>
+          <div
+            class="duration headline"
+            data-test="duration"
+          >
+            <div>{{ fnsFormatDistanceToNow(alert.lastUpdateTimeMs) }}</div>
+            <div>&nbsp;</div>
+          </div>
+          <div class="date-time">
+            <div
+              class="date headline"
+              data-test="date"
+            >
+              <span>{{ fnsFormat(alert.lastUpdateTimeMs, 'M/dd/yyyy') }}</span>
+            </div>
+            <div
+              class="time"
+              data-test="time"
+            >
+              <span>{{ fnsFormat(alert.lastUpdateTimeMs, 'HH:mm:ssxxx') }}</span>
+            </div>
+          </div>
+          <div class="check-circle">
+            <FeatherIcon
+              :icon="checkCircleIcon"
+              :class="{ acknowledged: alert.acknowledged }"
+              class="acknowledged-icon"
+              data-test="check-icon"
             />
-            <div class="name-node-type">
-              <div
-                class="name headline"
-                data-test="name"
-              >
-                {{ alert.name || 'Unknown' }}
-              </div>
-              <div data-test="node-type">
-                {{ alert.nodeType || 'Unknown' }}
-              </div>
-            </div>
-            <div
-              class="severity"
-              data-test="severity"
-            >
-              <AlertsSeverityLabel :severity="alert.severity" />
-              <div>&nbsp;</div>
-            </div>
-            <div
-              class="cause headline"
-              data-test="cause"
-            >
-              <div>{{ alert.type }}</div>
-              <div>&nbsp;</div>
-            </div>
-            <div
-              class="duration headline"
-              data-test="duration"
-            >
-              <div>{{ fnsFormatDistanceToNow(alert.lastUpdateTimeMs) }}</div>
-              <div>&nbsp;</div>
-            </div>
-            <div class="date-time">
-              <div
-                class="date headline"
-                data-test="date"
-              >
-                <span>{{ fnsFormat(alert.lastUpdateTimeMs, 'M/dd/yyyy') }}</span>
-              </div>
-              <div
-                class="time"
-                data-test="time"
-              >
-                <span>{{ fnsFormat(alert.lastUpdateTimeMs, 'HH:mm:ssxxx') }}</span>
-              </div>
-            </div>
-            <div class="check-circle">
-              <FeatherIcon
-                :icon="checkCircleIcon"
-                :class="{ acknowledged: alert.acknowledged }"
-                class="acknowledged-icon"
-                data-test="check-icon"
-              />
-            </div>
           </div>
         </div>
       </template>
@@ -81,23 +79,16 @@
 <script lang="ts" setup>
 import CheckCircle from '@featherds/icon/action/CheckCircle'
 import { format as fnsFormat, formatDistanceToNow as fnsFormatDistanceToNow } from 'date-fns'
+import { IAlert } from '@/types/alerts'
 
 const emits = defineEmits(['alert-selected'])
-const props = defineProps({
-  alert: {
-    type: Object,
-    required: true
-  }
-})
 
-const alertSelectedHandler = (id: number) => {
-  emits('alert-selected', id)
-}
+defineProps<{
+  alert: IAlert
+}>()
 
-const acknowledgedChecked = ref(props.alert.acknowledged)
-const acknowledgeHandler = (id: number) => {
-  acknowledgedChecked.value = !acknowledgedChecked.value
-  // send request
+const alertSelectedHandler = (databaseId: number) => {
+  emits('alert-selected', databaseId)
 }
 
 const checkCircleIcon = markRaw(CheckCircle)
@@ -116,15 +107,18 @@ const checkCircleIcon = markRaw(CheckCircle)
 
 .card {
   min-width: 900px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: var(variables.$spacing-m) var(variables.$spacing-xl) var(variables.$spacing-s) var(variables.$spacing-m);
+  border-width: 0 1px 1px;
+  border-style: solid;
+  border-color: var(variables.$border-on-surface);
 }
 
 .feather-expansion {
   box-shadow: none;
   background-color: unset;
-  padding: 1rem;
-  border-width: 0 1px 1px;
-  border-style: solid;
-  border-color: var(variables.$border-on-surface);
   :deep(.feather-expansion-header-button) {
     height: auto;
     padding: 0;
@@ -133,20 +127,12 @@ const checkCircleIcon = markRaw(CheckCircle)
     }
   }
   :deep(.panel-content) {
-    padding: 1rem 0 0 3.5rem !important;
+    padding: 1rem 0 0 0 !important;
     width: 90%;
   }
 }
 
 .content {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.top {
   width: 95%;
   display: flex;
   flex-direction: row;
@@ -155,20 +141,6 @@ const checkCircleIcon = markRaw(CheckCircle)
 
   > * {
     margin-right: 2%;
-  }
-
-  :deep(> .layout-container) {
-    margin-bottom: 0;
-    display: flex;
-    .feather-checkbox {
-      margin: 0;
-      .checkbox {
-        height: auto;
-      }
-      label {
-        display: none;
-      }
-    }
   }
 
   .name-node-type {
@@ -192,11 +164,11 @@ const checkCircleIcon = markRaw(CheckCircle)
   }
 
   .duration {
-    width: 8%;
+    width: 10%;
   }
 
   .date-time {
-    width: 12%;
+    width: 15%;
   }
 
   .check-circle {
@@ -208,6 +180,17 @@ const checkCircleIcon = markRaw(CheckCircle)
       &.acknowledged {
         color: var(variables.$success);
       }
+    }
+  }
+}
+
+:deep(> .layout-container) {
+  margin: 0.4rem 1rem 0 0;
+  display: flex;
+  .feather-checkbox {
+    margin: 0;
+    label {
+      display: none;
     }
   }
 }

@@ -4,7 +4,7 @@
     data-test="severity-list"
   >
     <AlertsSeverityCard
-      v-for="severity in Object.keys(AlertType).filter((a: string | number) => isNaN(Number(a)))"
+      v-for="severity in Object.keys(SeverityType).filter((a: string | number) => isNaN(Number(a)))"
       :key="severity"
       :severity="severity"
       :count="severitiesGrouped[severity] ? severitiesGrouped[severity].length : 0"
@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-import { AlertType } from '@/components/Alerts/alerts.constant'
+import { SeverityType } from '@/components/Alerts/alerts.constant'
 import { useAlertsStore } from '@/store/Views/alertsStore'
 import { groupBy } from 'lodash'
 

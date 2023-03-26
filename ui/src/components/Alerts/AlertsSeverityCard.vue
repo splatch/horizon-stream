@@ -26,10 +26,10 @@
     >
       {{ count }}
     </div>
-    <div data-test="percentage-time">
+    <!-- <div data-test="percentage-time">
       <span class="percentage">%5</span>
       <span>Past 24 Hours</span>
-    </div>
+    </div> -->
   </div>
   <div
     v-else
@@ -56,7 +56,7 @@ import Add from '@featherds/icon/action/Add'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import { useAlertsStore } from '@/store/Views/alertsStore'
 
-const store = useAlertsStore()
+const alertsStore = useAlertsStore()
 
 const isAdd = ref(true)
 const props = defineProps<{
@@ -66,7 +66,7 @@ const props = defineProps<{
 
 const addSeverityFilter = () => {
   isAdd.value = !isAdd.value
-  store.toggleSeverity(props.severity)
+  alertsStore.toggleSeverity(props.severity)
 }
 </script>
 

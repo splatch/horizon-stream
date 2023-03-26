@@ -1,5 +1,4 @@
 fragment AlertsParts on Query {
-  # findAllAlerts(filter: "", filterValues: [], page: "0", pageSize: 6, sortAscending: true, sortBy: "alertId") {
   findAllAlerts(
     filter: $filter
     filterValues: $filterValues
@@ -50,23 +49,3 @@ query Alerts(
 ) {
   ...AlertsParts
 }
-
-query AcknowledgeAlerts($alertId: Int!) {
-  acknowledgeAlert(id: $alertId)
-}
-
-# query countAlerts {
-
-# }
-
-# query {
-#   countAlerts(filter: "severity"
-#     filterValues: ["CRITICAL"])
-# }
-
-# query {
-#   countAlerts(filter: "severity"
-#     filterValues: ["CRITICAL", "MAJOR"])
-# }
-
-# fetch search alert list

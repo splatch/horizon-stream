@@ -1,1 +1,12 @@
-# acknowledge alert
+mutation AcknowledgeAlerts($alertId: Long!) {
+  acknowledgeAlert(id: $alertId) {
+    acknowledged
+    databaseId
+  }
+}
+mutation ClearAlerts($alertId: Long!) {
+  clearAlert(id: $alertId) {
+    databaseId
+    clearKey
+  }
+}

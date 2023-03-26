@@ -1,15 +1,19 @@
 import { defineStore } from 'pinia'
-import { TimeType, AlertType } from '@/components/Alerts/alerts.constant'
+import { TimeType } from '@/components/Alerts/alerts.constant'
 import { useAlertsQueries } from '../Queries/alertsQueries'
-import { IAlert } from '@/types/alerts'
+import { useAlertsMutations } from '../Mutations/alertsMutations'
+import { AlertsFilter } from '@/types/alerts'
 
 export const useAlertsStore = defineStore('alertsStore', () => {
+  const alertsList = ref()
+  const alertsSelected = <number[]>[]
+  const alertsFilter = <AlertsFilter>{}
   const severitiesSelected = ref<string[]>([])
   const timeSelected = ref()
-  const alertsList = ref()
   const alertsListSearched = ref([])
 
   const alertsQueries = useAlertsQueries()
+  const alertsMutations = useAlertsMutations()
 
   const fetchAlerts = async () => {
     await alertsQueries.fetchAlerts()
@@ -28,7 +32,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   }
 
   const selectTime = (selected: TimeType | undefined): void => {
-    timeSelected.value = selected
+    alertsFilter.time = selected
   }
 
   const clearAllFilters = () => {
@@ -36,23 +40,32 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     timeSelected.value = undefined
   }
 
-  const clearAlerts = () => {
-    // send query
+  const clearSelectedAlerts = async () => {
+    // console.log('alertsSelected',alertsSelected)
+    // await alertsMutations.clearAlerts(alertsSelected)
+    await alertsMutations.clearAlerts({ alertId: 1 })
+
+    fetchAlerts()
   }
 
-  const acknowledgedSelectedAlerts = () => {
-    // send query
+  const acknowledgeSelectedAlerts = async () => {
+    // console.log('alertsSelected',alertsSelected)
+    // await alertsMutations.acknowledgeAlerts(alertsSelected)
+    await alertsMutations.acknowledgeAlerts({ alertId: 1 })
+
+    fetchAlerts()
   }
 
   return {
     alertsList,
     fetchAlerts,
+    alertsSelected,
     severitiesSelected,
     toggleSeverity,
     timeSelected,
     selectTime,
     clearAllFilters,
-    clearAlerts,
-    acknowledgedSelectedAlerts
+    clearSelectedAlerts,
+    acknowledgeSelectedAlerts
   }
 })

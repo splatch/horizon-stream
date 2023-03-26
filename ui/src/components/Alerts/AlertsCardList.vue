@@ -5,9 +5,9 @@
   >
     <AlertsCard
       v-for="alert in alerts"
-      :key="alert.id"
+      :key="alert.databaseId"
       :alert="alert"
-      @alert-selected="emits('alert-selected', alert.id)"
+      @alert-selected="emits('alert-selected', alert.databaseId)"
     />
   </div>
   <div
@@ -27,12 +27,15 @@
 
 <script lang="ts" setup>
 import { useAlertsStore } from '@/store/Views/alertsStore'
+import { IAlert } from '@/types/alerts'
 
-const alertsStore = useAlertsStore()
-
-const alerts = computed(() => alertsStore.alertsList || [])
+defineProps<{
+  alerts: IAlert[]
+}>()
 
 const emits = defineEmits(['alert-selected'])
+
+const alertsStore = useAlertsStore()
 </script>
 
 <style lang="scss" scoped>

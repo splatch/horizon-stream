@@ -1,18 +1,13 @@
-export enum AlertType {
-  CRITICAL,
-  MAJOR,
-  MINOR,
-  WARNING,
-  INDETERMINATE
-}
-
-export const enum AlertStatus {
-  ACKNOWLEDGED,
-  UNACKNOWLEDGED
+export enum SeverityType {
+  CRITICAL = 'CRITiCAL',
+  MAJOR = 'MAJOR',
+  MINOR = 'MINOR',
+  WARNING = 'WARNING',
+  INDETERMINATE = 'INDETERMINATE'
 }
 
 export const enum TimeType {
-  TODAY,
-  DAY,
-  SEVEN_DAY
+  TODAY = 'TODAY',
+  DAY = '24H',
+  SEVEN_DAY = '7D'
 }

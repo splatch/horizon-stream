@@ -13,7 +13,6 @@
       >
     </div>
     <AlertsSeverityFilters data-test="severity-filters" />
-    <!-- <pre>{{ alerts }}</pre> -->
     <div class="content">
       <div class="time-search-filters">
         <div
@@ -56,6 +55,7 @@
         <div class="select-all-checkbox-btns">
           <FeatherCheckbox
             v-model="isAllAlertsSelected"
+            @update:model-value="allAlertsCheckboxHandler"
             :disabled="!alerts.length"
             data-test="select-all-checkbox"
             >Select All</FeatherCheckbox
@@ -63,14 +63,14 @@
           <FeatherButton
             :disabled="!atLeastOneAlertSelected"
             text
-            @click="clearAlerts"
+            @click="alertsStore.clearSelectedAlerts"
             data-test="clear-btn"
             >clear</FeatherButton
           >
           <FeatherButton
             :disabled="!atLeastOneAlertSelected"
             text
-            @click="acknowledgeSelectedAlerts"
+            @click="alertsStore.acknowledgeSelectedAlerts"
             data-test="acknowledge-btn"
             >acknowledge</FeatherButton
           >
@@ -111,7 +111,6 @@ import { TimeType } from '@/components/Alerts/alerts.constant'
 import { IAlert } from '@/types/alerts'
 
 onMounted(async () => {
-  // console.log('onMounted')
   await alertsStore.fetchAlerts()
 })
 
@@ -119,8 +118,13 @@ const alertsStore = useAlertsStore()
 
 const alerts = ref([] as IAlert[])
 watchEffect(() => {
-  // console.log('alertsStore.alertsList', alertsStore.alertsList)
-  alerts.value = alertsStore.alertsList?.map((a: IAlert) => ({ ...a, isSelected: true })) || []
+  alerts.value = alertsStore.alertsList?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
+})
+watchEffect(() => {
+  alertsStore.alertsSelected = alerts.value.reduce((acc, curr) => {
+    if (curr.isSelected) acc.push(curr.databaseId)
+    return acc
+  }, [] as number[])
 })
 
 const page = ref(1)
@@ -134,29 +138,23 @@ const updatePageSize = (v: number) => {
 const atLeastOneAlertSelected = computed(() => alerts.value.some((a: IAlert) => a.isSelected))
 
 const isAllAlertsSelected = ref(false)
-watch(isAllAlertsSelected, (isSelected) => {
+const allAlertsCheckboxHandler = (isSelected: boolean | undefined) => {
   alerts.value = alerts.value.map((a: IAlert) => ({
     ...a,
     isSelected
   }))
-})
-
-const clearAlerts = () => {
-  alertsStore.clearAlerts
-}
-const acknowledgeSelectedAlerts = () => {
-  alertsStore.acknowledgedSelectedAlerts
 }
 
-const alertSelectedListener = (id: string) => {
-  console.log('id', id)
+const alertSelectedListener = (databaseId: number) => {
   alerts.value = alerts.value.map((a: IAlert) => {
-    if (a.id === id) {
+    if (a.databaseId === databaseId) {
       a.isSelected = !a.isSelected // toggle selection
     }
 
     return a
   })
+
+  isAllAlertsSelected.value = alerts.value.every(({ isSelected }) => isSelected)
 }
 
 const timeFilterSelected = computed(() => alertsStore.timeSelected)
