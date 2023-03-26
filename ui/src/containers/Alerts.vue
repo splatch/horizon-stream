@@ -20,23 +20,23 @@
           data-test="time-filters"
         >
           <span
-            @click="selectTimeFilter(undefined)"
-            :class="{ selected: timeFilterSelected === undefined }"
+            @click="alertsStore.selectTime(TimeType.ALL)"
+            :class="{ selected: alertsStore.alertsFilter.time === TimeType.ALL }"
             >All</span
           >
           <span
-            @click="selectTimeFilter(TimeType.TODAY)"
-            :class="{ selected: timeFilterSelected === TimeType.TODAY }"
+            @click="alertsStore.selectTime(TimeType.TODAY)"
+            :class="{ selected: alertsStore.alertsFilter.time === TimeType.TODAY }"
             >Today</span
           >
           <span
-            @click="selectTimeFilter(TimeType.DAY)"
-            :class="{ selected: timeFilterSelected === TimeType.DAY }"
+            @click="alertsStore.selectTime(TimeType.DAY)"
+            :class="{ selected: alertsStore.alertsFilter.time === TimeType.DAY }"
             >24H</span
           >
           <span
-            @click="selectTimeFilter(TimeType.SEVEN_DAY)"
-            :class="{ selected: timeFilterSelected === TimeType.SEVEN_DAY }"
+            @click="alertsStore.selectTime(TimeType.SEVEN_DAY)"
+            :class="{ selected: alertsStore.alertsFilter.time === TimeType.SEVEN_DAY }"
             >7D</span
           >
         </div>
@@ -97,7 +97,7 @@
           v-model="page"
           :pageSize="pageSize"
           :total="total"
-          @update:pageSize="updatePageSize"
+          @update:pageSize="alertsStore.setPageSize"
           data-test="pagination"
         />
       </div>
@@ -107,6 +107,7 @@
 
 <script lang="ts" setup>
 import { useAlertsStore } from '@/store/Views/alertsStore'
+import { useAlertsQueries } from '@/store/Queries/alertsQueries'
 import { TimeType } from '@/components/Alerts/alerts.constant'
 import { IAlert } from '@/types/alerts'
 
@@ -115,24 +116,25 @@ onMounted(async () => {
 })
 
 const alertsStore = useAlertsStore()
+const alertsQueries = useAlertsQueries()
 
 const alerts = ref([] as IAlert[])
 watchEffect(() => {
   alerts.value = alertsStore.alertsList?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
 })
-watchEffect(() => {
-  alertsStore.alertsSelected = alerts.value.reduce((acc, curr) => {
-    if (curr.isSelected) acc.push(curr.databaseId)
-    return acc
-  }, [] as number[])
+// const page = computed(() => Number(alertsStore.alertsFilter.pagination.page)) // TODO get this config as number
+const page = 1
+const pageSize = computed(() => alertsStore.alertsFilter.pagination.pageSize)
+const total = ref(10)
+onMounted(async () => {
+  const { data } = await alertsQueries.fetchCountAlerts()
+  // console.log(data.value)
+  total.value = Number(data.value?.countAlerts)
 })
 
-const page = ref(1)
-const pageSize = ref(10)
-const total = 100
-
 const updatePageSize = (v: number) => {
-  pageSize.value = v
+  // console.log('v', v)
+  alertsStore.setPageSize(v)
 }
 
 const atLeastOneAlertSelected = computed(() => alerts.value.some((a: IAlert) => a.isSelected))
@@ -155,11 +157,6 @@ const alertSelectedListener = (databaseId: number) => {
   })
 
   isAllAlertsSelected.value = alerts.value.every(({ isSelected }) => isSelected)
-}
-
-const timeFilterSelected = computed(() => alertsStore.timeSelected)
-const selectTimeFilter = (type: TimeType | undefined) => {
-  alertsStore.selectTime(type)
 }
 
 const searchAlerts = ref('')

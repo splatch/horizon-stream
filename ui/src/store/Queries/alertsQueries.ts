@@ -1,23 +1,34 @@
 import { defineStore } from 'pinia'
 import { useQuery } from 'villus'
-import { AlertsDocument, CountAlertsDocument } from '@/types/graphql'
+import { AlertsDocument, CountAlertsDocument, Alert } from '@/types/graphql'
+import { AlertsFilters } from '@/types/alerts'
 
 export const useAlertsQueries = defineStore('alertsQueries', () => {
-  const { data: fetchAlertsData, execute: fetchAlerts } = useQuery({
-    query: AlertsDocument,
-    variables: {
-      filter: '',
-      filterValues: [],
-      page: '0',
-      pageSize: 10,
-      sortAscending: true,
-      sortBy: ''
-    },
-    fetchOnMount: false,
-    cachePolicy: 'network-only'
-  })
+  const fetchAlertsData = ref(<Alert[]>[])
 
-  const fetchCountAlerts = async (filter: string, filterValues: [string]) =>
+  const fetchAlerts = async (alertsFilters: AlertsFilters) => {
+    const { data, execute, isFetching } = useQuery({
+      query: AlertsDocument,
+      variables: {
+        filter: alertsFilters.filter,
+        filterValues: alertsFilters.filterValues,
+        page: alertsFilters.pagination.page,
+        pageSize: alertsFilters.pagination.pageSize,
+        sortAscending: alertsFilters.sortAscending,
+        sortBy: alertsFilters.sortBy
+      },
+      fetchOnMount: false,
+      cachePolicy: 'network-only'
+    })
+
+    await execute()
+
+    if (!isFetching.value) {
+      fetchAlertsData.value = data.value?.findAllAlerts?.alerts || []
+    }
+  }
+
+  const fetchCountAlerts = async (filter = '', filterValues = [] as string[]) =>
     useQuery({
       query: CountAlertsDocument,
       variables: {
@@ -30,7 +41,7 @@ export const useAlertsQueries = defineStore('alertsQueries', () => {
 
   return {
     fetchAlerts,
-    fetchAlertsData: computed(() => fetchAlertsData.value?.findAllAlerts?.alerts || []),
+    fetchAlertsData,
     fetchCountAlerts
   }
 })

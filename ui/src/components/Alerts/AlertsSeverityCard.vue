@@ -1,8 +1,8 @@
 <template>
   <div
     v-if="count"
-    @click="toggleSeverityFilter"
-    :class="{ selected: !isAdd }"
+    @click="alertsStore.toggleSeverity(severity)"
+    :class="{ selected: isTypeAdded }"
     class="card border pointer"
     data-test="severity-card"
   >
@@ -13,7 +13,7 @@
       />
       <Transition name="icon-anim">
         <FeatherIcon
-          :icon="isAdd ? Add : Cancel"
+          :icon="isTypeAdded ? Cancel : Add"
           class="icon"
           focusable="false"
           data-test="add-cancel-icon"
@@ -60,7 +60,6 @@ import { useAlertsQueries } from '@/store/Queries/alertsQueries'
 const alertsStore = useAlertsStore()
 const alertsQueries = useAlertsQueries()
 
-const isAdd = ref(true)
 const props = defineProps<{
   severity: string
 }>()
@@ -71,10 +70,7 @@ onMounted(async () => {
   count.value = data.value?.countAlerts
 })
 
-const toggleSeverityFilter = () => {
-  isAdd.value = !isAdd.value
-  alertsStore.toggleSeverity(props.severity)
-}
+const isTypeAdded = computed(() => alertsStore.alertsFilter.filterValues.includes(props.severity))
 </script>
 
 <style lang="scss" scoped>

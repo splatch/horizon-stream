@@ -136,35 +136,31 @@ const checkCircleIcon = markRaw(CheckCircle)
   width: 95%;
   display: flex;
   flex-direction: row;
+  gap: 2%;
   justify-content: flex-start;
   align-items: center;
 
-  > * {
-    margin-right: 2%;
-  }
-
   .name-node-type {
-    width: 23%;
+    width: 22%;
     .name {
       @include mixins.truncate-text();
     }
   }
 
   .severity {
-    width: 12%;
+    width: 14%;
     text-align: center;
   }
 
   .cause {
     width: 20%;
-    margin-right: 6%;
     > div {
       @include mixins.truncate-text();
     }
   }
 
   .duration {
-    width: 10%;
+    width: 15%;
   }
 
   .date-time {

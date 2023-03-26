@@ -7,8 +7,17 @@ interface IAlert extends Alert {
   nodeType?: string
 }
 
-interface AlertsFilter {
-  severity: [number]
-  time: TimeType | undefined
+interface Pagination {
+  page: string
+  pageSize: number
+}
+
+interface AlertsFilters {
+  filter: string
+  filterValues: string[]
+  time: TimeType
   search: string
+  pagination: Pagination
+  sortAscending: boolean
+  sortBy: string
 }

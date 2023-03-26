@@ -2,42 +2,94 @@ import { defineStore } from 'pinia'
 import { TimeType } from '@/components/Alerts/alerts.constant'
 import { useAlertsQueries } from '../Queries/alertsQueries'
 import { useAlertsMutations } from '../Mutations/alertsMutations'
-import { AlertsFilter } from '@/types/alerts'
+import { AlertsFilters } from '@/types/alerts'
+
+const alertsFilterDefault: AlertsFilters = {
+  filter: 'severity',
+  filterValues: ['CRITICAL'],
+  time: TimeType.ALL,
+  search: '',
+  pagination: {
+    page: '0',
+    pageSize: 10
+  },
+  sortAscending: true,
+  sortBy: 'alertId'
+}
 
 export const useAlertsStore = defineStore('alertsStore', () => {
   const alertsList = ref()
-  const alertsSelected = <number[]>[]
-  const alertsFilter = <AlertsFilter>{}
-  const severitiesSelected = ref<string[]>([])
-  const timeSelected = ref()
+  const alertsFilter = ref(alertsFilterDefault)
   const alertsListSearched = ref([])
 
   const alertsQueries = useAlertsQueries()
   const alertsMutations = useAlertsMutations()
 
   const fetchAlerts = async () => {
-    await alertsQueries.fetchAlerts()
+    await alertsQueries.fetchAlerts(alertsFilter.value)
 
     alertsList.value = alertsQueries.fetchAlertsData
   }
 
+  watch(
+    alertsFilter,
+    () => {
+      fetchAlerts()
+    },
+    { deep: true }
+  )
+
   const toggleSeverity = (selected: string): void => {
-    const exists = severitiesSelected.value.some((s) => s === selected)
+    const exists = alertsFilter.value.filterValues.some((s) => s === selected)
 
     if (exists) {
-      severitiesSelected.value = severitiesSelected.value.filter((s) => s !== selected)
+      alertsFilter.value = {
+        ...alertsFilter.value,
+        filterValues: alertsFilter.value.filterValues.filter((s) => s !== selected)
+      }
+
+      if (!alertsFilter.value.filterValues.length) alertsFilter.value = { ...alertsFilter.value, filter: '' }
     } else {
-      severitiesSelected.value.push(selected)
+      alertsFilter.value = {
+        ...alertsFilter.value,
+        filter: 'severity',
+        filterValues: [...alertsFilter.value.filterValues, selected]
+      }
     }
   }
 
-  const selectTime = (selected: TimeType | undefined): void => {
-    alertsFilter.time = selected
+  const selectTime = (selected: TimeType): void => {
+    alertsFilter.value = {
+      ...alertsFilter.value,
+      time: selected
+    }
+  }
+
+  const setPageSize = (pageSize: number) => {
+    if (pageSize !== alertsFilter.value.pagination.pageSize) {
+      alertsFilter.value = {
+        ...alertsFilter.value,
+        pagination: {
+          ...alertsFilter.value.pagination,
+          pageSize: pageSize
+        }
+      }
+    }
   }
 
   const clearAllFilters = () => {
-    severitiesSelected.value = []
-    timeSelected.value = undefined
+    alertsFilter.value = {
+      filter: '',
+      filterValues: [],
+      time: TimeType.ALL,
+      search: '',
+      pagination: {
+        page: '0',
+        pageSize: 10
+      },
+      sortAscending: true,
+      sortBy: 'alertId'
+    }
   }
 
   const clearSelectedAlerts = async () => {
@@ -59,11 +111,10 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   return {
     alertsList,
     fetchAlerts,
-    alertsSelected,
-    severitiesSelected,
+    alertsFilter,
     toggleSeverity,
-    timeSelected,
     selectTime,
+    setPageSize,
     clearAllFilters,
     clearSelectedAlerts,
     acknowledgeSelectedAlerts
