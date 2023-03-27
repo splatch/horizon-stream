@@ -8,7 +8,8 @@ describe('DiscoveryContentEditable', () => {
   beforeEach(() => {
     const props = {
       contentType: ContentEditableType.IP,
-      regexDelim: '[,; ]+'
+      regexDelim: '[,; ]+',
+      id: 1
     }
 
     wrapper = mount(DiscoveryContentEditable, {

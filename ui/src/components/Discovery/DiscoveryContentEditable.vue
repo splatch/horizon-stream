@@ -77,7 +77,7 @@ const props = defineProps({
     default: ''
   },
   regexExpression: {
-    type: Array<string>
+    type: Array<RegExp>
   },
   label: {
     type: String,
@@ -125,13 +125,14 @@ const splitContent = (str: string[]): (string | number)[] | null => {
   return str
 }
 
-const formatContent = (contentEditableStrings, regexp) => {
+const formatContent = (contentEditableStrings: string[], regexp: RegExp[]) => {
   const parent = document.getElementById('contentEditable_' + props.id)
+  if (!parent) return
   contentEditableStrings
     .map((str: string) => {
       const node = document.createElement('div')
       node.textContent = str
-      if (!regexp.map((t) => t.test(str)).includes(true)) {
+      if (!regexp.map((t: RegExp) => t.test(str)).includes(true)) {
         isContentInvalid.value = true
         node.setAttribute('style', 'color: #ff555e')
       }
@@ -140,7 +141,7 @@ const formatContent = (contentEditableStrings, regexp) => {
     .join(';')
 }
 
-const extractTextFromNodes = (ceNode) => {
+const extractTextFromNodes = (ceNode: HTMLElement) => {
   const rows = []
   let textElement = ceNode.innerHTML
   if (ceNode.innerHTML.indexOf('<') !== -1) {
@@ -148,9 +149,9 @@ const extractTextFromNodes = (ceNode) => {
   }
   rows.push(textElement)
 
-  const children = ceNode.children
+  const children = ceNode.children as HTMLCollection
   for (let child of children) {
-    rows.push(child.innerText)
+    rows.push((child as HTMLElement).innerText)
   }
   return rows.filter((s) => !isEmpty(s)).join(',')
 }
@@ -158,6 +159,7 @@ const extractTextFromNodes = (ceNode) => {
 const validateContent = () => {
   const regexDelim = new RegExp(props.regexDelim)
   const ceNode = document.getElementById('contentEditable_' + props.id)
+  if (!ceNode) return
   const textFromNodes = extractTextFromNodes(ceNode)
   const contentEditableStrings = textFromNodes.replace(/\s/g, '').split(regexDelim)
   const regexp = props.regexExpression?.map((r) => new RegExp(r))
