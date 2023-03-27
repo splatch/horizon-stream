@@ -28,11 +28,9 @@
 
 package org.opennms.horizon.server.config;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import lombok.extern.slf4j.Slf4j;
-import org.opennms.horizon.server.service.grpc.EventsClient;
+import org.opennms.horizon.server.mapper.alert.MonitorPolicyMapper;
 import org.opennms.horizon.server.service.grpc.AlertsClient;
+import org.opennms.horizon.server.service.grpc.EventsClient;
 import org.opennms.horizon.server.service.grpc.InventoryClient;
 import org.opennms.horizon.server.service.grpc.NotificationClient;
 import org.opennms.horizon.server.utils.JWTValidator;
@@ -42,8 +40,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class ConfigurationUtil {
     @Value("${grpc.url.inventory}")
     private String inventoryGrpcAddress;
@@ -59,6 +63,8 @@ public class ConfigurationUtil {
 
     @Value("${grpc.url.alerts}")
     private String alertsGrpcAddress;
+
+    private final MonitorPolicyMapper policyMapper;
 
     @Bean
     public ServerHeaderUtil createHeaderUtil(JWTValidator validator) {
@@ -110,6 +116,6 @@ public class ConfigurationUtil {
 
     @Bean(destroyMethod = "shutdown", initMethod = "initialStubs")
     public AlertsClient createAlertsClient(@Qualifier("alerts") ManagedChannel channel) {
-        return new AlertsClient(channel, deadline);
+        return new AlertsClient(channel, deadline, policyMapper);
     }
 }

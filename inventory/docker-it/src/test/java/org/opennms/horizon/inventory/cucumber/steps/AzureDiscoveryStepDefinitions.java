@@ -50,15 +50,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class AzureDiscoveryStepDefinitions {
-    private static InventoryBackgroundHelper backgroundHelper;
+    private final InventoryBackgroundHelper backgroundHelper;
     private AzureActiveDiscoveryCreateDTO createDiscoveryDto;
     private AzureActiveDiscoveryDTO discoveryDto;
     private TagCreateDTO tagCreateDto1;
     private TagListDTO tagList;
 
-    @BeforeAll
-    public static void beforeAll() {
-        backgroundHelper = new InventoryBackgroundHelper();
+    public AzureDiscoveryStepDefinitions(InventoryBackgroundHelper backgroundHelper) {
+        this.backgroundHelper = backgroundHelper;
     }
 
     /*
@@ -141,4 +140,6 @@ public class AzureDiscoveryStepDefinitions {
         TagDTO tagDTO = tagList.getTags(0);
         assertEquals(tagCreateDto1.getName(), tagDTO.getName());
     }
+
+
 }
