@@ -1,6 +1,11 @@
 <template>
   <div class="mp-card">
-    <div class="first-card-title">Existing Policies</div>
+    <div
+      class="first-card-title"
+      v-if="index === 0"
+    >
+      Existing Policies
+    </div>
 
     <div class="row">
       <div class="policy-title">
@@ -14,13 +19,14 @@
       </div>
     </div>
 
-    <div v-for="rule in policy.rules">
+    <div
+      v-for="rule in policy.rules"
+      :key="rule.id"
+    >
       <div class="row">
-        <div class="title-box rule"><span>Rule: </span>{{ rule.name }}</div>
-        <div class="title-box method">
-          <span>Detection Method: </span>{{ rule.detectionMethod }}-{{ rule.metricName }}
-        </div>
-        <div class="title-box component"><span>Component: </span>{{ rule.componentType }}</div>
+        <div class="title-box rule">{{ rule.name }}</div>
+        <div class="title-box method">{{ rule.detectionMethod }}-{{ rule.metricName }}</div>
+        <div class="title-box component">{{ rule.componentType }}</div>
 
         <div
           class="alert-conditions-btn"
@@ -35,6 +41,8 @@
         <div class="alert-title">Alert Conditions</div>
         <MonitoringPoliciesCardAlertRow
           v-for="(condition, index) in rule.conditions"
+          :key="condition.id"
+          :rule="rule"
           :condition="condition"
           :index="index"
         />
@@ -53,12 +61,16 @@ const icons = markRaw({
   ExpandMore
 })
 
-defineProps<{
+const props = defineProps<{
   policy: IPolicy
+  index: number
 }>()
 
 const ruleStates = reactive<{ [x: string]: boolean }>({})
 const triggerRuleState = (ruleId: string) => (ruleStates[ruleId] = !ruleStates[ruleId])
+
+// set first rule alert conditions open by default
+onMounted(() => (ruleStates[props.policy.rules[0].id] = true))
 </script>
 
 <style scoped lang="scss">
@@ -69,10 +81,10 @@ const triggerRuleState = (ruleId: string) => (ruleStates[ruleId] = !ruleStates[r
 @use '@/styles/vars.scss';
 
 .mp-card {
-  @include elevation.elevation(3);
-  border-radius: vars.$border-radius-s;
+  @include elevation.elevation(1);
+  border-radius: vars.$border-radius-xs;
   display: flex;
-  gap: var(variables.$spacing-s);
+  gap: var(variables.$spacing-xl);
   flex-direction: column;
   padding: var(variables.$spacing-l);
 
@@ -83,7 +95,8 @@ const triggerRuleState = (ruleId: string) => (ruleStates[ruleId] = !ruleStates[r
 
   .row {
     display: flex;
-    gap: var(variables.$spacing-m);
+    flex-wrap: wrap;
+    gap: var(variables.$spacing-xxs);
 
     .policy-title {
       @include typography.headline4;
@@ -100,7 +113,7 @@ const triggerRuleState = (ruleId: string) => (ruleStates[ruleId] = !ruleStates[r
       white-space: nowrap;
       background: var(variables.$shade-4);
       padding: var(variables.$spacing-xs);
-      border-radius: vars.$border-radius-xs;
+      border-radius: vars.$border-radius-s;
       overflow: hidden;
       text-overflow: ellipsis;
       span {
@@ -109,6 +122,8 @@ const triggerRuleState = (ruleId: string) => (ruleStates[ruleId] = !ruleStates[r
       }
 
       &.rule {
+        @include typography.subtitle2;
+        line-height: 2;
         flex: 1;
       }
       &.method {
@@ -121,12 +136,12 @@ const triggerRuleState = (ruleId: string) => (ruleStates[ruleId] = !ruleStates[r
 
     .alert-conditions-btn {
       @include typography.subtitle2;
-      border-radius: vars.$border-radius-xs;
+      border-radius: vars.$border-radius-s;
       white-space: nowrap;
       display: flex;
       justify-content: space-between;
       background: var(variables.$shade-1);
-      padding: var(variables.$spacing-xs);
+      padding: var(variables.$spacing-s);
       color: var(variables.$primary-text-on-color);
       width: 145px;
       cursor: pointer;

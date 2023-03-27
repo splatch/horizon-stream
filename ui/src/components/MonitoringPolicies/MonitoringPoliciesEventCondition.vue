@@ -9,38 +9,26 @@
       delete
     </div>
   </div>
-  <div
-    class="condition"
-    v-if="condition"
-  >
+  <div class="condition">
     <div class="inner-col">
-      <div class="text">Trigger when metric is:</div>
-      <BasicSelect
-        :list="levelOptions"
-        @item-selected="(val:string) => updateConditionProp('level', val)"
-        :selectedId="condition.level"
-      />
-    </div>
-
-    <div class="inner-col slider">
-      <div class="text">Severity threshold %</div>
-      <Slider
-        v-model="condition.percentage"
-        :min="0"
-        :max="100"
-        :tooltipPosition="'bottom'"
-        :format="(num: number) => num + '%'"
-        @change="(val:number) => updateConditionProp('percentage', val)"
-      />
-    </div>
-
-    <div class="inner-col input">
-      <div class="text">For any</div>
+      <div class="text">Count</div>
       <FeatherInput
         label=""
         hideLabel
-        @update:model-value="(val) => updateConditionProp('forAny', val as string)"
-        v-model="condition.forAny"
+        @update:model-value="(val) => updateConditionProp('count', val as number)"
+        v-model="condition.count"
+        type="number"
+      />
+    </div>
+
+    <div class="inner-col">
+      <div class="text">Over time (Optional)</div>
+      <FeatherInput
+        label=""
+        hideLabel
+        @update:model-value="(val) => updateConditionProp('time', val as number)"
+        v-model="condition.time"
+        type="number"
       />
     </div>
 
@@ -48,60 +36,46 @@
       <div class="text">&nbsp;</div>
       <BasicSelect
         :list="durationOptions"
-        @item-selected="(val:number) => updateConditionProp('duration', val)"
-        :selectedId="condition.durationUnit"
-      />
-    </div>
-
-    <div class="inner-col input">
-      <div class="text">During the last</div>
-      <FeatherInput
-        label=""
-        hideLabel
-        @update:model-value="(val) => updateConditionProp('period', val as string)"
-        v-model="condition.duringLast"
+        @item-selected="(val:number) => updateConditionProp('unit', val)"
+        :selectedId="condition.unit"
       />
     </div>
 
     <div class="inner-col">
-      <div class="text">&nbsp;</div>
-      <BasicSelect
-        :list="durationOptions"
-        @item-selected="(val:number) => updateConditionProp('duringLast', val)"
-        :selectedId="condition.periodUnit"
-      />
-    </div>
-
-    <div class="inner-col">
-      <div class="text">As</div>
+      <div class="text">Severity</div>
       <BasicSelect
         :list="severityList"
         @item-selected="(val:string) => updateConditionProp('severity', val)"
         :selectedId="condition.severity"
       />
     </div>
+
+    <div
+      class="inner-col"
+      v-if="isEventPortDownCondition(condition)"
+    >
+      <div class="text">Clear Event (optional)</div>
+      <BasicSelect
+        :list="clearEventOptions"
+        @item-selected="(val:string) => updateConditionProp('clearEvent', val)"
+        :selectedId="condition.clearEvent"
+      />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import Slider from '@vueform/slider'
-import { ThresholdCondition } from '@/types/policies'
+import { EventCondition } from '@/types/policies'
+import { isEventPortDownCondition } from './monitoringPolicies.utils'
 import { conditionLetters } from './monitoringPolicies.constants'
 
 const props = defineProps<{
-  condition: ThresholdCondition
+  condition: EventCondition
   index: number
 }>()
 
 const emit = defineEmits(['updateCondition'])
-const condition = ref<ThresholdCondition>()
-
-const levelOptions = [
-  { id: 'above', name: 'above' },
-  { id: 'equalTo', name: 'equalTo' },
-  { id: 'below', name: 'below' },
-  { id: 'isNotEqual', name: 'is not equal' }
-]
+const condition = ref<EventCondition>()
 
 const durationOptions = [
   { id: 'second', name: 'Second(s)' },
@@ -115,6 +89,11 @@ const severityList = [
   { id: 'major', name: 'Major' },
   { id: 'minor', name: 'Minor' },
   { id: 'warning', name: 'Warning' }
+]
+
+const clearEventOptions = [
+  { id: null, name: '' },
+  { id: 'port-up', name: 'Port Up' }
 ]
 
 watchEffect(() => (condition.value = props.condition))
@@ -146,13 +125,6 @@ const updateConditionProp = (property: string, value: number | string) => {
       @include typography.caption;
     }
 
-    &.slider {
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-      gap: var(variables.$spacing-s);
-    }
-
     &.input {
       flex: 0.6;
     }
@@ -162,18 +134,7 @@ const updateConditionProp = (property: string, value: number | string) => {
   }
 }
 
-:root {
-  .slider-horizontal {
-    width: 100%;
-    --slider-tooltip-distance: 10px;
-    --slider-tooltip-bg: #273180;
-    --slider-connect-bg: #273180;
-  }
-}
-
 :deep(.feather-input-sub-text) {
   display: none;
 }
 </style>
-
-<style src="@vueform/slider/themes/default.css"></style>

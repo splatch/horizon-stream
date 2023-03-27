@@ -6,7 +6,7 @@
         @click="store.displayPolicyForm()"
       >
         <FeatherIcon :icon="addIcon" />
-        Create New Policy
+        New Policy
       </FeatherButton>
       <MonitoringPoliciesExistingItems
         title="Existing Policies"
@@ -20,11 +20,10 @@
         class="policy-form"
         v-if="store.selectedPolicy"
       >
-        <div class="form-title">Create New Policy</div>
-        <div class="form-subtitle">New Policy Name</div>
+        <div class="form-title">Policy Name</div>
         <FeatherInput
           v-model="store.selectedPolicy.name"
-          label="Policy Name"
+          label="New Policy Name"
         />
         <FeatherTextarea
           v-model="store.selectedPolicy.memo"
@@ -39,7 +38,7 @@
           <FeatherCheckbox v-model="store.selectedPolicy.notifications.pagerDuty">Pager Duty</FeatherCheckbox>
           <FeatherCheckbox v-model="store.selectedPolicy.notifications.webhooks">Webhooks</FeatherCheckbox>
         </FeatherCheckboxGroup>
-        <div class="form-subtitle">Tags</div>
+        <div class="subtitle">Tags</div>
         <BasicAutocomplete
           @itemsSelected="selectTags"
           :getItems="tagQueries.getTagsSearch"
@@ -53,8 +52,10 @@
         class="mp-card-container"
       >
         <MonitoringPoliciesCard
-          v-for="policy in store.monitoringPolicies"
+          v-for="(policy, index) in store.monitoringPolicies"
+          :key="policy.id"
           :policy="policy"
+          :index="index"
           @selectPolicy="(policy: IPolicy) => store.displayPolicyForm(policy)"
         />
       </div>
@@ -75,7 +76,10 @@ const tagQueries = useTagQueries()
 const addIcon = markRaw(Add)
 
 const selectTags = (tags: TagSelectItem[]) => (store.selectedPolicy!.tags = tags.map((tag) => ({ name: tag.name })))
-const populateForm = (item: IPolicy) => (store.selectedPolicy = item)
+const populateForm = (item: IPolicy) => {
+  store.selectedPolicy = item
+  store.selectedRule = undefined
+}
 </script>
 
 <style scoped lang="scss">
@@ -84,6 +88,7 @@ const populateForm = (item: IPolicy) => (store.selectedPolicy = item)
 @use '@featherds/styles/mixins/typography';
 @use '@/styles/mediaQueriesMixins';
 @use '@/styles/_transitionFade';
+@use '@/styles/vars.scss';
 
 .policy-form-container {
   display: flex;
@@ -97,15 +102,14 @@ const populateForm = (item: IPolicy) => (store.selectedPolicy = item)
     flex-direction: column;
     background: var(variables.$surface);
     padding: var(variables.$spacing-l);
-    border-radius: 5px;
+    border-radius: vars.$border-radius-s;
 
     .form-title {
       @include typography.headline3;
       margin-bottom: var(variables.$spacing-m);
     }
-    .form-subtitle {
+    .subtitle {
       @include typography.subtitle1;
-      margin-bottom: var(variables.$spacing-m);
     }
   }
 
@@ -113,10 +117,11 @@ const populateForm = (item: IPolicy) => (store.selectedPolicy = item)
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: var(variables.$spacing-s);
+    gap: var(variables.$spacing-xxs);
+    margin-bottom: var(variables.$spacing-xl);
   }
 
-  @include mediaQueriesMixins.screen-md {
+  @include mediaQueriesMixins.screen-lg {
     flex-direction: row;
   }
 }
