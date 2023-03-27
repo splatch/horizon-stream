@@ -95,91 +95,91 @@ export const useFlowsStore = defineStore('flowsStore', {
         {
           timestamp: '2023-01-10T01:01:25Z',
           label: 'app_0',
-          value: 138790.1750375429,
+          value: 138790,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:09:47Z',
           label: 'app_0',
-          value: 216861.9119974472,
+          value: 1986561,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:18:07Z',
           label: 'app_0',
-          value: 202966.96568806906,
+          value: 202966,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:26:27Z',
           label: 'app_0',
-          value: 264173.0346710393,
+          value: 264173,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:34:47Z',
           label: 'app_0',
-          value: 28631.814024643267,
+          value: 28631,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:43:07Z',
           label: 'app_0',
-          value: 446770.59738684486,
+          value: 446770,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:51:27Z',
           label: 'app_0',
-          value: 475634.2969400164,
+          value: 475634,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:59:47Z',
           label: 'app_0',
-          value: 291804.2768482603,
+          value: 291804,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T02:08:07Z',
           label: 'app_0',
-          value: 192281.57332635063,
+          value: 192281,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T02:16:27Z',
           label: 'app_0',
-          value: 781683.5022437341,
+          value: 781683,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:01:27Z',
           label: 'app_1',
-          value: 446316.3858784942,
+          value: 446316,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:09:47Z',
           label: 'app_1',
-          value: 675859.8717571729,
+          value: 222222,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:18:07Z',
           label: 'app_1',
-          value: 703441.1031400502,
+          value: 703441,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:26:27Z',
           label: 'app_1',
-          value: 277710.0783393889,
+          value: 277710,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:34:47Z',
           label: 'app_1',
-          value: 928133.4566595472,
+          value: 928133,
           direction: 'EGRESS'
         },
         {
@@ -191,25 +191,25 @@ export const useFlowsStore = defineStore('flowsStore', {
         {
           timestamp: '2023-01-10T01:51:27Z',
           label: 'app_1',
-          value: 264867.46362876357,
+          value: 264867,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T01:59:47Z',
           label: 'app_1',
-          value: 738735.9705331036,
+          value: 738735,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T02:08:07Z',
           label: 'app_1',
-          value: 761950.6966375934,
+          value: 761950,
           direction: 'EGRESS'
         },
         {
           timestamp: '2023-01-10T02:16:27Z',
           label: 'app_1',
-          value: 995884.662063265,
+          value: 995884,
           direction: 'EGRESS'
         },
         {
@@ -221,7 +221,7 @@ export const useFlowsStore = defineStore('flowsStore', {
         {
           timestamp: '2023-03-24T01:40:37Z',
           label: 'ipsec-nat-t',
-          value: 9133508,
+          value: 9133,
           direction: 'INGRESS'
         }
       ]
