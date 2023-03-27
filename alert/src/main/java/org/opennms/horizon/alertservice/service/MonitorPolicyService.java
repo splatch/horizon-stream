@@ -34,7 +34,15 @@ import java.util.Optional;
 import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
 import org.opennms.horizon.alertservice.db.repository.MonitorPolicyRepository;
 import org.opennms.horizon.alertservice.mapper.MonitorPolicyMapper;
+import org.opennms.horizon.shared.alert.policy.ComponentType;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
+import org.opennms.horizon.shared.alert.policy.PolicyRuleProto;
+import org.opennms.horizon.shared.alert.policy.SNMPEventProto;
+import org.opennms.horizon.shared.alert.policy.SNMPEventType;
+import org.opennms.horizon.shared.alert.policy.Severity;
+import org.opennms.horizon.shared.constants.GrpcConstants;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +53,48 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MonitorPolicyService {
+    private static final String DEFAULT_POLICY = "default_snmp_policy";
+    private static final String DEFAULT_RULE = "default_snmp_rule";
+    private static final String DEFAULT_TAG = "default";
     private final MonitorPolicyMapper policyMapper;
     private final MonitorPolicyRepository repository;
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void defaultPolicies() {
+        if(repository.findAll().isEmpty()) {
+            SNMPEventProto coldReboot = SNMPEventProto.newBuilder()
+                .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
+                .setTriggerEvent(SNMPEventType.COLD_REBOOT)
+                .setCount(1)
+                .setSeverity(Severity.CRITICAL)
+                .build();
+            SNMPEventProto warmReboot = SNMPEventProto.newBuilder()
+                .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
+                .setTriggerEvent(SNMPEventType.WARM_REBOOT)
+                .setCount(1)
+                .setSeverity(Severity.MAJOR)
+                .build();
+            PolicyRuleProto defaultRule = PolicyRuleProto.newBuilder()
+                .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
+                .setName(DEFAULT_RULE)
+                .setComponentType(ComponentType.NODE)
+                .addSnmpEvents(coldReboot)
+                .addSnmpEvents(warmReboot)
+                .build();
+            MonitorPolicyProto defaultPolicy = MonitorPolicyProto.newBuilder()
+                .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
+                .setName(DEFAULT_POLICY)
+                .setMemo("Default SNMP event monitoring policy")
+                .addTags(DEFAULT_TAG)
+                .setNotifyByEmail(true)
+                .setNotifyByPagerDuty(true)
+                .setNotifyByWebhooks(true)
+                .addRules(defaultRule)
+                .setNotifyInstruction("This is default policy notification") //todo: changed to something from environment
+                .build();
+            createPolicy(defaultPolicy, GrpcConstants.DEFAULT_TENANT_ID);
+        }
+    }
 
     public MonitorPolicyProto createPolicy(MonitorPolicyProto request, String tenantId) {
         MonitorPolicy policy = policyMapper.protoToEntity(request);

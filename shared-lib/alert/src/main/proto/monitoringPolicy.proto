@@ -87,9 +87,10 @@ enum OverTimeUnit {
 
 enum SNMPEventType {
   COLD_REBOOT = 0;
-  SNMP_AUTH_FAILURE = 1;
-  PORT_DOWN = 2;
-  PORT_UP = 3;
+  WARM_REBOOT = 1;
+  SNMP_AUTH_FAILURE = 2;
+  PORT_DOWN = 3;
+  PORT_UP = 4;
 }
 
 enum Severity {
