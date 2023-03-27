@@ -30,6 +30,8 @@ package org.opennms.horizon.it;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
 import org.opennms.horizon.it.gqlmodels.GQLQuery;
+import org.opennms.horizon.it.gqlmodels.querywrappers.AddDiscoveryResult;
+import org.opennms.horizon.it.gqlmodels.querywrappers.CreateNodeResult;
 import org.opennms.horizon.it.helper.TestsExecutionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import java.net.MalformedURLException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DiscoveryTestSteps {
 
@@ -74,6 +77,12 @@ public class DiscoveryTestSteps {
 
         assertEquals("add-discovery query failed: status=" + response.getStatusCode() + "; body=" + response.getBody().asString(),
             200, response.getStatusCode());
-    }
+
+        AddDiscoveryResult discoveryResult = response.getBody().as(AddDiscoveryResult.class);
+
+        // GRAPHQL errors result in 200 http response code and a body with "errors" detail
+        assertTrue("create-node errors: " + discoveryResult.getErrors(),
+            ( discoveryResult.getErrors() == null ) || ( discoveryResult.getErrors().isEmpty() ));
+   }
 
 }

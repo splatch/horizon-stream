@@ -134,7 +134,7 @@ public class TestsExecutionHelper {
             return executePost(url, accessToken, gqlQuery);
 
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            LOG.error("checkTheStatusOfTheNode failed: " + e.getMessage());
         }
         return null;
     }
