@@ -26,21 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alertservice.db.entity;
+package org.opennms.horizon.server.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.TenantId;
 
 @Getter
 @Setter
-@MappedSuperclass
-public abstract class TenantAwareEntity {
-
-    @TenantId
-    @Column (name = "tenant_id")
+public abstract class BaseModel {
+    private Long id;
     private String tenantId;
-
 }

@@ -26,21 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alertservice.db.entity;
+package org.opennms.horizon.server.mapper.alert;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.TenantId;
+import org.mapstruct.CollectionMappingStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
+import org.opennms.horizon.server.model.alerts.PolicyRule;
+import org.opennms.horizon.shared.alert.policy.PolicyRuleProto;
 
-@Getter
-@Setter
-@MappedSuperclass
-public abstract class TenantAwareEntity {
-
-    @TenantId
-    @Column (name = "tenant_id")
-    private String tenantId;
-
+@Mapper(componentModel = "spring", uses = {TriggerEventMapper.class},nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+    collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
+public interface PolicyRuleMapper {
+    @Mapping(target = "triggerEvents", source = "snmpEventsList")
+    PolicyRule map(PolicyRuleProto proto);
+    @Mapping(target = "snmpEventsList", source = "triggerEvents")
+    PolicyRuleProto map(PolicyRule rule);
 }
