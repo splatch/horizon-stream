@@ -1,3 +1,4 @@
+import { flowApptoChartJSLine } from '@/dtos/chartJS.dto'
 import { ChartData } from 'chart.js'
 import { format } from 'date-fns'
 import { defineStore } from 'pinia'
@@ -38,8 +39,8 @@ export const useFlowsStore = defineStore('flowsStore', {
       const returnedTableDataSets = [
         {
           label: 'app_0',
-          bytesIn: 20809,
-          bytesOut: 59755
+          bytesIn: 407371,
+          bytesOut: 402374
         },
         {
           label: 'app_1',
@@ -92,83 +93,140 @@ export const useFlowsStore = defineStore('flowsStore', {
       //Will be replaced with a BE call
       const returnedLineDataSets = [
         {
-          label: 'app0',
-          data: [
-            {
-              timestamp: '2023-03-23T01:01:25Z',
-              value: 138790.1750375429,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:09:47Z',
-              value: 216861.9119974472,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:18:07Z',
-              value: 202966.96568806906,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:26:27Z',
-              value: 264173.0346710393,
-              direction: 'EGRESS'
-            }
-          ]
+          timestamp: '2023-01-10T01:01:25Z',
+          label: 'app_0',
+          value: 138790.1750375429,
+          direction: 'EGRESS'
         },
         {
-          label: 'app1',
-          data: [
-            {
-              timestamp: '2023-03-23T01:09:47Z',
-              value: 675859.8717571729,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:18:07Z',
-              value: 703441.1031400502,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:26:27Z',
-              value: 277710.0783393889,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:34:47Z',
-              value: -928133.4566595472,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:43:07Z',
-              value: 299538.99195372575,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:51:27Z',
-              value: 264867.46362876357,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:59:47Z',
-              value: 738735.9705331036,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T02:08:07Z',
-              value: 761950.6966375934,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T02:16:27Z',
-              value: 995884.662063265,
-              direction: 'EGRESS'
-            }
-          ]
+          timestamp: '2023-01-10T01:09:47Z',
+          label: 'app_0',
+          value: 216861.9119974472,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:18:07Z',
+          label: 'app_0',
+          value: 202966.96568806906,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:26:27Z',
+          label: 'app_0',
+          value: 264173.0346710393,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:34:47Z',
+          label: 'app_0',
+          value: 28631.814024643267,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:43:07Z',
+          label: 'app_0',
+          value: 446770.59738684486,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:51:27Z',
+          label: 'app_0',
+          value: 475634.2969400164,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:59:47Z',
+          label: 'app_0',
+          value: 291804.2768482603,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T02:08:07Z',
+          label: 'app_0',
+          value: 192281.57332635063,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T02:16:27Z',
+          label: 'app_0',
+          value: 781683.5022437341,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:01:27Z',
+          label: 'app_1',
+          value: 446316.3858784942,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:09:47Z',
+          label: 'app_1',
+          value: 675859.8717571729,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:18:07Z',
+          label: 'app_1',
+          value: 703441.1031400502,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:26:27Z',
+          label: 'app_1',
+          value: 277710.0783393889,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:34:47Z',
+          label: 'app_1',
+          value: 928133.4566595472,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:43:07Z',
+          label: 'app_1',
+          value: 299538.99195372575,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:51:27Z',
+          label: 'app_1',
+          value: 264867.46362876357,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T01:59:47Z',
+          label: 'app_1',
+          value: 738735.9705331036,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T02:08:07Z',
+          label: 'app_1',
+          value: 761950.6966375934,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-01-10T02:16:27Z',
+          label: 'app_1',
+          value: 995884.662063265,
+          direction: 'EGRESS'
+        },
+        {
+          timestamp: '2023-03-24T00:40:37Z',
+          label: 'ipsec-nat-t',
+          value: 798,
+          direction: 'INGRESS'
+        },
+        {
+          timestamp: '2023-03-24T01:40:37Z',
+          label: 'ipsec-nat-t',
+          value: 9133508,
+          direction: 'INGRESS'
         }
       ]
 
-      this.lineDatasets = returnedLineDataSets
+      this.lineDatasets = flowApptoChartJSLine(returnedLineDataSets)
     },
     createTableChartData() {
       //Dummy Data until BE is hooked up.
@@ -214,7 +272,7 @@ export const useFlowsStore = defineStore('flowsStore', {
     createLineChartData() {
       const datasetArr = {
         type: 'line',
-        datasets: this.lineDatasets.map((element, i) => {
+        datasets: this.lineDatasets.map((element) => {
           return {
             label: element.label,
             data: element.data.map((data: any) => {

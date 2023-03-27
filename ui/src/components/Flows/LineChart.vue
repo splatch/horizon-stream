@@ -43,7 +43,9 @@ const chartOptions = computed<ChartOptions<any>>(() => {
     cubicInterpolationMode: 'monotone',
     maintainAspectRatio: false,
     interaction: {
-      mode: 'x'
+      mode: 'nearest',
+      intersect: false,
+      axis: 'x'
     },
     plugins: {
       legend: {
