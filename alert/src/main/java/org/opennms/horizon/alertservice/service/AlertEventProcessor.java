@@ -28,16 +28,18 @@
 
 package org.opennms.horizon.alertservice.service;
 
-import com.google.common.base.Strings;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.RequiredArgsConstructor;
+import java.util.Date;
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
+
 import org.opennms.horizon.alerts.proto.Alert;
 import org.opennms.horizon.alerts.proto.AlertDefinition;
 import org.opennms.horizon.alerts.proto.AlertType;
 import org.opennms.horizon.alerts.proto.ManagedObjectType;
 import org.opennms.horizon.alertservice.db.repository.AlertDefinitionRepository;
 import org.opennms.horizon.alertservice.db.repository.AlertRepository;
+import org.opennms.horizon.alertservice.db.tenant.TenantLookup;
 import org.opennms.horizon.events.proto.Event;
 import org.opennms.horizon.model.common.proto.Severity;
 import org.slf4j.Logger;
@@ -45,9 +47,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.Optional;
+import com.google.common.base.Strings;
+
+import io.grpc.Context;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Used to process/reduce events to alerts.
@@ -66,6 +71,8 @@ public class AlertEventProcessor {
     private final MeterRegistry registry;
 
     private Counter eventsWithoutAlertDataCounter;
+
+    private final TenantLookup tenantLookup;
 
     @PostConstruct
     public void init() {
@@ -101,25 +108,28 @@ public class AlertEventProcessor {
         }
         AlertData alertData = getAlertData(event, alertDef);
 
-        org.opennms.horizon.alertservice.db.entity.Alert alert = null;
+        Optional<org.opennms.horizon.alertservice.db.entity.Alert> optionalAlert = Optional.empty();
         if (alertData.clearKey() != null) {
             // If a clearKey is set, determine if there is an existing alert, and reduce onto that one
-            alert = alertRepository.findByReductionKey(alertData.clearKey());
-            if (alert == null) {
+            optionalAlert = tenantLookup.lookupTenantId(Context.current())
+                .map(tenantId -> alertRepository.findByReductionKeyAndTenantId(alertData.clearKey(), tenantId));
+            if (optionalAlert.isEmpty()) {
                 LOG.debug("No existing alert found with clear key: {}. This is possibly an out-of-order event: {}", alertData.clearKey(), event);
             }
         }
-
-        if (alert == null) {
+        if (optionalAlert.isEmpty()) {
             // If we didn't find an existing alert to reduce to with the clearKey, the lookup by reductionKey
-            alert = alertRepository.findByReductionKey(alertData.reductionKey());
+            optionalAlert = tenantLookup.lookupTenantId(Context.current())
+                .map(tenantId -> alertRepository.findByReductionKeyAndTenantId(alertData.reductionKey(), tenantId));
         }
 
-        if (alert == null ) {
+        org.opennms.horizon.alertservice.db.entity.Alert alert;
+        if (optionalAlert.isEmpty()) {
             // No existing alert found, create a new one
             alert = createNewAlert(event, alertData);
         } else {
             // Existing alert found, update it
+            alert = optionalAlert.get();
             alert.incrementCount();
             alert.setLastEventId(event.getDatabaseId());
             alert.setType(alertData.type());

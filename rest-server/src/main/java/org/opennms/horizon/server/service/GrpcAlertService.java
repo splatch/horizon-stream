@@ -58,24 +58,30 @@ public class GrpcAlertService {
     @GraphQLQuery
     public Mono<AlertResponse> findAllAlerts(@GraphQLArgument(name = "pageSize") Integer pageSize,
                                              @GraphQLArgument(name = "page") String page,
-                                             @GraphQLArgument(name = "filter") String filter,
-                                             @GraphQLArgument(name = "filterValues") List<String> filterValues,
+                                             @GraphQLArgument(name = "hours") long hours,
+                                             @GraphQLArgument(name = "severities") List<String> severities,
                                              @GraphQLArgument(name = "sortBy") String sortBy,
                                              @GraphQLArgument(name = "sortAscending") boolean sortAscending,
                                              @GraphQLEnvironment ResolutionEnvironment env) {
-        return Mono.just(mapper.protoToAlertResponse(alertsClient.listAlerts(pageSize, page, filter, filterValues, sortBy, sortAscending, headerUtil.getAuthHeader(env))));
+        return Mono.just(mapper.protoToAlertResponse(alertsClient.listAlerts(pageSize, page, severities, hours, sortBy, sortAscending, headerUtil.getAuthHeader(env))));
     }
 
-    @GraphQLQuery
-    public Mono<Long> countAlerts(@GraphQLArgument(name = "filter") String filter,
-                                  @GraphQLArgument(name = "filterValues") List<String> filterValues,
+    @GraphQLQuery(
+        name = "countAlerts",
+        description = "Returns the total count of alerts filtered by severity and time."
+    )
+    public Mono<Long> countAlerts(@GraphQLArgument(name = "hours") long hours,
+                                  @GraphQLArgument(name = "severityFilters") List<String> severityFilters,
                                   @GraphQLEnvironment ResolutionEnvironment env) {
-        return Mono.just(alertsClient.countAlerts(filter, filterValues, headerUtil.getAuthHeader(env)));
+        return Mono.just(alertsClient.countAlerts(severityFilters, hours, headerUtil.getAuthHeader(env)));
     }
 
-    @GraphQLQuery
+    @GraphQLQuery(
+        name = "countAlerts",
+        description = "Returns the total count of alerts for the last 24h."
+    )
     public Mono<Long> countAlerts(@GraphQLEnvironment ResolutionEnvironment env) {
-        return Mono.just(alertsClient.countAlerts(null, null, headerUtil.getAuthHeader(env)));
+        return Mono.just(alertsClient.countAlerts(null, 0L, headerUtil.getAuthHeader(env)));
     }
 
     @GraphQLMutation

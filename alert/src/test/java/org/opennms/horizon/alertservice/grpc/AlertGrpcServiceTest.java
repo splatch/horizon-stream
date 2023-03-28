@@ -52,6 +52,8 @@ import org.opennms.horizon.alerts.proto.ListAlertsResponse;
 import org.opennms.horizon.alertservice.api.AlertService;
 import org.opennms.horizon.alertservice.db.entity.Alert;
 import org.opennms.horizon.alertservice.db.repository.AlertRepository;
+import org.opennms.horizon.alertservice.db.tenant.GrpcTenantLookupImpl;
+import org.opennms.horizon.alertservice.db.tenant.TenantLookup;
 import org.opennms.horizon.alertservice.service.AlertMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -71,13 +73,14 @@ public class AlertGrpcServiceTest extends AbstractGrpcUnitTest {
     private ManagedChannel channel;
     private AlertMapper mockAlertMapper;
     private AlertRepository mockAlertRepository;
+    protected TenantLookup tenantLookup = new GrpcTenantLookupImpl();
 
     @BeforeEach
     public void prepareTest() throws VerificationException, IOException {
         mockAlertService = mock(AlertService.class);
         mockAlertRepository = mock(AlertRepository.class);
         mockAlertMapper = mock(AlertMapper.class);
-        AlertGrpcService grpcService = new AlertGrpcService(mockAlertMapper, mockAlertRepository, mockAlertService);
+        AlertGrpcService grpcService = new AlertGrpcService(mockAlertMapper, mockAlertRepository, mockAlertService, tenantLookup);
         startServer(grpcService);
         channel = InProcessChannelBuilder.forName(serverName).directExecutor().build();
         stub = AlertServiceGrpc.newBlockingStub(channel);
@@ -101,12 +104,14 @@ public class AlertGrpcServiceTest extends AbstractGrpcUnitTest {
     void testListAlerts() throws VerificationException {
         Page<org.opennms.horizon.alertservice.db.entity.Alert> page = mock(Page.class);
         doReturn(Arrays.asList(alert1, alert2)).when(page).getContent();
-        doReturn(page).when(mockAlertRepository).findAll(any(PageRequest.class));
+        doReturn(page).when(mockAlertRepository).findBySeverityInAndLastEventTimeBetweenAndTenantId(any(), any(), any(), any(), any());
         when(mockAlertMapper.toProto(any(org.opennms.horizon.alertservice.db.entity.Alert.class))).thenReturn(alertProto1, alertProto2);
-        ListAlertsResponse result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listAlerts(ListAlertsRequest.newBuilder().build());
+        when(mockAlertMapper.toProto(any(org.opennms.horizon.alertservice.db.entity.Alert.class))).thenReturn(alertProto1, alertProto2);
+        ListAlertsResponse result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders()))
+            .listAlerts(ListAlertsRequest.newBuilder().build());
         assertThat(result.getAlertsList().size()).isEqualTo(2);
         ArgumentCaptor<PageRequest> pageRequestCaptor = ArgumentCaptor.forClass(PageRequest.class);
-        verify(mockAlertRepository).findAll(pageRequestCaptor.capture());
+        verify(mockAlertRepository).findBySeverityInAndLastEventTimeBetweenAndTenantId(any(), any(), any(), pageRequestCaptor.capture(), any());
         verify(spyInterceptor).verifyAccessToken(authHeader);
         verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
 
@@ -114,22 +119,4 @@ public class AlertGrpcServiceTest extends AbstractGrpcUnitTest {
         assertThat(pageRequestCaptor.getValue().getPageSize()).isEqualTo(10);
         assertThat(pageRequestCaptor.getValue().getSort().getOrderFor("alertId").getDirection()).isEqualTo(org.springframework.data.domain.Sort.Direction.DESC);
     }
-
-//    @Test
-//    void testListAlertsWithTime() throws VerificationException {
-//        Page<org.opennms.horizon.alertservice.db.entity.Alert> page = mock(Page.class);
-//        doReturn(Arrays.asList(alert1, alert2)).when(page).getContent();
-//        doReturn(page).when(mockAlertRepository).findAll(any(PageRequest.class));
-//        when(mockAlertMapper.toProto(any(org.opennms.horizon.alertservice.db.entity.Alert.class))).thenReturn(alertProto1, alertProto2);
-//        ListAlertsResponse result = stub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(createHeaders())).listAlerts(ListAlertsRequest.newBuilder().setFilter("time").addFilterValues("7d").build());
-//        assertThat(result.getAlertsList().size()).isEqualTo(2);
-//        ArgumentCaptor<PageRequest> pageRequestCaptor = ArgumentCaptor.forClass(PageRequest.class);
-//        verify(mockAlertRepository).findAll(pageRequestCaptor.capture());
-//        verify(spyInterceptor).verifyAccessToken(authHeader);
-//        verify(spyInterceptor).interceptCall(any(ServerCall.class), any(Metadata.class), any(ServerCallHandler.class));
-//
-//        assertThat(pageRequestCaptor.getValue().getPageNumber()).isEqualTo(0);
-//        assertThat(pageRequestCaptor.getValue().getPageSize()).isEqualTo(10);
-//        assertThat(pageRequestCaptor.getValue().getSort().getOrderFor("alertId").getDirection()).isEqualTo(org.springframework.data.domain.Sort.Direction.DESC);
-//    }
 }

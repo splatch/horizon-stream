@@ -93,9 +93,9 @@ public class GraphQLAlertsServiceTest {
 
     @Test
     public void testFindAllAlerts() throws JSONException {
-        doReturn(ListAlertsResponse.newBuilder().addAlerts(alerts1).addAlerts(alerts2).build()).when(mockClient).listAlerts(5, "0", "severity", Collections.singletonList("CRITICAL"), "tenantId", true, accessToken);
+        doReturn(ListAlertsResponse.newBuilder().addAlerts(alerts1).addAlerts(alerts2).build()).when(mockClient).listAlerts(5, "0", Collections.singletonList("CRITICAL"), 0L, "tenantId", true, accessToken);
         String request = "query {\n" +
-            "  findAllAlerts(pageSize: 5, page: \"0\", filter: \"severity\", filterValues: [\"CRITICAL\"], sortBy: \"tenantId\", sortAscending: true) {\n" +
+            "  findAllAlerts(pageSize: 5, page: \"0\", hours: \"0\", severities: [\"CRITICAL\"], sortBy: \"tenantId\", sortAscending: true) {\n" +
             "    nextPageToken\n" +
             "    alerts {\n" +
             "      tenantId\n" +
@@ -121,7 +121,7 @@ public class GraphQLAlertsServiceTest {
             .jsonPath("$.data.findAllAlerts.alerts[0].tenantId").isEqualTo(alerts1.getTenantId())
             .jsonPath("$.data.findAllAlerts.alerts[0].severity").isEqualTo(alerts1.getSeverity().name())
             .jsonPath("$.data.findAllAlerts.alerts[0].reductionKey").isEqualTo(alerts1.getReductionKey());
-        verify(mockClient).listAlerts(5, "0", "severity", Collections.singletonList("CRITICAL"), "tenantId", true, accessToken);
+        verify(mockClient).listAlerts(5, "0", Collections.singletonList("CRITICAL"), 0L, "tenantId", true, accessToken);
         verify(mockHeaderUtil, times(1)).getAuthHeader(any(ResolutionEnvironment.class));
     }
 

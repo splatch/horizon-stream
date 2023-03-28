@@ -40,13 +40,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AlertRepository extends JpaRepository<Alert, Long> {
-    Alert findByReductionKey(String reductionKey);
 
-    Page<Alert> findBySeverityIn(List<Severity> severityList, Pageable pageable);
+    Alert findByReductionKeyAndTenantId(String reductionKey, String tenantId);
 
-    Page<Alert> findByLastEventTimeBetween(Date start, Date end, Pageable pageable);
+    Page<Alert> findBySeverityInAndLastEventTimeBetweenAndTenantId(List<Severity> severityList, Date start, Date end, Pageable pageable, String tenantId);
 
-    Page<Alert> findBySeverityInAndLastEventTimeBetween(List<Severity> severityList, Date start, Date end, Pageable pageable);
-
-    int countAlertBySeverityIn(List<Severity> severityList);
+    int countAlertBySeverityInAndLastEventTimeBetweenAndTenantId(List<Severity> severityList, Date start, Date end, String tenantId);
 }

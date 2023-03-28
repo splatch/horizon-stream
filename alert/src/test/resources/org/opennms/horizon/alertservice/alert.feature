@@ -146,22 +146,21 @@ Feature: Alert Service Basic Functionality
       | alerts[1].severity == MAJOR |
     Then Send event with UEI "uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down" with tenant "tenantJ" with node 12 with severity "MINOR" with produced time 8 days ago
     Then List alerts for tenant "tenantJ", with timeout 5000ms, until JSON response matches the following JSON path expressions
-      | alerts.size() == 3              |
-      | alerts[0].counter == 1          |
-      | alerts[0].severity == MINOR     |
-      | alerts[1].severity == MAJOR     |
-      | alerts[2].severity == MINOR     |
-    Then Send event with UEI "uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down" with tenant "tenantJ" with node 13 with severity "MINOR" with produced time last month
-    Then List alerts for tenant "tenantJ" with time "7d", with timeout 5000ms, until JSON response matches the following JSON path expressions
       | alerts.size() == 2              |
       | alerts[0].counter == 1          |
       | alerts[0].severity == MINOR     |
       | alerts[1].severity == MAJOR     |
-    Then List alerts for tenant "tenantJ" with time "today", with timeout 5000ms, until JSON response matches the following JSON path expressions
+    Then Send event with UEI "uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down" with tenant "tenantJ" with node 13 with severity "MINOR" with produced time last month
+    Then List alerts for tenant "tenantJ" with hours 168, with timeout 5000ms, until JSON response matches the following JSON path expressions
+      | alerts.size() == 2              |
+      | alerts[0].counter == 1          |
+      | alerts[0].severity == MINOR     |
+      | alerts[1].severity == MAJOR     |
+    Then List alerts for tenant "tenantJ" today , with timeout 5000ms, until JSON response matches the following JSON path expressions
       | alerts.size() == 1              |
       | alerts[0].counter == 1          |
       | alerts[0].severity == MAJOR     |
-    Then List alerts for tenant "tenantJ" with time "24h", with timeout 5000ms, until JSON response matches the following JSON path expressions
+    Then List alerts for tenant "tenantJ" with hours 24, with timeout 5000ms, until JSON response matches the following JSON path expressions
       | alerts.size() == 2              |
       | alerts[0].counter == 1          |
       | alerts[0].severity == MINOR     |
