@@ -133,6 +133,7 @@ onMounted(() => {
 
 watch(props, () => {
   if (props.discovery?.id) {
+    form.clearErrors()
     discoveryQueries.getTagsByActiveDiscoveryId(props.discovery.id)
   }
   discoveryInfo.value = props.discovery || ({} as IcmpActiveDiscoveryCreateInput)
