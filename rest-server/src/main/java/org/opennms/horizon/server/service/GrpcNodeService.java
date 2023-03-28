@@ -66,7 +66,22 @@ public class GrpcNodeService {
 
     @GraphQLQuery
     public Flux<Node> findAllNodes(@GraphQLEnvironment ResolutionEnvironment env) {
-        return Flux.fromIterable(client.listNodes(headerUtil.getAuthHeader(env)).stream().map(mapper::protoToNode).collect(Collectors.toList()));
+        return Flux.fromIterable(client.listNodes(headerUtil.getAuthHeader(env)).stream().map(mapper::protoToNode).toList());
+    }
+
+    @GraphQLQuery
+    public Flux<Node> findAllNodesByMonitoredState(@GraphQLArgument(name = "monitoredState") String monitoredState, @GraphQLEnvironment ResolutionEnvironment env) {
+        return Flux.fromIterable(client.listNodesByMonitoredState(monitoredState, headerUtil.getAuthHeader(env)).stream().map(mapper::protoToNode).toList());
+    }
+
+    @GraphQLQuery
+    public Flux<Node> findAllNodesByNodeLabelSearch(@GraphQLArgument(name = "labelSearchTerm") String labelSearchTerm, @GraphQLEnvironment ResolutionEnvironment env) {
+        return Flux.fromIterable(client.listNodesByNodeLabelSearch(labelSearchTerm, headerUtil.getAuthHeader(env)).stream().map(mapper::protoToNode).toList());
+    }
+
+    @GraphQLQuery
+    public Flux<Node> findAllNodesByTags(@GraphQLArgument(name = "tags") List<String> tags, @GraphQLEnvironment ResolutionEnvironment env) {
+        return Flux.fromIterable(client.listNodesByTags(tags, headerUtil.getAuthHeader(env)).stream().map(mapper::protoToNode).toList());
     }
 
     @GraphQLQuery

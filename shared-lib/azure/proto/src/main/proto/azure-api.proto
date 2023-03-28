@@ -41,9 +41,10 @@ message AzureScanItem {
   string id = 1;
   string name = 2;
   string resourceGroup = 3;
-  int64 credential_id = 4;
+  int64 active_discovery_id = 4;
 }
 
+// TODO: the naming here is not Real Obvious - "what's the difference between AzureResponseMetric and AzureResultMetric?"
 message AzureResponseMetric {
   repeated AzureResultMetric results = 2;
 }

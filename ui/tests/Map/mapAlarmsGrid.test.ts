@@ -1,11 +1,11 @@
+import mountWithPiniaVillus from 'tests/mountWithPiniaVillus'
 import MapAlarmsGrid from '@/components/Map/MapAlarmsGrid.vue'
-import setupWrapper from 'tests/setupWrapper'
 import dateFormatDirective from '@/directives/v-date'
 
 let wrapper: any
 
 beforeEach(() => {
-  wrapper = setupWrapper({
+  wrapper = mountWithPiniaVillus({
     component: MapAlarmsGrid,
     global: {
       directives: {
@@ -16,13 +16,13 @@ beforeEach(() => {
 })
 
 const columns = [
-  [ 'ID', 'col-id' ],
-  [ 'SEVERITY', 'col-severity' ],
-  [ 'NODE LABEL', 'col-node-label' ],
-  [ 'UEI', 'col-uei' ],
-  [ 'COUNT', 'col-count' ],
-  [ 'LAST EVENT', 'col-last-event' ],
-  [ 'LOG MESSAGE', 'col-log-msg' ]
+  ['ID', 'col-id'],
+  ['SEVERITY', 'col-severity'],
+  ['NODE LABEL', 'col-node-label'],
+  ['UEI', 'col-uei'],
+  ['COUNT', 'col-count'],
+  ['LAST EVENT', 'col-last-event'],
+  ['LOG MESSAGE', 'col-log-msg']
 ]
 it.each(columns)('should have %s column', (_, col) => {
   const elem = wrapper.get(`[data-test="${col}"]`)

@@ -60,6 +60,8 @@ spec:
               value: "{{ .Values.OpenNMS.Events.ServiceName }}:{{ .Values.OpenNMS.Events.GrpcPort }}"
             - name: GRPC_URL_NOTIFICATION
               value: "{{ .Values.OpenNMS.Notification.ServiceName }}:{{ .Values.OpenNMS.Notification.GrpcPort }}"
+            - name: GRPC_URL_ALERT
+              value: "{{ .Values.OpenNMS.Alert.ServiceName }}:{{ .Values.OpenNMS.Alert.GrpcPort }}"
           ports:
             - containerPort: {{ .Values.OpenNMS.API.Port }}
           {{/*  TODO    livenessProbe:*/}}
@@ -72,3 +74,7 @@ spec:
             requests:
               cpu: "{{ .Values.OpenNMS.API.Resources.Requests.Cpu }}"
               memory: "{{ .Values.OpenNMS.API.Resources.Requests.Memory }}"
+      {{- if .Values.OpenNMS.API.PrivateRepoEnabled }}
+      imagePullSecrets:
+        - name: image-credentials
+      {{- end }}

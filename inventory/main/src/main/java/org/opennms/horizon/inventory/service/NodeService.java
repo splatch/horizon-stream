@@ -32,9 +32,12 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.opennms.horizon.inventory.discovery.IcmpActiveDiscoveryDTO;
+import org.opennms.horizon.inventory.dto.MonitoredState;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
+import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
@@ -58,6 +61,7 @@ import org.opennms.taskset.contract.TaskDefinition;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,7 +94,6 @@ public class NodeService {
     private final TaskSetPublisher taskSetPublisher;
     private final TagService tagService;
     private final NodeMapper mapper;
-    private final ActiveDiscoveryService activeDiscoveryService;
 
     @Transactional(readOnly = true)
     public List<NodeDTO> findByTenantId(String tenantId) {
@@ -104,6 +107,29 @@ public class NodeService {
     @Transactional(readOnly = true)
     public Optional<NodeDTO> getByIdAndTenantId(long id, String tenantId) {
         return nodeRepository.findByIdAndTenantId(id, tenantId).map(mapper::modelToDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public List<NodeDTO> findByMonitoredState(String tenantId, MonitoredState monitoredState) {
+        return nodeRepository.findByTenantIdAndMonitoredStateEquals(tenantId, monitoredState)
+            .stream().map(mapper::modelToDTO).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Node> getNode(String tenantId, String location, InetAddress primaryIpAddress) {
+
+        var list = nodeRepository.findByTenantId(tenantId);
+        if (list.isEmpty()) {
+            return Optional.empty();
+        }
+        var listOfNodesOnLocation = list.stream().filter(node -> node.getMonitoringLocation().getLocation().equals(location)).toList();
+        if (listOfNodesOnLocation.isEmpty()) {
+            return Optional.empty();
+        }
+        return listOfNodesOnLocation.stream().filter(node ->
+            node.getIpInterfaces().stream().anyMatch(ipInterface -> ipInterface.getSnmpPrimary() &&
+                ipInterface.getIpAddress().equals(primaryIpAddress))).findFirst();
+
     }
 
     private void saveIpInterfaces(NodeCreateDTO request, Node node, String tenantId) {
@@ -148,6 +174,9 @@ public class NodeService {
         node.setTenantId(tenantId);
         node.setNodeLabel(request.getLabel());
         node.setScanType(scanType);
+        if (request.hasMonitoredState()) {
+            node.setMonitoredState(request.getMonitoredState());
+        }
         node.setCreateTime(LocalDateTime.now());
         node.setMonitoringLocation(monitoringLocation);
         node.setMonitoringLocationId(monitoringLocation.getId());
@@ -162,22 +191,12 @@ public class NodeService {
         saveIpInterfaces(request, node, tenantId);
 
         tagService.addTags(tenantId, TagCreateListDTO.newBuilder()
-            .setNodeId(node.getId())
+            .addEntityIds(TagEntityIdDTO.newBuilder()
+                .setNodeId(node.getId()))
             .addAllTags(request.getTagsList())
             .build());
 
         return node;
-    }
-
-    @Transactional
-    public Map<String, Map<String, List<NodeDTO>>> listAllNodeForMonitoring() {
-        Map<String, Map<String, List<NodeDTO>>> nodesByTenantLocation = new HashMap<>();
-        nodeRepository.findAll().forEach(node -> {
-            Map<String, List<NodeDTO>> nodeByLocation = nodesByTenantLocation.computeIfAbsent(node.getTenantId(), (tenantId) -> new HashMap<>());
-            List<NodeDTO> nodeList = nodeByLocation.computeIfAbsent(node.getMonitoringLocation().getLocation(), location -> new ArrayList<>());
-            nodeList.add(mapper.modelToDTO(node));
-        });
-        return nodesByTenantLocation;
     }
 
     @Transactional
@@ -216,9 +235,9 @@ public class NodeService {
             ipInterface.getMonitoredServices().forEach((ms) -> {
                 String serviceName = ms.getMonitoredServiceType().getServiceName();
                 var monitorType = MonitorType.valueOf(serviceName);
-                var monitorTask = monitorTaskSetService.getMonitorTask(monitorType, ipInterface, node.getId());
+                var monitorTask = monitorTaskSetService.getMonitorTask(monitorType, ipInterface, node.getId(), null);
                 Optional.ofNullable(monitorTask).ifPresent(tasks::add);
-                var collectorTask = collectorTaskSetService.getCollectorTask(monitorType, ipInterface, node.getId());
+                var collectorTask = collectorTaskSetService.getCollectorTask(monitorType, ipInterface, node.getId(), null);
                 Optional.ofNullable(collectorTask).ifPresent(tasks::add);
             });
         });
@@ -236,36 +255,42 @@ public class NodeService {
         }
     }
 
-    public void sendNewNodeTaskSetAsync(Node node, long activeDiscoveryId) {
-        executorService.execute(() -> sendTaskSetsToMinion(node, activeDiscoveryId));
+    public void sendNewNodeTaskSetAsync(Node node, String location, IcmpActiveDiscoveryDTO icmpDiscoveryDTO) {
+        executorService.execute(() -> sendTaskSetsToMinion(node, location, icmpDiscoveryDTO));
     }
 
-    private void sendTaskSetsToMinion(Node node, long activeDiscoveryId) {
+    private void sendTaskSetsToMinion(Node node, String location, IcmpActiveDiscoveryDTO icmpDiscoveryDTO) {
 
         List<SnmpConfiguration> snmpConfigs = new ArrayList<>();
-
         try {
-            var optional = activeDiscoveryService.getDiscoveryConfigById(activeDiscoveryId, node.getTenantId());
-            if (optional.isPresent()) {
-                var activeDiscoveryDTO = optional.get();
-                var snmpConf = activeDiscoveryDTO.getSnmpConf();
-                snmpConf.getReadCommunityList().forEach(readCommunity -> {
-                    var builder = SnmpConfiguration.newBuilder()
-                        .setReadCommunity(readCommunity);
-                    snmpConfigs.add(builder.build());
-                });
-                snmpConf.getPortsList().forEach(port -> {
-                    var builder = SnmpConfiguration.newBuilder()
-                        .setPort(port);
-                    snmpConfigs.add(builder.build());
-                });
-            }
-            detectorTaskSetService.sendDetectorTasks(node);
+            var snmpConf = icmpDiscoveryDTO.getSnmpConf();
+            snmpConf.getReadCommunityList().forEach(readCommunity -> {
+                var builder = SnmpConfiguration.newBuilder()
+                    .setReadCommunity(readCommunity);
+                snmpConfigs.add(builder.build());
+            });
+            snmpConf.getPortsList().forEach(port -> {
+                var builder = SnmpConfiguration.newBuilder()
+                    .setPort(port);
+                snmpConfigs.add(builder.build());
+            });
             scannerTaskSetService.sendNodeScannerTask(mapper.modelToDTO(node),
-                node.getMonitoringLocation().getLocation(), snmpConfigs);
+                location, snmpConfigs);
         } catch (Exception e) {
-            log.error("Error while sending detector/nodescan task for node with label {}", node.getNodeLabel());
+            log.error("Error while sending nodescan task for node with label {}", node.getNodeLabel());
         }
+    }
+    
+    @Transactional(readOnly = true)
+    public List<NodeDTO> listNodesByNodeLabelSearch(String tenantId, String nodeLabelSearchTerm) {
+        return nodeRepository.findByTenantIdAndNodeLabelLike(tenantId, nodeLabelSearchTerm).stream()
+            .map(mapper::modelToDTO).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<NodeDTO> listNodesByTags(String tenantId, List<String> tags) {
+        return nodeRepository.findByTenantIdAndTagNamesIn(tenantId, tags).stream()
+            .map(mapper::modelToDTO).toList();
     }
 
 }

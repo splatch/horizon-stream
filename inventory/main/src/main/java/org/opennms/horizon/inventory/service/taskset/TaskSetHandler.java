@@ -32,8 +32,9 @@ package org.opennms.horizon.inventory.service.taskset;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.azure.api.AzureScanItem;
-import org.opennms.horizon.inventory.model.AzureCredential;
 import org.opennms.horizon.inventory.model.IpInterface;
+import org.opennms.horizon.inventory.service.SnmpConfigService;
+import org.opennms.horizon.inventory.model.discovery.active.AzureActiveDiscovery;
 import org.opennms.horizon.inventory.service.taskset.publisher.TaskSetPublisher;
 import org.opennms.taskset.contract.MonitorType;
 import org.opennms.taskset.contract.TaskDefinition;
@@ -49,37 +50,40 @@ public class TaskSetHandler {
     private final TaskSetPublisher taskSetPublisher;
     private final MonitorTaskSetService monitorTaskSetService;
     private final CollectorTaskSetService collectorTaskSetService;
+    private final SnmpConfigService snmpConfigService;
 
     public void sendMonitorTask(String location, MonitorType monitorType, IpInterface ipInterface, long nodeId) {
         String tenantId = ipInterface.getTenantId();
+        var snmpConfig = snmpConfigService.getSnmpConfig(tenantId, location, ipInterface.getIpAddress());
 
-        var task = monitorTaskSetService.getMonitorTask(monitorType, ipInterface, nodeId);
+        var task = monitorTaskSetService.getMonitorTask(monitorType, ipInterface, nodeId, snmpConfig.orElse(null));
         if (task != null) {
             taskSetPublisher.publishNewTasks(tenantId, location, Arrays.asList(task));
         }
     }
 
-    public void sendAzureMonitorTasks(AzureCredential credential, AzureScanItem item, String ipAddress, long nodeId) {
-        String tenantId = credential.getTenantId();
-        String location = credential.getMonitoringLocation().getLocation();
+    public void sendAzureMonitorTasks(AzureActiveDiscovery discovery, AzureScanItem item, String ipAddress, long nodeId) {
+        String tenantId = discovery.getTenantId();
+        String location = discovery.getLocation();
 
-        TaskDefinition task = monitorTaskSetService.addAzureMonitorTask(credential, item, ipAddress, nodeId);
+        TaskDefinition task = monitorTaskSetService.addAzureMonitorTask(discovery, item, ipAddress, nodeId);
         taskSetPublisher.publishNewTasks(tenantId, location, Arrays.asList(task));
     }
 
     public void sendCollectorTask(String location, MonitorType monitorType, IpInterface ipInterface, long nodeId) {
         String tenantId = ipInterface.getTenantId();
-        var task = collectorTaskSetService.getCollectorTask(monitorType, ipInterface, nodeId);
+        var snmpConfig = snmpConfigService.getSnmpConfig(tenantId, location, ipInterface.getIpAddress());
+        var task = collectorTaskSetService.getCollectorTask(monitorType, ipInterface, nodeId, snmpConfig.orElse(null));
         if (task != null) {
             taskSetPublisher.publishNewTasks(tenantId, location, Arrays.asList(task));
         }
     }
 
-    public void sendAzureCollectorTasks(AzureCredential credential, AzureScanItem item, String ipAddress, long nodeId) {
-        String tenantId = credential.getTenantId();
-        String location = credential.getMonitoringLocation().getLocation();
+    public void sendAzureCollectorTasks(AzureActiveDiscovery discovery, AzureScanItem item, String ipAddress, long nodeId) {
+        String tenantId = discovery.getTenantId();
+        String location = discovery.getLocation();
 
-        TaskDefinition task = collectorTaskSetService.addAzureCollectorTask(credential, item, ipAddress, nodeId);
+        TaskDefinition task = collectorTaskSetService.addAzureCollectorTask(discovery, item, ipAddress, nodeId);
         taskSetPublisher.publishNewTasks(tenantId, location, Arrays.asList(task));
     }
 

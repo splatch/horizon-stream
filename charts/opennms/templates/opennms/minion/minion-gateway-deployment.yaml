@@ -42,6 +42,8 @@ spec:
         - name: minion-gateway-ignite-config-volume
           configMap:
             name: minion-gateway-ignite-config
+        - name: ignite-volume
+          emptyDir: {}
       containers:
         - name: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
           image: {{ .Values.OpenNMS.MinionGateway.Image }}
@@ -76,6 +78,8 @@ spec:
           volumeMounts:
             - name: minion-gateway-ignite-config-volume
               mountPath: "/app/resources/ignite"
+            - name: ignite-volume
+              mountPath: /ignite
           resources:
             limits:
               cpu: "{{ .Values.OpenNMS.MinionGateway.Resources.Limits.Cpu }}"
@@ -83,3 +87,7 @@ spec:
             requests:
               cpu: "{{ .Values.OpenNMS.MinionGateway.Resources.Requests.Cpu }}"
               memory: "{{ .Values.OpenNMS.MinionGateway.Resources.Requests.Memory }}"
+      {{- if .Values.OpenNMS.MinionGateway.PrivateRepoEnabled }}
+      imagePullSecrets:
+        - name: image-credentials
+      {{- end }}

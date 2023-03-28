@@ -99,8 +99,7 @@ public class NodeServiceTest {
             mock(ScannerTaskSetService.class),
             mock(TaskSetPublisher.class),
             tagService,
-            nodeMapper,
-            mock(ActiveDiscoveryService.class));
+            nodeMapper);
 
         Node node = new Node();
         doReturn(node).when(mockNodeRepository).save(any(node.getClass()));

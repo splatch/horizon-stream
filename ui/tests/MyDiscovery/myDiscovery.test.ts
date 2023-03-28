@@ -1,8 +1,8 @@
+import mountWithPiniaVillus from 'tests/mountWithPiniaVillus'
 import MyDiscovery from '@/containers/MyDiscovery.vue'
-import setupWrapper from 'tests/setupWrapper'
 
-const wrapper = setupWrapper({ 
-  component: MyDiscovery 
+const wrapper = mountWithPiniaVillus({
+  component: MyDiscovery
 })
 
 test('The MyDiscovery page container mounts correctly', () => {
