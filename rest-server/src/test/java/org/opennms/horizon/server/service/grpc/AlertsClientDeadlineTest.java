@@ -46,10 +46,12 @@ import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.opennms.horizon.alerts.proto.AlertServiceGrpc;
 import org.opennms.horizon.alerts.proto.ListAlertsRequest;
 import org.opennms.horizon.alerts.proto.ListAlertsResponse;
+import org.opennms.horizon.server.mapper.alert.MonitorPolicyMapper;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import io.grpc.ManagedChannel;
@@ -68,6 +70,7 @@ public class AlertsClientDeadlineTest {
     @Rule
     public static final GrpcCleanupRule grpcCleanUp = new GrpcCleanupRule();
 
+    private static MonitorPolicyMapper mapper;
     private static AlertsClient client;
     private static MockServerInterceptor mockInterceptor;
     private static AlertServiceGrpc.AlertServiceImplBase mockAlertService;
@@ -95,7 +98,8 @@ public class AlertsClientDeadlineTest {
             .build()
             .start());
         ManagedChannel channel = grpcCleanUp.register(InProcessChannelBuilder.forName("AlertsClientDeadlineTest").directExecutor().build());
-        client = new AlertsClient(channel, 1000);
+        mapper = Mappers.getMapper(MonitorPolicyMapper.class);
+        client = new AlertsClient(channel, 1000, mapper);
         client.initialStubs();
     }
 

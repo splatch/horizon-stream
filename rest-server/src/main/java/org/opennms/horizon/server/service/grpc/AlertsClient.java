@@ -39,9 +39,15 @@ import org.opennms.horizon.alerts.proto.ListAlertsRequest;
 import org.opennms.horizon.alerts.proto.ListAlertsResponse;
 import org.opennms.horizon.alerts.proto.TimeRangeFilter;
 import org.opennms.horizon.model.common.proto.Severity;
+import org.opennms.horizon.server.mapper.alert.MonitorPolicyMapper;
+import org.opennms.horizon.server.model.alerts.MonitorPolicy;
+import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
+import org.opennms.horizon.shared.alert.policy.MonitorPolicyServiceGrpc;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import com.google.protobuf.Timestamp;
+import com.google.protobuf.Empty;
+import com.google.protobuf.Int64Value;
 import com.google.protobuf.UInt64Value;
 
 import io.grpc.ManagedChannel;
@@ -54,11 +60,14 @@ public class AlertsClient {
     public static final int DEFAULT_HOURS_DURATION = 24;
     private final ManagedChannel channel;
     private final long deadline;
+    private final MonitorPolicyMapper policyMapper;
 
     private AlertServiceGrpc.AlertServiceBlockingStub alertStub;
+    private MonitorPolicyServiceGrpc.MonitorPolicyServiceBlockingStub policyStub;
 
     protected void initialStubs() {
         alertStub = AlertServiceGrpc.newBlockingStub(channel);
+        policyStub = MonitorPolicyServiceGrpc.newBlockingStub(channel);
     }
 
     public void shutdown() {
@@ -147,5 +156,30 @@ public class AlertsClient {
         Metadata metadata = new Metadata();
         metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         return metadata;
+    }
+
+    public MonitorPolicy createMonitorPolicy(MonitorPolicy policy, String accessToken) {
+        Metadata metadata = new Metadata();
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        MonitorPolicyProto newPolicy = policyStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+            .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).createPolicy(policyMapper.map(policy));
+        return policyMapper.map(newPolicy);
+    }
+
+    public List<MonitorPolicy> listMonitorPolicies(String accessToken) {
+        Metadata metadata = new Metadata();
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        return policyStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+            .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).listPolicies(Empty.getDefaultInstance())
+            .getPoliciesList().stream().map(policyMapper::map).toList();
+    }
+
+    public MonitorPolicy getMonitorPolicyById(Long id, String accessToken) {
+        Metadata metadata = new Metadata();
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        return policyMapper.map(policyStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+            .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)
+            .getPolicyById(Int64Value.of(id)));
     }
 }

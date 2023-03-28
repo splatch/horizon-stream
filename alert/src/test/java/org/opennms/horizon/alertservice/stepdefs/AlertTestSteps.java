@@ -31,6 +31,18 @@ package org.opennms.horizon.alertservice.stepdefs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.MessageOrBuilder;
+import com.google.protobuf.UInt64Value;
+import com.google.protobuf.util.JsonFormat;
+
+import io.cucumber.java.en.Then;
+import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
@@ -80,14 +92,7 @@ public class AlertTestSteps {
     private RetryUtils retryUtils;
     private KafkaTestHelper kafkaTestHelper;
     private AlertGrpcClientUtils clientUtils;
-
-    //
-    // Test Configuration
-    //
-    private String applicationBaseHttpUrl;
-    private String applicationBaseGrpcUrl;
-    private String kafkaBootstrapUrl;
-
+    private BackgroundSteps background;
 
     //
     // Test Runtime Data
@@ -98,59 +103,30 @@ public class AlertTestSteps {
     private Alert firstAlertFromLastResponse;
     private Long lastAlertId;
     private String testAlertReductionKey;
-    private String eventTopic;
-    private String alertTopic;
 
 //========================================
 // Constructor
 //----------------------------------------
 
-    public AlertTestSteps(RetryUtils retryUtils, KafkaTestHelper kafkaTestHelper, AlertGrpcClientUtils clientUtils) {
+    public AlertTestSteps(RetryUtils retryUtils, KafkaTestHelper kafkaTestHelper, AlertGrpcClientUtils clientUtils, BackgroundSteps bgSteps) {
         this.retryUtils = retryUtils;
         this.kafkaTestHelper = kafkaTestHelper;
         this.clientUtils = clientUtils;
+        this.background = bgSteps;
+        initKafka();
+    }
+
+    private void initKafka() {
+        kafkaTestHelper.setKafkaBootstrapUrl(background.getKafkaBootstrapUrl());
+        kafkaTestHelper.startConsumerAndProducer(background.getEventTopic(), background.getEventTopic());
+        kafkaTestHelper.startConsumerAndProducer(background.getAlertTopic(), background.getAlertTopic());
     }
 
 //========================================
 // Gherkin Rules
 //========================================
-
-    @Given("Kafka event topic {string}")
-    public void createKafkaTopicForEvents(String eventTopic) {
-        kafkaTestHelper.startConsumerAndProducer(eventTopic, eventTopic);
-        this.eventTopic = eventTopic;
-    }
-
-    @Given("Kafka alert topic {string}")
-    public void createKafkaTopicForAlerts(String alertTopic) {
-        kafkaTestHelper.startConsumerAndProducer(alertTopic, alertTopic);
-        this.alertTopic = alertTopic;
-    }
-
-    @Given("Application base HTTP URL in system property {string}")
-    public void applicationBaseHttpUrlInSystemProperty(String systemProperty) {
-        this.applicationBaseHttpUrl = System.getProperty(systemProperty);
-
-        log.info("Using base HTTP URL {}", this.applicationBaseHttpUrl);
-    }
-
-    @Given("Application base gRPC URL in system property {string}")
-    public void applicationBaseGrpcUrlInSystemProperty(String systemProperty) {
-        this.applicationBaseGrpcUrl = System.getProperty(systemProperty);
-
-        log.info("Using base gRPC URL: {}", this.applicationBaseGrpcUrl);
-    }
-
-    @Given("Kafka bootstrap URL in system property {string}")
-    public void kafkaRestServerURLInSystemProperty(String systemProperty) {
-        this.kafkaBootstrapUrl = System.getProperty(systemProperty);
-        this.kafkaTestHelper.setKafkaBootstrapUrl(kafkaBootstrapUrl);
-
-        log.info("Using Kafka base URL: {}", this.kafkaBootstrapUrl);
-    }
-
-    @Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string}")
-    public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenantId, int nodeId, String severity) {
+@Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string}")
+public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenantId, int nodeId, String severity) {
         EventLog eventLog = EventLog.newBuilder()
             .setTenantId(tenantId)
             .addEvents(Event.newBuilder()
@@ -161,7 +137,7 @@ public class AlertTestSteps {
                 .setUei(eventUei))
             .build();
 
-        kafkaTestHelper.sendToTopic(eventTopic, eventLog.toByteArray(), tenantId);
+        kafkaTestHelper.sendToTopic(background.getEventTopic(), eventLog.toByteArray(), tenantId);
     }
 
     @Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string} with produced time 23h ago")
@@ -460,7 +436,7 @@ public class AlertTestSteps {
     }
 
     private void commonSendGetRequestToApplication(String path) throws MalformedURLException {
-        URL requestUrl = new URL(new URL(this.applicationBaseHttpUrl), path);
+        URL requestUrl = new URL(new URL(background.getApplicationBaseHttpUrl()), path);
 
         RestAssuredConfig restAssuredConfig = this.createRestAssuredTestConfig();
 
@@ -528,7 +504,7 @@ public class AlertTestSteps {
 
     private boolean checkNumberOfMessageForOneTenant(String tenant, int expectedMessages) {
         int foundMessages = 0;
-        List<ConsumerRecord<String, byte[]>> records = kafkaTestHelper.getConsumedMessages(alertTopic);
+        List<ConsumerRecord<String, byte[]>> records = kafkaTestHelper.getConsumedMessages(background.getAlertTopic());
         for (ConsumerRecord<String, byte[]> record: records) {
             if (record.value() == null) {
                 continue;
