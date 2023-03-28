@@ -144,23 +144,22 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
     }
 
     private static void getFilter(ListAlertsRequest request, List<Date> timeRange, List<Severity> severities) {
-        if(request.getFiltersList().isEmpty()) {
+        request.getFiltersList().forEach(filter -> {
+            if (filter.hasSeverity()) {
+                severities.add(Severity.valueOf(filter.getSeverity().name()));
+            }
+            if (filter.hasTimeRange()) {
+                timeRange.add(convertTimestampToDate(filter.getTimeRange().getStartTime()));
+                timeRange.add(convertTimestampToDate(filter.getTimeRange().getEndTime()));
+            }
+        });
+
+        if (timeRange.isEmpty()) {
             getDefaultTimeRange(timeRange);
+        }
+
+        if (severities.isEmpty()) {
             getAllSeverities(severities);
-        } else {
-            request.getFiltersList().forEach(filter -> {
-                if (filter.hasSeverity()) {
-                    severities.add(Severity.valueOf(filter.getSeverity().name()));
-                } else {
-                    getAllSeverities(severities);
-                }
-                if (filter.hasTimeRange()) {
-                    timeRange.add(convertTimestampToDate(filter.getTimeRange().getStartTime()));
-                    timeRange.add(convertTimestampToDate(filter.getTimeRange().getEndTime()));
-                } else {
-                    getDefaultTimeRange(timeRange);
-                }
-            });
         }
     }
 
