@@ -31,18 +31,6 @@ package org.opennms.horizon.alertservice.stepdefs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.MessageOrBuilder;
-import com.google.protobuf.UInt64Value;
-import com.google.protobuf.util.JsonFormat;
-
-import io.cucumber.java.en.Then;
-import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
@@ -71,7 +59,6 @@ import com.google.protobuf.Timestamp;
 import com.google.protobuf.UInt64Value;
 import com.google.protobuf.util.JsonFormat;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
@@ -152,7 +139,7 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
                 .setUei(eventUei))
             .build();
 
-        kafkaTestHelper.sendToTopic(eventTopic, eventLog.toByteArray(), tenantId);
+        kafkaTestHelper.sendToTopic(background.getEventTopic(), eventLog.toByteArray(), tenantId);
     }
 
     @Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string} with produced time 1h ago")
@@ -167,7 +154,7 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
                 .setUei(eventUei))
             .build();
 
-        kafkaTestHelper.sendToTopic(eventTopic, eventLog.toByteArray(), tenantId);
+        kafkaTestHelper.sendToTopic(background.getEventTopic(), eventLog.toByteArray(), tenantId);
     }
 
     @Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string} with produced time 8 days ago")
@@ -182,7 +169,7 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
                 .setUei(eventUei))
             .build();
 
-        kafkaTestHelper.sendToTopic(eventTopic, eventLog.toByteArray(), tenantId);
+        kafkaTestHelper.sendToTopic(background.getEventTopic(), eventLog.toByteArray(), tenantId);
     }
 
     @Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string} with produced time last month")
@@ -197,7 +184,7 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
                 .setUei(eventUei))
             .build();
 
-        kafkaTestHelper.sendToTopic(eventTopic, eventLog.toByteArray(), tenantId);
+        kafkaTestHelper.sendToTopic(background.getEventTopic(), eventLog.toByteArray(), tenantId);
     }
 
     @Then("List alerts for tenant {string}, with timeout {int}ms, until JSON response matches the following JSON path expressions")
