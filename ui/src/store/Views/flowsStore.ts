@@ -341,6 +341,33 @@ export const useFlowsStore = defineStore('flowsStore', {
       this.filters.dateFilter = e
       this.createLineChartData()
       this.createTableChartData()
+    },
+    getWeekTimeRange() {
+      const endTime = Date.now()
+      const startTime = endTime - 7 * 24 * 60 * 60 * 1000
+      return { startTime, endTime }
+    },
+    get24HTimeRange() {
+      const endTime = Date.now()
+      const startTime = endTime - 24 * 60 * 60 * 1000
+      return { startTime, endTime }
+    },
+    getTodayTimeRange() {
+      const endTime = Date.now()
+      const startTime = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
+      return { startTime, endTime }
+    },
+    getTimeRange() {
+      switch (this.filters.dateFilter) {
+        case 'today':
+          return this.getTodayTimeRange()
+        case '24h':
+          return this.get24HTimeRange()
+        case '7d':
+          return this.getWeekTimeRange()
+        default:
+          return this.getTodayTimeRange()
+      }
     }
   }
 })
