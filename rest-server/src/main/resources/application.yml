@@ -16,9 +16,7 @@ graphql:
     gui:
       enabled: true
     base-packages:
-      - org.opennms.horizon.server.model.inventory
-      - org.opennms.horizon.server.model.events
-      - org.opennms.horizon.server.model.alerts
+      - org.opennms.horizon.server.model
 
 logging:
   file.path: /var/log/restServer
