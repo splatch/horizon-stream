@@ -34,6 +34,17 @@ package opennms.inventory;
 option java_multiple_files = true;
 option java_package = "org.opennms.horizon.shared.alert.policy";
 
+message CreateMonitorPolicyRequest {
+  string name = 1;
+  string memo = 2;
+  repeated CreatePolicyRuleRequest rules = 3;
+  repeated string tags = 4;
+  bool notifyByEmail = 5;
+  bool notifyByPagerDuty = 6;
+  bool notifyByWebhooks = 7;
+  string notifyInstruction = 8;
+}
+
 message MonitorPolicyProto {
   int64 id = 1;
   string tenantId = 2;
@@ -41,7 +52,6 @@ message MonitorPolicyProto {
   string memo = 4;
   repeated PolicyRuleProto rules = 5;
   repeated string tags = 6;
-  //Notification
   bool notifyByEmail = 7;
   bool notifyByPagerDuty = 8;
   bool notifyByWebhooks = 9;
@@ -49,10 +59,17 @@ message MonitorPolicyProto {
 }
 
 enum ComponentType {
-  CPU = 0;
-  INTERFACE = 1;
-  STORAGE = 2;
-  NODE = 3;
+  UNKNOWN_CONTENT = 0;
+  CPU = 1;
+  INTERFACE = 2;
+  STORAGE = 3;
+  NODE = 4;
+}
+
+message CreatePolicyRuleRequest {
+  string name = 1;
+  ComponentType componentType = 2;
+  repeated CreateSNMPEventRequest snmpEvents = 3;
 }
 
 message PolicyRuleProto {
@@ -61,6 +78,15 @@ message PolicyRuleProto {
   string name = 3;
   ComponentType componentType = 4;
   repeated SNMPEventProto snmpEvents = 5;
+}
+
+message CreateSNMPEventRequest {
+  SNMPEventType triggerEvent = 1;
+  int32 count = 2;
+  int32 overtime = 3;
+  OverTimeUnit overtimeUnit = 4;
+  Severity severity = 5;
+  SNMPEventType clearEvent = 6;
 }
 
 message SNMPEventProto {
@@ -80,23 +106,26 @@ message SNMPEventProto {
 }*/
 
 enum OverTimeUnit {
-  SECOND = 0;
-  MINUTE = 1;
-  HOUR = 2;
+  UNKNOWN_UNIT = 0;
+  SECOND = 1;
+  MINUTE = 2;
+  HOUR = 3;
 }
 
 enum SNMPEventType {
-  COLD_REBOOT = 0;
-  SNMP_AUTH_FAILURE = 1;
-  PORT_DOWN = 2;
-  PORT_UP = 3;
+  UNKNOWN_EVENT = 0;
+  COLD_REBOOT = 1;
+  SNMP_AUTH_FAILURE = 2;
+  PORT_DOWN = 3;
+  PORT_UP = 4;
 }
 
 enum Severity {
-  WARNING = 0;
-  MINOR = 1;
-  MAJOR = 2;
-  CRITICAL = 3;
+  UNKNOWN_SEVERITY = 0;
+  WARNING = 1;
+  MINOR = 2;
+  MAJOR = 3;
+  CRITICAL = 4;
 }
 
 message MonitorPolicyList {
@@ -104,7 +133,7 @@ message MonitorPolicyList {
 }
 
 service MonitorPolicyService {
-  rpc createPolicy(MonitorPolicyProto) returns(MonitorPolicyProto);
+  rpc createPolicy(CreateMonitorPolicyRequest) returns(MonitorPolicyProto);
   rpc listPolicies(google.protobuf.Empty) returns(MonitorPolicyList);
   rpc getPolicyById(google.protobuf.Int64Value) returns(MonitorPolicyProto);
 }

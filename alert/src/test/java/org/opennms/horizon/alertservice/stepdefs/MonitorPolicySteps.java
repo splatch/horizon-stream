@@ -36,11 +36,12 @@ import java.util.concurrent.TimeUnit;
 import org.assertj.core.groups.Tuple;
 import org.opennms.horizon.alertservice.AlertGrpcClientUtils;
 import org.opennms.horizon.shared.alert.policy.ComponentType;
+import org.opennms.horizon.shared.alert.policy.CreateMonitorPolicyRequest;
+import org.opennms.horizon.shared.alert.policy.CreatePolicyRuleRequest;
+import org.opennms.horizon.shared.alert.policy.CreateSNMPEventRequest;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyList;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
 import org.opennms.horizon.shared.alert.policy.OverTimeUnit;
-import org.opennms.horizon.shared.alert.policy.PolicyRuleProto;
-import org.opennms.horizon.shared.alert.policy.SNMPEventProto;
 import org.opennms.horizon.shared.alert.policy.SNMPEventType;
 import org.opennms.horizon.shared.alert.policy.Severity;
 
@@ -58,17 +59,16 @@ public class MonitorPolicySteps {
     private final int DEADLINE_DURATION_SECONDS = 10;
     private final String tenantId = "test-tenant";
     private final AlertGrpcClientUtils grpcClient;
-    private MonitorPolicyProto.Builder policyBuilder = MonitorPolicyProto.newBuilder();
-    private PolicyRuleProto.Builder ruleBuilder = PolicyRuleProto.newBuilder();
-    private SNMPEventProto.Builder triggerBuilder = SNMPEventProto.newBuilder();
+    private CreateMonitorPolicyRequest.Builder policyBuilder = CreateMonitorPolicyRequest.newBuilder();
+    private CreatePolicyRuleRequest.Builder ruleBuilder = CreatePolicyRuleRequest.newBuilder();
+    private CreateSNMPEventRequest.Builder triggerBuilder = CreateSNMPEventRequest.newBuilder();
     private Long policyId;
 
     @Given("Monitor policy name {string} and memo {string}")
     public void monitorPolicyNameAndMemo(String name, String memo) {
         policyBuilder
             .setName(name)
-            .setMemo(memo)
-            .setTenantId(tenantId);
+            .setMemo(memo);
     }
 
     @Given("Policy tags")
@@ -79,13 +79,12 @@ public class MonitorPolicySteps {
 
     @Given("Notify by email {string}")
     public void notifyByEmail(String notifyByEmail) {
-        MonitorPolicyProto.Builder builder = policyBuilder.setNotifyByEmail(Boolean.parseBoolean(notifyByEmail));
+        policyBuilder.setNotifyByEmail(Boolean.parseBoolean(notifyByEmail));
     }
 
     @Given("Policy Rule name {string} and componentType {string}")
     public void policyRuleNameAndComponentType(String name, String type) {
         ruleBuilder
-            .setTenantId(tenantId)
             .setName(name)
             .setComponentType(ComponentType.valueOf(type.toUpperCase()));
     }
@@ -93,7 +92,6 @@ public class MonitorPolicySteps {
     @Given("Trigger event {string}, count {int} overtime {int} {string}, severity {string}")
     public void triggerEventCountOvertimeSeverity(String event, Integer count, Integer overTime, String timeUnit, String severity) {
         triggerBuilder.setTriggerEvent(SNMPEventType.valueOf(event.toUpperCase()))
-            .setTenantId(tenantId)
             .setCount(count)
             .setOvertime(overTime)
             .setOvertimeUnit(OverTimeUnit.valueOf(timeUnit.toUpperCase()))
@@ -102,7 +100,7 @@ public class MonitorPolicySteps {
 
     @Then("Create a new policy with give parameters")
     public void createANewPolicyWithGiveParameters() {
-        MonitorPolicyProto policy = policyBuilder.addRules(
+        CreateMonitorPolicyRequest policy = policyBuilder.addRules(
                 ruleBuilder.addSnmpEvents(triggerBuilder.build()).build()
         ).build();
         grpcClient.setTenantId(tenantId);
@@ -126,7 +124,7 @@ public class MonitorPolicySteps {
         assertThat(policy.getRulesList().get(0).getSnmpEventsList()).asList().hasSize(1)
             .extracting("triggerEvent", "count", "overtime", "overtimeUnit", "severity", "clearEvent")
             .containsExactly(Tuple.tuple(triggerBuilder.getTriggerEvent(), triggerBuilder.getCount(), triggerBuilder.getOvertime(),
-                triggerBuilder.getOvertimeUnit(), triggerBuilder.getSeverity(), triggerBuilder.getClearEvent()));
+                triggerBuilder.getOvertimeUnit(), triggerBuilder.getSeverity(), SNMPEventType.UNKNOWN_EVENT));
     }
 
     @Then("List policy should contain {int}")

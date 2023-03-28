@@ -33,6 +33,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
 import org.opennms.horizon.server.model.alerts.PolicyRule;
+import org.opennms.horizon.shared.alert.policy.CreatePolicyRuleRequest;
 import org.opennms.horizon.shared.alert.policy.PolicyRuleProto;
 
 @Mapper(componentModel = "spring", uses = {TriggerEventMapper.class},nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
@@ -42,4 +43,7 @@ public interface PolicyRuleMapper {
     PolicyRule map(PolicyRuleProto proto);
     @Mapping(target = "snmpEventsList", source = "triggerEvents")
     PolicyRuleProto map(PolicyRule rule);
+
+    @Mapping(target = "snmpEventsList", source = "triggerEvents")
+    CreatePolicyRuleRequest mapCreate(PolicyRule rule);
 }
