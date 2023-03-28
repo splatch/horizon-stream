@@ -1,4 +1,4 @@
-import { flowApptoChartJSLine } from '@/dtos/chartJS.dto'
+import { flowsAppDataToChartJS } from '@/dtos/chartJS.dto'
 import { ChartData } from 'chart.js'
 import { format } from 'date-fns'
 import { defineStore } from 'pinia'
@@ -226,7 +226,7 @@ export const useFlowsStore = defineStore('flowsStore', {
         }
       ]
 
-      this.lineDatasets = flowApptoChartJSLine(returnedLineDataSets)
+      this.lineDatasets = flowsAppDataToChartJS(returnedLineDataSets)
     },
     createTableChartData() {
       //Dummy Data until BE is hooked up.
