@@ -342,31 +342,22 @@ export const useFlowsStore = defineStore('flowsStore', {
       this.createLineChartData()
       this.createTableChartData()
     },
-    getWeekTimeRange() {
-      const endTime = Date.now()
-      const startTime = endTime - 7 * 24 * 60 * 60 * 1000
-      return { startTime, endTime }
-    },
-    get24HTimeRange() {
-      const endTime = Date.now()
-      const startTime = endTime - 24 * 60 * 60 * 1000
-      return { startTime, endTime }
-    },
-    getTodayTimeRange() {
-      const endTime = Date.now()
-      const startTime = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
-      return { startTime, endTime }
-    },
-    getTimeRange() {
-      switch (this.filters.dateFilter) {
+    getTimeRange(range: string) {
+      const now = Date.now()
+      let startTime
+      switch (range) {
         case 'today':
-          return this.getTodayTimeRange()
+          startTime = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
+          return { startTime: startTime, endTime: now }
         case '24h':
-          return this.get24HTimeRange()
+          startTime = now - 24 * 60 * 60 * 1000
+          return { startTime: startTime, endTime: now }
         case '7d':
-          return this.getWeekTimeRange()
+          startTime = now - 7 * 24 * 60 * 60 * 1000
+          return { startTime: startTime, endTime: now }
         default:
-          return this.getTodayTimeRange()
+          startTime = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
+          return { startTime: startTime, endTime: now }
       }
     }
   }
