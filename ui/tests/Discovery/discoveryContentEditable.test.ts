@@ -65,7 +65,7 @@ describe('DiscoveryContentEditable', () => {
   })
 
   test('Should validate regex for IP addreess in different format', async () => {
-    const regexp = wrapper.vm.props.regexExpression?.map((r) => new RegExp(r))
+    const regexp = wrapper.vm.props.regexExpression?.map((r: string) => new RegExp(r))
 
     const validIpv4Addresses = [
       '192.0.2.1',
