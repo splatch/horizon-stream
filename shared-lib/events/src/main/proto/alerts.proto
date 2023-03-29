@@ -161,6 +161,16 @@ message ListAlertsResponse {
   // that indicates from where listing should continue.
   string next_page_token = 2;
   string last_page_token = 3;
+  AlertError error = 4;
+}
+
+message CountAlertResponse {
+  int32 count = 1;
+  AlertError error = 2;
+}
+
+message AlertError {
+  string error = 1;
 }
 
 message ListAlertDefinitionsRequest {
@@ -188,7 +198,7 @@ service AlertService {
   rpc clearAlert(google.protobuf.UInt64Value) returns (Alert) {};
   rpc escalateAlert(google.protobuf.UInt64Value) returns (Alert) {};
   rpc deleteAlert(google.protobuf.UInt64Value) returns(google.protobuf.BoolValue) {};
-  rpc countAlerts(ListAlertsRequest) returns (google.protobuf.UInt64Value) {};
+  rpc countAlerts(ListAlertsRequest) returns (CountAlertResponse) {};
 }
 
 service AlertConfigurationService {

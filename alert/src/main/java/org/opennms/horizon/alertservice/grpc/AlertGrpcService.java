@@ -32,12 +32,16 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.opennms.horizon.alerts.proto.Alert;
+import org.opennms.horizon.alerts.proto.AlertError;
 import org.opennms.horizon.alerts.proto.AlertServiceGrpc;
+import org.opennms.horizon.alerts.proto.CountAlertResponse;
 import org.opennms.horizon.alerts.proto.ListAlertsRequest;
 import org.opennms.horizon.alerts.proto.ListAlertsResponse;
 import org.opennms.horizon.alertservice.api.AlertService;
@@ -87,29 +91,33 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
         getFilter(request, timeRange, severities);
 
         Optional<String> lookupTenantId = tenantLookup.lookupTenantId(Context.current());
-        var alertPage = lookupTenantId
-            .map(tenantId -> alertRepository.findBySeverityInAndLastEventTimeBetweenAndTenantId(severities, timeRange.get(0), timeRange.get(1), pageRequest, tenantId))
-            .orElseThrow();
+        try {
+            var alertPage = lookupTenantId
+                .map(tenantId -> alertRepository.findBySeverityInAndLastEventTimeBetweenAndTenantId(severities, timeRange.get(0), timeRange.get(1), pageRequest, tenantId))
+                .orElseThrow();
+            List<Alert> alerts = alertPage.getContent().stream()
+                .map(alertMapper::toProto)
+                .toList();
 
-        List<Alert> alerts = alertPage.getContent().stream()
-            .map(alertMapper::toProto)
-            .toList();
+            ListAlertsResponse.Builder responseBuilder = ListAlertsResponse.newBuilder()
+                .addAllAlerts(alerts);
 
-        ListAlertsResponse.Builder responseBuilder = ListAlertsResponse.newBuilder()
-            .addAllAlerts(alerts);
+            // If there is a next page, add the page number to the response's next_page_token field
+            if (alertPage.hasNext()) {
+                responseBuilder.setNextPageToken(String.valueOf(alertPage.nextPageable().getPageNumber()));
+            }
 
-        // If there is a next page, add the page number to the response's next_page_token field
-        if (alertPage.hasNext()) {
-            responseBuilder.setNextPageToken(String.valueOf(alertPage.nextPageable().getPageNumber()));
+            // Set last_page_token
+            responseBuilder.setLastPageToken(String.valueOf(alertPage.getTotalPages() - 1));
+
+            // Build the final ListAlertsResponse object and send it to the client using the responseObserver
+            ListAlertsResponse response = responseBuilder.build();
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (NoSuchElementException e) {
+            responseObserver.onNext(ListAlertsResponse.newBuilder().addAllAlerts(Collections.emptyList()).setError(AlertError.newBuilder().setError(e.getMessage()).build()).build());
+            responseObserver.onCompleted();
         }
-
-        // Set last_page_token
-        responseBuilder.setLastPageToken(String.valueOf(alertPage.getTotalPages() - 1));
-
-        // Build the final ListAlertsResponse object and send it to the client using the responseObserver
-        ListAlertsResponse response = responseBuilder.build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
     }
 
     @Override
@@ -132,15 +140,21 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
     }
 
     @Override
-    public void countAlerts(ListAlertsRequest request, StreamObserver<UInt64Value> responseObserver) {
+    public void countAlerts(ListAlertsRequest request, StreamObserver<CountAlertResponse> responseObserver) {
         List<Date> timeRange = new ArrayList<>();
         List<Severity> severities = new ArrayList<>();
         getFilter(request, timeRange, severities);
 
-        responseObserver.onNext(UInt64Value.of(tenantLookup.lookupTenantId(Context.current())
-            .map(tenantId -> alertRepository.countAlertBySeverityInAndLastEventTimeBetweenAndTenantId(severities, timeRange.get(0), timeRange.get(1), tenantId))
-            .orElseThrow()));
-        responseObserver.onCompleted();
+        try {
+            int count = tenantLookup.lookupTenantId(Context.current())
+                .map(tenantId -> alertRepository.countAlertBySeverityInAndLastEventTimeBetweenAndTenantId(severities, timeRange.get(0), timeRange.get(1), tenantId))
+                .orElseThrow();
+            responseObserver.onNext(CountAlertResponse.newBuilder().setCount(count).build());
+            responseObserver.onCompleted();
+        } catch (NoSuchElementException e) {
+            responseObserver.onNext(CountAlertResponse.newBuilder().setCount(-1).setError(AlertError.newBuilder().setError(e.getMessage()).build()).build());
+            responseObserver.onCompleted();
+        }
     }
 
     private static void getFilter(ListAlertsRequest request, List<Date> timeRange, List<Severity> severities) {

@@ -380,9 +380,9 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
     public void countAlertsForTenantWithTimeoutMsUntilJSONResponseMatchesTheFollowingJSONPathExpressions(String tenantId, int expected) {
         clientUtils.setTenantId(tenantId);
         ListAlertsRequest listAlertsRequest = ListAlertsRequest.newBuilder().build();
-        UInt64Value countAlertsResponse = clientUtils.getAlertServiceStub()
+        var countAlertsResponse = clientUtils.getAlertServiceStub()
             .countAlerts(listAlertsRequest);
-        assertEquals(expected, countAlertsResponse.getValue());
+        assertEquals(expected, countAlertsResponse.getCount());
 
     }
 
@@ -390,9 +390,9 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
     public void countAlertsForTenantFilteredBySeverity(String tenantId, String severity, int expected) {
         clientUtils.setTenantId(tenantId);
         ListAlertsRequest listAlertsRequest = ListAlertsRequest.newBuilder().addFilters(Filter.newBuilder().setSeverity(Severity.valueOf(severity)).build()).build();
-        UInt64Value countAlertsResponse = clientUtils.getAlertServiceStub()
+        var countAlertsResponse = clientUtils.getAlertServiceStub()
             .countAlerts(listAlertsRequest);
-        assertEquals(expected, countAlertsResponse.getValue());
+        assertEquals(expected, countAlertsResponse.getCount());
     }
 
 //========================================

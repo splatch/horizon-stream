@@ -28,11 +28,13 @@
 
 package org.opennms.horizon.server.service;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.opennms.horizon.server.mapper.AlertMapper;
 import org.opennms.horizon.server.model.alerts.Alert;
 import org.opennms.horizon.server.model.alerts.AlertResponse;
+import org.opennms.horizon.server.model.alerts.CountAlertResponse;
 import org.opennms.horizon.server.model.alerts.MonitorPolicy;
 import org.opennms.horizon.server.service.grpc.AlertsClient;
 import org.opennms.horizon.server.utils.ServerHeaderUtil;
@@ -72,18 +74,11 @@ public class GrpcAlertService {
         name = "countAlerts",
         description = "Returns the total count of alerts filtered by severity and time."
     )
-    public Mono<Long> countAlerts(@GraphQLArgument(name = "hours") long hours,
-                                  @GraphQLArgument(name = "severityFilters") List<String> severityFilters,
-                                  @GraphQLEnvironment ResolutionEnvironment env) {
-        return Mono.just(alertsClient.countAlerts(severityFilters, hours, headerUtil.getAuthHeader(env)));
-    }
-
-    @GraphQLQuery(
-        name = "countAlerts",
-        description = "Returns the total count of alerts for the last 24h."
-    )
-    public Mono<Long> countAlerts(@GraphQLEnvironment ResolutionEnvironment env) {
-        return Mono.just(alertsClient.countAlerts(null, 0L, headerUtil.getAuthHeader(env)));
+    public Mono<CountAlertResponse> countAlerts(@GraphQLArgument(name = "hours", defaultValue = "24") long hours,
+                                                @GraphQLArgument(name = "severityFilters") List<String> severityFilters,
+                                                @GraphQLEnvironment ResolutionEnvironment env) {
+        List<String> filters = severityFilters != null ? severityFilters : Collections.emptyList();
+        return Mono.just(mapper.protoToCountAlertResponse(alertsClient.countAlerts(filters, hours, headerUtil.getAuthHeader(env))));
     }
 
     @GraphQLMutation
