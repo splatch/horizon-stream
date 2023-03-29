@@ -68,6 +68,7 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
     public static final String PAGE_DEFAULT = "0";
     public static final String SORT_BY_DEFAULT = "alertId";
     public static final int DURATION = 24;
+    public static final String TENANT_ID_NOT_FOUND = "Tenant Id not found";
     private final AlertMapper alertMapper;
     private final AlertRepository alertRepository;
     private final AlertService alertService;
@@ -115,7 +116,7 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         } catch (NoSuchElementException e) {
-            responseObserver.onNext(ListAlertsResponse.newBuilder().addAllAlerts(Collections.emptyList()).setError(AlertError.newBuilder().setError(e.getMessage()).build()).build());
+            responseObserver.onNext(ListAlertsResponse.newBuilder().addAllAlerts(Collections.emptyList()).setError(AlertError.newBuilder().setError(TENANT_ID_NOT_FOUND).build()).build());
             responseObserver.onCompleted();
         }
     }
@@ -152,7 +153,7 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
             responseObserver.onNext(CountAlertResponse.newBuilder().setCount(count).build());
             responseObserver.onCompleted();
         } catch (NoSuchElementException e) {
-            responseObserver.onNext(CountAlertResponse.newBuilder().setCount(-1).setError(AlertError.newBuilder().setError(e.getMessage()).build()).build());
+            responseObserver.onNext(CountAlertResponse.newBuilder().setCount(-1).setError(AlertError.newBuilder().setError(TENANT_ID_NOT_FOUND)).build());
             responseObserver.onCompleted();
         }
     }
