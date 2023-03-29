@@ -8,6 +8,7 @@
       primary
       :disabled="!enableSaveRule"
       @click="store.saveRule"
+      data-test="save-rule-btn"
     >
       Save Rule
     </FeatherButton>
@@ -18,6 +19,7 @@
       primary
       :disabled="!store.selectedPolicy.rules.length || !store.selectedPolicy.name"
       @click="store.savePolicy"
+      data-test="save-policy-btn"
     >
       Save Policy
     </ButtonWithSpinner>

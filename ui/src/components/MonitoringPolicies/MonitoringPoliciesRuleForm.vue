@@ -7,6 +7,7 @@
       <FeatherButton
         primary
         @click="store.displayRuleForm()"
+        data-test="new-rule-btn"
       >
         <FeatherIcon :icon="addIcon" />
         New Rule
@@ -33,6 +34,7 @@
               label=""
               hideLabel
               v-focus
+              data-test="rule-name-input"
             />
           </div>
           <div class="col">

@@ -4,6 +4,7 @@
       <FeatherButton
         primary
         @click="store.displayPolicyForm()"
+        data-test="new-policy-btn"
       >
         <FeatherIcon :icon="addIcon" />
         New Policy
@@ -25,6 +26,7 @@
           v-model="store.selectedPolicy.name"
           label="New Policy Name"
           v-focus
+          data-test="policy-name-input"
         />
         <FeatherTextarea
           v-model="store.selectedPolicy.memo"

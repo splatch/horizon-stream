@@ -14,6 +14,7 @@
       <div
         class="edit"
         @click="$emit('selectPolicy', policy)"
+        data-test="policy-edit-btn"
       >
         edit
       </div>
