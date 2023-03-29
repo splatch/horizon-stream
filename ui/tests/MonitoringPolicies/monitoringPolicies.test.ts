@@ -2,6 +2,8 @@ import MonitoringPolicies from '@/containers/MonitoringPolicies.vue'
 import mount from 'tests/mountWithPiniaVillus'
 import { useMonitoringPoliciesStore } from '@/store/Views/monitoringPoliciesStore'
 import { useMonitoringPoliciesMutations } from '@/store/Mutations/monitoringPoliciesMutations'
+import { Unknowns, SNMPEventType, ComponentType } from '@/components/MonitoringPolicies/monitoringPolicies.constants'
+import { Severity } from '@/types/graphql'
 
 const testingPayload = {
   name: 'Policy1',
@@ -13,12 +15,13 @@ const testingPayload = {
   rules: [
     {
       name: 'Rule1',
-      componentType: 'CPU',
+      componentType: ComponentType.CPU,
       triggerEvents: [
         {
           count: 1,
-          severity: 'CRITICAL',
-          triggerEvent: 'COLD_REBOOT'
+          severity: Severity.Critical,
+          triggerEvent: SNMPEventType.COLD_REBOOT,
+          overtimeUnit: Unknowns.UNKNOWN_UNIT
         }
       ]
     }

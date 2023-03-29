@@ -9,7 +9,8 @@ import {
   SNMPEventType,
   ComponentType,
   EventMetrics,
-  ThresholdLevels
+  ThresholdLevels,
+  Unknowns
 } from '@/components/MonitoringPolicies/monitoringPolicies.constants'
 import { MonitorPolicy } from '@/types/graphql'
 import { Severity, TimeRangeUnit } from '@/types/graphql'
@@ -47,7 +48,8 @@ const getDefaultThresholdCondition = () => ({
 const getDefaultEventCondition = () => ({
   id: new Date().getTime(),
   count: 1,
-  severity: Severity.Critical
+  severity: Severity.Critical,
+  overtimeUnit: Unknowns.UNKNOWN_UNIT
 })
 
 // port down event has an extra properties
@@ -80,13 +82,31 @@ export const useMonitoringPoliciesStore = defineStore('monitoringPoliciesStore',
       this.monitoringPolicies = queries.monitoringPolicies
     },
     displayPolicyForm(policy?: Policy) {
-      this.selectedPolicy = policy || cloneDeep(defaultPolicy)
-      if (!policy) this.selectedRule = undefined
+      // BE does not have trigger event on rule yet
+      // so must get it from the condition.
+      // this.selectedPolicy = policy || cloneDeep(defaultPolicy)
+      if (policy) {
+        const rulesWithEvents = policy.rules.map((rule) => {
+          rule.triggerEvent = rule.triggerEvents[0].triggerEvent as string
+          return rule
+        })
+        policy.rules = rulesWithEvents
+        this.selectedPolicy = policy
+      } else {
+        this.selectedPolicy =  cloneDeep(defaultPolicy)
+      }
+
+      this.selectedRule = undefined
     },
     displayRuleForm(rule?: Rule) {
       if (rule) {
         const { detectionMethod, metricName } = getDefaultRule()
-        this.selectedRule = { ...cloneDeep(rule), detectionMethod, metricName }
+        this.selectedRule = {
+          ...cloneDeep(rule),
+          detectionMethod,
+          metricName,
+          triggerEvent: rule.triggerEvents[0].triggerEvent as string
+        }
       } else {
         this.selectedRule = getDefaultRule()
       }

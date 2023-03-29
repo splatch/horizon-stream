@@ -86,8 +86,7 @@
 <script lang="ts" setup>
 import Slider from '@vueform/slider'
 import { ThresholdCondition } from '@/types/policies'
-import { conditionLetters } from './monitoringPolicies.constants'
-import { ThresholdLevels } from './monitoringPolicies.constants'
+import { conditionLetters, ThresholdLevels, Unknowns } from './monitoringPolicies.constants'
 import { Severity, TimeRangeUnit } from '@/types/graphql'
 
 const props = defineProps<{
@@ -106,6 +105,7 @@ const levelOptions = [
 ]
 
 const durationOptions = [
+  { id: Unknowns.UNKNOWN_UNIT, name: '' },
   { id: TimeRangeUnit.Second, name: 'Second(s)' },
   { id: TimeRangeUnit.Minute, name: 'Minute(s)' },
   { id: TimeRangeUnit.Hour, name: 'Hour(s)' }

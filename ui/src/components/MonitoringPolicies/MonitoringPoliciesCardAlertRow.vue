@@ -50,7 +50,11 @@
       <div class="col half box">{{ condition.count }}</div>
       <div class="col half box">{{ condition.overtime || '&nbsp' }}</div>
       <div class="col box double">
-        {{ condition.overtime ? snakeToTitleCase(condition.overtimeUnit as string) : '&nbsp' }}
+        {{
+          condition.overtime && condition.overtimeUnit !== Unknowns.UNKNOWN_UNIT
+            ? snakeToTitleCase(condition.overtimeUnit as string)
+            : '&nbsp'
+        }}
       </div>
       <div
         class="col severity double"
@@ -62,7 +66,9 @@
         class="col box double"
         v-if="condition.triggerEvent === SNMPEventType.PORT_DOWN"
       >
-        {{ snakeToTitleCase(condition.clearEvent as string) }}
+        {{
+          condition.clearEvent !== Unknowns.UNKNOWN_EVENT ? snakeToTitleCase(condition.clearEvent as string) : '&nbsp;'
+        }}
       </div>
     </div>
   </div>
@@ -70,7 +76,7 @@
 
 <script setup lang="ts">
 import { Condition, Rule } from '@/types/policies'
-import { conditionLetters, SNMPEventType, DetectionMethodTypes } from './monitoringPolicies.constants'
+import { conditionLetters, SNMPEventType, DetectionMethodTypes, Unknowns } from './monitoringPolicies.constants'
 import { snakeToTitleCase } from '../utils'
 
 defineProps<{

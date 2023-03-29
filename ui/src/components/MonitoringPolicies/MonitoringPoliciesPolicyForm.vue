@@ -47,6 +47,7 @@
           :getItems="tagQueries.getTagsSearch"
           :items="tagQueries.tagsSearched"
           :label="'Tag name'"
+          :preselectedItems="formattedTags"
         />
       </div>
 
@@ -79,10 +80,8 @@ const tagQueries = useTagQueries()
 const addIcon = markRaw(Add)
 
 const selectTags = (tags: TagSelectItem[]) => (store.selectedPolicy!.tags = tags.map((tag) => tag.name))
-const populateForm = (item: Policy) => {
-  store.selectedPolicy = item
-  store.selectedRule = undefined
-}
+const populateForm = (policy: Policy) => store.displayPolicyForm(policy)
+const formattedTags = computed(() => store.selectedPolicy!.tags!.map((tag: string) => ({ name: tag, id: tag })))
 </script>
 
 <style scoped lang="scss">
