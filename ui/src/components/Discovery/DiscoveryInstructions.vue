@@ -6,56 +6,57 @@
   >
     <div class="drawerContent">
       <div class="section">
-        <div class="title">Discovery</div>
-        The discovery process identifies devices and entities on your monitored network through either active or passive
-        discovery.
+        <div class="title">{{ Instructions.title }}</div>
+        {{ Instructions.subtitle }}
       </div>
       <br />
       <div class="section">
-        <div class="title">What is Active Discovery?</div>
-        Active discovery queries nodes and cloud APIs to detect the entities that you want to monitor. You can choose
-        from two active discovery methods:
+        <div class="title">{{ Instructions.activeDiscoveryTitle }}</div>
+        {{ Instructions.activeDiscoverySubtitle }}
         <ul class="list">
           <li>
-            <strong>ICMP/SNMP:</strong> Performs a ping sweep and scans for SNMP MIBs on nodes that respond. You can
-            click Validate to verify that you have at least one IP address, range, or subnet in your inventory.
+            <strong>{{ Instructions.activeListTool.tool1 }}</strong> {{ Instructions.activeListTool.toolDescription1 }}
           </li>
           <li>
-            <strong>Azure:</strong> Connects to the Azure API, queries the virtual machines list, and creates entities
-            for each VM in the node inventory.
+            <strong>{{ Instructions.activeListTool.tool2 }}</strong> {{ Instructions.activeListTool.toolDescription2 }}
           </li>
         </ul>
-        You can create multiple discovery events to target specific areas of your network.
+        {{ Instructions.activeNote }}
         <ul class="list">
-          <li><strong>Benefits:</strong> Can be more comprehensive than passive discovery.</li>
           <li>
-            <strong>Disadvantages:</strong> Can slow network performance as the discovery process tries to connect to
-            all devices.
+            <strong>{{ Instructions.activeListCharacteristics.benefits }}</strong>
+            {{ Instructions.activeListCharacteristics.benefitsDescription }}
+          </li>
+          <li>
+            <strong>{{ Instructions.activeListCharacteristics.disadvantages }}</strong>
+            {{ Instructions.activeListCharacteristics.disadvantagesDescription }}
           </li>
         </ul>
       </div>
       <div class="section">
-        <div class="title">What is Passive Discovery?</div>
+        <div class="title">{{ Instructions.passiveDiscoveryTitle }}</div>
 
-        Passive discovery uses Syslog and SNMP traps to identify network devices. It does so by monitoring their
-        activity through events, flows, and indirectly by evaluating other devices' configuration settings.
+        {{ Instructions.passiveDiscoverySubtitle }}
 
-        <p>Note that you can set only one passive discovery configuration.</p>
+        <p>{{ Instructions.passiveNote }}</p>
 
         <ul class="list">
-          <li><strong>Benefits: </strong>Low bandwidth consumption.</li>
           <li>
-            <strong>Disadvantages:</strong> May miss devices if they are not active. All devices must be enabled and
-            configured to send Syslogs.
+            <strong>{{ Instructions.passiveListCharacteristics.benefits }}</strong>
+            {{ Instructions.passiveListCharacteristics.benefitsDescription }}
+          </li>
+          <li>
+            <strong>{{ Instructions.passiveListCharacteristics.disadvantages }}</strong>
+            {{ Instructions.passiveListCharacteristics.disadvantagesDescription }}
           </li>
         </ul>
       </div>
       <div class="section">
         <a
-          href="https://docs.opennms.com/"
+          :href="Instructions.learnMoreLink.link"
           target="_blank"
           class="link"
-          >LEARN MORE</a
+          >{{ Instructions.learnMoreLink.label }}</a
         >
       </div>
     </div>
@@ -64,7 +65,7 @@
 
 <script setup lang="ts">
 import { FeatherDrawer } from '@featherds/drawer'
-
+import { Instructions } from './discovery.text'
 const props = defineProps<{
   isOpen: boolean
 }>()
