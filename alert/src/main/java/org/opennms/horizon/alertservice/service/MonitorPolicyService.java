@@ -34,7 +34,6 @@ import java.util.Optional;
 import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
 import org.opennms.horizon.alertservice.db.repository.MonitorPolicyRepository;
 import org.opennms.horizon.alertservice.mapper.MonitorPolicyMapper;
-import org.opennms.horizon.shared.alert.policy.CreateMonitorPolicyRequest;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +48,7 @@ public class MonitorPolicyService {
     private final MonitorPolicyMapper policyMapper;
     private final MonitorPolicyRepository repository;
 
-    public MonitorPolicyProto createPolicy(CreateMonitorPolicyRequest request, String tenantId) {
+    public MonitorPolicyProto createPolicy(MonitorPolicyProto request, String tenantId) {
         MonitorPolicy policy = policyMapper.map(request);
         updateData(policy, tenantId);
         MonitorPolicy newPolicy = repository.save(policy);

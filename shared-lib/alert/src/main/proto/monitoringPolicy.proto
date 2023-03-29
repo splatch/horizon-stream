@@ -34,17 +34,6 @@ package opennms.inventory;
 option java_multiple_files = true;
 option java_package = "org.opennms.horizon.shared.alert.policy";
 
-message CreateMonitorPolicyRequest {
-  string name = 1;
-  string memo = 2;
-  repeated CreatePolicyRuleRequest rules = 3;
-  repeated string tags = 4;
-  bool notifyByEmail = 5;
-  bool notifyByPagerDuty = 6;
-  bool notifyByWebhooks = 7;
-  string notifyInstruction = 8;
-}
-
 message MonitorPolicyProto {
   int64 id = 1;
   string tenantId = 2;
@@ -66,27 +55,12 @@ enum ComponentType {
   NODE = 4;
 }
 
-message CreatePolicyRuleRequest {
-  string name = 1;
-  ComponentType componentType = 2;
-  repeated CreateSNMPEventRequest snmpEvents = 3;
-}
-
 message PolicyRuleProto {
   int64 id = 1;
   string tenantId = 2;
   string name = 3;
   ComponentType componentType = 4;
   repeated SNMPEventProto snmpEvents = 5;
-}
-
-message CreateSNMPEventRequest {
-  SNMPEventType triggerEvent = 1;
-  int32 count = 2;
-  int32 overtime = 3;
-  OverTimeUnit overtimeUnit = 4;
-  Severity severity = 5;
-  SNMPEventType clearEvent = 6;
 }
 
 message SNMPEventProto {
@@ -133,7 +107,7 @@ message MonitorPolicyList {
 }
 
 service MonitorPolicyService {
-  rpc createPolicy(CreateMonitorPolicyRequest) returns(MonitorPolicyProto);
+  rpc createPolicy(MonitorPolicyProto) returns(MonitorPolicyProto);
   rpc listPolicies(google.protobuf.Empty) returns(MonitorPolicyList);
   rpc getPolicyById(google.protobuf.Int64Value) returns(MonitorPolicyProto);
 }

@@ -36,7 +36,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
-import org.opennms.horizon.shared.alert.policy.CreateMonitorPolicyRequest;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -75,11 +74,4 @@ public interface MonitorPolicyMapper {
         @Mapping(target = "rules", source = "rulesList")
     })
     MonitorPolicy map(MonitorPolicyProto proto);
-
-    @Mappings({
-        @Mapping(target = "tags", source = "tagsList"),
-        @Mapping(target = "rules", source = "rulesList")
-    })
-    MonitorPolicy map(CreateMonitorPolicyRequest request);
-
 }

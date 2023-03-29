@@ -31,15 +31,11 @@ package org.opennms.horizon.server.mapper.alert;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueCheckStrategy;
 import org.opennms.horizon.server.model.alerts.TriggerEvent;
-import org.opennms.horizon.shared.alert.policy.CreateSNMPEventRequest;
 import org.opennms.horizon.shared.alert.policy.SNMPEventProto;
 
 @Mapper(componentModel = "spring",
     nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface TriggerEventMapper {
     TriggerEvent map(SNMPEventProto protoEvent);
-
     SNMPEventProto map(TriggerEvent event);
-
-    CreateSNMPEventRequest mapCreate(TriggerEvent event);
 }

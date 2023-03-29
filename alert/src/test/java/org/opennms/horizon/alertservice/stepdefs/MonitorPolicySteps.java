@@ -36,12 +36,11 @@ import java.util.concurrent.TimeUnit;
 import org.assertj.core.groups.Tuple;
 import org.opennms.horizon.alertservice.AlertGrpcClientUtils;
 import org.opennms.horizon.shared.alert.policy.ComponentType;
-import org.opennms.horizon.shared.alert.policy.CreateMonitorPolicyRequest;
-import org.opennms.horizon.shared.alert.policy.CreatePolicyRuleRequest;
-import org.opennms.horizon.shared.alert.policy.CreateSNMPEventRequest;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyList;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
 import org.opennms.horizon.shared.alert.policy.OverTimeUnit;
+import org.opennms.horizon.shared.alert.policy.PolicyRuleProto;
+import org.opennms.horizon.shared.alert.policy.SNMPEventProto;
 import org.opennms.horizon.shared.alert.policy.SNMPEventType;
 import org.opennms.horizon.shared.alert.policy.Severity;
 
@@ -59,9 +58,9 @@ public class MonitorPolicySteps {
     private final int DEADLINE_DURATION_SECONDS = 10;
     private final String tenantId = "test-tenant";
     private final AlertGrpcClientUtils grpcClient;
-    private CreateMonitorPolicyRequest.Builder policyBuilder = CreateMonitorPolicyRequest.newBuilder();
-    private CreatePolicyRuleRequest.Builder ruleBuilder = CreatePolicyRuleRequest.newBuilder();
-    private CreateSNMPEventRequest.Builder triggerBuilder = CreateSNMPEventRequest.newBuilder();
+    private MonitorPolicyProto.Builder policyBuilder = MonitorPolicyProto.newBuilder();
+    private PolicyRuleProto.Builder ruleBuilder = PolicyRuleProto.newBuilder();
+    private SNMPEventProto.Builder triggerBuilder = SNMPEventProto.newBuilder();
     private Long policyId;
 
     @Given("Monitor policy name {string} and memo {string}")
@@ -100,7 +99,7 @@ public class MonitorPolicySteps {
 
     @Then("Create a new policy with give parameters")
     public void createANewPolicyWithGiveParameters() {
-        CreateMonitorPolicyRequest policy = policyBuilder.addRules(
+        MonitorPolicyProto policy = policyBuilder.addRules(
                 ruleBuilder.addSnmpEvents(triggerBuilder.build()).build()
         ).build();
         grpcClient.setTenantId(tenantId);

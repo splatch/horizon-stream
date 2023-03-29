@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.opennms.horizon.alertservice.db.tenant.TenantLookup;
 import org.opennms.horizon.alertservice.service.MonitorPolicyService;
-import org.opennms.horizon.shared.alert.policy.CreateMonitorPolicyRequest;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyList;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyServiceGrpc;
@@ -57,7 +56,7 @@ public class MonitorPolicyGrpc extends MonitorPolicyServiceGrpc.MonitorPolicySer
     private final TenantLookup tenantLookup;
 
     @Override
-    public void createPolicy(CreateMonitorPolicyRequest request, StreamObserver<MonitorPolicyProto> responseObserver) {
+    public void createPolicy(MonitorPolicyProto request, StreamObserver<MonitorPolicyProto> responseObserver) {
         tenantLookup.lookupTenantId(Context.current())
             .ifPresentOrElse(tenantId -> {
                 MonitorPolicyProto created = service.createPolicy(request, tenantId);

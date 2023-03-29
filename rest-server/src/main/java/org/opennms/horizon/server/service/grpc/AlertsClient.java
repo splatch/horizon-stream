@@ -109,7 +109,7 @@ public class AlertsClient {
         Metadata metadata = new Metadata();
         metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
         MonitorPolicyProto newPolicy = policyStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
-            .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).createPolicy(policyMapper.mapCreateRequest(policy));
+            .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).createPolicy(policyMapper.map(policy));
         return policyMapper.map(newPolicy);
     }
 
