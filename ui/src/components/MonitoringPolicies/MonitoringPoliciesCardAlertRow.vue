@@ -46,21 +46,23 @@
 
     <div class="mp-card-alert-row">
       <div class="subtitle">{{ conditionLetters[index] + '.' }}</div>
-      <div class="col subtitle double">{{ condition.triggerEvent }}</div>
+      <div class="col subtitle double">{{ snakeToTitleCase(condition.triggerEvent as string) }}</div>
       <div class="col half box">{{ condition.count }}</div>
       <div class="col half box">{{ condition.overtime || '&nbsp' }}</div>
-      <div class="col box double">{{ condition.overtimeUnit || '&nbsp' }}</div>
+      <div class="col box double">
+        {{ condition.overtime ? snakeToTitleCase(condition.overtimeUnit as string) : '&nbsp' }}
+      </div>
       <div
         class="col severity double"
         :class="`${condition.severity!.toLowerCase()}-color`"
       >
-        {{ condition.severity }}
+        {{ snakeToTitleCase(condition.severity) }}
       </div>
       <div
         class="col box double"
         v-if="condition.triggerEvent === SNMPEventType.PORT_DOWN"
       >
-        {{ condition.clearEvent }}
+        {{ snakeToTitleCase(condition.clearEvent as string) }}
       </div>
     </div>
   </div>
@@ -69,6 +71,7 @@
 <script setup lang="ts">
 import { Condition, Rule } from '@/types/policies'
 import { conditionLetters, SNMPEventType, DetectionMethodTypes } from './monitoringPolicies.constants'
+import { snakeToTitleCase } from '../utils'
 
 defineProps<{
   rule: Rule
