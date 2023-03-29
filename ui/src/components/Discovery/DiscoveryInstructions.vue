@@ -105,10 +105,12 @@ const isOpen = computed<boolean>(() => props.isOpen)
       list-style: disc;
     }
     .link {
-      @include typography.anchor;
+      @include typography.button;
       display: flex;
       justify-content: flex-end;
       cursor: pointer;
+      color: var(variables.$primary);
+      text-decoration: none;
     }
     p {
       @include typography.caption;
