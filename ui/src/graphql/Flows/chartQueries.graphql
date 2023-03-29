@@ -1,0 +1,23 @@
+fragment findApplicationSeriesTest on Query {
+ findApplicationSeries(requestCriteria: {count: $count, step: $step, timeRange: {startTime: $startTime, endTime: $endTime}}) 
+    {
+    timestamp
+    label
+    value
+    direction
+  }
+}
+
+query findApplicationSeries($count: Int!, $step: Int!, $timeRange: { startTime: Int!, endTime: Int! }) {
+  ...findApplicationSeriesTest
+}
+
+# query{
+#   findApplicationSeries(requestCriteria:{count: 3, step: 3600000, timeRange: {startTime: 1670661637000, endTime: 1679910407693}})
+#   {
+#     timestamp,
+#     label,
+#     value,
+#     direction
+#   }
+# }
