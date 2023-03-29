@@ -81,6 +81,8 @@ const isOpen = computed<boolean>(() => props.isOpen)
 .drawerContent {
   padding: var(variables.$spacing-m);
   width: 100%;
+  @include typography.caption;
+
   @include mediaQueriesMixins.screen-md {
     width: 600px;
     padding: var(variables.$spacing-xl);
@@ -108,9 +110,14 @@ const isOpen = computed<boolean>(() => props.isOpen)
       justify-content: flex-end;
       cursor: pointer;
     }
+    p {
+      @include typography.caption;
+      padding-top: var(variables.$spacing-s);
+    }
   }
-  p {
-    padding-top: var(variables.$spacing-s);
+
+  strong {
+    @include typography.header;
   }
 }
 </style>
