@@ -26,24 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alertservice.db.repository;
+package org.opennms.horizon.server.model.alerts;
 
-import java.util.Date;
 import java.util.List;
 
-import org.opennms.horizon.alertservice.db.entity.Alert;
-import org.opennms.horizon.model.common.proto.Severity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import lombok.Getter;
+import lombok.Setter;
 
-@Repository
-public interface AlertRepository extends JpaRepository<Alert, Long> {
-
-    Alert findByReductionKeyAndTenantId(String reductionKey, String tenantId);
-
-    Page<Alert> findBySeverityInAndLastEventTimeBetweenAndTenantId(List<Severity> severityList, Date start, Date end, Pageable pageable, String tenantId);
-
-    int countAlertBySeverityInAndLastEventTimeBetweenAndTenantId(List<Severity> severityList, Date start, Date end, String tenantId);
+@Getter
+@Setter
+public class AlertResponse {
+    private List<Alert> alerts;
+    private String nextPageToken;
+    private String lastPageToken;
 }
