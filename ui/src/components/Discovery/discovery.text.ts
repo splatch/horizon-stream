@@ -113,3 +113,7 @@ export const SuccessModalOptions = {
   addMonitoring: 'Add Monitoring Policy',
   checkboxText: "Don't show this again"
 }
+
+export const Links = {
+  discoveryHelp: 'https://docs.opennms.com/'
+}
