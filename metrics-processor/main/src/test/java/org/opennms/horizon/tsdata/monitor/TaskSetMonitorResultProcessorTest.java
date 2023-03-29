@@ -29,6 +29,7 @@
 
 package org.opennms.horizon.tsdata.monitor;
 
+import java.util.function.Predicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
@@ -45,10 +46,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import prometheus.PrometheusTypes.TimeSeries;
+import prometheus.PrometheusTypes.TimeSeries.Builder;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.opennms.horizon.tsdata.MetricNameConstants.METRICS_NAME_PREFIX_MONITOR;
 
 public class TaskSetMonitorResultProcessorTest {
+
+    public final static String TENANT_ID = "foobar";
+    private static final String SYSTEM_ID = "minion-x";
+    private static final String LOCATION = "location-y";
 
     private TaskSetMonitorResultProcessor target;
 
@@ -113,7 +121,7 @@ public class TaskSetMonitorResultProcessorTest {
         // Verify the Results
         //
         var matcher = new PrometheusTimeSeriersBuilderArgumentMatcher(1313.0, MonitorType.ICMP, MetricNameConstants.METRICS_NAME_RESPONSE);
-        Mockito.verify(mockCortexTSS).store(Mockito.eq("x-tenant-id-x"), Mockito.argThat(matcher));
+        Mockito.verify(mockCortexTSS).store(eq("x-tenant-id-x"), Mockito.argThat(matcher));
         Mockito.verify(mockTenantMetricsTracker).addTenantMetricSampleCount("x-tenant-id-x", 1);
         Mockito.verifyNoMoreInteractions(mockCortexTSS);
         Mockito.verifyNoMoreInteractions(mockTenantMetricsTracker);
@@ -130,7 +138,7 @@ public class TaskSetMonitorResultProcessorTest {
         // Verify the Results
         //
         var matcher = new PrometheusTimeSeriersBuilderArgumentMatcher(1313.0, MonitorType.ECHO, MetricNameConstants.METRICS_NAME_RESPONSE);
-        Mockito.verify(mockCortexTSS).store(Mockito.eq("x-tenant-id-x"), Mockito.argThat(matcher));
+        Mockito.verify(mockCortexTSS).store(eq("x-tenant-id-x"), Mockito.argThat(matcher));
         Mockito.verify(mockTenantMetricsTracker).addTenantMetricSampleCount("x-tenant-id-x", 1);
         Mockito.verifyNoMoreInteractions(mockCortexTSS);
         Mockito.verifyNoMoreInteractions(mockTenantMetricsTracker);
@@ -148,19 +156,19 @@ public class TaskSetMonitorResultProcessorTest {
         //
         var mainMetricMatcher =
             new PrometheusTimeSeriersBuilderArgumentMatcher(1313.0, MonitorType.ECHO, MetricNameConstants.METRICS_NAME_RESPONSE);
-        Mockito.verify(mockCortexTSS).store(Mockito.eq("x-tenant-id-x"), Mockito.argThat(mainMetricMatcher));
+        Mockito.verify(mockCortexTSS).store(eq("x-tenant-id-x"), Mockito.argThat(mainMetricMatcher));
 
         var matcher1 =
             new PrometheusTimeSeriersBuilderArgumentMatcher(1.001, MonitorType.ECHO, METRICS_NAME_PREFIX_MONITOR + "x_metric_001_x");
-        Mockito.verify(mockCortexTSS).store(Mockito.eq("x-tenant-id-x"), Mockito.argThat(matcher1));
+        Mockito.verify(mockCortexTSS).store(eq("x-tenant-id-x"), Mockito.argThat(matcher1));
 
         var matcher2 =
             new PrometheusTimeSeriersBuilderArgumentMatcher(2.002, MonitorType.ECHO, METRICS_NAME_PREFIX_MONITOR + "x_metric_002_x");
-        Mockito.verify(mockCortexTSS).store(Mockito.eq("x-tenant-id-x"), Mockito.argThat(matcher2));
+        Mockito.verify(mockCortexTSS).store(eq("x-tenant-id-x"), Mockito.argThat(matcher2));
 
         var matcher3 =
             new PrometheusTimeSeriersBuilderArgumentMatcher(3.003, MonitorType.ECHO, METRICS_NAME_PREFIX_MONITOR + "x_metric_003_x");
-        Mockito.verify(mockCortexTSS).store(Mockito.eq("x-tenant-id-x"), Mockito.argThat(matcher3));
+        Mockito.verify(mockCortexTSS).store(eq("x-tenant-id-x"), Mockito.argThat(matcher3));
 
         Mockito.verify(mockTenantMetricsTracker, Mockito.times(4)).addTenantMetricSampleCount("x-tenant-id-x", 1);
 
@@ -168,9 +176,68 @@ public class TaskSetMonitorResultProcessorTest {
         Mockito.verifyNoMoreInteractions(mockTenantMetricsTracker);
     }
 
+    @Test
+    void testMonitoringResponseWithTimestamp() throws Exception {
+        long testTimestamp = 100_000_000L;
+        TaskResult result = createMonitorSample(testTimestamp);
+
+        target.processMonitorResponse(TENANT_ID, result, result.getMonitorResponse());
+
+        Mockito.verify(mockCortexTSS).store(eq(TENANT_ID), argThat(new TimeMatcher(testTimestamp)));
+        Mockito.verify(mockTenantMetricsTracker).addTenantMetricSampleCount(TENANT_ID, 1);
+    }
+
+    @Test
+    void testMonitoringResponseWithEmptyTimestamp() throws Exception {
+        TaskResult result = createMonitorSample(0);
+
+        target.processMonitorResponse(TENANT_ID, result, result.getMonitorResponse());
+
+        Mockito.verify(mockCortexTSS).store(eq(TENANT_ID), argThat(new TimeMatcher(ts -> ts != 0)));
+        Mockito.verify(mockTenantMetricsTracker).addTenantMetricSampleCount(TENANT_ID, 1);
+    }
+
+    private static TaskResult createMonitorSample(long timestamp) {
+        MonitorResponse monitorResponse = MonitorResponse.newBuilder()
+            .setResponseTimeMs(10.0)
+            .setTimestamp(timestamp)
+            .setNodeId(10L)
+            .build();
+
+        return TaskResult.newBuilder()
+            .setSystemId(SYSTEM_ID)
+            .setLocation(LOCATION)
+            .setId("test-monitor")
+            .setMonitorResponse(monitorResponse)
+            .build();
+    }
+
 //========================================
 // Internals
 //----------------------------------------
+
+    static class TimeMatcher implements ArgumentMatcher<TimeSeries.Builder> {
+
+        private final Predicate<Long> matcher;
+
+        public TimeMatcher(long timestamp) {
+            this(ts -> timestamp == ts);
+        }
+
+        public TimeMatcher(Predicate<Long> matcher) {
+            this.matcher = matcher;
+        }
+
+        @Override
+        public boolean matches(Builder argument) {
+            return matcher.test(argument.getSamples(0).getTimestamp());
+        }
+
+        @Override
+        public String toString() {
+            return "timestamp matcher";
+        }
+    }
 
     private class PrometheusTimeSeriersBuilderArgumentMatcher implements ArgumentMatcher<PrometheusTypes.TimeSeries.Builder> {
 
@@ -236,4 +303,5 @@ public class TaskSetMonitorResultProcessorTest {
             return false;
         }
     }
+
 }
