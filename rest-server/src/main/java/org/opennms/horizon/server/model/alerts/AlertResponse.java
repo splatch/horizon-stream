@@ -26,28 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.mapper.alert;
+package org.opennms.horizon.server.model.alerts;
 
-import org.mapstruct.CollectionMappingStrategy;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
-import org.mapstruct.NullValueCheckStrategy;
-import org.opennms.horizon.server.model.alerts.MonitorPolicy;
-import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
+import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {PolicyRuleMapper.class}, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-    collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
-public interface MonitorPolicyMapper {
-    @Mappings({
-        @Mapping(target = "tags", source = "tagsList"),
-        @Mapping(target = "rules", source = "rulesList")
-    })
-    MonitorPolicy map(MonitorPolicyProto proto);
+import lombok.Getter;
+import lombok.Setter;
 
-    @Mappings({
-        @Mapping(target = "rulesList", source = "rules"),
-        @Mapping(target = "tagsList", source = "tags")
-    })
-    MonitorPolicyProto map(MonitorPolicy policy);
+@Getter
+@Setter
+public class AlertResponse {
+    private List<Alert> alerts;
+    private String nextPageToken;
+    private String lastPageToken;
 }
