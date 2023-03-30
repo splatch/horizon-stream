@@ -2,7 +2,9 @@ import { flowsAppDataToChartJS } from '@/dtos/chartJS.dto'
 import { ChartData } from 'chart.js'
 import { format } from 'date-fns'
 import { defineStore } from 'pinia'
+import { useflowsQueries } from '@/store/Queries/flowsQueries'
 
+const flowsQueries = useflowsQueries()
 export const useFlowsStore = defineStore('flowsStore', {
   state: () => ({
     tableDatasets: [{} as any],
@@ -19,6 +21,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       }
     },
     applications: {
+      isLoading: false,
       tableChartData: {} as ChartData,
       lineChartData: {} as ChartData,
       expansionOpen: true,
@@ -90,143 +93,16 @@ export const useFlowsStore = defineStore('flowsStore', {
       ]
       this.tableDatasets = returnedTableDataSets
 
-      //Will be replaced with a BE call
-      const returnedLineDataSets = [
-        {
-          timestamp: '2023-01-10T01:01:25Z',
-          label: 'app_0',
-          value: 138790,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:09:47Z',
-          label: 'app_0',
-          value: 1986561,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:18:07Z',
-          label: 'app_0',
-          value: 202966,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:26:27Z',
-          label: 'app_0',
-          value: 264173,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:34:47Z',
-          label: 'app_0',
-          value: 28631,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:43:07Z',
-          label: 'app_0',
-          value: 446770,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:51:27Z',
-          label: 'app_0',
-          value: 475634,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:59:47Z',
-          label: 'app_0',
-          value: 291804,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T02:08:07Z',
-          label: 'app_0',
-          value: 192281,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T02:16:27Z',
-          label: 'app_0',
-          value: 781683,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:01:27Z',
-          label: 'app_1',
-          value: 446316,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:09:47Z',
-          label: 'app_1',
-          value: 222222,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:18:07Z',
-          label: 'app_1',
-          value: 703441,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:26:27Z',
-          label: 'app_1',
-          value: 277710,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:34:47Z',
-          label: 'app_1',
-          value: 928133,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:43:07Z',
-          label: 'app_1',
-          value: 299538.99195372575,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:51:27Z',
-          label: 'app_1',
-          value: 264867,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T01:59:47Z',
-          label: 'app_1',
-          value: 738735,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T02:08:07Z',
-          label: 'app_1',
-          value: 761950,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-01-10T02:16:27Z',
-          label: 'app_1',
-          value: 995884,
-          direction: 'EGRESS'
-        },
-        {
-          timestamp: '2023-03-24T00:40:37Z',
-          label: 'ipsec-nat-t',
-          value: 798,
-          direction: 'INGRESS'
-        },
-        {
-          timestamp: '2023-03-24T01:40:37Z',
-          label: 'ipsec-nat-t',
-          value: 9133,
-          direction: 'INGRESS'
-        }
-      ]
+      //Get Appliances
+      const { data: applicationsLineData } = flowsQueries.getApplicationsSeries()
+      const { data: applicationsTableData } = flowsQueries.getApplicationsSummaries()
+      const { data: applicationsData } = flowsQueries.getApplications()
 
-      this.lineDatasets = flowsAppDataToChartJS(returnedLineDataSets)
+      console.log('LINE DATA ' + applicationsLineData.value)
+      console.log('TABLE DATA ' + applicationsTableData.value)
+      console.log('APPLICATIONS ' + applicationsData.value)
+
+      // this.lineDatasets = flowsAppDataToChartJS(data.value)
     },
     createTableChartData() {
       //Dummy Data until BE is hooked up.

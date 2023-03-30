@@ -11,6 +11,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Instant: any;
   Json: any;
   Long: any;
   Map_String_StringScalar: any;
@@ -43,6 +44,13 @@ export type Alert = {
   tenantId?: Maybe<Scalars['String']>;
   type?: Maybe<AlertType>;
   uei?: Maybe<Scalars['String']>;
+};
+
+export type AlertResponse = {
+  __typename?: 'AlertResponse';
+  alerts?: Maybe<Array<Maybe<Alert>>>;
+  lastPageToken?: Maybe<Scalars['String']>;
+  nextPageToken?: Maybe<Scalars['String']>;
 };
 
 export enum AlertType {
@@ -100,6 +108,25 @@ export type EventParameter = {
   value?: Maybe<Scalars['String']>;
 };
 
+export type Exporter = {
+  __typename?: 'Exporter';
+  ipInterface?: Maybe<IpInterface>;
+  node?: Maybe<Node>;
+};
+
+export type ExporterInput = {
+  ipInterface?: InputMaybe<IpInterfaceInput>;
+  node?: InputMaybe<NodeInput>;
+};
+
+export type FlowingPoint = {
+  __typename?: 'FlowingPoint';
+  direction?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  timestamp?: Maybe<Scalars['Instant']>;
+  value: Scalars['Float'];
+};
+
 export type IcmpActiveDiscovery = {
   __typename?: 'IcmpActiveDiscovery';
   id: Scalars['Long'];
@@ -126,6 +153,16 @@ export type IpInterface = {
   nodeId: Scalars['Long'];
   snmpPrimary?: Maybe<Scalars['Boolean']>;
   tenantId?: Maybe<Scalars['String']>;
+};
+
+export type IpInterfaceInput = {
+  hostname?: InputMaybe<Scalars['String']>;
+  id: Scalars['Long'];
+  ipAddress?: InputMaybe<Scalars['String']>;
+  netmask?: InputMaybe<Scalars['String']>;
+  nodeId: Scalars['Long'];
+  snmpPrimary?: InputMaybe<Scalars['Boolean']>;
+  tenantId?: InputMaybe<Scalars['String']>;
 };
 
 export type Location = {
@@ -169,6 +206,33 @@ export type Minion = {
   tenantId?: Maybe<Scalars['String']>;
 };
 
+export type MonitorPolicy = {
+  __typename?: 'MonitorPolicy';
+  id?: Maybe<Scalars['Long']>;
+  memo?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  notifyByEmail?: Maybe<Scalars['Boolean']>;
+  notifyByPagerDuty?: Maybe<Scalars['Boolean']>;
+  notifyByWebhooks?: Maybe<Scalars['Boolean']>;
+  notifyInstruction?: Maybe<Scalars['String']>;
+  rules?: Maybe<Array<Maybe<PolicyRule>>>;
+  tags?: Maybe<Array<Maybe<Scalars['String']>>>;
+  tenantId?: Maybe<Scalars['String']>;
+};
+
+export type MonitorPolicyInput = {
+  id?: InputMaybe<Scalars['Long']>;
+  memo?: InputMaybe<Scalars['String']>;
+  name?: InputMaybe<Scalars['String']>;
+  notifyByEmail?: InputMaybe<Scalars['Boolean']>;
+  notifyByPagerDuty?: InputMaybe<Scalars['Boolean']>;
+  notifyByWebhooks?: InputMaybe<Scalars['Boolean']>;
+  notifyInstruction?: InputMaybe<Scalars['String']>;
+  rules?: InputMaybe<Array<InputMaybe<PolicyRuleInput>>>;
+  tags?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  tenantId?: InputMaybe<Scalars['String']>;
+};
+
 /** Mutation root */
 export type Mutation = {
   __typename?: 'Mutation';
@@ -178,6 +242,7 @@ export type Mutation = {
   clearAlert?: Maybe<Alert>;
   createAzureActiveDiscovery?: Maybe<AzureActiveDiscovery>;
   createIcmpActiveDiscovery?: Maybe<IcmpActiveDiscovery>;
+  createMonitorPolicy?: Maybe<MonitorPolicy>;
   deleteAlert?: Maybe<Scalars['Boolean']>;
   deleteMinion?: Maybe<Scalars['Boolean']>;
   deleteNode?: Maybe<Scalars['Boolean']>;
@@ -224,6 +289,12 @@ export type MutationCreateAzureActiveDiscoveryArgs = {
 /** Mutation root */
 export type MutationCreateIcmpActiveDiscoveryArgs = {
   request?: InputMaybe<IcmpActiveDiscoveryCreateInput>;
+};
+
+
+/** Mutation root */
+export type MutationCreateMonitorPolicyArgs = {
+  policy?: InputMaybe<MonitorPolicyInput>;
 };
 
 
@@ -313,6 +384,23 @@ export type NodeCreateInput = {
   tags?: InputMaybe<Array<InputMaybe<TagCreateInput>>>;
 };
 
+export type NodeInput = {
+  createTime: Scalars['Long'];
+  id: Scalars['Long'];
+  ipInterfaces?: InputMaybe<Array<InputMaybe<IpInterfaceInput>>>;
+  monitoredState?: InputMaybe<Scalars['String']>;
+  monitoringLocationId: Scalars['Long'];
+  nodeLabel?: InputMaybe<Scalars['String']>;
+  objectId?: InputMaybe<Scalars['String']>;
+  scanType?: InputMaybe<Scalars['String']>;
+  snmpInterfaces?: InputMaybe<Array<InputMaybe<SnmpInterfaceInput>>>;
+  systemContact?: InputMaybe<Scalars['String']>;
+  systemDescr?: InputMaybe<Scalars['String']>;
+  systemLocation?: InputMaybe<Scalars['String']>;
+  systemName?: InputMaybe<Scalars['String']>;
+  tenantId?: InputMaybe<Scalars['String']>;
+};
+
 export type NodeRef = {
   __typename?: 'NodeRef';
   nodeID: Scalars['Long'];
@@ -322,6 +410,12 @@ export type NodeStatus = {
   __typename?: 'NodeStatus';
   id: Scalars['Long'];
   status?: Maybe<Scalars['String']>;
+};
+
+export type NodeTags = {
+  __typename?: 'NodeTags';
+  nodeId: Scalars['Long'];
+  tags?: Maybe<Array<Maybe<Tag>>>;
 };
 
 export type PagerDutyConfigInput = {
@@ -359,22 +453,49 @@ export type PassiveDiscoveryUpsertInput = {
   tags?: InputMaybe<Array<InputMaybe<TagCreateInput>>>;
 };
 
+export type PolicyRule = {
+  __typename?: 'PolicyRule';
+  componentType?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['Long']>;
+  name?: Maybe<Scalars['String']>;
+  tenantId?: Maybe<Scalars['String']>;
+  triggerEvents?: Maybe<Array<Maybe<TriggerEvent>>>;
+};
+
+export type PolicyRuleInput = {
+  componentType?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Long']>;
+  name?: InputMaybe<Scalars['String']>;
+  tenantId?: InputMaybe<Scalars['String']>;
+  triggerEvents?: InputMaybe<Array<InputMaybe<TriggerEventInput>>>;
+};
+
 /** Query root */
 export type Query = {
   __typename?: 'Query';
-  findAllAlerts?: Maybe<Array<Maybe<Alert>>>;
+  /** Returns the total count of alerts for the last 24h. */
+  countAlerts?: Maybe<Scalars['Long']>;
+  findAllAlerts?: Maybe<AlertResponse>;
   findAllEvents?: Maybe<Array<Maybe<Event>>>;
   findAllLocations?: Maybe<Array<Maybe<Location>>>;
   findAllMinions?: Maybe<Array<Maybe<Minion>>>;
   findAllNodes?: Maybe<Array<Maybe<Node>>>;
   findAllNodesByMonitoredState?: Maybe<Array<Maybe<Node>>>;
+  findAllNodesByNodeLabelSearch?: Maybe<Array<Maybe<Node>>>;
+  findAllNodesByTags?: Maybe<Array<Maybe<Node>>>;
+  findApplicationSeries?: Maybe<Array<Maybe<FlowingPoint>>>;
+  findApplicationSummaries?: Maybe<Array<Maybe<TrafficSummary>>>;
+  findApplications?: Maybe<Array<Maybe<Scalars['String']>>>;
   findEventsByNodeId?: Maybe<Array<Maybe<Event>>>;
+  findExporters?: Maybe<Array<Maybe<Exporter>>>;
   findLocationById?: Maybe<Location>;
   findMinionById?: Maybe<Minion>;
+  findMonitorPolicyById?: Maybe<MonitorPolicy>;
   findNodeById?: Maybe<Node>;
   icmpActiveDiscoveryById?: Maybe<IcmpActiveDiscovery>;
   listActiveDiscovery?: Maybe<Array<Maybe<ActiveDiscovery>>>;
   listIcmpActiveDiscovery?: Maybe<Array<Maybe<IcmpActiveDiscovery>>>;
+  listMonitoryPolicies?: Maybe<Array<Maybe<MonitorPolicy>>>;
   metric?: Maybe<TimeSeriesQueryResult>;
   nodeStatus?: Maybe<NodeStatus>;
   passiveDiscoveries?: Maybe<Array<Maybe<PassiveDiscovery>>>;
@@ -382,7 +503,26 @@ export type Query = {
   tags?: Maybe<Array<Maybe<Tag>>>;
   tagsByActiveDiscoveryId?: Maybe<Array<Maybe<Tag>>>;
   tagsByNodeId?: Maybe<Array<Maybe<Tag>>>;
+  tagsByNodeIds?: Maybe<Array<Maybe<NodeTags>>>;
   tagsByPassiveDiscoveryId?: Maybe<Array<Maybe<Tag>>>;
+};
+
+
+/** Query root */
+export type QueryCountAlertsArgs = {
+  hours: Scalars['Long'];
+  severityFilters?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+
+/** Query root */
+export type QueryFindAllAlertsArgs = {
+  hours: Scalars['Long'];
+  page?: InputMaybe<Scalars['String']>;
+  pageSize?: InputMaybe<Scalars['Int']>;
+  severities?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  sortAscending: Scalars['Boolean'];
+  sortBy?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -393,8 +533,44 @@ export type QueryFindAllNodesByMonitoredStateArgs = {
 
 
 /** Query root */
+export type QueryFindAllNodesByNodeLabelSearchArgs = {
+  labelSearchTerm?: InputMaybe<Scalars['String']>;
+};
+
+
+/** Query root */
+export type QueryFindAllNodesByTagsArgs = {
+  tags?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+
+/** Query root */
+export type QueryFindApplicationSeriesArgs = {
+  requestCriteria?: InputMaybe<RequestCriteriaInput>;
+};
+
+
+/** Query root */
+export type QueryFindApplicationSummariesArgs = {
+  requestCriteria?: InputMaybe<RequestCriteriaInput>;
+};
+
+
+/** Query root */
+export type QueryFindApplicationsArgs = {
+  requestCriteria?: InputMaybe<RequestCriteriaInput>;
+};
+
+
+/** Query root */
 export type QueryFindEventsByNodeIdArgs = {
   id?: InputMaybe<Scalars['Long']>;
+};
+
+
+/** Query root */
+export type QueryFindExportersArgs = {
+  requestCriteria?: InputMaybe<RequestCriteriaInput>;
 };
 
 
@@ -407,6 +583,12 @@ export type QueryFindLocationByIdArgs = {
 /** Query root */
 export type QueryFindMinionByIdArgs = {
   id?: InputMaybe<Scalars['String']>;
+};
+
+
+/** Query root */
+export type QueryFindMonitorPolicyByIdArgs = {
+  id?: InputMaybe<Scalars['Long']>;
 };
 
 
@@ -464,9 +646,23 @@ export type QueryTagsByNodeIdArgs = {
 
 
 /** Query root */
+export type QueryTagsByNodeIdsArgs = {
+  nodeIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+};
+
+
+/** Query root */
 export type QueryTagsByPassiveDiscoveryIdArgs = {
   passiveDiscoveryId?: InputMaybe<Scalars['Long']>;
   searchTerm?: InputMaybe<Scalars['String']>;
+};
+
+export type RequestCriteriaInput = {
+  applications?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  count?: InputMaybe<Scalars['Int']>;
+  exporter?: InputMaybe<Array<InputMaybe<ExporterInput>>>;
+  step?: InputMaybe<Scalars['Int']>;
+  timeRange?: InputMaybe<TimeRangeInput>;
 };
 
 export type SnmpConfig = {
@@ -519,6 +715,22 @@ export type SnmpInterface = {
   tenantId?: Maybe<Scalars['String']>;
 };
 
+export type SnmpInterfaceInput = {
+  id: Scalars['Long'];
+  ifAdminStatus: Scalars['Int'];
+  ifAlias?: InputMaybe<Scalars['String']>;
+  ifDescr?: InputMaybe<Scalars['String']>;
+  ifIndex: Scalars['Int'];
+  ifName?: InputMaybe<Scalars['String']>;
+  ifOperatorStatus: Scalars['Int'];
+  ifSpeed: Scalars['Long'];
+  ifType: Scalars['Int'];
+  ipAddress?: InputMaybe<Scalars['String']>;
+  nodeId: Scalars['Long'];
+  physicalAddr?: InputMaybe<Scalars['String']>;
+  tenantId?: InputMaybe<Scalars['String']>;
+};
+
 export type SnmpInterfaceLinkRef = {
   __typename?: 'SnmpInterfaceLinkRef';
   ifA?: Maybe<SnmpInterfaceRef>;
@@ -565,6 +777,11 @@ export type TagListNodesRemoveInput = {
   tagIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
 };
 
+export type TimeRangeInput = {
+  endTime?: InputMaybe<Scalars['Instant']>;
+  startTime?: InputMaybe<Scalars['Instant']>;
+};
+
 export enum TimeRangeUnit {
   Day = 'DAY',
   Hour = 'HOUR',
@@ -577,6 +794,36 @@ export type TimeSeriesQueryResult = {
   __typename?: 'TimeSeriesQueryResult';
   data?: Maybe<TsData>;
   status?: Maybe<Scalars['String']>;
+};
+
+export type TrafficSummary = {
+  __typename?: 'TrafficSummary';
+  bytesIn: Scalars['Long'];
+  bytesOut: Scalars['Long'];
+  label?: Maybe<Scalars['String']>;
+};
+
+export type TriggerEvent = {
+  __typename?: 'TriggerEvent';
+  clearEvent?: Maybe<Scalars['String']>;
+  count?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Long']>;
+  overtime?: Maybe<Scalars['Int']>;
+  overtimeUnit?: Maybe<Scalars['String']>;
+  severity?: Maybe<Scalars['String']>;
+  tenantId?: Maybe<Scalars['String']>;
+  triggerEvent?: Maybe<Scalars['String']>;
+};
+
+export type TriggerEventInput = {
+  clearEvent?: InputMaybe<Scalars['String']>;
+  count?: InputMaybe<Scalars['Int']>;
+  id?: InputMaybe<Scalars['Long']>;
+  overtime?: InputMaybe<Scalars['Int']>;
+  overtimeUnit?: InputMaybe<Scalars['String']>;
+  severity?: InputMaybe<Scalars['String']>;
+  tenantId?: InputMaybe<Scalars['String']>;
+  triggerEvent?: InputMaybe<Scalars['String']>;
 };
 
 export type LocationsPartsFragment = { __typename?: 'Query', findAllLocations?: Array<{ __typename?: 'Location', id: any, location?: string }> };
@@ -613,6 +860,34 @@ export type UpsertPassiveDiscoveryMutationVariables = Exact<{
 
 
 export type UpsertPassiveDiscoveryMutation = { __typename?: 'Mutation', upsertPassiveDiscovery?: { __typename?: 'PassiveDiscovery', id?: any, location?: string, name?: string, snmpCommunities?: Array<string>, snmpPorts?: Array<number>, toggle: boolean } };
+
+export type FindApplicationSeriesQueryVariables = Exact<{
+  count: Scalars['Int'];
+  step: Scalars['Int'];
+  startTime: Scalars['Instant'];
+  endTime: Scalars['Instant'];
+}>;
+
+
+export type FindApplicationSeriesQuery = { __typename?: 'Query', findApplicationSeries?: Array<{ __typename?: 'FlowingPoint', timestamp?: any, label?: string, value: number, direction?: string }> };
+
+export type FindApplicationSummariesQueryVariables = Exact<{
+  count: Scalars['Int'];
+  startTime: Scalars['Instant'];
+  endTime: Scalars['Instant'];
+}>;
+
+
+export type FindApplicationSummariesQuery = { __typename?: 'Query', findApplicationSummaries?: Array<{ __typename?: 'TrafficSummary', label?: string, bytesIn: any, bytesOut: any }> };
+
+export type FindApplicationsQueryVariables = Exact<{
+  count: Scalars['Int'];
+  startTime: Scalars['Instant'];
+  endTime: Scalars['Instant'];
+}>;
+
+
+export type FindApplicationsQuery = { __typename?: 'Query', findApplications?: Array<string> };
 
 export type ChartTimeSeriesMetricFragment = { __typename?: 'Query', metric?: { __typename?: 'TimeSeriesQueryResult', data?: { __typename?: 'TSData', result?: Array<{ __typename?: 'TSResult', metric?: any, values?: Array<Array<number>> }> } } };
 
@@ -839,6 +1114,9 @@ export const CreateAzureActiveDiscoveryDocument = {"kind":"Document","definition
 export const CreateIcmpActiveDiscoveryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateIcmpActiveDiscovery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"request"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"IcmpActiveDiscoveryCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createIcmpActiveDiscovery"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"request"},"value":{"kind":"Variable","name":{"kind":"Name","value":"request"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"ipAddresses"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"snmpConfig"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"ports"}},{"kind":"Field","name":{"kind":"Name","value":"readCommunities"}}]}}]}}]}}]} as unknown as DocumentNode<CreateIcmpActiveDiscoveryMutation, CreateIcmpActiveDiscoveryMutationVariables>;
 export const TogglePassiveDiscoveryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"TogglePassiveDiscovery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"toggle"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PassiveDiscoveryToggleInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"togglePassiveDiscovery"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"toggle"},"value":{"kind":"Variable","name":{"kind":"Name","value":"toggle"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"toggle"}}]}}]}}]} as unknown as DocumentNode<TogglePassiveDiscoveryMutation, TogglePassiveDiscoveryMutationVariables>;
 export const UpsertPassiveDiscoveryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpsertPassiveDiscovery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"passiveDiscovery"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PassiveDiscoveryUpsertInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"upsertPassiveDiscovery"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"discovery"},"value":{"kind":"Variable","name":{"kind":"Name","value":"passiveDiscovery"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"snmpCommunities"}},{"kind":"Field","name":{"kind":"Name","value":"snmpPorts"}},{"kind":"Field","name":{"kind":"Name","value":"toggle"}}]}}]}}]} as unknown as DocumentNode<UpsertPassiveDiscoveryMutation, UpsertPassiveDiscoveryMutationVariables>;
+export const FindApplicationSeriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"findApplicationSeries"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"count"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"step"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startTime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Instant"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endTime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Instant"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findApplicationSeries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"requestCriteria"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"count"},"value":{"kind":"Variable","name":{"kind":"Name","value":"count"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"step"},"value":{"kind":"Variable","name":{"kind":"Name","value":"step"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"timeRange"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"startTime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startTime"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"endTime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endTime"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"direction"}}]}}]}}]} as unknown as DocumentNode<FindApplicationSeriesQuery, FindApplicationSeriesQueryVariables>;
+export const FindApplicationSummariesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"findApplicationSummaries"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"count"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startTime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Instant"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endTime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Instant"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findApplicationSummaries"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"requestCriteria"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"count"},"value":{"kind":"Variable","name":{"kind":"Name","value":"count"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"timeRange"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"startTime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startTime"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"endTime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endTime"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"bytesIn"}},{"kind":"Field","name":{"kind":"Name","value":"bytesOut"}}]}}]}}]} as unknown as DocumentNode<FindApplicationSummariesQuery, FindApplicationSummariesQueryVariables>;
+export const FindApplicationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"findApplications"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"count"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startTime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Instant"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"endTime"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Instant"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"findApplications"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"requestCriteria"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"timeRange"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"startTime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startTime"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"endTime"},"value":{"kind":"Variable","name":{"kind":"Name","value":"endTime"}}}]}},{"kind":"ObjectField","name":{"kind":"Name","value":"count"},"value":{"kind":"Variable","name":{"kind":"Name","value":"count"}}}]}}]}]}}]} as unknown as DocumentNode<FindApplicationsQuery, FindApplicationsQueryVariables>;
 export const DeleteMinionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteMinion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteMinion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteMinionMutation, DeleteMinionMutationVariables>;
 export const AddNodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddNode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"node"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"NodeCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addNode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"node"},"value":{"kind":"Variable","name":{"kind":"Name","value":"node"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createTime"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"monitoringLocationId"}},{"kind":"Field","name":{"kind":"Name","value":"nodeLabel"}},{"kind":"Field","name":{"kind":"Name","value":"tenantId"}}]}}]}}]} as unknown as DocumentNode<AddNodeMutation, AddNodeMutationVariables>;
 export const DeleteNodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteNode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Long"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteNode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode<DeleteNodeMutation, DeleteNodeMutationVariables>;

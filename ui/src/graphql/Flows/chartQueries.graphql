@@ -1,6 +1,7 @@
-fragment findApplicationSeriesTest on Query {
- findApplicationSeries(requestCriteria: {count: $count, step: $step, timeRange: {startTime: $startTime, endTime: $endTime}}) 
-    {
+query findApplicationSeries($count: Int!, $step: Int!, $startTime: Instant!, $endTime: Instant!) {
+  findApplicationSeries(
+    requestCriteria: { count: $count, step: $step, timeRange: { startTime: $startTime, endTime: $endTime } }
+  ) {
     timestamp
     label
     value
@@ -8,16 +9,16 @@ fragment findApplicationSeriesTest on Query {
   }
 }
 
-query findApplicationSeries($count: Int!, $step: Int!, $timeRange: { startTime: Int!, endTime: Int! }) {
-  ...findApplicationSeriesTest
+query findApplicationSummaries($count: Int!, $startTime: Instant!, $endTime: Instant!) {
+  findApplicationSummaries(
+    requestCriteria: { count: $count, timeRange: { startTime: $startTime, endTime: $endTime } }
+  ) {
+    label
+    bytesIn
+    bytesOut
+  }
 }
 
-# query{
-#   findApplicationSeries(requestCriteria:{count: 3, step: 3600000, timeRange: {startTime: 1670661637000, endTime: 1679910407693}})
-#   {
-#     timestamp,
-#     label,
-#     value,
-#     direction
-#   }
-# }
+query findApplications($count: Int!, $startTime: Instant!, $endTime: Instant!) {
+  findApplications(requestCriteria: { timeRange: { startTime: $startTime, endTime: $endTime }, count: $count })
+}
