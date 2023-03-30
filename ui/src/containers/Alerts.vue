@@ -80,7 +80,6 @@
           v-model="page"
           :pageSize="pageSize"
           :total="total"
-          @update:pageSize="updatePageSize"
           data-test="list-count"
         />
       </div>
@@ -97,7 +96,8 @@
           v-model="page"
           :pageSize="pageSize"
           :total="total"
-          @update:pageSize="updatePageSize"
+          @update:model-value="alertsStore.setPage"
+          @update:pageSize="alertsStore.setPageSize"
           data-test="pagination"
         />
       </div>
@@ -106,9 +106,9 @@
 </template>
 
 <script lang="ts" setup>
+import { TimeRange } from '@/types/graphql'
 import { useAlertsStore } from '@/store/Views/alertsStore'
 // import { useAlertsQueries } from '@/store/Queries/alertsQueries'
-import { TimeRange } from '@/types/graphql'
 import { IAlert } from '@/types/alerts'
 
 onMounted(async () => {
@@ -120,19 +120,12 @@ const alertsStore = useAlertsStore()
 
 const alerts = ref([] as IAlert[])
 watchEffect(() => {
-  alerts.value = alertsStore.alertsList?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
+  alerts.value = alertsStore.alertsList?.alerts?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
 })
 
-const page = ref(1)
-watch(page, (val) => {
-  alertsStore.setPage(val)
-})
-const pageSize = ref(10)
-const updatePageSize = (ps: number) => {
-  pageSize.value = ps
-  alertsStore.setPageSize(ps)
-}
-const total = computed(() => alerts.value.length) //100 // TODO get BE to add countAlerts to 'findAllAlerts' or use 'countAlerts' to get count on alertsFilter change
+const page = alertsStore.alertsPagination.page
+const pageSize = computed(() => alertsStore.alertsPagination.pageSize)
+const total = computed(() => alertsStore.alertsPagination.total)
 
 const atLeastOneAlertSelected = computed(() => alerts.value.some((a: IAlert) => a.isSelected))
 

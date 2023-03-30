@@ -7,7 +7,7 @@ import { AlertsFilters } from '@/types/alerts'
 const alertsFilterDefault: AlertsFilters = {
   timeRange: TimeRange.All,
   pagination: {
-    page: 0, // api base 0 (first page)
+    page: 0, // api has base of 0 (first page)
     pageSize: 10
   },
   // search: '', // not avail for EAR
@@ -16,19 +16,30 @@ const alertsFilterDefault: AlertsFilters = {
   sortBy: 'alertId'
 }
 
+const alertsPaginationDefault = {
+  page: 1, // pagination component has base of 1 (first page)
+  pageSize: 10,
+  total: 0
+}
+
 export const useAlertsStore = defineStore('alertsStore', () => {
   const alertsList = ref()
   const alertsFilter = ref(alertsFilterDefault)
-  const alertsListSearched = ref([])
+  const alertsPagination = ref(alertsPaginationDefault)
+  const alertsListSearched = ref([]) // TODO: not avail for EAR
 
   const alertsQueries = useAlertsQueries()
   const alertsMutations = useAlertsMutations()
 
   const fetchAlerts = async () => {
-    console.log('alertsFilter.value', alertsFilter.value)
     await alertsQueries.fetchAlerts(alertsFilter.value)
 
     alertsList.value = alertsQueries.fetchAlertsData
+
+    alertsPagination.value = {
+      ...alertsPagination.value,
+      total: alertsList.value.totalAlerts
+    }
   }
 
   watch(
@@ -65,7 +76,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   }
 
   const setPage = (page: number): void => {
-    const apiPage = page - 1 // pagination component base 1; hence first page is 1 - 1 = 0 for BE payload
+    const apiPage = page - 1 // pagination component has base of 1; hence first page is 1 - 1 = 0 as api payload
 
     if (apiPage !== Number(alertsFilter.value.pagination.page)) {
       alertsFilter.value = {
@@ -87,6 +98,12 @@ export const useAlertsStore = defineStore('alertsStore', () => {
           pageSize
         }
       }
+
+      alertsPagination.value = {
+        ...alertsPagination.value,
+        page: 1,
+        pageSize
+      }
     }
   }
 
@@ -102,6 +119,8 @@ export const useAlertsStore = defineStore('alertsStore', () => {
       sortAscending: true,
       sortBy: 'alertId'
     }
+
+    alertsPagination.value = alertsPaginationDefault
   }
 
   const clearSelectedAlerts = async () => {
@@ -126,6 +145,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     alertsFilter,
     toggleSeverity,
     selectTime,
+    alertsPagination,
     setPage,
     setPageSize,
     clearAllFilters,
