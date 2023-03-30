@@ -1,13 +1,15 @@
 fragment AlertsParts on Query {
-  # findAllAlerts(filter: "", filterValues: [], page: "0", pageSize: 6, sortAscending: true, sortBy: "alertId") {
   findAllAlerts(
-    filter: $filter
-    filterValues: $filterValues
+    timeRange: $timeRange
     page: $page
     pageSize: $pageSize
+    severities: $severities
     sortAscending: $sortAscending
     sortBy: $sortBy
   ) {
+    nextPageToken
+    lastPageToken
+    totalAlerts
     alerts {
       ackTimeMs
       ackUser
@@ -35,31 +37,23 @@ fragment AlertsParts on Query {
       type
       uei
     }
-    nextPageToken
-    lastPageToken
   }
 }
 
 query Alerts(
-  $filter: String
-  $filterValues: [String]
-  $page: String
+  $timeRange: TimeRange!
+  $page: Int!
   $pageSize: Int
+  $severities: [String]
   $sortAscending: Boolean!
   $sortBy: String
 ) {
   ...AlertsParts
 }
 
-# query AcknowledgeAlerts($alertId: Int!) {
-#   acknowledgeAlert(id: $alertId) {
-#     databaseId
-#   }
-# }
-
 query CountAlerts(
-  $filter: String # "severity"
-  $filterValues: [String] # ["CRITICAL", "MAJOR"]
+  $timeRange: TimeRange!
+  $severityFilters: [String] # ["CRITICAL", "MAJOR"]
 ) {
-  countAlerts(filter: $filter, filterValues: $filterValues)
+  countAlerts(timeRange: $timeRange, severityFilters: $severityFilters)
 }

@@ -54,6 +54,7 @@
 <script lang="ts" setup>
 import Add from '@featherds/icon/action/Add'
 import Cancel from '@featherds/icon/navigation/Cancel'
+import { TimeRange } from '@/types/graphql'
 import { useAlertsStore } from '@/store/Views/alertsStore'
 import { useAlertsQueries } from '@/store/Queries/alertsQueries'
 
@@ -66,11 +67,11 @@ const props = defineProps<{
 
 const count = ref(0)
 onMounted(async () => {
-  const { data } = await alertsQueries.fetchCountAlerts('severity', [props.severity])
+  const { data } = await alertsQueries.fetchCountAlerts(TimeRange.All, [props.severity])
   count.value = data.value?.countAlerts
 })
 
-const isTypeAdded = computed(() => alertsStore.alertsFilter.filterValues.includes(props.severity))
+const isTypeAdded = computed(() => alertsStore.alertsFilter.severities?.includes(props.severity))
 </script>
 
 <style lang="scss" scoped>

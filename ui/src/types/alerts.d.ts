@@ -1,5 +1,5 @@
 import { Alert } from './graphql'
-import { TimeType } from '@/components/Alerts/alerts.constant'
+import { TimeRange } from '@/types/graphql'
 
 interface IAlert extends Alert {
   isSelected?: boolean
@@ -8,16 +8,15 @@ interface IAlert extends Alert {
 }
 
 interface Pagination {
-  page: string
-  pageSize: number
+  page: number
+  pageSize?: number
 }
 
 interface AlertsFilters {
-  filter: string
-  filterValues: string[]
-  time: TimeType
-  search: string
+  timeRange: TimeRange //number
   pagination: Pagination
+  search?: string
+  severities?: string[]
   sortAscending: boolean
-  sortBy: string
+  sortBy?: string
 }

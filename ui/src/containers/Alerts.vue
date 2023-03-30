@@ -20,23 +20,23 @@
           data-test="time-filters"
         >
           <span
-            @click="alertsStore.selectTime(TimeType.ALL)"
-            :class="{ selected: alertsStore.alertsFilter.time === TimeType.ALL }"
+            @click="alertsStore.selectTime(TimeRange.All)"
+            :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.All }"
             >All</span
           >
           <span
-            @click="alertsStore.selectTime(TimeType.TODAY)"
-            :class="{ selected: alertsStore.alertsFilter.time === TimeType.TODAY }"
+            @click="alertsStore.selectTime(TimeRange.Today)"
+            :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.Today }"
             >Today</span
           >
           <span
-            @click="alertsStore.selectTime(TimeType.DAY)"
-            :class="{ selected: alertsStore.alertsFilter.time === TimeType.DAY }"
+            @click="alertsStore.selectTime(TimeRange.Last_24Hours)"
+            :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.Last_24Hours }"
             >24H</span
           >
           <span
-            @click="alertsStore.selectTime(TimeType.SEVEN_DAY)"
-            :class="{ selected: alertsStore.alertsFilter.time === TimeType.SEVEN_DAY }"
+            @click="alertsStore.selectTime(TimeRange.SevenDays)"
+            :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.SevenDays }"
             >7D</span
           >
         </div>
@@ -108,7 +108,7 @@
 <script lang="ts" setup>
 import { useAlertsStore } from '@/store/Views/alertsStore'
 // import { useAlertsQueries } from '@/store/Queries/alertsQueries'
-import { TimeType } from '@/components/Alerts/alerts.constant'
+import { TimeRange } from '@/types/graphql'
 import { IAlert } from '@/types/alerts'
 
 onMounted(async () => {
@@ -132,7 +132,7 @@ const updatePageSize = (ps: number) => {
   pageSize.value = ps
   alertsStore.setPageSize(ps)
 }
-const total = 100 // TODO get BE to add countAlerts to 'findAllAlerts' or use 'countAlerts' to get count on alertsFilter change
+const total = computed(() => alerts.value.length) //100 // TODO get BE to add countAlerts to 'findAllAlerts' or use 'countAlerts' to get count on alertsFilter change
 
 const atLeastOneAlertSelected = computed(() => alerts.value.some((a: IAlert) => a.isSelected))
 
@@ -156,6 +156,7 @@ const alertSelectedListener = (databaseId: number) => {
   isAllAlertsSelected.value = alerts.value.every(({ isSelected }) => isSelected)
 }
 
+// TODO: search not avail for EAR
 const searchAlerts = ref('')
 const searchAlertsListener = (v: any) => {
   // need to define (with BE dev), when to send request, how many chars,...

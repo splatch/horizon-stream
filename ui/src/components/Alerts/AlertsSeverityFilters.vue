@@ -4,7 +4,7 @@
     data-test="severity-list"
   >
     <AlertsSeverityCard
-      v-for="severity in Object.keys(SeverityType).filter((a: string | number) => isNaN(Number(a)))"
+      v-for="severity in severities"
       :key="severity"
       :severity="severity"
     />
@@ -12,12 +12,15 @@
 </template>
 
 <script lang="ts" setup>
-import { SeverityType } from '@/components/Alerts/alerts.constant'
+import { Severity } from '@/types/graphql'
 
-const severityItems = Object.keys(SeverityType).length
+const severitiesDisplay = ['critical', 'major', 'minor', 'warning', 'indeterminate']
+const severities = Object.values(Severity).filter((s) => severitiesDisplay.includes(s.toLowerCase()))
+
+// for setting CSS properties
 const gap = 1.5
 const itemGap = `${gap}%`
-const listItemWidth = `${100 - (gap * (severityItems - 1)) / severityItems}%` // to set card with equal width
+const listItemWidth = `${100 - (gap * (severities.length - 1)) / severities.length}%` // to set card with equal width
 </script>
 
 <style lang="scss" scoped>

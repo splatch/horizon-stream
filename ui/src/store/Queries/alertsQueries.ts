@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useQuery } from 'villus'
-import { AlertsDocument, CountAlertsDocument, Alert } from '@/types/graphql'
+import { AlertsDocument, CountAlertsDocument, Alert, TimeRange } from '@/types/graphql'
 import { AlertsFilters } from '@/types/alerts'
 
 export const useAlertsQueries = defineStore('alertsQueries', () => {
@@ -10,10 +10,11 @@ export const useAlertsQueries = defineStore('alertsQueries', () => {
     const { data, execute, isFetching } = useQuery({
       query: AlertsDocument,
       variables: {
-        filter: alertsFilters.filter,
-        filterValues: alertsFilters.filterValues,
-        page: alertsFilters.pagination.page as string,
+        timeRange: alertsFilters.timeRange,
+        page: alertsFilters.pagination.page,
         pageSize: alertsFilters.pagination.pageSize,
+        search: alertsFilters.search,
+        severities: alertsFilters.severities,
         sortAscending: alertsFilters.sortAscending,
         sortBy: alertsFilters.sortBy
       },
@@ -28,12 +29,12 @@ export const useAlertsQueries = defineStore('alertsQueries', () => {
     }
   }
 
-  const fetchCountAlerts = async (filter = '', filterValues = [] as string[]) =>
+  const fetchCountAlerts = async (timeRange = TimeRange.All, severityFilters = [] as string[]) =>
     useQuery({
       query: CountAlertsDocument,
       variables: {
-        filter,
-        filterValues
+        timeRange,
+        severityFilters
       },
       fetchOnMount: false,
       cachePolicy: 'network-only'

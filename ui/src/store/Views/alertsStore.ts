@@ -1,18 +1,17 @@
 import { defineStore } from 'pinia'
-import { TimeType } from '@/components/Alerts/alerts.constant'
+import { TimeRange } from '@/types/graphql'
 import { useAlertsQueries } from '../Queries/alertsQueries'
 import { useAlertsMutations } from '../Mutations/alertsMutations'
 import { AlertsFilters } from '@/types/alerts'
 
 const alertsFilterDefault: AlertsFilters = {
-  filter: 'severity',
-  filterValues: ['CRITICAL'],
-  time: TimeType.ALL,
-  search: '',
+  timeRange: TimeRange.All,
   pagination: {
-    page: '0', // api base 0 (first page)
+    page: 0, // api base 0 (first page)
     pageSize: 10
   },
+  // search: '', // not avail for EAR
+  severities: [],
   sortAscending: true,
   sortBy: 'alertId'
 }
@@ -26,6 +25,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   const alertsMutations = useAlertsMutations()
 
   const fetchAlerts = async () => {
+    console.log('alertsFilter.value', alertsFilter.value)
     await alertsQueries.fetchAlerts(alertsFilter.value)
 
     alertsList.value = alertsQueries.fetchAlertsData
@@ -40,28 +40,27 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   )
 
   const toggleSeverity = (selected: string): void => {
-    const exists = alertsFilter.value.filterValues.some((s) => s === selected)
+    const exists = alertsFilter.value.severities?.some((s) => s === selected)
 
     if (exists) {
       alertsFilter.value = {
         ...alertsFilter.value,
-        filterValues: alertsFilter.value.filterValues.filter((s) => s !== selected)
+        severities: alertsFilter.value.severities?.filter((s) => s !== selected)
       }
 
-      if (!alertsFilter.value.filterValues.length) alertsFilter.value = { ...alertsFilter.value, filter: '' }
+      if (!alertsFilter.value.severities?.length) alertsFilter.value = { ...alertsFilter.value, severities: [] }
     } else {
       alertsFilter.value = {
         ...alertsFilter.value,
-        filter: 'severity',
-        filterValues: [...alertsFilter.value.filterValues, selected]
+        severities: [...(alertsFilter.value.severities as string[]), selected]
       }
     }
   }
 
-  const selectTime = (selected: TimeType): void => {
+  const selectTime = (selected: TimeRange): void => {
     alertsFilter.value = {
       ...alertsFilter.value,
-      time: selected
+      timeRange: selected
     }
   }
 
@@ -73,7 +72,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
         ...alertsFilter.value,
         pagination: {
           ...alertsFilter.value.pagination,
-          page: apiPage.toString()
+          page: apiPage
         }
       }
     }
@@ -84,7 +83,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
       alertsFilter.value = {
         ...alertsFilter.value,
         pagination: {
-          page: '0',
+          page: 0,
           pageSize
         }
       }
@@ -93,14 +92,13 @@ export const useAlertsStore = defineStore('alertsStore', () => {
 
   const clearAllFilters = (): void => {
     alertsFilter.value = {
-      filter: '',
-      filterValues: [],
-      time: TimeType.ALL,
-      search: '',
+      timeRange: TimeRange.All,
       pagination: {
-        page: '0',
+        page: 0,
         pageSize: 10
       },
+      // search: '', // not avail for EAR
+      severities: [],
       sortAscending: true,
       sortBy: 'alertId'
     }
@@ -109,7 +107,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   const clearSelectedAlerts = async () => {
     // console.log('alertsSelected',alertsSelected)
     // await alertsMutations.clearAlerts(alertsSelected)
-    await alertsMutations.clearAlerts({ alertId: 1 })
+    await alertsMutations.clearAlerts({ ids: [1] })
 
     fetchAlerts()
   }
@@ -117,7 +115,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   const acknowledgeSelectedAlerts = async () => {
     // console.log('alertsSelected',alertsSelected)
     // await alertsMutations.acknowledgeAlerts(alertsSelected)
-    await alertsMutations.acknowledgeAlerts({ alertId: 1 })
+    await alertsMutations.acknowledgeAlerts({ ids: [1] })
 
     fetchAlerts()
   }
