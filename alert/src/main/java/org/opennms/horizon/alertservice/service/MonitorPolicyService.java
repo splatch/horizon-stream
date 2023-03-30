@@ -35,11 +35,11 @@ import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
 import org.opennms.horizon.alertservice.db.repository.MonitorPolicyRepository;
 import org.opennms.horizon.alertservice.mapper.MonitorPolicyMapper;
 import org.opennms.horizon.shared.alert.policy.ComponentType;
+import org.opennms.horizon.shared.alert.policy.EventType;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
 import org.opennms.horizon.shared.alert.policy.PolicyRuleProto;
-import org.opennms.horizon.shared.alert.policy.SNMPEventProto;
-import org.opennms.horizon.shared.alert.policy.SNMPEventType;
 import org.opennms.horizon.shared.alert.policy.Severity;
+import org.opennms.horizon.shared.alert.policy.TriggerEventProto;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -53,8 +53,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MonitorPolicyService {
-    private static final String DEFAULT_POLICY = "default_snmp_policy";
-    private static final String DEFAULT_RULE = "default_snmp_rule";
+    private static final String DEFAULT_POLICY = "default_policy";
+    private static final String DEFAULT_RULE = "default_rule";
     private static final String DEFAULT_TAG = "default";
     private final MonitorPolicyMapper policyMapper;
     private final MonitorPolicyRepository repository;
@@ -62,15 +62,21 @@ public class MonitorPolicyService {
     @EventListener(ApplicationReadyEvent.class)
     public void defaultPolicies() {
         if(repository.findAll().isEmpty()) {
-            SNMPEventProto coldReboot = SNMPEventProto.newBuilder()
+            TriggerEventProto coldReboot = TriggerEventProto.newBuilder()
                 .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
-                .setTriggerEvent(SNMPEventType.COLD_REBOOT)
+                .setTriggerEvent(EventType.COLD_REBOOT)
                 .setCount(1)
                 .setSeverity(Severity.CRITICAL)
                 .build();
-            SNMPEventProto warmReboot = SNMPEventProto.newBuilder()
+            TriggerEventProto warmReboot = TriggerEventProto.newBuilder()
                 .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
-                .setTriggerEvent(SNMPEventType.WARM_REBOOT)
+                .setTriggerEvent(EventType.WARM_REBOOT)
+                .setCount(1)
+                .setSeverity(Severity.MAJOR)
+                .build();
+            TriggerEventProto deviceUnreachable = TriggerEventProto.newBuilder()
+                .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
+                .setTriggerEvent(EventType.DEVICE_UNREACHABLE)
                 .setCount(1)
                 .setSeverity(Severity.MAJOR)
                 .build();
@@ -78,8 +84,7 @@ public class MonitorPolicyService {
                 .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
                 .setName(DEFAULT_RULE)
                 .setComponentType(ComponentType.NODE)
-                .addSnmpEvents(coldReboot)
-                .addSnmpEvents(warmReboot)
+                .addAllSnmpEvents(List.of(coldReboot, warmReboot, deviceUnreachable))
                 .build();
             MonitorPolicyProto defaultPolicy = MonitorPolicyProto.newBuilder()
                 .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
@@ -112,6 +117,12 @@ public class MonitorPolicyService {
     @Transactional(readOnly = true)
     public Optional<MonitorPolicyProto> findById(Long id, String tenantId) {
         return repository.findByIdAndTenantId(id, tenantId)
+            .map(policyMapper::entityToProto);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<MonitorPolicyProto> getDefaultPolicy() {
+        return repository.findByName(DEFAULT_POLICY)
             .map(policyMapper::entityToProto);
     }
 
