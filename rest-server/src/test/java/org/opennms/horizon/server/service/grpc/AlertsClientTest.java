@@ -53,6 +53,7 @@ import org.opennms.horizon.alerts.proto.DeleteAlertResponse;
 import org.opennms.horizon.alerts.proto.ListAlertsRequest;
 import org.opennms.horizon.alerts.proto.ListAlertsResponse;
 import org.opennms.horizon.server.mapper.alert.MonitorPolicyMapper;
+import org.opennms.horizon.server.model.alerts.TimeRange;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import io.grpc.ManagedChannel;
@@ -138,7 +139,7 @@ public class AlertsClientTest {
         String methodName = new Object() {
         }.getClass().getEnclosingMethod().getName();
         ArgumentCaptor<ListAlertsRequest> captor = ArgumentCaptor.forClass(ListAlertsRequest.class);
-        ListAlertsResponse result = client.listAlerts(5, 0, Collections.emptyList(), 0L, "tenantId", true, accessToken + methodName);
+        ListAlertsResponse result = client.listAlerts(5, 0, Collections.emptyList(), TimeRange.TODAY, "tenantId", true, accessToken + methodName);
         assertThat(result.getAlertsList().isEmpty()).isTrue();
         verify(mockAlertService).listAlerts(captor.capture(), any());
         assertThat(captor.getValue()).isNotNull();

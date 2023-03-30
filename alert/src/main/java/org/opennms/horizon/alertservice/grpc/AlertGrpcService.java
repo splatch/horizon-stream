@@ -79,7 +79,7 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
         String sortBy = !request.getSortBy().isEmpty() ? request.getSortBy() : SORT_BY_DEFAULT;
         boolean sortAscending = request.getSortAscending();
 
-        // Create a PageRequest object based on the page size, next page token, filter, and sort parameters
+        // Create a PageRequest object based on the page size, next page, filter, and sort parameters
         Sort.Direction sortDirection = sortAscending ? Sort.Direction.ASC : Sort.Direction.DESC;
         PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by(sortDirection, sortBy));
 
@@ -102,11 +102,11 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
 
         // If there is a next page, add the page number to the response's next_page_token field
         if (alertPage.hasNext()) {
-            responseBuilder.setNextPageToken(alertPage.nextPageable().getPageNumber());
+            responseBuilder.setNextPage(alertPage.nextPageable().getPageNumber());
         }
 
         // Set last_page_token
-        responseBuilder.setLastPageToken(alertPage.getTotalPages() - 1);
+        responseBuilder.setLastPage(alertPage.getTotalPages() - 1);
 
         // Set total alerts
         responseBuilder.setTotalAlerts(alertPage.getTotalElements());

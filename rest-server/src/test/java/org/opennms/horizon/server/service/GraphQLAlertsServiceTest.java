@@ -52,6 +52,7 @@ import org.opennms.horizon.alerts.proto.ListAlertsResponse;
 import org.opennms.horizon.model.common.proto.Severity;
 import org.opennms.horizon.server.RestServerApplication;
 import org.opennms.horizon.server.config.DataLoaderFactory;
+import org.opennms.horizon.server.model.alerts.TimeRange;
 import org.opennms.horizon.server.service.grpc.AlertsClient;
 import org.opennms.horizon.server.service.metrics.TSDBMetricsService;
 import org.opennms.horizon.server.utils.ServerHeaderUtil;
@@ -95,10 +96,10 @@ public class GraphQLAlertsServiceTest {
 
     @Test
     public void testFindAllAlerts() throws JSONException {
-        doReturn(ListAlertsResponse.newBuilder().addAlerts(alerts1).addAlerts(alerts2).build()).when(mockClient).listAlerts(5, 0, Collections.singletonList("CRITICAL"), 0L, "tenantId", true, accessToken);
+        doReturn(ListAlertsResponse.newBuilder().addAlerts(alerts1).addAlerts(alerts2).build()).when(mockClient).listAlerts(5, 0, Collections.singletonList("CRITICAL"), TimeRange.TODAY, "tenantId", true, accessToken);
         String request = """
             query {
-              findAllAlerts(pageSize: 5, page: 0, hours: "0", severities: ["CRITICAL"], sortBy: "tenantId", sortAscending: true) {
+              findAllAlerts(pageSize: 5, page: 0, timeRange: TODAY, severities: ["CRITICAL"], sortBy: "tenantId", sortAscending: true) {
                 nextPageToken
                 alerts {
                   tenantId
@@ -124,7 +125,7 @@ public class GraphQLAlertsServiceTest {
             .jsonPath("$.data.findAllAlerts.alerts[0].tenantId").isEqualTo(alerts1.getTenantId())
             .jsonPath("$.data.findAllAlerts.alerts[0].severity").isEqualTo(alerts1.getSeverity().name())
             .jsonPath("$.data.findAllAlerts.alerts[0].reductionKey").isEqualTo(alerts1.getReductionKey());
-        verify(mockClient).listAlerts(5, 0, Collections.singletonList("CRITICAL"), 0L, "tenantId", true, accessToken);
+        verify(mockClient).listAlerts(5, 0, Collections.singletonList("CRITICAL"), TimeRange.TODAY, "tenantId", true, accessToken);
         verify(mockHeaderUtil, times(1)).getAuthHeader(any(ResolutionEnvironment.class));
     }
 
@@ -151,8 +152,22 @@ public class GraphQLAlertsServiceTest {
 
     @Test
     public void testUnacknowledgeAlert() throws JSONException {
-        doReturn(AlertResponse.newBuilder().addAlert(Alert.newBuilder(alerts1).setIsAcknowledged(false).build()).build()).when(mockClient).acknowledgeAlert(List.of(1L), accessToken);
-        String request = "mutation {unacknowledgeAlert(ids: [\"" + alerts1.getDatabaseId() + "\"]){alertList{tenantId reductionKey severity}}}";
+        doReturn(AlertResponse.newBuilder().addAlert(Alert.newBuilder(alerts1).setIsAcknowledged(false).build()).build()).when(mockClient).unacknowledgeAlert(List.of(1L), accessToken);
+        String request = "mutation {\n" +
+            "  unacknowledgeAlert(ids: [\"" + alerts1.getDatabaseId() + "\"]) {\n" +
+            "    alertList {\n" +
+            "      tenantId\n" +
+            "      acknowledged\n" +
+            "      ackUser\n" +
+            "      severity\n" +
+            "      databaseId\n" +
+            "    }\n" +
+            "    alertErrorList {\n" +
+            "      error\n" +
+            "      databaseId\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
         webClient.post()
             .uri(GRAPHQL_PATH)
             .accept(MediaType.APPLICATION_JSON)
@@ -164,8 +179,7 @@ public class GraphQLAlertsServiceTest {
             .jsonPath("$.data.unacknowledgeAlert.alertList.size()").isEqualTo(1)
             .jsonPath("$.data.unacknowledgeAlert.alertList[0].tenantId").isEqualTo(alerts1.getTenantId())
             .jsonPath("$.data.unacknowledgeAlert.alertList[0].severity").isEqualTo(alerts1.getSeverity().name())
-            .jsonPath("$.data.acknowledgeAlert.alertList[0].acknowledged").isEqualTo(false)
-            .jsonPath("$.data.unacknowledgeAlert.alertList[0].reductionKey").isEqualTo(alerts1.getReductionKey());
+            .jsonPath("$.data.unacknowledgeAlert.alertList[0].acknowledged").isEqualTo(false);
         verify(mockClient).unacknowledgeAlert(List.of(1L), accessToken);
         verify(mockHeaderUtil, times(1)).getAuthHeader(any(ResolutionEnvironment.class));
     }

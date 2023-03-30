@@ -28,7 +28,8 @@
 package org.opennms.horizon.server.service.grpc;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +44,7 @@ import org.opennms.horizon.alerts.proto.TimeRangeFilter;
 import org.opennms.horizon.model.common.proto.Severity;
 import org.opennms.horizon.server.mapper.alert.MonitorPolicyMapper;
 import org.opennms.horizon.server.model.alerts.MonitorPolicy;
+import org.opennms.horizon.server.model.alerts.TimeRange;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyServiceGrpc;
 import org.opennms.horizon.shared.constants.GrpcConstants;
@@ -58,7 +60,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class AlertsClient {
-    public static final int DEFAULT_HOURS_DURATION = 24;
     private final ManagedChannel channel;
     private final long deadline;
     private final MonitorPolicyMapper policyMapper;
@@ -77,11 +78,11 @@ public class AlertsClient {
         }
     }
 
-    public ListAlertsResponse listAlerts(int pageSize, int page, List<String> severityFilters, long hours, String sortBy, boolean sortAscending, String accessToken) {
+    public ListAlertsResponse listAlerts(int pageSize, int page, List<String> severityFilters, TimeRange timeRange, String sortBy, boolean sortAscending, String accessToken) {
         Metadata metadata = getMetadata(accessToken);
 
         final var request = ListAlertsRequest.newBuilder();
-        getTimeRangeFilter(hours, request);
+        getTimeRangeFilter(timeRange, request);
         getSeverity(severityFilters, request);
 
         request.setPageSize(pageSize)
@@ -117,34 +118,47 @@ public class AlertsClient {
         return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).deleteAlert(AlertRequest.newBuilder().addAllAlertId(ids).build());
     }
 
-    public long countAlerts(List<String> severityFilter, long hours, String accessToken) {
+    public long countAlerts(List<String> severityFilter, TimeRange timeRange, String accessToken) {
         Metadata metadata = getMetadata(accessToken);
 
         ListAlertsRequest.Builder request = ListAlertsRequest.newBuilder();
-        getTimeRangeFilter(hours, request);
+        getTimeRangeFilter(timeRange, request);
         getSeverity(severityFilter, request);
 
         return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).countAlerts(request
             .build()).getValue();
     }
 
-    private static void getTimeRangeFilter(Long hours, ListAlertsRequest.Builder request) {
-        long effectiveHours = hours != null ? hours : DEFAULT_HOURS_DURATION;
+    private static void getTimeRangeFilter(TimeRange timeRange, ListAlertsRequest.Builder request) {
+        TimeRangeFilter.Builder filterBuilder = TimeRangeFilter.newBuilder();
+        Timestamp.Builder startTimeBuilder = Timestamp.newBuilder();
+        Timestamp.Builder endTimeBuilder = Timestamp.newBuilder();
 
-        Instant nowTime = Instant.now();
-        Timestamp nowTimestamp = Timestamp.newBuilder()
-            .setSeconds(nowTime.getEpochSecond())
-            .setNanos(nowTime.getNano()).build();
+        switch (timeRange) {
+            case TODAY:
+                startTimeBuilder.setSeconds(getStartTime(TimeRange.TODAY));
+                endTimeBuilder.setSeconds(getEndTime());
+                break;
+            case SEVEN_DAYS:
+                startTimeBuilder.setSeconds(getStartTime(TimeRange.SEVEN_DAYS));
+                endTimeBuilder.setSeconds(getEndTime());
+                break;
+            case LAST_24_HOURS:
+                startTimeBuilder.setSeconds(getStartTime(TimeRange.LAST_24_HOURS));
+                endTimeBuilder.setSeconds(getEndTime());
+                break;
+            case ALL:
+                startTimeBuilder.setSeconds(0);
+                endTimeBuilder.setSeconds(System.currentTimeMillis() / 1000);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid time range: " + timeRange);
+        }
 
-        Instant thenTime = nowTime.minus(effectiveHours, ChronoUnit.HOURS);
-        Timestamp thenTimestamp = Timestamp.newBuilder()
-            .setSeconds(thenTime.getEpochSecond())
-            .setNanos(thenTime.getNano()).build();
+        filterBuilder.setStartTime(startTimeBuilder.build());
+        filterBuilder.setEndTime(endTimeBuilder.build());
 
-        request.addFilters(Filter.newBuilder().setTimeRange(TimeRangeFilter.newBuilder()
-                .setStartTime(thenTimestamp)
-                .setEndTime(nowTimestamp))
-            .build());
+        request.addFilters(Filter.newBuilder().setTimeRange(filterBuilder.build()).build());
     }
 
     private static void getSeverity(List<String> severityFilters, ListAlertsRequest.Builder request) {
@@ -185,5 +199,20 @@ public class AlertsClient {
             .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
             .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)
             .getPolicyById(Int64Value.of(id)));
+    }
+
+    public static long getStartTime(TimeRange timeRange) {
+        LocalDate today = LocalDate.now();
+        return switch (timeRange) {
+            case TODAY -> today.atStartOfDay().toEpochSecond(ZoneOffset.UTC);
+            case SEVEN_DAYS -> today.minusDays(6).atStartOfDay().toEpochSecond(ZoneOffset.UTC);
+            case LAST_24_HOURS -> Instant.now().minusSeconds(24 * 60 * 60).getEpochSecond();
+            case ALL -> 0;
+            default -> throw new IllegalArgumentException("Invalid time range: " + timeRange);
+        };
+    }
+
+    public static long getEndTime() {
+        return Instant.now().getEpochSecond();
     }
 }
