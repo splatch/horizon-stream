@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,22 +25,23 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.horizon.shared.dto.datachoices;
 
-import lombok.Data;
+package org.opennms.horizon.server.mapper.flows;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.protobuf.Timestamp;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.opennms.horizon.server.model.flows.FlowingPoint;
 
-@Data
-public class UsageStatisticsReportDTO {
-    private String systemId;
+import java.time.Instant;
 
-    private String version;
+@Mapper(componentModel = "spring")
+public interface FlowingPointMapper {
 
-    private long nodes;
+    @Mapping(source = "application", target = "label")
+    FlowingPoint map(org.opennms.dataplatform.flows.querier.v1.FlowingPoint proto);
 
-    private long monitoredServices;
-
-    private Map<String, Integer> deviceTypeCounts = new HashMap<>();
+    default Instant map(Timestamp timestamp) {
+        return Instant.ofEpochSecond(timestamp.getSeconds(), timestamp.getNanos());
+    }
 }

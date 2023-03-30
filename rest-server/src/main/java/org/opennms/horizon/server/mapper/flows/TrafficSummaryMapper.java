@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,23 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.shared.dto.device;
+package org.opennms.horizon.server.mapper.flows;
 
-import org.opennms.horizon.shared.dto.AbstractCollectionDTO;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.opennms.horizon.server.model.flows.TrafficSummary;
 
-import java.util.Collection;
-import java.util.List;
+@Mapper(componentModel = "spring")
+public interface TrafficSummaryMapper {
 
-public class LocationCollectionDTO extends AbstractCollectionDTO<LocationDTO> {
-
-    public LocationCollectionDTO() {
-    }
-
-    public LocationCollectionDTO(final Collection<? extends LocationDTO> devices) {
-        objects.addAll(devices);
-    }
-
-    public List<LocationDTO> getLocations() {
-        return objects;
-    }
+    @Mapping(source = "application", target = "label")
+    TrafficSummary map(org.opennms.dataplatform.flows.querier.v1.TrafficSummary proto);
 }

@@ -50,10 +50,12 @@ import lombok.Setter;
 @Table(name = "trigger_event")
 @Getter
 @Setter
-public class TriggerEvent extends TenantAwareEntity {
+public class TriggerEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column (name = "tenant_id", nullable = false)
+    private String tenantId;
     @Enumerated(EnumType.STRING)
     @Column(name = "trigger_event_type")
     private EventType triggerEvent;
