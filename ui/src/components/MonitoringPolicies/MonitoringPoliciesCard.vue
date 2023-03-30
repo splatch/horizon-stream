@@ -35,7 +35,10 @@
           @click="triggerRuleState(rule.id)"
         >
           <div>Alert Conditions</div>
-          <FeatherIcon :icon="ruleStates[rule.id] ? icons.ExpandLess : icons.ExpandMore" />
+          <FeatherIcon
+            class="expand-icon"
+            :icon="ruleStates[rule.id] ? icons.ExpandLess : icons.ExpandMore"
+          />
         </div>
       </div>
 
@@ -147,6 +150,10 @@ onMounted(() => (ruleStates[props.policy.rules[0].id] = true))
       color: var(variables.$primary-text-on-color);
       width: 145px;
       cursor: pointer;
+    }
+
+    .expand-icon {
+      font-size: 20px;
     }
   }
 
