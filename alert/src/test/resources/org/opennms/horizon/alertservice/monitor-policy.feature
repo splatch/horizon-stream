@@ -9,7 +9,7 @@ Feature: Monitor policy gRPC Functionality
     Given Kafka alert topic "alerts"
 
   Scenario: The default monitoring policy should exist
-    Given Default tenant id "opennms-prime"
+    Given Tenant id "different-tenant"
     Then The default monitoring policy exist with name "default_policy" and tag "default" and all notification enabled
     Then Verify the default policy rule has name "default_rule" and component type "NODE"
     Then Verify the default monitoring policy has the following data
@@ -19,7 +19,7 @@ Feature: Monitor policy gRPC Functionality
       | DEVICE_UNREACHABLE | MAJOR    |
 
   Scenario: Create a monitor policy with SNMP Trap event rule
-    Given Test tenant id "test-tenant"
+    Given Tenant id "test-tenant"
     Given Monitor policy name "test-policy" and memo "the test policy"
     Given Policy tags
       | SNMP Trap        |

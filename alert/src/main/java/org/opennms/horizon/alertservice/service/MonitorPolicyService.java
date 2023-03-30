@@ -40,7 +40,6 @@ import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
 import org.opennms.horizon.shared.alert.policy.PolicyRuleProto;
 import org.opennms.horizon.shared.alert.policy.Severity;
 import org.opennms.horizon.shared.alert.policy.TriggerEventProto;
-import org.opennms.horizon.shared.constants.GrpcConstants;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -53,6 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MonitorPolicyService {
+    private static final String SYSTEM_TENANT = "system-tenant";
     private static final String DEFAULT_POLICY = "default_policy";
     private static final String DEFAULT_RULE = "default_rule";
     private static final String DEFAULT_TAG = "default";
@@ -63,31 +63,26 @@ public class MonitorPolicyService {
     public void defaultPolicies() {
         if(repository.findAll().isEmpty()) {
             TriggerEventProto coldReboot = TriggerEventProto.newBuilder()
-                .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
                 .setTriggerEvent(EventType.COLD_REBOOT)
                 .setCount(1)
                 .setSeverity(Severity.CRITICAL)
                 .build();
             TriggerEventProto warmReboot = TriggerEventProto.newBuilder()
-                .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
                 .setTriggerEvent(EventType.WARM_REBOOT)
                 .setCount(1)
                 .setSeverity(Severity.MAJOR)
                 .build();
             TriggerEventProto deviceUnreachable = TriggerEventProto.newBuilder()
-                .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
                 .setTriggerEvent(EventType.DEVICE_UNREACHABLE)
                 .setCount(1)
                 .setSeverity(Severity.MAJOR)
                 .build();
             PolicyRuleProto defaultRule = PolicyRuleProto.newBuilder()
-                .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
                 .setName(DEFAULT_RULE)
                 .setComponentType(ComponentType.NODE)
                 .addAllSnmpEvents(List.of(coldReboot, warmReboot, deviceUnreachable))
                 .build();
             MonitorPolicyProto defaultPolicy = MonitorPolicyProto.newBuilder()
-                .setTenantId(GrpcConstants.DEFAULT_TENANT_ID)
                 .setName(DEFAULT_POLICY)
                 .setMemo("Default SNMP event monitoring policy")
                 .addTags(DEFAULT_TAG)
@@ -97,7 +92,7 @@ public class MonitorPolicyService {
                 .addRules(defaultRule)
                 .setNotifyInstruction("This is default policy notification") //todo: changed to something from environment
                 .build();
-            createPolicy(defaultPolicy, GrpcConstants.DEFAULT_TENANT_ID);
+            createPolicy(defaultPolicy, SYSTEM_TENANT);
         }
     }
 

@@ -57,7 +57,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MonitorPolicySteps {
     private final AlertGrpcClientUtils grpcClient;
-    private String tenantId;
     private MonitorPolicyProto.Builder policyBuilder = MonitorPolicyProto.newBuilder();
     private PolicyRuleProto.Builder ruleBuilder = PolicyRuleProto.newBuilder();
     private TriggerEventProto.Builder triggerBuilder = TriggerEventProto.newBuilder();
@@ -65,9 +64,8 @@ public class MonitorPolicySteps {
 
     private MonitorPolicyProto policy;
 
-    @Given("Default/Test tenant id {string}")
+    @Given("Tenant id {string}")
     public void defaultTenantId(String tenantId) {
-        this.tenantId = tenantId;
         grpcClient.setTenantId(tenantId);
     }
 
