@@ -223,7 +223,6 @@ defineExpose({
     align-items: center;
     > .icon-help {
       height: 20px;
-      color: var(variables.$secondary-variant);
       width: 20px;
       min-width: 20px;
       border: none;
