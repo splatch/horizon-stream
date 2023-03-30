@@ -32,8 +32,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.horizon.alerts.proto.Alert;
+import org.opennms.horizon.alerts.proto.AlertRequest;
+import org.opennms.horizon.alerts.proto.AlertResponse;
 import org.opennms.horizon.alerts.proto.AlertServiceGrpc;
+import org.opennms.horizon.alerts.proto.DeleteAlertResponse;
 import org.opennms.horizon.alerts.proto.Filter;
 import org.opennms.horizon.alerts.proto.ListAlertsRequest;
 import org.opennms.horizon.alerts.proto.ListAlertsResponse;
@@ -45,10 +47,9 @@ import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
 import org.opennms.horizon.shared.alert.policy.MonitorPolicyServiceGrpc;
 import org.opennms.horizon.shared.constants.GrpcConstants;
 
-import com.google.protobuf.Timestamp;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
-import com.google.protobuf.UInt64Value;
+import com.google.protobuf.Timestamp;
 
 import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
@@ -76,7 +77,7 @@ public class AlertsClient {
         }
     }
 
-    public ListAlertsResponse listAlerts(int pageSize, String nextPage, List<String> severityFilters, long hours, String sortBy, boolean sortAscending, String accessToken) {
+    public ListAlertsResponse listAlerts(int pageSize, int page, List<String> severityFilters, long hours, String sortBy, boolean sortAscending, String accessToken) {
         Metadata metadata = getMetadata(accessToken);
 
         final var request = ListAlertsRequest.newBuilder();
@@ -84,36 +85,36 @@ public class AlertsClient {
         getSeverity(severityFilters, request);
 
         request.setPageSize(pageSize)
-            .setNextPageToken(nextPage)
+            .setPage(page)
             .setSortBy(sortBy)
             .setSortAscending(sortAscending)
             .build();
         return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).listAlerts(request.build());
     }
 
-    public Alert acknowledgeAlert(long alertId, String accessToken) {
+    public AlertResponse acknowledgeAlert(List<Long> ids, String accessToken) {
         Metadata metadata = getMetadata(accessToken);
-        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).acknowledgeAlert(UInt64Value.of(alertId));
+        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).acknowledgeAlert(AlertRequest.newBuilder().addAllAlertId(ids).build());
     }
 
-    public Alert unacknowledgeAlert(long alertId, String accessToken) {
+    public AlertResponse unacknowledgeAlert(List<Long> ids, String accessToken) {
         Metadata metadata = getMetadata(accessToken);
-        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).unacknowledgeAlert(UInt64Value.of(alertId));
+        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).unacknowledgeAlert(AlertRequest.newBuilder().addAllAlertId(ids).build());
     }
 
-    public Alert clearAlert(long alertId, String accessToken) {
+    public AlertResponse clearAlert(List<Long> ids, String accessToken) {
         Metadata metadata = getMetadata(accessToken);
-        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).clearAlert(UInt64Value.of(alertId));
+        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).clearAlert(AlertRequest.newBuilder().addAllAlertId(ids).build());
     }
 
-    public Alert escalateAlert(long alertId, String accessToken) {
+    public AlertResponse escalateAlert(List<Long> ids, String accessToken) {
         Metadata metadata = getMetadata(accessToken);
-        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).escalateAlert(UInt64Value.of(alertId));
+        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).escalateAlert(AlertRequest.newBuilder().addAllAlertId(ids).build());
     }
 
-    public boolean deleteAlert(long alertId, String accessToken) {
+    public DeleteAlertResponse deleteAlert(List<Long> ids, String accessToken) {
         Metadata metadata = getMetadata(accessToken);
-        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).deleteAlert(UInt64Value.of(alertId)).getValue();
+        return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).deleteAlert(AlertRequest.newBuilder().addAllAlertId(ids).build());
     }
 
     public long countAlerts(List<String> severityFilter, long hours, String accessToken) {
@@ -147,6 +148,9 @@ public class AlertsClient {
     }
 
     private static void getSeverity(List<String> severityFilters, ListAlertsRequest.Builder request) {
+        if (severityFilters == null || severityFilters.isEmpty()) {
+            return;
+        }
         severityFilters.stream()
             .map(Severity::valueOf)
             .forEach(severity -> request.addFilters(Filter.newBuilder().setSeverity(severity).build()));

@@ -35,7 +35,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AlertResponse {
-    List<Alert> alertList;
-    List<AlertError> alertErrorList;
+public class ListAlertResponse {
+    private List<Alert> alerts;
+    private int nextPageToken;
+    private int lastPageToken;
+    private long totalAlerts;
 }

@@ -37,7 +37,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.opennms.horizon.alerts.proto.Alert;
+import org.opennms.horizon.alerts.proto.AlertError;
+import org.opennms.horizon.alerts.proto.AlertRequest;
+import org.opennms.horizon.alerts.proto.AlertResponse;
 import org.opennms.horizon.alerts.proto.AlertServiceGrpc;
+import org.opennms.horizon.alerts.proto.DeleteAlertResponse;
 import org.opennms.horizon.alerts.proto.ListAlertsRequest;
 import org.opennms.horizon.alerts.proto.ListAlertsResponse;
 import org.opennms.horizon.alertservice.api.AlertService;
@@ -49,7 +53,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import com.google.protobuf.BoolValue;
 import com.google.protobuf.Timestamp;
 import com.google.protobuf.UInt64Value;
 
@@ -61,7 +64,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
     public static final int PAGE_SIZE_DEFAULT = 10;
-    public static final String PAGE_DEFAULT = "0";
     public static final String SORT_BY_DEFAULT = "alertId";
     public static final int DURATION = 24;
     private final AlertMapper alertMapper;
@@ -71,15 +73,15 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
 
     @Override
     public void listAlerts(ListAlertsRequest request, StreamObserver<ListAlertsResponse> responseObserver) {
-        // Extract the page size, next page token and sort values from the request
+        // Extract the page size, page and sort values from the request
         int pageSize = request.getPageSize() != 0 ? request.getPageSize() : PAGE_SIZE_DEFAULT;
-        String nextPageToken = !request.getNextPageToken().isEmpty() ? request.getNextPageToken() : PAGE_DEFAULT;
+        int page = request.getPage();
         String sortBy = !request.getSortBy().isEmpty() ? request.getSortBy() : SORT_BY_DEFAULT;
         boolean sortAscending = request.getSortAscending();
 
         // Create a PageRequest object based on the page size, next page token, filter, and sort parameters
         Sort.Direction sortDirection = sortAscending ? Sort.Direction.ASC : Sort.Direction.DESC;
-        PageRequest pageRequest = PageRequest.of(Integer.parseInt(nextPageToken), pageSize, Sort.by(sortDirection, sortBy));
+        PageRequest pageRequest = PageRequest.of(page, pageSize, Sort.by(sortDirection, sortBy));
 
         // Get Filters
         List<Date> timeRange = new ArrayList<>();
@@ -100,11 +102,14 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
 
         // If there is a next page, add the page number to the response's next_page_token field
         if (alertPage.hasNext()) {
-            responseBuilder.setNextPageToken(String.valueOf(alertPage.nextPageable().getPageNumber()));
+            responseBuilder.setNextPageToken(alertPage.nextPageable().getPageNumber());
         }
 
         // Set last_page_token
-        responseBuilder.setLastPageToken(String.valueOf(alertPage.getTotalPages() - 1));
+        responseBuilder.setLastPageToken(alertPage.getTotalPages() - 1);
+
+        // Set total alerts
+        responseBuilder.setTotalAlerts(alertPage.getTotalElements());
 
         // Build the final ListAlertsResponse object and send it to the client using the responseObserver
         ListAlertsResponse response = responseBuilder.build();
@@ -113,21 +118,101 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
     }
 
     @Override
-    public void deleteAlert(UInt64Value request, StreamObserver<BoolValue> responseObserver) {
-        alertService.deleteAlertById(request.getValue());
-        responseObserver.onNext(BoolValue.of(true));
+    public void deleteAlert(AlertRequest request, StreamObserver<DeleteAlertResponse> responseObserver) {
+        var deleteAlertResponse = DeleteAlertResponse.newBuilder();
+        String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
+        request.getAlertIdList().forEach(
+            alertId -> {
+                boolean success = alertService.deleteAlertByIdAndTenantId(alertId, tenantId);
+                if (success) {
+                    deleteAlertResponse.addAlertId(alertId).build();
+                } else {
+                    AlertError alertError = AlertError.newBuilder().setAlertId(alertId).setError("Couldn't delete alert").build();
+                    deleteAlertResponse.addAlertError(alertError);
+                }
+            });
+
+        responseObserver.onNext(deleteAlertResponse.build());
         responseObserver.onCompleted();
     }
 
     @Override
-    public void acknowledgeAlert(UInt64Value request, StreamObserver<Alert> responseObserver) {
-        responseObserver.onNext(alertService.acknowledgeAlertById(request.getValue()).orElse(null));
+    public void acknowledgeAlert(AlertRequest request, StreamObserver<AlertResponse> responseObserver) {
+        var alertResponse = AlertResponse.newBuilder();
+        String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
+        request.getAlertIdList().forEach(
+            alertId -> {
+                Optional<Alert> alert = alertService.acknowledgeAlertByIdAndTenantId(alertId, tenantId);
+                if(alert.isPresent()) {
+                    alertResponse.addAlert(alert.get());
+                }
+                else {
+                    AlertError alertError = AlertError.newBuilder().setAlertId(alertId).setError("Couldn't acknowledged alert").build();
+                    alertResponse.addAlertError(alertError);
+                }
+            });
+
+        responseObserver.onNext(alertResponse.build());
         responseObserver.onCompleted();
     }
 
     @Override
-    public void unacknowledgeAlert(UInt64Value request, StreamObserver<Alert> responseObserver) {
-        responseObserver.onNext(alertService.unacknowledgeAlertById(request.getValue()).orElse(null));
+    public void unacknowledgeAlert(AlertRequest request, StreamObserver<AlertResponse> responseObserver) {
+        var alertResponse = AlertResponse.newBuilder();
+        String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
+        request.getAlertIdList().forEach(
+            alertId -> {
+                Optional<Alert> alert = alertService.unacknowledgeAlertByIdAndTenantId(alertId, tenantId);
+                if(alert.isPresent()) {
+                    alertResponse.addAlert(alert.get());
+                }
+                else {
+                    AlertError alertError = AlertError.newBuilder().setAlertId(alertId).setError("Couldn't unacknowledged alert").build();
+                    alertResponse.addAlertError(alertError);
+                }
+            });
+
+        responseObserver.onNext(alertResponse.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void clearAlert(AlertRequest request, StreamObserver<AlertResponse> responseObserver) {
+        var alertResponse = AlertResponse.newBuilder();
+        String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
+        request.getAlertIdList().forEach(
+            alertId -> {
+                Optional<Alert> alert = alertService.clearAlertByIdAndTenantId(alertId, tenantId);
+                if(alert.isPresent()) {
+                    alertResponse.addAlert(alert.get());
+                }
+                else {
+                    AlertError alertError = AlertError.newBuilder().setAlertId(alertId).setError("Couldn't clear alert").build();
+                    alertResponse.addAlertError(alertError);
+                }
+            });
+
+        responseObserver.onNext(alertResponse.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void escalateAlert(AlertRequest request, StreamObserver<AlertResponse> responseObserver) {
+        var alertResponse = AlertResponse.newBuilder();
+        String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
+        request.getAlertIdList().forEach(
+            alertId -> {
+                Optional<Alert> alert = alertService.escalateAlertByIdAndTenantId(alertId, tenantId);
+                if(alert.isPresent()) {
+                    alertResponse.addAlert(alert.get());
+                }
+                else {
+                    AlertError alertError = AlertError.newBuilder().setAlertId(alertId).setError("Couldn't escalate alert").build();
+                    alertResponse.addAlertError(alertError);
+                }
+            });
+
+        responseObserver.onNext(alertResponse.build());
         responseObserver.onCompleted();
     }
 

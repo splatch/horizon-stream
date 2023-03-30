@@ -42,6 +42,7 @@ import java.util.function.Supplier;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.opennms.horizon.alerts.proto.Alert;
+import org.opennms.horizon.alerts.proto.AlertRequest;
 import org.opennms.horizon.alerts.proto.Filter;
 import org.opennms.horizon.alerts.proto.ListAlertsRequest;
 import org.opennms.horizon.alerts.proto.ListAlertsResponse;
@@ -229,20 +230,19 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
     @Then("Delete the alert")
     public void deleteTheAlert() {
         clientUtils.getAlertServiceStub()
-            .deleteAlert(UInt64Value.of(firstAlertFromLastResponse.getDatabaseId()))
-            .getValue();
+            .deleteAlert(AlertRequest.newBuilder().addAlertId(firstAlertFromLastResponse.getDatabaseId()).build());
     }
 
     @Then("Acknowledge the alert")
     public void acknowledgeTheAlert() {
         clientUtils.getAlertServiceStub()
-            .acknowledgeAlert(UInt64Value.of(firstAlertFromLastResponse.getDatabaseId()));
+            .acknowledgeAlert(AlertRequest.newBuilder().addAlertId(firstAlertFromLastResponse.getDatabaseId()).build());
     }
 
     @Then("Unacknowledge the alert")
     public void unacknowledgeTheAlert() {
         clientUtils.getAlertServiceStub()
-            .unacknowledgeAlert(UInt64Value.of(firstAlertFromLastResponse.getDatabaseId()));
+            .unacknowledgeAlert(AlertRequest.newBuilder().addAlertId(firstAlertFromLastResponse.getDatabaseId()).build());
     }
 
     @Then("Send GET request to application at path {string}, with timeout {int}ms, until JSON response matches the following JSON path expressions")
