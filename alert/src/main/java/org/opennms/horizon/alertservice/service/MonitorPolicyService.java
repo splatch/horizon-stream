@@ -61,7 +61,7 @@ public class MonitorPolicyService {
 
     @EventListener(ApplicationReadyEvent.class)
     public void defaultPolicies() {
-        if(repository.findAll().isEmpty()) {
+        if(repository.findAllByTenantId(SYSTEM_TENANT).isEmpty()) {
             TriggerEventProto coldReboot = TriggerEventProto.newBuilder()
                 .setTriggerEvent(EventType.COLD_REBOOT)
                 .setCount(1)

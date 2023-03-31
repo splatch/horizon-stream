@@ -31,8 +31,10 @@ public class AlertGrpcClientUtils {
         ManagedChannel managedChannel = channelBuilder.usePlaintext().build();
         managedChannel.getState(true);
         alertServiceStub = AlertServiceGrpc.newBlockingStub(managedChannel)
+            .withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS)
             .withInterceptors(dynamicTenantIdInterceptor);
         policyStub = MonitorPolicyServiceGrpc.newBlockingStub(managedChannel)
+            .withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS)
             .withInterceptors(dynamicTenantIdInterceptor);
     }
 
@@ -41,10 +43,10 @@ public class AlertGrpcClientUtils {
     }
 
     public AlertServiceGrpc.AlertServiceBlockingStub getAlertServiceStub() {
-        return alertServiceStub.withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS);
+        return alertServiceStub;
     }
 
     public MonitorPolicyServiceGrpc.MonitorPolicyServiceBlockingStub getPolicyStub() {
-        return policyStub.withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS);
+        return policyStub;
     }
 }
