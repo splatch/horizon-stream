@@ -71,14 +71,9 @@ const { openModal, closeModal, isVisible } = useModal()
 const successName = ref()
 
 const openSuccessModal = (name: string) => {
-  if (state.value.preventModal) return
   successName.value = name
   openModal()
 }
-
-const state = useStorage<{ preventModal: boolean }>('prevent-discovery-modal', {
-  preventModal: false
-})
 
 defineExpose({ openSuccessModal })
 </script>
@@ -119,7 +114,7 @@ defineExpose({ openSuccessModal })
   display: flex;
   flex-direction: column;
   align-items: center;
-
+  margin-top: var(variables.$spacing-xl);
   .btn {
     width: 300px;
     svg {
