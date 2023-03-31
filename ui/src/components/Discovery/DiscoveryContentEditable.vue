@@ -18,8 +18,8 @@
       <div class="label">
         <label for="contentEditable">{{ props.label }}</label>
         <FeatherPopover
-          :pointer-alignment="'center'"
-          :placement="'top'"
+          :pointer-alignment="PointerAlignment.center"
+          :placement="PopoverPlacement.top"
           v-if="props.tooltipText"
         >
           <template #default>
@@ -68,6 +68,7 @@
 import CheckCircleIcon from '@featherds/icon/action/CheckCircle'
 import { IIcon } from '@/types'
 import { ContentEditableType } from '@/components/Discovery/discovery.constants'
+import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
 import { PropType } from 'vue'
 import { fncArgVoid } from '@/types'
 import discoveryText from '@/components/Discovery/discovery.text'
