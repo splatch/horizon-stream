@@ -43,7 +43,7 @@
       <FeatherIcon
         :icon="Warning"
         class="icon"
-      />You have no {{ passive ? 'passive' : 'active ' }} discovery
+      />{{ discoveryText.Discovery.empty }}
     </div>
   </div>
 </template>
@@ -52,6 +52,8 @@
 import Warning from '@featherds/icon/notification/Warning'
 import { PassiveDiscovery, AzureActiveDiscovery, IcmpActiveDiscovery } from '@/types/graphql'
 import Help from '@featherds/icon/action/Help'
+import discoveryText from '@/components/Discovery/discovery.text'
+
 const Icons = markRaw({
   Help
 })
