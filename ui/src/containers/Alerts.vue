@@ -1,105 +1,107 @@
 <template>
   <div class="container">
-    <div class="header">
-      <PageHeadline
-        text="Alerts"
-        data-test="headline"
-      />
-      <FeatherButton
-        secondary
-        @click="alertsStore.clearAllFilters"
-        data-test="clear-all-filters-btn"
-        >clear all filters</FeatherButton
-      >
-    </div>
-    <AlertsSeverityFilters data-test="severity-filters" />
     <div class="content">
-      <div class="time-search-filters">
-        <div
-          class="time-filters"
-          data-test="time-filters"
+      <div class="header">
+        <PageHeadline
+          text="Alerts"
+          data-test="headline"
+        />
+        <FeatherButton
+          secondary
+          @click="alertsStore.clearAllFilters"
+          data-test="clear-all-filters-btn"
+          >clear all filters</FeatherButton
         >
-          <span
-            @click="alertsStore.selectTime(TimeRange.All)"
-            :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.All }"
-            >All</span
+      </div>
+      <AlertsSeverityFilters data-test="severity-filters" />
+      <div class="alerts-content">
+        <div class="time-search-filters">
+          <div
+            class="time-filters"
+            data-test="time-filters"
           >
-          <span
-            @click="alertsStore.selectTime(TimeRange.Today)"
-            :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.Today }"
-            >Today</span
-          >
-          <span
-            @click="alertsStore.selectTime(TimeRange.Last_24Hours)"
-            :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.Last_24Hours }"
-            >24H</span
-          >
-          <span
-            @click="alertsStore.selectTime(TimeRange.SevenDays)"
-            :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.SevenDays }"
-            >7D</span
-          >
+            <span
+              @click="alertsStore.selectTime(TimeRange.All)"
+              :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.All }"
+              >All</span
+            >
+            <span
+              @click="alertsStore.selectTime(TimeRange.Today)"
+              :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.Today }"
+              >Today</span
+            >
+            <span
+              @click="alertsStore.selectTime(TimeRange.Last_24Hours)"
+              :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.Last_24Hours }"
+              >24H</span
+            >
+            <span
+              @click="alertsStore.selectTime(TimeRange.SevenDays)"
+              :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.SevenDays }"
+              >7D</span
+            >
+          </div>
+          <div class="search-filter">
+            <FeatherInput
+              v-model="searchAlerts"
+              label="Search Alerts"
+              type="search"
+              @update:model-value="searchAlertsListener"
+              class="search-alerts-input"
+              data-test="search-filter"
+            />
+          </div>
         </div>
-        <div class="search-filter">
-          <FeatherInput
-            v-model="searchAlerts"
-            label="Search Alerts"
-            type="search"
-            @update:model-value="searchAlertsListener"
-            class="search-alerts-input"
-            data-test="search-filter"
+        <div class="card-list-top">
+          <div class="select-all-checkbox-btns">
+            <FeatherCheckbox
+              v-model="isAllAlertsSelected"
+              @update:model-value="allAlertsCheckboxHandler"
+              :disabled="!alerts.length"
+              data-test="select-all-checkbox"
+              >Select All</FeatherCheckbox
+            >
+            <FeatherButton
+              :disabled="!atLeastOneAlertSelected"
+              text
+              @click="alertsStore.clearSelectedAlerts"
+              data-test="clear-btn"
+              >clear</FeatherButton
+            >
+            <FeatherButton
+              :disabled="!atLeastOneAlertSelected"
+              text
+              @click="alertsStore.acknowledgeSelectedAlerts"
+              data-test="acknowledge-btn"
+              >acknowledge</FeatherButton
+            >
+          </div>
+          <FeatherPagination
+            v-if="alerts.length"
+            v-model="page"
+            :pageSize="pageSize"
+            :total="total"
+            data-test="list-count"
           />
         </div>
-      </div>
-      <div class="card-list-top">
-        <div class="select-all-checkbox-btns">
-          <FeatherCheckbox
-            v-model="isAllAlertsSelected"
-            @update:model-value="allAlertsCheckboxHandler"
-            :disabled="!alerts.length"
-            data-test="select-all-checkbox"
-            >Select All</FeatherCheckbox
-          >
-          <FeatherButton
-            :disabled="!atLeastOneAlertSelected"
-            text
-            @click="alertsStore.clearSelectedAlerts"
-            data-test="clear-btn"
-            >clear</FeatherButton
-          >
-          <FeatherButton
-            :disabled="!atLeastOneAlertSelected"
-            text
-            @click="alertsStore.acknowledgeSelectedAlerts"
-            data-test="acknowledge-btn"
-            >acknowledge</FeatherButton
-          >
-        </div>
-        <FeatherPagination
+        <AlertsCardList
+          :alerts="alerts"
+          @alert-selected="alertSelectedListener"
+          data-test="alerts-list"
+        />
+        <div
+          class="card-list-bottom"
           v-if="alerts.length"
-          v-model="page"
-          :pageSize="pageSize"
-          :total="total"
-          data-test="list-count"
-        />
-      </div>
-      <AlertsCardList
-        :alerts="alerts"
-        @alert-selected="alertSelectedListener"
-        data-test="alerts-list"
-      />
-      <div
-        class="card-list-bottom"
-        v-if="alerts.length"
-      >
-        <FeatherPagination
-          v-model="page"
-          :pageSize="pageSize"
-          :total="total"
-          @update:model-value="alertsStore.setPage"
-          @update:pageSize="alertsStore.setPageSize"
-          data-test="pagination"
-        />
+        >
+          <FeatherPagination
+            v-model="page"
+            :pageSize="pageSize"
+            :total="total"
+            @update:model-value="alertsStore.setPage"
+            @update:pageSize="alertsStore.setPageSize"
+            data-test="pagination"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -161,7 +163,12 @@ const searchAlertsListener = (v: any) => {
 @use '@/styles/vars.scss';
 
 .container {
-  min-width: 1100px;
+  display: flex;
+  justify-content: center;
+}
+
+.content {
+  width: 1128px;
   margin-right: var(variables.$spacing-l);
   margin-left: var(variables.$spacing-l);
 }
@@ -219,7 +226,7 @@ const searchAlertsListener = (v: any) => {
   }
 }
 
-.content {
+.alerts-content {
   background: white;
   padding: var(variables.$spacing-l);
 }

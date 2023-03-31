@@ -7,6 +7,7 @@
       v-for="severity in severities"
       :key="severity"
       :severity="severity"
+      :class="severity.toLowerCase()"
     />
   </div>
 </template>
@@ -33,6 +34,21 @@ const listItemWidth = `${100 - (gap * (severities.length - 1)) / severities.leng
   margin-bottom: var(variables.$spacing-l);
   > * {
     width: v-bind(listItemWidth);
+  }
+  .critical {
+    order: 0;
+  }
+  .major {
+    order: 1;
+  }
+  .minor {
+    order: 2;
+  }
+  .warning {
+    order: 3;
+  }
+  .indeterminate {
+    order: 4;
   }
 }
 </style>
