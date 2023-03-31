@@ -10,13 +10,13 @@ export const useAlertsQueries = defineStore('alertsQueries', () => {
     const { data, execute, isFetching } = useQuery({
       query: AlertsDocument,
       variables: {
-        timeRange: alertsFilters.timeRange,
         page: alertsFilters.pagination.page,
         pageSize: alertsFilters.pagination.pageSize,
         search: alertsFilters.search,
         severities: alertsFilters.severities,
         sortAscending: alertsFilters.sortAscending,
-        sortBy: alertsFilters.sortBy
+        sortBy: alertsFilters.sortBy,
+        timeRange: alertsFilters.timeRange
       },
       fetchOnMount: false,
       cachePolicy: 'network-only'
@@ -29,12 +29,12 @@ export const useAlertsQueries = defineStore('alertsQueries', () => {
     }
   }
 
-  const fetchCountAlerts = async (timeRange = TimeRange.All, severityFilters = [] as string[]) =>
+  const fetchCountAlerts = async (severityFilters = [] as string[], timeRange = TimeRange.All) =>
     useQuery({
       query: CountAlertsDocument,
       variables: {
-        timeRange,
-        severityFilters
+        severityFilters,
+        timeRange
       },
       fetchOnMount: false,
       cachePolicy: 'network-only'

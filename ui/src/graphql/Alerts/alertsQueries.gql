@@ -1,14 +1,14 @@
 fragment AlertsParts on Query {
   findAllAlerts(
-    timeRange: $timeRange
     page: $page
     pageSize: $pageSize
     severities: $severities
     sortAscending: $sortAscending
     sortBy: $sortBy
+    timeRange: $timeRange
   ) {
-    nextPageToken
-    lastPageToken
+    lastPage
+    nextPage
     totalAlerts
     alerts {
       ackTimeMs
@@ -41,19 +41,19 @@ fragment AlertsParts on Query {
 }
 
 query Alerts(
-  $timeRange: TimeRange!
   $page: Int!
   $pageSize: Int
   $severities: [String]
   $sortAscending: Boolean!
   $sortBy: String
+  $timeRange: TimeRange!
 ) {
   ...AlertsParts
 }
 
 query CountAlerts(
-  $timeRange: TimeRange!
   $severityFilters: [String] # ["CRITICAL", "MAJOR"]
+  $timeRange: TimeRange!
 ) {
-  countAlerts(timeRange: $timeRange, severityFilters: $severityFilters)
+  countAlerts(severityFilters: $severityFilters, timeRange: $timeRange)
 }

@@ -67,7 +67,7 @@ const props = defineProps<{
 
 const count = ref(0)
 onMounted(async () => {
-  const { data } = await alertsQueries.fetchCountAlerts(TimeRange.All, [props.severity])
+  const { data } = await alertsQueries.fetchCountAlerts([props.severity], TimeRange.All)
   count.value = data.value?.countAlerts
 })
 
