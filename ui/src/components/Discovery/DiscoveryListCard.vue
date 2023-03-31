@@ -131,7 +131,7 @@ defineProps<{
 .empty {
   display: flex;
   gap: 8px;
-  margin-top: var(variables.$spacing-s);
+  padding: var(variables.$spacing-m);
 
   .icon {
     width: 24px;
