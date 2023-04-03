@@ -30,12 +30,7 @@ package org.opennms.horizon.server.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.opennms.horizon.server.model.alerts.Alert;
-import org.opennms.horizon.server.model.alerts.AlertError;
-import org.opennms.horizon.server.model.alerts.AlertResponse;
-import org.opennms.horizon.server.model.alerts.CountAlertResponse;
-import org.opennms.horizon.server.model.alerts.DeleteAlertResponse;
-import org.opennms.horizon.server.model.alerts.ListAlertResponse;
+import org.opennms.horizon.server.model.alerts.*;
 
 @Mapper(componentModel = "spring")
 public interface AlertMapper {
@@ -56,4 +51,8 @@ public interface AlertMapper {
 
     @Mapping(source = "alertId", target = "databaseId")
     AlertError protoToAlertError(org.opennms.horizon.alerts.proto.AlertError alertError);
+
+    CountAlertResponse protoToCountAlertResponse(org.opennms.horizon.alerts.proto.CountAlertResponse countAlertResponse);
+
+    String alertErrorToString(org.opennms.horizon.alerts.proto.AlertError alertError);
 }
