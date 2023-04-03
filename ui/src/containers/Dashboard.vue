@@ -1,19 +1,13 @@
 <template>
   <div class="container">
     <div class="header">
-      <PageHeadline text="Monitoring Policies" />
+      <PageHeadline text="Insights Dashboard" />
       <HeaderLinks />
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-const router = useRouter()
-
-const redirect = (route: string) => {
-  router.push(route)
-}
-</script>
+<script setup lang="ts"></script>
 
 <style scoped lang="scss">
 @use '@featherds/styles/mixins/typography';
