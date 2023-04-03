@@ -4,6 +4,7 @@
       <PageHeadline text="Insights Dashboard" />
       <HeaderLinks />
     </div>
+    <AlertsSeverityFilters data-test="severity-filters" />
   </div>
 </template>
 
@@ -17,6 +18,8 @@
 .container {
   display: flex;
   margin: 0 1rem;
+  flex-direction: column;
+  // width: vars.$max-width-constrained;
   padding: var(variables.$spacing-l) var(variables.$spacing-m);
 
   > .header {

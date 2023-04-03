@@ -62,6 +62,12 @@
         :class="{ selected: isSelected('/monitoring-policies') }"
       />
       <FeatherAppRailNavItem
+        href="/alerts"
+        :icon="Icons.Warning"
+        title="Alerts"
+        :class="{ selected: isSelected('/alerts') }"
+      />
+      <FeatherAppRailNavItem
         v-if="false"
         href="/synthetic-transactions"
         :icon="Icons.Cycle"
@@ -83,6 +89,7 @@ import LogoText from '@/assets/OpenNMS-logo-text.svg'
 import Discovery from '@featherds/icon/action/Search'
 import Monitoring from '@featherds/icon/hardware/MinionProfiles'
 import Cycle from '@featherds/icon/action/Cycle'
+import Warning from '@featherds/icon/notification/Warning'
 
 const Icons = markRaw({
   Appliances,
@@ -91,7 +98,8 @@ const Icons = markRaw({
   Business,
   Discovery,
   Monitoring,
-  Cycle
+  Cycle,
+  Warning
 })
 
 const labels = {
