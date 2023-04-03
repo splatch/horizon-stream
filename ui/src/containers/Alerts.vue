@@ -168,7 +168,7 @@ const searchAlertsListener = (v: any) => {
 }
 
 .content {
-  width: 1128px;
+  max-width: vars.$max-width-constrained;
   margin-right: var(variables.$spacing-l);
   margin-left: var(variables.$spacing-l);
 }

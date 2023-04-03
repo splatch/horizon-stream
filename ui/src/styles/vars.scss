@@ -13,3 +13,5 @@ $border-radius-sm: map.get($border-radius, 'sm');
 $border-radius-m: map.get($border-radius, 'm');
 
 $min-width-smallest-screen: 480px;
+
+$max-width-constrained: 1128px;
