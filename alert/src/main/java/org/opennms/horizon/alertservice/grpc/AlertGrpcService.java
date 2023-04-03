@@ -28,22 +28,12 @@
 
 package org.opennms.horizon.alertservice.grpc;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import org.opennms.horizon.alerts.proto.Alert;
-import org.opennms.horizon.alerts.proto.AlertError;
-import org.opennms.horizon.alerts.proto.AlertRequest;
-import org.opennms.horizon.alerts.proto.AlertResponse;
-import org.opennms.horizon.alerts.proto.AlertServiceGrpc;
-import org.opennms.horizon.alerts.proto.DeleteAlertResponse;
-import org.opennms.horizon.alerts.proto.ListAlertsRequest;
-import org.opennms.horizon.alerts.proto.ListAlertsResponse;
+import com.google.protobuf.Timestamp;
+import com.google.protobuf.UInt64Value;
+import io.grpc.Context;
+import io.grpc.stub.StreamObserver;
+import lombok.RequiredArgsConstructor;
+import org.opennms.horizon.alerts.proto.*;
 import org.opennms.horizon.alertservice.api.AlertService;
 import org.opennms.horizon.alertservice.db.repository.AlertRepository;
 import org.opennms.horizon.alertservice.db.tenant.TenantLookup;
@@ -53,18 +43,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import com.google.protobuf.Timestamp;
-import com.google.protobuf.UInt64Value;
-
-import io.grpc.Context;
-import io.grpc.stub.StreamObserver;
-import lombok.RequiredArgsConstructor;
+import java.time.Instant;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
 public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
     public static final int PAGE_SIZE_DEFAULT = 10;
-    public static final String SORT_BY_DEFAULT = "alertId";
+    public static final String SORT_BY_DEFAULT = "id";
     public static final int DURATION = 24;
     private final AlertMapper alertMapper;
     private final AlertRepository alertRepository;

@@ -12,7 +12,7 @@
             </column>
 
             <!-- Unique identifier -->
-            <column name="id" type="bigint">
+            <column name="alert_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
 
@@ -61,7 +61,7 @@
             <column name="managed_object_instance" type="text"/>
         </createTable>
 
-        <addPrimaryKey columnNames="tenant_id, id"
+        <addPrimaryKey columnNames="tenant_id, alert_id"
                        constraintName="alert_pk"
                        tableName="alert"/>
 
