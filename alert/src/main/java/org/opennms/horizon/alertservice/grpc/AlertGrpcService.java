@@ -123,7 +123,7 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
         String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
         request.getAlertIdList().forEach(
             alertId -> {
-                boolean success = alertService.deleteAlertByIdAndTenantId(alertId, tenantId);
+                boolean success = alertService.deleteByIdAndTenantId(alertId, tenantId);
                 if (success) {
                     deleteAlertResponse.addAlertId(alertId).build();
                 } else {
@@ -142,7 +142,7 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
         String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
         request.getAlertIdList().forEach(
             alertId -> {
-                Optional<Alert> alert = alertService.acknowledgeAlertByIdAndTenantId(alertId, tenantId);
+                Optional<Alert> alert = alertService.acknowledgeByIdAndTenantId(alertId, tenantId);
                 if(alert.isPresent()) {
                     alertResponse.addAlert(alert.get());
                 }
@@ -162,7 +162,7 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
         String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
         request.getAlertIdList().forEach(
             alertId -> {
-                Optional<Alert> alert = alertService.unacknowledgeAlertByIdAndTenantId(alertId, tenantId);
+                Optional<Alert> alert = alertService.unacknowledgeByIdAndTenantId(alertId, tenantId);
                 if(alert.isPresent()) {
                     alertResponse.addAlert(alert.get());
                 }
@@ -182,7 +182,7 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
         String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
         request.getAlertIdList().forEach(
             alertId -> {
-                Optional<Alert> alert = alertService.clearAlertByIdAndTenantId(alertId, tenantId);
+                Optional<Alert> alert = alertService.clearByIdAndTenantId(alertId, tenantId);
                 if(alert.isPresent()) {
                     alertResponse.addAlert(alert.get());
                 }
@@ -202,7 +202,7 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
         String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
         request.getAlertIdList().forEach(
             alertId -> {
-                Optional<Alert> alert = alertService.escalateAlertByIdAndTenantId(alertId, tenantId);
+                Optional<Alert> alert = alertService.escalateByIdAndTenantId(alertId, tenantId);
                 if(alert.isPresent()) {
                     alertResponse.addAlert(alert.get());
                 }
@@ -223,7 +223,7 @@ public class AlertGrpcService extends AlertServiceGrpc.AlertServiceImplBase {
         getFilter(request, timeRange, severities);
 
         responseObserver.onNext(UInt64Value.of(tenantLookup.lookupTenantId(Context.current())
-            .map(tenantId -> alertRepository.countAlertBySeverityInAndLastEventTimeBetweenAndTenantId(severities, timeRange.get(0), timeRange.get(1), tenantId))
+            .map(tenantId -> alertRepository.countBySeverityInAndLastEventTimeBetweenAndTenantId(severities, timeRange.get(0), timeRange.get(1), tenantId))
             .orElseThrow()));
         responseObserver.onCompleted();
     }

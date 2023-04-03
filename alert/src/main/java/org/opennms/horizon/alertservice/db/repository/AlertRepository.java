@@ -46,9 +46,9 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
 
     Page<Alert> findBySeverityInAndLastEventTimeBetweenAndTenantId(List<Severity> severityList, Date start, Date end, Pageable pageable, String tenantId);
 
-    int countAlertBySeverityInAndLastEventTimeBetweenAndTenantId(List<Severity> severityList, Date start, Date end, String tenantId);
+    int countBySeverityInAndLastEventTimeBetweenAndTenantId(List<Severity> severityList, Date start, Date end, String tenantId);
 
-    Optional<Alert> findByAlertIdAndTenantId(long id, String tenantId);
+    Optional<Alert> findByIdAndTenantId(long id, String tenantId);
 
-    void deleteByAlertIdAndTenantId(long databaseId, String tenantId);
+    void deleteByIdAndTenantId(long databaseId, String tenantId);
 }

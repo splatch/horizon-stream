@@ -37,17 +37,17 @@ import org.opennms.horizon.events.proto.Event;
 public interface AlertService {
     Optional<Alert> reduceEvent(Event e);
 
-    boolean deleteAlertByIdAndTenantId(long id, String tenantId);
+    boolean deleteByIdAndTenantId(long id, String tenantId);
 
-    void deleteAlertByTenantId(Alert alert, String tenantId);
+    void deleteByTenantId(Alert alert, String tenantId);
 
-    Optional<Alert> acknowledgeAlertByIdAndTenantId(long id, String tenantId);
+    Optional<Alert> acknowledgeByIdAndTenantId(long id, String tenantId);
 
-    Optional<Alert> unacknowledgeAlertByIdAndTenantId(long id, String tenantId);
+    Optional<Alert> unacknowledgeByIdAndTenantId(long id, String tenantId);
 
-    Optional<Alert> escalateAlertByIdAndTenantId(long id, String tenantId);
+    Optional<Alert> escalateByIdAndTenantId(long id, String tenantId);
 
-    Optional<Alert> clearAlertByIdAndTenantId(long id, String tenantId);
+    Optional<Alert> clearByIdAndTenantId(long id, String tenantId);
 
     void addListener(AlertLifecyleListener listener);
 

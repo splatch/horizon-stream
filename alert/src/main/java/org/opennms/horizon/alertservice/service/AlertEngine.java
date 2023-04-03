@@ -133,7 +133,7 @@ public class AlertEngine implements AlertLifecyleListener {
     private void deleteAlert(Alert alert) {
         LOG.info("Delete alert with reduction key: {} for tenant id: {}", alert.getReductionKey(), alert.getTenantId());
         try {
-            alertService.deleteAlertByTenantId(alert, alert.getTenantId());
+            alertService.deleteByTenantId(alert, alert.getTenantId());
         } catch (EmptyResultDataAccessException ex) {
             LOG.warn("Could not find alert alert with reduction key: {} for tenant id: {}. Will stop tracking.", alert.getReductionKey(), alert.getTenantId());
         }
