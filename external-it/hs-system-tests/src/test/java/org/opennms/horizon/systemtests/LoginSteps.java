@@ -1,25 +1,16 @@
 package org.opennms.horizon.systemtests;
 
 
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
-import static com.codeborne.selenide.Condition.disappear;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.sleep;
-
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import org.opennms.horizon.systemtests.utils.HSWebDriver;
 import org.openqa.selenium.By;
-import org.openqa.selenium.ElementNotVisibleException;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.sleep;
 
 public class LoginSteps {
 
@@ -58,6 +49,7 @@ public class LoginSteps {
         passwordField.sendKeys(password);
         $(By.id("okta-signin-submit")).click();
 
+        sleep(10_000);
 
     }
 }

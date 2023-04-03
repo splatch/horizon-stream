@@ -13,5 +13,3 @@ Feature: Testing login to the local environment
   Scenario: Verify that we are able to login to the cluster
     Given Login to the web interface with provided "user" and "password"
     Then Verify that we logged in successfully
-
-
