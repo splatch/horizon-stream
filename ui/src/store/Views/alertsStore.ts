@@ -1,66 +1,155 @@
 import { defineStore } from 'pinia'
-import { TimeType, AlertType } from '@/components/Alerts/alerts.constant'
+import { TimeRange } from '@/types/graphql'
 import { useAlertsQueries } from '../Queries/alertsQueries'
-import { IAlert } from '@/types/alerts'
+import { useAlertsMutations } from '../Mutations/alertsMutations'
+import { AlertsFilters } from '@/types/alerts'
+
+const alertsFilterDefault: AlertsFilters = {
+  timeRange: TimeRange.All,
+  pagination: {
+    page: 0, // api has base of 0 (first page)
+    pageSize: 10
+  },
+  // search: '', // not avail for EAR
+  severities: [],
+  sortAscending: true,
+  sortBy: 'alertId'
+}
+
+const alertsPaginationDefault = {
+  page: 1, // pagination component has base of 1 (first page)
+  pageSize: 10,
+  total: 0
+}
 
 export const useAlertsStore = defineStore('alertsStore', () => {
-  const severitiesSelected = ref<string[]>([])
-  const timeSelected = ref()
   const alertsList = ref()
-  const allAlertsList = ref()
-  const alertsListSearched = ref([])
+  const alertsFilter = ref(alertsFilterDefault)
+  const alertsPagination = ref(alertsPaginationDefault)
+  const alertsListSearched = ref([]) // TODO: not avail for EAR
 
   const alertsQueries = useAlertsQueries()
+  const alertsMutations = useAlertsMutations()
 
   const fetchAlerts = async () => {
-    await alertsQueries.fetchAlerts()
+    await alertsQueries.fetchAlerts(alertsFilter.value)
 
     alertsList.value = alertsQueries.fetchAlertsData
-    allAlertsList.value = alertsQueries.fetchAlertsData
+
+    alertsPagination.value = {
+      ...alertsPagination.value,
+      total: alertsList.value.totalAlerts
+    }
   }
+
+  watch(
+    alertsFilter,
+    () => {
+      fetchAlerts()
+    },
+    { deep: true }
+  )
 
   const toggleSeverity = (selected: string): void => {
-    const exists = severitiesSelected.value.some((s) => s === selected)
+    const exists = alertsFilter.value.severities?.some((s) => s === selected)
 
     if (exists) {
-      severitiesSelected.value = severitiesSelected.value.filter((s) => s !== selected)
+      alertsFilter.value = {
+        ...alertsFilter.value,
+        severities: alertsFilter.value.severities?.filter((s) => s !== selected)
+      }
+
+      if (!alertsFilter.value.severities?.length) alertsFilter.value = { ...alertsFilter.value, severities: [] }
     } else {
-      severitiesSelected.value.push(selected)
-    }
-    if (!severitiesSelected.value.length) {
-      alertsList.value = allAlertsList.value
-    } else {
-      alertsList.value = allAlertsList.value.filter((a: IAlert) => severitiesSelected.value.includes(a.severity))
+      alertsFilter.value = {
+        ...alertsFilter.value,
+        severities: [...(alertsFilter.value.severities as string[]), selected]
+      }
     }
   }
 
-  const selectTime = (selected: TimeType | undefined): void => {
-    timeSelected.value = selected
+  const selectTime = (selected: TimeRange): void => {
+    alertsFilter.value = {
+      ...alertsFilter.value,
+      timeRange: selected
+    }
   }
 
-  const clearAllFilters = () => {
-    severitiesSelected.value = []
-    timeSelected.value = undefined
+  const setPage = (page: number): void => {
+    const apiPage = page - 1 // pagination component has base of 1; hence first page is 1 - 1 = 0 as api payload
+
+    if (apiPage !== Number(alertsFilter.value.pagination.page)) {
+      alertsFilter.value = {
+        ...alertsFilter.value,
+        pagination: {
+          ...alertsFilter.value.pagination,
+          page: apiPage
+        }
+      }
+    }
   }
 
-  const clearAlerts = () => {
-    // send query
+  const setPageSize = (pageSize: number): void => {
+    if (pageSize !== alertsFilter.value.pagination.pageSize) {
+      alertsFilter.value = {
+        ...alertsFilter.value,
+        pagination: {
+          page: 0,
+          pageSize
+        }
+      }
+
+      alertsPagination.value = {
+        ...alertsPagination.value,
+        page: 1,
+        pageSize
+      }
+    }
   }
 
-  const acknowledgedSelectedAlerts = () => {
-    // send query
+  const clearAllFilters = (): void => {
+    alertsFilter.value = {
+      timeRange: TimeRange.All,
+      pagination: {
+        page: 0,
+        pageSize: 10
+      },
+      // search: '', // not avail for EAR
+      severities: [],
+      sortAscending: true,
+      sortBy: 'alertId'
+    }
+
+    alertsPagination.value = alertsPaginationDefault
+  }
+
+  const clearSelectedAlerts = async () => {
+    // console.log('alertsSelected',alertsSelected)
+    // await alertsMutations.clearAlerts(alertsSelected)
+    await alertsMutations.clearAlerts({ ids: [1] })
+
+    fetchAlerts()
+  }
+
+  const acknowledgeSelectedAlerts = async () => {
+    // console.log('alertsSelected',alertsSelected)
+    // await alertsMutations.acknowledgeAlerts(alertsSelected)
+    await alertsMutations.acknowledgeAlerts({ ids: [1] })
+
+    fetchAlerts()
   }
 
   return {
     alertsList,
-    allAlertsList: computed(() => allAlertsList.value),
     fetchAlerts,
-    severitiesSelected,
+    alertsFilter,
     toggleSeverity,
-    timeSelected,
     selectTime,
+    alertsPagination,
+    setPage,
+    setPageSize,
     clearAllFilters,
-    clearAlerts,
-    acknowledgedSelectedAlerts
+    clearSelectedAlerts,
+    acknowledgeSelectedAlerts
   }
 })

@@ -1,23 +1,27 @@
 <template>
-  <div class="list">
-    <div
-      v-for="severity in Object.keys(AlertType).filter((a: string | number) => isNaN(Number(a)))"
+  <div
+    class="list"
+    data-test="severity-list"
+  >
+    <AlertsSeverityCard
+      v-for="severity in severities"
       :key="severity"
-    >
-      <AlertsSeverityCard
-        :severity="severity"
-        :count="severitiesGrouped[severity] ? severitiesGrouped[severity].length : 0"
-      />
-    </div>
+      :severity="severity"
+      :class="severity.toLowerCase()"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { AlertType } from '@/components/Alerts/alerts.constant'
-import { useAlertsStore } from '@/store/Views/alertsStore'
-import { groupBy } from 'lodash'
-const store = useAlertsStore()
-const severitiesGrouped = computed(() => groupBy(store.allAlertsList, 'severity'))
+import { Severity } from '@/types/graphql'
+
+const severitiesDisplay = ['critical', 'major', 'minor', 'warning', 'indeterminate']
+const severities = Object.values(Severity).filter((s) => severitiesDisplay.includes(s.toLowerCase()))
+
+// for setting CSS properties
+const gap = 1.5
+const itemGap = `${gap}%`
+const listItemWidth = `${100 - (gap * (severities.length - 1)) / severities.length}%` // to set card with equal width
 </script>
 
 <style lang="scss" scoped>
@@ -25,8 +29,26 @@ const severitiesGrouped = computed(() => groupBy(store.allAlertsList, 'severity'
 
 .list {
   display: flex;
-  gap: var(variables.$spacing-m);
+  flex-direction: row;
+  gap: v-bind(itemGap);
   margin-bottom: var(variables.$spacing-l);
-  flex-wrap: wrap;
+  > * {
+    width: v-bind(listItemWidth);
+  }
+  .critical {
+    order: 0;
+  }
+  .major {
+    order: 1;
+  }
+  .minor {
+    order: 2;
+  }
+  .warning {
+    order: 3;
+  }
+  .indeterminate {
+    order: 4;
+  }
 }
 </style>

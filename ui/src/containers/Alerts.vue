@@ -1,167 +1,157 @@
 <template>
   <div class="container">
-    <div class="header">
-      <PageHeadline
-        text="Alerts"
-        data-test="headline"
-      />
-      <FeatherButton
-        secondary
-        @click="alertsStore.clearAllFilters"
-        data-test="clear-all-filters-btn"
-        >clear all filters</FeatherButton
-      >
-    </div>
-    <AlertsSeverityFilters data-test="severity-filters" />
     <div class="content">
-      <div class="time-search-filters">
-        <div
-          class="time-filters"
-          data-test="time-filters"
+      <div class="header">
+        <PageHeadline
+          text="Alerts"
+          data-test="headline"
+        />
+        <FeatherButton
+          secondary
+          @click="alertsStore.clearAllFilters"
+          data-test="clear-all-filters-btn"
+          >clear all filters</FeatherButton
         >
-          <span
-            @click="selectTimeFilter(undefined)"
-            :class="{ selected: timeFilterSelected === undefined }"
-            >All</span
+      </div>
+      <AlertsSeverityFilters data-test="severity-filters" />
+      <div class="alerts-content">
+        <div class="time-search-filters">
+          <div
+            class="time-filters"
+            data-test="time-filters"
           >
-          <span
-            @click="selectTimeFilter(TimeType.TODAY)"
-            :class="{ selected: timeFilterSelected === TimeType.TODAY }"
-            >Today</span
-          >
-          <span
-            @click="selectTimeFilter(TimeType.DAY)"
-            :class="{ selected: timeFilterSelected === TimeType.DAY }"
-            >24H</span
-          >
-          <span
-            @click="selectTimeFilter(TimeType.SEVEN_DAY)"
-            :class="{ selected: timeFilterSelected === TimeType.SEVEN_DAY }"
-            >7D</span
-          >
+            <span
+              @click="alertsStore.selectTime(TimeRange.All)"
+              :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.All }"
+              >All</span
+            >
+            <span
+              @click="alertsStore.selectTime(TimeRange.Today)"
+              :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.Today }"
+              >Today</span
+            >
+            <span
+              @click="alertsStore.selectTime(TimeRange.Last_24Hours)"
+              :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.Last_24Hours }"
+              >24H</span
+            >
+            <span
+              @click="alertsStore.selectTime(TimeRange.SevenDays)"
+              :class="{ selected: alertsStore.alertsFilter.timeRange === TimeRange.SevenDays }"
+              >7D</span
+            >
+          </div>
+          <div class="search-filter">
+            <FeatherInput
+              v-model="searchAlerts"
+              label="Search Alerts"
+              type="search"
+              @update:model-value="searchAlertsListener"
+              class="search-alerts-input"
+              data-test="search-filter"
+            />
+          </div>
         </div>
-        <div class="search-filter">
-          <FeatherInput
-            v-model="searchAlerts"
-            label="Search Alerts"
-            type="search"
-            @update:model-value="searchAlertsListener"
-            class="search-alerts-input"
-            data-test="search-filter"
+        <div class="card-list-top">
+          <div class="select-all-checkbox-btns">
+            <FeatherCheckbox
+              v-model="isAllAlertsSelected"
+              @update:model-value="allAlertsCheckboxHandler"
+              :disabled="!alerts.length"
+              data-test="select-all-checkbox"
+              >Select All</FeatherCheckbox
+            >
+            <FeatherButton
+              :disabled="!atLeastOneAlertSelected"
+              text
+              @click="alertsStore.clearSelectedAlerts"
+              data-test="clear-btn"
+              >clear</FeatherButton
+            >
+            <FeatherButton
+              :disabled="!atLeastOneAlertSelected"
+              text
+              @click="alertsStore.acknowledgeSelectedAlerts"
+              data-test="acknowledge-btn"
+              >acknowledge</FeatherButton
+            >
+          </div>
+          <FeatherPagination
+            v-if="alerts.length"
+            v-model="page"
+            :pageSize="pageSize"
+            :total="total"
+            data-test="list-count"
           />
         </div>
-      </div>
-      <div class="card-list-top">
-        <div class="select-all-checkbox-btns">
-          <FeatherCheckbox
-            v-model="isAllAlertsSelected"
-            :disabled="!alerts.length"
-            data-test="select-all-checkbox"
-            >Select All</FeatherCheckbox
-          >
-          <FeatherButton
-            :disabled="!atLeastOneAlertSelected"
-            text
-            @click="clearAlerts"
-            data-test="clear-btn"
-            >clear</FeatherButton
-          >
-          <FeatherButton
-            :disabled="!atLeastOneAlertSelected"
-            text
-            @click="acknowledgeSelectedAlerts"
-            data-test="acknowledge-btn"
-            >acknowledge</FeatherButton
-          >
-        </div>
-        <FeatherPagination
+        <AlertsCardList
+          :alerts="alerts"
+          @alert-selected="alertSelectedListener"
+          data-test="alerts-list"
+        />
+        <div
+          class="card-list-bottom"
           v-if="alerts.length"
-          v-model="page"
-          :pageSize="pageSize"
-          :total="total"
-          @update:pageSize="updatePageSize"
-          data-test="list-count"
-        />
-      </div>
-      <AlertsCardList
-        :alerts="alerts"
-        @alert-selected="alertSelectedListener"
-        data-test="alerts-list"
-      />
-      <div
-        class="card-list-bottom"
-        v-if="alerts.length"
-      >
-        <FeatherPagination
-          v-model="page"
-          :pageSize="pageSize"
-          :total="total"
-          @update:pageSize="updatePageSize"
-          data-test="pagination"
-        />
+        >
+          <FeatherPagination
+            v-model="page"
+            :pageSize="pageSize"
+            :total="total"
+            @update:model-value="alertsStore.setPage"
+            @update:pageSize="alertsStore.setPageSize"
+            data-test="pagination"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { TimeRange } from '@/types/graphql'
 import { useAlertsStore } from '@/store/Views/alertsStore'
-import { TimeType } from '@/components/Alerts/alerts.constant'
+// import { useAlertsQueries } from '@/store/Queries/alertsQueries'
 import { IAlert } from '@/types/alerts'
 
 onMounted(async () => {
-  // console.log('onMounted')
   await alertsStore.fetchAlerts()
 })
 
 const alertsStore = useAlertsStore()
+// const alertsQueries = useAlertsQueries()
 
 const alerts = ref([] as IAlert[])
 watchEffect(() => {
-  alerts.value = alertsStore.alertsList?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
+  alerts.value = alertsStore.alertsList?.alerts?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
 })
 
-const page = ref(1)
-const pageSize = ref(10)
-const total = 100
-
-const updatePageSize = (v: number) => {
-  pageSize.value = v
-}
+const page = alertsStore.alertsPagination.page
+const pageSize = computed(() => alertsStore.alertsPagination.pageSize)
+const total = computed(() => alertsStore.alertsPagination.total)
 
 const atLeastOneAlertSelected = computed(() => alerts.value.some((a: IAlert) => a.isSelected))
 
 const isAllAlertsSelected = ref(false)
-watch(isAllAlertsSelected, (isSelected) => {
+const allAlertsCheckboxHandler = (isSelected: boolean | undefined) => {
   alerts.value = alerts.value.map((a: IAlert) => ({
     ...a,
     isSelected
   }))
-})
-
-const clearAlerts = () => {
-  alertsStore.clearAlerts
-}
-const acknowledgeSelectedAlerts = () => {
-  alertsStore.acknowledgedSelectedAlerts
 }
 
-const alertSelectedListener = (id: string) => {
-  console.log('id', id)
+const alertSelectedListener = (databaseId: number) => {
   alerts.value = alerts.value.map((a: IAlert) => {
-    if (a.id === id) {
+    if (a.databaseId === databaseId) {
       a.isSelected = !a.isSelected // toggle selection
     }
 
     return a
   })
+
+  isAllAlertsSelected.value = alerts.value.every(({ isSelected }) => isSelected)
 }
 
-const timeFilterSelected = computed(() => alertsStore.timeSelected)
-const selectTimeFilter = (type: TimeType | undefined) => {
-  alertsStore.selectTime(type)
-}
-
+// TODO: search not avail for EAR
 const searchAlerts = ref('')
 const searchAlertsListener = (v: any) => {
   // need to define (with BE dev), when to send request, how many chars,...
@@ -173,7 +163,12 @@ const searchAlertsListener = (v: any) => {
 @use '@/styles/vars.scss';
 
 .container {
-  min-width: 1100px;
+  display: flex;
+  justify-content: center;
+}
+
+.content {
+  max-width: vars.$max-width-constrained;
   margin-right: var(variables.$spacing-l);
   margin-left: var(variables.$spacing-l);
 }
@@ -231,7 +226,7 @@ const searchAlertsListener = (v: any) => {
   }
 }
 
-.content {
+.alerts-content {
   background: white;
   padding: var(variables.$spacing-l);
 }
@@ -245,6 +240,9 @@ const searchAlertsListener = (v: any) => {
   background-color: var(variables.$background);
   border: 1px solid var(variables.$border-on-surface);
   border-radius: vars.$border-radius-s vars.$border-radius-s 0 0;
+  :deep(.layout-container) {
+    margin-bottom: 0;
+  }
   :deep(> .feather-pagination) {
     border: 0;
     min-height: auto;

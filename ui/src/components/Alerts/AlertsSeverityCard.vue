@@ -1,80 +1,120 @@
 <template>
   <div
+    v-if="count"
+    @click="alertsStore.toggleSeverity(severity)"
+    :class="{ selected: isTypeAdded }"
     class="card border pointer"
-    :class="{ selected: !isAdd }"
-    @click="addSeverityFilter"
+    data-test="severity-card"
   >
-    <div class="row">
-      <div><AlertsSeverityLabel :severity="severity" /></div>
-
+    <div class="label-add-icon">
+      <AlertsSeverityLabel
+        :severity="severity"
+        data-test="severity-label"
+      />
       <Transition name="icon-anim">
         <FeatherIcon
-          :icon="isAdd ? Add : Cancel"
+          :icon="isTypeAdded ? Cancel : Add"
           class="icon"
           focusable="false"
+          data-test="add-cancel-icon"
         />
       </Transition>
     </div>
-    <div class="count">{{ count }}</div>
+    <div
+      class="count"
+      data-test="count"
+    >
+      {{ count }}
+    </div>
+    <!-- <div data-test="percentage-time">
+      <span class="percentage">%5</span>
+      <span>Past 24 Hours</span>
+    </div> -->
+  </div>
+  <div
+    v-else
+    class="card border pointer"
+    data-test="severity-card"
+  >
+    <div class="label-add-icon">
+      <AlertsSeverityLabel
+        :severity="severity"
+        data-test="severity-label"
+      />
+    </div>
+    <div
+      class="count"
+      data-test="count"
+    >
+      {{ count }}
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import Add from '@featherds/icon/action/Add'
 import Cancel from '@featherds/icon/navigation/Cancel'
+import { TimeRange } from '@/types/graphql'
 import { useAlertsStore } from '@/store/Views/alertsStore'
+import { useAlertsQueries } from '@/store/Queries/alertsQueries'
 
-const store = useAlertsStore()
+const alertsStore = useAlertsStore()
+const alertsQueries = useAlertsQueries()
 
-const isAdd = ref(true)
 const props = defineProps<{
   severity: string
-  count: number
 }>()
 
-const addSeverityFilter = () => {
-  isAdd.value = !isAdd.value
-  store.toggleSeverity(props.severity)
-}
+const count = ref(0)
+onMounted(async () => {
+  const { data } = await alertsQueries.fetchCountAlerts([props.severity], TimeRange.All)
+  count.value = data.value?.countAlerts
+})
+
+const isTypeAdded = computed(() => alertsStore.alertsFilter.severities?.includes(props.severity))
 </script>
 
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
 @use '@/styles/mediaQueriesMixins.scss';
+@use '@/styles/vars.scss';
 
 .card {
+  display: flex;
+  flex-direction: column;
   background-color: var(variables.$surface);
-  min-width: 165px;
-  height: 85px;
   padding: var(variables.$spacing-s);
-  border-radius: 5px;
-  @include mediaQueriesMixins.screen-md {
-    height: 130px;
-  }
+  border-radius: vars.$border-radius-s;
   &.selected {
     background-color: var(variables.$shade-4);
     border-color: var(variables.$secondary-variant);
   }
+}
 
-  > .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    > .icon {
-      font-size: 24px;
-    }
+.label-add-icon {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--feather-spacing-xl);
+  > .icon {
+    font-size: 24px;
   }
-
-  > .count {
-    margin-top: var(variables.$spacing-xs);
-    @include typography.headline2();
-    @include mediaQueriesMixins.screen-md {
-      @include typography.display2();
-      font-weight: 300;
-    }
+  > *:first-child {
+    margin-right: var(variables.$spacing-l);
   }
+}
+
+.count {
+  font-size: var(variables.$display3-font-size);
+  margin-bottom: var(variables.$spacing-l);
+  font-family: var(variables.$header-font-family);
+  color: var(variables.$primary-text-on-surface);
+}
+
+.percentage {
+  margin-right: var(variables.$spacing-xs);
 }
 
 .icon-anim-enter-active {

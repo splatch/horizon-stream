@@ -3,6 +3,7 @@
     v-if="severity"
     class="severity-status"
     :class="[`${severity.toLowerCase()}-color`]"
+    data-test="severity-status"
     >{{ severity }}</span
   >
 </template>
@@ -14,17 +15,15 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
-@use '@featherds/styles/themes/variables';
-@use '@featherds/styles/mixins/typography';
+@use '@/styles/vars.scss';
 @use '@/styles/_severities';
 
 .severity-status {
-  padding: 2px 8px;
-  font-size: 11px;
-  border-radius: 5px;
-  font-weight: 600;
-  width: fit-content;
-  max-height: 27px;
-  @include typography.caption();
+  display: inline-block;
+  letter-spacing: normal;
+  font-size: 0.65rem;
+  line-height: 1.3rem;
+  padding: 0 8px;
+  border-radius: vars.$border-radius-sm;
 }
 </style>
