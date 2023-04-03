@@ -1,10 +1,8 @@
 package org.opennms.horizon.systemtests;
 
-
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +11,6 @@ import java.time.Duration;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Selenide.sleep;
 
 public class LoginSteps {
 
@@ -44,8 +41,8 @@ public class LoginSteps {
 
         $(By.id("okta-signin-password")).shouldBe(visible, Duration.ofMinutes(2)).sendKeys(password);
         $(By.id("okta-signin-submit")).click();
-
-        sleep(10_000);
+        // waiting for the home page
+        $(By.className("welcome")).shouldBe(visible, Duration.ofMinutes(2));
 
     }
 }
