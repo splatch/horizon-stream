@@ -36,8 +36,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AlertResponse {
-    private List<Alert> alerts;
-    private String nextPageToken;
-    private String lastPageToken;
-    private String error;
+    List<Alert> alertList;
+    List<AlertError> alertErrorList;
 }
