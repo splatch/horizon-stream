@@ -9,7 +9,7 @@ Feature: Testing login to the local environment
 #    Given Keycloak client-id in environment variable "KEYCLOAK_CLIENT_ID"
 #    Then login to Keycloak with timeout 120000ms
 
-  @horizon-stream
+  @cloud
   Scenario: Verify that we are able to login to the cluster
     Given Login to the web interface with provided "user" and "password"
     Then Verify that we logged in successfully
