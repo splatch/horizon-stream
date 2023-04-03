@@ -86,10 +86,6 @@ message Alert {
   uint64 ack_time_ms = 18;
 }
 
-message AlertList {
-  repeated Alert alerts = 1;
-}
-
 message EventMatch {
   string name = 1;
   string value = 2;
