@@ -1,18 +1,19 @@
 export default {
   Discovery: {
     pageHeadline: 'Discovery',
-    headline1: 'Select a discovery',
+    headline1: 'Select a discovery type',
     headline2: 'ICMP/SNMP Discovery Setup',
     nameInputLabel: 'ICMP/SNMP name',
-    noneDiscoverySelectedMsg: 'Select a discovery to get started',
+    noneDiscoverySelectedMsg: 'Choose a discovery type to get started.',
     button: {
-      add: 'New Discovery',
+      add: 'Add Discovery',
       cancel: 'Cancel',
       submit: 'Save discovery'
     },
     error: {
       errorCreate: 'Error on creating discovery :('
-    }
+    },
+    empty: 'No discovery performed'
   },
   AddDiscoverySection: {
     activeDiscoveryTitle: 'Active Discovery',
@@ -91,10 +92,14 @@ export const DiscoverySyslogSNMPTrapsForm = {
 
 export const Common = {
   tagsInput: 'Search/Add tags (optional)',
-  tooltip: {
-    IPHelpTooltp: 'IP list or IP ranges separated by:,;. Examples: 127.0.0.1;127.0.0.2,127.0.0.1-127.0.0.12',
-    CommunityStringHelpTooltp: '',
-    PortHelpTooltp: 'It accepts list of ports, separated by space, ",",":" '
+  tooltipIP: {
+    title: 'IP list or IP ranges',
+    description:
+      'Separated by: [, ; .] <br />Examples: <br/> 127.0.0.1;<br />127.0.0.2,127.0.0.1-127.0.0.12  <br/> 172.16.0.0/12'
+  },
+  tooltipPort: {
+    title: 'Port list',
+    description: 'It accepts list of ports, separated by space, [, ; :]'
   }
 }
 
@@ -105,11 +110,49 @@ export const Azure = {
 }
 
 export const SuccessModalOptions = {
-  successMsg: 'setup successfully!',
-  title: 'You may be interested in...',
+  successMsg: 'setup successful.',
   viewNodes: 'View Detected Nodes',
   addDiscovery: 'Add Another Discovery',
   addTransaction: 'Add Synthetic Transaction',
   addMonitoring: 'Add Monitoring Policy',
   checkboxText: "Don't show this again"
+}
+
+export const Instructions = {
+  title: 'Discovery',
+  subtitle:
+    'The discovery process identifies devices and entities on your monitored network through either active or passive discovery.',
+  activeDiscoveryTitle: 'What is Active Discovery?',
+  activeDiscoverySubtitle:
+    'Active discovery queries nodes and cloud APIs to detect the entities that you want to monitor. You can choose from two active discovery methods:',
+  activeListTool: {
+    tool1: 'ICMP/SNMP:',
+    toolDescription1:
+      'Performs a ping sweep and scans for SNMP MIBs on nodes that respond. You can click Validate to verify that you have at least one IP address, range, or subnet in your inventory.',
+    tool2: 'Azure:',
+    toolDescription2:
+      'Connects to the Azure API, queries the virtual machines list, and creates entities for each VM in the node inventory.'
+  },
+  activeNote: 'You can create multiple discovery events to target specific areas of your network.',
+  activeListCharacteristics: {
+    benefits: 'Benefits:',
+    benefitsDescription: 'Can be more comprehensive than passive discovery.',
+    disadvantages: 'Disadvantages:',
+    disadvantagesDescription: 'Can slow network performance as the discovery process tries to connect to all devices.'
+  },
+  passiveDiscoveryTitle: 'What is Passive Discovery?',
+  passiveDiscoverySubtitle:
+    'Passive discovery uses Syslog and SNMP traps to identify network devices. It does so by monitoring their activity through events, flows, and indirectly by evaluating other devices configuration settings.',
+  passiveNote: 'Note that you can set only one passive discovery by location.',
+  passiveListCharacteristics: {
+    benefits: 'Benefits:',
+    benefitsDescription: 'Low bandwidth consumption.',
+    disadvantages: 'Disadvantages:',
+    disadvantagesDescription:
+      'May miss devices if they are not active. All devices must be enabled and configured to send Syslogs.'
+  },
+  learnMoreLink: {
+    label: 'LEARN MORE',
+    link: 'https://docs.opennms.com/'
+  }
 }

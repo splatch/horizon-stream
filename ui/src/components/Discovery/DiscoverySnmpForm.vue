@@ -26,18 +26,21 @@
       ref="tagsAutocompleteRef"
       class="tags-autocomplete"
       data-test="tags-autocomplete"
+      :preselectedItems="tags"
     />
     <div class="content-editable-container">
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('ipAddresses', val)"
         :contentType="ContentEditableType.IP"
         :regexDelim="IP_RANGE.regexDelim"
+        :regexExpression="REGEX_EXPRESSIONS.IP"
         :label="discoveryText.ContentEditable.IP.label"
         ref="contentEditableIPRef"
         class="ip-input"
-        :tooltipText="Common.tooltip.IPHelpTooltp"
+        :tooltipText="Common.tooltipIP"
         :content="props.discovery?.ipAddresses?.join(', ')"
         isRequired
+        :id="1"
       />
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('snmpConfig.readCommunities', val)"
@@ -48,17 +51,20 @@
         ref="contentEditableCommunityStringRef"
         class="community-input"
         :content="props.discovery?.snmpConfig?.readCommunities?.join(', ')"
+        :id="2"
       />
       <DiscoveryContentEditable
         @content-formatted="(val) => setSnmpConfig('snmpConfig.ports', val)"
         :contentType="ContentEditableType.UDPPort"
         :regexDelim="UDP_PORT.regexDelim"
+        :regexExpression="REGEX_EXPRESSIONS.PORT"
         :label="discoveryText.ContentEditable.UDPPort.label"
         :default-content="UDP_PORT.default"
         class="udp-port-input"
         ref="contentEditableUDPPortRef"
-        :tooltipText="Common.tooltip.PortHelpTooltp"
+        :tooltipText="Common.tooltipPort"
         :content="props.discovery?.snmpConfig?.ports?.join(', ')"
+        :id="3"
       />
     </div>
 
@@ -81,39 +87,55 @@
 </template>
 
 <script lang="ts" setup>
-import { ContentEditableType, UDP_PORT, COMMUNITY_STRING, IP_RANGE } from '@/components/Discovery/discovery.constants'
+import {
+  ContentEditableType,
+  UDP_PORT,
+  COMMUNITY_STRING,
+  IP_RANGE,
+  REGEX_EXPRESSIONS
+} from '@/components/Discovery/discovery.constants'
 import discoveryText, { DiscoverySNMPForm, Common } from '@/components/Discovery/discovery.text'
 import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useTagQueries } from '@/store/Queries/tagQueries'
-import { IcmpActiveDiscoveryCreateInput } from '@/types/graphql'
+import { IcmpActiveDiscovery, IcmpActiveDiscoveryCreateInput } from '@/types/graphql'
 import { set } from 'lodash'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import DiscoveryContentEditable from '@/components/Discovery/DiscoveryContentEditable.vue'
 import { useForm } from '@featherds/input-helper'
 import { string } from 'yup'
 
-const nameV = string().required('Name is required.')
-
 const form = useForm()
-
 const { createDiscoveryConfig, activeDiscoveryError, isFetchingActiveDiscovery } = useDiscoveryMutations()
-
 const tagQueries = useTagQueries()
 const discoveryQueries = useDiscoveryQueries()
+
 const props = defineProps<{
-  discovery?: IcmpActiveDiscoveryCreateInput | null
+  discovery?: IcmpActiveDiscovery | null
   successCallback: (name: string) => void
   cancel: () => void
 }>()
 
-const discoveryInfo = ref<IcmpActiveDiscoveryCreateInput>(
+const nameV = string().required('Name is required.')
+const discoveryInfo = ref<IcmpActiveDiscovery | IcmpActiveDiscoveryCreateInput>(
   props.discovery || ({} as IcmpActiveDiscoveryCreateInput)
 )
 const contentEditableIPRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableCommunityStringRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
 const contentEditableUDPPortRef = ref<InstanceType<typeof DiscoveryContentEditable>>()
+const tags = computed(() => (props.discovery?.id ? discoveryQueries.tagsByActiveDiscoveryId : []))
+const tagsAutocompleteRef = ref()
+
+onMounted(() => {
+  if (props.discovery?.id) {
+    discoveryQueries.getTagsByActiveDiscoveryId(props.discovery.id)
+  }
+})
 
 watch(props, () => {
+  if (props.discovery?.id) {
+    form.clearErrors()
+    discoveryQueries.getTagsByActiveDiscoveryId(props.discovery.id)
+  }
   discoveryInfo.value = props.discovery || ({} as IcmpActiveDiscoveryCreateInput)
 })
 
@@ -121,9 +143,8 @@ const setSnmpConfig = (property: string, val: (string | number)[] | null) => {
   set(discoveryInfo.value, property, val)
 }
 
-const tagsAutocompleteRef = ref()
 const tagsSelectedListener = (tags: Record<string, string>[]) => {
-  discoveryInfo.value.tags = tags.map(({ name }) => ({ name }))
+  ;(discoveryInfo.value as IcmpActiveDiscoveryCreateInput).tags = tags.map(({ name }) => ({ name }))
 }
 
 const resetContentEditable = () => {
@@ -134,9 +155,7 @@ const resetContentEditable = () => {
 }
 
 const saveHandler = async () => {
-  contentEditableIPRef.value?.validateAndFormat()
-  contentEditableCommunityStringRef.value?.validateAndFormat()
-  contentEditableUDPPortRef.value?.validateAndFormat()
+  contentEditableCommunityStringRef.value?.validateContent()
   const isIpInvalid = contentEditableIPRef.value?.validateContent()
   const isPortInvalid = contentEditableUDPPortRef.value?.validateContent()
   if (form.validate().length || isIpInvalid || isPortInvalid) return

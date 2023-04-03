@@ -33,6 +33,7 @@
           :list="discoveryQueries.activeDiscoveries"
           @select-discovery="showDiscovery"
           :selectedId="discoverySelectedType !== DiscoveryType.SyslogSNMPTraps ? selectedDiscovery?.id : null"
+          @show-instructions="isInstructionVisible = true"
         />
         <DiscoveryListCard
           passive
@@ -41,6 +42,7 @@
           @toggle-discovery="toggleDiscovery"
           @select-discovery="showDiscovery"
           :selectedId="discoverySelectedType === DiscoveryType.SyslogSNMPTraps ? selectedDiscovery?.id : null"
+          @show-instructions="isInstructionVisible = true"
         />
       </div>
     </section>
@@ -55,7 +57,10 @@
         class="type-selector"
       >
         <div class="headline">{{ discoveryText.Discovery.headline1 }}</div>
-        <DiscoveryTypeSelector @discovery-option-selected="(type: DiscoveryType) => (discoverySelectedType = type)" />
+        <DiscoveryTypeSelector
+          ref="discoveryTypeSelector"
+          @discovery-option-selected="(type: DiscoveryType) => (discoverySelectedType = type)"
+        />
       </div>
       <div>
         <div v-if="discoverySelectedType === DiscoveryType.ICMP">
@@ -67,7 +72,7 @@
               }
             "
             :cancel="handleClose"
-            :discovery="(selectedDiscovery)"
+            :discovery="(selectedDiscovery as IcmpActiveDiscovery)"
           />
         </div>
         <div v-else-if="discoverySelectedType === DiscoveryType.Azure">
@@ -103,6 +108,10 @@
     </section>
   </div>
   <DiscoverySuccessModal ref="successModal" />
+  <DiscoveryInstructions
+    :isOpen="isInstructionVisible"
+    @drawer-closed="() => (isInstructionVisible = false)"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -116,8 +125,7 @@ import { useDiscoveryQueries } from '@/store/Queries/discoveryQueries'
 import { useDiscoveryMutations } from '@/store/Mutations/discoveryMutations'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 import { AzureActiveDiscovery, IcmpActiveDiscovery, PassiveDiscovery } from '@/types/graphql'
-import { hasOwnProperty } from '@antfu/utils'
-
+import DiscoveryTypeSelector from '@/components/Discovery/DiscoveryTypeSelector.vue'
 const discoveryQueries = useDiscoveryQueries()
 const discoveryMutations = useDiscoveryMutations()
 
@@ -132,17 +140,19 @@ const isDiscoveryEditingShown = ref(false)
 const showNewDiscovery = ref(false)
 const selectedDiscovery = ref<PassiveDiscovery | AzureActiveDiscovery | IcmpActiveDiscovery | null>(null)
 const discoverySelectedType = ref(DiscoveryType.None)
+const discoveryTypeSelector = ref<InstanceType<typeof DiscoveryTypeSelector>>()
+const discoveriesResults = ref<TDiscoveryAutocomplete[]>([])
+const searchLoading = ref(false)
+const discoverySearchValue = ref(undefined)
+const isInstructionVisible = ref(false)
 
 const handleNewDiscovery = () => {
   isDiscoveryEditingShown.value = true
   showNewDiscovery.value = true
   selectedDiscovery.value = null
   discoverySelectedType.value = DiscoveryType.None
+  discoveryTypeSelector.value?.reset()
 }
-
-const discoveriesResults = ref<TDiscoveryAutocomplete[]>([])
-const searchLoading = ref(false)
-const discoverySearchValue = ref(undefined)
 
 const search = (q: string) => {
   if (!q) return
@@ -160,7 +170,7 @@ const search = (q: string) => {
 const showDiscovery = (selected: IAutocompleteItemType | IAutocompleteItemType[] | undefined) => {
   const discovery = selected as IAutocompleteItemType
   discoverySearchValue.value = undefined
-  
+
   if (discovery) {
     isDiscoveryEditingShown.value = true
     showNewDiscovery.value = false
@@ -168,8 +178,7 @@ const showDiscovery = (selected: IAutocompleteItemType | IAutocompleteItemType[]
     //replace with type guard
     if (discovery.discoveryType === DiscoveryType.ICMP) {
       discoverySelectedType.value = DiscoveryType.ICMP
-    }
-    else if (discovery.discoveryType === DiscoveryType.Azure) {
+    } else if (discovery.discoveryType === DiscoveryType.Azure) {
       discoverySelectedType.value = DiscoveryType.Azure
     } else {
       discoverySelectedType.value = DiscoveryType.SyslogSNMPTraps

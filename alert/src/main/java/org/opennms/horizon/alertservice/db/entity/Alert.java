@@ -56,7 +56,7 @@ import java.util.Date;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class Alert extends TenantAwareEntity implements Serializable {
+public class Alert implements Serializable {
     @Serial
     private static final long serialVersionUID = 7275548439687562161L;
 
@@ -66,6 +66,9 @@ public class Alert extends TenantAwareEntity implements Serializable {
     @Column(nullable=false)
     private Long alertId;
 
+    @Column (name = "tenant_id", nullable = false)
+    private String tenantId;
+
     @Column(length=256, nullable=false)
     private String eventUei;
 
@@ -73,14 +76,14 @@ public class Alert extends TenantAwareEntity implements Serializable {
     private String reductionKey;
 
     @Column
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private AlertType type;
 
     @Column(nullable=false)
     private Long counter;
 
     @Column(nullable=false)
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Severity severity = Severity.INDETERMINATE;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -111,7 +114,7 @@ public class Alert extends TenantAwareEntity implements Serializable {
     private String clearKey;
 
     @Column(nullable=false)
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private ManagedObjectType managedObjectType;
 
     @Column

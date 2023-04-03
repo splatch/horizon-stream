@@ -50,8 +50,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-core</artifactId>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>horizon-shaded-grpc-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
@@ -100,7 +101,7 @@
             <artifactId>gson</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
         </dependency>
         <dependency>
@@ -151,6 +152,12 @@
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-adapter-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>alert-dto</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- test -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
