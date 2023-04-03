@@ -215,4 +215,13 @@ public class AlertsClient {
     public static long getEndTime() {
         return Instant.now().getEpochSecond();
     }
+    
+    public MonitorPolicy getDefaultPolicy(String accessToken) {
+        Metadata metadata = new Metadata();
+        metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
+        return policyMapper.map(policyStub
+            .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+            .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS)
+            .getDefaultPolicy(Empty.getDefaultInstance()));
+    }
 }
