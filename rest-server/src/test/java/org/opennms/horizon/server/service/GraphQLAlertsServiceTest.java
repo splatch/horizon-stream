@@ -100,7 +100,7 @@ public class GraphQLAlertsServiceTest {
         String request = """
             query {
               findAllAlerts(pageSize: 5, page: 0, timeRange: TODAY, severities: ["CRITICAL"], sortBy: "tenantId", sortAscending: true) {
-                nextPageToken
+                nextPage
                 alerts {
                   tenantId
                   databaseId
