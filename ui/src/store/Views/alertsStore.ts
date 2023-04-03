@@ -135,9 +135,6 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   }
 
   const clearSelectedAlerts = async () => {
-    console.log('alertsSelected', alertsSelected.value)
-    // await alertsMutations.clearAlerts(alertsSelected)
-    debugger
     await alertsMutations.clearAlerts({ ids: alertsSelected.value })
 
     fetchAlerts()
