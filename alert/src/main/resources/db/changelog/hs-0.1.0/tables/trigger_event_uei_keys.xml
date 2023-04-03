@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet id="0.1.0-trigger-event-uei-keys" author="yli">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="trigger_event" columnName="uei"/>
+                <columnExists tableName="trigger_event" columnName="reduction_key"/>
+                <columnExists tableName="trigger_event" columnName="clear_key"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="trigger_event">
+            <column name="uei" type="text">
+                <constraints nullable="false" />
+            </column>
+            <column name="reduction_key" type="text">
+                <constraints nullable="false" />
+            </column>
+            <column name="clear_key" type="text"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="0.1.0-drop-event-id-definition" author="yli">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="alert_definition" columnName="trigger_event_id"/>
+        </preConditions>
+        <dropColumn tableName="alert_definition" columnName="trigger_event_id"/>
+    </changeSet>
+</databaseChangeLog>

@@ -31,7 +31,10 @@ package org.opennms.horizon.alertservice.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.opennms.horizon.alerts.proto.AlertType;
+import org.opennms.horizon.alertservice.db.entity.AlertDefinition;
 import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
+import org.opennms.horizon.alertservice.db.repository.AlertDefinitionRepository;
 import org.opennms.horizon.alertservice.db.repository.MonitorPolicyRepository;
 import org.opennms.horizon.alertservice.mapper.MonitorPolicyMapper;
 import org.opennms.horizon.shared.alert.policy.ComponentType;
@@ -52,30 +55,43 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MonitorPolicyService {
-    private static final String SYSTEM_TENANT = "system-tenant";
+    protected static final String SYSTEM_TENANT = "system-tenant";
     private static final String DEFAULT_POLICY = "default_policy";
     private static final String DEFAULT_RULE = "default_rule";
     private static final String DEFAULT_TAG = "default";
+    private static final String UEI_TEMPLATE_SNMP_TRAP = "uei.opennms.org/snmpTrap/%s"; //%s is the event type
+    private static final String UEI_TEMPLATE_INTER = "uei.opennms.org/internal/%s"; //%s is the event type
+    private static final String KEY_TEMPLATE_NODE = "%uei%:%nodeId%";
     private final MonitorPolicyMapper policyMapper;
     private final MonitorPolicyRepository repository;
+    private final AlertDefinitionRepository definitionRepo;
 
     @EventListener(ApplicationReadyEvent.class)
     public void defaultPolicies() {
         if(repository.findAllByTenantId(SYSTEM_TENANT).isEmpty()) {
+            String uei = String.format(UEI_TEMPLATE_SNMP_TRAP, EventType.COLD_REBOOT);
             TriggerEventProto coldReboot = TriggerEventProto.newBuilder()
                 .setTriggerEvent(EventType.COLD_REBOOT)
                 .setCount(1)
                 .setSeverity(Severity.CRITICAL)
+                .setUei(uei)
+                .setReductionKey(KEY_TEMPLATE_NODE.replace("%uei", uei))
                 .build();
+            uei = String.format(UEI_TEMPLATE_SNMP_TRAP, EventType.WARM_REBOOT);
             TriggerEventProto warmReboot = TriggerEventProto.newBuilder()
                 .setTriggerEvent(EventType.WARM_REBOOT)
                 .setCount(1)
                 .setSeverity(Severity.MAJOR)
+                .setUei(uei)
+                .setReductionKey(KEY_TEMPLATE_NODE.replace("%uei%", uei))
                 .build();
+            uei = String.format(UEI_TEMPLATE_INTER, EventType.WARM_REBOOT);
             TriggerEventProto deviceUnreachable = TriggerEventProto.newBuilder()
                 .setTriggerEvent(EventType.DEVICE_UNREACHABLE)
                 .setCount(1)
                 .setSeverity(Severity.MAJOR)
+                .setUei(uei)
+                .setReductionKey(KEY_TEMPLATE_NODE.replace("%uei%", uei))
                 .build();
             PolicyRuleProto defaultRule = PolicyRuleProto.newBuilder()
                 .setName(DEFAULT_RULE)
@@ -100,6 +116,9 @@ public class MonitorPolicyService {
         MonitorPolicy policy = policyMapper.map(request);
         updateData(policy, tenantId);
         MonitorPolicy newPolicy = repository.save(policy);
+        if(newPolicy.getId() != request.getId()) { //the operation is creating new policy not updating policy
+            createAlertDefinitionFromPolicy(newPolicy);
+        }
         return policyMapper.entityToProto(newPolicy);
     }
 
@@ -120,7 +139,6 @@ public class MonitorPolicyService {
         return repository.findByName(DEFAULT_POLICY)
             .map(policyMapper::entityToProto);
     }
-
     private void updateData(MonitorPolicy policy, String tenantId) {
         policy.setTenantId(tenantId);
         policy.getRules().forEach(r -> {
@@ -131,5 +149,30 @@ public class MonitorPolicyService {
                 e.setRule(r);
             });
         });
+    }
+
+    private void createAlertDefinitionFromPolicy(MonitorPolicy policy) {
+        policy.getRules().forEach(rule -> rule.getTriggerEvents()
+            .forEach(event -> {
+                if(definitionRepo.findByTenantIdAndReductionKey(event.getTenantId(), event.getReductionKey()).isEmpty()) {
+                    AlertDefinition definition = new AlertDefinition();
+                    definition.setUei(event.getUei());
+                    definition.setTenantId(event.getTenantId());
+                    definition.setReductionKey(event.getReductionKey());
+                    definition.setClearKey(event.getClearKey());
+                    definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
+                    definitionRepo.save(definition);
+                }
+            }));
+    }
+
+    private AlertType getAlertTypeFromEventType(EventType eventType) {
+        return switch (eventType) {
+            case UNKNOWN_EVENT -> AlertType.ALARM_TYPE_UNDEFINED;
+            case COLD_REBOOT, WARM_REBOOT -> AlertType.PROBLEM_WITHOUT_CLEAR;
+            case DEVICE_UNREACHABLE, SNMP_AUTH_FAILURE, PORT_DOWN -> AlertType.PROBLEM_WITH_CLEAR;
+            case PORT_UP -> AlertType.CLEAR;
+            default -> AlertType.UNRECOGNIZED;
+        };
     }
 }

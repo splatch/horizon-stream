@@ -26,18 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alertservice.db.repository;
-
-import org.opennms.horizon.alertservice.db.entity.AlertDefinition;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+package org.opennms.horizon.alertservice.service;
 
 import java.util.List;
-import java.util.Optional;
 
-@Repository
-public interface AlertDefinitionRepository extends JpaRepository<AlertDefinition, Long> {
-    Optional<AlertDefinition> findFirstByTenantIdAndUei(String tenantId, String uei);
-    List<AlertDefinition> findByTenantId(String tenantId);
-    Optional<AlertDefinition> findByTenantIdAndReductionKey(String tenantId, String key);
+import org.opennms.horizon.alertservice.db.entity.AlertDefinition;
+import org.opennms.horizon.alertservice.db.repository.AlertDefinitionRepository;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class AlertDefinitionService {
+    //TODO: is it better to use in memory cache?
+    private final AlertDefinitionRepository repository;
+    public List<AlertDefinition> getDefinitionsByTenant(String tenantId) {
+        return repository.findByTenantId(tenantId);
+    }
+    public List<AlertDefinition> getDefaultDefinition() {
+        return repository.findByTenantId(MonitorPolicyService.SYSTEM_TENANT);
+    }
 }
