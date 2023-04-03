@@ -1,18 +1,19 @@
 export default {
   Discovery: {
     pageHeadline: 'Discovery',
-    headline1: 'Select a discovery',
+    headline1: 'Select a discovery type',
     headline2: 'ICMP/SNMP Discovery Setup',
     nameInputLabel: 'ICMP/SNMP name',
-    noneDiscoverySelectedMsg: 'Select a discovery to get started',
+    noneDiscoverySelectedMsg: 'Choose a discovery type to get started.',
     button: {
-      add: 'New Discovery',
+      add: 'Add Discovery',
       cancel: 'Cancel',
       submit: 'Save discovery'
     },
     error: {
       errorCreate: 'Error on creating discovery :('
-    }
+    },
+    empty: 'No discovery performed'
   },
   AddDiscoverySection: {
     activeDiscoveryTitle: 'Active Discovery',
@@ -105,8 +106,7 @@ export const Azure = {
 }
 
 export const SuccessModalOptions = {
-  successMsg: 'setup successfully!',
-  title: 'You may be interested in...',
+  successMsg: 'setup successful.',
   viewNodes: 'View Detected Nodes',
   addDiscovery: 'Add Another Discovery',
   addTransaction: 'Add Synthetic Transaction',
@@ -139,7 +139,7 @@ export const Instructions = {
   passiveDiscoveryTitle: 'What is Passive Discovery?',
   passiveDiscoverySubtitle:
     'Passive discovery uses Syslog and SNMP traps to identify network devices. It does so by monitoring their activity through events, flows, and indirectly by evaluating other devices configuration settings.',
-  passiveNote: 'Note that you can set only one passive discovery configuration.',
+  passiveNote: 'Note that you can set only one passive discovery by location.',
   passiveListCharacteristics: {
     benefits: 'Benefits:',
     benefitsDescription: 'Low bandwidth consumption.',
