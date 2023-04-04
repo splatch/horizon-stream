@@ -35,7 +35,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AlertResponse {
-    List<Alert> alertList;
+public class DeleteAlertResponse {
+    List<Long> alertDatabaseIdList;
     List<AlertError> alertErrorList;
 }
