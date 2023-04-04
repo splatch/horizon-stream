@@ -28,14 +28,12 @@
 
 package org.opennms.horizon.server.model.alerts;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class AlertResponse {
-    List<Alert> alertList;
-    List<AlertError> alertErrorList;
+public class CountAlertResponse {
+    private int count;
+    private String error;
 }

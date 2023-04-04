@@ -28,14 +28,9 @@
 
 package org.opennms.horizon.server.model.alerts;
 
-import java.util.List;
-
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-public class AlertResponse {
-    List<Alert> alertList;
-    List<AlertError> alertErrorList;
+public enum TimeRange {
+    TODAY,
+    SEVEN_DAYS,
+    LAST_24_HOURS,
+    ALL
 }

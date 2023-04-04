@@ -4,7 +4,9 @@
       <PageHeadline text="Insights Dashboard" />
       <HeaderLinks />
     </div>
-    <AlertsSeverityFilters data-test="severity-filters" />
+    <div class="list-alerts">
+      <AlertsSeverityFilters data-test="severity-filters" />
+    </div>
   </div>
 </template>
 
@@ -14,14 +16,18 @@
 @use '@featherds/styles/mixins/typography';
 @use '@featherds/styles/themes/variables';
 @use '@/styles/mediaQueriesMixins.scss';
+@use '@/styles/vars.scss';
 
 .container {
   display: flex;
   margin: 0 1rem;
   flex-direction: column;
-  // width: vars.$max-width-constrained;
+  width: 100%;
   padding: var(variables.$spacing-l) var(variables.$spacing-m);
-
+  margin: auto;
+  @include mediaQueriesMixins.screen-md {
+    width: vars.$max-width-constrained;
+  }
   > .header {
     @include typography.headline2();
     display: flex;
@@ -33,6 +39,9 @@
       flex-direction: row;
       justify-content: space-between;
     }
+  }
+  .list-alerts {
+    overflow-x: auto;
   }
 }
 </style>

@@ -13,6 +13,7 @@ const alertsFilterDefault: AlertsFilters = {
   // search: '', // not avail for EAR
   severities: [],
   sortAscending: true,
+  // sortBy: 'lastUpdateTimeMs'
   sortBy: 'alertId'
 }
 
@@ -26,6 +27,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   const alertsList = ref()
   const alertsFilter = ref(alertsFilterDefault)
   const alertsPagination = ref(alertsPaginationDefault)
+  const alertsSelected = ref([] as number[] | undefined)
   const alertsListSearched = ref([]) // TODO: not avail for EAR
 
   const alertsQueries = useAlertsQueries()
@@ -46,6 +48,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     alertsFilter,
     () => {
       fetchAlerts()
+      // setPage(1) // TODO go to 1st page on filters change
     },
     { deep: true }
   )
@@ -123,10 +126,16 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     alertsPagination.value = alertsPaginationDefault
   }
 
+  const setAlertsSelected = (selectedAlert: number | undefined) => {
+    if (!selectedAlert) alertsSelected.value = undefined
+    else {
+      const exists = alertsSelected.value?.indexOf(selectedAlert)
+      exists ? alertsSelected.value?.splice(exists) : alertsSelected.value?.push(selectedAlert)
+    }
+  }
+
   const clearSelectedAlerts = async () => {
-    // console.log('alertsSelected',alertsSelected)
-    // await alertsMutations.clearAlerts(alertsSelected)
-    await alertsMutations.clearAlerts({ ids: [1] })
+    await alertsMutations.clearAlerts({ ids: alertsSelected.value })
 
     fetchAlerts()
   }
@@ -149,6 +158,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     setPage,
     setPageSize,
     clearAllFilters,
+    setAlertsSelected,
     clearSelectedAlerts,
     acknowledgeSelectedAlerts
   }

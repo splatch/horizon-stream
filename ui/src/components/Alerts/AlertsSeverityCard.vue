@@ -46,7 +46,7 @@
       class="count"
       data-test="count"
     >
-      0
+      {{ count || 0 }}
     </div>
   </div>
 </template>
