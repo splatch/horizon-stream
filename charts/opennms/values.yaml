@@ -50,6 +50,16 @@ OpenNMS:
         Cpu: 100m
         Memory: 250Mi
     PrivateRepoEnabled: false
+    IngressAnnotations:
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        add_header X-Content-Type-Options "nosniff";
+        add_header X-Frame-Options "sameorigin";
+        add_header server_tokens "off";
+      nginx.ingress.kubernetes.io/client-body-buffer-size: 4k
+      nginx.ingress.kubernetes.io/client-header-buffer-size: 4k
+      nginx.ingress.kubernetes.io/large-client-header-buffers: 4 16k
+      nginx.ingress.kubernetes.io/proxy-body-size: 4m
+      nginx.ingress.kubernetes.io/proxy-buffer-size: 6k
   Minion:
     ServiceName: opennms-minion
     Image: opennms/horizon-stream-minion
@@ -68,8 +78,13 @@ OpenNMS:
       Requests:
         Cpu: 100m
         Memory: 250Mi
+    ExtraVolumes: []
+    ExtraMounts: []
+    ExtraContainers: []
+    GrpcConfig: {}
   MinionGateway:
     ServiceName: opennms-minion-gateway
+    SecretName: opennms-minion-gateway-certificate
     Image: opennms/horizon-stream-minion-gateway
     ImagePullPolicy: IfNotPresent
     Port: 8080
@@ -88,13 +103,16 @@ OpenNMS:
         Cpu: 100m
         Memory: 250Mi
     IngressAnnotations:
+      cert-manager.io/cluster-issuer: opennms-ca
+      nginx.ingress.kubernetes.io/auth-tls-secret: default/client-root-ca-certificate
+      nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+      nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+      nginx.ingress.kubernetes.io/auth-url: "http://opennms-minion-certificate-verifier.default.svc.cluster.local:8080/certificate/debug"
+      nginx.ingress.kubernetes.io/auth-response-headers: "tenant-id, location"
       nginx.ingress.kubernetes.io/server-snippet: |
-        listen 8990 http2;
         grpc_read_timeout "1200s";
         grpc_send_timeout "1200s";
         client_body_timeout "1200s";
-      nginx.ingress.kubernetes.io/configuration-snippet: |
-        grpc_set_header tenant-id 'opennms-prime';
     PrivateRepoEnabled: false
 
   MinionGatewayGrpcProxy:
@@ -103,22 +121,6 @@ OpenNMS:
     Image: opennms/horizon-stream-minion-gateway-grpc-proxy
     ImagePullPolicy: IfNotPresent
     Port: 8990
-    Replicas: 1
-    Resources:
-      Limits:
-        Cpu: "1"
-        Memory: 500Mi
-      Requests:
-        Cpu: 100m
-        Memory: 250Mi
-
-  MinionSslGateway:
-    Enabled: true
-    ServiceName: opennms-minion-ssl-gateway
-    # TODO: use the project maven property to populate this value?
-    Image: nginx:1.21.6-alpine
-    ImagePullPolicy: IfNotPresent
-    Port: 443
     Replicas: 1
     Resources:
       Limits:
@@ -219,11 +221,28 @@ OpenNMS:
         Memory: 250Mi
     PrivateRepoEnabled: false
   MinionCertificateManager:
+    Enabled: false
     ServiceName: opennms-minion-certificate-manager
+    CaSecretName: ""
+    MtlsSecretName: opennms-minion-certificate
     Image: opennms/horizon-stream-minion-certificate-manager
     ImagePullPolicy: IfNotPresent
     Replicas: 1
     Port: 8990
+    Resources:
+      Limits:
+        Cpu: "1"
+        Memory: 500Mi
+      Requests:
+        Cpu: 100m
+        Memory: 250Mi
+    PrivateRepoEnabled: false
+  MinionCertificateVerifier:
+    ServiceName: opennms-minion-certificate-verifier
+    Image: opennms/horizon-stream-minion-certificate-verifier
+    ImagePullPolicy: IfNotPresent
+    Replicas: 1
+    Port: 8080
     Resources:
       Limits:
         Cpu: "1"
@@ -278,16 +297,7 @@ Keycloak:
   DynamicRealmConfig: true
   PrivateRepoEnabled: false
   ConfigmapName: keycloak-realm-configmap
-  IngressAnnotations:
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      add_header X-Content-Type-Options "nosniff";
-      add_header X-Frame-Options "sameorigin";
-      add_header server_tokens "off";
-    nginx.ingress.kubernetes.io/client-body-buffer-size: 4k
-    nginx.ingress.kubernetes.io/client-header-buffer-size: 4k
-    nginx.ingress.kubernetes.io/large-client-header-buffers: 4 16k
-    nginx.ingress.kubernetes.io/proxy-body-size: 4m
-    nginx.ingress.kubernetes.io/proxy-buffer-size: 6k
+  Environment: {}
 Grafana:
   Enabled: true
   Path: /grafana
@@ -356,6 +366,7 @@ NodeRestrictions: # will be applied to every pod in the instance
   Value: spot
 TLS:
   Enabled: true
+  CertificateGeneration: false
   Issuer:
     IssuerServer: https://acme-v02.api.letsencrypt.org/directory
     IssuerUserEmail: email@address.com
@@ -372,6 +383,7 @@ TLS:
 
 Ingress:
   Enabled: true
+  DefaultEndpointsEnabled: true
   HttpPort: 80
   HttpsPort: 443
   ControllerImage: registry.k8s.io/ingress-nginx/controller:v1.3.0@sha256:d1707ca76d3b044ab8a28277a2466a02100ee9f58a86af1535a3edf9323ea1b5
@@ -397,3 +409,4 @@ Prometheus:
     Requests:
       Cpu: 100m
       Memory: 100Mi
+

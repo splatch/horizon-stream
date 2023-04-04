@@ -122,6 +122,10 @@ spec:
             - name: KC_HOSTNAME_STRICT_HTTPS
               value: "false"
             {{- end }}
+            {{- range $Variable, $Value := .Values.Keycloak.Environment }}
+            - name: {{ $Variable | quote }}
+              value: {{ $Value | quote }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.Keycloak.Port }}
