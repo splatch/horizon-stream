@@ -4,13 +4,17 @@
       <PageHeadline text="Insights Dashboard" />
       <HeaderLinks />
     </div>
-    <div class="list-alerts">
-      <AlertsSeverityFilters data-test="severity-filters" />
-    </div>
+    <div class="list-alerts"><AlertsSeverityFilters @click="redirect('/alerts')" /></div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const router = useRouter()
+
+const redirect = (route: string) => {
+  router.push(route)
+}
+</script>
 
 <style scoped lang="scss">
 @use '@featherds/styles/mixins/typography';
