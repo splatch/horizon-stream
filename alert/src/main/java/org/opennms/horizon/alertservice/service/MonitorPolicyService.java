@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opennms.horizon.alerts.proto.AlertType;
 import org.opennms.horizon.alertservice.db.entity.AlertDefinition;
 import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
@@ -186,7 +187,7 @@ public class MonitorPolicyService {
     private void createAlertDefinition(TriggerEvent event) {
         definitionRepo.findByTriggerEventId(event.getId())
             .ifPresentOrElse(definition -> {
-                if(!event.getUei().equals(definition.getUei())) {
+                if(StringUtils.isNotEmpty(event.getUei()) && !event.getUei().equals(definition.getUei())) {
                     definition.setUei(event.getUei());
                     definition.setReductionKey(event.getReductionKey());
                     definition.setClearKey(event.getClearKey());
