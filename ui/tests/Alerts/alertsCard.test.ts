@@ -4,7 +4,7 @@ import { getAlert } from 'mock-graphql/src/fixture/alerts.fixture'
 
 let wrapper: any
 
-describe.skip('Alert card', () => {
+describe('Alert card', () => {
   beforeAll(() => {
     wrapper = mount(AlertsCard, {
       props: {

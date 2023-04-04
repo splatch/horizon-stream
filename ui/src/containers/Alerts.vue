@@ -14,7 +14,7 @@
         >
       </div>
       <AlertsSeverityFilters data-test="severity-filters" />
-      <div class="alerts-content">
+      <!-- <div class="alerts-content">
         <div class="time-search-filters">
           <div
             class="time-filters"
@@ -102,7 +102,7 @@
             data-test="pagination"
           />
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

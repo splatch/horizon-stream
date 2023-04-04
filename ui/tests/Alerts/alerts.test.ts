@@ -38,7 +38,7 @@ describe.skip('Alerts', () => {
     // expect(spy).toHaveBeenCalled()
   })
 
-  test('Should have severity filters', () => {
+  test.only('Should have severity filters', () => {
     const elem = wrapper.get('[data-test="severity-filters"]')
     expect(elem.exists()).toBeTruthy()
   })
