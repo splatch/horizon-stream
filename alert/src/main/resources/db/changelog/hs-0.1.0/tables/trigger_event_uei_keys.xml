@@ -21,10 +21,10 @@
             <column name="clear_key" type="text"/>
         </addColumn>
     </changeSet>
-    <changeSet id="0.1.0-drop-event-id-definition" author="yli">
+    <!--<changeSet id="0.1.0-drop-event-id-definition" author="yli">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="alert_definition" columnName="trigger_event_id"/>
         </preConditions>
         <dropColumn tableName="alert_definition" columnName="trigger_event_id"/>
-    </changeSet>
+    </changeSet>-->
 </databaseChangeLog>

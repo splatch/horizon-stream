@@ -165,7 +165,5 @@ public class AlertEventProcessor {
         alert.setEventUei(event.getUei() );
         return alert;
     }
-
     private record AlertData(String reductionKey, String clearKey, AlertType type) { }
-
 }
