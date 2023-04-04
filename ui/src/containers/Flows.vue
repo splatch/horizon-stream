@@ -200,7 +200,6 @@ const flowsQueries = useflowsQueries()
 
 const hasData = computed(() => {
   if (flowsStore.applications.tableChartData.datasets) {
-    console.log(flowsStore.applications.tableChartData.datasets)
     return Object.keys(flowsStore.applications.tableChartData.datasets[0].data).length > 0
   }
   return false
