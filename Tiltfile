@@ -348,6 +348,12 @@ k8s_resource(
     port_forwards=['32090:9090'],
 )
 
+### opennms-minion-ssl-gateway ###
+k8s_resource(
+    'opennms-minion-ssl-gateway',
+    port_forwards=['28990:443'],
+)
+
 ### Others ###
 k8s_resource(
     'ingress-nginx-controller',
