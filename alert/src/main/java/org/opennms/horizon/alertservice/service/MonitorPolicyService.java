@@ -114,8 +114,7 @@ public class MonitorPolicyService {
                 .setNotifyInstruction("This is default policy notification") //todo: changed to something from environment
                 .build();
             createPolicy(defaultPolicy, SYSTEM_TENANT);
-        } else {
-            eventRepository.findAllByTenantId(SYSTEM_TENANT).forEach(e -> {
+        } else {eventRepository.findAllByTenantId(SYSTEM_TENANT).forEach(e -> {
                 if(e.getTriggerEvent().equals(EventType.COLD_REBOOT) && !UEI_SNMP_TRAP_COLD_START.equals(e.getUei()))
                 {
                     e.setUei(UEI_SNMP_TRAP_COLD_START);
@@ -172,19 +171,22 @@ public class MonitorPolicyService {
 
 
     private void createAlertDefinition() {
-        CompletableFuture.runAsync(() -> eventRepository.findAll().forEach(e -> createAlertDefinition(e, false)));
+        CompletableFuture.runAsync(() -> {
+            eventRepository.findAll().forEach(this::createAlertDefinition);
+            definitionRepo.flush();
+        });
     }
 
 
     private void createAlertDefinitionFromPolicy(MonitorPolicy policy) {
         policy.getRules().forEach(rule -> rule.getTriggerEvents()
-            .forEach(event -> createAlertDefinition(event, true)));
+            .forEach(this::createAlertDefinition));
     }
 
-    private void createAlertDefinition(TriggerEvent event, boolean update) {
+    private void createAlertDefinition(TriggerEvent event) {
         definitionRepo.findByTriggerEventId(event.getId())
             .ifPresentOrElse(definition -> {
-                if(update) {
+                if(!event.getUei().equals(definition.getUei())) {
                     definition.setUei(event.getUei());
                     definition.setReductionKey(event.getReductionKey());
                     definition.setClearKey(event.getClearKey());
