@@ -28,18 +28,6 @@
 
 package org.opennms.horizon.server.service;
 
-import java.util.List;
-
-import org.opennms.horizon.server.mapper.AlertMapper;
-import org.opennms.horizon.server.model.alerts.AlertResponse;
-import org.opennms.horizon.server.model.alerts.DeleteAlertResponse;
-import org.opennms.horizon.server.model.alerts.ListAlertResponse;
-import org.opennms.horizon.server.model.alerts.MonitorPolicy;
-import org.opennms.horizon.server.model.alerts.TimeRange;
-import org.opennms.horizon.server.service.grpc.AlertsClient;
-import org.opennms.horizon.server.utils.ServerHeaderUtil;
-import org.springframework.stereotype.Service;
-
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLEnvironment;
 import io.leangen.graphql.annotations.GraphQLMutation;
@@ -47,8 +35,15 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.RequiredArgsConstructor;
+import org.opennms.horizon.server.mapper.AlertMapper;
+import org.opennms.horizon.server.model.alerts.*;
+import org.opennms.horizon.server.service.grpc.AlertsClient;
+import org.opennms.horizon.server.utils.ServerHeaderUtil;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @GraphQLApi
@@ -74,10 +69,10 @@ public class GrpcAlertService {
         name = "countAlerts",
         description = "Returns the total count of alerts filtered by severity and time."
     )
-    public Mono<Long> countAlerts(@GraphQLArgument(name = "timeRange") TimeRange timeRange,
+    public Mono<CountAlertResponse> countAlerts(@GraphQLArgument(name = "timeRange") TimeRange timeRange,
                                   @GraphQLArgument(name = "severityFilters") List<String> severityFilters,
                                   @GraphQLEnvironment ResolutionEnvironment env) {
-        return Mono.just(alertsClient.countAlerts(severityFilters, timeRange, headerUtil.getAuthHeader(env)));
+        return Mono.just(mapper.protoToCountAlertResponse(alertsClient.countAlerts(severityFilters, timeRange, headerUtil.getAuthHeader(env))));
     }
 
     @GraphQLMutation

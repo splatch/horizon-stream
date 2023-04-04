@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.horizon.alerts.proto.AlertRequest;
 import org.opennms.horizon.alerts.proto.AlertResponse;
 import org.opennms.horizon.alerts.proto.AlertServiceGrpc;
+import org.opennms.horizon.alerts.proto.CountAlertResponse;
 import org.opennms.horizon.alerts.proto.DeleteAlertResponse;
 import org.opennms.horizon.alerts.proto.Filter;
 import org.opennms.horizon.alerts.proto.ListAlertsRequest;
@@ -51,6 +52,7 @@ import org.opennms.horizon.shared.constants.GrpcConstants;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
+import com.google.protobuf.Timestamp;
 import com.google.protobuf.Timestamp;
 
 import io.grpc.ManagedChannel;
@@ -118,7 +120,7 @@ public class AlertsClient {
         return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).deleteAlert(AlertRequest.newBuilder().addAllAlertId(ids).build());
     }
 
-    public long countAlerts(List<String> severityFilter, TimeRange timeRange, String accessToken) {
+    public CountAlertResponse countAlerts(List<String> severityFilter, TimeRange timeRange, String accessToken) {
         Metadata metadata = getMetadata(accessToken);
 
         ListAlertsRequest.Builder request = ListAlertsRequest.newBuilder();
@@ -126,7 +128,7 @@ public class AlertsClient {
         getSeverity(severityFilter, request);
 
         return alertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).countAlerts(request
-            .build()).getValue();
+            .build());
     }
 
     private static void getTimeRangeFilter(TimeRange timeRange, ListAlertsRequest.Builder request) {
@@ -215,7 +217,7 @@ public class AlertsClient {
     public static long getEndTime() {
         return Instant.now().getEpochSecond();
     }
-    
+
     public MonitorPolicy getDefaultPolicy(String accessToken) {
         Metadata metadata = new Metadata();
         metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);

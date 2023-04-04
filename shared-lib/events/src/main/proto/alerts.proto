@@ -87,10 +87,6 @@ message Alert {
   uint64 monitoring_policy_id = 19;
 }
 
-message AlertList {
-  repeated Alert alerts = 1;
-}
-
 message EventMatch {
   string name = 1;
   string value = 2;
@@ -160,6 +156,12 @@ message ListAlertsResponse {
   int32 next_page = 2;
   int32 last_page = 3;
   int64 total_alerts = 4;
+  AlertError error = 5;
+}
+
+message CountAlertResponse {
+  int32 count = 1;
+  AlertError error = 2;
 }
 
 message ListAlertDefinitionsRequest {
@@ -206,7 +208,7 @@ service AlertService {
   rpc clearAlert(AlertRequest) returns (AlertResponse) {};
   rpc escalateAlert(AlertRequest) returns (AlertResponse) {};
   rpc deleteAlert(AlertRequest) returns(DeleteAlertResponse) {};
-  rpc countAlerts(ListAlertsRequest) returns (google.protobuf.UInt64Value) {};
+  rpc countAlerts(ListAlertsRequest) returns (CountAlertResponse) {};
 }
 
 service AlertConfigurationService {
