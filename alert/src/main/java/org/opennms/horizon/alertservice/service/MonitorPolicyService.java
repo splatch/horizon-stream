@@ -35,8 +35,10 @@ import java.util.concurrent.CompletableFuture;
 import org.opennms.horizon.alerts.proto.AlertType;
 import org.opennms.horizon.alertservice.db.entity.AlertDefinition;
 import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
+import org.opennms.horizon.alertservice.db.entity.TriggerEvent;
 import org.opennms.horizon.alertservice.db.repository.AlertDefinitionRepository;
 import org.opennms.horizon.alertservice.db.repository.MonitorPolicyRepository;
+import org.opennms.horizon.alertservice.db.repository.TriggerEventRepository;
 import org.opennms.horizon.alertservice.mapper.MonitorPolicyMapper;
 import org.opennms.horizon.shared.alert.policy.ComponentType;
 import org.opennms.horizon.shared.alert.policy.EventType;
@@ -67,6 +69,7 @@ public class MonitorPolicyService {
     private final MonitorPolicyMapper policyMapper;
     private final MonitorPolicyRepository repository;
     private final AlertDefinitionRepository definitionRepo;
+    private final TriggerEventRepository eventRepository;
 
     @EventListener(ApplicationReadyEvent.class)
     public void defaultPolicies() {
@@ -111,15 +114,30 @@ public class MonitorPolicyService {
                 .setNotifyInstruction("This is default policy notification") //todo: changed to something from environment
                 .build();
             createPolicy(defaultPolicy, SYSTEM_TENANT);
-            createAlertDefinitionFromPolicy();
+        } else {
+            eventRepository.findAllByTenantId(SYSTEM_TENANT).forEach(e -> {
+                if(e.getTriggerEvent().equals(EventType.COLD_REBOOT) && !UEI_SNMP_TRAP_COLD_START.equals(e.getUei()))
+                {
+                    e.setUei(UEI_SNMP_TRAP_COLD_START);
+                    e.setReductionKey(REDUCTION_KEY_TEMPLATE);
+                } else if(e.getTriggerEvent().equals(EventType.WARM_REBOOT) && !UEI_SNMP_TRAP_WARM_START.equals(e.getUei())) {
+                    e.setUei(UEI_SNMP_TRAP_WARM_START);
+                    e.setReductionKey(REDUCTION_KEY_TEMPLATE);
+                } else if(!UEI_TEMPLATE_GENERIC.equals(e.getUei())) {
+                    e.setUei(UEI_TEMPLATE_GENERIC);
+                    e.setReductionKey(REDUCTION_KEY_TEMPLATE);
+                }
+                eventRepository.save(e);
+            });
         }
+        createAlertDefinition();
     }
 
     public MonitorPolicyProto createPolicy(MonitorPolicyProto request, String tenantId) {
         MonitorPolicy policy = policyMapper.map(request);
         updateData(policy, tenantId);
         MonitorPolicy newPolicy = repository.save(policy);
-        createAlertDefinitionFromPolicy(newPolicy, true);
+        createAlertDefinitionFromPolicy(newPolicy);
         return policyMapper.entityToProto(newPolicy);
     }
 
@@ -153,32 +171,36 @@ public class MonitorPolicyService {
     }
 
 
-    private void createAlertDefinitionFromPolicy() {
-        CompletableFuture.runAsync(() -> repository.findAll().forEach(p -> createAlertDefinitionFromPolicy(p, false)));
+    private void createAlertDefinition() {
+        CompletableFuture.runAsync(() -> eventRepository.findAll().forEach(e -> createAlertDefinition(e, false)));
     }
 
 
-    private void createAlertDefinitionFromPolicy(MonitorPolicy policy, boolean update) {
+    private void createAlertDefinitionFromPolicy(MonitorPolicy policy) {
         policy.getRules().forEach(rule -> rule.getTriggerEvents()
-            .forEach(event -> definitionRepo.findByTriggerEventId(event.getId())
-                .ifPresentOrElse(definition -> {
-                    if(update) {
-                        definition.setUei(event.getUei());
-                        definition.setReductionKey(event.getReductionKey());
-                        definition.setClearKey(event.getClearKey());
-                        definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
-                        definitionRepo.save(definition);
-                    }},
-                    () ->{
-                        AlertDefinition definition = new AlertDefinition();
-                        definition.setUei(event.getUei());
-                        definition.setTenantId(event.getTenantId());
-                        definition.setReductionKey(event.getReductionKey());
-                        definition.setClearKey(event.getClearKey());
-                        definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
-                        definition.setTriggerEventId(event.getId());
-                        definitionRepo.save(definition);
-                    })));
+            .forEach(event -> createAlertDefinition(event, true)));
+    }
+
+    private void createAlertDefinition(TriggerEvent event, boolean update) {
+        definitionRepo.findByTriggerEventId(event.getId())
+            .ifPresentOrElse(definition -> {
+                if(update) {
+                    definition.setUei(event.getUei());
+                    definition.setReductionKey(event.getReductionKey());
+                    definition.setClearKey(event.getClearKey());
+                    definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
+                    definitionRepo.save(definition);
+                }
+            }, ()-> {
+                AlertDefinition definition = new AlertDefinition();
+                definition.setUei(event.getUei());
+                definition.setTenantId(event.getTenantId());
+                definition.setReductionKey(event.getReductionKey());
+                definition.setClearKey(event.getClearKey());
+                definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
+                definition.setTriggerEventId(event.getId());
+                definitionRepo.save(definition);
+            });
     }
 
     private AlertType getAlertTypeFromEventType(EventType eventType) {

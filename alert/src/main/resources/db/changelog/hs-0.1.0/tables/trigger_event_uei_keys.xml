@@ -12,8 +12,8 @@
             </not>
         </preConditions>
         <addColumn tableName="trigger_event">
-            <column name="uei" type="text" defaultValue="uei.opennms.org/generic/traps/%s"/>
-            <column name="reduction_key" type="text" defaultValue="%s:%s:%d" />
+            <column name="uei" type="text"/>
+            <column name="reduction_key" type="text"/>
             <column name="clear_key" type="text"/>
         </addColumn>
     </changeSet>
