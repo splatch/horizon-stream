@@ -41,6 +41,7 @@
         <module>azure</module>
         <module>flows</module>
         <module>alert</module>
+        <module>minion-certificate-manager-api</module>
     </modules>
 
     <build>

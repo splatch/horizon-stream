@@ -1,0 +1,7 @@
+certificate-authority:
+  url: acme://pebble/pebble:14000
+
+grpc:
+  server:
+    port: 8990
+    deadline: 60000

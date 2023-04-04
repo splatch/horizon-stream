@@ -297,6 +297,16 @@ k8s_resource(
     trigger_mode=TRIGGER_MODE_MANUAL,
 )
 
+### Minion Certificate Manager ###
+jib_project(
+    'minion-certificate-manager',
+    'opennms/horizon-stream-minion-certificate-manager',
+    'minion-certificate-manager',
+    'opennms-minion-certificate-manager',
+    port_forwards=['8888:8888', '34050:5005'],
+    resource_deps=['shared-lib']
+)
+
 ## 3rd Party Resources ##
 ### Keycloak ###
 docker_build(
