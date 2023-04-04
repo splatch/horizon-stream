@@ -12,12 +12,8 @@
             </not>
         </preConditions>
         <addColumn tableName="trigger_event">
-            <column name="uei" type="text">
-                <constraints nullable="false" />
-            </column>
-            <column name="reduction_key" type="text">
-                <constraints nullable="false" />
-            </column>
+            <column name="uei" type="text" defaultValue="uei.opennms.org/generic/traps/%s"/>
+            <column name="reduction_key" type="text" defaultValue="%s:%s:%d" />
             <column name="clear_key" type="text"/>
         </addColumn>
     </changeSet>

@@ -30,6 +30,7 @@ package org.opennms.horizon.alertservice.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.horizon.alerts.proto.AlertType;
 import org.opennms.horizon.alertservice.db.entity.AlertDefinition;
@@ -59,8 +60,9 @@ public class MonitorPolicyService {
     private static final String DEFAULT_POLICY = "default_policy";
     private static final String DEFAULT_RULE = "default_rule";
     private static final String DEFAULT_TAG = "default";
-    private static final String UEI_TEMPLATE_SNMP_TRAP = "uei.opennms.org/vendor/opennms/snmpTrap/%s"; //%s is the event type
-    private static final String UEI_TEMPLATE_INTER = "uei.opennms.org/vendor/opennms/internal/%s"; //%s is the event type
+    private static final String UEI_SNMP_TRAP_COLD_START = "uei.opennms.org/generic/traps/SNMP_Cold_Start";
+    private static final String UEI_SNMP_TRAP_WARM_START = "uei.opennms.org/generic/traps/SNMP_Warm_Start";
+    private static final String UEI_TEMPLATE_GENERIC = "uei.opennms.org/generic/traps/%s"; //%s is the event type
     private static final String REDUCTION_KEY_TEMPLATE = "%s:%s:%d";
     private final MonitorPolicyMapper policyMapper;
     private final MonitorPolicyRepository repository;
@@ -69,7 +71,7 @@ public class MonitorPolicyService {
     @EventListener(ApplicationReadyEvent.class)
     public void defaultPolicies() {
         if(repository.findAllByTenantId(SYSTEM_TENANT).isEmpty()) {
-            String uei = String.format(UEI_TEMPLATE_SNMP_TRAP, EventType.COLD_REBOOT);
+            String uei = String.format(UEI_SNMP_TRAP_COLD_START);
             TriggerEventProto coldReboot = TriggerEventProto.newBuilder()
                 .setTriggerEvent(EventType.COLD_REBOOT)
                 .setCount(1)
@@ -77,7 +79,7 @@ public class MonitorPolicyService {
                 .setUei(uei)
                 .setReductionKey(REDUCTION_KEY_TEMPLATE)
                 .build();
-            uei = String.format(UEI_TEMPLATE_SNMP_TRAP, EventType.WARM_REBOOT);
+            uei = String.format(UEI_SNMP_TRAP_WARM_START);
             TriggerEventProto warmReboot = TriggerEventProto.newBuilder()
                 .setTriggerEvent(EventType.WARM_REBOOT)
                 .setCount(1)
@@ -85,7 +87,7 @@ public class MonitorPolicyService {
                 .setUei(uei)
                 .setReductionKey(REDUCTION_KEY_TEMPLATE)
                 .build();
-            uei = String.format(UEI_TEMPLATE_INTER, EventType.DEVICE_UNREACHABLE);
+            uei = String.format(UEI_TEMPLATE_GENERIC, EventType.DEVICE_UNREACHABLE);
             TriggerEventProto deviceUnreachable = TriggerEventProto.newBuilder()
                 .setTriggerEvent(EventType.DEVICE_UNREACHABLE)
                 .setCount(1)
@@ -109,6 +111,7 @@ public class MonitorPolicyService {
                 .setNotifyInstruction("This is default policy notification") //todo: changed to something from environment
                 .build();
             createPolicy(defaultPolicy, SYSTEM_TENANT);
+            createAlertDefinitionFromPolicy();
         }
     }
 
@@ -116,9 +119,7 @@ public class MonitorPolicyService {
         MonitorPolicy policy = policyMapper.map(request);
         updateData(policy, tenantId);
         MonitorPolicy newPolicy = repository.save(policy);
-        if(newPolicy.getId() != request.getId()) { //the operation is creating new policy not updating policy
-            createAlertDefinitionFromPolicy(newPolicy);
-        }
+        createAlertDefinitionFromPolicy(newPolicy, true);
         return policyMapper.entityToProto(newPolicy);
     }
 
@@ -151,20 +152,33 @@ public class MonitorPolicyService {
         });
     }
 
-    private void createAlertDefinitionFromPolicy(MonitorPolicy policy) {
+
+    private void createAlertDefinitionFromPolicy() {
+        CompletableFuture.runAsync(() -> repository.findAll().forEach(p -> createAlertDefinitionFromPolicy(p, false)));
+    }
+
+
+    private void createAlertDefinitionFromPolicy(MonitorPolicy policy, boolean update) {
         policy.getRules().forEach(rule -> rule.getTriggerEvents()
-            .forEach(event -> {
-                if(definitionRepo.findFirstByTenantIdAndUei(event.getTenantId(), event.getUei()).isEmpty()) {
-                    AlertDefinition definition = new AlertDefinition();
-                    definition.setUei(event.getUei());
-                    definition.setTenantId(event.getTenantId());
-                    definition.setReductionKey(event.getReductionKey());
-                    definition.setClearKey(event.getClearKey());
-                    definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
-                    definition.setTriggerEventId(event.getId());
-                    definitionRepo.save(definition);
-                }
-            }));
+            .forEach(event -> definitionRepo.findByTriggerEventId(event.getId())
+                .ifPresentOrElse(definition -> {
+                    if(update) {
+                        definition.setUei(event.getUei());
+                        definition.setReductionKey(event.getReductionKey());
+                        definition.setClearKey(event.getClearKey());
+                        definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
+                        definitionRepo.save(definition);
+                    }},
+                    () ->{
+                        AlertDefinition definition = new AlertDefinition();
+                        definition.setUei(event.getUei());
+                        definition.setTenantId(event.getTenantId());
+                        definition.setReductionKey(event.getReductionKey());
+                        definition.setClearKey(event.getClearKey());
+                        definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
+                        definition.setTriggerEventId(event.getId());
+                        definitionRepo.save(definition);
+                    })));
     }
 
     private AlertType getAlertTypeFromEventType(EventType eventType) {
