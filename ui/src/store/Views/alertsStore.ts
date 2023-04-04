@@ -110,17 +110,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   }
 
   const clearAllFilters = (): void => {
-    alertsFilter.value = {
-      timeRange: TimeRange.All,
-      pagination: {
-        page: 0,
-        pageSize: 10
-      },
-      // search: '', // not avail for EAR
-      severities: [],
-      sortAscending: true,
-      sortBy: 'alertId'
-    }
+    alertsFilter.value = alertsFilterDefault
 
     alertsPagination.value = alertsPaginationDefault
   }
@@ -140,9 +130,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   }
 
   const acknowledgeSelectedAlerts = async () => {
-    // console.log('alertsSelected',alertsSelected)
-    // await alertsMutations.acknowledgeAlerts(alertsSelected)
-    await alertsMutations.acknowledgeAlerts({ ids: [1] })
+    await alertsMutations.acknowledgeAlerts({ ids: alertsSelected.value })
 
     fetchAlerts()
   }
