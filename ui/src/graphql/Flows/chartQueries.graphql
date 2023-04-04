@@ -1,7 +1,5 @@
-query findApplicationSeries($count: Int!, $step: Int!, $startTime: Instant!, $endTime: Instant!) {
-  findApplicationSeries(
-    requestCriteria: { count: $count, step: $step, timeRange: { startTime: $startTime, endTime: $endTime } }
-  ) {
+query findApplicationSeries($requestCriteria: RequestCriteriaInput!) {
+  findApplicationSeries(requestCriteria: $requestCriteria) {
     timestamp
     label
     value
@@ -9,16 +7,27 @@ query findApplicationSeries($count: Int!, $step: Int!, $startTime: Instant!, $en
   }
 }
 
-query findApplicationSummaries($count: Int!, $startTime: Instant!, $endTime: Instant!) {
-  findApplicationSummaries(
-    requestCriteria: { count: $count, timeRange: { startTime: $startTime, endTime: $endTime } }
-  ) {
+query findApplicationSummaries($requestCriteria: RequestCriteriaInput!) {
+  findApplicationSummaries(requestCriteria: $requestCriteria) {
     label
     bytesIn
     bytesOut
   }
 }
 
-query findApplications($count: Int!, $startTime: Instant!, $endTime: Instant!) {
-  findApplications(requestCriteria: { timeRange: { startTime: $startTime, endTime: $endTime }, count: $count })
+query findApplications($requestCriteria: RequestCriteriaInput!) {
+  findApplications(requestCriteria: $requestCriteria)
+}
+
+query findExporters($requestCriteria: RequestCriteriaInput!) {
+  findExporters(requestCriteria: $requestCriteria) {
+    node {
+      id
+      nodeLabel
+    }
+    ipInterface {
+      id
+      ipAddress
+    }
+  }
 }

@@ -22,3 +22,9 @@ export interface FlowsApplicationChartData {
   value: number
   direction: string
 }
+
+export interface FlowsApplicationSummaries {
+  label: string
+  bytesIn: number
+  bytesOut: number
+}

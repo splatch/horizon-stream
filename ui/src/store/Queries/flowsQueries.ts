@@ -3,46 +3,67 @@ import { defineStore } from 'pinia'
 import {
   FindApplicationsDocument,
   FindApplicationSeriesDocument,
-  FindApplicationSummariesDocument
+  FindApplicationSummariesDocument,
+  FindExportersDocument,
+  RequestCriteriaInput
 } from '@/types/graphql'
 
 export const useflowsQueries = defineStore('flowsQueries', {
   state: () => {
-    const getApplicationsSeries = (count = 10, step = 3600000, startTime = 1670661637000, endTime = 1679910407693) =>
-      useQuery({
+    const isLoadingApplications = ref(false)
+
+    const getApplicationsSeries = async (requestCriteria: RequestCriteriaInput) => {
+      const { execute, data } = useQuery({
         query: FindApplicationSeriesDocument,
         variables: {
-          count,
-          step,
-          startTime,
-          endTime
-        }
+          requestCriteria
+        },
+        cachePolicy: 'network-only'
       })
-
-    const getApplications = (count = 10, startTime = 1670661637000, endTime = 1679910407693) =>
-      useQuery({
+      await execute()
+      return data
+    }
+    const getApplications = async (requestCriteria: RequestCriteriaInput) => {
+      const { execute, data } = useQuery({
         query: FindApplicationsDocument,
         variables: {
-          count,
-          startTime,
-          endTime
-        }
+          requestCriteria
+        },
+        cachePolicy: 'network-only'
       })
-
-    const getApplicationsSummaries = (count = 10, startTime = 1670661637000, endTime = 1679910407693) =>
-      useQuery({
+      await execute()
+      return data
+    }
+    const getApplicationsSummaries = async (requestCriteria: RequestCriteriaInput) => {
+      const { execute, data } = useQuery({
         query: FindApplicationSummariesDocument,
         variables: {
-          count,
-          startTime,
-          endTime
-        }
+          requestCriteria
+        },
+        cachePolicy: 'network-only'
       })
+      await execute()
+      return data
+    }
+    const getExporters = async (requestCriteria: RequestCriteriaInput) => {
+      const { execute, data } = useQuery({
+        query: FindExportersDocument,
+        variables: {
+          requestCriteria
+        },
+        cachePolicy: 'network-only'
+      })
+      await execute()
+      return data
+    }
+
+    const getApplicationsSearch = () => ({}) //Application autocomplete Filter
 
     return {
       getApplicationsSeries,
+      getApplications,
       getApplicationsSummaries,
-      getApplications
+      getExporters
     }
   }
 })

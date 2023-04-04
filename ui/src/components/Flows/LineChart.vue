@@ -62,7 +62,7 @@ const chartOptions = computed<ChartOptions<any>>(() => {
         footerColor: '#4F4F4F',
         titleColor: '#4F4F4F',
         callbacks: {
-          title: () => props.selectedFilterRange,
+          title: (context: any) => context.label,
           label: (context: any) => {
             const appName = context.dataset.label
             return `${appName} : ` + formatBytes(context.parsed.y)

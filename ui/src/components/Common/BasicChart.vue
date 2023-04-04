@@ -48,8 +48,9 @@ const render = async (update?: boolean) => {
   try {
     if (update) {
       chart.data = props.chartData
+      chart.options = props.chartOptions
       chart.update()
-    } else {
+    } else if (props.chartData) {
       if (props.chartData.datasets.length) {
         const ctx: any = document.getElementById(props.id)
         chart = new Chart(ctx, {
@@ -66,7 +67,11 @@ const render = async (update?: boolean) => {
 }
 
 watch(props, () => {
-  render(true)
+  if (chart.canvas) {
+    render(true)
+  } else {
+    render
+  }
 })
 
 onMounted(async () => {

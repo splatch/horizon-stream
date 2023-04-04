@@ -84,7 +84,8 @@
           </FeatherRadioGroup>
         </div>
       </div>
-      <ExpandingChartWrapper
+      <!-- EXPORTERS CHARTS -->
+      <!-- <ExpandingChartWrapper
         :title="'Top Ten Exporters (24 Hrs) - Total'"
         :model-value="flowsStore.exporters.expansionOpen"
         :on-filter-click="(e) => flowsStore.filterDialogToggle(e, false)"
@@ -103,7 +104,7 @@
           :chart-data="flowsStore.exporters.lineChartData"
           :table-data="flowsStore.tableDatasets"
         />
-      </ExpandingChartWrapper>
+      </ExpandingChartWrapper> -->
 
       <ExpandingChartWrapper
         :title="'Top Ten Applications (24 Hrs) - Total'"
@@ -181,11 +182,13 @@
 </template>
 
 <script setup lang="ts">
+import { useflowsQueries } from '@/store/Queries/flowsQueries'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import { FeatherRadioObject } from '@/types'
 import Download from '@featherds/icon/action/DownloadFile'
 import Refresh from '@featherds/icon/navigation/Refresh'
 const flowsStore = useFlowsStore()
+const flowsQueries = useflowsQueries()
 
 const trafficRadios = ref([
   { name: 'Total', value: 'total' },
@@ -205,11 +208,10 @@ const expDialogLabels = {
   title: 'Top Ten Exporters (24 Hrs) - Total'
 }
 
-onBeforeMount(async () => {
+onMounted(async () => {
   //Get Table data first as line data will take some time to get.
   //Show Table chart first for same reason
-  flowsStore.generateTableChart()
-  flowsStore.generateLineChart()
+  await flowsStore.updateCharts()
 })
 
 // DUMMY DATA
