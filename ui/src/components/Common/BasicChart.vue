@@ -67,11 +67,7 @@ const render = async (update?: boolean) => {
 }
 
 watch(props, () => {
-  if (chart.canvas) {
-    render(true)
-  } else {
-    render
-  }
+  render(true)
 })
 
 onMounted(async () => {
