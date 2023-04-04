@@ -15,7 +15,7 @@ const alertsFilterDefault: AlertsFilters = {
   severities: [],
   sortAscending: true,
   // sortBy: 'lastUpdateTimeMs'
-  sortBy: 'alertId'
+  sortBy: 'id'
 }
 
 const alertsPaginationDefault = {
