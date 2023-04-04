@@ -4,7 +4,10 @@
       <PageHeadline text="Insights Dashboard" />
       <HeaderLinks />
     </div>
-    <div class="list-alerts"><AlertsSeverityFilters @click="redirect('/alerts')" /></div>
+    <div class="section-title">Alert Status</div>
+    <div class="list-alerts">
+      <AlertsSeverityFilters @click="redirect('/alerts')" />
+    </div>
   </div>
 </template>
 
@@ -46,6 +49,9 @@ const redirect = (route: string) => {
   }
   .list-alerts {
     overflow-x: auto;
+  }
+  .section-title {
+    @include typography.headline3();
   }
 }
 </style>
