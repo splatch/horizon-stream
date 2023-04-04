@@ -101,6 +101,9 @@ public class AlertEventProcessor {
 
     protected org.opennms.horizon.alertservice.db.entity.Alert addOrReduceEventAsAlert(Event event) {
         Optional<AlertDefinition> alertDefOpt = alertDefinitionRepository.findFirstByTenantIdAndUei(event.getTenantId(), event.getUei());
+        if(alertDefOpt.isEmpty()) {
+            alertDefOpt = alertDefinitionRepository.findFirstByTenantIdAndUei(MonitorPolicyService.SYSTEM_TENANT, event.getUei());
+        }
         if (alertDefOpt.isEmpty()) {
             // No alert definition matching, no alert to create
             eventsWithoutAlertDataCounter.increment();

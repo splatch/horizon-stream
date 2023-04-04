@@ -59,9 +59,9 @@ public class MonitorPolicyService {
     private static final String DEFAULT_POLICY = "default_policy";
     private static final String DEFAULT_RULE = "default_rule";
     private static final String DEFAULT_TAG = "default";
-    private static final String UEI_TEMPLATE_SNMP_TRAP = "uei.opennms.org/snmpTrap/%s"; //%s is the event type
-    private static final String UEI_TEMPLATE_INTER = "uei.opennms.org/internal/%s"; //%s is the event type
-    private static final String KEY_TEMPLATE_NODE = "%uei%:%nodeId%";
+    private static final String UEI_TEMPLATE_SNMP_TRAP = "uei.opennms.org/vendor/opennms/snmpTrap/%s"; //%s is the event type
+    private static final String UEI_TEMPLATE_INTER = "uei.opennms.org/vendor/opennms/internal/%s"; //%s is the event type
+    private static final String REDUCTION_KEY_TEMPLATE = "%s:%s:%d";
     private final MonitorPolicyMapper policyMapper;
     private final MonitorPolicyRepository repository;
     private final AlertDefinitionRepository definitionRepo;
@@ -75,7 +75,7 @@ public class MonitorPolicyService {
                 .setCount(1)
                 .setSeverity(Severity.CRITICAL)
                 .setUei(uei)
-                .setReductionKey(KEY_TEMPLATE_NODE.replace("%uei", uei))
+                .setReductionKey(REDUCTION_KEY_TEMPLATE)
                 .build();
             uei = String.format(UEI_TEMPLATE_SNMP_TRAP, EventType.WARM_REBOOT);
             TriggerEventProto warmReboot = TriggerEventProto.newBuilder()
@@ -83,15 +83,15 @@ public class MonitorPolicyService {
                 .setCount(1)
                 .setSeverity(Severity.MAJOR)
                 .setUei(uei)
-                .setReductionKey(KEY_TEMPLATE_NODE.replace("%uei%", uei))
+                .setReductionKey(REDUCTION_KEY_TEMPLATE)
                 .build();
-            uei = String.format(UEI_TEMPLATE_INTER, EventType.WARM_REBOOT);
+            uei = String.format(UEI_TEMPLATE_INTER, EventType.DEVICE_UNREACHABLE);
             TriggerEventProto deviceUnreachable = TriggerEventProto.newBuilder()
                 .setTriggerEvent(EventType.DEVICE_UNREACHABLE)
                 .setCount(1)
                 .setSeverity(Severity.MAJOR)
                 .setUei(uei)
-                .setReductionKey(KEY_TEMPLATE_NODE.replace("%uei%", uei))
+                .setReductionKey(REDUCTION_KEY_TEMPLATE)
                 .build();
             PolicyRuleProto defaultRule = PolicyRuleProto.newBuilder()
                 .setName(DEFAULT_RULE)
@@ -154,13 +154,14 @@ public class MonitorPolicyService {
     private void createAlertDefinitionFromPolicy(MonitorPolicy policy) {
         policy.getRules().forEach(rule -> rule.getTriggerEvents()
             .forEach(event -> {
-                if(definitionRepo.findByTenantIdAndReductionKey(event.getTenantId(), event.getReductionKey()).isEmpty()) {
+                if(definitionRepo.findFirstByTenantIdAndUei(event.getTenantId(), event.getUei()).isEmpty()) {
                     AlertDefinition definition = new AlertDefinition();
                     definition.setUei(event.getUei());
                     definition.setTenantId(event.getTenantId());
                     definition.setReductionKey(event.getReductionKey());
                     definition.setClearKey(event.getClearKey());
                     definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
+                    definition.setTriggerEventId(event.getId());
                     definitionRepo.save(definition);
                 }
             }));
