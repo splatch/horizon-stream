@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { TimeRange } from '@/types/graphql'
 import { useAlertsQueries } from '../Queries/alertsQueries'
 import { useAlertsMutations } from '../Mutations/alertsMutations'
+import { Alert } from '@/types/graphql'
 import { AlertsFilters } from '@/types/alerts'
 
 const alertsFilterDefault: AlertsFilters = {
@@ -126,11 +127,16 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     alertsPagination.value = alertsPaginationDefault
   }
 
-  const setAlertsSelected = (selectedAlert: number | undefined) => {
-    if (!selectedAlert) alertsSelected.value = undefined
-    else {
-      const exists = alertsSelected.value?.indexOf(selectedAlert)
-      exists ? alertsSelected.value?.splice(exists) : alertsSelected.value?.push(selectedAlert)
+  // all toggle (select/deselect): true/false / individual toggle: number (alert id)
+  const setAlertsSelected = (selectedAlert: number | boolean) => {
+    if (Number.isInteger(selectedAlert)) {
+      const found = alertsSelected.value?.indexOf(selectedAlert as number) as number
+      found === -1 ? alertsSelected.value?.push(selectedAlert as number) : alertsSelected.value?.splice(found, 1)
+    } else {
+      if (!selectedAlert) alertsSelected.value = []
+      else {
+        alertsSelected.value = alertsList.value.alerts.map((al: Alert) => al.databaseId)
+      }
     }
   }
 
@@ -141,9 +147,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   }
 
   const acknowledgeSelectedAlerts = async () => {
-    // console.log('alertsSelected',alertsSelected)
-    // await alertsMutations.acknowledgeAlerts(alertsSelected)
-    await alertsMutations.acknowledgeAlerts({ ids: [1] })
+    await alertsMutations.acknowledgeAlerts({ ids: alertsSelected.value })
 
     fetchAlerts()
   }

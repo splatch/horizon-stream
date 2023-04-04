@@ -64,14 +64,14 @@
             <FeatherButton
               :disabled="!atLeastOneAlertSelected"
               text
-              @click="alertsStore.clearSelectedAlerts"
+              @click="clearAlertsHandler"
               data-test="clear-btn"
               >clear</FeatherButton
             >
             <FeatherButton
               :disabled="!atLeastOneAlertSelected"
               text
-              @click="alertsStore.acknowledgeSelectedAlerts"
+              @click="acknowledgeAlertsHandler"
               data-test="acknowledge-btn"
               >acknowledge</FeatherButton
             >
@@ -137,11 +137,13 @@ const allAlertsCheckboxHandler = (isSelected: boolean | undefined) => {
     ...a,
     isSelected
   }))
+
+  alertsStore.setAlertsSelected(isSelected as boolean)
 }
 
-const alertSelectedListener = (databaseId: number) => {
+const alertSelectedListener = (id: number) => {
   alerts.value = alerts.value.map((a: IAlert) => {
-    if (a.databaseId === databaseId) {
+    if (a.databaseId === id) {
       a.isSelected = !a.isSelected // toggle selection
     }
 
@@ -149,6 +151,20 @@ const alertSelectedListener = (databaseId: number) => {
   })
 
   isAllAlertsSelected.value = alerts.value.every(({ isSelected }) => isSelected)
+
+  alertsStore.setAlertsSelected(id)
+}
+
+const clearAlertsHandler = () => {
+  alertsStore.clearSelectedAlerts()
+
+  isAllAlertsSelected.value = false
+}
+
+const acknowledgeAlertsHandler = () => {
+  alertsStore.acknowledgeSelectedAlerts()
+
+  isAllAlertsSelected.value = false
 }
 
 // TODO: search not avail for EAR
