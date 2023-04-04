@@ -55,6 +55,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -204,13 +205,13 @@ public class NotificationCucumberTestSteps extends GrpcTestBase {
         }
     }
 
-    @Given("Alert posted via service with tenant {string}")
-    public void postAlertViaService(String tenantId) throws Exception{
-        postAlert(tenantId);
+    @Given("Alert posted via service with tenant {string} with monitoring policy ID {long}")
+    public void postAlertViaService(String tenantId, long monitoringPolicyId) {
+        postAlert(tenantId, monitoringPolicyId);
     }
 
-    private void postAlert(String tenantId) throws NotificationException {
-        Alert alert = Alert.newBuilder().setLogMessage("Hello").setTenantId(tenantId).build();
+    private void postAlert(String tenantId, long monitoringPolicyId) {
+        Alert alert = Alert.newBuilder().setLogMessage("Hello").setTenantId(tenantId).addMonitoringPolicyId(monitoringPolicyId).build();
         notificationService.postNotification(alert);
     }
 
@@ -241,11 +242,11 @@ public class NotificationCucumberTestSteps extends GrpcTestBase {
         verify(restTemplate, times(count)).exchange(any(URI.class), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class));
     }
 
-    @Given("Alert posted via service with no config with tenant {string}")
-    public void postNotificationWithNoConfig(String tenantId) {
+    @Given("Alert posted via service with no config with tenant {string} with monitoring policy ID {long}")
+    public void postNotificationWithNoConfig(String tenantId, long monitoringPolicyId) {
         caught = null;
         try {
-            postAlert(tenantId);
+            postAlert(tenantId, monitoringPolicyId);
         } catch (Exception ex) {
             caught = ex;
         }
@@ -289,12 +290,19 @@ public class NotificationCucumberTestSteps extends GrpcTestBase {
     @WithTenant(tenantIdArg = 0)
     public void verifyMonitoringPolicy(String tenant, long id, List<String> enabledNotifications) {
         Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAsserted(() -> {
-            Optional<MonitoringPolicy> monitoringPolicy = monitoringPolicyRepository.findByTenantIdAndId(tenant, id);
-            assertTrue(monitoringPolicy.isPresent());
+            List<MonitoringPolicy> monitoringPolicy = monitoringPolicyRepository.findByTenantIdAndIdIn(tenant, List.of(id));
+            assertEquals(1, monitoringPolicy.size());
 
-            assertEquals(enabledNotifications.contains("PagerDuty"), monitoringPolicy.get().isNotifyByPagerDuty());
-            assertEquals(enabledNotifications.contains("email"), monitoringPolicy.get().isNotifyByEmail());
-            assertEquals(enabledNotifications.contains("webhooks"), monitoringPolicy.get().isNotifyByWebhooks());
+            assertEquals(enabledNotifications.contains("PagerDuty"), monitoringPolicy.get(0).isNotifyByPagerDuty());
+            assertEquals(enabledNotifications.contains("email"), monitoringPolicy.get(0).isNotifyByEmail());
+            assertEquals(enabledNotifications.contains("webhooks"), monitoringPolicy.get(0).isNotifyByWebhooks());
         });
     }
+
+    @Given("{string} has a monitoring policy with ID {long}")
+    @WithTenant(tenantIdArg = 0)
+    public void waitForMonitoringPolicy(String tenant, long id) {
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> !monitoringPolicyRepository.findByTenantIdAndIdIn(tenant, List.of(id)).isEmpty());
+    }
+
 }
