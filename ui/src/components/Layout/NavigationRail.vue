@@ -24,7 +24,6 @@
       </IconTextAnimate>
     </template>
     <template v-slot:nav>
-      <!-- hide dashboard link until complete -->
       <FeatherAppRailNavItem
         href="/"
         :icon="Icons.Home"
