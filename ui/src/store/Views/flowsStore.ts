@@ -176,11 +176,9 @@ export const useFlowsStore = defineStore('flowsStore', {
       }
       return format(new Date(ts), dateFormat())
     },
-    onDateFilterUpdate(e: any) {
+    async onDateFilterUpdate(e: any) {
       this.filters.dateFilter = e
-      this.getDatasets()
-      this.createLineChartData()
-      this.createTableChartData()
+      await this.updateCharts()
     },
     getTimeRange(range: string) {
       const now = new Date()

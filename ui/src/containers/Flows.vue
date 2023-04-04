@@ -112,19 +112,20 @@
         :on-filter-click="(e) => flowsStore.filterDialogToggle(e, true)"
       >
         <TableChart
-          v-if="flowsStore.filters.dataStyle.selectedItem === 'table'"
+          v-if="flowsStore.filters.dataStyle.selectedItem === 'table' && hasData"
           :id="'tableChartApplications'"
           :selected-filter-range="flowsStore.filters.dateFilter"
           :chart-data="flowsStore.applications.tableChartData"
           :table-data="flowsStore.tableDatasets"
         />
         <LineChart
-          v-if="flowsStore.filters.dataStyle.selectedItem === 'line'"
+          v-if="flowsStore.filters.dataStyle.selectedItem === 'line' && hasData"
           :id="'lineChartApplications'"
           :selected-filter-range="flowsStore.filters.dateFilter"
           :chart-data="flowsStore.applications.lineChartData"
           :table-data="flowsStore.tableDatasets"
         />
+        <div v-if="!hasData">No data</div>
       </ExpandingChartWrapper>
     </div>
   </div>
@@ -190,6 +191,14 @@ import Refresh from '@featherds/icon/navigation/Refresh'
 const flowsStore = useFlowsStore()
 const flowsQueries = useflowsQueries()
 
+const hasData = computed(() => {
+  if (flowsStore.applications.tableChartData.datasets) {
+    console.log(flowsStore.applications.tableChartData.datasets)
+    return Object.keys(flowsStore.applications.tableChartData.datasets[0].data).length > 0
+  }
+  return false
+})
+
 const trafficRadios = ref([
   { name: 'Total', value: 'total' },
   { name: 'Inbound', value: 'inbound' },
@@ -197,8 +206,8 @@ const trafficRadios = ref([
 ] as FeatherRadioObject[])
 
 const dataStyleRadios = ref([
-  { name: 'Line Chart', value: 'line' },
-  { name: 'Table Chart', value: 'table' }
+  { name: 'Table Chart', value: 'table' },
+  { name: 'Line Chart', value: 'line' }
 ] as FeatherRadioObject[])
 
 const appDialogLabels = {
