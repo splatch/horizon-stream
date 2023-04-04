@@ -25,7 +25,8 @@ export const useFlowsStore = defineStore('flowsStore', {
       applications: ['']
     },
     applications: {
-      isLoading: false,
+      isTableLoading: false,
+      isLineLoading: false,
       tableChartData: {} as ChartData,
       lineChartData: {} as ChartData,
       expansionOpen: true,
@@ -33,6 +34,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       dialogFilters: { ...defaultDialogFilters }
     },
     exporters: {
+      isLoading: false,
       tableChartData: {} as ChartData,
       lineChartData: {} as ChartData,
       expansionOpen: true,
@@ -49,17 +51,21 @@ export const useFlowsStore = defineStore('flowsStore', {
         timeRange: this.getTimeRange(this.filters.dateFilter)
       } as RequestCriteriaInput
 
+      this.applications.isTableLoading = true
       //Get Table Data
       const applicationTableData = await flowsQueries.getApplicationsSummaries(requestData)
       this.tableDatasets = [
         ...((applicationTableData.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || null)
       ]
+      this.applications.isTableLoading = false
 
+      this.applications.isLineLoading = true
       //Get Line Graph Data
       const applicationsLineData = await flowsQueries.getApplicationsSeries(requestData)
       this.lineDatasets = [
         ...(flowsAppDataToChartJS(applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[]) || null)
       ]
+      this.applications.isLineLoading = false
     },
     createTableChartData() {
       if (this.tableDatasets) {

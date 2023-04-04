@@ -112,20 +112,27 @@
         :on-filter-click="(e) => flowsStore.filterDialogToggle(e, true)"
       >
         <TableChart
-          v-if="flowsStore.filters.dataStyle.selectedItem === 'table' && hasData"
+          v-if="
+            flowsStore.filters.dataStyle.selectedItem === 'table' && hasData && !flowsStore.applications.isTableLoading
+          "
           :id="'tableChartApplications'"
           :selected-filter-range="flowsStore.filters.dateFilter"
           :chart-data="flowsStore.applications.tableChartData"
           :table-data="flowsStore.tableDatasets"
         />
         <LineChart
-          v-if="flowsStore.filters.dataStyle.selectedItem === 'line' && hasData"
+          v-if="
+            flowsStore.filters.dataStyle.selectedItem === 'line' && hasData && !flowsStore.applications.isLineLoading
+          "
           :id="'lineChartApplications'"
           :selected-filter-range="flowsStore.filters.dateFilter"
           :chart-data="flowsStore.applications.lineChartData"
           :table-data="flowsStore.tableDatasets"
         />
-        <div v-if="!hasData">No data</div>
+        <FeatherSpinner v-if="flowsStore.applications.isLineLoading || flowsStore.applications.isLineLoading" />
+        <div v-if="!hasData && !flowsStore.applications.isLineLoading && !flowsStore.applications.isLineLoading">
+          No data
+        </div>
       </ExpandingChartWrapper>
     </div>
   </div>
