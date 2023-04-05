@@ -1,13 +1,10 @@
 <template>
   <div class="table-chart-container">
     <div class="chart-container">
-      <BasicChart
-        :id="id"
-        :chart-options="chartOptions"
-        :chart-data="chartData"
-        :chart-type="ChartTypes.BAR"
-      >
-      </BasicChart>
+      <Bar
+        :data="chartData"
+        :options="chartOptions"
+      />
     </div>
 
     <div class="table-container">
@@ -38,6 +35,7 @@
 import { ChartOptions, ChartData } from 'chart.js'
 import { PropType } from 'vue'
 import { ChartTypes } from '@/types'
+import { Bar } from 'vue-chartjs'
 
 const props = defineProps({
   id: {
@@ -46,7 +44,7 @@ const props = defineProps({
   },
   chartData: {
     required: true,
-    type: Object as PropType<ChartData>
+    type: Object as PropType<{ labels: []; datasets: [] }>
   },
   tableData: {
     required: true,
