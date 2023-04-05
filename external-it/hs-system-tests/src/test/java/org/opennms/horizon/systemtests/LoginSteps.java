@@ -40,6 +40,8 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
+import org.opennms.horizon.systemtests.utils.Locators;
+
 public class LoginSteps {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoginSteps.class);
@@ -57,7 +59,7 @@ public class LoginSteps {
     public void verifyThatWeLoggedInSuccessfully() {
         LOG.info("waiting for the product icon");
 
-        $(By.className("icon-animate")).shouldBe(visible, Duration.ofMinutes(2));
+        $(Locators.OPENNMS_BANNER).shouldBe(visible, Duration.ofMinutes(2));
     }
 
     @Given("Cloud url in environment variable {string}")
@@ -84,12 +86,13 @@ public class LoginSteps {
      */
     private void doLogin() {
         LOG.info("doLogin method started");
+        // Open browser with Selenide. Browser configuration in selenide.properties file
         open(cloudBaseUrl);
-        // Wait if Banner appears
-        $(By.id("idp-discovery-username")).shouldBe(visible, Duration.ofMinutes(2)).sendKeys(cloudUsername);
-        $(By.id("idp-discovery-submit")).click();
-
-        $(By.id("okta-signin-password")).shouldBe(visible, Duration.ofMinutes(2)).sendKeys(cloudPassword);
-        $(By.id("okta-signin-submit")).click();
+        // Wait if login appears
+        $(Locators.LOGIN_USERNAME).shouldBe(visible, Duration.ofMinutes(2)).sendKeys(cloudUsername);
+        $(Locators.LOGIN_NEXT).click();
+        // Wait for the password appears
+        $(Locators.LOGIN_PASSWORD).shouldBe(visible, Duration.ofMinutes(2)).sendKeys(cloudPassword);
+        $(Locators.LOGIN_SUBMIT).click();
     }
 }
