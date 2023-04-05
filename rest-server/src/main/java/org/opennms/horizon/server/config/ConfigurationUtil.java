@@ -34,7 +34,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.server.mapper.alert.MonitorPolicyMapper;
 import org.opennms.horizon.server.service.flows.FlowClient;
-import org.opennms.horizon.server.service.grpc.*;
+import org.opennms.horizon.server.service.grpc.AlertsClient;
+import org.opennms.horizon.server.service.grpc.EventsClient;
+import org.opennms.horizon.server.service.grpc.InventoryClient;
+import org.opennms.horizon.server.service.grpc.NotificationClient;
 import org.opennms.horizon.server.utils.JWTValidator;
 import org.opennms.horizon.server.utils.ServerHeaderUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,7 +69,7 @@ public class ConfigurationUtil {
     @Value("${grpc.url.flows}")
     private String flowQuerierGrpcAddress;
 
-    @Value("${grpc.url.minionCertificateManager}")
+    @Value("${grpc.url.minion.certificate.manager}")
     private String minionCertificateManagerGrpcAddress;
 
     @Bean
