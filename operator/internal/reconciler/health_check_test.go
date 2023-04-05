@@ -66,7 +66,7 @@ func getTestInstance() *Instance {
 	return instance
 }
 
-func Test_InstanceReady_ServiceStatus200OK_True_NoError(t *testing.T) {
+func Test_instanceReady_ServiceStatus200OK_True_NoError(t *testing.T) {
 	instance := getTestInstance()
 	httpClient.response = &http.Response{StatusCode: http.StatusOK}
 	httpClient.err = nil
@@ -75,7 +75,7 @@ func Test_InstanceReady_ServiceStatus200OK_True_NoError(t *testing.T) {
 	assert.True(t, res, "should return true when service returns 200")
 }
 
-func Test_InstanceReady_ServiceStatus502BadGateway_False_NoError(t *testing.T) {
+func Test_instanceReady_ServiceStatus502BadGateway_False_NoError(t *testing.T) {
 	instance := getTestInstance()
 	httpClient.response = &http.Response{StatusCode: http.StatusBadGateway}
 	httpClient.err = nil
@@ -84,7 +84,7 @@ func Test_InstanceReady_ServiceStatus502BadGateway_False_NoError(t *testing.T) {
 	assert.False(t, res, "should return false when service doesn't return 200")
 }
 
-func Test_InstanceReady_ClientError_False_Error(t *testing.T) {
+func Test_instanceReady_ClientError_False_Error(t *testing.T) {
 	instance := getTestInstance()
 	httpClient.response = nil
 	httpClient.err = errors.New("this is an error")
@@ -93,7 +93,7 @@ func Test_InstanceReady_ClientError_False_Error(t *testing.T) {
 	assert.False(t, res, "should return false when there's an error")
 }
 
-func Test_InstanceReady_RequestCreationError_False_Error(t *testing.T) {
+func Test_instanceReady_RequestCreationError_False_Error(t *testing.T) {
 	instance := getTestInstance()
 	instance.Values.Values.OpenNMS.UI.ServiceName = "thisistrash%%%%%%%%%%%%%%"
 	res, err := r.instanceReady(instance)
