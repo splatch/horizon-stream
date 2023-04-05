@@ -50,6 +50,7 @@ type OpenNMSReconciler struct {
 	Instances        map[string]*Instance
 }
 
+// TODO add high level unit tests for this method
 func (r *OpenNMSReconciler) Reconcile(ctx context.Context, req ctrl.Request) (reconcile.Result, error) {
 	instance, err := r.getInstance(ctx, req)
 	if err != nil { //any error here is fatal

@@ -35,7 +35,13 @@ func (h *mockHttp) Do(req *http.Request) (*http.Response, error) {
 	return h.response, h.err
 }
 
-func TestInstanceReady(t *testing.T) {
+var client = mockHttp{}
+var r = OpenNMSReconciler{
+	HttpClient: &client,
+	Log:        zap.New(),
+}
+
+func getTestInstance() *Instance {
 	namespace := "mynamespace"
 	svcName := "uiServer"
 	port := 1234
@@ -57,27 +63,40 @@ func TestInstanceReady(t *testing.T) {
 			},
 		},
 	}
-	client := mockHttp{}
-	r := OpenNMSReconciler{
-		HttpClient: &client,
-		Log:        zap.New(),
-	}
+	return instance
+}
 
+func Test_InstanceReady_200OK(t *testing.T) {
+	instance := getTestInstance()
 	client.response = &http.Response{StatusCode: http.StatusOK}
 	client.err = nil
 	res, err := r.instanceReady(instance)
 	assert.Nil(t, err, "error should be nil")
 	assert.True(t, res, "should return true when service returns 200")
+}
 
+func Test_InstanceReady_502BadGateway(t *testing.T) {
+	instance := getTestInstance()
 	client.response = &http.Response{StatusCode: http.StatusBadGateway}
 	client.err = nil
-	res, err = r.instanceReady(instance)
+	res, err := r.instanceReady(instance)
 	assert.Nil(t, err, "error should be nil")
 	assert.False(t, res, "should return false when service doesn't return 200")
+}
 
+func Test_InstanceReady_ClientError(t *testing.T) {
+	instance := getTestInstance()
 	client.response = nil
 	client.err = errors.New("this is an error")
-	res, err = r.instanceReady(instance)
+	res, err := r.instanceReady(instance)
 	assert.NotNil(t, err, "error shouldn't be nil")
+	assert.False(t, res, "should return false when there's an error")
+}
+
+func Test_InstanceReady_RequestCreationError(t *testing.T) {
+	instance := getTestInstance()
+	instance.Values.Values.OpenNMS.UI.ServiceName = "thisistrash%%%%%%%%%%%%%%"
+	res, err := r.instanceReady(instance)
+	assert.NotNil(t, err, "error shouldn't be nil when a trash URL is created")
 	assert.False(t, res, "should return false when there's an error")
 }
