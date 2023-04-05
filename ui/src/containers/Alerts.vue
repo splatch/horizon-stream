@@ -14,8 +14,11 @@
         >
       </div>
       <AlertsSeverityFilters data-test="severity-filters" />
-      <!-- <div class="alerts-content">
-        <div class="time-search-filters">
+      <div class="alerts-content">
+        <div
+          v-if="alerts.length"
+          class="time-search-filters"
+        >
           <div
             class="time-filters"
             data-test="time-filters"
@@ -53,36 +56,40 @@
           </div>
         </div>
         <div class="card-list-top">
-          <div class="select-all-checkbox-btns">
-            <FeatherCheckbox
-              v-model="isAllAlertsSelected"
-              @update:model-value="allAlertsCheckboxHandler"
-              :disabled="!alerts.length"
-              data-test="select-all-checkbox"
-              >Select All</FeatherCheckbox
-            >
-            <FeatherButton
-              :disabled="!atLeastOneAlertSelected"
-              text
-              @click="alertsStore.clearSelectedAlerts"
-              data-test="clear-btn"
-              >clear</FeatherButton
-            >
-            <FeatherButton
-              :disabled="!atLeastOneAlertSelected"
-              text
-              @click="alertsStore.acknowledgeSelectedAlerts"
-              data-test="acknowledge-btn"
-              >acknowledge</FeatherButton
-            >
-          </div>
-          <FeatherPagination
+          <div
             v-if="alerts.length"
-            v-model="page"
-            :pageSize="pageSize"
-            :total="total"
-            data-test="list-count"
-          />
+            class=""
+          >
+            <div class="select-all-checkbox-btns">
+              <FeatherCheckbox
+                v-model="isAllAlertsSelected"
+                @update:model-value="allAlertsCheckboxHandler"
+                :disabled="!alerts.length"
+                data-test="select-all-checkbox"
+                >Select All</FeatherCheckbox
+              >
+              <FeatherButton
+                :disabled="!atLeastOneAlertSelected"
+                text
+                @click="alertsStore.clearSelectedAlerts"
+                data-test="clear-btn"
+                >clear</FeatherButton
+              >
+              <FeatherButton
+                :disabled="!atLeastOneAlertSelected"
+                text
+                @click="alertsStore.acknowledgeSelectedAlerts"
+                data-test="acknowledge-btn"
+                >acknowledge</FeatherButton
+              >
+            </div>
+            <FeatherPagination
+              v-model="page"
+              :pageSize="pageSize"
+              :total="total"
+              data-test="list-count"
+            />
+          </div>
         </div>
         <AlertsCardList
           :alerts="alerts"
@@ -102,7 +109,7 @@
             data-test="pagination"
           />
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>

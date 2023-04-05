@@ -13,8 +13,7 @@ const alertsFilterDefault: AlertsFilters = {
   // search: '', // not avail for EAR
   severities: [],
   sortAscending: true,
-  // sortBy: 'lastUpdateTimeMs'
-  sortBy: 'alertId'
+  sortBy: 'id'
 }
 
 const alertsPaginationDefault = {
@@ -111,17 +110,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   }
 
   const clearAllFilters = (): void => {
-    alertsFilter.value = {
-      timeRange: TimeRange.All,
-      pagination: {
-        page: 0,
-        pageSize: 10
-      },
-      // search: '', // not avail for EAR
-      severities: [],
-      sortAscending: true,
-      sortBy: 'alertId'
-    }
+    alertsFilter.value = alertsFilterDefault
 
     alertsPagination.value = alertsPaginationDefault
   }
