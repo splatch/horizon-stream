@@ -15,10 +15,7 @@
       </div>
       <AlertsSeverityFilters data-test="severity-filters" />
       <div class="alerts-content">
-        <div
-          v-if="alerts.length"
-          class="time-search-filters"
-        >
+        <div class="time-search-filters">
           <div
             class="time-filters"
             data-test="time-filters"
@@ -56,40 +53,36 @@
           </div>
         </div>
         <div class="card-list-top">
-          <div
-            v-if="alerts.length"
-            class=""
-          >
-            <div class="select-all-checkbox-btns">
-              <FeatherCheckbox
-                v-model="isAllAlertsSelected"
-                @update:model-value="allAlertsCheckboxHandler"
-                :disabled="!alerts.length"
-                data-test="select-all-checkbox"
-                >Select All</FeatherCheckbox
-              >
-              <FeatherButton
-                :disabled="!atLeastOneAlertSelected"
-                text
-                @click="alertsStore.clearSelectedAlerts"
-                data-test="clear-btn"
-                >clear</FeatherButton
-              >
-              <FeatherButton
-                :disabled="!atLeastOneAlertSelected"
-                text
-                @click="alertsStore.acknowledgeSelectedAlerts"
-                data-test="acknowledge-btn"
-                >acknowledge</FeatherButton
-              >
-            </div>
-            <FeatherPagination
-              v-model="page"
-              :pageSize="pageSize"
-              :total="total"
-              data-test="list-count"
-            />
+          <div class="select-all-checkbox-btns">
+            <FeatherCheckbox
+              v-model="isAllAlertsSelected"
+              @update:model-value="allAlertsCheckboxHandler"
+              :disabled="isAlertsListEmpty"
+              data-test="select-all-checkbox"
+              >Select All</FeatherCheckbox
+            >
+            <FeatherButton
+              :disabled="!atLeastOneAlertSelected"
+              text
+              @click="alertsStore.clearSelectedAlerts"
+              data-test="clear-btn"
+              >clear</FeatherButton
+            >
+            <FeatherButton
+              :disabled="!atLeastOneAlertSelected"
+              text
+              @click="alertsStore.acknowledgeSelectedAlerts"
+              data-test="acknowledge-btn"
+              >acknowledge</FeatherButton
+            >
           </div>
+          <FeatherPagination
+            v-if="!isAlertsListEmpty"
+            v-model="page"
+            :pageSize="pageSize"
+            :total="total"
+            data-test="list-count"
+          />
         </div>
         <AlertsCardList
           :alerts="alerts"
@@ -98,7 +91,7 @@
         />
         <div
           class="card-list-bottom"
-          v-if="alerts.length"
+          v-if="!isAlertsListEmpty"
         >
           <FeatherPagination
             v-model="page"
@@ -117,7 +110,6 @@
 <script lang="ts" setup>
 import { TimeRange } from '@/types/graphql'
 import { useAlertsStore } from '@/store/Views/alertsStore'
-// import { useAlertsQueries } from '@/store/Queries/alertsQueries'
 import { IAlert } from '@/types/alerts'
 
 onMounted(async () => {
@@ -125,12 +117,13 @@ onMounted(async () => {
 })
 
 const alertsStore = useAlertsStore()
-// const alertsQueries = useAlertsQueries()
 
 const alerts = ref([] as IAlert[])
 watchEffect(() => {
   alerts.value = alertsStore.alertsList?.alerts?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
 })
+
+const isAlertsListEmpty = computed(() => alertsStore.isAlertsListEmpty)
 
 const page = alertsStore.alertsPagination.page
 const pageSize = computed(() => alertsStore.alertsPagination.pageSize)
@@ -250,7 +243,7 @@ const searchAlertsListener = (v: any) => {
   :deep(.layout-container) {
     margin-bottom: 0;
   }
-  :deep(> .feather-pagination) {
+  :deep(.feather-pagination) {
     border: 0;
     min-height: auto;
     padding-left: 0;

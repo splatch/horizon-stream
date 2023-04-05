@@ -27,6 +27,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   const alertsFilter = ref(alertsFilterDefault)
   const alertsPagination = ref(alertsPaginationDefault)
   const alertsSelected = ref([] as number[] | undefined)
+  const isAlertsListEmpty = ref(true)
   const alertsListSearched = ref([]) // TODO: not avail for EAR
 
   const alertsQueries = useAlertsQueries()
@@ -36,6 +37,8 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     await alertsQueries.fetchAlerts(alertsFilter.value)
 
     alertsList.value = alertsQueries.fetchAlertsData
+
+    isAlertsListEmpty.value = alertsList.value.alerts.length <= 0
 
     alertsPagination.value = {
       ...alertsPagination.value,
@@ -130,9 +133,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
   }
 
   const acknowledgeSelectedAlerts = async () => {
-    // console.log('alertsSelected',alertsSelected)
-    // await alertsMutations.acknowledgeAlerts(alertsSelected)
-    await alertsMutations.acknowledgeAlerts({ ids: [1] })
+    await alertsMutations.acknowledgeAlerts({ ids: alertsSelected.value })
 
     fetchAlerts()
   }
@@ -149,6 +150,7 @@ export const useAlertsStore = defineStore('alertsStore', () => {
     clearAllFilters,
     setAlertsSelected,
     clearSelectedAlerts,
-    acknowledgeSelectedAlerts
+    acknowledgeSelectedAlerts,
+    isAlertsListEmpty
   }
 })
