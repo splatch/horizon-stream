@@ -28,39 +28,38 @@
 
 package org.opennms.horizon.alertservice.db.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.opennms.horizon.alerts.proto.AlertType;
-import org.opennms.horizon.alerts.proto.ManagedObjectType;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.horizon.alerts.proto.AlertType;
+import org.opennms.horizon.alerts.proto.ManagedObjectType;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 @Table(name="alert_definition")
 @Getter
 @Setter
-@ToString
-@RequiredArgsConstructor
 public class AlertDefinition implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 7825119801706458618L;
 
     @Id
-    @Column(nullable=false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column (name = "tenant_id", nullable = false)
@@ -88,4 +87,6 @@ public class AlertDefinition implements Serializable {
     @Enumerated(EnumType.STRING)
     private ManagedObjectType managedObjectType;
 
+    @Column(name = "trigger_event_id")
+    private Long triggerEventId;
 }

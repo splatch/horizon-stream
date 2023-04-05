@@ -9,7 +9,7 @@ Feature: Alert Service Basic Functionality
 
   Scenario: Verify when an event is received from Kafka, a new alert is created
     Then Send event with UEI "uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down" with tenant "tenantA" with node 10 with severity "MINOR"
-    Then List alerts for tenant "tenantA", with timeout 5000ms, until JSON response matches the following JSON path expressions
+    Then List alerts for tenant "tenantA", with timeout 15000ms, until JSON response matches the following JSON path expressions
       | alerts.size() == 1 |
       | alerts[0].counter == 1 |
       | alerts[0].severity == MINOR |

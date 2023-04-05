@@ -20,6 +20,12 @@ Feature: Monitor policy gRPC Functionality
       | WARM_REBOOT        | MAJOR    |
       | DEVICE_UNREACHABLE | MAJOR    |
 
+  Scenario: Verify alert can be created based on the default policy
+    Then Send event with UEI "uei.opennms.org/vendor/opennms/internal/DEVICE_UNREACHABLE" with tenant "new-tenant" with node 10 with severity "MAJOR"
+    Then List alerts for tenant "new-tenant", with timeout 5000ms, until JSON response matches the following JSON path expressions
+      | alerts.size() == 1 |
+      | alerts[0].counter == 1 |
+
   Scenario: Create a monitor policy with SNMP Trap event rule
     Given Tenant id "test-tenant"
     Given Monitor policy name "test-policy" and memo "the test policy"

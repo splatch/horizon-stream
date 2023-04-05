@@ -28,14 +28,13 @@
 
 package org.opennms.horizon.alertservice.db.repository;
 
-import java.util.Optional;
+import java.util.List;
 
-import org.opennms.horizon.alertservice.db.entity.AlertDefinition;
+import org.opennms.horizon.alertservice.db.entity.TriggerEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AlertDefinitionRepository extends JpaRepository<AlertDefinition, Long> {
-    Optional<AlertDefinition> findFirstByTenantIdAndUei(String tenantId, String uei);
-    Optional<AlertDefinition> findByTriggerEventId(Long id);
+public interface TriggerEventRepository extends JpaRepository<TriggerEvent, Long> {
+    List<TriggerEvent> findAllByTenantId(String tenantId);
 }
