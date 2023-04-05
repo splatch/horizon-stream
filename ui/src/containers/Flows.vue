@@ -193,6 +193,7 @@
 import { useflowsQueries } from '@/store/Queries/flowsQueries'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import { FeatherRadioObject } from '@/types'
+import { TimeRange } from '@/types/graphql'
 import Download from '@featherds/icon/action/DownloadFile'
 import Refresh from '@featherds/icon/navigation/Refresh'
 const flowsStore = useFlowsStore()
@@ -231,9 +232,9 @@ onMounted(async () => {
 
 // DUMMY DATA
 const timeOptions = [
-  { id: 'today', name: 'Today' },
-  { id: '24h', name: 'Last 24 hours' },
-  { id: '7d', name: 'Last 7 days' }
+  { id: TimeRange.Today, name: 'Today' },
+  { id: TimeRange.Last_24Hours, name: 'Last 24 hours' },
+  { id: TimeRange.SevenDays, name: 'Last 7 days' }
 ]
 const applicationsAutoComplete = ref([
   { id: 'app1', name: 'Application 1' },

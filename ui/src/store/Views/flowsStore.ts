@@ -3,7 +3,7 @@ import { ChartData } from 'chart.js'
 import { format } from 'date-fns'
 import { defineStore } from 'pinia'
 import { useflowsQueries } from '@/store/Queries/flowsQueries'
-import { RequestCriteriaInput } from '@/types/graphql'
+import { RequestCriteriaInput, TimeRange } from '@/types/graphql'
 import { FlowsApplicationData, FlowsApplicationSummaries } from '@/types'
 
 const flowsQueries = useflowsQueries()
@@ -15,7 +15,7 @@ export const useFlowsStore = defineStore('flowsStore', {
     tableChartOptions: {},
     totalFlows: '1,957',
     filters: {
-      dateFilter: '7d',
+      dateFilter: TimeRange.Today,
       traffic: {
         selectedItem: 'total'
       },
@@ -170,11 +170,11 @@ export const useFlowsStore = defineStore('flowsStore', {
     convertToDate(ts: string) {
       const dateFormat = () => {
         switch (this.filters.dateFilter) {
-          case 'today':
+          case TimeRange.Today:
             return 'HH:mm'
-          case '24h':
+          case TimeRange.Last_24Hours:
             return 'HH:mm'
-          case '7d':
+          case TimeRange.SevenDays:
             return 'dd/MMM HH:mm'
           default:
             return 'dd/MMM HH:mm'
@@ -190,13 +190,13 @@ export const useFlowsStore = defineStore('flowsStore', {
       const now = new Date()
       let startTime
       switch (range) {
-        case 'today':
+        case TimeRange.Today:
           startTime = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
           return { startTime: startTime, endTime: Date.now() }
-        case '24h':
+        case TimeRange.Last_24Hours:
           startTime = now.setDate(now.getDate() - 1)
           return { startTime: startTime, endTime: Date.now() }
-        case '7d':
+        case TimeRange.SevenDays:
           startTime = now.setDate(now.getDate() - 7)
           return { startTime: startTime, endTime: Date.now() }
         default:
