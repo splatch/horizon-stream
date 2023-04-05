@@ -35,9 +35,9 @@ func (h *mockHttp) Do(req *http.Request) (*http.Response, error) {
 	return h.response, h.err
 }
 
-var client = mockHttp{}
+var httpClient = mockHttp{}
 var r = OpenNMSReconciler{
-	HttpClient: &client,
+	HttpClient: &httpClient,
 	Log:        zap.New(),
 }
 
@@ -68,8 +68,8 @@ func getTestInstance() *Instance {
 
 func Test_InstanceReady_200OK(t *testing.T) {
 	instance := getTestInstance()
-	client.response = &http.Response{StatusCode: http.StatusOK}
-	client.err = nil
+	httpClient.response = &http.Response{StatusCode: http.StatusOK}
+	httpClient.err = nil
 	res, err := r.instanceReady(instance)
 	assert.Nil(t, err, "error should be nil")
 	assert.True(t, res, "should return true when service returns 200")
@@ -77,8 +77,8 @@ func Test_InstanceReady_200OK(t *testing.T) {
 
 func Test_InstanceReady_502BadGateway(t *testing.T) {
 	instance := getTestInstance()
-	client.response = &http.Response{StatusCode: http.StatusBadGateway}
-	client.err = nil
+	httpClient.response = &http.Response{StatusCode: http.StatusBadGateway}
+	httpClient.err = nil
 	res, err := r.instanceReady(instance)
 	assert.Nil(t, err, "error should be nil")
 	assert.False(t, res, "should return false when service doesn't return 200")
@@ -86,8 +86,8 @@ func Test_InstanceReady_502BadGateway(t *testing.T) {
 
 func Test_InstanceReady_ClientError(t *testing.T) {
 	instance := getTestInstance()
-	client.response = nil
-	client.err = errors.New("this is an error")
+	httpClient.response = nil
+	httpClient.err = errors.New("this is an error")
 	res, err := r.instanceReady(instance)
 	assert.NotNil(t, err, "error shouldn't be nil")
 	assert.False(t, res, "should return false when there's an error")
