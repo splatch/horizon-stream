@@ -246,7 +246,7 @@ const searchAlertsListener = (v: any) => {
 }
 
 .alerts-content {
-  background: white;
+  background: var(variables.$surface);
   padding: var(variables.$spacing-l);
 }
 
