@@ -1,6 +1,5 @@
 import { mount } from '@vue/test-utils'
 import AlertsCard from '@/components/Alerts/AlertsCard.vue'
-// import { getAlert } from 'mock-graphql/src/fixture/alerts.fixture'
 import { getAlert } from '../fixture/alerts'
 
 let wrapper: any
