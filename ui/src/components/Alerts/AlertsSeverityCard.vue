@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="count"
+    v-if="count && isFilter"
     @click="alertsStore.toggleSeverity(severity)"
     :class="{ selected: isTypeAdded }"
     class="card border pointer"
@@ -46,7 +46,7 @@
       class="count"
       data-test="count"
     >
-      {{ count }}
+      {{ count || 0 }}
     </div>
   </div>
 </template>
@@ -63,12 +63,13 @@ const alertsQueries = useAlertsQueries()
 
 const props = defineProps<{
   severity: string
+  isFilter?: boolean
 }>()
 
 const count = ref(0)
 onMounted(async () => {
   const { data } = await alertsQueries.fetchCountAlerts([props.severity], TimeRange.All)
-  count.value = data.value?.countAlerts
+  count.value = data.value?.countAlerts?.count || 0
 })
 
 const isTypeAdded = computed(() => alertsStore.alertsFilter.severities?.includes(props.severity))

@@ -7,6 +7,8 @@ Feature: Monitor policy gRPC Functionality
     Given Kafka bootstrap URL in system property "kafka.bootstrap-servers"
     Given Kafka event topic "events"
     Given Kafka alert topic "alerts"
+    Given Kafka monitoring policy topic "monitoring-policy"
+    Given Monitoring policy kafka consumer
 
   Scenario: The default monitoring policy should exist
     Given Tenant id "different-tenant"
@@ -17,6 +19,12 @@ Feature: Monitor policy gRPC Functionality
       | COLD_REBOOT        | CRITICAL |
       | WARM_REBOOT        | MAJOR    |
       | DEVICE_UNREACHABLE | MAJOR    |
+
+  Scenario: Verify alert can be created based on the default policy
+    Then Send event with UEI "uei.opennms.org/generic/traps/SNMP_Cold_Start" with tenant "new-tenant" with node 10 with severity "MAJOR"
+    Then List alerts for tenant "new-tenant", with timeout 5000ms, until JSON response matches the following JSON path expressions
+      | alerts.size() == 1 |
+      | alerts[0].counter == 1 |
 
   Scenario: Create a monitor policy with SNMP Trap event rule
     Given Tenant id "test-tenant"
@@ -30,3 +38,4 @@ Feature: Monitor policy gRPC Functionality
     Then Create a new policy with give parameters
     Then Verify the new policy has been created
     Then List policy should contain 1
+    Then Verify monitoring policy for tenant "test-tenant" is sent to Kafka
