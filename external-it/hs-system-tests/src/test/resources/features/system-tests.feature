@@ -1,15 +1,11 @@
-Feature: Testing login to the local environment
+Feature: Testing login to the cloud environment
 
-#  Background: Login to Cluster
-#    Given Ingress base url in environment variable "INGRESS_BASE_URL"
-#    Given Keycloak server base url in environment variable "KEYCLOAK_BASE_URL"
-#    Given Keycloak realm in environment variable "KEYCLOAK_REALM"
-#    Given Keycloak username in environment variable "KEYCLOAK_USERNAME"
-#    Given Keycloak password in environment variable "KEYCLOAK_PASSWORD"
-#    Given Keycloak client-id in environment variable "KEYCLOAK_CLIENT_ID"
-#    Then login to Keycloak with timeout 120000ms
+  Background: Login to Cloud env
+    Given Cloud url in environment variable "CLOUD_URL"
+    Given Cloud username in environment variable "CLOUD_USERNAME"
+    Given Cloud password in environment variable "CLOUD_PASSWORD"
 
   @cloud
   Scenario: Verify that we are able to login to the cluster
-    Given Login to the web interface with provided "user" and "password"
+    Given Login to the web with provided login details
     Then Verify that we logged in successfully
