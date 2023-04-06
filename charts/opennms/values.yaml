@@ -84,6 +84,8 @@ OpenNMS:
       nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
       nginx.ingress.kubernetes.io/auth-tls-secret: default/client-ca
       nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
+      #nginx.ingress.kubernetes.io/auth-url: "http://certificate-manager.default.svc.cluster.local:8080/authz"
+      #nginx.ingress.kubernetes.io/auth-response-headers: "Tenant, Location"
       nginx.ingress.kubernetes.io/server-snippet: |
         listen 8990 http2;
         grpc_read_timeout "1200s";
