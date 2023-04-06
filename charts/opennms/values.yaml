@@ -81,6 +81,9 @@ OpenNMS:
         Cpu: 100m
         Memory: 250Mi
     IngressAnnotations:
+      nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+      nginx.ingress.kubernetes.io/auth-tls-secret: default/client-ca
+      nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
       nginx.ingress.kubernetes.io/server-snippet: |
         listen 8990 http2;
         grpc_read_timeout "1200s";

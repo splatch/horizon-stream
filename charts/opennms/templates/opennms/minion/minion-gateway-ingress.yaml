@@ -10,7 +10,12 @@ metadata:
     {{ $Annotation | quote }}: {{ $Value | quote }}
     {{- end }}
 spec:
-  ingressClassName: nginx
+  {{- if .Values.TLS.Enabled }}
+  tls:
+    - hosts:
+      - "minion.{{ .Values.Host }}"
+      secretName: "mionion-ssl-gateway-secret"
+  {{- end }}
   rules:
     - host: "minion.{{ .Values.Host }}"
       http:
