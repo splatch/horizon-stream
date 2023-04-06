@@ -46,7 +46,7 @@ let chart: any = {}
 
 const render = async (update?: boolean) => {
   try {
-    if (update) {
+    if (update && chart.update) {
       chart.data = props.chartData
       chart.options = props.chartOptions
       chart.update()

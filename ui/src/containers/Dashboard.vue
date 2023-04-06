@@ -2,11 +2,14 @@
   <div class="container">
     <div class="header">
       <PageHeadline text="Insights Dashboard" />
-      <HeaderLinks />
+      <DashboardHeaderLinks />
     </div>
     <div class="section-title">Alert Status</div>
     <div class="list-alerts">
-      <AlertsSeverityFilters @click="redirect('/alerts')" />
+      <AlertsSeverityFilters @click="redirect('Alerts')" />
+    </div>
+    <div>
+      <DashboardApplications />
     </div>
   </div>
 </template>
