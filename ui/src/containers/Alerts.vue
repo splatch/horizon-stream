@@ -103,6 +103,7 @@
             @update:model-value="alertsStore.setPage"
             @update:pageSize="alertsStore.setPageSize"
             data-test="pagination"
+            ref="refPagination"
           />
         </div>
       </div>
@@ -113,7 +114,6 @@
 <script lang="ts" setup>
 import { TimeRange } from '@/types/graphql'
 import { useAlertsStore } from '@/store/Views/alertsStore'
-// import { useAlertsQueries } from '@/store/Queries/alertsQueries'
 import { IAlert } from '@/types/alerts'
 
 onMounted(async () => {
@@ -121,11 +121,19 @@ onMounted(async () => {
 })
 
 const alertsStore = useAlertsStore()
-// const alertsQueries = useAlertsQueries()
+
+const refPagination = ref()
 
 const alerts = ref([] as IAlert[])
 watchEffect(() => {
   alerts.value = alertsStore.alertsList?.alerts?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
+})
+
+watchEffect(() => {
+  if (alertsStore.gotoFirstPage && refPagination.value) {
+    refPagination.value.first() // goto first page on 'severity' and/or 'time' filter change
+    alertsStore.gotoFirstPage = false
+  }
 })
 
 const page = alertsStore.alertsPagination.page
