@@ -10,6 +10,7 @@
 </template>
 
 <script setup lang="ts">
+import { ChartData } from '@/types'
 import { ChartOptions } from 'chart.js'
 import { PropType } from 'vue'
 import { Line } from 'vue-chartjs'
@@ -21,7 +22,7 @@ const props = defineProps({
   },
   chartData: {
     required: true,
-    type: Object as PropType<{ labels: []; datasets: [] }>
+    type: Object as PropType<ChartData>
   },
   tableData: {
     required: true,

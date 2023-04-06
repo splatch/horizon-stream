@@ -32,9 +32,9 @@
 </template>
 
 <script setup lang="ts">
-import { ChartOptions, ChartData } from 'chart.js'
+import { ChartOptions } from 'chart.js'
 import { PropType } from 'vue'
-import { ChartTypes } from '@/types'
+import { ChartData } from '@/types'
 import { Bar } from 'vue-chartjs'
 
 const props = defineProps({
@@ -44,7 +44,7 @@ const props = defineProps({
   },
   chartData: {
     required: true,
-    type: Object as PropType<{ labels: []; datasets: [] }>
+    type: Object as PropType<ChartData>
   },
   tableData: {
     required: true,
@@ -108,7 +108,7 @@ const chartOptions = computed<ChartOptions<any>>(() => {
         },
         ticks: {
           callback: function (value: any) {
-            return formatBytes(value, 0)
+            return formatBytes(value, 2)
           }
         }
       },
@@ -141,7 +141,9 @@ const formatBytes = (bytes: any, decimals = 2) => {
   const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
 
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-
+  if (sizes[i] === undefined) {
+    return 0
+  }
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
 </script>

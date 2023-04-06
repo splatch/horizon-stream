@@ -1,10 +1,9 @@
 import { flowsAppDataToChartJS } from '@/dtos/chartJS.dto'
-import { ChartData } from 'chart.js'
 import { format } from 'date-fns'
 import { defineStore } from 'pinia'
 import { useflowsQueries } from '@/store/Queries/flowsQueries'
 import { RequestCriteriaInput, TimeRange } from '@/types/graphql'
-import { FlowsApplicationData, FlowsApplicationSummaries } from '@/types'
+import { FlowsApplicationData, FlowsApplicationSummaries, ChartData } from '@/types'
 
 const flowsQueries = useflowsQueries()
 
@@ -28,7 +27,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       isTableLoading: false,
       isLineLoading: false,
       tableChartData: {} as ChartData,
-      lineChartData: {} as ChartData,
+      lineChartData: {},
       expansionOpen: true,
       filterDialogOpen: false,
       dialogFilters: { ...defaultDialogFilters }
