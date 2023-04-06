@@ -10,7 +10,7 @@
 
     <name>OpenNMS Horizon Stream :: System level tests</name>
     <description>
-        A Spring Boot based application that runs E2E tests against a fully deployed Horizon Stream cluster.
+        A System integration test suite to run against a fully deployed Horizon Stream cluster.
 
         Intended to be used in CI pipelines.
     </description>
