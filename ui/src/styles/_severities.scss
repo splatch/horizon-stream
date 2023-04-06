@@ -1,32 +1,27 @@
 @use '@featherds/styles/themes/variables';
 
 .critical-color {
-  // background-color: #A5021F;
-  background-color: rgb(165, 2, 31, 0.2);
+  background-color: rgb(165, 2, 31, 0.2); // #A5021F
   color: #FFA3B5 !important;
 }
 
 .major-color {
-  // background-color: #E35302;
-  background-color: rgb(227, 83, 2, 0.2);
+  background-color: rgb(227, 83, 2, 0.2); // #E35302
   color: #E35302 !important;
-  // color: rgb(227, 83, 2, 0.2) !important;
 }
 
 .minor-color {
-  background-color: rgb(255, 172, 38, 0.2);
+  background-color: rgb(255, 172, 38, 0.2); // #FFAC26
   color: #5B2F00 !important;
 }
 
 .warning-color {
-  // background-color: #FBE947;
-  background-color: rgb(251, 233, 71, 0.2);
+  background-color: rgb(251, 233, 71, 0.2); // #FBE947
   color: #5B2F00 !important;
 }
 
 .indeterminate-color {
-  // background-color: #0092C7;
-  background-color: rgb(0, 146, 199, 0.2);
+  background-color: rgb(0, 146, 199, 0.2); // #0092C7
   color: #0D6B90 !important;
 }
 
