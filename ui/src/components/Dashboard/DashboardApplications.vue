@@ -110,7 +110,7 @@ const config = {
       font: { size: 20 },
       padding: 40,
       align: 'start',
-      color: isDark.value ? '#00bfcb' : '#00000'
+      color: isDark.value ? '#d1d0d0' : '#00000'
     },
     legend: {
       display: true,
@@ -124,7 +124,7 @@ const config = {
         borderRadius: 20,
         useBorderRadius: true,
         padding: 20,
-        color: isDark.value ? '#00bfcb' : '#00000',
+        color: isDark.value ? '#d1d0d0' : '#00000',
         font: {
           size: 15
         }
