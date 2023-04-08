@@ -27,6 +27,11 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>spring-boot-logback-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.horizon.events</groupId>
             <artifactId>persistence</artifactId>
             <version>${project.version}</version>

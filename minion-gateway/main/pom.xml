@@ -29,6 +29,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>spring-boot-logback-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.horizon.minion.gateway</groupId>
             <artifactId>minion-gateway-ignite-detector-api</artifactId>
             <version>${project.version}</version>

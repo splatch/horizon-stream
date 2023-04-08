@@ -40,6 +40,11 @@
 	<dependencies>
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>spring-boot-logback-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>horizon-shaded-grpc-core</artifactId>
             <version>${project.version}</version>
         </dependency>
