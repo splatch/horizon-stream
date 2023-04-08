@@ -4,3 +4,6 @@ metadata:
   name: spring-boot-env
   namespace: {{ .Release.Namespace }}
 data:
+{{- if .Values.OpenNMS.global.enableJsonLogging }}
+  SPRING_PROFILES_ACTIVE: json-logging
+{{- end }}
