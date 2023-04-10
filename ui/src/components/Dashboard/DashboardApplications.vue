@@ -1,9 +1,8 @@
 <template>
   <div class="flows">
     <BasicChart
-      ref="chart"
       :id="'pieChartApplications'"
-      :chart-options="config"
+      :chart-options="constGraph"
       :chart-data="data"
       :chart-type="'polarArea'"
     >
@@ -15,10 +14,12 @@
 import { map, sum, sortBy } from 'lodash'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import useTheme from '@/composables/useTheme'
+import { useMediaQuery } from '@vueuse/core'
+const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 const { onThemeChange, isDark } = useTheme()
-
 const flowsStore = useFlowsStore()
 const router = useRouter()
+const constGraph = ref()
 
 //const isDark = useDark()
 const mockApp = {
@@ -90,30 +91,49 @@ const mockApp = {
 
 const values = map(sortBy(mockApp.data.findApplicationSeries, ['value']).reverse(), 'value')
 const total = sum(values)
-const porcentages = map(values, (i) => (i * 100) / total)
-
+const percentages = map(values, (i) => (i * 100) / total)
+const labels = map(
+  mockApp.data.findApplicationSeries,
+  (app, i) => `${i + 1}. ${app.label} (${percentages[i].toFixed(2)}%)`
+)
 const data = {
-  labels: map(mockApp.data.findApplicationSeries, (app, i) => `${i + 1}. ${app.label} (${porcentages[i].toFixed(2)}%)`),
+  labels: labels,
   datasets: [
     {
-      data: porcentages
+      data: percentages
     }
   ]
 }
+
+const titleLargeScreenConfig = {
+  align: 'start',
+  padding: 20,
+  font: { size: 20 }
+}
+
+const titleSmallScreenConfig = {
+  align: 'center',
+  padding: {
+    top: 10,
+    bottom: 10
+  },
+  font: { size: 16 }
+}
+
 const config = {
   layout: {},
   responsive: true,
   plugins: {
     title: {
-      display: true,
-      text: 'Top 10 applications',
-      font: { size: 20 },
-      padding: 40,
-      align: 'start',
-      color: isDark.value ? '#d1d0d0' : '#00000'
+      ...{
+        display: true,
+        text: 'Top 10 applications',
+        color: isDark.value ? '#d1d0d0' : '#00000'
+      },
+      ...(isLargeScreen.value ? titleLargeScreenConfig : titleSmallScreenConfig)
     },
     legend: {
-      display: true,
+      display: isLargeScreen.value,
       align: 'center',
       position: 'right',
       fullSize: true,
@@ -132,6 +152,7 @@ const config = {
     }
   }
 }
+constGraph.value = config
 
 onMounted(async () => {
   await flowsStore.updateCharts()
@@ -142,7 +163,9 @@ const redirect = (route: string) => {
 }
 
 onThemeChange(() => {
-  console.log('update')
+  config.plugins.title.color = isDark.value ? '#d1d0d0' : '#00000'
+  config.plugins.legend.labels.color = isDark.value ? '#d1d0d0' : '#00000'
+  constGraph.value = { ...config }
 })
 </script>
 

@@ -48,7 +48,7 @@ const render = async (update?: boolean) => {
   try {
     if (update && chart.update) {
       chart.data = props.chartData
-      chart.options = props.chartOptions
+      chart.options = { ...props.chartOptions }
       chart.update()
     } else if (props.chartData) {
       if (props.chartData.datasets.length) {
@@ -67,6 +67,7 @@ const render = async (update?: boolean) => {
 }
 
 watch(props, () => {
+  console.log('props changed')
   render(true)
 })
 
