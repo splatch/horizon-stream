@@ -72,9 +72,6 @@ message TriggerEventProto {
   OverTimeUnit overtimeUnit = 6;
   Severity severity = 7;
   EventType clearEvent = 8;
-  string uei = 9;
-  string reduction_key = 12;
-  string clear_key = 11;
 }
 
 //TBD
