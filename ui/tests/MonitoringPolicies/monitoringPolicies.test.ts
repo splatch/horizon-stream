@@ -4,6 +4,7 @@ import { useMonitoringPoliciesStore } from '@/store/Views/monitoringPoliciesStor
 import { useMonitoringPoliciesMutations } from '@/store/Mutations/monitoringPoliciesMutations'
 import { Unknowns, SNMPEventType, ComponentType } from '@/components/MonitoringPolicies/monitoringPolicies.constants'
 import { Severity } from '@/types/graphql'
+import featherInputFocusDirective from '@/directives/v-focus'
 
 const testingPayload = {
   name: 'Policy1',
@@ -21,7 +22,8 @@ const testingPayload = {
           count: 1,
           severity: Severity.Critical,
           triggerEvent: SNMPEventType.COLD_REBOOT,
-          overtimeUnit: Unknowns.UNKNOWN_UNIT
+          overtimeUnit: Unknowns.UNKNOWN_UNIT,
+          clearEvent: Unknowns.UNKNOWN_EVENT
         }
       ]
     }
@@ -31,7 +33,12 @@ const testingPayload = {
 const wrapper = mount({
   component: MonitoringPolicies,
   shallow: false,
-  stubActions: false
+  stubActions: false,
+  global: {
+    directives: {
+      focus: featherInputFocusDirective
+    }
+  }
 })
 
 test('The Monitoring Policies page container mounts correctly', () => {
@@ -96,4 +103,20 @@ test('Clicking edit populates the selected policy for editing', async () => {
 
   expect(store.selectedPolicy!.id).toBe(1)
   expect(store.selectedPolicy!.name).toBe('Policy1')
+})
+
+test('Clicking copy populates the selected policy with a copy', async () => {
+  const existingPolicy = { ...testingPayload, id: 1 }
+  const store = useMonitoringPoliciesStore()
+  store.selectedPolicy = undefined
+  store.selectedRule = undefined
+  store.monitoringPolicies = [existingPolicy]
+
+  await nextTick()
+  const copyPolicyBtn = wrapper.get('[data-test="policy-copy-btn"]')
+  await copyPolicyBtn.trigger('click')
+
+  expect(store.selectedPolicy!.id).toBeUndefined()
+  expect(store.selectedPolicy!.name).toBeUndefined()
+  expect(store.selectedPolicy!.rules[0].name).toBe('Rule1')
 })

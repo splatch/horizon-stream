@@ -210,7 +210,9 @@ public class ScannerResponseService {
 
     private void processNodeScanResponse(String tenantId, NodeScanResult result, String location ) {
         var snmpConfiguration = result.getSnmpConfig();
-        snmpConfigService.saveOrUpdateSnmpConfig(tenantId, location, snmpConfiguration);
+        // Save SNMP Config for all the interfaces in the node.
+        result.getIpInterfacesList().forEach(ipInterfaceResult ->
+            snmpConfigService.saveOrUpdateSnmpConfig(tenantId, location, ipInterfaceResult.getIpAddress(), snmpConfiguration));
 
         Optional<Node> nodeOpt = nodeRepository.findByIdAndTenantId(result.getNodeId(), tenantId);
         if (nodeOpt.isPresent()) {
@@ -223,7 +225,7 @@ public class ScannerResponseService {
                 ifIndexSNMPMap.put(snmpInterface.getIfIndex(), snmpInterface);
             }
             for (IpInterfaceResult ipIfResult : result.getIpInterfacesList()) {
-                ipInterfaceService.creatUpdateFromScanResult(tenantId, node, ipIfResult, ifIndexSNMPMap);
+                ipInterfaceService.createOrUpdateFromScanResult(tenantId, node, ipIfResult, ifIndexSNMPMap);
             }
             result.getDetectorResultList().forEach(detectorResult -> {
                 processDetectorResults(tenantId, location, detectorResult);
