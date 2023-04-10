@@ -60,27 +60,27 @@
             <FeatherCheckbox
               v-model="isAllAlertsSelected"
               @update:model-value="allAlertsCheckboxHandler"
-              :disabled="!alerts.length"
+              :disabled="isAlertsListEmpty"
               data-test="select-all-checkbox"
               >Select All</FeatherCheckbox
             >
             <FeatherButton
               :disabled="!atLeastOneAlertSelected"
               text
-              @click="alertsStore.clearSelectedAlerts"
+              @click="clearAlertsHandler"
               data-test="clear-btn"
               >clear</FeatherButton
             >
             <FeatherButton
               :disabled="!atLeastOneAlertSelected"
               text
-              @click="alertsStore.acknowledgeSelectedAlerts"
+              @click="acknowledgeAlertsHandler"
               data-test="acknowledge-btn"
               >acknowledge</FeatherButton
             >
           </div>
           <FeatherPagination
-            v-if="alerts.length"
+            v-if="!isAlertsListEmpty"
             v-model="page"
             :pageSize="pageSize"
             :total="total"
@@ -94,7 +94,7 @@
         />
         <div
           class="card-list-bottom"
-          v-if="alerts.length"
+          v-if="!isAlertsListEmpty"
         >
           <FeatherPagination
             v-model="page"
@@ -103,6 +103,7 @@
             @update:model-value="alertsStore.setPage"
             @update:pageSize="alertsStore.setPageSize"
             data-test="pagination"
+            ref="refPagination"
           />
         </div>
       </div>
@@ -113,7 +114,6 @@
 <script lang="ts" setup>
 import { TimeRange } from '@/types/graphql'
 import { useAlertsStore } from '@/store/Views/alertsStore'
-// import { useAlertsQueries } from '@/store/Queries/alertsQueries'
 import { IAlert } from '@/types/alerts'
 
 onMounted(async () => {
@@ -121,11 +121,20 @@ onMounted(async () => {
 })
 
 const alertsStore = useAlertsStore()
-// const alertsQueries = useAlertsQueries()
+
+const refPagination = ref()
 
 const alerts = ref([] as IAlert[])
 watchEffect(() => {
   alerts.value = alertsStore.alertsList?.alerts?.map((a: IAlert) => ({ ...a, isSelected: false })) || []
+})
+
+const isAlertsListEmpty = computed(() => alertsStore.isAlertsListEmpty)
+watchEffect(() => {
+  if (alertsStore.gotoFirstPage && refPagination.value) {
+    refPagination.value.first() // goto first page on 'severity' and/or 'time' filter change
+    alertsStore.gotoFirstPage = false
+  }
 })
 
 const page = alertsStore.alertsPagination.page
@@ -140,11 +149,13 @@ const allAlertsCheckboxHandler = (isSelected: boolean | undefined) => {
     ...a,
     isSelected
   }))
+
+  alertsStore.setAlertsSelected(isSelected as boolean)
 }
 
-const alertSelectedListener = (databaseId: number) => {
+const alertSelectedListener = (id: number) => {
   alerts.value = alerts.value.map((a: IAlert) => {
-    if (a.databaseId === databaseId) {
+    if (a.databaseId === id) {
       a.isSelected = !a.isSelected // toggle selection
     }
 
@@ -152,6 +163,20 @@ const alertSelectedListener = (databaseId: number) => {
   })
 
   isAllAlertsSelected.value = alerts.value.every(({ isSelected }) => isSelected)
+
+  alertsStore.setAlertsSelected(id)
+}
+
+const clearAlertsHandler = () => {
+  alertsStore.clearSelectedAlerts()
+
+  isAllAlertsSelected.value = false
+}
+
+const acknowledgeAlertsHandler = () => {
+  alertsStore.acknowledgeSelectedAlerts()
+
+  isAllAlertsSelected.value = false
 }
 
 // TODO: search not avail for EAR
@@ -230,7 +255,7 @@ const searchAlertsListener = (v: any) => {
 }
 
 .alerts-content {
-  background: white;
+  background: var(variables.$surface);
   padding: var(variables.$spacing-l);
 }
 
@@ -246,7 +271,7 @@ const searchAlertsListener = (v: any) => {
   :deep(.layout-container) {
     margin-bottom: 0;
   }
-  :deep(> .feather-pagination) {
+  :deep(.feather-pagination) {
     border: 0;
     min-height: auto;
     padding-left: 0;
