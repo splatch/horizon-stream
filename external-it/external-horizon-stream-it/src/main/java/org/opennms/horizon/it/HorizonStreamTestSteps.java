@@ -27,9 +27,6 @@ public class HorizonStreamTestSteps {
         this.metricsTestSteps = metricsTestSteps;
         this.testsExecutionHelper = testsExecutionHelper;
 
-        this.inventoryTestSteps.setUserAccessTokenSupplier(this.keycloakTestSteps::getKeycloakAccessToken);
-        this.inventoryTestSteps.setIngressUrlSupplier(this::getIngressBaseUrl);
-
         this.testsExecutionHelper.setUserAccessTokenSupplier(this.keycloakTestSteps::getKeycloakAccessToken);
         this.testsExecutionHelper.setIngressUrlSupplier(this::getIngressBaseUrl);
 
