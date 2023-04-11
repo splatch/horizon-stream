@@ -1,12 +1,31 @@
 <template>
   <div class="flows">
-    <BasicChart
-      :id="'pieChartApplications'"
-      :chart-options="constGraph"
-      :chart-data="data"
-      :chart-type="'polarArea'"
+    <div class="section-title">Top 10 Applications</div>
+    <div class="section-subtitle">24 hours</div>
+    <div
+      v-if="hasData"
+      class="chart-box"
     >
-    </BasicChart>
+      <BasicChart
+        :id="'pieChartApplications'"
+        :chart-options="constGraph"
+        :chart-data="dataGraph"
+        :chart-type="'polarArea'"
+      >
+      </BasicChart>
+      <!--<PolarArea
+        :data="dataGraph"
+        :options="constGraph"
+        :id="'pieChartApplications'"
+      />-->
+    </div>
+    <div
+      v-else
+      class="empty"
+    >
+      <!--will be replaced with the component-->
+      No data...
+    </div>
   </div>
 </template>
 
@@ -15,129 +34,51 @@ import { map, sum, sortBy } from 'lodash'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import useTheme from '@/composables/useTheme'
 import { useMediaQuery } from '@vueuse/core'
+import { PolarArea } from 'vue-chartjs'
+
 const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 const { onThemeChange, isDark } = useTheme()
 const flowsStore = useFlowsStore()
 const router = useRouter()
 const constGraph = ref()
+const dataGraph = ref()
+const hasData = ref(false)
 
-//const isDark = useDark()
-const mockApp = {
-  data: {
-    findApplicationSeries: [
-      {
-        timestamp: '2023-04-03T17:36:53Z',
-        label: 'at-rtmp',
-        value: 28490,
-        direction: 'INGRESS'
-      },
-      {
-        timestamp: '2023-04-03T17:36:53Z',
-        label: 'ssh',
-        value: 29957,
-        direction: 'INGRESS'
-      },
-      {
-        timestamp: '2023-04-03T17:36:53Z',
-        label: 'isakmp',
-        value: 33683,
-        direction: 'INGRESS'
-      },
-      {
-        timestamp: '2023-04-03T17:36:53Z',
-        label: 'ipsec-nat-t-application',
-        value: 25578,
-        direction: 'INGRESS'
-      },
-      {
-        timestamp: '2023-04-03T17:36:53Z',
-        label: 'ftp',
-        value: 3972,
-        direction: 'INGRESS'
-      },
-      {
-        timestamp: '2023-04-03T17:36:53Z',
-        label: 'https',
-        value: 28439,
-        direction: 'INGRESS'
-      },
-      {
-        timestamp: '2023-04-03T17:36:53Z',
-        label: 'imaps',
-        value: 27037,
-        direction: 'INGRESS'
-      },
-      {
-        timestamp: '2023-04-03T17:36:53Z',
-        label: 'snmptrap',
-        value: 24627,
-        direction: 'INGRESS'
-      },
-      {
-        timestamp: '2023-04-03T17:36:53Z',
-        label: 'bootpc',
-        value: 27831,
-        direction: 'INGRESS'
-      },
-      {
-        timestamp: '2023-04-03T17:36:53Z',
-        label: 'pop3',
-        value: 14558,
-        direction: 'INGRESS'
-      }
-    ]
+const dataApplications = computed(() => flowsStore.topApplications)
+
+const buildData = () => {
+  if (dataApplications.value.length > 0) {
+    const values = map(sortBy(dataApplications.value, ['bytesIn']).reverse(), 'bytesIn')
+    const total = sum(values)
+    const percentages = map(values, (i) => (i * 100) / total)
+    const labels = map(dataApplications.value, (app, i) => ` ${i + 1}. ${app.label} (${percentages[i].toFixed(2)}%)`)
+    const data = {
+      labels: labels,
+      datasets: [
+        {
+          data: percentages
+        }
+      ]
+    }
+    hasData.value = true
+    dataGraph.value = data
+  } else {
+    hasData.value = false
   }
 }
 
-const values = map(sortBy(mockApp.data.findApplicationSeries, ['value']).reverse(), 'value')
-const total = sum(values)
-const percentages = map(values, (i) => (i * 100) / total)
-const labels = map(
-  mockApp.data.findApplicationSeries,
-  (app, i) => `${i + 1}. ${app.label} (${percentages[i].toFixed(2)}%)`
-)
-const data = {
-  labels: labels,
-  datasets: [
-    {
-      data: percentages
-    }
-  ]
-}
-
-const titleLargeScreenConfig = {
-  align: 'start',
-  padding: 20,
-  font: { size: 20 }
-}
-
-const titleSmallScreenConfig = {
-  align: 'center',
-  padding: {
-    top: 10,
-    bottom: 10
-  },
-  font: { size: 16 }
-}
+watchEffect(() => {
+  buildData()
+})
 
 const config = {
-  layout: {},
   responsive: true,
+  aspectRatio: 1.3,
   plugins: {
-    title: {
-      ...{
-        display: true,
-        text: 'Top 10 applications',
-        color: isDark.value ? '#d1d0d0' : '#00000'
-      },
-      ...(isLargeScreen.value ? titleLargeScreenConfig : titleSmallScreenConfig)
-    },
     legend: {
       display: isLargeScreen.value,
       align: 'center',
       position: 'right',
-      fullSize: true,
-      maxWidth: 200,
       labels: {
         boxWidth: 22,
         boxHeight: 22,
@@ -147,23 +88,19 @@ const config = {
         color: isDark.value ? '#d1d0d0' : '#00000',
         font: {
           size: 15
-        }
+        },
+        usePointStyle: true
       }
     }
   }
 }
 constGraph.value = config
 
-onMounted(async () => {
-  await flowsStore.updateCharts()
-})
-
 const redirect = (route: string) => {
   router.push(route)
 }
 
 onThemeChange(() => {
-  config.plugins.title.color = isDark.value ? '#d1d0d0' : '#00000'
   config.plugins.legend.labels.color = isDark.value ? '#d1d0d0' : '#00000'
   constGraph.value = { ...config }
 })
@@ -177,13 +114,28 @@ onThemeChange(() => {
 .flows {
   width: 100%;
   background-color: var(variables.$surface);
-  padding: 0 var(variables.$spacing-xl);
+  padding: var(variables.$spacing-l);
   border: 1px solid var(variables.$border-on-surface);
   @include mediaQueriesMixins.screen-md {
-    width: 50%;
+    width: 48%;
+  }
+  .chart-box {
+    border: 1px solid var(variables.$border-on-surface);
+    padding: 0 var(variables.$spacing-l);
+    margin-top: var(variables.$spacing-l);
+  }
+
+  .empty {
+    height: 630px;
+    text-align: center;
+    padding-top: 50px;
   }
 }
+
 .section-title {
   @include typography.headline3();
+}
+.section-subtitle {
+  @include typography.caption();
 }
 </style>

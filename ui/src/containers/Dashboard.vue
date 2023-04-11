@@ -15,11 +15,18 @@
 </template>
 
 <script setup lang="ts">
+import { useFlowsStore } from '@/store/Views/flowsStore'
+
 const router = useRouter()
+const flowsStore = useFlowsStore()
 
 const redirect = (route: string) => {
   router.push(route)
 }
+
+onMounted(async () => {
+  await flowsStore.getApplicationDataset()
+})
 </script>
 
 <style scoped lang="scss">
@@ -36,7 +43,7 @@ const redirect = (route: string) => {
   padding: var(variables.$spacing-l) var(variables.$spacing-m);
   margin: auto;
   @include mediaQueriesMixins.screen-md {
-    width: vars.$max-width-constrained;
+    padding: var(variables.$spacing-xl);
   }
   > .header {
     @include typography.headline2();

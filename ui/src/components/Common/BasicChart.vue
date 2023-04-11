@@ -67,7 +67,6 @@ const render = async (update?: boolean) => {
 }
 
 watch(props, () => {
-  console.log('props changed')
   render(true)
 })
 

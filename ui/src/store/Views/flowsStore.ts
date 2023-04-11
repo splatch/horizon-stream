@@ -12,6 +12,7 @@ export const useFlowsStore = defineStore('flowsStore', {
   state: () => ({
     tableDatasets: [{} as any],
     lineDatasets: [{} as any],
+    topApplications: [{} as any],
     tableChartOptions: {},
     totalFlows: '1,957',
     filters: {
@@ -67,6 +68,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       ]
       this.applications.isLineLoading = false
     },
+
     createTableChartData() {
       if (this.tableDatasets) {
         this.exporters.tableChartData = {
@@ -203,6 +205,19 @@ export const useFlowsStore = defineStore('flowsStore', {
           startTime = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
           return { startTime: startTime, endTime: Date.now() }
       }
+    },
+    async getApplicationDataset() {
+      const requestData = {
+        count: 10,
+        step: 2000000,
+        timeRange: this.getTimeRange(TimeRange.Last_24Hours)
+      } as RequestCriteriaInput
+
+      const topApplications = await flowsQueries.getApplicationsSummaries(requestData)
+      // this.topApplications = [
+      //   ...((topApplications.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || null)
+      // ]
+      this.topApplications = []
     }
   }
 })
