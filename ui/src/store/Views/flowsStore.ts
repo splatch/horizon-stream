@@ -12,7 +12,7 @@ export const useFlowsStore = defineStore('flowsStore', {
   state: () => ({
     tableDatasets: [{} as any],
     lineDatasets: [{} as any],
-    topApplications: [{} as any],
+    topApplications: [] as any,
     tableChartOptions: {},
     totalFlows: '1,957',
     filters: {
