@@ -169,6 +169,7 @@ public class MonitorPolicyService {
                     definition.setUei(uei);
                     definition.setReductionKey(REDUCTION_KEY_TEMPLATE);
                     definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
+                    setClearKey(definition, event.getClearEvent());
                     definitionRepo.save(definition);
                 }
             }, ()-> {
@@ -179,8 +180,15 @@ public class MonitorPolicyService {
                 definition.setReductionKey(REDUCTION_KEY_TEMPLATE);
                 definition.setType(getAlertTypeFromEventType(event.getTriggerEvent()));
                 definition.setTriggerEventId(event.getId());
+                setClearKey(definition, event.getClearEvent());
                 definitionRepo.save(definition);
             });
+    }
+
+    private void setClearKey(AlertDefinition definition, EventType clearType) {
+        if(clearType != null && !clearType.equals(EventType.UNKNOWN_EVENT) && !clearType.equals(EventType.UNRECOGNIZED)) {
+            definition.setClearKey("%s:" + getUeiFromEventType(clearType) + ":%d");
+        }
     }
 
     private String getUeiFromEventType(EventType type) {
@@ -188,17 +196,16 @@ public class MonitorPolicyService {
             case COLD_REBOOT -> UEI_TRAP_COLD_START;
             case WARM_REBOOT -> UEI_TRAP_WARM_START;
             case DEVICE_UNREACHABLE -> UEI_TRAP_UNREACHABLE;
-            default -> UEI_GENERIC_TEMPLATE;
+            default -> String.format(UEI_GENERIC_TEMPLATE, type.name());
         };
     }
 
     private AlertType getAlertTypeFromEventType(EventType eventType) {
         return switch (eventType) {
-            case UNKNOWN_EVENT -> AlertType.ALARM_TYPE_UNDEFINED;
             case COLD_REBOOT, WARM_REBOOT -> AlertType.PROBLEM_WITHOUT_CLEAR;
-            case DEVICE_UNREACHABLE, SNMP_AUTH_FAILURE, PORT_DOWN -> AlertType.PROBLEM_WITH_CLEAR;
-            case PORT_UP -> AlertType.CLEAR;
-            default -> AlertType.UNRECOGNIZED;
+            case PORT_DOWN, SNMP_Link_Down -> AlertType.PROBLEM_WITH_CLEAR;
+            case PORT_UP, SNMP_Link_Up -> AlertType.CLEAR;
+            default -> AlertType.ALARM_TYPE_UNDEFINED;
         };
     }
 }

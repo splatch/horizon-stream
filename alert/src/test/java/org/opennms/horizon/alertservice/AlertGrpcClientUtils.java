@@ -9,7 +9,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 
 public class AlertGrpcClientUtils {
-    private static final int DEADLINE_DURATION = 30000;
+    private static final int DEADLINE_DURATION = 3000000;
     private static final String LOCALHOST = "localhost";
 
     private final DynamicTenantIdInterceptor dynamicTenantIdInterceptor = new DynamicTenantIdInterceptor(

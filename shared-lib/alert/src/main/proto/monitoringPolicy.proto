@@ -94,6 +94,8 @@ enum EventType {
   PORT_DOWN = 4;
   PORT_UP = 5;
   DEVICE_UNREACHABLE = 6;
+  SNMP_Link_Down = 7;
+  SNMP_Link_Up = 8;
 }
 
 enum Severity {
@@ -102,6 +104,7 @@ enum Severity {
   MINOR = 2;
   MAJOR = 3;
   CRITICAL = 4;
+  CLEAR = 5;
 }
 
 message MonitorPolicyList {
