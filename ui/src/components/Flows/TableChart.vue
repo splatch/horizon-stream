@@ -72,7 +72,6 @@ const chartOptions = computed<ChartOptions<any>>(() => {
           usePointStyle: true,
           useBorderRadius: true,
           borderRadius: 8,
-          color: 'black',
           font: {
             weight: 700
           }

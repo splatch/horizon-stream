@@ -13,24 +13,30 @@
         @item-selected="flowsStore.onDateFilterUpdate"
       />
       <div class="filters-divider"></div>
-      <BasicAutocomplete
+      <FeatherAutocomplete
         class="filter-autocomplete"
-        :get-items="getAppliications"
-        :items="applicationsAutoComplete"
         label="Filter Exporters"
-        ref="exportersAutocompleteRef"
-      />
+        type="multi"
+        v-model="flowsStore.filters.selectedExporters"
+        :loading="flowsStore.filters.isExportersLoading"
+        :results="flowsStore.filters.filteredExporters"
+        @search="flowsStore.exportersAutoCompleteSearch"
+        @update:model-value="flowsStore.updateCharts"
+      ></FeatherAutocomplete>
       <div class="filters-divider"></div>
-      <BasicAutocomplete
+      <FeatherAutocomplete
         class="filter-autocomplete"
-        :get-items="getAppliications"
-        :items="applicationsAutoComplete"
         label="Filter Applications"
-        ref="appsAutocompleteRef"
-      />
+        type="multi"
+        v-model="flowsStore.filters.selectedApplications"
+        :loading="flowsStore.filters.isApplicationsLoading"
+        :results="flowsStore.filters.filteredApplications"
+        @search="flowsStore.applicationsAutoCompleteSearch"
+        @update:model-value="flowsStore.updateCharts"
+      ></FeatherAutocomplete>
     </div>
     <!-- Chart Area -->
-    <div class="flows">
+    <div class="flows filters">
       <div class="top-of-flows">
         <div class="total-container">
           <div class="total-title">Total Flows:</div>
@@ -84,120 +90,40 @@
           </FeatherRadioGroup>
         </div>
       </div>
-      <!-- EXPORTERS CHARTS -->
-      <!-- <ExpandingChartWrapper
-        :title="'Top Ten Exporters (24 Hrs) - Total'"
-        :model-value="flowsStore.exporters.expansionOpen"
-        :on-filter-click="(e) => flowsStore.filterDialogToggle(e, false)"
-      >
-        <TableChart
-          v-if="flowsStore.filters.dataStyle.selectedItem === 'table'"
-          :id="'tableChartExporters'"
-          :selected-filter-range="flowsStore.filters.dateFilter"
-          :chart-data="flowsStore.exporters.tableChartData"
-          :table-data="flowsStore.tableDatasets"
-        />
-        <LineChart
-          v-if="flowsStore.filters.dataStyle.selectedItem === 'line'"
-          :id="'lineChartExporters'"
-          :selected-filter-range="flowsStore.filters.dateFilter"
-          :chart-data="flowsStore.exporters.lineChartData"
-          :table-data="flowsStore.tableDatasets"
-        />
-      </ExpandingChartWrapper> -->
-
-      <ExpandingChartWrapper
-        :title="'Top Ten Applications (24 Hrs) - Total'"
-        :model-value="flowsStore.applications.expansionOpen"
-        :on-filter-click="(e) => flowsStore.filterDialogToggle(e, true)"
-      >
-        <TableChart
-          v-if="
-            flowsStore.filters.dataStyle.selectedItem === 'table' && hasData && !flowsStore.applications.isTableLoading
-          "
-          :id="'tableChartApplications'"
-          :selected-filter-range="flowsStore.filters.dateFilter"
-          :chart-data="flowsStore.applications.tableChartData"
-          :table-data="flowsStore.tableDatasets"
-        />
-        <LineChart
-          v-if="
-            flowsStore.filters.dataStyle.selectedItem === 'line' && hasData && !flowsStore.applications.isLineLoading
-          "
-          :id="'lineChartApplications'"
-          :selected-filter-range="flowsStore.filters.dateFilter"
-          :chart-data="flowsStore.applications.lineChartData"
-          :table-data="flowsStore.tableDatasets"
-        />
-        <FeatherSpinner v-if="flowsStore.applications.isLineLoading || flowsStore.applications.isLineLoading" />
-        <div v-if="!hasData && !flowsStore.applications.isLineLoading && !flowsStore.applications.isLineLoading">
-          No data
-        </div>
-      </ExpandingChartWrapper>
+    </div>
+    <div class="flows applications-charts">
+      <div class="flows-titles">
+        <div class="title">Top Ten Applications</div>
+        <div class="optional-text">Optional Explainer Text</div>
+      </div>
+      <TableChart
+        v-if="flowsStore.filters.dataStyle.selectedItem === 'table' && hasData"
+        :id="'tableChartApplications'"
+        :selected-filter-range="flowsStore.filters.dateFilter"
+        :chart-data="flowsStore.applications.tableChartData"
+        :table-data="flowsStore.tableDatasets"
+      />
+      <LineChart
+        v-if="flowsStore.filters.dataStyle.selectedItem === 'line' && hasData"
+        :id="'lineChartApplications'"
+        :selected-filter-range="flowsStore.filters.dateFilter"
+        :chart-data="flowsStore.applications.lineChartData"
+        :table-data="flowsStore.tableDatasets"
+      />
+      <div v-if="!hasData && !flowsStore.applications.isLineLoading && !flowsStore.applications.isLineLoading">
+        No data
+      </div>
     </div>
   </div>
-  <FeatherDialog
-    id="appDialog"
-    v-model="flowsStore.applications.filterDialogOpen"
-    :labels="appDialogLabels"
-    @update:model-value="(e) => (flowsStore.applications.filterDialogOpen = e)"
-  >
-    <FeatherCheckboxGroup
-      label=""
-      vertical
-      class="chart-dialog-group"
-    >
-      <FeatherCheckbox v-model="flowsStore.applications.dialogFilters.http">HTTP</FeatherCheckbox>
-      <FeatherCheckbox v-model="flowsStore.applications.dialogFilters.https">HTTPS</FeatherCheckbox>
-      <FeatherCheckbox v-model="flowsStore.applications.dialogFilters.pandoPub">Pando-Pub</FeatherCheckbox>
-      <FeatherCheckbox v-model="flowsStore.applications.dialogFilters.snmp">SNMP</FeatherCheckbox>
-      <FeatherCheckbox v-model="flowsStore.applications.dialogFilters.imaps">IMAPS</FeatherCheckbox>
-    </FeatherCheckboxGroup>
-
-    <template v-slot:footer>
-      <FeatherButton
-        primary
-        @click="flowsStore.appDialogRefreshClick"
-        >Refresh</FeatherButton
-      >
-    </template>
-  </FeatherDialog>
-  <FeatherDialog
-    v-model="flowsStore.exporters.filterDialogOpen"
-    :labels="expDialogLabels"
-    @update:model-value="(e) => (flowsStore.exporters.filterDialogOpen = e)"
-  >
-    <FeatherCheckboxGroup
-      label=""
-      vertical
-      class="chart-dialog-group"
-    >
-      <FeatherCheckbox v-model="flowsStore.exporters.dialogFilters.http">HTTP</FeatherCheckbox>
-      <FeatherCheckbox v-model="flowsStore.exporters.dialogFilters.https">HTTPS</FeatherCheckbox>
-      <FeatherCheckbox v-model="flowsStore.exporters.dialogFilters.pandoPub">Pando-Pub</FeatherCheckbox>
-      <FeatherCheckbox v-model="flowsStore.exporters.dialogFilters.snmp">SNMP</FeatherCheckbox>
-      <FeatherCheckbox v-model="flowsStore.exporters.dialogFilters.imaps">IMAPS</FeatherCheckbox>
-    </FeatherCheckboxGroup>
-
-    <template v-slot:footer>
-      <FeatherButton
-        primary
-        @click="flowsStore.expDialogRefreshClick"
-        >Refresh</FeatherButton
-      >
-    </template>
-  </FeatherDialog>
 </template>
 
 <script setup lang="ts">
-import { useflowsQueries } from '@/store/Queries/flowsQueries'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import { FeatherRadioObject } from '@/types'
 import { TimeRange } from '@/types/graphql'
 import Download from '@featherds/icon/action/DownloadFile'
 import Refresh from '@featherds/icon/navigation/Refresh'
 const flowsStore = useFlowsStore()
-const flowsQueries = useflowsQueries()
 
 const hasData = computed(() => {
   if (flowsStore.applications.tableChartData.datasets) {
@@ -295,6 +221,16 @@ const getAppliications = () => {
   min-width: 325px;
 }
 
+.flows-titles {
+  margin-bottom: var(variables.$spacing-xl);
+  .title {
+    @include headline3();
+  }
+  .optional-text {
+    @include caption();
+  }
+}
+
 .options-container {
   display: flex;
   gap: 56px;
@@ -320,9 +256,18 @@ const getAppliications = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 
   .utility-icon {
     color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.open-dark {
+  .top-of-flows {
+    .utility-icon {
+      color: rgba(255, 255, 255, 0.6);
+    }
   }
 }
 .total-container {

@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 import { useflowsQueries } from '@/store/Queries/flowsQueries'
 import { RequestCriteriaInput, TimeRange } from '@/types/graphql'
 import { FlowsApplicationData, FlowsApplicationSummaries, ChartData } from '@/types'
+import { IAutocompleteItemType } from '@featherds/autocomplete/src/components/types'
 
 const flowsQueries = useflowsQueries()
 
@@ -21,13 +22,22 @@ export const useFlowsStore = defineStore('flowsStore', {
       dataStyle: {
         selectedItem: 'table'
       },
-      applications: ['']
+      //Application AutoComplete
+      applications: [] as IAutocompleteItemType[],
+      selectedApplications: [],
+      isApplicationsLoading: false,
+      filteredApplications: [] as IAutocompleteItemType[],
+      //Exporter AutoComplete
+      exporters: [] as IAutocompleteItemType[],
+      selectedExporters: [],
+      isExportersLoading: false,
+      filteredExporters: [] as IAutocompleteItemType[]
     },
     applications: {
       isTableLoading: false,
       isLineLoading: false,
       tableChartData: {} as ChartData,
-      lineChartData: {},
+      lineChartData: {} as ChartData,
       expansionOpen: true,
       filterDialogOpen: false,
       dialogFilters: { ...defaultDialogFilters }
@@ -39,16 +49,25 @@ export const useFlowsStore = defineStore('flowsStore', {
       expansionOpen: true,
       filterDialogOpen: false,
       dialogFilters: { ...defaultDialogFilters }
-    }
+    },
+    requestCriteria: {
+      count: 10,
+      step: 2000000,
+      timeRange: { startTime: 0, endTime: 0 },
+      applications: [] as string[],
+      exporters: []
+    } as RequestCriteriaInput
   }),
   actions: {
     async getDatasets() {
-      //Will be replaced with a BE call
       const requestData = {
         count: 10,
         step: 2000000,
-        timeRange: this.getTimeRange(this.filters.dateFilter)
+        timeRange: this.getTimeRange(this.filters.dateFilter),
+        applications: this.filters.selectedApplications.map((app: any) => app.value)
       } as RequestCriteriaInput
+
+      console.log(requestData)
 
       this.applications.isTableLoading = true
       //Get Table Data
@@ -65,6 +84,21 @@ export const useFlowsStore = defineStore('flowsStore', {
         ...(flowsAppDataToChartJS(applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[]) || null)
       ]
       this.applications.isLineLoading = false
+    },
+    async getApplications() {
+      const requestData = {
+        count: 50,
+        step: 2000000,
+        timeRange: this.getTimeRange(this.filters.dateFilter)
+      } as RequestCriteriaInput
+
+      //Get Applications Data
+      const applications = (await flowsQueries.getApplications(requestData)) || []
+      const applicationsAutocompleteObject = applications.value?.findApplications?.map((item: string) => ({
+        _text: item.toUpperCase(),
+        value: item
+      })) as IAutocompleteItemType[]
+      this.filters.applications = applicationsAutocompleteObject
     },
     createTableChartData() {
       if (this.tableDatasets) {
@@ -114,7 +148,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       if (this.lineDatasets) {
         const datasetArr = {
           type: 'line',
-          datasets: this.lineDatasets.map((element) => {
+          datasets: this.lineDatasets.map((element, index) => {
             return {
               label: element.label,
               data: element.data.map((data: any) => {
@@ -123,7 +157,9 @@ export const useFlowsStore = defineStore('flowsStore', {
                   y: data.value
                 }
               }),
-              fill: true
+              fill: true,
+              borderColor: this.randomColours(index),
+              backgroundColor: this.randomColours(index, true)
             }
           })
         }
@@ -137,6 +173,7 @@ export const useFlowsStore = defineStore('flowsStore', {
         : (this.exporters.filterDialogOpen = !this.exporters.filterDialogOpen)
     },
     async updateCharts() {
+      await this.getApplications()
       await this.getDatasets()
       this.createTableChartData()
       this.createLineChartData()
@@ -201,6 +238,78 @@ export const useFlowsStore = defineStore('flowsStore', {
         default:
           startTime = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
           return { startTime: startTime, endTime: Date.now() }
+      }
+    },
+    applicationsAutoCompleteSearch(searchString: string) {
+      let timeout = -1
+      this.filters.isApplicationsLoading = true
+      clearTimeout(timeout)
+      timeout = window.setTimeout(() => {
+        this.filters.filteredApplications = this.filters.applications
+          .filter((x: any) => x._text.toLowerCase().indexOf(searchString) > -1)
+          .map((x: any) => ({
+            value: x.value,
+            _text: x._text
+          }))
+        this.filters.isApplicationsLoading = false
+      }, 500)
+    },
+    exportersAutoCompleteSearch(searchString: string) {
+      let timeout = -1
+      this.filters.isExportersLoading = true
+      clearTimeout(timeout)
+      timeout = window.setTimeout(() => {
+        this.filters.filteredExporters = this.filters.exporters
+          .filter((x: any) => x._text.toLowerCase().indexOf(searchString) > -1)
+          .map((x: any) => ({
+            value: x.value,
+            _text: x._text
+          }))
+        this.filters.isExportersLoading = false
+      }, 500)
+    },
+    // This method is needed as currently, on update of chart data, new data values are not being assigned a colour.
+    randomColours(index: number, opacity = false) {
+      const defaultColors = [
+        '#3366CC',
+        '#DC3912',
+        '#FF9900',
+        '#109618',
+        '#990099',
+        '#3B3EAC',
+        '#0099C6',
+        '#DD4477',
+        '#66AA00',
+        '#B82E2E',
+        '#316395',
+        '#994499',
+        '#22AA99',
+        '#AAAA11',
+        '#6633CC',
+        '#E67300',
+        '#8B0707',
+        '#329262',
+        '#5574A6',
+        '#651067'
+      ]
+      const addOpacity = function (hex: string, opacity: number) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+        return result
+          ? 'rgba(' +
+              parseInt(result[1], 16) +
+              ', ' +
+              parseInt(result[2], 16) +
+              ', ' +
+              parseInt(result[3], 16) +
+              ', ' +
+              opacity +
+              ')'
+          : hex
+      }
+      if (opacity) {
+        return addOpacity(defaultColors[index], 0.3)
+      } else {
+        return defaultColors[index]
       }
     }
   }

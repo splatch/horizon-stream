@@ -47,7 +47,18 @@ const chartOptions = computed<ChartOptions<any>>(() => {
     },
     plugins: {
       legend: {
-        display: false
+        display: true,
+        position: 'right',
+        labels: {
+          boxWidth: 13,
+          boxHeight: 13,
+          useBorderRadius: true,
+          padding: 16,
+          borderRadius: 1,
+          font: {
+            weight: 700
+          }
+        }
       },
       tooltip: {
         xAlign: 'left',
@@ -123,7 +134,7 @@ const formatBytes = (bytes: any, decimals = 2) => {
   flex-wrap: wrap;
   .chart-container {
     flex: 1 1 0;
-    min-height: 280px;
+    min-height: 380px;
   }
 }
 table {
