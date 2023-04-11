@@ -13,49 +13,40 @@
  */
 package org.opennms.horizon.minioncertmanager.certificate;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.shredzone.acme4j.*;
-import org.shredzone.acme4j.challenge.Challenge;
-import org.shredzone.acme4j.challenge.Dns01Challenge;
-import org.shredzone.acme4j.challenge.Http01Challenge;
-import org.shredzone.acme4j.exception.AcmeException;
-import org.shredzone.acme4j.util.CSRBuilder;
-import org.shredzone.acme4j.util.KeyPairUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.shredzone.acme4j.Certificate;
 import org.springframework.stereotype.Component;
 
-import javax.swing.*;
-import java.io.*;
-import java.net.URI;
-import java.net.URL;
-import java.security.KeyPair;
-import java.security.Security;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.cert.CertificateEncodingException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-/**
- * A simple client test tool.
- * <p>
- * Pass the names of the domains as parameters.
- */
 @Component
 public class CertZipper {
-    public ByteArrayOutputStream getZip(Certificate certificate) throws IOException, CertificateEncodingException {
+
+    public ByteArrayOutputStream createEncryptedZip(java.security.PrivateKey privateKey, Certificate certificate)
+        throws IOException, CertificateEncodingException {
+
         ByteArrayOutputStream os = new ByteArrayOutputStream();
+        // Create a ZipOutputStream to write the encrypted zip file
+        try (ZipOutputStream zos = new ZipOutputStream(os)) {
 
-        try (ZipOutputStream out = new ZipOutputStream(os)) {
-            ZipEntry e = new ZipEntry("domain-chain.crt");
-            out.putNextEntry(e);
+            // Add the certificate to the zip file
+            ZipEntry certEntry = new ZipEntry("certificate.cer");
+            zos.putNextEntry(certEntry);
+            zos.write(certificate.getCertificate().getEncoded());
+            zos.closeEntry();
 
-            byte[] data = certificate.getCertificate().getEncoded();
-            out.write(data, 0, data.length);
-            out.closeEntry();
+            // Add the private key to the zip file
+            ZipEntry privateKeyEntry = new ZipEntry("key.pem");
+            zos.putNextEntry(privateKeyEntry);
+            zos.write(privateKey.getEncoded());
+            zos.closeEntry();
+
+            // Close the zip output stream
+            zos.finish();
         }
-
         return os;
     }
 }

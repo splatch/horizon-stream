@@ -41,7 +41,6 @@ message GetMinionCertificateRequest {
 }
 
 message GetMinionCertificateResponse {
-  string tenant_id = 1;
-  uint64 location_id = 2;
-  bytes zip = 3;
+  bytes zip = 1;
+  string password = 2;
 }
