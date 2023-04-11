@@ -1,12 +1,12 @@
 @use '@featherds/styles/themes/variables';
 
 .critical-color {
-  background-color: rgb(255, 163, 181, 0.2); // #FFA3B5
+  background-color: rgba(255, 163, 181, 0.2); // #FFA3B5
   color: #A5021F !important;
 }
 
 .major-color {
-  background-color: rgb(227, 83, 2, 0.2); // #E35302
+  background-color: rgba(227, 83, 2, 0.2); // #E35302
   color: #E35302 !important;
 }
 
@@ -16,12 +16,12 @@
 }
 
 .warning-color {
-  background-color: rgb(251, 233, 71, 0.5); // #FBE947
+  background-color: rgba(251, 233, 71, 0.5); // #FBE947
   color: #5B2F00 !important;
 }
 
 .indeterminate-color {
-  background-color: rgb(0, 146, 199, 0.2); // #0092C7
+  background-color: rgba(0, 146, 199, 0.2); // #0092C7
   color: #0D6B90 !important;
 }
 
