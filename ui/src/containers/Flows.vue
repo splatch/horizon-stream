@@ -6,12 +6,12 @@
     />
     <!-- Filter Area -->
     <div class="filters">
-      <BasicChipSelect
-        :list="timeOptions"
-        :size="160"
-        :show-chip="true"
-        @item-selected="flowsStore.onDateFilterUpdate"
-      />
+      <TextRadioButtons
+        :items="timeOptions"
+        @checked="flowsStore.onDateFilterUpdate"
+        :selected-value="'TODAY'"
+      >
+      </TextRadioButtons>
       <div class="filters-divider"></div>
       <FeatherAutocomplete
         class="filter-autocomplete"
@@ -143,33 +143,15 @@ const dataStyleRadios = ref([
   { name: 'Line Chart', value: 'line' }
 ] as FeatherRadioObject[])
 
-const appDialogLabels = {
-  title: 'Top Ten Applications (24 Hrs) - Total'
-}
-const expDialogLabels = {
-  title: 'Top Ten Exporters (24 Hrs) - Total'
-}
-
 onMounted(async () => {
-  //Get Table data first as line data will take some time to get.
-  //Show Table chart first for same reason
   await flowsStore.updateCharts()
 })
 
-// DUMMY DATA
-const timeOptions = [
-  { id: TimeRange.Today, name: 'Today' },
-  { id: TimeRange.Last_24Hours, name: 'Last 24 hours' },
-  { id: TimeRange.SevenDays, name: 'Last 7 days' }
-]
-const applicationsAutoComplete = ref([
-  { id: 'app1', name: 'Application 1' },
-  { id: 'app2', name: 'Application 2' },
-  { id: 'app3', name: 'Application 3' }
+const timeOptions = ref([
+  { value: TimeRange.Today, name: 'Today' },
+  { value: TimeRange.Last_24Hours, name: '24H' },
+  { value: TimeRange.SevenDays, name: '7D' }
 ])
-const getAppliications = () => {
-  return {}
-}
 </script>
 
 <style scoped lang="scss">
@@ -217,10 +199,6 @@ const getAppliications = () => {
     background-color: var(variables.$surface);
   }
 }
-.chart-dialog-group {
-  min-width: 325px;
-}
-
 .flows-titles {
   margin-bottom: var(variables.$spacing-xl);
   .title {

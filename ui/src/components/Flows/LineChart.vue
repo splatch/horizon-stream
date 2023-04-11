@@ -10,10 +10,12 @@
 </template>
 
 <script setup lang="ts">
+import useTheme from '@/composables/useTheme'
 import { ChartData } from '@/types'
 import { ChartOptions } from 'chart.js'
 import { PropType } from 'vue'
 import { Line } from 'vue-chartjs'
+const { isDark } = useTheme()
 
 const props = defineProps({
   id: {
@@ -55,6 +57,7 @@ const chartOptions = computed<ChartOptions<any>>(() => {
           useBorderRadius: true,
           padding: 16,
           borderRadius: 1,
+          color: isDark ? '#e1d0d0' : '#000000',
           font: {
             weight: 700
           }

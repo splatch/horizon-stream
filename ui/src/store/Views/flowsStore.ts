@@ -39,16 +39,14 @@ export const useFlowsStore = defineStore('flowsStore', {
       tableChartData: {} as ChartData,
       lineChartData: {} as ChartData,
       expansionOpen: true,
-      filterDialogOpen: false,
-      dialogFilters: { ...defaultDialogFilters }
+      filterDialogOpen: false
     },
     exporters: {
       isLoading: false,
       tableChartData: {} as ChartData,
       lineChartData: {} as ChartData,
       expansionOpen: true,
-      filterDialogOpen: false,
-      dialogFilters: { ...defaultDialogFilters }
+      filterDialogOpen: false
     },
     requestCriteria: {
       count: 10,
@@ -67,18 +65,16 @@ export const useFlowsStore = defineStore('flowsStore', {
         applications: this.filters.selectedApplications.map((app: any) => app.value)
       } as RequestCriteriaInput
 
-      console.log(requestData)
-
-      this.applications.isTableLoading = true
       //Get Table Data
+      this.applications.isTableLoading = true
       const applicationTableData = await flowsQueries.getApplicationsSummaries(requestData)
       this.tableDatasets = [
         ...((applicationTableData.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || null)
       ]
       this.applications.isTableLoading = false
 
-      this.applications.isLineLoading = true
       //Get Line Graph Data
+      this.applications.isLineLoading = true
       const applicationsLineData = await flowsQueries.getApplicationsSeries(requestData)
       this.lineDatasets = [
         ...(flowsAppDataToChartJS(applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[]) || null)
@@ -167,11 +163,6 @@ export const useFlowsStore = defineStore('flowsStore', {
         this.exporters.lineChartData = datasetArr
       }
     },
-    filterDialogToggle(event: Event, isAppFilter: boolean) {
-      isAppFilter
-        ? (this.applications.filterDialogOpen = !this.applications.filterDialogOpen)
-        : (this.exporters.filterDialogOpen = !this.exporters.filterDialogOpen)
-    },
     async updateCharts() {
       await this.getApplications()
       await this.getDatasets()
@@ -181,16 +172,6 @@ export const useFlowsStore = defineStore('flowsStore', {
     createCharts() {
       this.createTableChartData()
       this.createLineChartData()
-    },
-    appDialogRefreshClick(e: Event) {
-      const selectedFilters = this.getTrueValuesFromObject(this.applications.dialogFilters)
-      console.log('you have selected ' + selectedFilters)
-      this.filterDialogToggle(e, true)
-    },
-    expDialogRefreshClick(e: Event) {
-      const selectedFilters = this.getTrueValuesFromObject(this.exporters.dialogFilters)
-      console.log('you have selected ' + selectedFilters)
-      this.filterDialogToggle(e, false)
     },
     getTrueValuesFromObject(object: object) {
       const keys = Object.keys(object)
@@ -268,7 +249,7 @@ export const useFlowsStore = defineStore('flowsStore', {
         this.filters.isExportersLoading = false
       }, 500)
     },
-    // This method is needed as currently, on update of chart data, new data values are not being assigned a colour.
+    // This method is needed as currently on update of chart data, new data values are not being assigned a colour.
     randomColours(index: number, opacity = false) {
       const defaultColors = [
         '#3366CC',
@@ -314,19 +295,3 @@ export const useFlowsStore = defineStore('flowsStore', {
     }
   }
 })
-
-type FlowsDialogFilters = {
-  http: boolean
-  https: boolean
-  pandoPub: boolean
-  snmp: boolean
-  imaps: boolean
-}
-
-const defaultDialogFilters: FlowsDialogFilters = {
-  http: false,
-  https: false,
-  pandoPub: false,
-  snmp: false,
-  imaps: false
-}

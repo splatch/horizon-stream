@@ -118,6 +118,7 @@ declare module '@vue/runtime-core' {
     Spinner: typeof import('./src/components/Common/Spinner.vue')['default']
     TableCard: typeof import('./src/components/Common/TableCard.vue')['default']
     TableChart: typeof import('./src/components/Flows/TableChart.vue')['default']
+    TextRadioButtons: typeof import('./src/components/Common/TextRadioButtons.vue')['default']
     TopologyLeftDrawer: typeof import('./src/components/Topology/TopologyLeftDrawer.vue')['default']
     TopologyModal: typeof import('./src/components/Topology/TopologyModal.vue')['default']
     TopologyRightDrawer: typeof import('./src/components/Topology/TopologyRightDrawer.vue')['default']

@@ -1,0 +1,93 @@
+<template>
+  <FeatherRadioGroup
+    v-model="radioModel"
+    :label="''"
+    class="text-radio"
+    @update:modelValue="(e) => onChecked && onChecked(e)"
+  >
+    <FeatherRadio
+      v-for="item in items"
+      :id="item.value"
+      :key="item.name"
+      :value="item.value"
+      :data-test="`text-radio-button-${item.value}`"
+    >
+      <p>{{ item.name }}</p>
+    </FeatherRadio>
+  </FeatherRadioGroup>
+</template>
+
+<script lang="ts" setup>
+import { PropType } from 'vue'
+
+const props = defineProps({
+  /** Items to pass into */
+  items: {
+    type: Object,
+    required: true,
+    default: () => {
+      /**/
+    }
+  },
+  /** Emitted when an radio button is checked */
+  onChecked: {
+    type: Function as PropType<(e: any) => void>,
+    default: () => {
+      /**/
+    }
+  },
+  /** The value of the item you want to be selected */
+  selectedValue: { type: String, default: '' }
+})
+
+const radioModel = ref(props.selectedValue)
+</script>
+
+<style scoped lang="scss">
+@use '@featherds/styles/themes/variables';
+@use '@/styles/vars';
+@use '@/styles/mediaQueriesMixins.scss';
+@import '@featherds/styles/mixins/typography';
+
+.open-dark {
+  .text-radio .feather-radio-group .layout-container .feather-radio .label {
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
+}
+
+:deep.text-radio .feather-radio-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: var(variables.$spacing-xs);
+
+  .layout-container {
+    margin: 0;
+  }
+
+  .layout-container .feather-radio .label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var($spacing-xs);
+    cursor: pointer;
+
+    p {
+      margin: 0;
+      @include button();
+      color: var(--feather-disabled-text-on-surface);
+    }
+  }
+
+  .layout-container .feather-radio .radio {
+    display: none;
+  }
+  .layout-container .feather-radio[aria-checked='true'] .label {
+    p {
+      color: var(--feather-primary);
+    }
+  }
+}
+</style>
