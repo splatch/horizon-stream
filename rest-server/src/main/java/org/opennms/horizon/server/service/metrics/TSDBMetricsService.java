@@ -52,6 +52,8 @@ import java.util.Optional;
 
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.AZURE_MONITOR_TYPE;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.AZURE_SCAN_TYPE;
+import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_BYTES;
+import static org.opennms.horizon.server.service.metrics.normalization.Constants.TOTAL_NETWORK_BYTES;
 
 @Slf4j
 @GraphQLApi
@@ -93,7 +95,10 @@ public class TSDBMetricsService {
             .map(HashMap::new).orElseGet(HashMap::new);
 
         String metricNameRegex = name;
-
+        String tenantId = headerUtil.extractTenant(env);
+        if(TOTAL_NETWORK_BYTES.equals(name)) {
+            return  getMetrics(tenantId, QUERY_FOR_TOTAL_NETWORK_BYTES);
+        }
         //in the case of minion echo, there is no node information
         Optional<NodeDTO> nodeOpt = getNode(env, metricLabels);
         if (nodeOpt.isPresent()) {
@@ -104,7 +109,6 @@ public class TSDBMetricsService {
                 .getQueryMetricRegex(node, name, metricLabels);
         }
 
-        String tenantId = headerUtil.extractTenant(env);
         String queryString = queryService
             .getQueryString(metricNameRegex, metricLabels, timeRange, timeRangeUnit);
 
@@ -113,6 +117,7 @@ public class TSDBMetricsService {
                 normalizationService.normalizeResults(name, result)))
             .orElse(resultMono);
     }
+
 
     private Optional<NodeDTO> getNode(ResolutionEnvironment env, Map<String, String> metricLabels) {
         return metricLabelUtils.getNodeId(metricLabels).map(nodeId -> {
