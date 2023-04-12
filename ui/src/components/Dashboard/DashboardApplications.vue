@@ -1,30 +1,31 @@
 <template>
   <div class="flows">
-    <div class="section-title">Top 10 Applications</div>
-    <div class="section-subtitle">24 hours</div>
+    <div class="header">
+      <div class="section-title">{{ dashboardText.TopApplications.title }}</div>
+      <div
+        class="link"
+        @click="router.push('Flows')"
+      >
+        {{ dashboardText.TopApplications.linkFlows }}
+      </div>
+    </div>
+    <div class="section-subtitle">{{ dashboardText.TopApplications.timePeriod }}</div>
     <div
       v-if="hasData"
       class="chart-box"
     >
-      <BasicChart
-        :id="'pieChartApplications'"
-        :chart-options="constGraph"
-        :chart-data="dataGraph"
-        :chart-type="'polarArea'"
-      >
-      </BasicChart>
-      <!--<PolarArea
+      <PolarArea
         :data="dataGraph"
         :options="constGraph"
         :id="'pieChartApplications'"
-      />-->
+      />
     </div>
     <div
       v-else
       class="empty"
     >
       <!--will be replaced with the component-->
-      No data...
+      No data
     </div>
   </div>
 </template>
@@ -35,6 +36,7 @@ import { useFlowsStore } from '@/store/Views/flowsStore'
 import useTheme from '@/composables/useTheme'
 import { useMediaQuery } from '@vueuse/core'
 import { PolarArea } from 'vue-chartjs'
+import dashboardText from '@/components/Dashboard/dashboard.text'
 
 const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 const { onThemeChange, isDark } = useTheme()
@@ -96,10 +98,6 @@ const config = {
 }
 constGraph.value = config
 
-const redirect = (route: string) => {
-  router.push(route)
-}
-
 onThemeChange(() => {
   config.plugins.legend.labels.color = isDark.value ? '#d1d0d0' : '#00000'
   constGraph.value = { ...config }
@@ -119,6 +117,20 @@ onThemeChange(() => {
   @include mediaQueriesMixins.screen-md {
     width: 48%;
   }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .link {
+      @include typography.subtitle2();
+      text-decoration: underline;
+      cursor: pointer;
+      color: var(variables.$primary);
+    }
+    .section-title {
+      @include typography.headline3();
+    }
+  }
   .chart-box {
     border: 1px solid var(variables.$border-on-surface);
     padding: 0 var(variables.$spacing-l);
@@ -132,9 +144,6 @@ onThemeChange(() => {
   }
 }
 
-.section-title {
-  @include typography.headline3();
-}
 .section-subtitle {
   @include typography.caption();
 }

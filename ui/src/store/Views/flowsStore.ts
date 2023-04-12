@@ -12,7 +12,7 @@ export const useFlowsStore = defineStore('flowsStore', {
   state: () => ({
     tableDatasets: [{} as any],
     lineDatasets: [{} as any],
-    topApplications: [] as any,
+    topApplications: [] as FlowsApplicationSummaries[],
     tableChartOptions: {},
     totalFlows: '1,957',
     filters: {
@@ -214,10 +214,9 @@ export const useFlowsStore = defineStore('flowsStore', {
       } as RequestCriteriaInput
 
       const topApplications = await flowsQueries.getApplicationsSummaries(requestData)
-      // this.topApplications = [
-      //   ...((topApplications.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || null)
-      // ]
-      this.topApplications = []
+      this.topApplications = [
+        ...((topApplications.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || null)
+      ]
     }
   }
 })
