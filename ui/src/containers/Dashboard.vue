@@ -8,14 +8,25 @@
     <div class="list-alerts">
       <AlertsSeverityFilters @click="redirect('Alerts')" />
     </div>
-    <div>
-      <DashboardApplications />
+    <div class="graphs">
+      <DashboardCard :texts="dashboardText.NetworkTraffic">
+        <template v-slot:content>
+          <DashboardNetworkTraffic />
+        </template>
+      </DashboardCard>
+      <DashboardCard :texts="dashboardText.TopApplications">
+        <template v-slot:content>
+          <DashboardApplications />
+        </template>
+      </DashboardCard>
+      <!--<DashboardApplications /> -->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useFlowsStore } from '@/store/Views/flowsStore'
+import dashboardText from '@/components/Dashboard/dashboard.text'
 
 const router = useRouter()
 const flowsStore = useFlowsStore()
@@ -62,6 +73,14 @@ onMounted(async () => {
   }
   .section-title {
     @include typography.headline3();
+  }
+  .graphs {
+    display: flex;
+    gap: 1.3%;
+    flex-direction: column;
+    @include mediaQueriesMixins.screen-md {
+      flex-direction: row;
+    }
   }
 }
 </style>
