@@ -28,6 +28,8 @@ declare module '@vue/runtime-core' {
     CtrlSemanticZoomLevel: typeof import('./src/components/Topology/CtrlSemanticZoomLevel.vue')['default']
     CustomFeatherStep: typeof import('./src/components/Common/Stepper/CustomFeatherStep.vue')['default']
     CustomFeatherStepper: typeof import('./src/components/Common/Stepper/CustomFeatherStepper.vue')['default']
+    DashboardApplications: typeof import('./src/components/Dashboard/DashboardApplications.vue')['default']
+    DashboardHeaderLinks: typeof import('./src/components/Dashboard/DashboardHeaderLinks.vue')['default']
     DiscoveryAzureForm: typeof import('./src/components/Discovery/DiscoveryAzureForm.vue')['default']
     DiscoveryContentEditable: typeof import('./src/components/Discovery/DiscoveryContentEditable.vue')['default']
     DiscoveryHelpConfiguring: typeof import('./src/components/Discovery/DiscoveryHelpConfiguring.vue')['default']
