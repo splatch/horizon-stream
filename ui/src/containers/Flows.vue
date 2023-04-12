@@ -9,7 +9,7 @@
       <TextRadioButtons
         :items="timeOptions"
         @checked="flowsStore.onDateFilterUpdate"
-        :selected-value="'TODAY'"
+        selected-value="TODAY"
       >
       </TextRadioButtons>
       <div class="filters-divider"></div>
@@ -158,8 +158,7 @@ const timeOptions = ref([
 @use '@featherds/styles/themes/variables';
 @use '@/styles/vars';
 @use '@/styles/mediaQueriesMixins.scss';
-@import '@featherds/styles/mixins/typography';
-
+@use '@featherds/styles/mixins/typography';
 .flows {
   width: 100%;
   min-width: 400px;
@@ -202,10 +201,10 @@ const timeOptions = ref([
 .flows-titles {
   margin-bottom: var(variables.$spacing-xl);
   .title {
-    @include headline3();
+    @include typography.headline3;
   }
   .optional-text {
-    @include caption();
+    @include typography.caption;
   }
 }
 
@@ -254,7 +253,7 @@ const timeOptions = ref([
   align-items: center;
 
   .total-title {
-    @include subtitle1();
+    @include typography.subtitle1;
   }
   .total-flows {
     background-color: rgba(0, 102, 109, 0.12);

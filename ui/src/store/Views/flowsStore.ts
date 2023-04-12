@@ -6,8 +6,6 @@ import { RequestCriteriaInput, TimeRange } from '@/types/graphql'
 import { FlowsApplicationData, FlowsApplicationSummaries, ChartData } from '@/types'
 import { IAutocompleteItemType } from '@featherds/autocomplete/src/components/types'
 
-const flowsQueries = useflowsQueries()
-
 export const useFlowsStore = defineStore('flowsStore', {
   state: () => ({
     tableDatasets: [{} as any],
@@ -58,6 +56,7 @@ export const useFlowsStore = defineStore('flowsStore', {
   }),
   actions: {
     async getDatasets() {
+      const flowsQueries = useflowsQueries()
       const requestData = {
         count: 10,
         step: 2000000,
@@ -82,6 +81,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       this.applications.isLineLoading = false
     },
     async getApplications() {
+      const flowsQueries = useflowsQueries()
       const requestData = {
         count: 50,
         step: 2000000,

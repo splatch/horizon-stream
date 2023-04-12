@@ -25,16 +25,12 @@ const props = defineProps({
   items: {
     type: Object,
     required: true,
-    default: () => {
-      /**/
-    }
+    default: () => ({})
   },
   /** Emitted when an radio button is checked */
   onChecked: {
     type: Function as PropType<(e: any) => void>,
-    default: () => {
-      /**/
-    }
+    default: () => ({})
   },
   /** The value of the item you want to be selected */
   selectedValue: { type: String, default: '' }
@@ -46,8 +42,7 @@ const radioModel = ref(props.selectedValue)
 <style scoped lang="scss">
 @use '@featherds/styles/themes/variables';
 @use '@/styles/vars';
-@use '@/styles/mediaQueriesMixins.scss';
-@import '@featherds/styles/mixins/typography';
+@use '@featherds/styles/mixins/typography';
 
 .open-dark {
   .text-radio .feather-radio-group .layout-container .feather-radio .label {
@@ -71,13 +66,13 @@ const radioModel = ref(props.selectedValue)
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: var($spacing-xs);
+    gap: var(variables.$spacing-xs);
     cursor: pointer;
 
     p {
       margin: 0;
-      @include button();
-      color: var(--feather-disabled-text-on-surface);
+      @include typography.button();
+      color: var(variables.$disabled-text-on-surface);
     }
   }
 
@@ -86,7 +81,7 @@ const radioModel = ref(props.selectedValue)
   }
   .layout-container .feather-radio[aria-checked='true'] .label {
     p {
-      color: var(--feather-primary);
+      color: var(variables.$primary);
     }
   }
 }
