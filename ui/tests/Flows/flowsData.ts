@@ -49,3 +49,56 @@ export const FlowsState = {
     exporters: []
   } as RequestCriteriaInput
 }
+
+export const LineGraphData = [
+  {
+    label: 'app0',
+    data: [
+      {
+        timestamp: '2023-01-10T01:01:25Z',
+        value: 138790.1750375429,
+        direction: 'EGRESS'
+      },
+      {
+        timestamp: '2023-01-10T01:09:47Z',
+        value: 216861.9119974472,
+        direction: 'EGRESS'
+      },
+      {
+        timestamp: '2023-01-10T01:18:07Z',
+        value: 202966.96568806906,
+        direction: 'EGRESS'
+      },
+      {
+        timestamp: '2023-01-10T01:26:27Z',
+        value: 264173.0346710393,
+        direction: 'EGRESS'
+      }
+    ]
+  },
+  {
+    label: 'app1',
+    data: [
+      {
+        timestamp: '2023-01-10T01:01:25Z',
+        value: 138790.1750375429,
+        direction: 'EGRESS'
+      },
+      {
+        timestamp: '2023-01-10T01:09:47Z',
+        value: 216861.9119974472,
+        direction: 'EGRESS'
+      },
+      {
+        timestamp: '2023-01-10T01:18:07Z',
+        value: 202966.96568806906,
+        direction: 'EGRESS'
+      },
+      {
+        timestamp: '2023-01-10T01:26:27Z',
+        value: 264173.0346710393,
+        direction: 'EGRESS'
+      }
+    ]
+  }
+]

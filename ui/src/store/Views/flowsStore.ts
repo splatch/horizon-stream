@@ -174,13 +174,6 @@ export const useFlowsStore = defineStore('flowsStore', {
       this.createTableChartData()
       this.createLineChartData()
     },
-    getTrueValuesFromObject(object: object) {
-      const keys = Object.keys(object)
-      const filtered = keys.filter(function (key: string) {
-        return object[key as keyof typeof object]
-      })
-      return filtered
-    },
     async trafficRadioOnChange(selectedItem: string) {
       this.filters.traffic.selectedItem = selectedItem
       await this.updateCharts()

@@ -2,6 +2,7 @@ import Flows from '@/containers/Flows.vue'
 import mountWithPiniaVillus from 'tests/mountWithPiniaVillus'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import { TimeRange } from '@/types/graphql'
+import { LineGraphData } from './flowsData'
 
 describe('Flows', () => {
   let wrapper: any
@@ -30,13 +31,24 @@ describe('Flows', () => {
   test('The Flows Store randomColours() should return a Hex', () => {
     const store = useFlowsStore()
     //Get random colour user store method
-    const randomColour = store.randomColours(0)
+    const randomHex = store.randomColours(0)
     function isHex(num: string) {
       return Boolean(num.match(/^#[0-9A-F]{6}$/i))
     }
     //Check colour is a Hex
-    const isValueHex = isHex(randomColour)
+    const isValueHex = isHex(randomHex)
     expect(isValueHex).toBeTruthy()
+
+    function isRGBA(num: string) {
+      return Boolean(
+        num.match(
+          /^rgba[(](?:\s*0*(?:\d\d?(?:\.\d+)?(?:\s*%)?|\.\d+\s*%|100(?:\.0*)?\s*%|(?:1\d\d|2[0-4]\d|25[0-5])(?:\.\d+)?)\s*,){3}\s*0*(?:\.\d+|1(?:\.0*)?)\s*[)]$/gm
+        )
+      )
+    }
+    const randomRGBA = store.randomColours(0, true)
+    const isValueRGBA = isRGBA(randomRGBA)
+    expect(isValueRGBA).toBeTruthy()
   })
 
   test('The Flows store getDataset and createCharts should be run onMount', () => {
@@ -77,8 +89,32 @@ describe('Flows', () => {
   test('The Flows store convert to date should convert time range to string for labels', () => {
     const store = useFlowsStore()
     store.filters.dateFilter = TimeRange.Today
-    const returnedObject = store.convertToDate('2023-01-10T01:01:25Z')
-    const expectedString = '01:01'
-    expect(returnedObject).toStrictEqual(expectedString)
+    const returnedTodayObject = store.convertToDate('2023-01-10T01:01:25Z')
+    const expectedTodayString = '01:01'
+    expect(returnedTodayObject).toStrictEqual(expectedTodayString)
+
+    store.filters.dateFilter = TimeRange.Last_24Hours
+    const returned24Object = store.convertToDate('2023-01-10T01:01:25Z')
+    const expected24String = '01:01'
+    expect(returned24Object).toStrictEqual(expected24String)
+
+    store.filters.dateFilter = TimeRange.SevenDays
+    const returnedSevenDayObject = store.convertToDate('2023-01-10T01:01:25Z')
+    const expectedSevenDayString = '10/Jan 01:01'
+    expect(returnedSevenDayObject).toStrictEqual(expectedSevenDayString)
+
+    store.filters.dateFilter = TimeRange.All
+    const returnedDefaultObject = store.convertToDate('2023-01-10T01:01:25Z')
+    const expectedDefaultString = '10/Jan 01:01'
+    expect(returnedDefaultObject).toStrictEqual(expectedDefaultString)
+  })
+
+  test('The Flows store createLine Chart should populate lineChartData', () => {
+    const store = useFlowsStore()
+    store.lineDatasets = LineGraphData
+    expect(store.applications.lineChartData.datasets.length).toBe(0)
+    store.applications.lineChartData
+    store.createLineChartData()
+    expect(store.applications.lineChartData.datasets.length).toBe(2)
   })
 })
