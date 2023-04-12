@@ -68,16 +68,16 @@ export const useFlowsStore = defineStore('flowsStore', {
       this.applications.isTableLoading = true
       const applicationTableData = await flowsQueries.getApplicationsSummaries(requestData)
       this.tableDatasets = [
-        ...((applicationTableData.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || null)
+        ...((applicationTableData.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || [])
       ]
       this.applications.isTableLoading = false
 
       //Get Line Graph Data
       this.applications.isLineLoading = true
       const applicationsLineData = await flowsQueries.getApplicationsSeries(requestData)
-      this.lineDatasets = [
-        ...(flowsAppDataToChartJS(applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[]) || null)
-      ]
+      this.lineDatasets = applicationsLineData.value?.findApplicationSeries
+        ? [...flowsAppDataToChartJS(applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[])]
+        : []
       this.applications.isLineLoading = false
     },
     async getApplications() {
@@ -166,8 +166,7 @@ export const useFlowsStore = defineStore('flowsStore', {
     async updateCharts() {
       await this.getApplications()
       await this.getDatasets()
-      this.createTableChartData()
-      this.createLineChartData()
+      this.createCharts()
     },
     createCharts() {
       this.createTableChartData()

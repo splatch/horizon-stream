@@ -10,6 +10,7 @@
         :items="timeOptions"
         @checked="flowsStore.onDateFilterUpdate"
         selected-value="TODAY"
+        id="Date"
       >
       </TextRadioButtons>
       <div class="filters-divider"></div>

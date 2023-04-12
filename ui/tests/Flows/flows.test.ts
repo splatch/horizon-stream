@@ -1,21 +1,21 @@
 import Flows from '@/containers/Flows.vue'
-import { mount } from '@vue/test-utils'
-import { createTestingPinia } from '@pinia/testing'
-import { FlowsState } from './flowsState'
+import mountWithPiniaVillus from 'tests/mountWithPiniaVillus'
+import { useFlowsStore } from '@/store/Views/flowsStore'
+import { TimeRange } from '@/types/graphql'
 
 describe('Flows', () => {
   let wrapper: any
 
-  beforeAll(() => {
-    wrapper = mount(Flows, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            initialState: FlowsState
-          })
-        ]
-      }
+  beforeAll(async () => {
+    wrapper = await mountWithPiniaVillus({
+      shallow: false,
+      component: Flows,
+      stubActions: false
     })
+  })
+
+  afterAll(() => {
+    wrapper.unmount()
   })
 
   test('The Flows page container mounts correctly', () => {
@@ -27,17 +27,58 @@ describe('Flows', () => {
     expect(title.text()).toBe('Flows')
   })
 
-  //TODO
-  // FIX Error for (when using stub actions: false):
-  // Cannot detect villus Client, did you forget to call `useClient`? Alternatively, you can explicitly pass a client as the `manualClient` argument.
-  // test('The Flows Store should return a colour', () => {
-  //   const store = useFlowsStore()
-  //   const randomColour = store.randomColours(0)
+  test('The Flows Store randomColours() should return a Hex', () => {
+    const store = useFlowsStore()
+    //Get random colour user store method
+    const randomColour = store.randomColours(0)
+    function isHex(num: string) {
+      return Boolean(num.match(/^#[0-9A-F]{6}$/i))
+    }
+    //Check colour is a Hex
+    const isValueHex = isHex(randomColour)
+    expect(isValueHex).toBeTruthy()
+  })
 
-  //   function isHex(num: string) {
-  //     return Boolean(num.match(/^0x[0-9a-f]+$/i))
-  //   }
+  test('The Flows store getDataset and createCharts should be run onMount', () => {
+    const store = useFlowsStore()
+    expect(store.getDatasets).toHaveBeenCalledOnce()
+    expect(store.getApplications).toHaveBeenCalledOnce()
+    expect(store.createCharts).toHaveBeenCalledOnce()
+  })
 
-  //   expect(isHex(randomColour)).toBeTruthy()
-  // })
+  test('The Flows page should have date radio buttons and can be clicked', async () => {
+    const store = useFlowsStore()
+
+    const dateSelector = wrapper.get('[data-test="text-radio-group-Date"]')
+    const today = dateSelector.get('[data-test="text-radio-button-TODAY"]')
+    const twentyFour = dateSelector.get('[data-test="text-radio-button-LAST_24_HOURS"]')
+    const sevenDays = dateSelector.get('[data-test="text-radio-button-SEVEN_DAYS"]')
+
+    //Ensure all 3 options are available
+    expect(today.exists()).toBeTruthy()
+    expect(twentyFour.exists()).toBeTruthy()
+    expect(sevenDays.exists()).toBeTruthy()
+
+    //Change selected from today to 24H
+    expect(today.get('[aria-checked="true"]').exists()).toBeTruthy()
+    await twentyFour.get('span.label').trigger('click')
+    expect(store.onDateFilterUpdate).toHaveBeenCalledOnce()
+    expect(twentyFour.get('[aria-checked="true"]').exists()).toBeTruthy()
+  })
+
+  test('The Flows store get time range should return starttime and endtime object', () => {
+    const store = useFlowsStore()
+    const returnedObject = store.getTimeRange(TimeRange.Today)
+    const startTime = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
+    const expectedObject = { startTime: startTime, endTime: Date.now() }
+    expect(returnedObject).toStrictEqual(expectedObject)
+  })
+
+  test('The Flows store convert to date should convert time range to string for labels', () => {
+    const store = useFlowsStore()
+    store.filters.dateFilter = TimeRange.Today
+    const returnedObject = store.convertToDate('2023-01-10T01:01:25Z')
+    const expectedString = '01:01'
+    expect(returnedObject).toStrictEqual(expectedString)
+  })
 })

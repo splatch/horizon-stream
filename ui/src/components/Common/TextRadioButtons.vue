@@ -4,6 +4,7 @@
     :label="''"
     class="text-radio"
     @update:modelValue="(e) => onChecked && onChecked(e)"
+    :data-test="`text-radio-group-${id}`"
   >
     <FeatherRadio
       v-for="item in items"
@@ -33,7 +34,9 @@ const props = defineProps({
     default: () => ({})
   },
   /** The value of the item you want to be selected */
-  selectedValue: { type: String, default: '' }
+  selectedValue: { type: String, default: '' },
+  /** ID for the Feather Group component */
+  id: { type: String, default: '' }
 })
 
 const radioModel = ref(props.selectedValue)
