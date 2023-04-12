@@ -13,6 +13,9 @@
 import dashboardText from '@/components/Dashboard/dashboard.text'
 import AreaChart from '@/assets/AreaChart.svg'
 import AreaChartDark from '@/assets/AreaChart-dark.svg'
+import useTheme from '@/composables/useTheme'
+
+const { isDark } = useTheme()
 </script>
 
 <style scoped lang="scss"></style>

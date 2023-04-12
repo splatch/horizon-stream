@@ -9,17 +9,22 @@
       <AlertsSeverityFilters @click="redirect('Alerts')" />
     </div>
     <div class="graphs">
-      <DashboardCard :texts="dashboardText.NetworkTraffic">
+      <DashboardCard
+        :texts="dashboardText.NetworkTraffic"
+        :redirectLink="'Appliances'"
+      >
         <template v-slot:content>
           <DashboardNetworkTraffic />
         </template>
       </DashboardCard>
-      <DashboardCard :texts="dashboardText.TopApplications">
+      <DashboardCard
+        :texts="dashboardText.TopApplications"
+        :redirectLink="'Flows'"
+      >
         <template v-slot:content>
           <DashboardApplications />
         </template>
       </DashboardCard>
-      <!--<DashboardApplications /> -->
     </div>
   </div>
 </template>

@@ -4,9 +4,9 @@
       <div class="section-title">{{ texts.title }}</div>
       <div
         class="link"
-        @click="router.push('Appliances')"
+        @click="router.push(redirectLink)"
       >
-        {{ texts.linkFlows }}
+        {{ texts.redirectLink }}
       </div>
     </div>
     <div class="section-subtitle">{{ texts.timePeriod }}</div>
@@ -17,8 +17,11 @@
 </template>
 
 <script setup lang="ts">
+const router = useRouter()
+
 defineProps<{
   texts: Record<string, string>
+  redirectLink: string
 }>()
 </script>
 
@@ -48,6 +51,9 @@ defineProps<{
     .section-title {
       @include typography.headline3();
     }
+    .section-subtitle {
+      @include typography.caption();
+    }
   }
 
   .content {
@@ -55,15 +61,5 @@ defineProps<{
     border: 1px solid var(variables.$border-on-surface);
     padding: var(variables.$spacing-l);
   }
-
-  .empty {
-    height: 630px;
-    text-align: center;
-    padding-top: 50px;
-  }
-}
-
-.section-subtitle {
-  @include typography.caption();
 }
 </style>
