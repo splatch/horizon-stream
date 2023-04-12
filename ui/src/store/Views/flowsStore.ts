@@ -10,6 +10,7 @@ export const useFlowsStore = defineStore('flowsStore', {
   state: () => ({
     tableDatasets: [{} as any],
     lineDatasets: [{} as any],
+    topApplications: [] as FlowsApplicationSummaries[],
     tableChartOptions: {},
     totalFlows: '1,957',
     filters: {
@@ -96,6 +97,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       })) as IAutocompleteItemType[]
       this.filters.applications = applicationsAutocompleteObject
     },
+
     createTableChartData() {
       if (this.tableDatasets) {
         this.exporters.tableChartData = {
@@ -291,6 +293,19 @@ export const useFlowsStore = defineStore('flowsStore', {
       } else {
         return defaultColors[index]
       }
+    },
+    async getApplicationDataset() {
+      const flowsQueries = useflowsQueries()
+      const requestData = {
+        count: 10,
+        step: 2000000,
+        timeRange: this.getTimeRange(TimeRange.Last_24Hours)
+      } as RequestCriteriaInput
+
+      const topApplications = await flowsQueries.getApplicationsSummaries(requestData)
+      this.topApplications = [
+        ...((topApplications.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || null)
+      ]
     }
   }
 })
