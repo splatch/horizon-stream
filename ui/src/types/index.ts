@@ -47,6 +47,11 @@ export interface IInputButtonPopover {
   handler: fncVoid
 }
 
+export interface ChartData {
+  labels?: any[]
+  datasets: any[]
+}
+
 export const enum Monitor {
   ICMP = 'ICMP',
   SNMP = 'SNMP',
