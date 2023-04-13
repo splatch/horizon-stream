@@ -18,20 +18,18 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Component
-public class CertZipper {
+public class CertFileUtils {
 
-    public ByteArrayOutputStream createEncryptedZip(java.security.PrivateKey privateKey, Certificate certificate)
-        throws IOException, CertificateEncodingException {
-
+    public ByteArrayOutputStream createEncryptedZip(PrivateKey privateKey, Certificate certificate) throws IOException, CertificateEncodingException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         // Create a ZipOutputStream to write the encrypted zip file
         try (ZipOutputStream zos = new ZipOutputStream(os)) {
-
             // Add the certificate to the zip file
             ZipEntry certEntry = new ZipEntry("certificate.cer");
             zos.putNextEntry(certEntry);

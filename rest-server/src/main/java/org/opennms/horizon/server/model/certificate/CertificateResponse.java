@@ -25,22 +25,15 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-syntax = "proto3";
 
-package opennms.minioncertmanager;
-option java_multiple_files = true;
-option java_package = "org.opennms.horizon.minioncertmanager.proto";
+package org.opennms.horizon.server.model.certificate;
 
-service MinionCertificateManager {
-  rpc getMinionCert(GetMinionCertificateRequest) returns (GetMinionCertificateResponse) {};
-}
+import lombok.Getter;
+import lombok.Setter;
 
-message GetMinionCertificateRequest {
-  string tenant_id = 1;
-  string location = 2;
-}
-
-message GetMinionCertificateResponse {
-  bytes certificate = 1;
-  string password = 2;
+@Getter
+@Setter
+public class CertificateResponse {
+    private byte[] certificate;
+    private String password;
 }

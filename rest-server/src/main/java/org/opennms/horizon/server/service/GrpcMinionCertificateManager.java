@@ -5,7 +5,8 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.execution.ResolutionEnvironment;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.RequiredArgsConstructor;
-import org.opennms.horizon.minioncertmanager.proto.GetMinionCertificateResponse;
+import org.opennms.horizon.server.mapper.certificate.CertificateMapper;
+import org.opennms.horizon.server.model.certificate.CertificateResponse;
 import org.opennms.horizon.server.service.grpc.MinionCertificateManagerClient;
 import org.opennms.horizon.server.utils.ServerHeaderUtil;
 import org.springframework.stereotype.Service;
@@ -17,13 +18,14 @@ import reactor.core.publisher.Mono;
 public class GrpcMinionCertificateManager {
     private final MinionCertificateManagerClient client;
     private final ServerHeaderUtil headerUtil;
+    private final CertificateMapper mapper;
 
     @GraphQLQuery(name = "getMinionCertificate")
-    public Mono<byte[]> getMinionCertificate(Long locationId, @GraphQLEnvironment ResolutionEnvironment env) {
+    public Mono<CertificateResponse> getMinionCertificate(String location, @GraphQLEnvironment ResolutionEnvironment env) {
         String tenantId = headerUtil.extractTenant(env);
 
-        GetMinionCertificateResponse minionCert = client.getMinionCert(tenantId, locationId, headerUtil.getAuthHeader(env));
+        CertificateResponse minionCert = mapper.protoToCertificateResponse(client.getMinionCert(tenantId, location, headerUtil.getAuthHeader(env)));
 
-        return Mono.just(minionCert.getZip().toByteArray());
+        return Mono.just(minionCert);
     }
 }

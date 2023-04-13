@@ -25,22 +25,19 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-syntax = "proto3";
 
-package opennms.minioncertmanager;
-option java_multiple_files = true;
-option java_package = "org.opennms.horizon.minioncertmanager.proto";
+package org.opennms.horizon.server.mapper.certificate;
 
-service MinionCertificateManager {
-  rpc getMinionCert(GetMinionCertificateRequest) returns (GetMinionCertificateResponse) {};
-}
+import com.google.protobuf.ByteString;
+import org.mapstruct.Mapper;
+import org.opennms.horizon.minioncertmanager.proto.GetMinionCertificateResponse;
+import org.opennms.horizon.server.model.certificate.CertificateResponse;
 
-message GetMinionCertificateRequest {
-  string tenant_id = 1;
-  string location = 2;
-}
+@Mapper(componentModel = "spring")
+public interface CertificateMapper {
+    CertificateResponse protoToCertificateResponse(GetMinionCertificateResponse certificateResponseProto);
 
-message GetMinionCertificateResponse {
-  bytes certificate = 1;
-  string password = 2;
+    default byte[] byteStringToString(ByteString byteString) {
+        return byteString.toByteArray();
+    }
 }
