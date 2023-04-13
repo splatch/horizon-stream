@@ -26,45 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.systemtests;
 
-import com.codeborne.selenide.Selenide;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.cucumber.junit.Cucumber;
-import io.cucumber.junit.CucumberOptions;
-import org.junit.runner.RunWith;
+package org.opennms.horizon.systemtests.steps.portal;
+
+import io.cucumber.java.en.Then;
+import org.opennms.horizon.systemtests.pages.portal.AddNewInstancePopup;
 import org.opennms.horizon.systemtests.pages.portal.PortalCloudPage;
-import org.opennms.horizon.systemtests.pages.portal.PortalLoginPage;
 
-@RunWith(Cucumber.class)
-@CucumberOptions(
-    features = "src/test/resources/features",
-    plugin = {"pretty",
-        "json:cucumber.reports/cucumber-report.json",
-        "html:cucumber.reports/cucumber-report.html"},
-    tags = "@cloud"
-)
-public class HSCucumberRunnerTest {
+public class PortalCloudSteps {
 
-    @Before("@portal")
-    public static void loginToPortal() {
-        if (Selenide.webdriver().driver().hasWebDriverStarted()) {
-            return;
-        }
-        Selenide.open("https://dev.cloud.opennms.com");
-        PortalLoginPage.closeCookieHeader();
-        PortalLoginPage.setUsername(System.getProperty("portal_user.email"));
-        PortalLoginPage.clickNext();
-        PortalLoginPage.setPassword(System.getProperty("portal_user.password"));
-        PortalLoginPage.clickSignIn();
-
+    @Then("Verify that user logged in to Portal successfully")
+    public void verifyThatUserLoggedInToPortal() {
         PortalCloudPage.verifyThatUserLoggedIn();
     }
 
-    @After("@portal")
-    public static void returnToPortalMainPage() {
-        Selenide.open("https://dev.cloud.opennms.com/cloud");
+    @Then("a IT Administrator clicks on '+ADD INSTANCE' button")
+    public void clickOnAddInstanceButton() {
+        PortalCloudPage.clickAddInstance();
+        AddNewInstancePopup.waitPopupIsDisplayed(true);
     }
 
+    @Then("the IT Administrator sees an instance {string} in the list")
+    public void findInstanceNameInTheTable(String instanceName) {
+        PortalCloudPage.setFilter(instanceName);
+        PortalCloudPage.instantShouldBePresentedInTable(instanceName);
+    }
+
+    @Then("the IT Administrator opens 'Details' for the instance")
+    public void openDetailsForTheInstance() {
+        PortalCloudPage.clickDetailsForFirstInstance();
+    }
+
+
+    @Then("the IT Administrator is brought back to the OpenNMS Cloud page")
+    public void thePageIsNotCoveredByAnyPopup() {
+        PortalCloudPage.mainPageIsNotCoveredByPopups();
+    }
 }

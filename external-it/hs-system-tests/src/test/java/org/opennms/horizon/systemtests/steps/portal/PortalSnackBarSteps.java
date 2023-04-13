@@ -26,26 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.systemtests;
 
-import com.codeborne.selenide.logevents.SimpleReport;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
+package org.opennms.horizon.systemtests.steps.portal;
 
-public class TextReport {
+import io.cucumber.java.en.Then;
+import org.opennms.horizon.systemtests.pages.portal.PortalSnackBar;
 
-    private final SimpleReport report = new SimpleReport();
+public class PortalSnackBarSteps {
 
-    @Before
-    public void beforeTest(Scenario scenario) {
-        scenario.log("Starting " + scenario.getName());
-        report.start();
+    @Then("the IT Administrator gets success snackbar message {string}")
+    public void checkSnackBarMessage(String message) {
+        PortalSnackBar.verifySuccessSnackBarMessage(message);
     }
 
-    @After
-    public void afterTest(Scenario scenario) {
-        scenario.log("Finished " + scenario.getName());
-        report.finish(scenario.getName());
+    @Then("the IT Administrator gets error snackbar message {string}")
+    public void checkErrorSnackBarMessage(String message) {
+        PortalSnackBar.verifyErrorSnackBarMessage(message);
     }
 }
