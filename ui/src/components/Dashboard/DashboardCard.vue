@@ -31,6 +31,8 @@ defineProps<{
 @use '@/styles/mediaQueriesMixins.scss';
 
 .card {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   background-color: var(variables.$surface);
   padding: var(variables.$spacing-l);
@@ -60,6 +62,7 @@ defineProps<{
     margin-top: var(variables.$spacing-l);
     border: 1px solid var(variables.$border-on-surface);
     padding: var(variables.$spacing-l);
+    flex: 1;
   }
 }
 </style>

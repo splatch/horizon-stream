@@ -36,7 +36,6 @@ import PolarChartDark from '@/assets/PolarChart-dark.svg'
 const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 const { onThemeChange, isDark } = useTheme()
 const flowsStore = useFlowsStore()
-const router = useRouter()
 const constGraph = ref()
 const dataGraph = ref()
 const hasData = ref(false)
@@ -98,17 +97,3 @@ onThemeChange(() => {
   constGraph.value = { ...config }
 })
 </script>
-
-<style scoped lang="scss">
-@use '@featherds/styles/mixins/typography';
-@use '@featherds/styles/themes/variables';
-@use '@/styles/mediaQueriesMixins.scss';
-
-.flows {
-  .chart-box {
-    border: 1px solid var(variables.$border-on-surface);
-    padding: 0 var(variables.$spacing-l);
-    margin-top: var(variables.$spacing-l);
-  }
-}
-</style>

@@ -11,7 +11,7 @@
     <div class="graphs">
       <DashboardCard
         :texts="dashboardText.NetworkTraffic"
-        :redirectLink="'Appliances'"
+        :redirectLink="'Inventory'"
       >
         <template v-slot:content>
           <DashboardNetworkTraffic />
@@ -65,13 +65,8 @@ onMounted(async () => {
     @include typography.headline2();
     display: flex;
     align-items: center;
-    flex-direction: column;
+    justify-content: space-between;
     width: 100%;
-
-    @include mediaQueriesMixins.screen-md {
-      flex-direction: row;
-      justify-content: space-between;
-    }
   }
   .list-alerts {
     overflow-x: auto;
