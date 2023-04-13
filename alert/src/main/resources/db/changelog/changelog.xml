@@ -5,6 +5,11 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
     <include file="/db/changelog/hs-0.1.0/tables/alert.xml"/>
+    <include file="/db/changelog/hs-0.1.0/tables/update_alert_id.xml"/>
     <include file="/db/changelog/hs-0.1.0/tables/policy.xml" />
-
+    <include file="/db/changelog/hs-0.1.0/tables/alert_definition.xml" />
+    <include file="/db/changelog/hs-0.1.0/tables/alert_definition_trigger.xml" />
+    <include file="/db/changelog/hs-0.1.0/tables/trigger_event_uei_keys.xml" />
+    <include file="/db/changelog/hs-0.1.0/tables/remove_uei_keys_trigger_event.xml" />
+    <include file="/db/changelog/hs-0.1.0/tables/alert_definition_trigger_fk.xml" />
 </databaseChangeLog>

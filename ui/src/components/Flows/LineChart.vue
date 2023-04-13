@@ -1,21 +1,21 @@
 <template>
   <div class="table-chart-container">
     <div class="chart-container">
-      <BasicChart
-        :id="id"
-        :chart-options="chartOptions"
-        :chart-data="chartData"
-        :chart-type="ChartTypes.LINE"
-      >
-      </BasicChart>
+      <Line
+        :data="chartData"
+        :options="chartOptions"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ChartOptions, ChartData } from 'chart.js'
+import useTheme from '@/composables/useTheme'
+import { ChartData } from '@/types'
+import { ChartOptions } from 'chart.js'
 import { PropType } from 'vue'
-import { ChartTypes } from '@/types'
+import { Line } from 'vue-chartjs'
+const { isDark } = useTheme()
 
 const props = defineProps({
   id: {
@@ -43,11 +43,25 @@ const chartOptions = computed<ChartOptions<any>>(() => {
     cubicInterpolationMode: 'monotone',
     maintainAspectRatio: false,
     interaction: {
-      mode: 'x'
+      mode: 'nearest',
+      intersect: false,
+      axis: 'x'
     },
     plugins: {
       legend: {
-        display: false
+        display: true,
+        position: 'right',
+        labels: {
+          boxWidth: 13,
+          boxHeight: 13,
+          useBorderRadius: true,
+          padding: 16,
+          borderRadius: 1,
+          color: isDark ? '#e1d0d0' : '#000000',
+          font: {
+            weight: 700
+          }
+        }
       },
       tooltip: {
         xAlign: 'left',
@@ -58,7 +72,14 @@ const chartOptions = computed<ChartOptions<any>>(() => {
         borderWidth: 0.1,
         bodyColor: '#4F4F4F',
         footerColor: '#4F4F4F',
-        titleColor: '#4F4F4F'
+        titleColor: '#4F4F4F',
+        callbacks: {
+          title: (context: any) => context.label,
+          label: (context: any) => {
+            const appName = context.dataset.label
+            return `${appName} : ` + formatBytes(context.parsed.y)
+          }
+        }
       }
     },
     scales: {
@@ -66,13 +87,16 @@ const chartOptions = computed<ChartOptions<any>>(() => {
         stacked: true,
         grid: {
           display: true
-        },
-        ticks: {}
+        }
       },
       y: {
-        stacked: true,
         grid: {
           display: false
+        },
+        ticks: {
+          callback: function (value: any) {
+            return formatBytes(value, 2)
+          }
         },
         title: {
           display: true,
@@ -82,6 +106,18 @@ const chartOptions = computed<ChartOptions<any>>(() => {
     }
   }
 })
+
+const formatBytes = (bytes: any, decimals = 2) => {
+  if (!+bytes) return '0 Bytes'
+
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+}
 </script>
 
 <style lang="scss" scoped>
@@ -101,7 +137,7 @@ const chartOptions = computed<ChartOptions<any>>(() => {
   flex-wrap: wrap;
   .chart-container {
     flex: 1 1 0;
-    min-height: 280px;
+    min-height: 380px;
   }
 }
 table {

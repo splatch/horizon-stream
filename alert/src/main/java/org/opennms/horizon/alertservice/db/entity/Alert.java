@@ -28,6 +28,14 @@
 
 package org.opennms.horizon.alertservice.db.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Date;
+
+import org.opennms.horizon.alerts.proto.AlertType;
+import org.opennms.horizon.alerts.proto.ManagedObjectType;
+import org.opennms.horizon.model.common.proto.Severity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,13 +50,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.opennms.horizon.alerts.proto.AlertType;
-import org.opennms.horizon.alerts.proto.ManagedObjectType;
-import org.opennms.horizon.model.common.proto.Severity;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Date;
 
 @Entity
 @Table(name="alert")
@@ -56,7 +57,7 @@ import java.util.Date;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class Alert extends TenantAwareEntity implements Serializable {
+public class Alert implements Serializable {
     @Serial
     private static final long serialVersionUID = 7275548439687562161L;
 
@@ -64,7 +65,10 @@ public class Alert extends TenantAwareEntity implements Serializable {
     @SequenceGenerator(name="alertSequence", sequenceName="alert_nxt_id", allocationSize = 1)
     @GeneratedValue(generator="alertSequence")
     @Column(nullable=false)
-    private Long alertId;
+    private Long id;
+
+    @Column (name = "tenant_id", nullable = false)
+    private String tenantId;
 
     @Column(length=256, nullable=false)
     private String eventUei;
@@ -73,14 +77,14 @@ public class Alert extends TenantAwareEntity implements Serializable {
     private String reductionKey;
 
     @Column
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private AlertType type;
 
     @Column(nullable=false)
     private Long counter;
 
     @Column(nullable=false)
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private Severity severity = Severity.INDETERMINATE;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -111,7 +115,7 @@ public class Alert extends TenantAwareEntity implements Serializable {
     private String clearKey;
 
     @Column(nullable=false)
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private ManagedObjectType managedObjectType;
 
     @Column

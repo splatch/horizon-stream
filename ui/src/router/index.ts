@@ -6,12 +6,12 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: '/',
+      path: '/appliances',
       name: 'Appliances',
       component: Appliances
     },
     {
-      path: '/dashboard', // Temporary route - will change to '/' once complete.
+      path: '/',
       name: 'Dashboard',
       component: () => import('@/containers/Dashboard.vue')
     },
@@ -61,6 +61,11 @@ const router = createRouter({
       path: '/synthetic-transactions',
       name: 'Synthetic Transactions',
       component: () => import('@/containers/SyntheticTransactions.vue')
+    },
+    {
+      path: '/alerts',
+      name: 'Alerts',
+      component: () => import('@/containers/Alerts.vue')
     },
     {
       path: '/node/:id',

@@ -3,7 +3,7 @@ import { PointerAlignment, PopoverPlacement } from '@featherds/popover'
 
 export * from './flows.d'
 export declare type fncVoid = () => void
-export declare type fncArgVoid = (...args: unknown[]) => void
+export declare type fncArgVoid = (...args: any[]) => void
 
 export interface SnackbarProps {
   msg: string
@@ -47,8 +47,20 @@ export interface IInputButtonPopover {
   handler: fncVoid
 }
 
+export interface ChartData {
+  labels?: any[]
+  datasets: any[]
+}
+
 export const enum Monitor {
   ICMP = 'ICMP',
   SNMP = 'SNMP',
   ECHO = 'ECHO'
+}
+
+export interface TagSelectItem {
+  name: string
+  id?: string
+  _text?: string
+  tenantId?: string
 }

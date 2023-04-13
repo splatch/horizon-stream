@@ -28,11 +28,27 @@
 
 package org.opennms.horizon.alertservice.db.repository;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 import org.opennms.horizon.alertservice.db.entity.Alert;
+import org.opennms.horizon.model.common.proto.Severity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AlertRepository extends JpaRepository<Alert, Long> {
-    Alert findByReductionKey(String reductionKey);
+
+    Alert findByReductionKeyAndTenantId(String reductionKey, String tenantId);
+
+    Page<Alert> findBySeverityInAndLastEventTimeBetweenAndTenantId(List<Severity> severityList, Date start, Date end, Pageable pageable, String tenantId);
+
+    int countBySeverityInAndLastEventTimeBetweenAndTenantId(List<Severity> severityList, Date start, Date end, String tenantId);
+
+    Optional<Alert> findByIdAndTenantId(long id, String tenantId);
+
+    void deleteByIdAndTenantId(long databaseId, String tenantId);
 }

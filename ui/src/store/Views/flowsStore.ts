@@ -1,277 +1,191 @@
-import { ChartData } from 'chart.js'
+import { flowsAppDataToChartJS } from '@/dtos/chartJS.dto'
 import { format } from 'date-fns'
 import { defineStore } from 'pinia'
+import { useflowsQueries } from '@/store/Queries/flowsQueries'
+import { RequestCriteriaInput, TimeRange } from '@/types/graphql'
+import { FlowsApplicationData, FlowsApplicationSummaries, ChartData } from '@/types'
+import { IAutocompleteItemType } from '@featherds/autocomplete/src/components/types'
 
 export const useFlowsStore = defineStore('flowsStore', {
   state: () => ({
     tableDatasets: [{} as any],
     lineDatasets: [{} as any],
+    topApplications: [] as FlowsApplicationSummaries[],
     tableChartOptions: {},
     totalFlows: '1,957',
     filters: {
-      dateFilter: 'today',
+      dateFilter: TimeRange.Today,
       traffic: {
         selectedItem: 'total'
       },
       dataStyle: {
         selectedItem: 'table'
-      }
+      },
+      //Application AutoComplete
+      applications: [] as IAutocompleteItemType[],
+      selectedApplications: [],
+      isApplicationsLoading: false,
+      filteredApplications: [] as IAutocompleteItemType[],
+      //Exporter AutoComplete
+      exporters: [] as IAutocompleteItemType[],
+      selectedExporters: [],
+      isExportersLoading: false,
+      filteredExporters: [] as IAutocompleteItemType[]
     },
     applications: {
+      isTableLoading: false,
+      isLineLoading: false,
       tableChartData: {} as ChartData,
       lineChartData: {} as ChartData,
       expansionOpen: true,
-      filterDialogOpen: false,
-      dialogFilters: { ...defaultDialogFilters }
+      filterDialogOpen: false
     },
     exporters: {
+      isLoading: false,
       tableChartData: {} as ChartData,
       lineChartData: {} as ChartData,
       expansionOpen: true,
-      filterDialogOpen: false,
-      dialogFilters: { ...defaultDialogFilters }
-    }
+      filterDialogOpen: false
+    },
+    requestCriteria: {
+      count: 10,
+      step: 2000000,
+      timeRange: { startTime: 0, endTime: 0 },
+      applications: [] as string[],
+      exporters: []
+    } as RequestCriteriaInput
   }),
   actions: {
-    getDatasets() {
-      //Will be replaced with a BE call
-      const returnedTableDataSets = [
-        {
-          label: 'app_0',
-          bytesIn: 20809,
-          bytesOut: 59755
-        },
-        {
-          label: 'app_1',
-          bytesIn: 63491,
-          bytesOut: 62750
-        },
-        {
-          label: 'app_2',
-          bytesIn: 95187,
-          bytesOut: 19754
-        },
-        {
-          label: 'app_3',
-          bytesIn: 76824,
-          bytesOut: 95025
-        },
-        {
-          label: 'app_4',
-          bytesIn: 16870,
-          bytesOut: 97879
-        },
-        {
-          label: 'app_5',
-          bytesIn: 86697,
-          bytesOut: 90904
-        },
-        {
-          label: 'app_6',
-          bytesIn: 10761,
-          bytesOut: 71282
-        },
-        {
-          label: 'app_7',
-          bytesIn: 67521,
-          bytesOut: 86472
-        },
-        {
-          label: 'app_8',
-          bytesIn: 37723,
-          bytesOut: 61793
-        },
-        {
-          label: 'app_9',
-          bytesIn: 36712,
-          bytesOut: 63233
-        }
-      ]
-      this.tableDatasets = returnedTableDataSets
+    async getDatasets() {
+      const flowsQueries = useflowsQueries()
+      const requestData = {
+        count: 10,
+        step: 2000000,
+        timeRange: this.getTimeRange(this.filters.dateFilter),
+        applications: this.filters.selectedApplications.map((app: any) => app.value)
+      } as RequestCriteriaInput
 
-      //Will be replaced with a BE call
-      const returnedLineDataSets = [
-        {
-          label: 'app0',
-          data: [
-            {
-              timestamp: '2023-03-23T01:01:25Z',
-              value: 138790.1750375429,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:09:47Z',
-              value: 216861.9119974472,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:18:07Z',
-              value: 202966.96568806906,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:26:27Z',
-              value: 264173.0346710393,
-              direction: 'EGRESS'
-            }
-          ]
-        },
-        {
-          label: 'app1',
-          data: [
-            {
-              timestamp: '2023-03-23T01:09:47Z',
-              value: 675859.8717571729,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:18:07Z',
-              value: 703441.1031400502,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:26:27Z',
-              value: 277710.0783393889,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:34:47Z',
-              value: -928133.4566595472,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:43:07Z',
-              value: 299538.99195372575,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:51:27Z',
-              value: 264867.46362876357,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T01:59:47Z',
-              value: 738735.9705331036,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T02:08:07Z',
-              value: 761950.6966375934,
-              direction: 'EGRESS'
-            },
-            {
-              timestamp: '2023-03-23T02:16:27Z',
-              value: 995884.662063265,
-              direction: 'EGRESS'
-            }
-          ]
-        }
+      //Get Table Data
+      this.applications.isTableLoading = true
+      const applicationTableData = await flowsQueries.getApplicationsSummaries(requestData)
+      this.tableDatasets = [
+        ...((applicationTableData.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || [])
       ]
+      this.applications.isTableLoading = false
 
-      this.lineDatasets = returnedLineDataSets
+      //Get Line Graph Data
+      this.applications.isLineLoading = true
+      const applicationsLineData = await flowsQueries.getApplicationsSeries(requestData)
+      this.lineDatasets = applicationsLineData.value?.findApplicationSeries
+        ? [...flowsAppDataToChartJS(applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[])]
+        : []
+      this.applications.isLineLoading = false
     },
+    async getApplications() {
+      const flowsQueries = useflowsQueries()
+      const requestData = {
+        count: 50,
+        step: 2000000,
+        timeRange: this.getTimeRange(this.filters.dateFilter)
+      } as RequestCriteriaInput
+
+      //Get Applications Data
+      const applications = (await flowsQueries.getApplications(requestData)) || []
+      const applicationsAutocompleteObject = applications.value?.findApplications?.map((item: string) => ({
+        _text: item.toUpperCase(),
+        value: item
+      })) as IAutocompleteItemType[]
+      this.filters.applications = applicationsAutocompleteObject
+    },
+
     createTableChartData() {
-      //Dummy Data until BE is hooked up.
-      this.exporters.tableChartData = {
-        labels: this.tableDatasets.map((row) => row.label),
-        datasets: [
-          {
-            label: 'Inbound',
-            data: this.tableDatasets.map((row) => row.bytesIn),
-            barThickness: 13,
-            backgroundColor: '#0043A4',
-            hidden: this.filters.traffic.selectedItem === 'outbound'
-          },
-          {
-            label: 'Outbound',
-            data: this.tableDatasets.map((row) => row.bytesOut),
-            barThickness: 13,
-            backgroundColor: '#EE7D00',
-            hidden: this.filters.traffic.selectedItem === 'inbound'
-          }
-        ]
+      if (this.tableDatasets) {
+        this.exporters.tableChartData = {
+          labels: this.tableDatasets.map((row) => row.label),
+          datasets: [
+            {
+              label: 'Inbound',
+              data: this.tableDatasets.map((row) => row.bytesIn),
+              barThickness: 13,
+              backgroundColor: '#0043A4',
+              hidden: this.filters.traffic.selectedItem === 'outbound'
+            },
+            {
+              label: 'Outbound',
+              data: this.tableDatasets.map((row) => row.bytesOut),
+              barThickness: 13,
+              backgroundColor: '#EE7D00',
+              hidden: this.filters.traffic.selectedItem === 'inbound'
+            }
+          ]
+        }
       }
-      this.applications.tableChartData = {
-        labels: this.tableDatasets.map((row) => row.label),
-        datasets: [
-          {
-            label: 'Inbound',
-            data: this.tableDatasets.map((row) => row.bytesIn),
-            barThickness: 13,
-            backgroundColor: '#0043A4',
-            hidden: this.filters.traffic.selectedItem === 'outbound'
-          },
-          {
-            label: 'Outbound',
-            data: this.tableDatasets.map((row) => row.bytesOut),
-            barThickness: 13,
-            backgroundColor: '#EE7D00',
-            hidden: this.filters.traffic.selectedItem === 'inbound'
-          }
-        ]
+      if (this.tableDatasets) {
+        this.applications.tableChartData = {
+          labels: this.tableDatasets.map((row) => row.label),
+          datasets: [
+            {
+              label: 'Inbound',
+              data: this.tableDatasets.map((row) => row.bytesIn),
+              barThickness: 13,
+              backgroundColor: '#0043A4',
+              hidden: this.filters.traffic.selectedItem === 'outbound'
+            },
+            {
+              label: 'Outbound',
+              data: this.tableDatasets.map((row) => row.bytesOut),
+              barThickness: 13,
+              backgroundColor: '#EE7D00',
+              hidden: this.filters.traffic.selectedItem === 'inbound'
+            }
+          ]
+        }
       }
     },
     createLineChartData() {
-      const datasetArr = {
-        type: 'line',
-        datasets: this.lineDatasets.map((element, i) => {
-          return {
-            label: element.label,
-            data: element.data.map((data: any) => {
-              return {
-                x: this.convertToDate(data.timestamp),
-                y: data.value
-              }
-            }),
-            fill: true
-          }
-        })
+      if (this.lineDatasets) {
+        const datasetArr = {
+          type: 'line',
+          datasets: this.lineDatasets.map((element, index) => {
+            return {
+              label: element.label,
+              data: element.data.map((data: any) => {
+                return {
+                  x: this.convertToDate(data.timestamp),
+                  y: data.value
+                }
+              }),
+              fill: true,
+              borderColor: this.randomColours(index),
+              backgroundColor: this.randomColours(index, true)
+            }
+          })
+        }
+        this.applications.lineChartData = datasetArr
+        this.exporters.lineChartData = datasetArr
       }
-      this.applications.lineChartData = datasetArr
-      this.exporters.lineChartData = datasetArr
     },
-    filterDialogToggle(event: Event, isAppFilter: boolean) {
-      isAppFilter
-        ? (this.applications.filterDialogOpen = !this.applications.filterDialogOpen)
-        : (this.exporters.filterDialogOpen = !this.exporters.filterDialogOpen)
+    async updateCharts() {
+      await this.getApplications()
+      await this.getDatasets()
+      this.createCharts()
     },
-    generateTableChart() {
-      this.getDatasets()
+    createCharts() {
       this.createTableChartData()
-    },
-    generateLineChart() {
-      this.getDatasets()
       this.createLineChartData()
     },
-    appDialogRefreshClick(e: Event) {
-      const selectedFilters = this.getTrueValuesFromObject(this.applications.dialogFilters)
-      console.log('you have selected ' + selectedFilters)
-      this.filterDialogToggle(e, true)
-    },
-    expDialogRefreshClick(e: Event) {
-      const selectedFilters = this.getTrueValuesFromObject(this.exporters.dialogFilters)
-      console.log('you have selected ' + selectedFilters)
-      this.filterDialogToggle(e, false)
-    },
-    getTrueValuesFromObject(object: object) {
-      const keys = Object.keys(object)
-      const filtered = keys.filter(function (key: string) {
-        return object[key as keyof typeof object]
-      })
-      return filtered
-    },
-    trafficRadioOnChange(selectedItem: string) {
+    async trafficRadioOnChange(selectedItem: string) {
       this.filters.traffic.selectedItem = selectedItem
-      this.generateTableChart()
+      await this.updateCharts()
     },
     convertToDate(ts: string) {
       const dateFormat = () => {
         switch (this.filters.dateFilter) {
-          case 'today':
+          case TimeRange.Today:
             return 'HH:mm'
-          case '24h':
+          case TimeRange.Last_24Hours:
             return 'HH:mm'
-          case '7d':
+          case TimeRange.SevenDays:
             return 'dd/MMM HH:mm'
           default:
             return 'dd/MMM HH:mm'
@@ -279,26 +193,112 @@ export const useFlowsStore = defineStore('flowsStore', {
       }
       return format(new Date(ts), dateFormat())
     },
-    onDateFilterUpdate(e: any) {
+    async onDateFilterUpdate(e: any) {
       this.filters.dateFilter = e
-      this.createLineChartData()
-      this.createTableChartData()
+      await this.updateCharts()
+    },
+    getTimeRange(range: string) {
+      const now = new Date()
+      let startTime
+      switch (range) {
+        case TimeRange.Today:
+          startTime = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
+          return { startTime: startTime, endTime: Date.now() }
+        case TimeRange.Last_24Hours:
+          startTime = now.setDate(now.getDate() - 1)
+          return { startTime: startTime, endTime: Date.now() }
+        case TimeRange.SevenDays:
+          startTime = now.setDate(now.getDate() - 7)
+          return { startTime: startTime, endTime: Date.now() }
+        default:
+          startTime = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
+          return { startTime: startTime, endTime: Date.now() }
+      }
+    },
+    applicationsAutoCompleteSearch(searchString: string) {
+      let timeout = -1
+      this.filters.isApplicationsLoading = true
+      clearTimeout(timeout)
+      timeout = window.setTimeout(() => {
+        this.filters.filteredApplications = this.filters.applications
+          .filter((x: any) => x._text.toLowerCase().indexOf(searchString) > -1)
+          .map((x: any) => ({
+            value: x.value,
+            _text: x._text
+          }))
+        this.filters.isApplicationsLoading = false
+      }, 500)
+    },
+    exportersAutoCompleteSearch(searchString: string) {
+      let timeout = -1
+      this.filters.isExportersLoading = true
+      clearTimeout(timeout)
+      timeout = window.setTimeout(() => {
+        this.filters.filteredExporters = this.filters.exporters
+          .filter((x: any) => x._text.toLowerCase().indexOf(searchString) > -1)
+          .map((x: any) => ({
+            value: x.value,
+            _text: x._text
+          }))
+        this.filters.isExportersLoading = false
+      }, 500)
+    },
+    // This method is needed as currently on update of chart data, new data values are not being assigned a colour.
+    randomColours(index: number, opacity = false) {
+      const defaultColors = [
+        '#3366CC',
+        '#DC3912',
+        '#FF9900',
+        '#109618',
+        '#990099',
+        '#3B3EAC',
+        '#0099C6',
+        '#DD4477',
+        '#66AA00',
+        '#B82E2E',
+        '#316395',
+        '#994499',
+        '#22AA99',
+        '#AAAA11',
+        '#6633CC',
+        '#E67300',
+        '#8B0707',
+        '#329262',
+        '#5574A6',
+        '#651067'
+      ]
+      const addOpacity = function (hex: string, opacity: number) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+        return result
+          ? 'rgba(' +
+              parseInt(result[1], 16) +
+              ', ' +
+              parseInt(result[2], 16) +
+              ', ' +
+              parseInt(result[3], 16) +
+              ', ' +
+              opacity +
+              ')'
+          : hex
+      }
+      if (opacity) {
+        return addOpacity(defaultColors[index], 0.3)
+      } else {
+        return defaultColors[index]
+      }
+    },
+    async getApplicationDataset() {
+      const flowsQueries = useflowsQueries()
+      const requestData = {
+        count: 10,
+        step: 2000000,
+        timeRange: this.getTimeRange(TimeRange.Last_24Hours)
+      } as RequestCriteriaInput
+
+      const topApplications = await flowsQueries.getApplicationsSummaries(requestData)
+      this.topApplications = [
+        ...((topApplications.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || null)
+      ]
     }
   }
 })
-
-type FlowsDialogFilters = {
-  http: boolean
-  https: boolean
-  pandoPub: boolean
-  snmp: boolean
-  imaps: boolean
-}
-
-const defaultDialogFilters: FlowsDialogFilters = {
-  http: false,
-  https: false,
-  pandoPub: false,
-  snmp: false,
-  imaps: false
-}

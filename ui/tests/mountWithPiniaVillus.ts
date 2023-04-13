@@ -19,12 +19,12 @@ import { VILLUS_CLIENT, createClient } from 'villus'
  *              stubs
  *              plugins
  *              provide
- *                directives
+ *              directives
  *            attachTo
  * @returns mounted component
  */
 const wrapper = (mountingOption: Record<string, any>): any => {
-  const { component, shallow = true, props = {}, global = {}, attachTo } = mountingOption
+  const { component, shallow = true, props = {}, global = {}, attachTo, stubActions = true } = mountingOption
   const { stubs = {}, plugins = [], provide = {}, directives = {} } = global
 
   const globalOptions: Record<string, any> = {
@@ -32,14 +32,19 @@ const wrapper = (mountingOption: Record<string, any>): any => {
     props,
     global: {
       stubs: { ...stubs },
-      plugins: [createTestingPinia(), ...plugins],
+      plugins: [
+        createTestingPinia({
+          stubActions
+        }),
+        ...plugins
+      ],
       provide: {
         [VILLUS_CLIENT as unknown as string]: createClient({
           url: 'https://test/graphql'
         }),
         ...provide,
-        directives: { ...directives }
-      }
+      },
+      directives: { ...directives }
     },
     attachTo
   }

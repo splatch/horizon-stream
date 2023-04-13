@@ -13,11 +13,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
+import org.mockito.Mockito;
 import org.opennms.horizon.alerts.proto.Alert;
 import org.opennms.horizon.model.common.proto.Severity;
 import org.opennms.horizon.notifications.NotificationsApplication;
 import org.opennms.horizon.notifications.SpringContextTestInitializer;
 import org.opennms.horizon.notifications.exceptions.NotificationException;
+import org.opennms.horizon.notifications.model.MonitoringPolicy;
+import org.opennms.horizon.notifications.repository.MonitoringPolicyRepository;
 import org.opennms.horizon.notifications.service.NotificationService;
 import org.opennms.horizon.notifications.tenant.TenantContext;
 import org.opennms.horizon.notifications.tenant.WithTenant;
@@ -46,9 +49,15 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
@@ -86,6 +95,9 @@ class AlertKafkaConsumerIntegrationTest {
     @MockBean
     private RestTemplate restTemplate;
 
+    @MockBean
+    private MonitoringPolicyRepository monitoringPolicyRepository;
+
     @BeforeAll
     void setUp() {
         Map<String, Object> producerConfig = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
@@ -97,6 +109,14 @@ class AlertKafkaConsumerIntegrationTest {
 
     @Test
     void testProducingAlertWithConfigSetup() throws NotificationException, InvalidProtocolBufferException {
+        MonitoringPolicy monitoringPolicy  = new MonitoringPolicy();
+        monitoringPolicy.setTenantId("opennms-prime");
+        monitoringPolicy.setId(1);
+        monitoringPolicy.setNotifyByPagerDuty(true);
+        Mockito.when(monitoringPolicyRepository.findByTenantIdAndIdIn(anyString(), anyList())).thenReturn(
+            List.of(monitoringPolicy)
+        );
+
         String tenantId = "opennms-prime";
         alertKafkaConsumerTestHelper.setupConfig(tenantId);
 
@@ -106,6 +126,7 @@ class AlertKafkaConsumerIntegrationTest {
             .setLogMessage("hello")
             .setDatabaseId(1234)
             .setTenantId("opennms-prime")
+            .addMonitoringPolicyId(1)
             .build();
         var producerRecord = new ProducerRecord<String,byte[]>(alertsTopic, alert.toByteArray());
         kafkaProducer.send(producerRecord);
@@ -119,10 +140,10 @@ class AlertKafkaConsumerIntegrationTest {
 
         // This is the call to the PagerDuty API, it will fail due to an invalid token, but we just need to
         // verify that the call has been attempted.
-        verify(restTemplate, timeout(HTTP_TIMEOUT).times(1)).exchange(ArgumentMatchers.any(URI.class),
+        verify(restTemplate, timeout(HTTP_TIMEOUT).times(1)).exchange(any(URI.class),
             ArgumentMatchers.eq(HttpMethod.POST),
-            ArgumentMatchers.any(HttpEntity.class),
-            ArgumentMatchers.any(Class.class));
+            any(HttpEntity.class),
+            any(Class.class));
     }
 
     @AfterAll

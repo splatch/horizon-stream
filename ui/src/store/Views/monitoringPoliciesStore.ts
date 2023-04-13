@@ -1,66 +1,168 @@
 import { defineStore } from 'pinia'
-import { cloneDeep, without } from 'lodash'
-import { IPolicy, IRule } from '@/types/policies'
+import { cloneDeep, findIndex } from 'lodash'
+import { Policy, Rule, Condition } from '@/types/policies'
+import { useMonitoringPoliciesMutations } from '../Mutations/monitoringPoliciesMutations'
+import { useMonitoringPoliciesQueries } from '../Queries/monitoringPoliciesQueries'
+import useSnackbar from '@/composables/useSnackbar'
+import {
+  DetectionMethodTypes,
+  SNMPEventType,
+  ComponentType,
+  EventMetrics,
+  ThresholdLevels,
+  Unknowns
+} from '@/components/MonitoringPolicies/monitoringPolicies.constants'
+import { MonitorPolicy } from '@/types/graphql'
+import { Severity, TimeRangeUnit } from '@/types/graphql'
+
+const { showSnackbar } = useSnackbar()
 
 type TState = {
-  existingPolicies: IPolicy[]
-  existingRules: IRule[]
-  selectedPolicy: IPolicy
-  selectedRule: IRule
+  selectedPolicy?: Policy
+  selectedRule?: Rule
+  monitoringPolicies: MonitorPolicy[]
 }
 
-const defaultPolicy: IPolicy = {
-  id: '',
+const defaultPolicy: Policy = {
+  id: undefined,
   name: '',
+  memo: '',
+  notifyByEmail: false,
+  notifyByPagerDuty: false,
+  notifyByWebhooks: false,
   tags: [],
   rules: []
 }
 
-const defaultRule: IRule = {
-  id: '',
+const getDefaultThresholdCondition = () => ({
+  id: new Date().getTime(),
+  level: ThresholdLevels.ABOVE,
+  percentage: 50,
+  forAny: 5,
+  durationUnit: TimeRangeUnit.Second,
+  duringLast: 60,
+  periodUnit: TimeRangeUnit.Second,
+  severity: Severity.Critical
+})
+
+const getDefaultEventCondition = () => ({
+  id: new Date().getTime(),
+  count: 1,
+  severity: Severity.Critical,
+  overtimeUnit: Unknowns.UNKNOWN_UNIT,
+  triggerEvent: SNMPEventType.COLD_REBOOT,
+  clearEvent: Unknowns.UNKNOWN_EVENT
+})
+
+const getDefaultRule = () => ({
+  id: new Date().getTime(),
   name: '',
-  componentType: 'cpu',
-  detectionMethod: 'thresholdAlert',
-  metricName: 'interfaceUtil',
-  conditions: []
-}
+  componentType: ComponentType.CPU,
+  detectionMethod: DetectionMethodTypes.EVENT,
+  metricName: EventMetrics.SNMP_TRAP,
+  triggerEvents: [getDefaultEventCondition()]
+})
 
 export const useMonitoringPoliciesStore = defineStore('monitoringPoliciesStore', {
   state: (): TState => ({
-    existingRules: [],
-    existingPolicies: [],
-    selectedPolicy: cloneDeep(defaultPolicy),
-    selectedRule: cloneDeep(defaultRule)
+    selectedPolicy: undefined,
+    selectedRule: undefined,
+    monitoringPolicies: []
   }),
   actions: {
-    removeTag(tag: string) {
-      this.selectedPolicy.tags = without(this.selectedPolicy.tags, tag)
+    // used for initial population of policies
+    async getMonitoringPolicies() {
+      const queries = useMonitoringPoliciesQueries()
+      await queries.listMonitoringPolicies()
+      this.monitoringPolicies = queries.monitoringPolicies
     },
-    setMetricName(name: string) {
-      this.selectedRule.metricName = name
+    displayPolicyForm(policy?: Policy) {
+      this.selectedPolicy = policy ? cloneDeep(policy) : cloneDeep(defaultPolicy)
+      this.selectedRule = undefined
+    },
+    displayRuleForm(rule?: Rule) {
+      this.selectedRule = rule ? cloneDeep(rule) : getDefaultRule()
+    },
+    resetDefaultConditions() {
+      if (!this.selectedRule) return
+
+      // detection method THRESHOLD
+      if (this.selectedRule.detectionMethod === DetectionMethodTypes.THRESHOLD) {
+        return (this.selectedRule.triggerEvents = [getDefaultThresholdCondition()])
+      }
+
+      // detection method EVENT
+      return (this.selectedRule.triggerEvents = [getDefaultEventCondition()])
     },
     addNewCondition() {
-      const defaultCondition = {
-        id: new Date().getTime(),
-        level: 'above',
-        percentage: 50,
-        duration: 5,
-        period: 15,
-        severity: 'critical'
+      if (!this.selectedRule) return
+
+      // detection method THRESHOLD
+      if (this.selectedRule.detectionMethod === DetectionMethodTypes.THRESHOLD) {
+        return this.selectedRule.triggerEvents.push(getDefaultThresholdCondition())
       }
-      this.selectedRule.conditions.push(defaultCondition)
+
+      // detection method EVENT
+      return this.selectedRule.triggerEvents.push(getDefaultEventCondition())
     },
-    removeCondition(id: number) {
-      this.selectedRule.conditions = this.selectedRule.conditions.filter((c) => c.id !== id)
+    updateCondition(id: string, condition: Condition) {
+      this.selectedRule!.triggerEvents.map((currentCondition) => {
+        if (currentCondition.id === id) {
+          return { ...currentCondition, ...condition }
+        }
+        return
+      })
+    },
+    deleteCondition(id: string) {
+      this.selectedRule!.triggerEvents = this.selectedRule!.triggerEvents.filter((c) => c.id !== id)
     },
     saveRule() {
-      this.selectedPolicy.rules.push(this.selectedRule)
-      this.existingRules.push(this.selectedRule)
-      this.selectedRule = cloneDeep(defaultRule) // clear form
+      const existingItemIndex = findIndex(this.selectedPolicy!.rules, { id: this.selectedRule!.id })
+
+      if (existingItemIndex !== -1) {
+        // replace existing rule
+        this.selectedPolicy!.rules.splice(existingItemIndex, 1, this.selectedRule!)
+      } else {
+        // add new rule
+        this.selectedPolicy!.rules.push(this.selectedRule!)
+      }
+
+      this.selectedRule = getDefaultRule()
+      showSnackbar({ msg: 'Rule successfully applied to the policy.' })
     },
-    savePolicy() {
-      this.existingPolicies.push(this.selectedPolicy)
-      this.selectedPolicy = cloneDeep(defaultPolicy) // clear form
+    async savePolicy() {
+      const { addMonitoringPolicy, error } = useMonitoringPoliciesMutations()
+
+      // modify payload to comply with current BE format
+      const policy = cloneDeep(this.selectedPolicy!)
+      policy.rules = policy.rules.map((rule) => {
+        rule.triggerEvents = rule.triggerEvents.map((condition) => {
+          if (!policy.id) delete condition.id // don't send generated ids
+          return condition
+        })
+        delete rule.detectionMethod
+        delete rule.metricName
+        if (!policy.id) delete rule.id // don't send generated ids
+        return rule
+      })
+
+      await addMonitoringPolicy({ policy: policy })
+
+      if (!error.value) {
+        this.selectedPolicy = undefined
+        this.selectedRule = undefined
+        this.getMonitoringPolicies()
+        showSnackbar({ msg: 'Policy successfully applied.' })
+      }
+
+      return !error.value
+    },
+    copyPolicy(policy: Policy) {
+      const copiedPolicy = cloneDeep(policy)
+      delete copiedPolicy.isDefault
+      delete copiedPolicy.id
+      delete copiedPolicy.name
+      this.displayPolicyForm(copiedPolicy)
     }
   }
 })
