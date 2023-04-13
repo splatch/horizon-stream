@@ -1,8 +1,8 @@
-/*******************************************************************************
+/*
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -24,21 +24,14 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ *
+ */
 
-package org.opennms.horizon.minion.grpc;
+package org.opennms.horizon.minion.bootstrap;
 
-public interface GrpcClientConstants {
-
-    String GRPC_CLIENT_PID = "org.opennms.core.ipc.grpc.client";
-    String GRPC_HOST = "host";
-    String DEFAULT_GRPC_HOST = "localhost";
-    String GRPC_PORT = "port";
-    int DEFAULT_GRPC_PORT = 8990;
-    String TLS_ENABLED = "tls.enabled";
-    String GRPC_MAX_INBOUND_SIZE = "max.message.size";
-    int DEFAULT_MESSAGE_SIZE = 10485760;
-    String CLIENT_CERTIFICATE_FILE_PATH = "client.cert.filepath";
-    String CLIENT_PRIVATE_KEY_FILE_PATH = "client.private.key.filepath";
-    String TRUST_CERTIFICATE_FILE_PATH = "trust.cert.filepath";
+/**
+ * Marker interface for the bean that performs the Certificate Package bootstrap process, extracting from ZIP and placing
+ *  the files in the correct locations.
+ */
+public interface CertificatePackageBootstrap {
 }
