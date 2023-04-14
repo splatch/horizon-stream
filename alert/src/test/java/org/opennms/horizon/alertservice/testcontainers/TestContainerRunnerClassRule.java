@@ -136,7 +136,7 @@ public class TestContainerRunnerClassRule extends ExternalResource {
         );
 
         // DEBUGGING: uncomment to force local port 5005
-        //applicationContainer.getPortBindings().add("5005:5005");
+        applicationContainer.getPortBindings().add("5005:5005");
         applicationContainer.start();
 
         var httpPort = applicationContainer.getMappedPort(8080); // application-http-port
