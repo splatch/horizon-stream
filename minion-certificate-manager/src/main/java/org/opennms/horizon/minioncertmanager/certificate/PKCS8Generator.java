@@ -42,36 +42,21 @@ public class PKCS8Generator {
     private static final Logger LOG = LoggerFactory.getLogger(PKCS8Generator.class);
 
     public void generate(String location, String tenantId, File directory) throws InterruptedException, IOException {
-        LOG.info("=== MAKING PKCS1 KEY");
+        LOG.info("=== GENERATING CERTIFICATE FOR LOCATION: {} AND TENANT: {}", location, tenantId);
+        LOG.debug("=== GENERATE CA CERT");
+        executeCommand("openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj \"/C=CA/ST=TBD/L=TBD/O=OpenNMS/CN=insecure-opennms-hs-ca\" -keyout CA.key -out CA.cert", directory);
+
+        LOG.debug("=== MAKING PKCS1 KEY");
         executeCommand("openssl genrsa -out client.key.pkcs1 2048", directory);
 
-        File pkcs1KeyFile = new File(directory, "client.key.pkcs1");
-        LOG.info("PKCS1 key file exists: {}", pkcs1KeyFile.exists());
-        LOG.info("PKCS1 location: {}", pkcs1KeyFile.getAbsolutePath());
-
-
-        LOG.info("=== CONVERTING TO PKCS8");
+        LOG.debug("=== CONVERTING TO PKCS8");
         executeCommand("openssl pkcs8 -topk8 -in client.key.pkcs1 -out client.key -nocrypt", directory);
 
-        File pkcs8KeyFile = new File(directory, "client.key");
-        LOG.info("PKCS8 key file exists: {}", pkcs8KeyFile.exists());
-        LOG.info("PKCS8 location: {}", pkcs8KeyFile.getAbsolutePath());
-
-
-        LOG.info("=== GENERATING THE UNSIGNED CERT");
+        LOG.debug("=== GENERATING THE UNSIGNED CERT");
         executeCommand("openssl req -new -key client.key -out client.unsigned.cert -subj \"/C=CA/ST=TBD/L=TBD/O=OpenNMS/CN=opennms-minion-ssl-gateway/OU=L:" + location + "/OU=T:" + tenantId + "\"", directory);
 
-        File unsignedCertFile = new File(directory, "client.unsigned.cert");
-        LOG.info("Unsigned cert file exists: {}", unsignedCertFile.exists());
-        LOG.info("Unsigned cert location: {}", unsignedCertFile.getAbsolutePath());
-
-
-        LOG.info("=== SIGNING CERT");
+        LOG.debug("=== SIGNING CERT");
         executeCommand("openssl x509 -req -in client.unsigned.cert -days 3650 -CA CA.cert -CAkey CA.key -CAcreateserial -out client.signed.cert", directory);
-
-        File signedCertFile = new File(directory, "client.signed.cert");
-        LOG.info("Signed cert file exists: {}", signedCertFile.exists());
-        LOG.info("Signed cert location: {}", signedCertFile.getAbsolutePath());
 
         LOG.info("=== DONE");
     }
@@ -86,7 +71,7 @@ public class PKCS8Generator {
 
         String stdoutLine;
         while ((stdoutLine = stdoutReader.readLine()) != null) {
-            LOG.info(stdoutLine);
+            LOG.debug(stdoutLine);
         }
 
         String stderrLine;

@@ -1,6 +1,3 @@
-certificate-authority:
-  url: acme://pebble/pebble:14000
-
 keycloak:
   realm: opennms
   base-url: http://onms-keycloak:8080/auth

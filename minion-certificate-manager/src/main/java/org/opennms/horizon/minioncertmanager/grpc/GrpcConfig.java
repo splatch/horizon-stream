@@ -84,7 +84,6 @@ public class GrpcConfig {
     @Bean(destroyMethod = "stopServer")
     public GrpcServerManager startServer(MinionCertificateManagerImpl minionCertificateManagerImpl, MinionCertServerInterceptor interceptor) {
         GrpcServerManager manager = new GrpcServerManager(port, interceptor);
-//        GrpcServerManager manager = new GrpcServerManager(port);
         manager.startServer(minionCertificateManagerImpl);
         return manager;
     }

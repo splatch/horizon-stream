@@ -28,9 +28,14 @@
 
 package org.opennms.horizon.minioncertmanager.grpc;
 
-import io.grpc.*;
+import io.grpc.Context;
+import io.grpc.Contexts;
+import io.grpc.Metadata;
+import io.grpc.ServerCall;
+import io.grpc.ServerCallHandler;
+import io.grpc.ServerInterceptor;
+import io.grpc.Status;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.keycloak.TokenVerifier;
 import org.keycloak.adapters.KeycloakDeployment;
@@ -39,27 +44,30 @@ import org.keycloak.common.VerificationException;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.util.TokenUtil;
 import org.opennms.horizon.shared.constants.GrpcConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-@Slf4j
 public class MinionCertServerInterceptor implements ServerInterceptor {
+    private static final Logger LOG = LoggerFactory.getLogger(MinionCertServerInterceptor.class);
+
     private static final String TOKEN_PREFIX = "Bearer";
     private final KeycloakDeployment keycloak;
 
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> callHandler) {
 
-        log.debug("Received metadata: {}", headers);
+        LOG.debug("Received metadata: {}", headers);
         String authHeader = headers.get(GrpcConstants.AUTHORIZATION_METADATA_KEY);
         try {
             Optional<String> tenantId = verifyAccessToken(authHeader);
             Context context = tenantId.map(tnId -> Context.current().withValue(GrpcConstants.TENANT_ID_CONTEXT_KEY, tnId)).orElseThrow();
             return Contexts.interceptCall(context, serverCall, headers, callHandler);
         } catch (VerificationException e) {
-            log.error("Failed to verify access token", e);
+            LOG.error("Failed to verify access token", e);
             serverCall.close(Status.UNAUTHENTICATED.withDescription("Invalid access token"), new Metadata());
             return new ServerCall.Listener<>() {
             };

@@ -34,15 +34,17 @@ import io.grpc.ServerInterceptor;
 import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import io.grpc.protobuf.services.ProtoReflectionService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
-@Slf4j
 public class GrpcServerManager {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GrpcServerManager.class);
 
     private Server grpcServer;
     private final int port;
@@ -56,9 +58,9 @@ public class GrpcServerManager {
         grpcServer = serverBuilder.build();
         try {
             grpcServer.start();
-            log.info("gRPC server started at port {}", port);
+            LOG.info("gRPC server started at port {}", port);
         } catch (IOException e) {
-            log.error("Couldn't start gRPC server", e);
+            LOG.error("Couldn't start gRPC server", e);
         }
     }
 
