@@ -289,7 +289,7 @@ export const useFlowsStore = defineStore('flowsStore', {
 
       const topApplications = await flowsQueries.getApplicationsSummaries(requestData)
       this.topApplications = [
-        ...((topApplications.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || null)
+        ...((topApplications.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || [])
       ]
     }
   }
