@@ -69,7 +69,7 @@ public class ConfigurationUtil {
     @Value("${grpc.url.flows}")
     private String flowQuerierGrpcAddress;
 
-    @Value("${grpc.url.minion.certificate.manager}")
+    @Value("${grpc.url.minion-certificate-manager}")
     private String minionCertificateManagerGrpcAddress;
 
     @Bean
