@@ -32,6 +32,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.opennms.horizon.alerts.proto.AlertType;
+import org.opennms.horizon.alerts.proto.ManagedObjectType;
+import org.opennms.horizon.alerts.proto.MonitorPolicyProto;
+import org.opennms.horizon.alerts.proto.PolicyRuleProto;
+import org.opennms.horizon.alerts.proto.Severity;
+import org.opennms.horizon.alerts.proto.TriggerEventProto;
 import org.opennms.horizon.alertservice.db.entity.AlertDefinition;
 import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
 import org.opennms.horizon.alertservice.db.entity.TriggerEvent;
@@ -39,12 +44,7 @@ import org.opennms.horizon.alertservice.db.repository.AlertDefinitionRepository;
 import org.opennms.horizon.alertservice.db.repository.MonitorPolicyRepository;
 import org.opennms.horizon.alertservice.db.repository.TriggerEventRepository;
 import org.opennms.horizon.alertservice.mapper.MonitorPolicyMapper;
-import org.opennms.horizon.shared.alert.policy.ComponentType;
-import org.opennms.horizon.shared.alert.policy.EventType;
-import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
-import org.opennms.horizon.shared.alert.policy.PolicyRuleProto;
-import org.opennms.horizon.shared.alert.policy.Severity;
-import org.opennms.horizon.shared.alert.policy.TriggerEventProto;
+import org.opennms.horizon.alerts.proto.EventType;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -91,7 +91,7 @@ public class MonitorPolicyService {
                 .build();
             PolicyRuleProto defaultRule = PolicyRuleProto.newBuilder()
                 .setName(DEFAULT_RULE)
-                .setComponentType(ComponentType.NODE)
+                .setComponentType(ManagedObjectType.NODE.NODE)
                 .addAllSnmpEvents(List.of(coldReboot, warmReboot, deviceUnreachable))
                 .build();
             MonitorPolicyProto defaultPolicy = MonitorPolicyProto.newBuilder()
