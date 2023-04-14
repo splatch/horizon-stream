@@ -26,26 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.systemtests;
 
-import com.codeborne.selenide.logevents.SimpleReport;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
+package org.opennms.horizon.systemtests.pages.portal;
 
-public class TextReport {
+import com.codeborne.selenide.SelenideElement;
 
-    private final SimpleReport report = new SimpleReport();
+import java.time.Duration;
 
-    @Before
-    public void beforeTest(Scenario scenario) {
-        scenario.log("Starting " + scenario.getName());
-        report.start();
+import static com.codeborne.selenide.Condition.cssClass;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
+public class PortalSnackBar {
+
+    private static final SelenideElement snackBar = $("[data-ref-id='feather-snackbar']");
+
+    public static void verifySuccessSnackBarMessage(String message) {
+        snackBar
+            .shouldNot(cssClass("error"))
+            .shouldHave(text(message), Duration.ofSeconds(20));
     }
 
-    @After
-    public void afterTest(Scenario scenario) {
-        scenario.log("Finished " + scenario.getName());
-        report.finish(scenario.getName());
+    public static void verifyErrorSnackBarMessage(String message) {
+        snackBar
+            .shouldBe(visible, Duration.ofSeconds(20))
+            .shouldHave(cssClass("error"), text(message));
     }
 }

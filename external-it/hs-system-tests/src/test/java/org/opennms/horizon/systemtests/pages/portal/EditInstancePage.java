@@ -26,26 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.systemtests;
 
-import com.codeborne.selenide.logevents.SimpleReport;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
+package org.opennms.horizon.systemtests.pages.portal;
 
-public class TextReport {
+import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 
-    private final SimpleReport report = new SimpleReport();
+import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
-    @Before
-    public void beforeTest(Scenario scenario) {
-        scenario.log("Starting " + scenario.getName());
-        report.start();
+public class EditInstancePage {
+
+    public static final ElementsCollection usersRow = $$("tbody tr");
+    public static final SelenideElement usersTable = $("tbody");
+    public static final SelenideElement deleteInstanceBtn = $("#delete-btn-cloud-instance");
+
+    public static void verifyNumberOfUsers(int count) {
+        usersRow.shouldHave(CollectionCondition.size(count));
     }
 
-    @After
-    public void afterTest(Scenario scenario) {
-        scenario.log("Finished " + scenario.getName());
-        report.finish(scenario.getName());
+    public static void verifyUserEmailInTable(String email) {
+        usersTable.find(byText(email)).shouldBe(Condition.visible);
+    }
+
+    public static void clickDeleteInstance() {
+        deleteInstanceBtn.shouldBe(Condition.enabled).click();
     }
 }

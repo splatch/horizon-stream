@@ -26,26 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.systemtests;
 
-import com.codeborne.selenide.logevents.SimpleReport;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
+package org.opennms.horizon.systemtests.pages.portal;
 
-public class TextReport {
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.SelenideElement;
 
-    private final SimpleReport report = new SimpleReport();
+import static com.codeborne.selenide.Selenide.$;
 
-    @Before
-    public void beforeTest(Scenario scenario) {
-        scenario.log("Starting " + scenario.getName());
-        report.start();
+public class DeleteInstancePopup {
+
+    private static final SelenideElement popup = $("[data-ref-id='feather-dialog']");
+    private static final SelenideElement confirmInstanceNameInp = $("#delete-instance-confirm-input");
+    private static final SelenideElement deleteBtn = $("div.dialog-footer button.btn-primary");
+    private static final SelenideElement cancelBtn = $("div.dialog-footer button.btn-secondary");
+
+    public static void waitPopupIsDisplayed(boolean isVisible) {
+        if (isVisible) {
+            popup.shouldBe(Condition.visible);
+        } else {
+            popup.shouldBe(Condition.disappear);
+        }
     }
 
-    @After
-    public void afterTest(Scenario scenario) {
-        scenario.log("Finished " + scenario.getName());
-        report.finish(scenario.getName());
+    public static void setInstanceEmail(String instanceName) {
+        confirmInstanceNameInp.shouldBe(Condition.enabled).setValue(instanceName);
+    }
+
+    public static void clickDelete() {
+        deleteBtn.shouldBe(Condition.enabled).click();
+    }
+
+    public static void clickCancel() {
+        cancelBtn.shouldBe(Condition.enabled).click();
     }
 }

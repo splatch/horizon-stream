@@ -26,26 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.systemtests;
 
-import com.codeborne.selenide.logevents.SimpleReport;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
+package org.opennms.horizon.systemtests.pages.portal;
 
-public class TextReport {
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.SelenideElement;
 
-    private final SimpleReport report = new SimpleReport();
+import static com.codeborne.selenide.Selenide.$;
 
-    @Before
-    public void beforeTest(Scenario scenario) {
-        scenario.log("Starting " + scenario.getName());
-        report.start();
+public class PortalLoginPage {
+
+    private static final SelenideElement acceptBtn = $("button.MuiButton-root");
+    private static final SelenideElement usernameInp = $("#idp-discovery-username");
+    private static final SelenideElement passwordInp = $("#okta-signin-password");
+    private static final SelenideElement nextBtn = $("#idp-discovery-submit");
+    private static final SelenideElement signInBtn = $("#okta-signin-submit");
+
+    public static void closeCookieHeader() {
+        acceptBtn.shouldBe(Condition.enabled).click();
     }
 
-    @After
-    public void afterTest(Scenario scenario) {
-        scenario.log("Finished " + scenario.getName());
-        report.finish(scenario.getName());
+    public static void setUsername(String username) {
+        usernameInp.shouldBe(Condition.enabled).setValue(username);
     }
+
+    public static void setPassword(String password) {
+        passwordInp.shouldBe(Condition.enabled).setValue(password);
+    }
+
+    public static void clickNext() {
+        nextBtn.shouldBe(Condition.enabled).click();
+    }
+
+    public static void clickSignIn() {
+        signInBtn.shouldBe(Condition.enabled).click();
+    }
+
+
 }

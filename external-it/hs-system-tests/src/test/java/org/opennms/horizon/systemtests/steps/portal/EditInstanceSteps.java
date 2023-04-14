@@ -26,26 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.systemtests;
 
-import com.codeborne.selenide.logevents.SimpleReport;
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
+package org.opennms.horizon.systemtests.steps.portal;
 
-public class TextReport {
+import io.cucumber.java.en.Then;
+import org.opennms.horizon.systemtests.pages.portal.EditInstancePage;
 
-    private final SimpleReport report = new SimpleReport();
+public class EditInstanceSteps {
 
-    @Before
-    public void beforeTest(Scenario scenario) {
-        scenario.log("Starting " + scenario.getName());
-        report.start();
-    }
-
-    @After
-    public void afterTest(Scenario scenario) {
-        scenario.log("Finished " + scenario.getName());
-        report.finish(scenario.getName());
+    @Then("the IT Administrator sees {string} as a single user for the instance")
+    public void instanceHasASingleUser(String email) {
+        EditInstancePage.verifyNumberOfUsers(1);
+        if (email.equals("themself")) {
+            email = System.getProperty("portal_user.email");
+        }
+        EditInstancePage.verifyUserEmailInTable(email);
     }
 }
