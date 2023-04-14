@@ -285,7 +285,7 @@ export const useFlowsStore = defineStore('flowsStore', {
     },
     async getApplicationDataset() {
       const flowsQueries = useflowsQueries()
-      const requestData = this.getRequestData(50, 2000000, [], [])
+      const requestData = this.getRequestData(10, 2000000, [], [])
 
       const topApplications = await flowsQueries.getApplicationsSummaries(requestData)
       this.topApplications = [
