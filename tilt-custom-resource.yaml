@@ -40,6 +40,3 @@ spec:
     image: opennms/horizon-stream-grafana-dev
   postgres:
     image: postgres:13.3-alpine
-  pebble:
-    image: letsencrypt/pebble:v2.3.1
-
