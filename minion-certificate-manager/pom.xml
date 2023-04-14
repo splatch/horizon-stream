@@ -10,10 +10,10 @@
     </parent>
 
 	<artifactId>minion-certificate-manager</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>OpenNMS Horizon Stream :: Minion Certificate Manager</name>
 	<description>POC of Minion Certificate Manager</description>
 	<properties>
+        <application.docker.image.name>opennms/horizon-stream-minion-certificate-manager</application.docker.image.name>
 		<java.version>17</java.version>
 	</properties>
 
@@ -79,19 +79,6 @@
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java-util</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.shredzone.acme4j</groupId>
-            <artifactId>acme4j-client</artifactId>
-            <version>2.16</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.shredzone.acme4j</groupId>
-            <artifactId>acme4j-utils</artifactId>
-            <version>2.16</version>
-        </dependency>
-
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
@@ -120,13 +107,13 @@
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>minion-certificate-manager-api</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>grpc-common-constants</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -137,6 +124,10 @@
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
         </dependency>
     </dependencies>
 
@@ -179,7 +170,7 @@
                 <executions>
                     <execution>
                         <id>build-docker-image</id>
-                        <phase>package</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>${application.jib.defaultGoal}</goal>
                         </goals>
