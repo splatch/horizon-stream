@@ -1,5 +1,10 @@
 <template>
-  <div class="page-headline">{{ text }}</div>
+  <div
+    class="page-headline"
+    data-test="page-headline"
+  >
+    {{ text }}
+  </div>
 </template>
 
 <script lang="ts" setup>

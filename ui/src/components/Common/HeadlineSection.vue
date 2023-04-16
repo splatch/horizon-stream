@@ -1,10 +1,18 @@
 <template>
   <div class="section-wrapper">
     <div class="section-headline">
-      <div class="headline">{{ text }}</div>
-      <div><slot name="infos" /></div>
+      <div
+        class="headline"
+        data-test="section-headline"
+      >
+        {{ text }}
+      </div>
+      <div data-test="infos-slot"><slot name="infos" /></div>
     </div>
-    <div class="section-actions">
+    <div
+      class="section-actions"
+      data-test="actions-slot"
+    >
       <slot name="actions" />
     </div>
   </div>

@@ -6,7 +6,7 @@ const text = 'New Headline'
 
 let wrapper: any
 
-describe('Page header component', () => {
+describe('HeadlinePage', () => {
   afterAll(() => {
     wrapper.unmount()
   })
@@ -14,9 +14,10 @@ describe('Page header component', () => {
   it(`should have ${defaultHeading} as heading`, () => {
     wrapper = mount(HeadlinePage)
 
-    const componentHeading = wrapper.get('.headline').text()
+    const componentHeading = wrapper.get('[data-test="page-headline"]').text()
     expect(componentHeading).toBe(defaultHeading)
   })
+
   it(`should have ${text} as heading`, () => {
     wrapper = mount(HeadlinePage, {
       propsData: {
@@ -24,7 +25,7 @@ describe('Page header component', () => {
       }
     })
 
-    const componentHeading = wrapper.get('.headline').text()
+    const componentHeading = wrapper.get('[data-test="page-headline"]').text()
     expect(componentHeading).toBe(text)
   })
 })

@@ -76,7 +76,6 @@ declare module '@vue/runtime-core' {
     FeatherTextarea: typeof import('@featherds/textarea')['FeatherTextarea']
     FeatherTooltip: typeof import('@featherds/tooltip')['FeatherTooltip']
     GridTabs: typeof import('./src/components/Map/GridTabs.vue')['default']
-    HeaderLinks: typeof import('./src/components/Dashboard/HeaderLinks.vue')['default']
     HeadlinePage: typeof import('./src/components/Common/HeadlinePage.vue')['default']
     HeadlineSection: typeof import('./src/components/Common/HeadlineSection.vue')['default']
     Icon: typeof import('./src/components/Common/Icon.vue')['default']
