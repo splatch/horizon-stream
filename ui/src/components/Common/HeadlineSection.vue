@@ -2,7 +2,7 @@
   <div class="section-wrapper">
     <div class="section-headline">
       <div class="headline">{{ text }}</div>
-      <div><slot name="count" /></div>
+      <div><slot name="infos" /></div>
     </div>
     <div class="section-actions">
       <slot name="actions" />
