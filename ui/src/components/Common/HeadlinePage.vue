@@ -1,5 +1,5 @@
 <template>
-  <div class="headline">{{ text }}</div>
+  <div class="page-headline">{{ text }}</div>
 </template>
 
 <script lang="ts" setup>
@@ -15,7 +15,7 @@ defineProps({
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
 
-.headline {
+.page-headline {
   @include typography.headline2();
   margin-top: var(variables.$spacing-xl);
   margin-bottom: var(variables.$spacing-xl);
