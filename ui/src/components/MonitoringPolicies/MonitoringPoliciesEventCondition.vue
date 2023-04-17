@@ -68,7 +68,7 @@
 
     <div
       class="inner-col"
-      v-if="condition.triggerEvent === SNMPEventType.PORT_DOWN"
+      v-if="condition.triggerEvent === SNMPEventType.SNMP_LINK_UP"
     >
       <div class="text">Clear Event (optional)</div>
       <BasicSelect
