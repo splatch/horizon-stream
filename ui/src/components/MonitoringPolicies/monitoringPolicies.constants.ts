@@ -6,10 +6,9 @@ export enum DetectionMethodTypes {
 export enum SNMPEventType {
   COLD_REBOOT = 'COLD_REBOOT',
   WARM_REBOOT = 'WARM_REBOOT',
-  DEVICE_UNREACHABLE = 'DEVICE_UNREACHABLE',
   SNMP_AUTH_FAILURE = 'SNMP_AUTH_FAILURE',
-  PORT_DOWN = 'PORT_DOWN',
-  PORT_UP = 'PORT_UP'
+  SNMP_Link_Down ='SNMP_Link_Down',
+  SNMP_Link_Up = 'SNMP_Link_Up'
 }
 
 export enum ComponentType {

@@ -81,9 +81,9 @@
 </template>
 
 <script lang="ts" setup>
-import { EventCondition, Rule, Policy } from '@/types/policies'
-import { conditionLetters, SNMPEventType, Unknowns } from './monitoringPolicies.constants'
-import { Severity, TimeRangeUnit } from '@/types/graphql'
+import {EventCondition, Policy, Rule} from '@/types/policies'
+import {conditionLetters, SNMPEventType, Unknowns} from './monitoringPolicies.constants'
+import {Severity, TimeRangeUnit} from '@/types/graphql'
 
 const props = defineProps<{
   condition: EventCondition
@@ -106,20 +106,21 @@ const severityList = [
   { id: Severity.Critical, name: 'Critical' },
   { id: Severity.Major, name: 'Major' },
   { id: Severity.Minor, name: 'Minor' },
-  { id: Severity.Warning, name: 'Warning' }
+  { id: Severity.Warning, name: 'Warning' },
+  { id: Severity.Cleared, name: 'Cleared'}
 ]
 
 const clearEventOptions = [
   { id: Unknowns.UNKNOWN_EVENT, name: '' },
-  { id: SNMPEventType.PORT_UP, name: 'Port Up' }
+  { id: SNMPEventType.SNMP_Link_Down, name: 'SNMP Link Down'},
 ]
 
 const triggerEventOptions = [
   { id: SNMPEventType.COLD_REBOOT, name: 'Cold Reboot' },
   { id: SNMPEventType.WARM_REBOOT, name: 'Warm Reboot' },
-  { id: SNMPEventType.DEVICE_UNREACHABLE, name: 'Device Unreachable' },
   { id: SNMPEventType.SNMP_AUTH_FAILURE, name: 'SNMP Authentication Failure' },
-  { id: SNMPEventType.PORT_DOWN, name: 'Port Down' }
+  { id: SNMPEventType.SNMP_Link_Down, name: 'SNMP Link Down'},
+  {id: SNMPEventType.SNMP_Link_Up, name: 'SNMP Link Up'}
 ]
 
 watchEffect(() => (condition.value = props.condition))
