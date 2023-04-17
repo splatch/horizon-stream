@@ -16,7 +16,7 @@ const testingPayload = {
   rules: [
     {
       name: 'Rule1',
-      componentType: ComponentType.CPU,
+      componentType: ComponentType.NODE,
       triggerEvents: [
         {
           count: 1,

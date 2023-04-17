@@ -57,7 +57,7 @@ const getDefaultEventCondition = () => ({
 const getDefaultRule = () => ({
   id: new Date().getTime(),
   name: '',
-  componentType: ComponentType.CPU,
+  componentType: ComponentType.NODE,
   detectionMethod: DetectionMethodTypes.EVENT,
   metricName: EventMetrics.SNMP_TRAP,
   triggerEvents: [getDefaultEventCondition()]

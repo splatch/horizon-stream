@@ -135,8 +135,8 @@ const metricOptions = computed(() => {
 })
 
 const componentTypeOptions = [
-  { id: ComponentType.CPU, name: 'CPU' },
-  { id: ComponentType.INTERFACE, name: 'Interface' },
+  { id: ComponentType.ANY, name: 'Any' },
+  { id: ComponentType.SNMP_INTERFACE, name: 'SNMP Interface' },
   { id: ComponentType.STORAGE, name: 'Storage' },
   { id: ComponentType.NODE, name: 'Node' }
 ]
