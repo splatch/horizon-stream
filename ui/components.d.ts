@@ -76,6 +76,7 @@ declare module '@vue/runtime-core' {
     FeatherTooltip: typeof import('@featherds/tooltip')['FeatherTooltip']
     GridTabs: typeof import('./src/components/Map/GridTabs.vue')['default']
     Icon: typeof import('./src/components/Common/Icon.vue')['default']
+    InstructionsStepper: typeof import('./src/components/Common/InstructionsStepper.vue')['default']
     InventoryDetectedNodesTabContent: typeof import('./src/components/Inventory/InventoryDetectedNodesTabContent.vue')['default']
     InventoryFilter: typeof import('./src/components/Inventory/InventoryFilter.vue')['default']
     InventoryIconActionList: typeof import('./src/components/Inventory/InventoryIconActionList.vue')['default']
