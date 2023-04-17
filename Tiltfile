@@ -31,6 +31,7 @@
 ## 30 = events
 ## 31 = cortex
 ## 32 = prometheus
+## 34 = minion-certificate-manager
 
 # Tilt config #
 secret_settings(disable_scrub=True)  ## TODO: update secret values so we can reenable scrub
