@@ -26,43 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.horizon.systemtests.pages.cloud;
 
-package org.opennms.horizon.systemtests.pages.portal;
-
-import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 
-public class EditInstancePage {
+public class CloudLoginPage {
+    private static final SelenideElement userNameInp = $("#idp-discovery-username");
+    private static final SelenideElement nextBtn = $("#idp-discovery-submit");
+    private static final SelenideElement passwordInp = $("#okta-signin-password");
+    private static final SelenideElement submitBtn = $("#okta-signin-submit");
 
-    public static final ElementsCollection usersRow = $$("tbody tr");
-    public static final SelenideElement usersTable = $("tbody");
-    public static final SelenideElement deleteInstanceBtn = $("#delete-btn-cloud-instance");
-    public static final SelenideElement instanceUrlTxt = $("h2 a");
-
-    public static void verifyNumberOfUsers(int count) {
-        usersRow.shouldHave(CollectionCondition.size(count));
+    public static void setUsername(String username) {
+        userNameInp.shouldBe(enabled).setValue(username);
     }
 
-    public static void verifyUserEmailInTable(String email) {
-        usersTable.find(byText(email)).shouldBe(visible);
+    public static void clickNextBtn() {
+        nextBtn.shouldBe(enabled).click();
     }
 
-    public static String getInstanceUrl() {
-        return instanceUrlTxt.shouldBe(visible).getAttribute("href");
+    public static void setPassword(String password) {
+        passwordInp.shouldBe(enabled).setValue(password);
     }
 
-    public static void clickDeleteInstance() {
-        deleteInstanceBtn.shouldBe(enabled).click();
-    }
-
-    public static void clickOnInstanceUrl() {
-        instanceUrlTxt.shouldBe(enabled).click();
+    public static void clickSubmitBtn() {
+        submitBtn.shouldBe(enabled).click();
     }
 }
