@@ -2,21 +2,47 @@
   <div class="container">
     <div class="header">
       <PageHeadline text="Insights Dashboard" />
-      <HeaderLinks />
+      <DashboardHeaderLinks />
     </div>
     <div class="section-title">Alert Status</div>
     <div class="list-alerts">
-      <AlertsSeverityFilters @click="redirect('/alerts')" />
+      <AlertsSeverityFilters @click="redirect('Alerts')" />
+    </div>
+    <div class="graphs">
+      <DashboardCard
+        :texts="dashboardText.NetworkTraffic"
+        :redirectLink="'Inventory'"
+      >
+        <template v-slot:content>
+          <DashboardNetworkTraffic />
+        </template>
+      </DashboardCard>
+      <DashboardCard
+        :texts="dashboardText.TopApplications"
+        :redirectLink="'Flows'"
+      >
+        <template v-slot:content>
+          <DashboardApplications />
+        </template>
+      </DashboardCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useFlowsStore } from '@/store/Views/flowsStore'
+import dashboardText from '@/components/Dashboard/dashboard.text'
+
 const router = useRouter()
+const flowsStore = useFlowsStore()
 
 const redirect = (route: string) => {
   router.push(route)
 }
+
+onMounted(async () => {
+  await flowsStore.getApplicationDataset()
+})
 </script>
 
 <style scoped lang="scss">
@@ -33,25 +59,28 @@ const redirect = (route: string) => {
   padding: var(variables.$spacing-l) var(variables.$spacing-m);
   margin: auto;
   @include mediaQueriesMixins.screen-md {
-    width: vars.$max-width-constrained;
+    padding: var(variables.$spacing-xl);
   }
   > .header {
     @include typography.headline2();
     display: flex;
     align-items: center;
-    flex-direction: column;
+    justify-content: space-between;
     width: 100%;
-
-    @include mediaQueriesMixins.screen-md {
-      flex-direction: row;
-      justify-content: space-between;
-    }
   }
   .list-alerts {
     overflow-x: auto;
   }
   .section-title {
     @include typography.headline3();
+  }
+  .graphs {
+    display: flex;
+    gap: 1.3%;
+    flex-direction: column;
+    @include mediaQueriesMixins.screen-md {
+      flex-direction: row;
+    }
   }
 }
 </style>

@@ -6,7 +6,10 @@ import {
   TsResult,
   Location,
   TimeRangeUnit,
-  ListTagsByNodeIdsDocument
+  ListTagsByNodeIdsDocument,
+  FindAllNodesByNodeLabelSearchDocument,
+  Node,
+  FindAllNodesByTagsDocument
 } from '@/types/graphql'
 import { NodeContent } from '@/types/inventory'
 import useSpinner from '@/composables/useSpinner'
@@ -15,18 +18,56 @@ import { Monitor } from '@/types'
 export const useInventoryQueries = defineStore('inventoryQueries', () => {
   const nodes = ref<NodeContent[]>([])
   const variables = reactive({ nodeIds: <number[]>[] })
+  const labelSearchVariables = reactive({ labelSearchTerm: '' })
+  const tagsVariables = reactive({ tags: <string[]>[] })
 
   const { startSpinner, stopSpinner } = useSpinner()
 
+  // Get all nodes
   const {
-    data: nodesData,
+    onData,
     isFetching: nodesFetching,
     execute
   } = useQuery({
     query: NodesListDocument,
-    cachePolicy: 'network-only' // always fetch and do not cache
+    cachePolicy: 'network-only'
   })
 
+  // Get nodes by label
+  const {
+    onData: onFilteredByLabelData,
+    isFetching: filteredNodesByLabelFetching,
+    execute: filterNodesByLabel
+  } = useQuery({
+    query: FindAllNodesByNodeLabelSearchDocument,
+    cachePolicy: 'network-only',
+    fetchOnMount: false,
+    variables: labelSearchVariables
+  })
+
+  const getNodesByLabel = (label: string) => {
+    labelSearchVariables.labelSearchTerm = label
+    filterNodesByLabel()
+  }
+
+  // Get nodes by tags
+  const {
+    onData: onFilteredByTagsData,
+    isFetching: filteredNodesByTagsFetching,
+    execute: filterNodesByTags
+  } = useQuery({
+    query: FindAllNodesByTagsDocument,
+    cachePolicy: 'network-only',
+    fetchOnMount: false,
+    variables: tagsVariables
+  })
+
+  const getNodesByTags = (tags: string[]) => {
+    tagsVariables.tags = tags
+    filterNodesByTags()
+  }
+
+  // Get tags for nodes
   const { data: tagData, execute: getTags } = useQuery({
     query: ListTagsByNodeIdsDocument,
     cachePolicy: 'network-only',
@@ -34,6 +75,7 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
     variables
   })
 
+  // Get metrics for specific node
   const fetchNodeMetrics = (id: number, instance: string) =>
     useQuery({
       query: NodeLatencyMetricDocument,
@@ -44,22 +86,26 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
         timeRange: 1,
         timeRangeUnit: TimeRangeUnit.Minute
       },
-      cachePolicy: 'network-only' // always fetch and do not cache
+      cachePolicy: 'network-only'
     })
 
-  watch(nodesFetching, (_, fetched) => (fetched ? stopSpinner() : startSpinner()))
+  watchEffect(() => (nodesFetching.value ? startSpinner() : stopSpinner()))
+  watchEffect(() => (filteredNodesByLabelFetching.value ? startSpinner() : stopSpinner()))
+  watchEffect(() => (filteredNodesByTagsFetching.value ? startSpinner() : stopSpinner()))
 
-  watchEffect(async () => {
+  onData((data) => formatData(data.findAllNodes || []))
+  onFilteredByLabelData((data) => formatData(data.findAllNodesByNodeLabelSearch || []))
+  onFilteredByTagsData((data) => formatData(data.findAllNodesByTags || []))
+
+  const formatData = async (data: Partial<Node>[]) => {
     nodes.value = []
 
-    const allNodes = nodesData.value?.findAllNodes
-
-    if (allNodes?.length) {
+    if (data?.length) {
       // get the tags for all nodeIds
-      variables.nodeIds = allNodes.map((node) => node.id)
+      variables.nodeIds = data.map((node) => node.id)
       await getTags()
 
-      allNodes.forEach(async ({ id, nodeLabel, location, ipInterfaces }) => {
+      data.forEach(async ({ id, nodeLabel, location, ipInterfaces }) => {
         const { ipAddress: snmpPrimaryIpAddress } = ipInterfaces?.filter((ii) => ii.snmpPrimary)[0] || {} // not getting ipAddress from snmpPrimary interface can result in missing metrics for ICMP
         const tagsObj = tagData.value?.tagsByNodeIds?.filter((item) => item.nodeId === id)[0]
 
@@ -142,10 +188,12 @@ export const useInventoryQueries = defineStore('inventoryQueries', () => {
         }
       })
     }
-  })
+  }
 
   return {
     nodes,
-    fetch: execute
+    fetch: execute,
+    getNodesByLabel,
+    getNodesByTags
   }
 })

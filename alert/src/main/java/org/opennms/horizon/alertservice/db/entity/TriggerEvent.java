@@ -28,10 +28,9 @@
 
 package org.opennms.horizon.alertservice.db.entity;
 
-import org.opennms.horizon.shared.alert.policy.EventType;
-import org.opennms.horizon.shared.alert.policy.OverTimeUnit;
-import org.opennms.horizon.shared.alert.policy.Severity;
-
+import org.opennms.horizon.alerts.proto.EventType;
+import org.opennms.horizon.alerts.proto.OverTimeUnit;
+import org.opennms.horizon.alerts.proto.Severity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -79,9 +78,4 @@ public class TriggerEvent {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id", referencedColumnName = "trigger_event_id")
     private AlertDefinition alertDefinition;
-    private String uei;
-    @Column(name = "reduction_key")
-    private String reductionKey;
-    @Column(name = "clear_key")
-    private String clearKey;
 }

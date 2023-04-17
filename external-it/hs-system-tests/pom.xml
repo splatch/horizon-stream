@@ -21,6 +21,9 @@
         <cucumber.version>7.11.2</cucumber.version>
         <selenium.version>4.1.1</selenium.version>
         <junit.version>5.9.1</junit.version>
+        <azure.okhttp.version>1.11.8</azure.okhttp.version>
+        <azure.secrets.version>4.6.0</azure.secrets.version>
+        <azure.identity.version>1.8.2</azure.identity.version>
     </properties>
 
     <build>
@@ -30,11 +33,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0</version>
-                <configuration>
-                    <systemPropertyVariables>
-                        <selenide.downloadsFolder>target/downloads</selenide.downloadsFolder>
-                    </systemPropertyVariables>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -61,7 +59,7 @@
         <dependency>
             <groupId>com.codeborne</groupId>
             <artifactId>selenide</artifactId>
-            <version>6.12.4</version>
+            <version>6.13.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -78,8 +76,27 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <!-- azure key-value -->
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-core-http-okhttp</artifactId>
+            <version>${azure.okhttp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-security-keyvault-secrets</artifactId>
+            <version>${azure.secrets.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.azure</groupId>
+                    <artifactId>azure-core-http-netty</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-identity</artifactId>
+            <version>${azure.identity.version}</version>
+        </dependency>
     </dependencies>
-
-
 </project>

@@ -29,21 +29,14 @@
 package org.opennms.horizon.server.service.flows;
 
 import io.grpc.ManagedChannel;
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.ServerInterceptor;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
-import io.grpc.stub.ServerCalls;
 import io.grpc.stub.StreamObserver;
 import io.grpc.testing.GrpcCleanupRule;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
 import org.opennms.dataplatform.flows.querier.v1.ApplicationSeriesRequest;
 import org.opennms.dataplatform.flows.querier.v1.ApplicationSummariesRequest;
 import org.opennms.dataplatform.flows.querier.v1.ApplicationsServiceGrpc;
@@ -56,10 +49,12 @@ import org.opennms.dataplatform.flows.querier.v1.ListRequest;
 import org.opennms.dataplatform.flows.querier.v1.Series;
 import org.opennms.dataplatform.flows.querier.v1.Summaries;
 import org.opennms.dataplatform.flows.querier.v1.TrafficSummary;
+import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
+import org.opennms.horizon.inventory.dto.NodeDTO;
+import org.opennms.horizon.server.model.flows.ExporterFilter;
 import org.opennms.horizon.server.model.flows.RequestCriteria;
 import org.opennms.horizon.server.model.flows.TimeRange;
-import org.opennms.horizon.server.model.inventory.IpInterface;
-import org.opennms.horizon.shared.constants.GrpcConstants;
+import org.opennms.horizon.server.service.grpc.InventoryClient;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -70,29 +65,37 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.AdditionalAnswers.delegatesTo;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FLowClientTest {
     @Rule
     public final GrpcCleanupRule grpcCleanUp = new GrpcCleanupRule();
 
-    private static FlowClient flowClient;
-
+    private FlowClient flowClient;
 
     private final String tenantId = "testId";
-    private final long exporterInterfaceId = 1L;
+    private final String authHeader = "authHeader";
+
+    private final long exporterNodeId = 1L;
+    private final long exporterInterfaceId = 3L;
     private final String application = "http";
     private final int count = 20; // make sure it is not default value
     private final int bytesIn = 10;
     private final int bytesOut = 10;
+    private final boolean includeOther = true;
     private final Instant startTime = Instant.now();
     private final Instant endTime = startTime.minus(1, ChronoUnit.HOURS);
 
-
     @Before
-    public void startGrpc() throws IOException {
-//        private static ApplicationsServiceGrpc.ApplicationsServiceImplBase applicationsServiceBlockingStub;
-//        private static ExporterServiceGrpc.ExporterServiceImplBase exporterServiceStub;
+    public void setup() throws IOException {
+        var inventoryClient = mock(InventoryClient.class);
+        when(inventoryClient.getNodeById(anyLong(), anyString())).thenReturn(
+            NodeDTO.newBuilder()
+                .addIpInterfaces(IpInterfaceDTO.newBuilder().setId(1))
+                .addIpInterfaces(IpInterfaceDTO.newBuilder().setId(2)).build());
         var applicationsServiceBlockingStub = mock(ApplicationsServiceGrpc.ApplicationsServiceImplBase.class, delegatesTo(
             new ApplicationsServiceGrpc.ApplicationsServiceImplBase() {
                 @Override
@@ -112,8 +115,14 @@ public class FLowClientTest {
                     checkTimeRangeFilters(request.getFiltersList());
                     Assert.assertEquals(tenantId, request.getTenantId());
                     Assert.assertEquals(count, request.getCount());
-                    checkApplication(application, request.getFiltersList());
-                    checkExporter(Exporter.newBuilder().setInterfaceId(exporterInterfaceId).build(), request.getFiltersList());
+                    Assert.assertEquals(includeOther, request.getIncludeOther());
+                    Assert.assertEquals(application, request.getApplications(0));
+                    var exporters = new ArrayList<Exporter>();
+                    exporters.add(Exporter.newBuilder().setInterfaceId(exporterInterfaceId).build());
+                    // interfaceId from nodeId 1 from inventoryClient mock.
+                    exporters.add(Exporter.newBuilder().setInterfaceId(1).build());
+                    exporters.add(Exporter.newBuilder().setInterfaceId(2).build());
+                    checkExporter(exporters, request.getFiltersList());
                     CompletableFuture.delayedExecutor(100, TimeUnit.MILLISECONDS).execute(() -> {
                         responseObserver.onNext(Summaries.newBuilder()
                             .addSummaries(TrafficSummary.newBuilder().setApplication(application).setBytesIn(bytesIn).setBytesOut(bytesOut))
@@ -127,8 +136,10 @@ public class FLowClientTest {
                     checkTimeRangeFilters(request.getFiltersList());
                     Assert.assertEquals(tenantId, request.getTenantId());
                     Assert.assertEquals(count, request.getCount());
-                    checkApplication(application, request.getFiltersList());
-                    checkExporter(Exporter.newBuilder().setInterfaceId(exporterInterfaceId).build(), request.getFiltersList());
+                    Assert.assertEquals(application, request.getApplications(0));
+                    var exporters = new ArrayList<Exporter>();
+                    exporters.add(Exporter.newBuilder().setInterfaceId(exporterInterfaceId).build());
+                    checkExporter(exporters, request.getFiltersList());
 
                     CompletableFuture.delayedExecutor(100, TimeUnit.MILLISECONDS).execute(() -> {
                         responseObserver.onNext(Series.newBuilder()
@@ -147,8 +158,9 @@ public class FLowClientTest {
                     checkTimeRangeFilters(request.getFiltersList());
                     Assert.assertEquals(tenantId, request.getTenantId());
                     Assert.assertEquals(count, request.getLimit());
-                    checkExporter(Exporter.newBuilder().setInterfaceId(exporterInterfaceId).build(), request.getFiltersList());
-
+                    var exporters = new ArrayList<Exporter>();
+                    exporters.add(Exporter.newBuilder().setInterfaceId(exporterInterfaceId).build());
+                    checkExporter(exporters, request.getFiltersList());
                     CompletableFuture.delayedExecutor(100, TimeUnit.MILLISECONDS).execute(() -> {
                         responseObserver.onNext(org.opennms.dataplatform.flows.querier.v1.List.newBuilder()
                             .addElements(String.valueOf(exporterInterfaceId)).build());
@@ -166,7 +178,7 @@ public class FLowClientTest {
             .start());
         ManagedChannel channel = grpcCleanUp.register(InProcessChannelBuilder.forName(FLowClientTest.class.getName())
             .directExecutor().build());
-        flowClient = new FlowClient(channel, 600);
+        flowClient = new FlowClient(inventoryClient, channel, 600);
         flowClient.initialStubs();
     }
 
@@ -175,7 +187,7 @@ public class FLowClientTest {
     public void testGetApplications() {
         RequestCriteria requestCriteria = this.getRequestCriteria();
 
-        var list = flowClient.findApplications(requestCriteria, tenantId);
+        var list = flowClient.findApplications(requestCriteria, tenantId, authHeader);
         Assert.assertEquals(1, list.size());
         Assert.assertEquals(application, list.get(0));
     }
@@ -184,7 +196,7 @@ public class FLowClientTest {
     public void testGetExporters() {
         RequestCriteria requestCriteria = this.getRequestCriteria();
 
-        var list = flowClient.findExporters(requestCriteria, tenantId);
+        var list = flowClient.findExporters(requestCriteria, tenantId, authHeader);
         Assert.assertEquals(1, list.size());
         Assert.assertEquals(exporterInterfaceId, (long) list.get(0));
     }
@@ -192,8 +204,10 @@ public class FLowClientTest {
     @Test
     public void testGetApplicationSummary() {
         RequestCriteria requestCriteria = this.getRequestCriteria();
-
-        var summaries = flowClient.getApplicationSummaries(requestCriteria, tenantId);
+        ExporterFilter nodeExporterFilter = new ExporterFilter();
+        nodeExporterFilter.setNodeId(exporterNodeId);
+        requestCriteria.getExporter().add(nodeExporterFilter);
+        var summaries = flowClient.getApplicationSummaries(requestCriteria, tenantId, authHeader);
         Assert.assertEquals(1, summaries.getSummariesCount());
         Assert.assertEquals(application, summaries.getSummaries(0).getApplication());
         Assert.assertEquals(bytesIn, summaries.getSummaries(0).getBytesIn());
@@ -204,7 +218,7 @@ public class FLowClientTest {
     public void testGetApplicationSeries() {
         RequestCriteria requestCriteria = this.getRequestCriteria();
 
-        var series = flowClient.getApplicationSeries(requestCriteria, tenantId);
+        var series = flowClient.getApplicationSeries(requestCriteria, tenantId, authHeader);
         Assert.assertEquals(1, series.getPointCount());
         Assert.assertEquals(application, series.getPoint(0).getApplication());
         Assert.assertEquals(bytesIn, series.getPoint(0).getValue(), 0);
@@ -218,6 +232,7 @@ public class FLowClientTest {
         timeRage.setEndTime(endTime);
         requestCriteria.setTimeRange(timeRage);
         requestCriteria.setCount(count);
+        requestCriteria.setIncludeOther(includeOther);
 
         // application
         List<String> applications = new ArrayList<>();
@@ -225,19 +240,17 @@ public class FLowClientTest {
         requestCriteria.setApplications(applications);
 
         // exporter
-        org.opennms.horizon.server.model.flows.Exporter exporter = new org.opennms.horizon.server.model.flows.Exporter();
-        IpInterface ipInterface = new IpInterface();
-        ipInterface.setId(exporterInterfaceId);
-        exporter.setIpInterface(ipInterface);
-        List<org.opennms.horizon.server.model.flows.Exporter> exporters = new ArrayList<>();
-        exporters.add(exporter);
+        var exporterFilter = new org.opennms.horizon.server.model.flows.ExporterFilter();
+        exporterFilter.setIpInterfaceId(exporterInterfaceId);
+        List<org.opennms.horizon.server.model.flows.ExporterFilter> exporters = new ArrayList<>();
+        exporters.add(exporterFilter);
         requestCriteria.setExporter(exporters);
 
         return requestCriteria;
     }
 
     private void checkTimeRangeFilters(List<Filter> filters) {
-        var timeRangeFilters = filters.stream().filter(f -> f.hasTimeRange()).toList();
+        var timeRangeFilters = filters.stream().filter(Filter::hasTimeRange).toList();
         Assert.assertEquals(1, timeRangeFilters.size());
 
         var startTimestamp = timeRangeFilters.get(0).getTimeRange().getStartTime();
@@ -248,16 +261,16 @@ public class FLowClientTest {
     }
 
     private void checkApplication(String application, List<Filter> filters) {
-        var applicationFilter = filters.stream().filter(f -> f.hasApplication()).toList();
+        var applicationFilter = filters.stream().filter(Filter::hasApplication).toList();
 
         Assert.assertEquals(1, applicationFilter.size());
         Assert.assertEquals(application, applicationFilter.get(0).getApplication().getApplication());
     }
 
-    private void checkExporter(Exporter exporter, List<Filter> filters) {
-        var exporterFilters = filters.stream().filter(f -> f.hasExporter()).toList();
+    private void checkExporter(List<Exporter> exporters, List<Filter> filters) {
+        var exporterFilters = filters.stream().filter(Filter::hasExporter).map(f->f.getExporter().getExporter()).toList();
+        Assert.assertEquals(exporters.size(), exporterFilters.size());
 
-        Assert.assertEquals(1, exporterFilters.size());
-        Assert.assertEquals(exporter.getInterfaceId(), exporterFilters.get(0).getExporter().getExporter().getInterfaceId());
+        Assert.assertEquals(exporters, exporterFilters);
     }
 }

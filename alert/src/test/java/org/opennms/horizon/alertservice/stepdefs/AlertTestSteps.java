@@ -28,27 +28,8 @@
 
 package org.opennms.horizon.alertservice.stepdefs;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.MessageOrBuilder;
-import com.google.protobuf.Timestamp;
-import com.google.protobuf.UInt64Value;
-import com.google.protobuf.util.JsonFormat;
-import io.cucumber.java.en.Then;
-import io.restassured.RestAssured;
-import io.restassured.config.HttpClientConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.opennms.horizon.alerts.proto.*;
-import org.opennms.horizon.alertservice.AlertGrpcClientUtils;
-import org.opennms.horizon.alertservice.RetryUtils;
-import org.opennms.horizon.alertservice.kafkahelper.KafkaTestHelper;
-import org.opennms.horizon.events.proto.Event;
-import org.opennms.horizon.events.proto.EventLog;
-import org.opennms.horizon.model.common.proto.Severity;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,8 +40,34 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.opennms.horizon.alerts.proto.Alert;
+import org.opennms.horizon.alerts.proto.AlertRequest;
+import org.opennms.horizon.alerts.proto.Filter;
+import org.opennms.horizon.alerts.proto.ListAlertsRequest;
+import org.opennms.horizon.alerts.proto.ListAlertsResponse;
+import org.opennms.horizon.alerts.proto.TimeRangeFilter;
+import org.opennms.horizon.alertservice.AlertGrpcClientUtils;
+import org.opennms.horizon.alertservice.RetryUtils;
+import org.opennms.horizon.alertservice.kafkahelper.KafkaTestHelper;
+import org.opennms.horizon.events.proto.Event;
+import org.opennms.horizon.events.proto.EventLog;
+import org.opennms.horizon.alerts.proto.Severity;
+
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.MessageOrBuilder;
+import com.google.protobuf.Timestamp;
+import com.google.protobuf.util.JsonFormat;
+
+import io.cucumber.java.After;
+import io.cucumber.java.en.Then;
+import io.restassured.RestAssured;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AlertTestSteps {
@@ -103,16 +110,26 @@ public class AlertTestSteps {
         kafkaTestHelper.startConsumerAndProducer(background.getAlertTopic(), background.getAlertTopic());
     }
 
+    @After
+    public void cleanData() {
+        log.info("clean alert data");
+        if(alertsFromLastResponse != null) {
+            alertsFromLastResponse.forEach(alert -> {
+                clientUtils.getAlertServiceStub()
+                    .deleteAlert(AlertRequest.newBuilder().addAlertId(alert.getDatabaseId()).build());
+            });
+        }
+    }
+
 //========================================
 // Gherkin Rules
 //========================================
-@Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string}")
-public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenantId, int nodeId, String severity) {
+@Then("Send event with UEI {string} with tenant {string} with node {int}")
+public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenantId, int nodeId) {
         EventLog eventLog = EventLog.newBuilder()
             .setTenantId(tenantId)
             .addEvents(Event.newBuilder()
                 .setTenantId(tenantId)
-                .setSeverity(Severity.valueOf(severity))
                 .setProducedTimeMs(System.currentTimeMillis())
                 .setNodeId(nodeId)
                 .setUei(eventUei))
@@ -121,13 +138,12 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
         kafkaTestHelper.sendToTopic(background.getEventTopic(), eventLog.toByteArray(), tenantId);
     }
 
-    @Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string} with produced time 23h ago")
-    public void sendMessageToKafkaAtTopicYesterday(String eventUei, String tenantId, int nodeId, String severity) {
+    @Then("Send event with UEI {string} with tenant {string} with node {int} with produced time 23h ago")
+    public void sendMessageToKafkaAtTopicYesterday(String eventUei, String tenantId, int nodeId) {
         EventLog eventLog = EventLog.newBuilder()
             .setTenantId(tenantId)
             .addEvents(Event.newBuilder()
                 .setTenantId(tenantId)
-                .setSeverity(Severity.valueOf(severity))
                 .setProducedTimeMs(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(23))
                 .setNodeId(nodeId)
                 .setUei(eventUei))
@@ -136,13 +152,12 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
         kafkaTestHelper.sendToTopic(background.getEventTopic(), eventLog.toByteArray(), tenantId);
     }
 
-    @Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string} with produced time 1h ago")
-    public void sendMessageToKafkaAtTopic1hAgo(String eventUei, String tenantId, int nodeId, String severity) {
+    @Then("Send event with UEI {string} with tenant {string} with node {int} with with produced time 1h ago")
+    public void sendMessageToKafkaAtTopic1hAgo(String eventUei, String tenantId, int nodeId) {
         EventLog eventLog = EventLog.newBuilder()
             .setTenantId(tenantId)
             .addEvents(Event.newBuilder()
                 .setTenantId(tenantId)
-                .setSeverity(Severity.valueOf(severity))
                 .setProducedTimeMs(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1))
                 .setNodeId(nodeId)
                 .setUei(eventUei))
@@ -151,13 +166,12 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
         kafkaTestHelper.sendToTopic(background.getEventTopic(), eventLog.toByteArray(), tenantId);
     }
 
-    @Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string} with produced time 8 days ago")
-    public void sendMessageToKafkaAtTopicLastWeek(String eventUei, String tenantId, int nodeId, String severity) {
+    @Then("Send event with UEI {string} with tenant {string} with node {int} with produced time 8 days ago")
+    public void sendMessageToKafkaAtTopicLastWeek(String eventUei, String tenantId, int nodeId) {
         EventLog eventLog = EventLog.newBuilder()
             .setTenantId(tenantId)
             .addEvents(Event.newBuilder()
                 .setTenantId(tenantId)
-                .setSeverity(Severity.valueOf(severity))
                 .setProducedTimeMs(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(8))
                 .setNodeId(nodeId)
                 .setUei(eventUei))
@@ -166,13 +180,12 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
         kafkaTestHelper.sendToTopic(background.getEventTopic(), eventLog.toByteArray(), tenantId);
     }
 
-    @Then("Send event with UEI {string} with tenant {string} with node {int} with severity {string} with produced time last month")
-    public void sendMessageToKafkaAtTopicLastMonth(String eventUei, String tenantId, int nodeId, String severity) {
+    @Then("Send event with UEI {string} with tenant {string} with node {int} with produced time last month")
+    public void sendMessageToKafkaAtTopicLastMonth(String eventUei, String tenantId, int nodeId) {
         EventLog eventLog = EventLog.newBuilder()
             .setTenantId(tenantId)
             .addEvents(Event.newBuilder()
                 .setTenantId(tenantId)
-                .setSeverity(Severity.valueOf(severity))
                 .setProducedTimeMs(System.currentTimeMillis() - 30L * 24 * 60 * 60 * 1000)
                 .setNodeId(nodeId)
                 .setUei(eventUei))
@@ -183,6 +196,7 @@ public void sendMessageToKafkaAtTopicWithSeverity(String eventUei, String tenant
 
     @Then("List alerts for tenant {string}, with timeout {int}ms, until JSON response matches the following JSON path expressions")
     public void listAlertsForTenant(String tenantId, int timeout, List<String> jsonPathExpressions) throws Exception {
+        log.info("List for tenant {}, timeout {}ms, data {}", tenantId, timeout, jsonPathExpressions);
         Supplier<MessageOrBuilder> call = () -> {
             clientUtils.setTenantId(tenantId);
             ListAlertsResponse listAlertsResponse = clientUtils.getAlertServiceStub()
