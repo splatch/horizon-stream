@@ -26,7 +26,6 @@ public class CucumberHooks {
             return;
         }
 
-        System.out.println("CLOUD BEFORE STEP");
         Selenide.open(SecretsStorage.portalHost);
         PortalLoginPage.closeCookieHeader();
         PortalLoginPage.setUsername(SecretsStorage.adminUserEmail);
@@ -37,7 +36,7 @@ public class CucumberHooks {
         PortalCloudPage.verifyThatUserLoggedIn();
 
         long timeCode = Instant.now().toEpochMilli();
-        ;
+
         String instanceName = "Cloud-env" + timeCode;
         PortalCloudPage.clickAddInstance();
         AddNewInstancePopup.setInstanceName(instanceName);
