@@ -31,13 +31,16 @@ package org.opennms.horizon.server.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
 public class TSResult {
-    private Map<String, String> metric;
-    List<Double> value;
-    List<List<Double>> values;
+    private Map<String, String> metric = new HashMap<>();
+    List<Double> value = new ArrayList<>();
+    List<List<Double>> values = new ArrayList<>();
 }
+
