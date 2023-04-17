@@ -50,7 +50,7 @@ const getDefaultEventCondition = () => ({
   count: 1,
   severity: Severity.Critical,
   overtimeUnit: Unknowns.UNKNOWN_UNIT,
-  triggerEvent: SNMPEventType.COLD_REBOOT,
+  triggerEvent: SNMPEventType.SNMP_COLD_START,
   clearEvent: Unknowns.UNKNOWN_EVENT
 })
 
