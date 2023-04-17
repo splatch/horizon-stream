@@ -26,9 +26,13 @@
     <template v-slot:nav>
       <router-link
         to="/"
-        v-slot="{ isActive }">
+        active-class="selected"
+        custom
+        v-slot="{ isActive, href, navigate }">
         <FeatherAppRailNavItem
           :icon="Icons.Home"
+          @click="navigate"
+          :href="href"
           :class="{ selected: isActive }">
           Home
         </FeatherAppRailNavItem>
@@ -36,9 +40,13 @@
 
       <router-link
         to="/appliances"
-        v-slot="{ isActive }">
+        active-class="selected"
+        custom
+        v-slot="{ isActive, href, navigate }">
         <FeatherAppRailNavItem
           :icon="Icons.Appliances"
+          @click="navigate"
+          :href="href"
           :class="{ selected: isActive }">
           Appliances
         </FeatherAppRailNavItem>
@@ -46,9 +54,13 @@
 
       <router-link
         to="/map"
-        v-slot="{ isActive }">
+        active-class="selected"
+        custom
+        v-slot="{ isActive, href, navigate }">
       <FeatherAppRailNavItem
         :icon="Icons.Location"
+        @click="navigate"
+        :href="href"
         :class="{ selected: isActive }">
         Map
       </FeatherAppRailNavItem>
@@ -56,9 +68,13 @@
 
       <router-link
         to="/inventory"
-        v-slot="{ isActive }">
+        active-class="selected"
+        custom
+        v-slot="{ isActive, href, navigate }">
         <FeatherAppRailNavItem
           :icon="Icons.Business"
+          @click="navigate"
+          :href="href"
           :class="{ selected: isActive }">
           Inventory
         </FeatherAppRailNavItem>
@@ -66,9 +82,13 @@
 
       <router-link
         to="/discovery"
-        v-slot="{ isActive }">
+        active-class="selected"
+        custom
+        v-slot="{ isActive, href, navigate }">
         <FeatherAppRailNavItem
           :icon="Icons.Discovery"
+          @click="navigate"
+          :href="href"
           :class="{ selected: isActive }">
           Discovery
         </FeatherAppRailNavItem>
@@ -76,9 +96,13 @@
 
       <router-link
         to="/monitoring-policies"
-        v-slot="{ isActive }">
+        active-class="selected"
+        custom
+        v-slot="{ isActive, href, navigate }">
         <FeatherAppRailNavItem
           :icon="Icons.Monitoring"
+          @click="navigate"
+          :href="href"
           :class="{ selected: isActive }">
           Monitoring Policies
         </FeatherAppRailNavItem>
@@ -86,9 +110,13 @@
 
       <router-link
         to="/alerts"
-        v-slot="{ isActive }">
+        active-class="selected"
+        custom
+        v-slot="{ isActive, href, navigate }">
         <FeatherAppRailNavItem
           :icon="Icons.Warning"
+          @click="navigate"
+          :href="href"
           :class="{ selected: isActive }">
           Alerts
         </FeatherAppRailNavItem>
@@ -97,9 +125,13 @@
       <router-link
         v-if="false"
         to="/synthetic-transactions"
-        v-slot="{ isActive }">
+        active-class="selected"
+        custom
+        v-slot="{ isActive, href, navigate }">
         <FeatherAppRailNavItem
           :icon="Icons.Cycle"
+          @click="navigate"
+          :href="href"
           :class="{ selected: isActive }">
           Synthetic Transactions
         </FeatherAppRailNavItem>
