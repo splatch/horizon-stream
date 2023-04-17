@@ -4,24 +4,22 @@
     :content="content"
   >
     <template v-slot:icon>
-      <IconTextAnimate class="nav-rail-home">
-        <template v-slot:icon>
-          <FeatherIcon
-            :icon="LogoIcon"
-            title="Home"
-            class="product-icon"
-            @click="gotoHome"
-          />
-        </template>
-        <template v-slot:text>
-          <FeatherIcon
-            :icon="LogoText"
-            title="Home"
-            class="product-icon"
-            @click="gotoHome"
-          />
-        </template>
-      </IconTextAnimate>
+      <router-link to="/">
+        <IconTextAnimate class="nav-rail-home">
+          <template v-slot:icon>
+            <FeatherIcon
+              :icon="LogoIcon"
+              title="Home"
+            />
+          </template>
+          <template v-slot:text>
+            <FeatherIcon
+              :icon="LogoText"
+              title="Home"
+            />
+          </template>
+        </IconTextAnimate>
+      </router-link>
     </template>
     <template v-slot:nav>
 
@@ -100,22 +98,4 @@ const labels = {
 }
 const content = 'mainContent'
 
-const router = useRouter()
-const route = useRoute()
-
-const isSelected = (path: string) => path === route.fullPath
-
-const gotoHome = () => {
-  router.push('/')
-}
 </script>
-
-<style lang="scss" scoped>
-@use '@featherds/styles/mixins/typography';
-
-.icon-text-animate {
-  &:hover {
-    cursor: pointer;
-  }
-}
-</style>
