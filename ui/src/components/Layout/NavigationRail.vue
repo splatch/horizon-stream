@@ -24,55 +24,86 @@
       </IconTextAnimate>
     </template>
     <template v-slot:nav>
+      <router-link
+        to="/"
+        v-slot="{ isActive }">
+        <FeatherAppRailNavItem
+          :icon="Icons.Home"
+          :class="{ selected: isActive }">
+          Home
+        </FeatherAppRailNavItem>
+      </router-link>
+
+      <router-link
+        to="/appliances"
+        v-slot="{ isActive }">
+        <FeatherAppRailNavItem
+          :icon="Icons.Appliances"
+          :class="{ selected: isActive }">
+          Appliances
+        </FeatherAppRailNavItem>
+      </router-link>
+
+      <router-link
+        to="/map"
+        v-slot="{ isActive }">
       <FeatherAppRailNavItem
-        href="/"
-        :icon="Icons.Home"
-        title="Home"
-        :class="{ selected: isSelected('/') }"
-      />
-      <FeatherAppRailNavItem
-        href="/appliances"
-        :icon="Icons.Appliances"
-        title="Appliances"
-        :class="{ selected: isSelected('/appliances') }"
-      />
-      <FeatherAppRailNavItem
-        href="/map"
         :icon="Icons.Location"
-        title="Map"
-        :class="{ selected: isSelected('/map') }"
-      />
-      <FeatherAppRailNavItem
-        href="/inventory"
-        :icon="Icons.Business"
-        title="Inventory"
-        :class="{ selected: isSelected('/inventory') }"
-      />
-      <FeatherAppRailNavItem
-        href="/discovery"
-        :icon="Icons.Discovery"
-        title="Discovery"
-        :class="{ selected: isSelected('/discovery') }"
-      />
-      <FeatherAppRailNavItem
-        href="/monitoring-policies"
-        :icon="Icons.Monitoring"
-        title="Monitoring Policies"
-        :class="{ selected: isSelected('/monitoring-policies') }"
-      />
-      <FeatherAppRailNavItem
-        href="/alerts"
-        :icon="Icons.Warning"
-        title="Alerts"
-        :class="{ selected: isSelected('/alerts') }"
-      />
-      <FeatherAppRailNavItem
+        :class="{ selected: isActive }">
+        Map
+      </FeatherAppRailNavItem>
+      </router-link>
+
+      <router-link
+        to="/inventory"
+        v-slot="{ isActive }">
+        <FeatherAppRailNavItem
+          :icon="Icons.Business"
+          :class="{ selected: isActive }">
+          Inventory
+        </FeatherAppRailNavItem>
+      </router-link>
+
+      <router-link
+        to="/discovery"
+        v-slot="{ isActive }">
+        <FeatherAppRailNavItem
+          :icon="Icons.Discovery"
+          :class="{ selected: isActive }">
+          Discovery
+        </FeatherAppRailNavItem>
+      </router-link>
+
+      <router-link
+        to="/monitoring-policies"
+        v-slot="{ isActive }">
+        <FeatherAppRailNavItem
+          :icon="Icons.Monitoring"
+          :class="{ selected: isActive }">
+          Monitoring Policies
+        </FeatherAppRailNavItem>
+      </router-link>
+
+      <router-link
+        to="/alerts"
+        v-slot="{ isActive }">
+        <FeatherAppRailNavItem
+          :icon="Icons.Warning"
+          :class="{ selected: isActive }">
+          Alerts
+        </FeatherAppRailNavItem>
+      </router-link>
+
+      <router-link
         v-if="false"
-        href="/synthetic-transactions"
-        :icon="Icons.Cycle"
-        title="Synthetic Transactions"
-        :class="{ selected: isSelected('/synthetic-transactions') }"
-      />
+        to="/synthetic-transactions"
+        v-slot="{ isActive }">
+        <FeatherAppRailNavItem
+          :icon="Icons.Cycle"
+          :class="{ selected: isActive }">
+          Synthetic Transactions
+        </FeatherAppRailNavItem>
+      </router-link>
     </template>
   </FeatherAppRail>
 </template>
