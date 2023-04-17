@@ -117,7 +117,7 @@ const clearEventOptions = [
 
 const triggerEventOptions = [
   { id: SNMPEventType.SNMP_COLD_START, name: 'SNMP Cold Start' },
-  { id: SNMPEventType.SNMP_WARM_START, name: 'SNMP_Warm_Start' },
+  { id: SNMPEventType.SNMP_WARM_START, name: 'SNMP Warm Start' },
   { id: SNMPEventType.SNMP_AUTHEN_FAILURE, name: 'SNMP Authentication Failure' },
   { id: SNMPEventType.SNMP_LINK_DOWN, name: 'SNMP Link Down'},
   { id: SNMPEventType.SNMP_LINK_UP, name: 'SNMP Link Up'},
