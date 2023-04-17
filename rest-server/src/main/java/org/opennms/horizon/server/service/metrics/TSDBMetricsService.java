@@ -107,6 +107,8 @@ public class TSDBMetricsService {
         String metricNameRegex = name;
         String tenantId = headerUtil.extractTenant(env);
         if (TOTAL_NETWORK_BYTES_IN.equals(name) || TOTAL_NETWORK_BYTES_OUT.equals(name)) {
+            // TODO: Derive start/end/steps from API.
+            //  For now these two queries are fixed to 24h with 1h steps.
             long currentTimeStampInSec = System.currentTimeMillis() / 1000L;
             long timeStampBefore24h = currentTimeStampInSec - 24 * 60 * 60;
             String rangeQuerySuffix = "&start=" + timeStampBefore24h + "&end=" + currentTimeStampInSec +
