@@ -34,6 +34,7 @@ import io.cucumber.java.Before;
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import org.junit.runner.RunWith;
+import org.opennms.horizon.systemtests.keyvalue.SecretsStorage;
 import org.opennms.horizon.systemtests.pages.portal.PortalCloudPage;
 import org.opennms.horizon.systemtests.pages.portal.PortalLoginPage;
 
@@ -52,11 +53,11 @@ public class HSCucumberRunnerTest {
         if (Selenide.webdriver().driver().hasWebDriverStarted()) {
             return;
         }
-        Selenide.open("https://dev.cloud.opennms.com");
+        Selenide.open(SecretsStorage.portalHost);
         PortalLoginPage.closeCookieHeader();
-        PortalLoginPage.setUsername(System.getProperty("portal_user.email"));
+        PortalLoginPage.setUsername(SecretsStorage.adminUserEmail);
         PortalLoginPage.clickNext();
-        PortalLoginPage.setPassword(System.getProperty("portal_user.password"));
+        PortalLoginPage.setPassword(SecretsStorage.adminUserPassword);
         PortalLoginPage.clickSignIn();
 
         PortalCloudPage.verifyThatUserLoggedIn();
@@ -64,7 +65,7 @@ public class HSCucumberRunnerTest {
 
     @After("@portal")
     public static void returnToPortalMainPage() {
-        Selenide.open("https://dev.cloud.opennms.com/cloud");
+        Selenide.open(SecretsStorage.portalHost + "/cloud");
     }
 
 }
