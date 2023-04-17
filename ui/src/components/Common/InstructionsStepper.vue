@@ -3,8 +3,9 @@
     <button
       @click="isExpand = !isExpand"
       class="btn-open-toggle"
+      data-test="btn-open-toggle"
     >
-      <span>{{ btnLabel }}</span>
+      <span>{{ textButton }}</span>
       <FeatherIcon
         :icon="isExpand ? icon.ExpandLess : icon.ExpandMore"
         aria-hidden="true"
@@ -15,7 +16,10 @@
       v-if="isExpand"
       class="steps"
     >
-      <div class="stepper">
+      <div
+        class="stepper"
+        data-test="stepper"
+      >
         <!-- first item -->
         <div
           @click="step = 0"
@@ -32,6 +36,7 @@
               :key="index"
               @click="step = index"
               :class="{ selected: step === index }"
+              data-test="step-selector"
             >
               {{ index + 1 }}
             </li>
@@ -53,8 +58,16 @@
         :class="{ active: step === index }"
         class="step-content"
       >
-        <div class="subtitle2">{{ list.title }}</div>
-        <ul class="type-square">
+        <div
+          class="subtitle"
+          data-test="step-content-subtitle"
+        >
+          {{ list.title }}
+        </div>
+        <ul
+          class="type-square"
+          data-test="step-content-list"
+        >
           <li
             v-for="(item, index) in list.items"
             :key="index"
@@ -80,7 +93,7 @@ interface StepContent {
 }
 
 defineProps({
-  btnLabel: {
+  textButton: {
     type: String,
     required: true
   },
@@ -203,7 +216,7 @@ const icon = markRaw({
   padding-left: var(variables.$spacing-m);
   margin-left: var(variables.$spacing-xl);
 
-  .subtitle2 {
+  .subtitle {
     @include typography.subtitle2();
     margin-bottom: var(variables.$spacing-m);
   }
