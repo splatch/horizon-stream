@@ -82,7 +82,7 @@ import Cycle from '@featherds/icon/action/Cycle'
 import Warning from '@featherds/icon/notification/Warning'
 import NavigationRailNavItem from '@/components/Layout/NavigationRailNavItem.vue'
 
-const Icons = {
+const Icons = markRaw({
   Appliances,
   Home,
   Location,
@@ -91,7 +91,7 @@ const Icons = {
   Monitoring,
   Cycle,
   Warning
-}
+})
 
 const labels = {
   skip: 'Skip to main content'

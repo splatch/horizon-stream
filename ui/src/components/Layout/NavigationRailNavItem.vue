@@ -1,14 +1,13 @@
 <template>
   <router-link
-    active-class="selected"
     custom
     :to="href"
-    v-slot="{ isActive, href, navigate }">
+    v-slot="{ isActive, href: routerHref, navigate }">
     <FeatherAppRailNavItem
       :icon="icon"
       :title="title"
       @click="navigate"
-      :href="href"
+      :href="routerHref"
       :class="{ selected: isActive }"/>
   </router-link>
 </template>
