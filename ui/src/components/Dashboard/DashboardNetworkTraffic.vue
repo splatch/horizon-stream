@@ -20,8 +20,7 @@ import AreaChartDark from '@/assets/AreaChart-dark.svg'
 import useTheme from '@/composables/useTheme'
 import { Line } from 'vue-chartjs'
 import { TimeRangeUnit } from '@/types/graphql'
-import { format, eachHourOfInterval } from 'date-fns'
-import { sortBy } from 'lodash'
+import { format, fromUnixTime, isSameDay, formatISO } from 'date-fns'
 const { isDark } = useTheme()
 
 const params = {
@@ -30,53 +29,83 @@ const params = {
   timeRangeUnit: TimeRangeUnit.Minute
 }
 const values = [
-  [1681481752.95, 31009702990],
-  [1681481812.753, 31009959955],
-  [1681481872.751, 31009998930],
-  [1681481932.756, 31010196542],
-  [1681481992.806, 31016311966],
-  [1681482053.567, 31016768277],
-  [1681482112.81, 31014066565],
-  [1681482172.809, 31011798368],
-  [1681482232.719, 31012377402],
-  [1681482292.722, 31013490757],
-  [1681482352.769, 31014043317],
-  [1681482412.772, 31036284530],
-  [1681482472.726, 31042176732],
-  [1681482532.729, 31042290039],
-  [1681482592.733, 31043342671],
-  [1681482652.728, 31043541323],
-  [1681482712.73, 31045497763],
-  [1681482352.769, 31034043417],
-  [1681482832.687, 31045806765],
-  [1681482892.782, 31045949824],
-  [1681483122.014, 31047157235],
-  [1681483252.984, 31047924486],
-  [1681483253.376, 31044590926],
-  [1681483313.758, 31039396534],
-  [1681482352.769, 31014043317]
+  [1681649682, 639440546.6416215],
+  [1681653282, 508919101959.2322],
+  [1681656882, 68278883114.71479],
+  [1681660482, 734307700620.8582],
+  [1681664082, 583662416203.6449],
+  [1681667682, 521208602012.51465],
+  [1681671282, 156552992309.7778],
+  [1681674882, 608352551156.4628],
+  [1681678482, 926031281879.0571],
+  [1681682082, 45749331345.70422],
+  [1681685682, 559170850545.3351],
+  [1681689282, 5789705845.894407],
+  [1681692882, 22229237435.0039482],
+  [1681696482, 40773554023.95905],
+  [1681700082, 1116630287842.7036],
+  [1681703682, 474413966478.28345],
+  [1681707282, 708300654466.2225],
+  [1681710882, 321187578329.12506],
+  [1681714482, 404563613803.0508],
+  [1681718082, 88036336202.1175],
+  [1681721682, 933772646320.0774],
+  [1681725282, 393296129.3433485],
+  [1681728882, 1242350636402.834],
+  [1681732482, 345630601.32130504],
+  [1681736082, 1423696281532.7114]
 ]
 
-const valuesFormatted = values.map((i) => {
-  const transformToDate = (val: number) => parseInt(val.toString().replace('.', ''))
-  const transformtoGb = (val: number) => val / 1e9
-  return [transformToDate(i[0]), transformtoGb(i[1])]
-})
+const values2 = [
+  [1681649682, 963944084121.15],
+  [1681653282, 202914601952.2322],
+  [1681656882, 682783114.71479],
+  [1681660482, 73430700620.8582],
+  [1681664082, 58366416203.6449],
+  [1681667682, 52128602012.51465],
+  [1681671282, 15655992309.7778],
+  [1681674882, 60835551156.4628],
+  [1681678482, 92603281879.0571],
+  [1681682082, 45749313.7088422],
+  [1681685682, 5591708545.3351],
+  [1681689282, 527897084.8944407],
+  [1681692882, 22923735.0039482],
+  [1681696482, 45540773540.06905],
+  [1681700082, 11166387842.7036],
+  [1681703682, 47441366478.28345],
+  [1681707282, 70830054466.2225],
+  [1681710882, 32118778329.12506],
+  [1681714482, 40456313803.0508],
+  [1681718082, 8803636202.1175],
+  [1681721682, 93377646320.0774],
+  [1681725282, 39329129.3433485],
+  [1681728882, 124235066402.834],
+  [1681732482, 34563001.32130504],
+  [1681736082, 142369281532.7114]
+]
+const valuesFormatted = (list) =>
+  list.map((i) => {
+    const transformToDate = (val: number) => format(fromUnixTime(new Date(val)), 'h a')
+    const transformtoGb = (val: number) => val / 1e9
+    return [transformToDate(i[0]), transformtoGb(i[1])]
+  })
 
-const interval = eachHourOfInterval({
-  start: new Date(Date.now() - 3600 * 24 * 1000),
-  end: Date.now()
-})
-const labels = interval.map((i) => format(i, 'h a'))
 const data = {
-  labels: labels,
+  labels: valuesFormatted(values).map((i) => i[0]),
   datasets: [
     {
-      data: valuesFormatted,
+      data: valuesFormatted(values),
       segment: {
         borderColor: 'transparent'
       },
       label: 'Outbound'
+    },
+    {
+      data: valuesFormatted(values2),
+      segment: {
+        borderColor: 'transparent'
+      },
+      label: 'Inbound'
     }
   ]
 }
@@ -135,6 +164,11 @@ const config = {
         },
         ticks: {
           callback: function (val, index) {
+            const lastIndex = values.length - 1
+            if (index == 0 || index == lastIndex) {
+              const date = format(fromUnixTime(new Date(values[index][0])), 'LLL d')
+              return this.getLabelForValue(date)
+            }
             return index % 2 === 0 ? this.getLabelForValue(val) : ''
           },
           maxRotation: 0,
