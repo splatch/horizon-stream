@@ -52,6 +52,10 @@ import java.util.Optional;
 
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.AZURE_MONITOR_TYPE;
 import static org.opennms.horizon.server.service.metrics.normalization.Constants.AZURE_SCAN_TYPE;
+import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_BYTES_IN;
+import static org.opennms.horizon.server.service.metrics.normalization.Constants.QUERY_FOR_TOTAL_NETWORK_BYTES_OUT;
+import static org.opennms.horizon.server.service.metrics.normalization.Constants.TOTAL_NETWORK_BYTES_IN;
+import static org.opennms.horizon.server.service.metrics.normalization.Constants.TOTAL_NETWORK_BYTES_OUT;
 
 @Slf4j
 @GraphQLApi
@@ -63,7 +67,8 @@ public class TSDBMetricsService {
     private final QueryService queryService;
     private final NormalizationService normalizationService;
     private final InventoryClient inventoryClient;
-    private final WebClient webClient;
+    private final WebClient tsdbQueryWebClient;
+    private final WebClient tsdbrangeQueryWebClient;
 
     public TSDBMetricsService(ServerHeaderUtil headerUtil,
                               MetricLabelUtils metricLabelUtils,
@@ -77,8 +82,15 @@ public class TSDBMetricsService {
         this.queryService = queryService;
         this.normalizationService = normalizationService;
         this.inventoryClient = inventoryClient;
-        this.webClient = WebClient.builder()
-            .baseUrl(tsdbURL)
+        String tsdbQueryURL = tsdbURL + "/query";
+        String tsdbRangeQueryURL = tsdbURL + "/query_range";
+        this.tsdbQueryWebClient = WebClient.builder()
+            .baseUrl(tsdbQueryURL)
+            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+            .build();
+        this.tsdbrangeQueryWebClient = WebClient.builder()
+            .baseUrl(tsdbRangeQueryURL)
             .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .build();
@@ -93,7 +105,21 @@ public class TSDBMetricsService {
             .map(HashMap::new).orElseGet(HashMap::new);
 
         String metricNameRegex = name;
-
+        String tenantId = headerUtil.extractTenant(env);
+        if (TOTAL_NETWORK_BYTES_IN.equals(name) || TOTAL_NETWORK_BYTES_OUT.equals(name)) {
+            // TODO: Derive start/end/steps from API.
+            //  For now these two queries are fixed to 24h with 1h steps.
+            long currentTimeStampInSec = System.currentTimeMillis() / 1000L;
+            long timeStampBefore24h = currentTimeStampInSec - 24 * 60 * 60;
+            String rangeQuerySuffix = "&start=" + timeStampBefore24h + "&end=" + currentTimeStampInSec +
+                "&step=1h";
+            if (TOTAL_NETWORK_BYTES_IN.equals(name)) {
+                String rangeQuery = QUERY_FOR_TOTAL_NETWORK_BYTES_IN + rangeQuerySuffix;
+                return getRangeMetrics(tenantId, rangeQuery);
+            }
+            String rangeQuery = QUERY_FOR_TOTAL_NETWORK_BYTES_OUT + rangeQuerySuffix;
+            return getRangeMetrics(tenantId, rangeQuery);
+        }
         //in the case of minion echo, there is no node information
         Optional<NodeDTO> nodeOpt = getNode(env, metricLabels);
         if (nodeOpt.isPresent()) {
@@ -104,7 +130,6 @@ public class TSDBMetricsService {
                 .getQueryMetricRegex(node, name, metricLabels);
         }
 
-        String tenantId = headerUtil.extractTenant(env);
         String queryString = queryService
             .getQueryString(metricNameRegex, metricLabels, timeRange, timeRangeUnit);
 
@@ -113,6 +138,7 @@ public class TSDBMetricsService {
                 normalizationService.normalizeResults(name, result)))
             .orElse(resultMono);
     }
+
 
     private Optional<NodeDTO> getNode(ResolutionEnvironment env, Map<String, String> metricLabels) {
         return metricLabelUtils.getNodeId(metricLabels).map(nodeId -> {
@@ -129,7 +155,15 @@ public class TSDBMetricsService {
     }
 
     private Mono<TimeSeriesQueryResult> getMetrics(String tenantId, String queryString) {
-        return webClient.post()
+        return tsdbQueryWebClient.post()
+            .header("X-Scope-OrgID", tenantId)
+            .bodyValue(queryString)
+            .retrieve()
+            .bodyToMono(TimeSeriesQueryResult.class);
+    }
+
+    private Mono<TimeSeriesQueryResult> getRangeMetrics(String tenantId, String queryString) {
+        return tsdbrangeQueryWebClient.post()
             .header("X-Scope-OrgID", tenantId)
             .bodyValue(queryString)
             .retrieve()
