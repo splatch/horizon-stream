@@ -28,7 +28,6 @@ import { format, fromUnixTime } from 'date-fns'
 import { useDashboardStore } from '@/store/Views/dashboardStore'
 import { optionsGraph } from './dashboardNetworkTraffic.config'
 import { ChartData } from '@/types'
-import { ChartOptions, LineOptions, PluginChartOptions } from 'chart.js'
 
 const { isDark } = useTheme()
 const store = useDashboardStore()

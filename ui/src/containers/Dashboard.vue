@@ -6,7 +6,10 @@
     </div>
     <div class="section-title">Alert Status</div>
     <div class="list-alerts">
-      <AlertsSeverityFilters @click="redirect('Alerts')" />
+      <AlertsSeverityFilters
+        @click="redirect('Alerts')"
+        :timeRange="TimeRange.Last_24Hours"
+      />
     </div>
     <div class="graphs">
       <DashboardCard
@@ -32,6 +35,7 @@
 <script setup lang="ts">
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import dashboardText from '@/components/Dashboard/dashboard.text'
+import { TimeRange } from '@/types/graphql'
 
 const router = useRouter()
 const flowsStore = useFlowsStore()
