@@ -51,7 +51,7 @@ class GraphQLMinionCertificateManagerTest {
     }
 
     @Test
-    public void testGetMinionCert() throws JSONException {
+    void testGetMinionCert() throws JSONException {
         doReturn(GetMinionCertificateResponse.newBuilder().setCertificate(ByteString.copyFromUtf8("test")).setPassword("password").build()).when(mockClient).getMinionCert(TENANT_ID, LOCATION, accessToken);
         String request = """
             query {

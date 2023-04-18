@@ -40,6 +40,7 @@ import io.grpc.stub.StreamObserver;
 import io.grpc.testing.GrpcCleanupRule;
 import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -98,12 +99,12 @@ public class MinionCertificateManagerClientTest {
     }
 
     @Test
-    public void testGetMinionCert() {
+    void testGetMinionCert() {
         String methodName = new Object() {
         }.getClass().getEnclosingMethod().getName();
         ArgumentCaptor<GetMinionCertificateRequest> captor = ArgumentCaptor.forClass(GetMinionCertificateRequest.class);
         GetMinionCertificateResponse result = client.getMinionCert("tenantId", "location", accessToken + methodName);
-        assertThat(result.getPassword().isEmpty()).isFalse();
+        Assertions.assertFalse(result.getPassword().isEmpty());
         verify(mockAlertService).getMinionCert(captor.capture(), any());
         assertThat(captor.getValue()).isNotNull();
         assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
