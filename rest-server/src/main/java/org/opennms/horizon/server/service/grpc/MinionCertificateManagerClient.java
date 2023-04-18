@@ -4,6 +4,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
 import io.grpc.stub.MetadataUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.opennms.horizon.minioncertmanager.proto.GetMinionCertificateRequest;
 import org.opennms.horizon.minioncertmanager.proto.GetMinionCertificateResponse;
 import org.opennms.horizon.minioncertmanager.proto.MinionCertificateManagerGrpc;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
@@ -21,9 +23,12 @@ public class MinionCertificateManagerClient {
 
     private MinionCertificateManagerGrpc.MinionCertificateManagerBlockingStub minionCertStub;
 
+    @Setter
+    private Function<ManagedChannel, MinionCertificateManagerGrpc.MinionCertificateManagerBlockingStub> minionCertStubFactory = MinionCertificateManagerGrpc::newBlockingStub;
+
     @PostConstruct
     protected void initialStubs() {
-        minionCertStub = MinionCertificateManagerGrpc.newBlockingStub(minionCertificateManagerChannel);
+        minionCertStub = minionCertStubFactory.apply(minionCertificateManagerChannel);
     }
 
     @PreDestroy

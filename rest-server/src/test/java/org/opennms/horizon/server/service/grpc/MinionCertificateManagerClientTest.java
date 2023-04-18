@@ -28,105 +28,85 @@
 
 package org.opennms.horizon.server.service.grpc;
 
-import com.google.protobuf.ByteString;
+import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
-import io.grpc.Metadata;
-import io.grpc.ServerCall;
-import io.grpc.ServerCallHandler;
-import io.grpc.ServerInterceptor;
-import io.grpc.inprocess.InProcessChannelBuilder;
-import io.grpc.inprocess.InProcessServerBuilder;
-import io.grpc.stub.StreamObserver;
-import io.grpc.testing.GrpcCleanupRule;
-import org.junit.Rule;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.opennms.horizon.minioncertmanager.proto.GetMinionCertificateRequest;
 import org.opennms.horizon.minioncertmanager.proto.GetMinionCertificateResponse;
 import org.opennms.horizon.minioncertmanager.proto.MinionCertificateManagerGrpc;
-import org.opennms.horizon.shared.constants.GrpcConstants;
 
-import java.io.IOException;
+import java.util.Objects;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.AdditionalAnswers.delegatesTo;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class MinionCertificateManagerClientTest {
-    @Rule
-    public static final GrpcCleanupRule grpcCleanUp = new GrpcCleanupRule();
 
-    private static MinionCertificateManagerClient client;
-    private static MockServerInterceptor mockInterceptor;
-    private static MinionCertificateManagerGrpc.MinionCertificateManagerImplBase mockAlertService;
-    private final String accessToken = "test-token";
+    private MinionCertificateManagerClient client;
+    private MinionCertificateManagerGrpc.MinionCertificateManagerBlockingStub mockCertStub1;
+    private MinionCertificateManagerGrpc.MinionCertificateManagerBlockingStub mockCertStub2;
+    private ManagedChannel mockManagedChannel;
+    private GetMinionCertificateResponse testGetMinionCertificateResponse;
 
-    @BeforeAll
-    public static void startGrpc() throws IOException {
-        mockInterceptor = new MockServerInterceptor();
+    @BeforeEach
+    public void setUp() {
+        mockCertStub1 = mock(MinionCertificateManagerGrpc.MinionCertificateManagerBlockingStub.class);
+        mockCertStub2 = mock(MinionCertificateManagerGrpc.MinionCertificateManagerBlockingStub.class);
+        mockManagedChannel = mock(ManagedChannel.class);
 
-        mockAlertService = mock(MinionCertificateManagerGrpc.MinionCertificateManagerImplBase.class, delegatesTo(
-            new MinionCertificateManagerGrpc.MinionCertificateManagerImplBase() {
-                @Override
-                public void getMinionCert(GetMinionCertificateRequest request, StreamObserver<GetMinionCertificateResponse> responseObserver) {
-                    responseObserver.onNext(GetMinionCertificateResponse.newBuilder()
-                        .setCertificate(ByteString.copyFromUtf8("test"))
-                        .setPassword("password")
-                        .build());
-                    responseObserver.onCompleted();
-                }
-            }));
+        testGetMinionCertificateResponse = GetMinionCertificateResponse.newBuilder().build();
 
-        grpcCleanUp.register(InProcessServerBuilder.forName("MinionCertificateManagerClientTest").intercept(mockInterceptor)
-            .addService(mockAlertService).directExecutor().build().start());
-        ManagedChannel channel = grpcCleanUp.register(InProcessChannelBuilder.forName("MinionCertificateManagerClientTest").directExecutor().build());
-        client = new MinionCertificateManagerClient(channel);
-        client.initialStubs();
-    }
+        client = new MinionCertificateManagerClient(mockManagedChannel);
+        client.setMinionCertStubFactory(this::testMinionCertFactory);
 
-    @AfterEach
-    public void afterTest() {
-        verifyNoMoreInteractions(mockAlertService);
-        reset(mockAlertService);
-        mockInterceptor.reset();
+        ArgumentMatcher<GetMinionCertificateRequest> requestMatcher = createGetMinionCertificateRequestArgumentMatcher("tenantId", "location");
+
+        Mockito.when(mockCertStub1.withInterceptors(Mockito.any(ClientInterceptor.class))).thenReturn(mockCertStub2);
+        Mockito.when(mockCertStub2.getMinionCert(Mockito.argThat(requestMatcher))).thenReturn(testGetMinionCertificateResponse);
     }
 
     @Test
     void testGetMinionCert() {
-        String methodName = new Object() {
-        }.getClass().getEnclosingMethod().getName();
-        ArgumentCaptor<GetMinionCertificateRequest> captor = ArgumentCaptor.forClass(GetMinionCertificateRequest.class);
-        GetMinionCertificateResponse result = client.getMinionCert("tenantId", "location", accessToken + methodName);
-        Assertions.assertFalse(result.getPassword().isEmpty());
-        verify(mockAlertService).getMinionCert(captor.capture(), any());
-        assertThat(captor.getValue()).isNotNull();
-        assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
+        client.initialStubs();
+
+        GetMinionCertificateResponse response = client.getMinionCert("tenantId", "location", "accessToken");
+
+        assertThat(response).isSameAs(testGetMinionCertificateResponse);
+
+        //
+        // Shutdown
+        //
+        Mockito.when(mockManagedChannel.isShutdown()).thenReturn(false);
+
         client.shutdown();
+
+        verify(mockManagedChannel).shutdown();
     }
 
-    private static class MockServerInterceptor implements ServerInterceptor {
-        private String authHeader;
+//========================================
+//
+//----------------------------------------
 
-        @Override
-        public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-            authHeader = headers.get(GrpcConstants.AUTHORIZATION_METADATA_KEY);
-            return next.startCall(call, headers);
-        }
-
-        public String getAuthHeader() {
-            return authHeader;
-        }
-
-        public void reset() {
-            authHeader = null;
-        }
+    private MinionCertificateManagerGrpc.MinionCertificateManagerBlockingStub testMinionCertFactory(ManagedChannel channel) {
+        assertThat(channel).isSameAs(mockManagedChannel);
+        return mockCertStub1;
     }
 
+    private ArgumentMatcher<GetMinionCertificateRequest> createGetMinionCertificateRequestArgumentMatcher(String expectedTenantId, String expectedLocation) {
+        return new ArgumentMatcher<GetMinionCertificateRequest>() {
+            @Override
+            public boolean matches(GetMinionCertificateRequest argument) {
+                if (Objects.equals(argument.getTenantId(), expectedTenantId)) {
+                    if (Objects.equals(argument.getLocation(), expectedLocation)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+    }
 }
