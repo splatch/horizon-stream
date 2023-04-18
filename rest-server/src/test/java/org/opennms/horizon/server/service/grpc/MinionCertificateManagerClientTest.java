@@ -108,6 +108,7 @@ public class MinionCertificateManagerClientTest {
         verify(mockAlertService).getMinionCert(captor.capture(), any());
         assertThat(captor.getValue()).isNotNull();
         assertThat(mockInterceptor.getAuthHeader()).isEqualTo(accessToken + methodName);
+        client.shutdown();
     }
 
     private static class MockServerInterceptor implements ServerInterceptor {
