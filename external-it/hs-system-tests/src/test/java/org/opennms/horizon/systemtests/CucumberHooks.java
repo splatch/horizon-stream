@@ -36,7 +36,7 @@ public class CucumberHooks {
         PortalCloudPage.verifyThatUserLoggedIn();
 
         long timeCode = Instant.now().toEpochMilli();
-        ;
+
         String instanceName = "Cloud-env" + timeCode;
         PortalCloudPage.clickAddInstance();
         AddNewInstancePopup.setInstanceName(instanceName);
