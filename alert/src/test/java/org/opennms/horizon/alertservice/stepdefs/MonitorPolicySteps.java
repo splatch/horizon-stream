@@ -175,7 +175,7 @@ public class MonitorPolicySteps {
     public void verifyTheDefaultMonitoringPolicyHasTheFollowingData(DataTable dataTable) {
         List<Map<String, String>> rows = dataTable.asMaps();
         List<TriggerEventProto> events = policy.getRulesList().get(0).getSnmpEventsList();
-        assertThat(events).asList().hasSize(3);
+        assertThat(events).asList().hasSize(rows.size());
         for(int i =0; i < events.size(); i++) {
             assertThat(events.get(i))
                 .extracting(e -> e.getTriggerEvent().name(), e -> e.getSeverity().name())
