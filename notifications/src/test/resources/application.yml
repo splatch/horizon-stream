@@ -2,6 +2,10 @@ spring:
   application:
     name: integration-test
 
+  mail:
+    template: test.txt.vm
+    from: noreply@opennms.com
+
   liquibase:
     change-log: db/changelog/changelog.xml
     enabled: true

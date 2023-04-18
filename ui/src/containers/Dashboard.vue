@@ -1,21 +1,37 @@
 <template>
   <div class="container">
     <div class="header">
-      <PageHeadline text="Insights Dashboard" />
+      <HeadlinePage text="Insights Dashboard" />
       <DashboardHeaderLinks />
     </div>
     <div class="section-title">Alert Status</div>
     <div class="list-alerts">
       <AlertsSeverityFilters @click="redirect('Alerts')" />
     </div>
-    <div>
-      <DashboardApplications />
+    <div class="graphs">
+      <DashboardCard
+        :texts="dashboardText.NetworkTraffic"
+        :redirectLink="'Inventory'"
+      >
+        <template v-slot:content>
+          <DashboardNetworkTraffic />
+        </template>
+      </DashboardCard>
+      <DashboardCard
+        :texts="dashboardText.TopApplications"
+        :redirectLink="'Flows'"
+      >
+        <template v-slot:content>
+          <DashboardApplications />
+        </template>
+      </DashboardCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useFlowsStore } from '@/store/Views/flowsStore'
+import dashboardText from '@/components/Dashboard/dashboard.text'
 
 const router = useRouter()
 const flowsStore = useFlowsStore()
@@ -49,19 +65,22 @@ onMounted(async () => {
     @include typography.headline2();
     display: flex;
     align-items: center;
-    flex-direction: column;
+    justify-content: space-between;
     width: 100%;
-
-    @include mediaQueriesMixins.screen-md {
-      flex-direction: row;
-      justify-content: space-between;
-    }
   }
   .list-alerts {
     overflow-x: auto;
   }
   .section-title {
     @include typography.headline3();
+  }
+  .graphs {
+    display: flex;
+    gap: 1.3%;
+    flex-direction: column;
+    @include mediaQueriesMixins.screen-md {
+      flex-direction: row;
+    }
   }
 }
 </style>

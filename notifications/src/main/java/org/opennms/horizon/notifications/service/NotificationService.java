@@ -29,8 +29,12 @@
 package org.opennms.horizon.notifications.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.opennms.horizon.alerts.proto.Alert;
+import org.opennms.horizon.notifications.api.email.EmailAPI;
 import org.opennms.horizon.notifications.api.PagerDutyAPI;
+import org.opennms.horizon.notifications.api.email.Velocity;
+import org.opennms.horizon.notifications.api.keycloak.KeyCloakAPI;
 import org.opennms.horizon.notifications.dto.PagerDutyConfigDTO;
 import org.opennms.horizon.notifications.exceptions.NotificationException;
 import org.opennms.horizon.notifications.model.MonitoringPolicy;
@@ -40,7 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -48,6 +51,15 @@ public class NotificationService {
 
     @Autowired
     private PagerDutyAPI pagerDutyAPI;
+
+    @Autowired
+    private EmailAPI emailAPI;
+
+    @Autowired
+    private Velocity velocity;
+
+    @Autowired
+    private KeyCloakAPI keyCloakAPI;
 
     @Autowired
     private MonitoringPolicyRepository monitoringPolicyRepository;
@@ -60,10 +72,14 @@ public class NotificationService {
         );
 
         boolean notifyPagerDuty = false;
+        boolean notifyEmail = false;
 
         for (MonitoringPolicy policy : dbPolicies) {
             if (policy.isNotifyByPagerDuty()) {
                 notifyPagerDuty = true;
+            }
+            if (policy.isNotifyByEmail()) {
+                notifyEmail = true;
             }
         }
 
@@ -74,6 +90,19 @@ public class NotificationService {
                 pagerDutyAPI.postNotification(alert);
             } catch (NotificationException e) {
                 log.warn("Unable to send alert to PagerDuty: {}", alert, e);
+            }
+        }
+        if (notifyEmail) {
+            try {
+                for (String emailAddress: keyCloakAPI.getTenantEmailAddresses(alert.getTenantId())) {
+                    emailAPI.sendEmail(
+                        emailAddress,
+                        String.format("%s severity alert", StringUtils.capitalize(alert.getSeverity().getValueDescriptor().getName())),
+                        velocity.populateTemplate(emailAddress, alert)
+                    );
+                }
+            }catch (NotificationException e) {
+                log.warn("Unable to send alert to Email: {}", alert, e);
             }
         }
 

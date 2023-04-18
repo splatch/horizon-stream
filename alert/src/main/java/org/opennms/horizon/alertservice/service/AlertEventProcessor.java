@@ -28,6 +28,11 @@
 
 package org.opennms.horizon.alertservice.service;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.Optional;
 
@@ -36,12 +41,20 @@ import javax.annotation.PostConstruct;
 import org.opennms.horizon.alerts.proto.Alert;
 import org.opennms.horizon.alerts.proto.AlertType;
 import org.opennms.horizon.alerts.proto.ManagedObjectType;
+import org.opennms.horizon.alerts.proto.OverTimeUnit;
+import org.opennms.horizon.alerts.proto.Severity;
 import org.opennms.horizon.alertservice.db.entity.AlertDefinition;
+import org.opennms.horizon.alertservice.db.entity.ThresholdedEvent;
+import org.opennms.horizon.alertservice.db.entity.TriggerEvent;
 import org.opennms.horizon.alertservice.db.repository.AlertDefinitionRepository;
 import org.opennms.horizon.alertservice.db.repository.AlertRepository;
+import org.opennms.horizon.alertservice.db.repository.TriggerEventRepository;
 import org.opennms.horizon.alertservice.db.tenant.TenantLookup;
 import org.opennms.horizon.events.proto.Event;
-import org.opennms.horizon.model.common.proto.Severity;
+import org.opennms.horizon.alertservice.db.repository.ThresholdedEventRepository;
+import org.opennms.horizon.alertservice.db.repository.TriggerEventRepository;
+import org.opennms.horizon.alertservice.db.tenant.TenantLookup;
+import org.opennms.horizon.events.proto.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -67,6 +80,8 @@ public class AlertEventProcessor {
     private final AlertMapper alertMapper;
 
     private final AlertDefinitionRepository alertDefinitionRepository;
+    private final TriggerEventRepository triggerEventRepository;
+    private final ThresholdedEventRepository thresholdedEventRepository;
 
     private final MeterRegistry registry;
 
@@ -96,7 +111,8 @@ public class AlertEventProcessor {
         if (!Strings.isNullOrEmpty(alertDefinition.getClearKey())) {
             clearKey = String.format(alertDefinition.getClearKey(), event.getTenantId(), event.getNodeId());
         }
-        return new AlertData(reductionKey, clearKey, alertDefinition.getType());
+        TriggerEvent triggerEvent = triggerEventRepository.getReferenceById(alertDefinition.getTriggerEventId());
+        return new AlertData(reductionKey, clearKey, alertDefinition.getType(), triggerEvent.getSeverity(), triggerEvent.getCount(), triggerEvent.getOvertime(), triggerEvent.getOvertimeUnit());
     }
 
     protected org.opennms.horizon.alertservice.db.entity.Alert addOrReduceEventAsAlert(Event event) {
@@ -126,10 +142,23 @@ public class AlertEventProcessor {
                 .map(tenantId -> alertRepository.findByReductionKeyAndTenantId(alertData.reductionKey(), tenantId));
         }
 
-        org.opennms.horizon.alertservice.db.entity.Alert alert;
+        boolean thresholding = isThresholding(alertData);
+        boolean thresholdMet = true;
+        if (thresholding) {
+            if (!AlertType.CLEAR.equals(alertData.type())) {
+                saveThresholdEvent(event.getUei(), alertData, event);
+                thresholdMet = isThresholdMet(alertData, event.getTenantId());
+            }
+        }
+
+        org.opennms.horizon.alertservice.db.entity.Alert alert = null;
         if (optionalAlert.isEmpty()) {
             // No existing alert found, create a new one
-            alert = createNewAlert(event, alertData);
+            if (thresholdMet) {
+                alert = createNewAlert(event, alertData);
+            } else {
+                return null;
+            }
         } else {
             // Existing alert found, update it
             alert = optionalAlert.get();
@@ -140,13 +169,61 @@ public class AlertEventProcessor {
                 // Set the severity to CLEARED when reducing alerts
                 alert.setSeverity(Severity.CLEARED);
             } else {
-                alert.setSeverity(event.getSeverity());
+                alert.setSeverity(alertData.severity());
             }
         }
 
         // FIXME: If the alert is going to be delete immediately, should we even bother creating it?
         alertRepository.save(alert);
         return alert;
+    }
+
+    private boolean isThresholdMet(AlertData alertData, String tenantId) {
+        Date current = new Date();
+        Date cutOff = calculateExpiry(current, alertData, false);
+
+        int currentCount = thresholdedEventRepository.countByReductionKeyAndTenantIdAndExpiryTimeGreaterThanEqual(alertData.reductionKey(), tenantId, cutOff);
+        return alertData.count() <= currentCount;
+    }
+
+    private void saveThresholdEvent(String uei, AlertData alertData, Event event) {
+        Date current = new Date(event.getProducedTimeMs());
+        Date expired = calculateExpiry(current, alertData, true);
+
+        ThresholdedEvent thresholdedEvent = new ThresholdedEvent();
+        thresholdedEvent.setEventUei(uei);
+        thresholdedEvent.setReductionKey(alertData.reductionKey());
+        thresholdedEvent.setTenantId(event.getTenantId());
+        thresholdedEvent.setCreateTime(current);
+        thresholdedEvent.setExpiryTime(expired);
+
+        thresholdedEventRepository.save(thresholdedEvent);
+    }
+
+    private Date calculateExpiry(Date current, AlertData alertData, boolean future) {
+        Instant curr = current.toInstant();
+        Duration dur = Duration.ZERO;
+        if (alertData.overTime() == 0) {
+            dur = Duration.ofDays(365*1000);
+        } else {
+            switch (alertData.overTimeUnit) {
+                case HOUR -> dur = Duration.ofHours(alertData.overTime());
+                case MINUTE -> dur = Duration.ofMinutes(alertData.overTime());
+                case SECOND -> dur = Duration.ofSeconds(alertData.overTime());
+            }
+        }
+
+        Instant expiry;
+        if (future) {
+            expiry = curr.plus(dur);
+        } else {
+            expiry = curr.minus(dur);
+        }
+        return Date.from(expiry);
+    }
+
+    private boolean isThresholding(AlertData alertData) {
+        return (alertData.count() > 1 || alertData.overTime() > 0);
     }
 
     private org.opennms.horizon.alertservice.db.entity.Alert createNewAlert(Event event, AlertData alertData) {
@@ -164,9 +241,9 @@ public class AlertEventProcessor {
         }
         // FIXME: We should be using the source time of the event and not the time at which it was produced
         alert.setLastEventTime(new Date(event.getProducedTimeMs()));
-        alert.setSeverity(event.getSeverity());
+        alert.setSeverity(alertData.severity());
         alert.setEventUei(event.getUei() );
         return alert;
     }
-    private record AlertData(String reductionKey, String clearKey, AlertType type) { }
+    private record AlertData(String reductionKey, String clearKey, AlertType type, Severity severity, Integer count, Integer overTime, OverTimeUnit overTimeUnit) { }
 }

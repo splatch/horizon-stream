@@ -32,16 +32,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.opennms.horizon.alerts.proto.EventType;
+import org.opennms.horizon.alerts.proto.ManagedObjectType;
+import org.opennms.horizon.alerts.proto.MonitorPolicyProto;
+import org.opennms.horizon.alerts.proto.OverTimeUnit;
+import org.opennms.horizon.alerts.proto.PolicyRuleProto;
+import org.opennms.horizon.alerts.proto.Severity;
 import org.opennms.horizon.server.model.alerts.MonitorPolicy;
 import org.opennms.horizon.server.model.alerts.PolicyRule;
 import org.opennms.horizon.server.model.alerts.TriggerEvent;
-import org.opennms.horizon.shared.alert.policy.ComponentType;
-import org.opennms.horizon.shared.alert.policy.EventType;
-import org.opennms.horizon.shared.alert.policy.MonitorPolicyProto;
-import org.opennms.horizon.shared.alert.policy.OverTimeUnit;
-import org.opennms.horizon.shared.alert.policy.PolicyRuleProto;
-import org.opennms.horizon.shared.alert.policy.Severity;
-import org.opennms.horizon.shared.alert.policy.TriggerEventProto;
+import org.opennms.horizon.alerts.proto.TriggerEventProto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -54,13 +54,13 @@ public class MonitorPolicyMapperTest {
     @BeforeEach
     void before() {
         TriggerEventProto triggerEvent = TriggerEventProto.newBuilder()
-            .setTriggerEvent(EventType.PORT_DOWN)
+            .setTriggerEvent(EventType.SNMP_Warm_Start)
             .setCount(1)
             .setSeverity(Severity.CRITICAL)
             .build();
         PolicyRuleProto rule = PolicyRuleProto.newBuilder()
             .setName("test-rule")
-            .setComponentType(ComponentType.NODE)
+            .setComponentType(ManagedObjectType.NODE)
             .addSnmpEvents(triggerEvent)
             .build();
         policyProto = MonitorPolicyProto.newBuilder()
@@ -86,11 +86,11 @@ public class MonitorPolicyMapperTest {
         assertThat(policy.getTags()).isEqualTo(policyProto.getTagsList()); //the order doesn't matter here
         assertThat(policy.getRules().get(0))
             .extracting(PolicyRule::getName, PolicyRule::getComponentType, r -> r.getTriggerEvents().size())
-            .containsExactly("test-rule", ComponentType.NODE.name(), 1);
+            .containsExactly("test-rule", ManagedObjectType.NODE.name(), 1);
         assertThat(policy.getRules().get(0).getTriggerEvents().get(0))
             .extracting(TriggerEvent::getTriggerEvent, TriggerEvent::getCount, TriggerEvent::getOvertime, TriggerEvent::getOvertimeUnit,
                 TriggerEvent::getSeverity, TriggerEvent::getClearEvent)
-            .containsExactly(EventType.PORT_DOWN.name(), 1, 0, OverTimeUnit.UNKNOWN_UNIT.name(), Severity.CRITICAL.name(), EventType.UNKNOWN_EVENT.name());
+            .containsExactly(EventType.SNMP_Warm_Start.name(), 1, 0, OverTimeUnit.UNKNOWN_UNIT.name(), Severity.CRITICAL.name(), EventType.UNKNOWN_EVENT.name());
     }
 
     @Test

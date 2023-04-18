@@ -1,0 +1,315 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+package opennms.alerts;
+option java_multiple_files = true;
+option java_package = "org.opennms.horizon.alerts.proto";
+
+//Common enums
+
+enum ManagedObjectType {
+  UNDEFINED = 0;
+  ANY = 1;
+  NODE = 2;
+  SNMP_INTERFACE = 3;
+  SNMP_INTERFACE_LINK = 4;
+}
+
+enum Severity {
+  // No or missing value
+  SEVERITY_UNDEFINED = 0;
+  // The Indeterminate severity level indicates that the severity level cannot be determined.
+  INDETERMINATE = 1;
+  // The Cleared severity level indicates the clearing of one or more previously reported alerts. This
+  // alert clears all alerts for this managed object that have the same Alert type, Probable cause and
+  // Specific problems (if given).
+  CLEARED = 2;
+  // Informational only.
+  NORMAL = 3;
+  // The Warning severity level indicates the detection of a potential or impending service affecting
+  // fault, before any significant effects have been felt. Action should be taken to further diagnose (if
+  // necessary) and correct the problem in order to prevent it from becoming a more serious service affecting
+  // fault.
+  WARNING = 4;
+  // The Minor severity level indicates the existence of a non-service affecting fault condition and that
+  // corrective action should be taken in order to prevent a more serious (for example, service affecting) fault.
+  // Such a severity can be reported, for example, when the detected alert condition is not currently
+  // degrading the capacity of the managed object.
+  MINOR = 5;
+  // The Major severity level indicates that a service affecting condition has developed and an urgent
+  // corrective action is required. Such a severity can be reported, for example, when there is a severe
+  // degradation in the capability of the managed object and its full capability must be restored.
+  MAJOR = 6;
+  // The Critical severity level indicates that a service affecting condition has occurred and an
+  // immediate corrective action is required. Such a severity can be reported, for example, when a managed
+  // object becomes totally out of service and its capability must be restored.
+  CRITICAL = 7;
+}
+
+enum AlertType {
+  ALARM_TYPE_UNDEFINED = 0;
+  PROBLEM_WITH_CLEAR = 1;
+  CLEAR = 2;
+  PROBLEM_WITHOUT_CLEAR = 3;
+}
+
+message TimeRangeFilter {
+  google.protobuf.Timestamp start_time = 1;
+  google.protobuf.Timestamp end_time = 2;
+}
+
+message Filter {
+  oneof filter {
+    TimeRangeFilter time_range = 1;
+    Severity severity = 2;
+    int64 node_id = 3;
+  }
+}
+
+message Alert {
+  string tenant_id = 1;
+  uint64 database_id = 2;
+  string uei = 3;
+  string reduction_key = 4;
+  string clear_key = 5;
+
+  AlertType type = 6;
+  uint64 counter = 7;
+  Severity severity = 8;
+  // Summary
+  string description = 9;
+  // Details
+  string log_message = 10;
+
+  string location = 11;
+  // What object (physical or virtual) does this relate to?
+  ManagedObject managed_object = 12;
+
+  uint64 first_event_time_ms = 13;
+  uint64 last_event_id = 14;
+  uint64 last_update_time_ms = 15;
+
+  bool is_acknowledged = 16;
+  // Acknowledged by who?
+  string ack_user = 17;
+  // Acknowledged when?
+  uint64 ack_time_ms = 18;
+  repeated uint64 monitoring_policy_id = 19;
+}
+
+message EventMatch {
+  string name = 1;
+  string value = 2;
+}
+
+message AlertDefinition {
+  string uei = 1;
+  repeated EventMatch match = 2;
+  string reduction_key = 3;
+  string clear_key = 4;
+  AlertType type = 5;
+  ManagedObjectType managed_object_type = 6;
+}
+
+message ManagedObject {
+  ManagedObjectType type = 1;
+  ManagedObjectInstance instance = 2;
+}
+
+message NodeRef {
+  uint64 node_id = 1;
+}
+
+message SnmpInterfaceRef {
+  NodeRef node = 1;
+  uint64 if_index = 2;
+}
+
+message SnmpInterfaceLinkRef {
+  SnmpInterfaceRef if_a = 1;
+  SnmpInterfaceRef if_b = 2;
+}
+
+message ManagedObjectInstance {
+  oneof value {
+    NodeRef node_val = 1;
+    SnmpInterfaceRef snmp_interface_val = 2;
+    SnmpInterfaceLinkRef snmp_interface_link_val = 3;
+
+    google.protobuf.Any any_val = 9; // protobuf.Any encoded bytes.
+  }
+}
+
+message ListAlertsRequest {
+  // Optional. The maximum number of alerts to return in the response.
+  int32 page_size = 1;
+  int32 page = 3;
+  repeated Filter filters = 4;
+  string sort_by = 5;
+  bool sort_ascending = 6;
+}
+
+message ListAlertsResponse {
+  // A possibly paginated list of Alerts that are associated with the calling tenant.
+  repeated Alert alerts = 1;
+
+  // A pagination token returned from a previous call to `ListAlerts`
+  // that indicates from where listing should continue.
+  int32 next_page = 2;
+  int32 last_page = 3;
+  int64 total_alerts = 4;
+  AlertError error = 5;
+}
+
+message CountAlertResponse {
+  int32 count = 1;
+  AlertError error = 2;
+}
+
+message ListAlertDefinitionsRequest {
+  // Optional. The maximum number of alerts to return in the response.
+  int32 page_size = 1;
+
+  // Optional. A pagination token returned from a previous call to `listAlerts`
+  // that indicates where this listing should continue from.
+  string page_token = 2;
+}
+
+message ListAlertDefinitionsResponse {
+  // A possibly paginated list of Alerts that are associated with the calling tenant.
+  repeated AlertDefinition definitions = 1;
+
+  // Optional. A pagination token returned from a previous call to `ListAlertDefinitions`
+  // that indicates where this listing should continue from.
+  string page_token = 2;
+}
+
+message AlertRequest {
+  repeated uint64 alert_id = 1;
+}
+
+message AlertResponse {
+  repeated Alert alert = 1;
+  repeated AlertError alert_error = 2;
+}
+
+message DeleteAlertResponse {
+  repeated uint64 alert_id = 1;
+  repeated AlertError alert_error = 2;
+}
+
+message AlertError {
+  uint64 alert_id = 1;
+  string error = 2;
+}
+
+service AlertService {
+  rpc listAlerts(ListAlertsRequest) returns (ListAlertsResponse) {};
+  rpc acknowledgeAlert(AlertRequest) returns (AlertResponse) {};
+  rpc unacknowledgeAlert(AlertRequest) returns (AlertResponse) {};
+  rpc clearAlert(AlertRequest) returns (AlertResponse) {};
+  rpc escalateAlert(AlertRequest) returns (AlertResponse) {};
+  rpc deleteAlert(AlertRequest) returns(DeleteAlertResponse) {};
+  rpc countAlerts(ListAlertsRequest) returns (CountAlertResponse) {};
+}
+
+service AlertConfigurationService {
+  rpc listAlertDefinitions(ListAlertDefinitionsRequest) returns (ListAlertDefinitionsResponse) {};
+  rpc getAlertDefinition(google.protobuf.UInt64Value) returns (AlertDefinition) {}
+  rpc insertAlertDefinition(AlertDefinition) returns (AlertDefinition) {}
+  rpc updateAlertDefinition(AlertDefinition) returns (AlertDefinition) {}
+  rpc removeAlertDefinition(google.protobuf.UInt64Value) returns (google.protobuf.BoolValue) {}
+}
+
+// Proto for Monitoring policy
+
+message MonitorPolicyProto {
+  int64 id = 1;
+  string tenantId = 2;
+  string name = 3;
+  string memo = 4;
+  repeated PolicyRuleProto rules = 5;
+  repeated string tags = 6;
+  bool notifyByEmail = 7;
+  bool notifyByPagerDuty = 8;
+  bool notifyByWebhooks = 9;
+  string notifyInstruction = 10;
+}
+
+message PolicyRuleProto {
+  int64 id = 1;
+  string tenantId = 2;
+  string name = 3;
+  ManagedObjectType componentType = 4;
+  repeated TriggerEventProto snmpEvents = 5;
+}
+
+message TriggerEventProto {
+  int64 id = 1;
+  string tenantId = 2;
+  EventType triggerEvent = 3;
+  int32 count = 4;
+  int32 overtime = 5;
+  OverTimeUnit overtimeUnit = 6;
+  Severity severity = 7;
+  EventType clearEvent = 8;
+}
+
+enum OverTimeUnit {
+  UNKNOWN_UNIT = 0;
+  SECOND = 1;
+  MINUTE = 2;
+  HOUR = 3;
+}
+
+enum EventType {
+  UNKNOWN_EVENT = 0;
+  SNMP_Cold_Start = 1;
+  SNMP_Warm_Start = 2;
+  SNMP_Authen_Failure = 3;
+  SNMP_Link_Down = 4;
+  SNMP_Link_Up = 5;
+  SNMP_EGP_Down = 6;
+}
+
+message MonitorPolicyList {
+  repeated MonitorPolicyProto policies = 1;
+}
+
+service MonitorPolicyService {
+  rpc createPolicy(MonitorPolicyProto) returns(MonitorPolicyProto);
+  rpc listPolicies(google.protobuf.Empty) returns(MonitorPolicyList);
+  rpc getPolicyById(google.protobuf.Int64Value) returns(MonitorPolicyProto);
+  rpc getDefaultPolicy(google.protobuf.Empty) returns(MonitorPolicyProto);
+}
