@@ -26,19 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.systemtests;
+package org.opennms.horizon.alertservice.db.repository;
 
-import io.cucumber.junit.Cucumber;
-import io.cucumber.junit.CucumberOptions;
-import org.junit.runner.RunWith;
+import org.opennms.horizon.alertservice.db.entity.ThresholdedEvent;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-@RunWith(Cucumber.class)
-@CucumberOptions(
-    features = {"src/test/resources/cloud-features", "src/test/resources/portal-features"},
-    plugin = {"pretty",
-        "json:cucumber.reports/cucumber-report.json",
-        "html:cucumber.reports/cucumber-report.html"},
-    tags = "@cloud"
-)
-public class HSCucumberRunnerTest {
+import java.util.Date;
+import java.util.List;
+
+@Repository
+public interface ThresholdedEventRepository extends JpaRepository<ThresholdedEvent, Long> {
+
+    int countByReductionKeyAndTenantIdAndExpiryTimeGreaterThanEqual(String reductionKey, String tenantId, Date expiryTime);
+    List<ThresholdedEvent> findAllByReductionKeyAndTenantIdAndExpiryTimeLessThan(String reductionKey, String tenantId, Date expiryTime);
+
+    long deleteByReductionKeyAndTenantId(String reductionKey, String tenantId);
+
 }

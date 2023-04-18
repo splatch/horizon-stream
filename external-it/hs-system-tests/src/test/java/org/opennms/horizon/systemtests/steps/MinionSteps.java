@@ -26,19 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.systemtests;
+package org.opennms.horizon.systemtests.steps;
 
-import io.cucumber.junit.Cucumber;
-import io.cucumber.junit.CucumberOptions;
-import org.junit.runner.RunWith;
+import io.cucumber.java.en.When;
+import testcontainers.MinionContainer;
 
-@RunWith(Cucumber.class)
-@CucumberOptions(
-    features = {"src/test/resources/cloud-features", "src/test/resources/portal-features"},
-    plugin = {"pretty",
-        "json:cucumber.reports/cucumber-report.json",
-        "html:cucumber.reports/cucumber-report.html"},
-    tags = "@cloud"
-)
-public class HSCucumberRunnerTest {
+import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
+
+public class MinionSteps {
+    @When("Run a minion {string} as name, {string} as location and connect to the cloud instance")
+    public void runMinion(String minionId, String minionLocation) {
+        MinionContainer minionContainer = new MinionContainer(MINIONS.get(0).gatewayHost, minionId, minionLocation);
+        minionContainer.start();
+    }
 }

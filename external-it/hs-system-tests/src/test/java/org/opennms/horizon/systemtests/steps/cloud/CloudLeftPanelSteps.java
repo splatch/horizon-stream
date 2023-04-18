@@ -26,19 +26,15 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.systemtests;
+package org.opennms.horizon.systemtests.steps.cloud;
 
-import io.cucumber.junit.Cucumber;
-import io.cucumber.junit.CucumberOptions;
-import org.junit.runner.RunWith;
+import io.cucumber.java.en.Then;
+import org.opennms.horizon.systemtests.pages.cloud.CloudLeftPanelPage;
 
-@RunWith(Cucumber.class)
-@CucumberOptions(
-    features = {"src/test/resources/cloud-features", "src/test/resources/portal-features"},
-    plugin = {"pretty",
-        "json:cucumber.reports/cucumber-report.json",
-        "html:cucumber.reports/cucumber-report.html"},
-    tags = "@cloud"
-)
-public class HSCucumberRunnerTest {
+public class CloudLeftPanelSteps {
+
+    @Then("Navigate to the 'Appliances' through the left panel")
+    public void clickOnAppliancesSection() {
+        CloudLeftPanelPage.clickOnApplianceSection();
+    }
 }

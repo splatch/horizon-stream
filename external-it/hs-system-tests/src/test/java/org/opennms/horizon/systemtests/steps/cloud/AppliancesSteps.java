@@ -26,43 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
+package org.opennms.horizon.systemtests.steps.cloud;
 
-package org.opennms.horizon.systemtests.pages.portal;
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
+import io.cucumber.java.en.Then;
 
-import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
+import java.time.Duration;
 
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
 
-public class EditInstancePage {
+public class AppliancesSteps {
 
-    public static final ElementsCollection usersRow = $$("tbody tr");
-    public static final SelenideElement usersTable = $("tbody");
-    public static final SelenideElement deleteInstanceBtn = $("#delete-btn-cloud-instance");
-    public static final SelenideElement instanceUrlTxt = $("h2 a");
-
-    public static void verifyNumberOfUsers(int count) {
-        usersRow.shouldHave(CollectionCondition.size(count));
+    @Then("check minion in the list")
+    public static void justWait() {
+        $(byText(MINIONS.get(0).minionId)).shouldBe(Condition.visible, Duration.ofMinutes(10));
     }
 
-    public static void verifyUserEmailInTable(String email) {
-        usersTable.find(byText(email)).shouldBe(visible);
-    }
-
-    public static String getInstanceUrl() {
-        return instanceUrlTxt.shouldBe(visible).getAttribute("href");
-    }
-
-    public static void clickDeleteInstance() {
-        deleteInstanceBtn.shouldBe(enabled).click();
-    }
-
-    public static void clickOnInstanceUrl() {
-        instanceUrlTxt.shouldBe(enabled).click();
+    @Then("wait")
+    public static void waitSecond() {
+        Selenide.sleep(60_000);
     }
 }
