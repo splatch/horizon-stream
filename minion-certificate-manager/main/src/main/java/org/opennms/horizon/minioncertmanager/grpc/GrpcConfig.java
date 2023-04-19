@@ -28,21 +28,14 @@
 
 package org.opennms.horizon.minioncertmanager.grpc;
 
-import com.google.common.base.Strings;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.keycloak.adapters.KeycloakDeployment;
-import org.keycloak.adapters.rotation.HardcodedPublicKeyLocator;
 import org.keycloak.adapters.rotation.JWKPublicKeyLocator;
-import org.keycloak.common.util.Base64;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
 
 @Configuration
 public class GrpcConfig {
@@ -54,13 +47,6 @@ public class GrpcConfig {
     private String keycloakAuthUrl;
     @Value("${keycloak.realm}")
     private String keycloakRealm;
-    @Value("${keycloak.public-key}")
-    private String keycloakPublicKey;
-
-    @Bean
-    public TenantLookup createTenantLookup() {
-        return new GrpcTenantLookupImpl();
-    }
 
     @Bean
     public KeycloakDeployment createKeycloak() {
@@ -75,28 +61,12 @@ public class GrpcConfig {
         KeycloakDeployment keycloak = new KeycloakDeployment();
         keycloak.setAuthServerBaseUrl(config);
         keycloak.setRealm(keycloakRealm);
-        if (!Strings.isNullOrEmpty(keycloakPublicKey)) {
-            // Use the given public key
-            keycloak.setPublicKeyLocator(new HardcodedPublicKeyLocator(getKey(keycloakPublicKey)));
-        } else {
-            keycloak.setPublicKeyLocator(new JWKPublicKeyLocator());
-        }
+        keycloak.setPublicKeyLocator(new JWKPublicKeyLocator());
         keycloak.setPublicKeyCacheTtl(3600);
         HttpClient client = HttpClientBuilder.create().build();
         keycloak.setClient(client);
 
         return keycloak;
-    }
-
-    private static PublicKey getKey(String key) {
-        try{
-            byte[] byteKey = Base64.decode(key.getBytes());
-            X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            return kf.generatePublic(X509publicKey);
-        } catch(Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Bean(destroyMethod = "stopServer")

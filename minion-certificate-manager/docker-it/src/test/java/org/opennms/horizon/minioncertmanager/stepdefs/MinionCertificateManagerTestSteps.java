@@ -29,7 +29,6 @@
 package org.opennms.horizon.minioncertmanager.stepdefs;
 
 import com.google.protobuf.MessageOrBuilder;
-import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import org.opennms.horizon.minioncertmanager.MinionCertificateManagerGrpcClientUtils;
@@ -55,7 +54,7 @@ public class MinionCertificateManagerTestSteps {
     private final RetryUtils retryUtils;
     private final MinionCertificateManagerGrpcClientUtils clientUtils;
 
-    private GetMinionCertificateRequest.Builder getMinionCertificateRequestBuilder;
+    private GetMinionCertificateRequest getMinionCertificateRequest;
     private GetMinionCertificateResponse getMinionCertificateResponse;
 
     //========================================
@@ -66,31 +65,37 @@ public class MinionCertificateManagerTestSteps {
         this.clientUtils = clientUtils;
     }
 
-    @After
-    public void cleanupTest() {
-        clientUtils.cleanup();
-    }
-
     //========================================
     // Gherkin Rules
     //========================================
-    @Given("Get Minion Certificate Request Location {string}")
-    public void minionRequestLocation(String location) {
-        ensureGetMinonCertificateRequest();
-        getMinionCertificateRequestBuilder.setLocation(location);
+    @Given("External GRPC Port in system property {string}")
+    public void externalGRPCPortInSystemProperty(String propertyName) {
+        clientUtils.externalGRPCPortInSystemProperty(propertyName);
     }
 
-    @Given("Get Minion Certificate Request TenantId {string}")
-    public void minionRequestTenantId(String tenantId) {
-        ensureGetMinonCertificateRequest();
-        getMinionCertificateRequestBuilder.setTenantId(tenantId);
+    @Given("Grpc TenantId {string}")
+    public void grpcTenantId(String tenantId) {
+        clientUtils.grpcTenantId(tenantId);
+    }
+
+    @Given("Create Grpc Connection")
+    public void createGrpcConnection() {
+        clientUtils.createGrpcConnection();
+    }
+
+    @Given("New Get Minion Certificate with tenantId {string} for location {string}")
+    public void newActiveDiscoveryWithIpAddressesAndSNMPCommunityAsAtLocation(String tenantId, String location) {
+        getMinionCertificateRequest = GetMinionCertificateRequest.newBuilder()
+            .setTenantId(tenantId)
+            .setLocation(location)
+            .build();
     }
 
     @Then("send Get Minion Certificate Request with timeout {int}ms and verify success")
     public void sendRequest(long timeout) throws InterruptedException {
         Supplier<MessageOrBuilder> call = () -> {
-            clientUtils.setTenantId(getMinionCertificateRequestBuilder.getTenantId());
-            getMinionCertificateResponse = clientUtils.getAlertServiceStub().getMinionCert(getMinionCertificateRequestBuilder.build());
+            getMinionCertificateResponse = clientUtils.getMinionCertificateManagerStub()
+                .getMinionCert(getMinionCertificateRequest);
             return getMinionCertificateResponse;
         };
         boolean success = retryUtils.retry(
@@ -105,21 +110,11 @@ public class MinionCertificateManagerTestSteps {
     //========================================
     // Internals
     //========================================
-    private void ensureGetMinonCertificateRequest() {
-        if (getMinionCertificateRequestBuilder == null) {
-            getMinionCertificateRequestBuilder = GetMinionCertificateRequest.newBuilder();
-        }
-    }
-
     private boolean doRequestAndAssert(Supplier<MessageOrBuilder> supplier) {
         LOG.debug("Running request");
-        try {
-            GetMinionCertificateResponse message = (GetMinionCertificateResponse) supplier.get();
-            assertFalse("Certificate is not empty", message.getCertificate().isEmpty());
-            assertFalse("Password is not empty", message.getPassword().isEmpty());
-            return true;
-        } catch (Throwable thrown) {
-            throw new RuntimeException(thrown);
-        }
+        GetMinionCertificateResponse message = (GetMinionCertificateResponse) supplier.get();
+        assertFalse("Certificate is not empty", message.getCertificate().isEmpty());
+        assertFalse("Password is not empty", message.getPassword().isEmpty());
+        return true;
     }
 }

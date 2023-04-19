@@ -35,11 +35,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public class CommandExecutor {
     private static final Logger LOG = LoggerFactory.getLogger(CommandExecutor.class);
     private static final int TIMEOUT = 5000;
+
+    private CommandExecutor() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static void executeCommand(String command) throws IOException, InterruptedException {
         executeCommand(command, null);
@@ -48,45 +53,51 @@ public class CommandExecutor {
     public static void executeCommand(String command, File directory) throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command).directory(directory);
         Process process = null;
-        BufferedReader stdoutReader = null;
-        BufferedReader stderrReader = null;
         try {
             process = processBuilder.start();
 
-            // Read the output from the process's stdout and stderr
-            stdoutReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            stderrReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            // Create CompletableFutures for reading stdout and stderr
+            Process finalProcess = process;
+            CompletableFuture<Void> stdoutFuture = CompletableFuture.runAsync(() -> {
+                try (BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(finalProcess.getInputStream()))) {
+                    String stdoutLine;
+                    while ((stdoutLine = stdoutReader.readLine()) != null) {
+                        LOG.debug(stdoutLine);
+                    }
+                } catch (IOException e) {
+                    LOG.error("Error reading stdout: " + e.getMessage(), e);
+                }
+            });
 
-            String stdoutLine;
-            while ((stdoutLine = stdoutReader.readLine()) != null) {
-                LOG.debug(stdoutLine);
-            }
+            CompletableFuture<Void> stderrFuture = CompletableFuture.runAsync(() -> {
+                try (BufferedReader stderrReader = new BufferedReader(new InputStreamReader(finalProcess.getErrorStream()))) {
+                    String stderrLine;
+                    while ((stderrLine = stderrReader.readLine()) != null) {
+                        LOG.error(stderrLine);
+                    }
+                } catch (IOException e) {
+                    LOG.error("Error reading stderr: " + e.getMessage(), e);
+                }
+            });
 
-            String stderrLine;
-            while ((stderrLine = stderrReader.readLine()) != null) {
-                LOG.error(stderrLine); // Log stderr output as error
-            }
+            // Wait for both CompletableFutures to complete
+            CompletableFuture.allOf(stdoutFuture, stderrFuture).join();
+
 
             // Wait for the process to complete with a configurable timeout
             boolean completed = process.waitFor(TIMEOUT, TimeUnit.MILLISECONDS);
             if (!completed) {
-                LOG.error("Command timed out: " + command + ". Timeout: " + TIMEOUT + " seconds");
+                LOG.error("Command timed out: {}. Timeout: {} milliseconds", command, TIMEOUT);
             }
 
             // Check the exit value of the process
             int exitValue = process.exitValue();
             if (exitValue != 0) {
-                LOG.error("Command exited with error code: " + exitValue + ". Command: " + command);
+                LOG.error("Command exited with error code: {}. Command: {}", exitValue, command);
             }
         } finally {
             if (process != null) {
                 process.destroy();
-            }
-            if (stdoutReader != null) {
-                stdoutReader.close();
-            }
-            if (stderrReader != null) {
-                stderrReader.close();
             }
         }
     }

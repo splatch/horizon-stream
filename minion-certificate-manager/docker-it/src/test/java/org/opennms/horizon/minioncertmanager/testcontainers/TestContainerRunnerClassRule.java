@@ -94,27 +94,20 @@ public class TestContainerRunnerClassRule extends ExternalResource {
             .withEnv("SPRING_LIQUIBASE_CONTEXTS", "test")
             .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("APPLICATION"))
             .waitingFor(Wait.forLogMessage(".*Started MinionCertificateManagerApplication.*", 1)
-            .withStartupTimeout(Duration.ofMinutes(1))
-        );
+                .withStartupTimeout(Duration.ofMinutes(1))
+            );
 
         // DEBUGGING: uncomment to force local port 5005
         //applicationContainer.getPortBindings().add("5005:5005");
         applicationContainer.start();
 
-        var httpPort = applicationContainer.getMappedPort(8080); // application-http-port
-        var grpcPort = applicationContainer.getMappedPort(8990); // application-grpc-port
+        var externalGrpcPort = applicationContainer.getMappedPort(8990); // application-external-grpc-port
+        var externalHttpPort = applicationContainer.getMappedPort(8080);
         var debuggerPort = applicationContainer.getMappedPort(5005);
 
-        LOG.info("APPLICATION MAPPED PORTS: http={}, grpc={}; debugger={}", httpPort, grpcPort, debuggerPort);
-        System.setProperty("application.base-http-url", "http://localhost:" + httpPort);
-        System.setProperty("application.base-grpc-url", "http://localhost:" + grpcPort);
-    }
-
-    public KeyPair getJwtKeyPair() {
-        return jwtKeyPair;
-    }
-
-    public int getGrpcPort() {
-        return applicationContainer.getMappedPort(8990);
+        LOG.info("APPLICATION MAPPED PORTS:  external-grpc={};  external-http={}; debugger={}", externalGrpcPort, externalHttpPort, debuggerPort);
+        System.setProperty("application-external-grpc-port", String.valueOf(externalGrpcPort));
+        System.setProperty("application-external-http-port", String.valueOf(externalHttpPort));
+        System.setProperty("application-external-http-base-url", "http://localhost:" + externalHttpPort);
     }
 }
