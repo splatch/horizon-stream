@@ -37,6 +37,7 @@ import org.opennms.horizon.server.service.flows.FlowClient;
 import org.opennms.horizon.server.service.grpc.AlertsClient;
 import org.opennms.horizon.server.service.grpc.EventsClient;
 import org.opennms.horizon.server.service.grpc.InventoryClient;
+import org.opennms.horizon.server.service.grpc.MinionCertificateManagerClient;
 import org.opennms.horizon.server.service.grpc.NotificationClient;
 import org.opennms.horizon.server.utils.JWTValidator;
 import org.opennms.horizon.server.utils.ServerHeaderUtil;
@@ -112,7 +113,7 @@ public class ConfigurationUtil {
             .build();
     }
 
-    @Bean
+    @Bean(name = "minionCertificateManager")
     public ManagedChannel minionCertificateManagerChannel() {
         return ManagedChannelBuilder.forTarget(minionCertificateManagerGrpcAddress)
             .keepAliveWithoutCalls(true)
@@ -142,5 +143,10 @@ public class ConfigurationUtil {
     @Bean(destroyMethod = "shutdown", initMethod = "initialStubs")
     public FlowClient createFlowClient(@Qualifier("flowQuerier") ManagedChannel channel, InventoryClient inventoryClient) {
         return new FlowClient(inventoryClient, channel, deadline);
+    }
+
+    @Bean(destroyMethod = "shutdown", initMethod = "initialStubs")
+    public MinionCertificateManagerClient createMinionCertificateManagerClient(@Qualifier("minionCertificateManager") ManagedChannel channel) {
+        return new MinionCertificateManagerClient(channel, deadline);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Component
@@ -20,6 +21,7 @@ import java.util.function.Function;
 public class MinionCertificateManagerClient {
 
     private final ManagedChannel minionCertificateManagerChannel;
+    private final long deadline;
 
     private MinionCertificateManagerGrpc.MinionCertificateManagerBlockingStub minionCertStub;
 
@@ -45,6 +47,7 @@ public class MinionCertificateManagerClient {
             .build();
         Metadata metadata = new Metadata();
         metadata.put(GrpcConstants.AUTHORIZATION_METADATA_KEY, accessToken);
-        return minionCertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata)).getMinionCert(request);
+        return minionCertStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+            .withDeadlineAfter(deadline, TimeUnit.MILLISECONDS).getMinionCert(request);
     }
 }
