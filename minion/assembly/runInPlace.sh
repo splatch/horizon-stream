@@ -2,8 +2,8 @@
 set -e 
 
 # defaults
-MINION_ID='minion-test-local'
-MINION_LOCATION='test-local'
+MINION_ID='minion-standalone'
+MINION_LOCATION='minion-standalone-loc'
 IGNITE_SERVER_ADDRESSES=localhost
 MINION_GATEWAY_HOST=localhost
 # TODO - port 9443 for TLS?
