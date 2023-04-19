@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -41,17 +42,55 @@ import org.opennms.horizon.minion.flows.parser.ie.values.DateTimeValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.FloatValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.IPv4AddressValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.IPv6AddressValue;
+import org.opennms.horizon.minion.flows.parser.ie.values.ListValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.MacAddressValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.OctetArrayValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.SignedValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.StringValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.UnsignedValue;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class ValueTest {
 
-    // TODO: Test BasicList, SubTemplateList, SubTemplateMultiList
+    @Test
+    public void testBasicList() throws MissingTemplateException, InvalidPacketException {
+        // Given
+        ByteBuf byteBuf = Unpooled.buffer()
+            .writeByte(0xFF) // Semantic: Undefined
+            .writeShort(11) // FieldID: destinationTransportPort (unsigned16)
+            .writeShort(2) // Field Length: unsigned16
+            .writeBytes(new byte[] { 23, 42 })
+            .writeBytes(new byte[] { 13, 37 })
+            .writeBytes(new byte[] { 89, 80 });
+
+        // When
+        final ListValue listValue = (ListValue) ListValue.parserWithBasicList("name1", Optional.empty()).parse(null, byteBuf);
+
+        // Then
+        Assert.assertNotNull(listValue.getValue());
+        Assert.assertEquals(3, listValue.getValue().size());
+    }
+
+    @Test
+    public void testSubTemplateList() {
+        // Given
+
+        // When
+
+        // Then
+
+    }
+
+    @Test
+    public void testSubTemplateMultiList() {
+        // Given
+
+        // When
+
+        // Then
+    }
 
     @Test
     public void testBooleanValue() throws Exception {
@@ -75,16 +114,16 @@ public class ValueTest {
         Assert.assertEquals(Instant.from(ZonedDateTime.of(1900, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)), dateTimeMicrosecondsValue1.getValue());
         Assert.assertEquals("dateTimeMicrosecondsName1", dateTimeMicrosecondsValue1.getName());
 
-        final DateTimeValue dateTimeMicrosecondsName2 = (DateTimeValue) DateTimeValue.parserWithMicroseconds("dateTimeMicrosecondsName2", Optional.empty()).parse(null, Unpooled.buffer(8).writeInt((int)(1509533996L + DateTimeValue.SECONDS_TO_EPOCH)).writeInt(0));
+        final DateTimeValue dateTimeMicrosecondsName2 = (DateTimeValue) DateTimeValue.parserWithMicroseconds("dateTimeMicrosecondsName2", Optional.empty()).parse(null, Unpooled.buffer(8).writeInt((int) (1509533996L + DateTimeValue.SECONDS_TO_EPOCH)).writeInt(0));
         Assert.assertEquals(Instant.from(ZonedDateTime.of(2017, 11, 1, 10, 59, 56, 0, ZoneOffset.UTC)), dateTimeMicrosecondsName2.getValue());
         Assert.assertEquals("dateTimeMicrosecondsName2", dateTimeMicrosecondsName2.getName());
 
 
-        final DateTimeValue dateTimeMicrosecondsName3 = (DateTimeValue) DateTimeValue.parserWithMicroseconds("dateTimeMicrosecondsName3", Optional.empty()).parse(null, Unpooled.buffer(8).writeInt((int)(1509533996L + DateTimeValue.SECONDS_TO_EPOCH)).writeInt(16775168));
+        final DateTimeValue dateTimeMicrosecondsName3 = (DateTimeValue) DateTimeValue.parserWithMicroseconds("dateTimeMicrosecondsName3", Optional.empty()).parse(null, Unpooled.buffer(8).writeInt((int) (1509533996L + DateTimeValue.SECONDS_TO_EPOCH)).writeInt(16775168));
         Assert.assertEquals(Instant.from(ZonedDateTime.of(2017, 11, 1, 10, 59, 56, 3905773, ZoneOffset.UTC)), dateTimeMicrosecondsName3.getValue());
         Assert.assertEquals("dateTimeMicrosecondsName3", dateTimeMicrosecondsName3.getName());
 
-        final DateTimeValue dateTimeMicrosecondsName4 = (DateTimeValue) DateTimeValue.parserWithMicroseconds("dateTimeMicrosecondsName4", Optional.empty()).parse(null, Unpooled.buffer(8).writeInt((int)(1509533996L + DateTimeValue.SECONDS_TO_EPOCH)).writeInt(16775169));
+        final DateTimeValue dateTimeMicrosecondsName4 = (DateTimeValue) DateTimeValue.parserWithMicroseconds("dateTimeMicrosecondsName4", Optional.empty()).parse(null, Unpooled.buffer(8).writeInt((int) (1509533996L + DateTimeValue.SECONDS_TO_EPOCH)).writeInt(16775169));
         Assert.assertEquals(Instant.from(ZonedDateTime.of(2017, 11, 1, 10, 59, 56, 3905773, ZoneOffset.UTC)), dateTimeMicrosecondsName4.getValue());
         Assert.assertEquals("dateTimeMicrosecondsName4", dateTimeMicrosecondsName4.getName());
     }
@@ -106,11 +145,11 @@ public class ValueTest {
         Assert.assertEquals(Instant.from(ZonedDateTime.of(1900, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC)), dateTimeNanosecondsValue1.getValue());
         Assert.assertEquals("dateTimeNanosecondsName1", dateTimeNanosecondsValue1.getName());
 
-        final DateTimeValue dateTimeNanosecondsValue2 = (DateTimeValue) DateTimeValue.parserWithNanoseconds("dateTimeNanosecondsName2", Optional.empty()).parse(null, Unpooled.buffer(8).writeInt((int)(1509533996L + DateTimeValue.SECONDS_TO_EPOCH)).writeInt(0));
+        final DateTimeValue dateTimeNanosecondsValue2 = (DateTimeValue) DateTimeValue.parserWithNanoseconds("dateTimeNanosecondsName2", Optional.empty()).parse(null, Unpooled.buffer(8).writeInt((int) (1509533996L + DateTimeValue.SECONDS_TO_EPOCH)).writeInt(0));
         Assert.assertEquals(Instant.from(ZonedDateTime.of(2017, 11, 1, 10, 59, 56, 0, ZoneOffset.UTC)), dateTimeNanosecondsValue2.getValue());
         Assert.assertEquals("dateTimeNanosecondsName2", dateTimeNanosecondsValue2.getName());
 
-        final DateTimeValue dateTimeNanosecondsValue3 = (DateTimeValue) DateTimeValue.parserWithNanoseconds("dateTimeNanosecondsName3", Optional.empty()).parse(null, Unpooled.buffer(8).writeInt((int)(1509533996L + DateTimeValue.SECONDS_TO_EPOCH)).writeInt(34509786));
+        final DateTimeValue dateTimeNanosecondsValue3 = (DateTimeValue) DateTimeValue.parserWithNanoseconds("dateTimeNanosecondsName3", Optional.empty()).parse(null, Unpooled.buffer(8).writeInt((int) (1509533996L + DateTimeValue.SECONDS_TO_EPOCH)).writeInt(34509786));
         Assert.assertEquals(Instant.from(ZonedDateTime.of(2017, 11, 1, 10, 59, 56, 8034935, ZoneOffset.UTC)), dateTimeNanosecondsValue3.getValue());
         Assert.assertEquals("dateTimeNanosecondsName3", dateTimeNanosecondsValue3.getName());
     }
