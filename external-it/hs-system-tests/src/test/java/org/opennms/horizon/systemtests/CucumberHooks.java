@@ -43,6 +43,7 @@ public class CucumberHooks {
         AddNewInstancePopup.setInstanceName(instanceName);
         AddNewInstancePopup.clickSubmitBtn();
 
+        PortalCloudPage.mainPageIsNotCoveredByPopups();
         PortalCloudPage.setFilter(instanceName);
         PortalCloudPage.clickDetailsForFirstInstance();
         String instanceUrl = EditInstancePage.getInstanceUrl();

@@ -37,4 +37,9 @@ public class CloudLeftPanelSteps {
     public void clickOnAppliancesSection() {
         CloudLeftPanelPage.clickOnApplianceSection();
     }
+
+    @Then("Navigate to the {string} through the left panel")
+    public void clickOnLeftPanelSection(String section) {
+        CloudLeftPanelPage.clickOnPanelSection(section);
+    }
 }

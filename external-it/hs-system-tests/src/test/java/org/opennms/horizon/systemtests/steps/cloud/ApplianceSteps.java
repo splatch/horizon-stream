@@ -30,15 +30,21 @@ package org.opennms.horizon.systemtests.steps.cloud;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import org.opennms.horizon.systemtests.pages.portal.AppliancePage;
 
 import java.time.Duration;
 
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$x;
+import static com.codeborne.selenide.Selenide.open;
+import static org.junit.Assert.assertEquals;
 import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
 
-public class AppliancesSteps {
+public class ApplianceSteps {
 
     @Then("check minion in the list")
     public static void justWait() {
@@ -49,4 +55,20 @@ public class AppliancesSteps {
     public static void waitSecond() {
         Selenide.sleep(60_000);
     }
+
+    @Then("check that the remove Minion button is displayed")
+    public void checkIsRemoveMinionButtonShown(boolean isShown) {
+        assertEquals(isShown, AppliancePage.checkIsRemoveButtonShown());
+    }
+
+    @Then("check the status of the minion is {string}")
+    public void checkTheStatusOfTheMinionIs(String status) {
+        assertEquals(status, AppliancePage.getMinionStatus());
+    }
+
+    @Then("remove Minion from the list")
+    public void removeMinionFromTheList() {
+        AppliancePage.clickRemoveMinion();
+    }
+
 }
