@@ -8,13 +8,11 @@ import org.opennms.horizon.minioncertmanager.proto.GetMinionCertificateRequest;
 import org.opennms.horizon.minioncertmanager.proto.GetMinionCertificateResponse;
 import org.opennms.horizon.minioncertmanager.proto.MinionCertificateManagerGrpc;
 import org.opennms.horizon.shared.constants.GrpcConstants;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.concurrent.TimeUnit;
 
-@Component
 @RequiredArgsConstructor
 public class MinionCertificateManagerClient {
 

@@ -87,7 +87,7 @@ public class MinionCertificateManagerClientTest {
         grpcCleanUp.register(InProcessServerBuilder.forName("MinionCertificateManagerClientTest").intercept(mockInterceptor)
             .addService(mockAlertService).directExecutor().build().start());
         ManagedChannel channel = grpcCleanUp.register(InProcessChannelBuilder.forName("MinionCertificateManagerClientTest").directExecutor().build());
-        client = new MinionCertificateManagerClient(channel);
+        client = new MinionCertificateManagerClient(channel, 1000L);
         client.initialStubs();
     }
 
