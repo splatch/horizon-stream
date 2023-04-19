@@ -2,7 +2,7 @@ export const optionsGraph: any = {
   fill: true,
   radius: 0.5,
   responsive: true,
-  aspectRatio: 1.4,
+  aspectRatio: 1.6,
   interaction: {
     mode: 'index',
     intersect: false

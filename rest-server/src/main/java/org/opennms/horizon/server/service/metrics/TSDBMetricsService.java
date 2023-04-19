@@ -75,11 +75,11 @@ public class TSDBMetricsService {
     private static final Logger LOG = LoggerFactory.getLogger(TSDBMetricsService.class);
 
     public TSDBMetricsService(ServerHeaderUtil headerUtil,
-            MetricLabelUtils metricLabelUtils,
-            QueryService queryService,
-            NormalizationService normalizationService,
-            InventoryClient inventoryClient,
-            @Value("${tsdb.url}") String tsdbURL) {
+                              MetricLabelUtils metricLabelUtils,
+                              QueryService queryService,
+                              NormalizationService normalizationService,
+                              InventoryClient inventoryClient,
+                              @Value("${tsdb.url}") String tsdbURL) {
 
         this.headerUtil = headerUtil;
         this.metricLabelUtils = metricLabelUtils;
