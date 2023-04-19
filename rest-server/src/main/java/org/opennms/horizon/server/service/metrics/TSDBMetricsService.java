@@ -89,34 +89,33 @@ public class TSDBMetricsService {
         String tsdbQueryURL = tsdbURL + "/query";
         String tsdbRangeQueryURL = tsdbURL + "/query_range";
         this.tsdbQueryWebClient = WebClient.builder()
-                .baseUrl(tsdbQueryURL)
-                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .build();
+            .baseUrl(tsdbQueryURL)
+            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+            .build();
         this.tsdbrangeQueryWebClient = WebClient.builder()
-                .baseUrl(tsdbRangeQueryURL)
-                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .build();
+            .baseUrl(tsdbRangeQueryURL)
+            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+            .build();
     }
 
     @GraphQLQuery
     public Mono<TimeSeriesQueryResult> getMetric(@GraphQLEnvironment ResolutionEnvironment env,
-            String name, Map<String, String> labels,
-            Integer timeRange, TimeRangeUnit timeRangeUnit) {
+                                                 String name, Map<String, String> labels,
+                                                 Integer timeRange, TimeRangeUnit timeRangeUnit) {
 
         Map<String, String> metricLabels = Optional.ofNullable(labels)
-                .map(HashMap::new).orElseGet(HashMap::new);
+            .map(HashMap::new).orElseGet(HashMap::new);
 
         String metricNameRegex = name;
         String tenantId = headerUtil.extractTenant(env);
         if (TOTAL_NETWORK_BYTES_IN.equals(name) || TOTAL_NETWORK_BYTES_OUT.equals(name)) {
-            // TODO: Defaults to 24h with 1h steps but may need to align both step and range
-            // in the rate query
+            // TODO: Defaults to 24h with 1h steps but may need to align both step and range in the rate query
             long end = System.currentTimeMillis() / 1000L;
             long start = end - getDuration(timeRange, timeRangeUnit).orElse(Duration.ofHours(24)).getSeconds();
             String rangeQuerySuffix = "&start=" + start + "&end=" + end +
-                    "&step=1h";
+                "&step=1h";
             if (TOTAL_NETWORK_BYTES_IN.equals(name)) {
                 String rangeQuery = QUERY_FOR_TOTAL_NETWORK_BYTES_IN + rangeQuerySuffix;
                 return getRangeMetrics(tenantId, rangeQuery);
@@ -124,22 +123,23 @@ public class TSDBMetricsService {
             String rangeQuery = QUERY_FOR_TOTAL_NETWORK_BYTES_OUT + rangeQuerySuffix;
             return getRangeMetrics(tenantId, rangeQuery);
         }
-        // in the case of minion echo, there is no node information
+        //in the case of minion echo, there is no node information
         Optional<NodeDTO> nodeOpt = getNode(env, metricLabels);
         if (nodeOpt.isPresent()) {
             NodeDTO node = nodeOpt.get();
             setMonitorTypeByScanType(node, metricLabels);
 
             metricNameRegex = normalizationService
-                    .getQueryMetricRegex(node, name, metricLabels);
+                .getQueryMetricRegex(node, name, metricLabels);
         }
 
         String queryString = queryService
-                .getQueryString(metricNameRegex, metricLabels, timeRange, timeRangeUnit);
+            .getQueryString(metricNameRegex, metricLabels, timeRange, timeRangeUnit);
 
         Mono<TimeSeriesQueryResult> resultMono = getMetrics(tenantId, queryString);
-        return nodeOpt.map(nodeDTO -> resultMono.map(result -> normalizationService.normalizeResults(name, result)))
-                .orElse(resultMono);
+        return nodeOpt.map(nodeDTO -> resultMono.map(result ->
+                normalizationService.normalizeResults(name, result)))
+            .orElse(resultMono);
     }
 
     public static Optional<Duration> getDuration(Integer timeRange, TimeRangeUnit timeRangeUnit) {
@@ -153,6 +153,7 @@ public class TSDBMetricsService {
         }
         return Optional.empty();
     }
+
 
     private Optional<NodeDTO> getNode(ResolutionEnvironment env, Map<String, String> metricLabels) {
         return metricLabelUtils.getNodeId(metricLabels).map(nodeId -> {
@@ -170,17 +171,17 @@ public class TSDBMetricsService {
 
     private Mono<TimeSeriesQueryResult> getMetrics(String tenantId, String queryString) {
         return tsdbQueryWebClient.post()
-                .header("X-Scope-OrgID", tenantId)
-                .bodyValue(queryString)
-                .retrieve()
-                .bodyToMono(TimeSeriesQueryResult.class);
+            .header("X-Scope-OrgID", tenantId)
+            .bodyValue(queryString)
+            .retrieve()
+            .bodyToMono(TimeSeriesQueryResult.class);
     }
 
     private Mono<TimeSeriesQueryResult> getRangeMetrics(String tenantId, String queryString) {
         return tsdbrangeQueryWebClient.post()
-                .header("X-Scope-OrgID", tenantId)
-                .bodyValue(queryString)
-                .retrieve()
-                .bodyToMono(TimeSeriesQueryResult.class);
+            .header("X-Scope-OrgID", tenantId)
+            .bodyValue(queryString)
+            .retrieve()
+            .bodyToMono(TimeSeriesQueryResult.class);
     }
 }
