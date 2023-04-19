@@ -1,6 +1,9 @@
-package org.opennms.horizon.systemtests.pages.portal;
+package org.opennms.horizon.systemtests.pages.cloud;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
+
+import java.time.Duration;
 
 import static com.codeborne.selenide.Selenide.$;
 
@@ -40,6 +43,10 @@ public class AppliancePage {
 
     public static String getMinionStatus() {
         return minionStatus.getText();
+    }
+
+    public static void waitMinionStatus(String status) {
+        minionStatus.shouldHave(Condition.text(status), Duration.ofSeconds(31));
     }
 
     public static String getDeviceStatus() {

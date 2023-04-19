@@ -37,13 +37,14 @@ public class MinionSteps {
 
     @When("Run a minion {string} as name, {string} as location and connect to the cloud instance")
     public void runMinion(String minionId, String minionLocation) {
-        MinionContainer minionContainer = new MinionContainer(MINIONS.get(0).gatewayHost, minionId, minionLocation);
-        minionContainer.start();
+        MinionContainer.createNewOne(minionId, minionLocation);
     }
 
     @When("Stop running minion connected to the cloud instance")
     public void stopMinion() {
-        if (MINIONS.get(0).isRunning())
+        if (MINIONS.get(0).isRunning()) {
             MINIONS.get(0).stop();
+            MINIONS.clear();
+        }
     }
 }

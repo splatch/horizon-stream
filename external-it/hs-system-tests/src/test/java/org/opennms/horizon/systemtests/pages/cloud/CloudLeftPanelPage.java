@@ -41,6 +41,6 @@ public class CloudLeftPanelPage {
     }
 
     public static void clickOnPanelSection(String section) {
-        $(String.format("[href='/%s']", section)).shouldBe(Condition.enabled).click();
+        $(String.format("[href='/%s']", section)).shouldBe(Condition.enabled).hover().click();
     }
 }

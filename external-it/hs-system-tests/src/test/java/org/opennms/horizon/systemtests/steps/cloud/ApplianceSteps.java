@@ -28,47 +28,48 @@
 
 package org.opennms.horizon.systemtests.steps.cloud;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import org.opennms.horizon.systemtests.pages.portal.AppliancePage;
-
-import java.time.Duration;
+import org.opennms.horizon.systemtests.pages.cloud.AppliancePage;
 
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
-import static com.codeborne.selenide.Selenide.open;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
 
 public class ApplianceSteps {
 
-    @Then("check minion in the list")
-    public static void justWait() {
-        $(byText(MINIONS.get(0).minionId)).shouldBe(Condition.visible, Duration.ofMinutes(10));
+    @Then("check {string} minion in the list")
+    public static void waitWhenMinionAppear(String minionName) {
+        if (minionName.equals("DEFAULT")) {
+            minionName = MINIONS.get(0).minionId;
+        }
+
+        for (int i = 0; i < 2; i++) {
+            if (!$(byText(minionName.toUpperCase())).isDisplayed()) {
+                waitHeartbeat(1);
+            }
+        }
     }
 
-    @Then("wait")
-    public static void waitSecond() {
-        Selenide.sleep(60_000);
+    @Then("wait for {long} heartbeats")
+    public static void waitHeartbeat(long count) {
+        Selenide.sleep(count * 30_000);
+        Selenide.refresh();
     }
 
     @Then("check that the remove Minion button is displayed")
-    public void checkIsRemoveMinionButtonShown(boolean isShown) {
-        assertEquals(isShown, AppliancePage.checkIsRemoveButtonShown());
+    public void checkIsRemoveMinionButtonShown() {
+        assertTrue(AppliancePage.checkIsRemoveButtonShown());
     }
 
     @Then("check the status of the minion is {string}")
     public void checkTheStatusOfTheMinionIs(String status) {
-        assertEquals(status, AppliancePage.getMinionStatus());
+        AppliancePage.waitMinionStatus(status);
     }
 
-    @Then("remove Minion from the list")
+    @Then("click on the delete button for minion")
     public void removeMinionFromTheList() {
         AppliancePage.clickRemoveMinion();
     }
-
 }
