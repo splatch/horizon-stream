@@ -272,5 +272,9 @@ public class NodeServiceTest {
         Node result = nodeService.createNode(nodeCreate, ScanType.NODE_SCAN, tenantID);
         assertThat(result).isEqualTo(node);
         verify(mockIpInterfaceRepository).findByIpAddressAndLocationAndTenantId(any(InetAddress.class), eq(nodeCreate.getLocation()), eq(tenantID));
+        verifyNoInteractions(mockNodeRepository);
+        verifyNoInteractions(mockMonitoringLocationRepository);
+        verifyNoInteractions(tagService);
+        verifyNoInteractions(mockConfigUpdateService);
     }
 }
