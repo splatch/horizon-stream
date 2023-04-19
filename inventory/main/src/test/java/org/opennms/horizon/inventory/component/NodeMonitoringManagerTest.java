@@ -37,8 +37,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opennms.horizon.events.proto.Event;
+import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.model.Node;
+import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.discovery.PassiveDiscoveryService;
 import org.opennms.horizon.shared.events.EventConstants;
@@ -52,6 +54,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.Optional;
+
 @ExtendWith(MockitoExtension.class)
 class NodeMonitoringManagerTest {
 
@@ -59,6 +63,8 @@ class NodeMonitoringManagerTest {
     private NodeService nodeService;
     @Mock
     private PassiveDiscoveryService passiveDiscoveryService;
+    @Mock
+    IpInterfaceService ipInterfaceService;
     @InjectMocks
     private NodeMonitoringManager consumer;
 
@@ -86,14 +92,23 @@ class NodeMonitoringManagerTest {
     @Test
     void testReceiveEventAndCreateNewNode() {
         doReturn(node).when(nodeService).createNode(any(NodeCreateDTO.class), eq(ScanType.NODE_SCAN), eq(tenantId));
+        doReturn(Optional.empty()).when(ipInterfaceService).findByIpAddressAndLocationAndTenantId(event.getIpAddress(), event.getLocation(), tenantId);
         ArgumentCaptor<NodeCreateDTO> argumentCaptor = ArgumentCaptor.forClass(NodeCreateDTO.class);
         consumer.receiveTrapEvent(event.toByteArray());
         verify(nodeService).createNode(argumentCaptor.capture(), eq(ScanType.NODE_SCAN), eq(tenantId));
         verify(passiveDiscoveryService).sendNodeScan(node);
+        verify(ipInterfaceService).findByIpAddressAndLocationAndTenantId(event.getIpAddress(), event.getLocation(), tenantId);
         NodeCreateDTO createDTO = argumentCaptor.getValue();
         assertThat(createDTO.getLocation()).isEqualTo(event.getLocation());
         assertThat(createDTO.getManagementIp()).isEqualTo(event.getIpAddress());
         assertThat(createDTO.getLabel()).endsWith(event.getIpAddress());
+    }
+
+    @Test
+    void testReceiveEventAndNodeExists() {
+        doReturn(Optional.of(IpInterfaceDTO.newBuilder().build())).when(ipInterfaceService).findByIpAddressAndLocationAndTenantId(event.getIpAddress(), event.getLocation(), tenantId);
+        consumer.receiveTrapEvent(event.toByteArray());
+        verify(ipInterfaceService).findByIpAddressAndLocationAndTenantId(event.getIpAddress(), event.getLocation(), tenantId);
     }
 
     @Test
