@@ -33,12 +33,10 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opennms.horizon.events.proto.Event;
-import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.inventory.dto.MonitoredState;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.exception.InventoryRuntimeException;
 import org.opennms.horizon.inventory.model.Node;
-import org.opennms.horizon.inventory.service.IpInterfaceService;
 import org.opennms.horizon.inventory.service.NodeService;
 import org.opennms.horizon.inventory.service.discovery.PassiveDiscoveryService;
 import org.opennms.horizon.shared.events.EventConstants;
@@ -49,7 +47,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -57,7 +54,6 @@ import java.util.Optional;
 @PropertySource("classpath:application.yml")
 public class NodeMonitoringManager {
     private final NodeService nodeService;
-    private final IpInterfaceService ipInterfaceService;
     private final PassiveDiscoveryService passiveDiscoveryService;
 
     @KafkaListener(topics = "${kafka.topics.internal-events}", concurrency = "1")
@@ -71,20 +67,14 @@ public class NodeMonitoringManager {
                 var tenantId = event.getTenantId();
                 log.debug("Create new node from event with interface: {}, location: {} and tenant: {}", event.getIpAddress(), event.getLocation(), tenantId);
 
-                Optional<IpInterfaceDTO> ipInterfaceOp = ipInterfaceService.findByIpAddressAndLocationAndTenantId(event.getIpAddress(), event.getLocation(), event.getTenantId());
-                if(ipInterfaceOp.isPresent()) {
-                    IpInterfaceDTO ipInterface = ipInterfaceOp.get();
-                    log.warn("IP address {} already exists in the system and belong to device with ID {}", event.getIpAddress(), ipInterface.getNodeId());
-                } else {
-                    NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
-                        .setLocation(event.getLocation())
-                        .setManagementIp(event.getIpAddress())
-                        .setLabel("trap-" + event.getIpAddress())
-                        .setMonitoredState(MonitoredState.DETECTED)
-                        .build();
-                    Node node = nodeService.createNode(createDTO, ScanType.NODE_SCAN, tenantId);
-                    passiveDiscoveryService.sendNodeScan(node);
-                }
+                NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
+                    .setLocation(event.getLocation())
+                    .setManagementIp(event.getIpAddress())
+                    .setLabel("trap-" + event.getIpAddress())
+                    .setMonitoredState(MonitoredState.DETECTED)
+                    .build();
+                Node node = nodeService.createNode(createDTO, ScanType.NODE_SCAN, tenantId);
+                passiveDiscoveryService.sendNodeScan(node);
             }
         } catch (InvalidProtocolBufferException e) {
             log.error("Error while parsing Event. Payload: {}", Arrays.toString(data), e);
