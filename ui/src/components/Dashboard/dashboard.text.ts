@@ -1,4 +1,8 @@
 export default {
+  Alerts: {
+    title: 'Alert Status',
+    timePeriod: '24hours'
+  },
   TopApplications: {
     title: 'Top 10 Applications',
     redirectLink: 'Flows',

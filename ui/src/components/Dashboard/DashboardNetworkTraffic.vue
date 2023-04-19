@@ -12,7 +12,6 @@
   </DashboardEmptyState>
   <Line
     v-else
-    class="network-container"
     :data="dataGraph"
     :options="configGraph"
   />
@@ -29,11 +28,13 @@ import { useDashboardStore } from '@/store/Views/dashboardStore'
 import { optionsGraph } from './dashboardNetworkTraffic.config'
 import { ChartData } from '@/types'
 
-const { isDark } = useTheme()
+const { onThemeChange, isDark } = useTheme()
+
 const store = useDashboardStore()
 const networkTrafficIn = ref([] as [string, number][])
 const networkTrafficOut = ref([] as [string, number][])
 const dataGraph = ref({} as ChartData)
+const configGraph = ref({})
 
 onMounted(async () => {
   await store.getNetworkTrafficInValues()
@@ -48,9 +49,9 @@ const formatValues = (list: [number, number][]): [string, number][] =>
     return [transformToDate(i[0]), transformtoGb(i[1])]
   })
 
-const configGraph = computed<any>(() => {
+const createConfigGraph = (list: number[]) => {
   const options = { ...optionsGraph }
-
+  //options.aspectRatio = isLargeScreen ? 1.4 : 1
   options.scales.x = {
     grid: {
       display: false
@@ -60,8 +61,8 @@ const configGraph = computed<any>(() => {
         //show date at the beginning and at the end
         const lastIndex = store.totalNetworkTrafficIn.length - 1
 
-        if ((index == 0 || index == lastIndex) && store.totalNetworkTrafficIn[index]) {
-          const date = format(fromUnixTime(store.totalNetworkTrafficIn[index][0]), 'LLL d')
+        if ((index == 0 || index == lastIndex) && list[index]) {
+          const date = format(fromUnixTime(list[index]), 'LLL d')
           return (this as any).getLabelForValue(date)
         }
         return index % 2 === 0 ? (this as any).getLabelForValue(val) : ''
@@ -69,7 +70,7 @@ const configGraph = computed<any>(() => {
     }
   }
   return options
-})
+}
 
 const createData = (list: [string, number][]) => {
   return {
@@ -97,13 +98,14 @@ watchEffect(() => {
   networkTrafficIn.value = formatValues(store.totalNetworkTrafficIn)
   networkTrafficOut.value = formatValues(store.totalNetworkTrafficOut)
   dataGraph.value = createData(networkTrafficIn.value)
+  const dates = store.totalNetworkTrafficIn.map((v) => v[0]) //dates before format
+  configGraph.value = createConfigGraph(dates)
+})
+
+onThemeChange(() => {
+  optionsGraph.plugins.legend.labels.color = isDark.value ? '#d1d0d0' : '#00000'
+  optionsGraph.scales.x.ticks.color = isDark.value ? '#d1d0d0' : '#00000'
+  optionsGraph.scales.y.ticks.color = isDark.value ? '#d1d0d0' : '#00000'
+  configGraph.value = { ...optionsGraph }
 })
 </script>
-
-<style scoped lang="scss">
-@use '@featherds/styles/themes/variables';
-
-.network-container {
-  padding-top: var(variables.$spacing-xxl);
-}
-</style>

@@ -4,7 +4,8 @@
       <PageHeadline text="Insights Dashboard" />
       <DashboardHeaderLinks />
     </div>
-    <div class="section-title">Alert Status</div>
+    <div class="section-title">{{ dashboardText.Alerts.title }}</div>
+    <div class="section-subtitle">{{ dashboardText.Alerts.timePeriod }}</div>
     <div class="list-alerts">
       <AlertsSeverityFilters
         @click="redirect('Alerts')"
@@ -77,6 +78,10 @@ onMounted(async () => {
   }
   .section-title {
     @include typography.headline3();
+  }
+  .section-subtitle {
+    @include typography.body-small;
+    padding-bottom: var(variables.$spacing-xs);
   }
   .graphs {
     display: flex;
