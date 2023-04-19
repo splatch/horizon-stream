@@ -59,9 +59,6 @@ defineProps<{
   }
 
   .content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin-top: var(variables.$spacing-l);
     border: 1px solid var(variables.$border-on-surface);
     padding: var(variables.$spacing-s);
