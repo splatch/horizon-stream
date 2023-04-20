@@ -102,18 +102,19 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
     public void createNode(NodeCreateDTO request, StreamObserver<NodeDTO> responseObserver) {
         String tenantId = tenantLookup.lookupTenantId(Context.current()).orElseThrow();
         boolean valid = validateInput(request, tenantId, responseObserver);
-
         if (valid) {
             try {
                 Node node = nodeService.createNode(request, ScanType.NODE_SCAN, tenantId);
                 responseObserver.onNext(nodeMapper.modelToDTO(node));
                 responseObserver.onCompleted();
-
-
                 // Asynchronously send task sets to Minion
                 executorService.execute(() -> sendNodeScanTaskToMinion(node));
             } catch (EntityExistException e) {
-                responseObserver.onError(e);
+                Status status = Status.newBuilder()
+                    .setCode(Code.ALREADY_EXISTS_VALUE)
+                    .setMessage(IP_ADDRESS_ALREADY_EXISTS_FOR_LOCATION_MSG)
+                    .build();
+                responseObserver.onError(StatusProto.toStatusRuntimeException(status));
             }
         }
     }
@@ -344,16 +345,6 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
                     .setMessage("Bad management_ip: " + request.getManagementIp())
                     .build();
                 responseObserver.onError(StatusProto.toStatusRuntimeException(status));
-            } else {
-                Optional<IpInterfaceDTO> optionalIpInterface = ipInterfaceService.findByIpAddressAndLocationAndTenantId(request.getManagementIp(), request.getLocation(), tenantId);
-                if (optionalIpInterface.isPresent()) {
-                    valid = false;
-                    Status status = Status.newBuilder()
-                        .setCode(Code.ALREADY_EXISTS_VALUE)
-                        .setMessage(IP_ADDRESS_ALREADY_EXISTS_FOR_LOCATION_MSG)
-                        .build();
-                    responseObserver.onError(StatusProto.toStatusRuntimeException(status));
-                }
             }
         }
 
