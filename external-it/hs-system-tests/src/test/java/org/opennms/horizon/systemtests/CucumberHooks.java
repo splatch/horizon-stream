@@ -92,6 +92,7 @@ public class CucumberHooks {
     @After("@portal")
     public static void returnToPortalMainPage() {
         Selenide.open(SecretsStorage.portalHost + "/cloud");
+        PortalCloudPage.verifyMainPageHeader();
         INSTANCES.clear();
     }
 

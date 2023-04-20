@@ -30,6 +30,7 @@
 package org.opennms.horizon.systemtests.steps.portal;
 
 import io.cucumber.java.en.Then;
+import org.opennms.horizon.systemtests.pages.portal.DeleteInstancePopup;
 import org.opennms.horizon.systemtests.pages.portal.EditInstancePage;
 import org.opennms.horizon.systemtests.utils.TestDataStorage;
 
@@ -40,5 +41,27 @@ public class EditInstanceSteps {
         EditInstancePage.verifyNumberOfUsers(1);
         String userEmail = TestDataStorage.mapUserToEmail(email);
         EditInstancePage.verifyUserEmailInTable(userEmail);
+    }
+
+    @Then("click on 'DELETE INSTANCE' button")
+    public void clickDeleteInstanceBtn() {
+        EditInstancePage.clickDeleteInstance();
+    }
+
+    @Then("the IT Administrator sees the 'Cloud Instance Details' page for the {string} instance")
+    public void checkWeAreOnDetailsPage(String instanceName) {
+        DeleteInstancePopup.waitPopupIsDisplayed(false);
+        EditInstancePage.verifyPageTitle();
+        EditInstancePage.verifyInstanceName(instanceName);
+    }
+
+    @Then("click on the instance 'URL' link")
+    public void clickOnUrl() {
+        EditInstancePage.clickOnInstanceUrl();
+    }
+
+    @Then("click on 'edit' for instance name")
+    public void clickOnEditInstanceName() {
+        EditInstancePage.clickEditNameBtn();
     }
 }
