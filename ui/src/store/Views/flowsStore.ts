@@ -5,6 +5,8 @@ import { useflowsQueries } from '@/store/Queries/flowsQueries'
 import { RequestCriteriaInput, TimeRange } from '@/types/graphql'
 import { FlowsApplicationData, FlowsApplicationSummaries, ChartData } from '@/types'
 import { IAutocompleteItemType } from '@featherds/autocomplete/src/components/types'
+import { get, toArray } from 'lodash'
+import { IExporter } from '@/types/flows'
 
 export const useFlowsStore = defineStore('flowsStore', {
   state: () => ({
@@ -27,6 +29,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       filteredApplications: [] as IAutocompleteItemType[],
       //Exporter AutoComplete
       exporters: [] as IAutocompleteItemType[],
+      selectedExporterTopApplication: null as null | IAutocompleteItemType[],
       selectedExporters: [],
       isExportersLoading: false,
       filteredExporters: [] as IAutocompleteItemType[]
@@ -122,7 +125,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       //Get Total Flows
       this.totalFlows = applicationsLineData.value?.findApplicationSeries?.length || 0
     },
-    getRequestData(count = 10, step?: number, exporter?: object[], applications?: string[]) {
+    getRequestData(count = 10, step?: number, exporter?: IExporter[], applications?: string[]) {
       return {
         count: count,
         step: step || this.filters.steps,
@@ -318,7 +321,10 @@ export const useFlowsStore = defineStore('flowsStore', {
     },
     async getApplicationDataset() {
       const flowsQueries = useflowsQueries()
-      const requestData = this.getRequestData(10, 2000000, [], [])
+      this.filters.dateFilter = TimeRange.Last_24Hours
+      const exporter = get(this.filters.selectedExporterTopApplication, 'value')
+      const exporters: IExporter[] = exporter ? [exporter] : []
+      const requestData = this.getRequestData(10, 2000000, exporters, [])
 
       const topApplications = await flowsQueries.getApplicationsSummaries(requestData)
       this.topApplications = [

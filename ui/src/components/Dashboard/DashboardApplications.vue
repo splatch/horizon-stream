@@ -1,4 +1,14 @@
 <template>
+  <FeatherAutocomplete
+    class="exporters-filter"
+    :label="dashboardText.TopApplications.filterLabel"
+    type="single"
+    v-model="flowsStore.filters.selectedExporterTopApplication"
+    :loading="flowsStore.filters.isExportersLoading"
+    :results="flowsStore.filters.filteredExporters"
+    @search="flowsStore.exportersAutoCompleteSearch"
+    @update:model-value="flowsStore.getApplicationDataset"
+  ></FeatherAutocomplete>
   <div class="flows">
     <div
       v-if="hasData"
@@ -64,16 +74,12 @@ const buildData = () => {
   }
 }
 
-watchEffect(() => {
-  buildData()
-})
-
 const config = {
   responsive: true,
-  aspectRatio: 1.4,
+  aspectRatio: 1.5,
   plugins: {
     legend: {
-      display: isLargeScreen.value,
+      display: true,
       align: 'center',
       position: 'right',
       labels: {
@@ -93,8 +99,23 @@ const config = {
 }
 constGraph.value = config
 
+watchEffect(() => {
+  buildData()
+})
+
 onThemeChange(() => {
   config.plugins.legend.labels.color = isDark.value ? '#d1d0d0' : '#00000'
   constGraph.value = { ...config }
 })
+
+onMounted(async () => {
+  flowsStore.filters.selectedExporterTopApplication = null
+})
 </script>
+
+<style scoped lang="scss">
+.exporters-filter {
+  width: 50%;
+  margin-left: auto;
+}
+</style>
