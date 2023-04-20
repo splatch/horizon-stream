@@ -41,6 +41,7 @@ import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
 import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
+import org.opennms.horizon.inventory.exception.EntityExistException;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoredServiceType;
 import org.opennms.horizon.inventory.model.Node;
@@ -165,8 +166,12 @@ public class ScannerResponseService {
                         .setLabel(pingResponse.getIpAddress())
                         .addAllTags(tags)
                         .build();
-                    Node node = nodeService.createNode(createDTO, ScanType.DISCOVERY_SCAN, tenantId);
-                    nodeService.sendNewNodeTaskSetAsync(node, location, icmpDiscovery);
+                    try {
+                        Node node = nodeService.createNode(createDTO, ScanType.DISCOVERY_SCAN, tenantId);
+                        nodeService.sendNewNodeTaskSetAsync(node, location, icmpDiscovery);
+                    } catch (EntityExistException e) {
+                        log.error("Error while adding new device for tenant {} at location {} with IP {}", tenantId, location, pingResponse.getIpAddress());
+                    }
                 }
             }
         }
@@ -183,29 +188,34 @@ public class ScannerResponseService {
 
         String nodeLabel = String.format("%s (%s)", item.getName(), item.getResourceGroup());
         Optional<Node> nodeOpt = nodeRepository.findByTenantLocationAndNodeLabel(tenantId, location, nodeLabel);
+        try {
+            Node node;
+            if (nodeOpt.isPresent()) {
+                node = nodeOpt.get();
+                log.warn("Node already exists for tenant: {}, location: {}, label: {}", tenantId, location, nodeLabel);
+            } else {
+                NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
+                    .setLocation(location)
+                    .setManagementIp(ipAddress)
+                    .setLabel(nodeLabel)
+                    .build();
 
-        Node node;
-        if (nodeOpt.isPresent()) {
-            node = nodeOpt.get();
-            log.warn("Node already exists for tenant: {}, location: {}, label: {}", tenantId, location, nodeLabel);
-        } else {
-            NodeCreateDTO createDTO = NodeCreateDTO.newBuilder()
-                .setLocation(location)
-                .setManagementIp(ipAddress)
-                .setLabel(nodeLabel)
-                .build();
-            node = nodeService.createNode(createDTO, ScanType.AZURE_SCAN, tenantId);
+                node = nodeService.createNode(createDTO, ScanType.AZURE_SCAN, tenantId);
 
-            taskSetHandler.sendAzureMonitorTasks(discovery, item, ipAddress, node.getId());
-            taskSetHandler.sendAzureCollectorTasks(discovery, item, ipAddress, node.getId());
+                taskSetHandler.sendAzureMonitorTasks(discovery, item, ipAddress, node.getId());
+                taskSetHandler.sendAzureCollectorTasks(discovery, item, ipAddress, node.getId());
+
+            }
+            List<TagCreateDTO> tags = discovery.getTags().stream()
+                .map(tag -> TagCreateDTO.newBuilder().setName(tag.getName()).build())
+                .toList();
+            tagService.addTags(tenantId, TagCreateListDTO.newBuilder()
+                .addEntityIds(TagEntityIdDTO.newBuilder()
+                    .setNodeId(node.getId()))
+                .addAllTags(tags).build());
+        }  catch (EntityExistException e) {
+            log.error("Error while adding new Azure device for tenant {} at location {} with IP {}", tenantId, location, ipAddress);
         }
-        List<TagCreateDTO> tags = discovery.getTags().stream()
-            .map(tag -> TagCreateDTO.newBuilder().setName(tag.getName()).build())
-            .toList();
-        tagService.addTags(tenantId, TagCreateListDTO.newBuilder()
-            .addEntityIds(TagEntityIdDTO.newBuilder()
-                .setNodeId(node.getId()))
-            .addAllTags(tags).build());
     }
 
     private void processNodeScanResponse(String tenantId, NodeScanResult result, String location ) {

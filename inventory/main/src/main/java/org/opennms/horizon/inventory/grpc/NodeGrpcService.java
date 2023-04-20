@@ -52,6 +52,7 @@ import org.opennms.horizon.inventory.dto.NodeLabelSearchQuery;
 import org.opennms.horizon.inventory.dto.NodeList;
 import org.opennms.horizon.inventory.dto.NodeServiceGrpc;
 import org.opennms.horizon.inventory.dto.TagNameQuery;
+import org.opennms.horizon.inventory.exception.EntityExistException;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.Node;
 import org.opennms.horizon.inventory.service.IpInterfaceService;
@@ -103,13 +104,17 @@ public class NodeGrpcService extends NodeServiceGrpc.NodeServiceImplBase {
         boolean valid = validateInput(request, tenantId, responseObserver);
 
         if (valid) {
-            Node node = nodeService.createNode(request, ScanType.NODE_SCAN, tenantId);
-            responseObserver.onNext(nodeMapper.modelToDTO(node));
-            responseObserver.onCompleted();
+            try {
+                Node node = nodeService.createNode(request, ScanType.NODE_SCAN, tenantId);
+                responseObserver.onNext(nodeMapper.modelToDTO(node));
+                responseObserver.onCompleted();
 
 
-            // Asynchronously send task sets to Minion
-            executorService.execute(() -> sendNodeScanTaskToMinion(node));
+                // Asynchronously send task sets to Minion
+                executorService.execute(() -> sendNodeScanTaskToMinion(node));
+            } catch (EntityExistException e) {
+                responseObserver.onError(e);
+            }
         }
     }
 

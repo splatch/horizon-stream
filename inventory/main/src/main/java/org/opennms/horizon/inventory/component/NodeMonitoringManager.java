@@ -28,10 +28,8 @@
 
 package org.opennms.horizon.inventory.component;
 
-import com.google.common.base.Strings;
-import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Arrays;
+
 import org.opennms.horizon.events.proto.Event;
 import org.opennms.horizon.inventory.dto.MonitoredState;
 import org.opennms.horizon.inventory.dto.NodeCreateDTO;
@@ -46,7 +44,10 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import com.google.common.base.Strings;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -76,7 +77,7 @@ public class NodeMonitoringManager {
                 Node node = nodeService.createNode(createDTO, ScanType.NODE_SCAN, tenantId);
                 passiveDiscoveryService.sendNodeScan(node);
             }
-        } catch (InvalidProtocolBufferException e) {
+        } catch (Exception e) {
             log.error("Error while parsing Event. Payload: {}", Arrays.toString(data), e);
         }
     }

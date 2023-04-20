@@ -49,6 +49,7 @@ import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.NodeIdList;
 import org.opennms.horizon.inventory.dto.NodeIdQuery;
 import org.opennms.horizon.inventory.dto.NodeList;
+import org.opennms.horizon.inventory.exception.EntityExistException;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
 import org.opennms.horizon.inventory.model.Node;
@@ -76,7 +77,6 @@ public class NodeGrpcServiceTest {
     private StreamObserver<Int64Value> mockInt64ValueStreamObserver;
     private StreamObserver<BoolValue> mockBoolValueStreamObserver;
     private ExecutorService mockExecutorService;
-    private Logger mockLogger;
 
     private NodeGrpcService target;
 
@@ -125,7 +125,6 @@ public class NodeGrpcServiceTest {
         mockInt64ValueStreamObserver = Mockito.mock(StreamObserver.class);
         mockBoolValueStreamObserver = Mockito.mock(StreamObserver.class);
         mockExecutorService = Mockito.mock(ExecutorService.class);
-        mockLogger = Mockito.mock(Logger.class);
 
         target =
             new NodeGrpcService(
@@ -145,7 +144,7 @@ public class NodeGrpcServiceTest {
      * Verify the creation of a new node, and successful send of task updates.
      */
     @Test
-    void testCreateNodeNewValidManagementIpSuccessfulSendTasks() {
+    void testCreateNodeNewValidManagementIpSuccessfulSendTasks() throws EntityExistException {
         Runnable runnable = commonTestCreateNode();
 
         // Verify the lambda execution
@@ -157,7 +156,7 @@ public class NodeGrpcServiceTest {
      * Verify the creation of a new node with no management IP address
      */
     @Test
-    void testCreateNodeNoManagementIp() {
+    void testCreateNodeNoManagementIp() throws EntityExistException {
         //
         // Setup test data and interactions
         //
@@ -683,7 +682,7 @@ public class NodeGrpcServiceTest {
 // Internals
 //----------------------------------------
 
-    private Runnable commonTestCreateNode() {
+    private Runnable commonTestCreateNode() throws EntityExistException {
         //
         // Setup test data and interactions
         //

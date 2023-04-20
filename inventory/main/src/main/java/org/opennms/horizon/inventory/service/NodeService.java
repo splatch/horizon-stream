@@ -47,6 +47,7 @@ import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
 import org.opennms.horizon.inventory.dto.TagEntityIdDTO;
+import org.opennms.horizon.inventory.exception.EntityExistException;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
@@ -182,14 +183,14 @@ public class NodeService {
     }
 
     @Transactional
-    public Node createNode(NodeCreateDTO request, ScanType scanType, String tenantId) {
-        if(request.hasManagementIp()) { //Do we really want create a node without managed IP?
+    public Node createNode(NodeCreateDTO request, ScanType scanType, String tenantId) throws EntityExistException {
+        if(request.hasManagementIp()) { //Do we really want to create a node without managed IP?
             Optional<IpInterface> ipInterfaceOpt = ipInterfaceRepository
                 .findByIpAddressAndLocationAndTenantId(InetAddressUtils.getInetAddress(request.getManagementIp()), request.getLocation(), tenantId);
             if(ipInterfaceOpt.isPresent()) {
                 IpInterface ipInterface = ipInterfaceOpt.get();
-                log.warn("IP address {} already exists in the system and belong to device {}", request.getManagementIp(), ipInterface.getNode().getNodeLabel());
-                return ipInterface.getNode();
+                log.error("IP address {} already exists in the system and belong to device {}", request.getManagementIp(), ipInterface.getNode().getNodeLabel());
+                throw new EntityExistException("IP address " + request.getManagementIp() + " already exists in the system and belong to device " + ipInterface.getNode().getNodeLabel());
             }
         }
         MonitoringLocation monitoringLocation = saveMonitoringLocation(request, tenantId);

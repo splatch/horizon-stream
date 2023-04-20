@@ -29,6 +29,7 @@
 package org.opennms.horizon.inventory.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -56,6 +57,7 @@ import org.opennms.horizon.inventory.dto.NodeCreateDTO;
 import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
+import org.opennms.horizon.inventory.exception.EntityExistException;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.model.IpInterface;
 import org.opennms.horizon.inventory.model.MonitoringLocation;
@@ -112,7 +114,7 @@ public class NodeServiceTest {
     }
 
     @Test
-    public void createNode() {
+    public void createNode() throws EntityExistException {
         String tenant = "ANY";
         String location = "loc";
         MonitoringLocation ml = new MonitoringLocation();
@@ -140,7 +142,7 @@ public class NodeServiceTest {
     }
 
     @Test
-    public void createNodeExistingLocation() {
+    public void createNodeExistingLocation() throws EntityExistException {
         String location = "loc";
         String tenantId = "ANY";
 
@@ -163,7 +165,7 @@ public class NodeServiceTest {
     }
 
     @Test
-    public void createNodeNoIp() {
+    public void createNodeNoIp() throws EntityExistException {
         String tenant = "TENANT";
         String location = "LOCATION";
         MonitoringLocation ml = new MonitoringLocation();
@@ -185,7 +187,7 @@ public class NodeServiceTest {
     }
 
     @Test
-    public void createNodeWithLocationDefaultLocationExist() {
+    public void createNodeWithLocationDefaultLocationExist() throws EntityExistException {
         NodeCreateDTO nodeCreate = NodeCreateDTO.newBuilder()
             .setLabel("test-node")
             .setManagementIp("127.0.0.1").build();
@@ -200,7 +202,7 @@ public class NodeServiceTest {
     }
 
     @Test
-    public void createNodeWithLocationDefaultLocationNotExist() {
+    public void createNodeWithLocationDefaultLocationNotExist() throws EntityExistException {
         NodeCreateDTO nodeCreate = NodeCreateDTO.newBuilder()
             .setLabel("test-node")
             .setManagementIp("127.0.0.1").build();
@@ -269,8 +271,9 @@ public class NodeServiceTest {
             .setLabel("test-node")
             .setManagementIp("127.0.0.1").build();
         doReturn(Optional.of(ipInterface)).when(mockIpInterfaceRepository).findByIpAddressAndLocationAndTenantId(any(InetAddress.class), eq(nodeCreate.getLocation()), eq(tenantID));
-        Node result = nodeService.createNode(nodeCreate, ScanType.NODE_SCAN, tenantID);
-        assertThat(result).isEqualTo(node);
+        assertThatThrownBy(() -> nodeService.createNode(nodeCreate, ScanType.NODE_SCAN, tenantID))
+            .isInstanceOf(EntityExistException.class)
+            .hasMessageContaining("already exists in the system ");
         verify(mockIpInterfaceRepository).findByIpAddressAndLocationAndTenantId(any(InetAddress.class), eq(nodeCreate.getLocation()), eq(tenantID));
         verifyNoInteractions(mockNodeRepository);
         verifyNoInteractions(mockMonitoringLocationRepository);
