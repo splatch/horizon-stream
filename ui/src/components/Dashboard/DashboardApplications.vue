@@ -115,8 +115,13 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/mediaQueriesMixins.scss';
+
 .exporters-filter {
-  width: 50%;
-  margin-left: auto;
+  width: 100%;
+  @include mediaQueriesMixins.screen-md {
+    width: 50%;
+    margin-left: auto;
+  }
 }
 </style>
