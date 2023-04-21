@@ -29,7 +29,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       filteredApplications: [] as IAutocompleteItemType[],
       //Exporter AutoComplete
       exporters: [] as IAutocompleteItemType[],
-      selectedExporterTopApplication: null as null | IAutocompleteItemType[],
+      selectedExporterTopApplication: undefined as undefined | IAutocompleteItemType[],
       selectedExporters: [],
       isExportersLoading: false,
       filteredExporters: [] as IAutocompleteItemType[]

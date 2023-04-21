@@ -1,5 +1,6 @@
 <template>
   <FeatherAutocomplete
+    v-if="hasData"
     class="exporters-filter"
     :label="dashboardText.TopApplications.filterLabel"
     type="single"
@@ -109,7 +110,7 @@ onThemeChange(() => {
 })
 
 onMounted(async () => {
-  flowsStore.filters.selectedExporterTopApplication = null
+  flowsStore.filters.selectedExporterTopApplication = undefined
 })
 </script>
 
