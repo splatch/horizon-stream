@@ -21,9 +21,11 @@ import java.util.stream.Stream;
 
 public class CucumberHooks {
     public static final List<MinionContainer> MINIONS = new ArrayList<>();
+    public static final List<String> INSTANCES = new ArrayList<>();
     public static String instanceUrl;
     public static String gatewayHost;
     private static String minionPrefix = "Default_Minion-";
+    public static PortalApi portalApi = new PortalApi();
 
     @Before("@cloud")
     public static void setUp() {
@@ -38,7 +40,7 @@ public class CucumberHooks {
         PortalLoginPage.setPassword(SecretsStorage.adminUserPassword);
         PortalLoginPage.clickSignIn();
 
-        PortalCloudPage.verifyThatUserLoggedIn();
+        PortalCloudPage.verifyMainPageHeader();
 
         long timeCode = Instant.now().toEpochMilli();
 
@@ -70,7 +72,7 @@ public class CucumberHooks {
         CloudLoginPage.setUsername(SecretsStorage.adminUserEmail);
         CloudLoginPage.clickNextBtn();
         CloudLoginPage.setPassword(SecretsStorage.adminUserPassword);
-        CloudLoginPage.clickSubmitBtn();
+        CloudLoginPage.clickSignInBtn();
     }
 
     @After("@cloud")
@@ -101,12 +103,13 @@ public class CucumberHooks {
         PortalLoginPage.setPassword(SecretsStorage.adminUserPassword);
         PortalLoginPage.clickSignIn();
 
-        PortalCloudPage.verifyThatUserLoggedIn();
+        PortalCloudPage.verifyMainPageHeader();
     }
 
     @After("@portal")
     public static void returnToPortalMainPage() {
         Selenide.open(SecretsStorage.portalHost + "/cloud");
+        INSTANCES.clear();
     }
 
     @AfterAll
@@ -114,8 +117,6 @@ public class CucumberHooks {
         if (!MINIONS.isEmpty()) {
             MINIONS.get(0).stop();
         }
-        PortalApi portalApi = new PortalApi();
         portalApi.deleteAllBtoInstances();
-
     }
 }

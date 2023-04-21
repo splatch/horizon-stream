@@ -44,4 +44,9 @@ public class CloudLeftPanelSteps {
         CloudLeftPanelPage.clickOnPanelSection(section);
         Selenide.refresh();
     }
+
+    @Then("user sees the navigation panel for instance")
+    public void verifyLeftPanel() {
+        CloudLeftPanelPage.verifyLeftPanelIsDisplayed();
+    }
 }
