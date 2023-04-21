@@ -54,6 +54,7 @@ public class PortalCloudPage {
     private static final SelenideElement shadedBackground = $("div.backdrop");
     private static final SelenideElement spinner = $(".spinner");
     private static final SelenideElement noDataTxt = $("h3.empty-view");
+    private static final SelenideElement secondRow = $("#cloud-instances-row-details-1");
 
     public static void verifyMainPageHeader() {
         headerTxt.shouldBe(visible, Duration.ofMinutes(1)).shouldHave(text("OpenNMS Cloud"));
@@ -75,7 +76,6 @@ public class PortalCloudPage {
         logInBtn.shouldBe(enabled).click();
     }
 
-
     public static void clickDetailsForFirstInstance() {
         detailsBtn.shouldBe(enabled).click();
     }
@@ -83,6 +83,7 @@ public class PortalCloudPage {
     public static void setFilter(String pattern) {
         searchInstanceInp.shouldBe(enabled, Duration.ofSeconds(8)).setValue("").sendKeys(pattern);
         spinner.shouldBe(appear).shouldBe(disappear, Duration.ofMinutes(1));
+        secondRow.shouldBe(hidden); // temporary crutch for case when our instance isn't at 1st place and after search we need time to wait when others will be hidden
     }
 
     public static void mainPageIsNotCoveredByPopups() {
