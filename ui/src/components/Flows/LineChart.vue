@@ -13,10 +13,19 @@
 <script setup lang="ts">
 import useTheme from '@/composables/useTheme'
 import { ChartData } from '@/types'
-import { ChartOptions } from 'chart.js'
 import { PropType } from 'vue'
 import { Line } from 'vue-chartjs'
-import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
+import {
+  Chart,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartOptions
+} from 'chart.js'
 const { isDark } = useTheme()
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
@@ -42,7 +51,7 @@ defineProps({
 const lineChart = ref()
 
 const downloadChart = (filename: string) => {
-  var a = document.createElement('a')
+  let a = document.createElement('a')
   if (lineChart.value) {
     a.href = lineChart.value.chart.toBase64Image()
     a.download = `${filename + Date.now()}.png`
