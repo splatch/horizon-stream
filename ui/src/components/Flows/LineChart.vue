@@ -1,9 +1,10 @@
 <template>
-  <div class="table-chart-container">
+  <div class="line-chart-container">
     <div class="chart-container">
       <Line
         :data="chartData"
         :options="chartOptions"
+        ref="lineChart"
       />
     </div>
   </div>
@@ -15,21 +16,12 @@ import { ChartData } from '@/types'
 import { ChartOptions } from 'chart.js'
 import { PropType } from 'vue'
 import { Line } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
+import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
 const { isDark } = useTheme()
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
-const props = defineProps({
+defineProps({
   id: {
     required: true,
     type: String
@@ -47,7 +39,16 @@ const props = defineProps({
     type: String
   }
 })
+const lineChart = ref()
 
+const downloadChart = (filename: string) => {
+  var a = document.createElement('a')
+  if (lineChart.value) {
+    a.href = lineChart.value.chart.toBase64Image()
+    a.download = `${filename + Date.now()}.png`
+  }
+  a.click()
+}
 const chartOptions = computed<ChartOptions<any>>(() => {
   return {
     indexAxis: 'x',
@@ -58,6 +59,9 @@ const chartOptions = computed<ChartOptions<any>>(() => {
       mode: 'nearest',
       intersect: false,
       axis: 'x'
+    },
+    animation: {
+      duration: 700
     },
     plugins: {
       legend: {
@@ -132,6 +136,10 @@ const formatBytes = (bytes: any, decimals = 2) => {
   }
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
+
+defineExpose({
+  downloadChart
+})
 </script>
 
 <style lang="scss" scoped>
@@ -141,7 +149,7 @@ const formatBytes = (bytes: any, decimals = 2) => {
 @use '@featherds/styles/mixins/typography';
 @import '@featherds/table/scss/table';
 
-.table-chart-container {
+.line-chart-container {
   display: flex;
   justify-content: flex-start;
   align-items: stretch;
@@ -149,22 +157,11 @@ const formatBytes = (bytes: any, decimals = 2) => {
   flex-direction: row;
   min-width: 0;
   flex-wrap: wrap;
+  padding-bottom: var(variables.$spacing-m);
+
   .chart-container {
     flex: 1 1 0;
     min-height: 380px;
-  }
-}
-table {
-  @include table();
-  @include row-select();
-  width: 100%;
-  &.condensed {
-    @include table-condensed();
-  }
-  th,
-  td {
-    border-bottom: 0px;
-    box-shadow: none;
   }
 }
 </style>
