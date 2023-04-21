@@ -34,7 +34,7 @@ import org.opennms.horizon.systemtests.pages.cloud.AppliancePage;
 
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
 
 public class ApplianceSteps {
@@ -46,6 +46,7 @@ public class ApplianceSteps {
         }
 
         for (int i = 0; i < 2; i++) {
+            // since the minion doesn't show up we need to wait and refresh the page
             if (!$(byText(minionName.toUpperCase())).isDisplayed()) {
                 waitHeartbeat(1);
             }
