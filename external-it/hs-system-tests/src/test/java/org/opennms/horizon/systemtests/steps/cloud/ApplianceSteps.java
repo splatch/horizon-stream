@@ -34,6 +34,7 @@ import org.opennms.horizon.systemtests.pages.cloud.AppliancePage;
 
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
 
@@ -72,5 +73,27 @@ public class ApplianceSteps {
     @Then("click on the delete button for minion")
     public void removeMinionFromTheList() {
         AppliancePage.clickRemoveMinion();
+    }
+
+    @Then("check 'Add Device' button is accessible and visible")
+    public void checkAddDeviceButtonIsAccessibleAndVisible() {
+        assertTrue(AppliancePage.checkIsAddDeviceButtonVisible());
+    }
+
+    @Then("click on 'Add Device' button to open a pop up window")
+    public void clickOnAddDeviceButtonToOpenAPopUpWindow() {
+        AppliancePage.clickAddDevice();
+    }
+
+    @Then("fill details of a newly added device with name {string} and ip address {string}")
+    public void fillDetailsOfANewlyAddedDeviceWithNameAndIpAddress(String deviceName, String deviceIpAddress) {
+        AppliancePage.setDeviceNameInput(deviceName);
+        AppliancePage.setDeviceIpInput(deviceIpAddress);
+        AppliancePage.clickSaveButton();
+    }
+
+    @Then("check the status of the device with name {string} as status {string}")
+    public void checkTheStatusOfTheAddedDeviceAsStatus(String name, String status) {
+        assertEquals(status, AppliancePage.getDeviceStatusWithName(name));
     }
 }
