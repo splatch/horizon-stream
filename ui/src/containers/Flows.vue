@@ -319,7 +319,6 @@ onUnmounted(() => flowsStore.$reset)
 .exporter-section {
   display: flex;
   flex-direction: row;
-  width: fit-content;
   gap: 8px;
   width: 100%;
   max-width: 360px;
