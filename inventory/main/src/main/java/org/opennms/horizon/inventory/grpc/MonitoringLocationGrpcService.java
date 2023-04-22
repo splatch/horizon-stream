@@ -47,7 +47,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -99,7 +98,7 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
 
     @Override
     public void listLocationsByIds(IdList request, StreamObserver<MonitoringLocationList> responseObserver) {
-        List<Long> idList = request.getIdsList().stream().map(Int64Value::getValue).collect(Collectors.toList());
+        List<Long> idList = request.getIdsList().stream().map(Int64Value::getValue).toList();
         responseObserver.onNext(MonitoringLocationList.newBuilder().addAllLocations(service.findByLocationIds(idList)).build());
         responseObserver.onCompleted();
     }
@@ -110,6 +109,34 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
             .map(tenantId -> service.searchLocationsByTenantId(request.getValue(), tenantId)).orElseThrow();
         responseObserver.onNext(MonitoringLocationList.newBuilder().addAllLocations(locations).build());
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void createLocation(MonitoringLocationDTO request, StreamObserver<MonitoringLocationDTO> responseObserver) {
+        tenantLookup.lookupTenantId(Context.current())
+            .ifPresent(tenantId -> {
+                responseObserver.onNext(service.upsert(MonitoringLocationDTO.newBuilder(request).setTenantId(tenantId).build()));
+                responseObserver.onCompleted();
+            });
+    }
+
+    @Override
+    public void updateLocation(MonitoringLocationDTO request, StreamObserver<MonitoringLocationDTO> responseObserver) {
+        tenantLookup.lookupTenantId(Context.current())
+            .ifPresent(tenantId -> {
+                responseObserver.onNext(service.upsert(MonitoringLocationDTO.newBuilder(request).setTenantId(tenantId).build()));
+                responseObserver.onCompleted();
+            });
+    }
+
+    @Override
+    public void deleteLocation(Int64Value request, StreamObserver<Empty> responseObserver) {
+        tenantLookup.lookupTenantId(Context.current())
+            .ifPresent(tenantId -> {
+                service.delete(request.getValue(), tenantId);
+                responseObserver.onNext(Empty.getDefaultInstance());
+                responseObserver.onCompleted();
+            });
     }
 }
 
