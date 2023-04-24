@@ -73,6 +73,9 @@ spec:
                 secretKeyRef:
                   key: encryptionKey
                   name: {{ .Values.OpenNMS.Inventory.ServiceName }}-encryption-key
+          envFrom:
+          - configMapRef:
+              name: spring-boot-env
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.Inventory.Port }}

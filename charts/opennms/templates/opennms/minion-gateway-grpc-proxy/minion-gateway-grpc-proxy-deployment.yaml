@@ -56,6 +56,9 @@ spec:
               value: "{{ .Values.OpenNMS.MinionGateway.ServiceName }}"
             - name: GRPC_DOWNSTREAM_PORT
               value: "{{ .Values.OpenNMS.MinionGateway.GrpcPort }}"
+          envFrom:
+          - configMapRef:
+              name: spring-boot-env
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.MinionGatewayGrpcProxy.Port }}

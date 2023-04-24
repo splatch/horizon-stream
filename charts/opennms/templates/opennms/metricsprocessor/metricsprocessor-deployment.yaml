@@ -54,6 +54,9 @@ spec:
               value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
             - name: CORTEX_WRITE_URL
               value: {{ .Values.Cortex.Protocol }}://{{ .Values.Cortex.Host }}:{{ .Values.Cortex.Port }}{{ .Values.Cortex.PathWrite }}
+          envFrom:
+          - configMapRef:
+              name: spring-boot-env
           ports:
             - name: http
               containerPort: 8080

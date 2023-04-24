@@ -72,6 +72,9 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.Keycloak.ServiceName }}-initial-admin
                   key: password
+          envFrom:
+          - configMapRef:
+              name: spring-boot-env
           ports:
             - name: grpc
               containerPort: {{ .Values.OpenNMS.Notification.GrpcPort }}

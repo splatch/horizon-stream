@@ -64,6 +64,9 @@ spec:
               value: "http://{{ .Values.Keycloak.ServiceName }}:8080/auth/"
             - name: KEYCLOAK_REALM
               value: "{{ .Values.Keycloak.RealmName }}"
+          envFrom:
+          - configMapRef:
+              name: spring-boot-env
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.DataChoices.Port }}
