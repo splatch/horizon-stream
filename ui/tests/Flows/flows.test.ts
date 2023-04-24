@@ -3,9 +3,12 @@ import mountWithPiniaVillus from 'tests/mountWithPiniaVillus'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import { TimeRange } from '@/types/graphql'
 import { LineGraphData, TableGraphData } from './flowsData'
+import { useFlowsApplicationStore } from '@/store/Views/flowsApplicationStore'
 
 describe('Flows', () => {
   let wrapper: any
+  const appStore = useFlowsApplicationStore()
+  const store = useFlowsStore()
 
   beforeAll(async () => {
     wrapper = await mountWithPiniaVillus({
@@ -19,11 +22,10 @@ describe('Flows', () => {
       Line: () => null
     }))
 
-    const store = useFlowsStore()
     store.filters.traffic.selectedItem = 'total'
-    store.applications.lineInboundData = LineGraphData
-    store.applications.lineOutboundData = LineGraphData
-    store.applications.lineTotalData = LineGraphData
+    appStore.lineInboundData = LineGraphData
+    appStore.lineOutboundData = LineGraphData
+    appStore.lineTotalData = LineGraphData
   })
 
   test('The Flows page container mounts correctly', () => {
@@ -98,21 +100,19 @@ describe('Flows', () => {
   })
 
   test('The Flows store createLineChart should populate lineChartData', () => {
-    const store = useFlowsStore()
-    store.applications.lineChartData = { labels: [], datasets: [] }
-    expect(store.applications.lineChartData.datasets.length).toBe(0)
-    store.applications.lineInboundData = LineGraphData
-    store.applications.lineOutboundData = LineGraphData
-    store.applications.lineTotalData = LineGraphData
-    store.createApplicationLineChartData()
-    expect(store.applications.lineChartData.datasets.length).toBe(2)
+    appStore.lineChartData = { labels: [], datasets: [] }
+    expect(appStore.lineChartData.datasets.length).toBe(0)
+    appStore.lineInboundData = LineGraphData
+    appStore.lineOutboundData = LineGraphData
+    appStore.lineTotalData = LineGraphData
+    appStore.createApplicationLineChartData()
+    expect(appStore.lineChartData.datasets.length).toBe(2)
   })
   test('The Flows store createTableChart should populate TableGraphData', () => {
-    const store = useFlowsStore()
-    store.applications.tableChartData = { labels: [], datasets: [] }
-    expect(store.applications.tableChartData.datasets.length).toBe(0)
-    store.applications.tableData = TableGraphData
-    store.createApplicationTableChartData()
-    expect(store.applications.tableChartData.datasets.length).toBe(2)
+    appStore.tableChartData = { labels: [], datasets: [] }
+    expect(appStore.tableChartData.datasets.length).toBe(0)
+    appStore.tableData = TableGraphData
+    appStore.createApplicationTableChartData()
+    expect(appStore.tableChartData.datasets.length).toBe(2)
   })
 })

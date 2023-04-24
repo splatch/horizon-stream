@@ -55,7 +55,7 @@
       <div class="top-of-flows">
         <div class="total-container">
           <div class="total-title">Total Flows:</div>
-          <div class="total-flows">{{ flowsStore.totalFlows }}</div>
+          <div class="total-flows">{{ appStore.totalFlows }}</div>
         </div>
         <div class="utilitys">
           <FeatherButton
@@ -66,8 +66,8 @@
                 : downloadLineChartApplications('LineChartApplications')
             "
             :disabled="
-              (!flowsStore.applications.hasLineData && flowsStore.filters.dataStyle.selectedItem === 'line') ||
-              (!flowsStore.applications.hasTableData && flowsStore.filters.dataStyle.selectedItem === 'table')
+              (!appStore.hasLineData && flowsStore.filters.dataStyle.selectedItem === 'line') ||
+              (!appStore.hasTableData && flowsStore.filters.dataStyle.selectedItem === 'table')
             "
           >
             <FeatherIcon
@@ -127,39 +127,33 @@
       </div>
       <TableChart
         v-if="
-          flowsStore.filters.dataStyle.selectedItem === 'table' &&
-          flowsStore.applications.hasTableData &&
-          !flowsStore.applications.isTableLoading
+          flowsStore.filters.dataStyle.selectedItem === 'table' && appStore.hasTableData && !appStore.isTableLoading
         "
         :id="'tableChartApplications'"
         ref="tableChartApplications"
         :selected-filter-range="flowsStore.filters.dateFilter"
-        :chart-data="flowsStore.applications.tableChartData"
-        :table-data="flowsStore.applications.tableData"
+        :chart-data="appStore.tableChartData"
+        :table-data="appStore.tableData"
       />
       <LineChart
-        v-if="
-          flowsStore.filters.dataStyle.selectedItem === 'line' &&
-          flowsStore.applications.hasLineData &&
-          !flowsStore.applications.isLineLoading
-        "
+        v-if="flowsStore.filters.dataStyle.selectedItem === 'line' && appStore.hasLineData && !appStore.isLineLoading"
         :id="'lineChartApplications'"
         ref="lineChartApplications"
         :selected-filter-range="flowsStore.filters.dateFilter"
-        :chart-data="flowsStore.applications.lineChartData"
-        :table-data="flowsStore.applications.tableData"
+        :chart-data="appStore.lineChartData"
+        :table-data="appStore.tableData"
       />
       <div
         v-if="
-          ((!flowsStore.applications.hasLineData && flowsStore.filters.dataStyle.selectedItem === 'line') ||
-            (!flowsStore.applications.hasTableData && flowsStore.filters.dataStyle.selectedItem === 'table')) &&
-          !flowsStore.applications.isLineLoading &&
-          !flowsStore.applications.isLineLoading
+          ((!appStore.hasLineData && flowsStore.filters.dataStyle.selectedItem === 'line') ||
+            (!appStore.hasTableData && flowsStore.filters.dataStyle.selectedItem === 'table')) &&
+          !appStore.isLineLoading &&
+          !appStore.isLineLoading
         "
       >
         No data
       </div>
-      <div v-if="flowsStore.applications.isLineLoading || flowsStore.applications.isTableLoading">
+      <div v-if="appStore.isLineLoading || appStore.isTableLoading">
         <FeatherSpinner />
       </div>
     </div>
@@ -197,7 +191,9 @@ import Download from '@featherds/icon/action/DownloadFile'
 import HelpIcon from '@featherds/icon/action/Help'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherDrawer } from '@featherds/drawer'
+import { useFlowsApplicationStore } from '@/store/Views/flowsApplicationStore'
 const flowsStore = useFlowsStore()
+const appStore = useFlowsApplicationStore()
 
 const lineChartApplications = ref()
 const downloadLineChartApplications = (fileName: string) => {

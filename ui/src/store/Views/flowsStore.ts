@@ -1,10 +1,10 @@
-import { flowsAppDataToChartJSDirection, flowsAppDataToChartJSTotal } from '@/dtos/chartJS.dto'
 import { format } from 'date-fns'
 import { defineStore } from 'pinia'
 import { useflowsQueries } from '@/store/Queries/flowsQueries'
 import { RequestCriteriaInput, TimeRange } from '@/types/graphql'
-import { FlowsApplicationData, FlowsApplicationSummaries, ChartData } from '@/types'
+import { FlowsApplicationSummaries } from '@/types'
 import { IAutocompleteItemType } from '@featherds/autocomplete/src/components/types'
+import { useFlowsApplicationStore } from './flowsApplicationStore'
 
 export const useFlowsStore = defineStore('flowsStore', {
   state: () => ({
@@ -20,13 +20,11 @@ export const useFlowsStore = defineStore('flowsStore', {
         selectedItem: 'table'
       },
       steps: 2000000,
-
       //Application AutoComplete
       applications: [] as IAutocompleteItemType[],
       selectedApplications: [],
       isApplicationsLoading: false,
       filteredApplications: [] as IAutocompleteItemType[],
-
       //Exporter AutoComplete
       exporters: [] as IAutocompleteItemType[],
       // Selected Exporters can be set as [{ _text: 'Node Name', value: { nodeId: 1, ipInterfaceId: 1 } }]
@@ -34,35 +32,14 @@ export const useFlowsStore = defineStore('flowsStore', {
       selectedExporters: [],
       isExportersLoading: false,
       filteredExporters: [] as IAutocompleteItemType[]
-    },
-    applications: {
-      isTableLoading: false,
-      isLineLoading: false,
-      tableChartData: {} as ChartData,
-      lineChartData: {} as ChartData,
-      filterDialogOpen: false,
-      hasLineData: false,
-      hasTableData: false,
-      //Table Data
-      tableData: [{} as any],
-      //Line Data
-      lineTotalData: [{} as any],
-      lineInboundData: [{} as any],
-      lineOutboundData: [{} as any]
-    },
-    exporters: {
-      isLoading: false,
-      tableChartData: {} as ChartData,
-      lineChartData: {} as ChartData,
-      filterDialogOpen: false
     }
   }),
   actions: {
     async getApplicationDatasets() {
+      const flowsApplicationStore = useFlowsApplicationStore()
       const requestData = this.getRequestData()
-
-      await this.getApplicationTableDataset(requestData)
-      await this.getApplicationLineDataset(requestData)
+      await flowsApplicationStore.getApplicationTableDataset(requestData)
+      await flowsApplicationStore.getApplicationLineDataset(requestData)
     },
     async getApplications() {
       const flowsQueries = useflowsQueries()
@@ -86,47 +63,6 @@ export const useFlowsStore = defineStore('flowsStore', {
       })) as IAutocompleteItemType[]
       this.filters.exporters = exportersAutocompleteObject
     },
-    async getApplicationTableDataset(requestData: RequestCriteriaInput) {
-      this.applications.tableData = []
-      const flowsQueries = useflowsQueries()
-      this.applications.isTableLoading = true
-      const applicationTableData = await flowsQueries.getApplicationsSummaries(requestData)
-      if (applicationTableData.value?.findApplicationSummaries) {
-        this.applications.tableData = [
-          ...((applicationTableData.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || [])
-        ]
-      }
-    },
-    async getApplicationLineDataset(requestData: RequestCriteriaInput) {
-      const flowsQueries = useflowsQueries()
-      this.applications.isLineLoading = true
-      const applicationsLineData = await flowsQueries.getApplicationsSeries(requestData)
-      this.applications.isLineLoading = false
-
-      if (applicationsLineData.value?.findApplicationSeries) {
-        //Get Inbound Data
-        this.applications.lineInboundData =
-          flowsAppDataToChartJSDirection(
-            applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[],
-            'INGRESS'
-          ) || []
-
-        //Get Outbound Data
-        this.applications.lineOutboundData =
-          flowsAppDataToChartJSDirection(
-            applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[],
-            'EGRESS'
-          ) || []
-
-        //Get Total Data
-        this.applications.lineTotalData =
-          flowsAppDataToChartJSTotal(applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[]) || []
-        this.applications.isLineLoading = false
-      }
-
-      //Get Total Flows
-      this.totalFlows = applicationsLineData.value?.findApplicationSeries?.length || 0
-    },
     getRequestData(count = 10, step?: number, exporter?: object[], applications?: string[]) {
       return {
         count: count,
@@ -136,60 +72,6 @@ export const useFlowsStore = defineStore('flowsStore', {
         applications: applications || this.filters.selectedApplications.map((app: any) => app.value)
       } as RequestCriteriaInput
     },
-    createApplicationTableChartData() {
-      if (this.applications.tableData.length > 0) {
-        this.applications.tableChartData = {
-          labels: this.applications.tableData.map((row) => row.label),
-          datasets: [
-            {
-              label: 'Inbound',
-              data: this.applications.tableData.map((row) => row.bytesIn),
-              barThickness: 13,
-              backgroundColor: '#0043A4',
-              hidden: this.filters.traffic.selectedItem === 'outbound'
-            },
-            {
-              label: 'Outbound',
-              data: this.applications.tableData.map((row) => row.bytesOut),
-              barThickness: 13,
-              backgroundColor: '#EE7D00',
-              hidden: this.filters.traffic.selectedItem === 'inbound'
-            }
-          ]
-        }
-        this.applications.hasTableData = true
-      } else {
-        this.applications.hasTableData = false
-      }
-      this.applications.isTableLoading = false
-    },
-    createApplicationLineChartData() {
-      if (this.applications.lineTotalData.length > 0) {
-        const data = this.getLineChartDataForSelectedTraffic()
-        const datasetArr = {
-          type: 'line',
-          datasets: data?.map((element, index) => {
-            return {
-              label: element.label,
-              data: element.data.map((data: any) => {
-                return {
-                  x: this.convertToDate(data.timestamp),
-                  y: data.value
-                }
-              }),
-              fill: true,
-              borderColor: this.randomColours(index),
-              backgroundColor: this.randomColours(index, true)
-            }
-          })
-        }
-        this.applications.lineChartData = datasetArr
-        this.applications.hasLineData = true
-      } else {
-        this.applications.hasLineData = false
-      }
-      this.applications.isLineLoading = false
-    },
     async updateApplicationCharts() {
       await this.getApplicationDatasets()
       this.createApplicationCharts()
@@ -197,15 +79,15 @@ export const useFlowsStore = defineStore('flowsStore', {
     async populateData() {
       await this.getExporters()
       await this.getApplications()
-      await this.getApplicationDatasets()
-      this.createApplicationCharts()
+      await this.updateApplicationCharts()
     },
     async updateChartData() {
       await this.updateApplicationCharts()
     },
     createApplicationCharts() {
-      this.createApplicationTableChartData()
-      this.createApplicationLineChartData()
+      const flowsApplicationStore = useFlowsApplicationStore()
+      flowsApplicationStore.createApplicationTableChartData()
+      flowsApplicationStore.createApplicationLineChartData()
     },
     async trafficRadioOnChange(selectedItem: string) {
       this.filters.traffic.selectedItem = selectedItem
@@ -225,18 +107,6 @@ export const useFlowsStore = defineStore('flowsStore', {
         }
       }
       return format(new Date(ts), dateFormat())
-    },
-    getLineChartDataForSelectedTraffic() {
-      switch (this.filters.traffic.selectedItem) {
-        case 'inbound':
-          return this.applications.lineInboundData
-        case 'outbound':
-          return this.applications.lineOutboundData
-        case 'total':
-          return this.applications.lineTotalData
-        default:
-          return this.applications.lineTotalData
-      }
     },
     async onDateFilterUpdate(e: any) {
       this.filters.dateFilter = e
