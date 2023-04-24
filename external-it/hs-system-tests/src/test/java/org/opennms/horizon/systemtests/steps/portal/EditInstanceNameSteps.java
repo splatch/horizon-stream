@@ -17,13 +17,30 @@ public class EditInstanceNameSteps {
         EditInstanceNamePopup.clickUpdateBtn();
     }
 
+    @Then("click on 'CANCEL' button to close 'Edit Instance' popup")
+    public void clickCancelBtn() {
+        EditInstanceNamePopup.clickCancelBtn();
+        EditInstanceNamePopup.waitNewState(disappear);
+    }
+
+    @Then("click on 'X' button to close 'Edit Instance' popup")
+    public void clickCloseBtn() {
+        EditInstanceNamePopup.clickCloseBtn();
+        EditInstanceNamePopup.waitNewState(disappear);
+    }
+
     @Then("'Edit Instance' popup appears")
     public void waitPopup() {
-        EditInstanceNamePopup.isPopupVisible(appear);
+        EditInstanceNamePopup.waitNewState(appear);
     }
 
     @Then("'Edit Instance' popup disappear")
     public void waitPopupDisappear() {
-        EditInstanceNamePopup.isPopupVisible(disappear);
+        EditInstanceNamePopup.waitNewState(disappear);
+    }
+
+    @Then("'Edit Instance' popup shows an error message {string} for Instance name")
+    public void verifyErrorMessage(String errorMessage) {
+        EditInstanceNamePopup.verifyErrorMessage(errorMessage);
     }
 }
