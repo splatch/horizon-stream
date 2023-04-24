@@ -36,11 +36,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class CommandExecutor {
     private static final Logger LOG = LoggerFactory.getLogger(CommandExecutor.class);
-    private static final int TIMEOUT = 5000;
+    private static final int TIMEOUT = 10000;
+    public static final int STD_TIMEOUT = 30000;
 
     private CommandExecutor() {
         throw new IllegalStateException("Utility class");
@@ -58,36 +61,17 @@ public class CommandExecutor {
 
             // Create CompletableFutures for reading stdout and stderr
             Process finalProcess = process;
-            CompletableFuture<Void> stdoutFuture = CompletableFuture.runAsync(() -> {
-                try (BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(finalProcess.getInputStream()))) {
-                    String stdoutLine;
-                    while ((stdoutLine = stdoutReader.readLine()) != null) {
-                        LOG.debug(stdoutLine);
-                    }
-                } catch (IOException e) {
-                    LOG.error("Error reading stdout: " + e.getMessage(), e);
-                }
-            });
+            CompletableFuture<Void> stdoutFuture = logStdoutFuture(finalProcess);
+            CompletableFuture<Void> stderrFuture = logStderrFuture(finalProcess);
 
-            CompletableFuture<Void> stderrFuture = CompletableFuture.runAsync(() -> {
-                try (BufferedReader stderrReader = new BufferedReader(new InputStreamReader(finalProcess.getErrorStream()))) {
-                    String stderrLine;
-                    while ((stderrLine = stderrReader.readLine()) != null) {
-                        LOG.error(stderrLine);
-                    }
-                } catch (IOException e) {
-                    LOG.error("Error reading stderr: " + e.getMessage(), e);
-                }
-            });
-
-            // Wait for both CompletableFutures to complete
-            CompletableFuture.allOf(stdoutFuture, stderrFuture).join();
-
-
-            // Wait for the process to complete with a configurable timeout
+            // Wait for the process to complete with a timeout
             boolean completed = process.waitFor(TIMEOUT, TimeUnit.MILLISECONDS);
             if (!completed) {
                 LOG.error("Command timed out: {}. Timeout: {} milliseconds", command, TIMEOUT);
+                // Cancel both CompletableFutures
+                CompletableFuture.allOf(stdoutFuture, stderrFuture).cancel(true);
+            } else {
+                waitForStdsToComplete(stdoutFuture, stderrFuture);
             }
 
             // Check the exit value of the process
@@ -99,6 +83,46 @@ public class CommandExecutor {
             if (process != null) {
                 process.destroy();
             }
+        }
+    }
+
+    private static CompletableFuture<Void> logStderrFuture(Process finalProcess) {
+        return CompletableFuture.runAsync(() -> {
+            try (BufferedReader stderrReader = new BufferedReader(new InputStreamReader(finalProcess.getErrorStream()))) {
+                String stderrLine;
+                while ((stderrLine = stderrReader.readLine()) != null) {
+                    LOG.error("{} {}", Thread.currentThread().getName(), stderrLine);
+                }
+            } catch (IOException e) {
+                LOG.error("{} Error reading stderr: {}", Thread.currentThread().getName(), e.getMessage(), e);
+            }
+        });
+    }
+
+    private static CompletableFuture<Void> logStdoutFuture(Process finalProcess) {
+        return CompletableFuture.runAsync(() -> {
+            try (BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(finalProcess.getInputStream()))) {
+                String stdoutLine;
+                while ((stdoutLine = stdoutReader.readLine()) != null) {
+                    LOG.debug("{} {}", Thread.currentThread().getName(), stdoutLine);
+                }
+            } catch (IOException e) {
+                LOG.error("{} Error reading stdout: {}", Thread.currentThread().getName(), e.getMessage(), e);
+            }
+        });
+    }
+
+    private static void waitForStdsToComplete(CompletableFuture<Void> stdoutFuture, CompletableFuture<Void> stderrFuture) {
+        // Wait for both CompletableFutures to complete with a timeout
+        CompletableFuture<Void> allOfFuture = CompletableFuture.allOf(stdoutFuture, stderrFuture);
+        try {
+            allOfFuture.get(STD_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            LOG.error("Timeout occurred while waiting for buffer reader to complete: {} milliseconds", STD_TIMEOUT);
+            allOfFuture.cancel(true);
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Error occurred while waiting for buffer reader to complete: {}", e.getMessage(), e);
+            Thread.currentThread().interrupt();
         }
     }
 }
