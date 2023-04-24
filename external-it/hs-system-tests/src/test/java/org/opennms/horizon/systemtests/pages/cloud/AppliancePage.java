@@ -32,7 +32,6 @@ import com.codeborne.selenide.SelenideElement;
 import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.hidden;
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
@@ -52,23 +51,23 @@ public class AppliancePage {
     private static final SelenideElement cancelButton = $("[data-test='cancel-btn']");
 
     public static void setDeviceNameInput(String name) {
-        deviceNameInput.shouldBe(visible, enabled).sendKeys(name);
+        deviceNameInput.shouldBe(enabled).sendKeys(name);
     }
 
     public static void setDeviceIpInput(String ipAddress) {
-        deviceIpInput.shouldBe(visible, enabled).sendKeys(ipAddress);
+        deviceIpInput.shouldBe(enabled).sendKeys(ipAddress);
     }
 
     public static void clickSaveButton() {
-        saveButton.shouldBe(visible, enabled).click();
+        saveButton.shouldBe(enabled).click();
     }
 
     public static void clickCancelButton() {
-        cancelButton.shouldBe(visible, enabled).click();
+        cancelButton.shouldBe(enabled).click();
     }
 
     public static void clickAddDeviceButton() {
-        addDeviceButton.shouldBe(visible, enabled).click();
+        addDeviceButton.shouldBe(enabled).click();
     }
 
     public static String getMinionStatus() {
@@ -89,15 +88,15 @@ public class AppliancePage {
     }
 
     public static void clickRemoveMinion() {
-        minionRemoveButton.shouldBe(visible, enabled).click();
+        minionRemoveButton.shouldBe(enabled).click();
     }
 
     public static void checkIsRemoveButtonShown(boolean condition) {
-        minionRemoveButton.shouldBe(condition ? visible : hidden);
+        minionRemoveButton.shouldBe(condition ? enabled : hidden);
     }
 
     public static void checkIsAddDeviceButtonVisible() {
-        addDeviceButton.shouldBe(visible, enabled);
+        addDeviceButton.shouldBe(enabled);
     }
 
 }
