@@ -58,7 +58,7 @@ export const useFlowsStore = defineStore('flowsStore', {
     }
   }),
   actions: {
-    async getDatasets() {
+    async getApplicationDatasets() {
       const requestData = this.getRequestData()
 
       await this.getTableDataset(requestData)
@@ -136,7 +136,7 @@ export const useFlowsStore = defineStore('flowsStore', {
         applications: applications || this.filters.selectedApplications.map((app: any) => app.value)
       } as RequestCriteriaInput
     },
-    createTableChartData() {
+    createApplicationTableChartData() {
       if (this.applications.tableData.length > 0) {
         this.applications.tableChartData = {
           labels: this.applications.tableData.map((row) => row.label),
@@ -163,7 +163,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       }
       this.applications.isTableLoading = false
     },
-    createLineChartData() {
+    createApplicationLineChartData() {
       if (this.applications.lineTotalData.length > 0) {
         const data = this.getLineChartDataForSelectedTraffic()
         const datasetArr = {
@@ -190,23 +190,26 @@ export const useFlowsStore = defineStore('flowsStore', {
       }
       this.applications.isLineLoading = false
     },
+    async updateApplicationCharts() {
+      await this.getApplicationDatasets()
+      this.createApplicationCharts()
+    },
     async populateData() {
       await this.getExporters()
       await this.getApplications()
-      await this.getDatasets()
-      this.createCharts()
+      await this.getApplicationDatasets()
+      this.createApplicationCharts()
     },
     async updateChartData() {
-      await this.getDatasets()
-      this.createCharts()
+      await this.updateApplicationCharts()
     },
-    createCharts() {
-      this.createTableChartData()
-      this.createLineChartData()
+    createApplicationCharts() {
+      this.createApplicationTableChartData()
+      this.createApplicationLineChartData()
     },
     async trafficRadioOnChange(selectedItem: string) {
       this.filters.traffic.selectedItem = selectedItem
-      this.createCharts()
+      this.createApplicationCharts()
     },
     convertToDate(ts: string) {
       const dateFormat = () => {

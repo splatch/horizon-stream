@@ -58,7 +58,7 @@ describe('Flows', () => {
     expect(store.populateData).toHaveBeenCalledOnce()
     expect(store.getExporters).toHaveBeenCalledOnce()
     expect(store.getApplications).toHaveBeenCalledOnce()
-    expect(store.getDatasets).toHaveBeenCalledOnce()
+    expect(store.getApplicationDatasets).toHaveBeenCalledOnce()
   })
 
   test('The Flows store get time range should return starttime and endtime object', () => {
@@ -104,7 +104,7 @@ describe('Flows', () => {
     store.applications.lineInboundData = LineGraphData
     store.applications.lineOutboundData = LineGraphData
     store.applications.lineTotalData = LineGraphData
-    store.createLineChartData()
+    store.createApplicationLineChartData()
     expect(store.applications.lineChartData.datasets.length).toBe(2)
   })
   test('The Flows store createTableChart should populate TableGraphData', () => {
@@ -112,7 +112,7 @@ describe('Flows', () => {
     store.applications.tableChartData = { labels: [], datasets: [] }
     expect(store.applications.tableChartData.datasets.length).toBe(0)
     store.applications.tableData = TableGraphData
-    store.createTableChartData()
+    store.createApplicationTableChartData()
     expect(store.applications.tableChartData.datasets.length).toBe(2)
   })
 })
