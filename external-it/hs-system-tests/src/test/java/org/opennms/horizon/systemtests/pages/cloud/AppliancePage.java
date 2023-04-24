@@ -27,11 +27,13 @@
  *******************************************************************************/
 package org.opennms.horizon.systemtests.pages.cloud;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 
 import java.time.Duration;
 
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$x;
 
@@ -49,23 +51,23 @@ public class AppliancePage {
     private static final SelenideElement cancelButton = $("[data-test='cancel-btn']");
 
     public static void setDeviceNameInput(String name) {
-        deviceNameInput.shouldBe(Condition.visible, Condition.enabled).sendKeys(name);
+        deviceNameInput.shouldBe(visible, enabled).sendKeys(name);
     }
 
     public static void setDeviceIpInput(String ipAddress) {
-        deviceIpInput.shouldBe(Condition.visible, Condition.enabled).sendKeys(ipAddress);
+        deviceIpInput.shouldBe(visible, enabled).sendKeys(ipAddress);
     }
 
     public static void clickSaveButton() {
-        saveButton.shouldBe(Condition.visible, Condition.enabled).click();
+        saveButton.shouldBe(visible, enabled).click();
     }
 
     public static void clickCancelButton() {
-        cancelButton.shouldBe(Condition.visible, Condition.enabled).click();
+        cancelButton.shouldBe(visible, enabled).click();
     }
 
     public static void clickAddDeviceButton() {
-        addDeviceButton.shouldBe(Condition.visible, Condition.enabled).click();
+        addDeviceButton.shouldBe(visible, enabled).click();
     }
 
     public static String getMinionStatus() {
@@ -73,7 +75,7 @@ public class AppliancePage {
     }
 
     public static void waitMinionStatus(String status) {
-        minionStatus.shouldHave(Condition.text(status), Duration.ofSeconds(31));
+        minionStatus.shouldHave(text(status), Duration.ofSeconds(31));
     }
 
     public static String getDeviceStatusWithName(String name) {
@@ -86,15 +88,15 @@ public class AppliancePage {
     }
 
     public static void clickRemoveMinion() {
-        minionRemoveButton.shouldBe(Condition.visible, Condition.enabled).click();
+        minionRemoveButton.shouldBe(visible, enabled).click();
     }
 
     public static boolean checkIsRemoveButtonShown() {
-        return minionRemoveButton.shouldBe(Condition.visible, Condition.enabled).isDisplayed();
+        return minionRemoveButton.shouldBe(visible, enabled).isDisplayed();
     }
 
     public static boolean checkIsAddDeviceButtonVisible() {
-        return addDeviceButton.shouldBe(Condition.visible, Condition.enabled).isDisplayed();
+        return addDeviceButton.shouldBe(visible, enabled).isDisplayed();
     }
 
 }
