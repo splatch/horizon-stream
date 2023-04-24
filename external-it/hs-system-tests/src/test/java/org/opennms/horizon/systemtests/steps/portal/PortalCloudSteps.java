@@ -29,15 +29,19 @@
 
 package org.opennms.horizon.systemtests.steps.portal;
 
+import com.codeborne.selenide.Selenide;
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import org.opennms.horizon.systemtests.pages.portal.AddNewInstancePopup;
 import org.opennms.horizon.systemtests.pages.portal.PortalCloudPage;
+
+import static org.opennms.horizon.systemtests.CucumberHooks.INSTANCES;
 
 public class PortalCloudSteps {
 
     @Then("Verify that user logged in to Portal successfully")
     public void verifyThatUserLoggedInToPortal() {
-        PortalCloudPage.verifyThatUserLoggedIn();
+        PortalCloudPage.verifyMainPageHeader();
     }
 
     @Then("a IT Administrator clicks on '+ADD INSTANCE' button")
@@ -48,8 +52,20 @@ public class PortalCloudSteps {
 
     @Then("the IT Administrator sees an instance {string} in the list")
     public void findInstanceNameInTheTable(String instanceName) {
+        if (instanceName.startsWith("random")) {
+            instanceName = INSTANCES.get(0);
+        }
         PortalCloudPage.setFilter(instanceName);
         PortalCloudPage.instantShouldBePresentedInTable(instanceName);
+    }
+
+    @Then("the IT Administrator doesn't see an instance {string} in the list")
+    public void checkThatInstanceIsAbsent(String instanceName) {
+        if (instanceName.startsWith("random")) {
+            instanceName = INSTANCES.get(0);
+        }
+        PortalCloudPage.setFilter(instanceName);
+        PortalCloudPage.searchShowsNothingFound();
     }
 
     @Then("the IT Administrator opens 'Details' for the instance")
@@ -57,9 +73,25 @@ public class PortalCloudSteps {
         PortalCloudPage.clickDetailsForFirstInstance();
     }
 
-
     @Then("the IT Administrator is brought back to the OpenNMS Cloud page")
     public void thePageIsNotCoveredByAnyPopup() {
         PortalCloudPage.mainPageIsNotCoveredByPopups();
+        PortalCloudPage.verifyMainPageHeader();
+    }
+
+    @Then("click on 'Log in' button for the instance")
+    public void clickOnLogInBtn() {
+        PortalCloudPage.clickLogInForFirstInstance(); // it opens a new tab
+        Selenide.closeWindow();
+        Selenide.switchTo().window(0);
+    }
+
+    @Given("prepare {string} instance")
+    public void prepareInstance(String instanceName) {
+        PortalCloudPage.clickAddInstance();
+        AddNewInstancePopup.setInstanceName(instanceName);
+        AddNewInstancePopup.clickSubmitBtn();
+        PortalCloudPage.mainPageIsNotCoveredByPopups();
+        PortalCloudPage.setFilter(instanceName);
     }
 }
