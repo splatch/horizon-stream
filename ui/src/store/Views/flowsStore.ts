@@ -5,7 +5,7 @@ import { useflowsQueries } from '@/store/Queries/flowsQueries'
 import { RequestCriteriaInput, TimeRange } from '@/types/graphql'
 import { FlowsApplicationData, FlowsApplicationSummaries, ChartData } from '@/types'
 import { IAutocompleteItemType } from '@featherds/autocomplete/src/components/types'
-import { get, toArray } from 'lodash'
+import { get } from 'lodash'
 import { IExporter } from '@/types/flows'
 
 export const useFlowsStore = defineStore('flowsStore', {
@@ -29,7 +29,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       filteredApplications: [] as IAutocompleteItemType[],
       //Exporter AutoComplete
       exporters: [] as IAutocompleteItemType[],
-      selectedExporterTopApplication: undefined as undefined | IAutocompleteItemType[],
+      selectedExporterTopApplication: undefined as undefined | IAutocompleteItemType,
       selectedExporters: [],
       isExportersLoading: false,
       filteredExporters: [] as IAutocompleteItemType[]
@@ -322,7 +322,7 @@ export const useFlowsStore = defineStore('flowsStore', {
     async getApplicationDataset() {
       const flowsQueries = useflowsQueries()
       this.filters.dateFilter = TimeRange.Last_24Hours
-      const exporter = get(this.filters.selectedExporterTopApplication, 'value')
+      const exporter = get(this.filters.selectedExporterTopApplication, 'value') as IExporter
       const exporters: IExporter[] = exporter ? [exporter] : []
       const requestData = this.getRequestData(10, 2000000, exporters, [])
 

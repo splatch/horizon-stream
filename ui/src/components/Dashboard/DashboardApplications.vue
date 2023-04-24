@@ -38,13 +38,11 @@
 import { map, sum, sortBy } from 'lodash'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import useTheme from '@/composables/useTheme'
-import { useMediaQuery } from '@vueuse/core'
 import { PolarArea } from 'vue-chartjs'
 import dashboardText from '@/components/Dashboard/dashboard.text'
 import PolarChart from '@/assets/PolarChart.svg'
 import PolarChartDark from '@/assets/PolarChart-dark.svg'
 
-const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 const { onThemeChange, isDark } = useTheme()
 const flowsStore = useFlowsStore()
 const constGraph = ref()
@@ -112,6 +110,8 @@ onThemeChange(() => {
 onMounted(async () => {
   flowsStore.filters.selectedExporterTopApplication = undefined
 })
+
+onUnmounted(() => flowsStore.$reset)
 </script>
 
 <style scoped lang="scss">
