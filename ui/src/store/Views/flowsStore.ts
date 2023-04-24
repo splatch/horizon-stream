@@ -61,8 +61,8 @@ export const useFlowsStore = defineStore('flowsStore', {
     async getApplicationDatasets() {
       const requestData = this.getRequestData()
 
-      await this.getTableDataset(requestData)
-      await this.getLineDataset(requestData)
+      await this.getApplicationTableDataset(requestData)
+      await this.getApplicationLineDataset(requestData)
     },
     async getApplications() {
       const flowsQueries = useflowsQueries()
@@ -86,7 +86,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       })) as IAutocompleteItemType[]
       this.filters.exporters = exportersAutocompleteObject
     },
-    async getTableDataset(requestData: RequestCriteriaInput) {
+    async getApplicationTableDataset(requestData: RequestCriteriaInput) {
       this.applications.tableData = []
       const flowsQueries = useflowsQueries()
       this.applications.isTableLoading = true
@@ -97,7 +97,7 @@ export const useFlowsStore = defineStore('flowsStore', {
         ]
       }
     },
-    async getLineDataset(requestData: RequestCriteriaInput) {
+    async getApplicationLineDataset(requestData: RequestCriteriaInput) {
       const flowsQueries = useflowsQueries()
       this.applications.isLineLoading = true
       const applicationsLineData = await flowsQueries.getApplicationsSeries(requestData)
