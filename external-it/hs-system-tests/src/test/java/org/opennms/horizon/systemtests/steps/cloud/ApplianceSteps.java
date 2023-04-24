@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.horizon.systemtests.steps.cloud;
 
 import com.codeborne.selenide.Selenide;
@@ -35,8 +34,6 @@ import org.opennms.horizon.systemtests.utils.TestDataStorage;
 
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApplianceSteps {
 
@@ -60,7 +57,8 @@ public class ApplianceSteps {
 
     @Then("Is the 'delete' Minion button displayed? {string}")
     public void checkIsRemoveMinionButtonShown(String isDisplayed) {
-        assertEquals(TestDataStorage.stringToBoolean(isDisplayed), AppliancePage.checkIsRemoveButtonShown());
+        boolean condition = TestDataStorage.stringToBoolean(isDisplayed);
+        AppliancePage.checkIsRemoveButtonShown(condition);
     }
 
     @Then("check the status of the minion is {string}")
@@ -75,7 +73,7 @@ public class ApplianceSteps {
 
     @Then("check 'Add Device' button is accessible and visible")
     public void checkAddDeviceButtonIsAccessibleAndVisible() {
-        assertTrue(AppliancePage.checkIsAddDeviceButtonVisible());
+        AppliancePage.checkIsAddDeviceButtonVisible();
     }
 
     @Then("click on 'Add Device' button to open a pop up window")
@@ -85,7 +83,7 @@ public class ApplianceSteps {
 
     @Then("check the status of the device with name {string} as status {string}")
     public void checkTheStatusOfTheAddedDeviceAsStatus(String name, String status) {
-        assertEquals(status, AppliancePage.getDeviceStatusWithName(name));
+        AppliancePage.getDeviceStatusWithName(status, name);
     }
 
     @Then("Add device name {string}")

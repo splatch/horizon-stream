@@ -31,6 +31,7 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.time.Duration;
 
+import static com.codeborne.selenide.Condition.hidden;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.text;
@@ -78,9 +79,9 @@ public class AppliancePage {
         minionStatus.shouldHave(text(status), Duration.ofSeconds(31));
     }
 
-    public static String getDeviceStatusWithName(String name) {
+    public static void getDeviceStatusWithName(String status, String name) {
         SelenideElement deviceStatus = $x(String.format("//div[@data-test='node-item' and contains(., '%s')]/div[@data-test='node-item-status']/div", name));
-        return deviceStatus.getText();
+        deviceStatus.shouldHave(text(status));
     }
 
     public static String getMinionLatency() {
@@ -91,12 +92,12 @@ public class AppliancePage {
         minionRemoveButton.shouldBe(visible, enabled).click();
     }
 
-    public static boolean checkIsRemoveButtonShown() {
-        return minionRemoveButton.shouldBe(visible, enabled).isDisplayed();
+    public static void checkIsRemoveButtonShown(boolean condition) {
+        minionRemoveButton.shouldBe(condition ? visible : hidden);
     }
 
-    public static boolean checkIsAddDeviceButtonVisible() {
-        return addDeviceButton.shouldBe(visible, enabled).isDisplayed();
+    public static void checkIsAddDeviceButtonVisible() {
+        addDeviceButton.shouldBe(visible, enabled);
     }
 
 }
