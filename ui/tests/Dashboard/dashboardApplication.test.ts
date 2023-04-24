@@ -2,7 +2,6 @@ import DashboardApplications from '@/components/Dashboard/DashboardApplications.
 import mount from 'tests/mountWithPiniaVillus'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import { TimeRange } from '@/types/graphql'
-import router from '@/router'
 import { createClient, setActiveClient } from 'villus'
 
 const wrapper = mount({
