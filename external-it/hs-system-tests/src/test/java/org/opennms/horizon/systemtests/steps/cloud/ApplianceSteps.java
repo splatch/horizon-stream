@@ -31,20 +31,18 @@ package org.opennms.horizon.systemtests.steps.cloud;
 import com.codeborne.selenide.Selenide;
 import io.cucumber.java.en.Then;
 import org.opennms.horizon.systemtests.pages.cloud.AppliancePage;
+import org.opennms.horizon.systemtests.utils.TestDataStorage;
 
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
 
 public class ApplianceSteps {
 
     @Then("check {string} minion in the list")
     public static void waitWhenMinionAppear(String minionName) {
-        if (minionName.equals("DEFAULT")) {
-            minionName = MINIONS.get(0).minionId;
-        }
+        minionName = TestDataStorage.getMinionName(minionName);
 
         for (int i = 0; i < 2; i++) {
             // since the minion doesn't show up we need to wait and refresh the page
@@ -60,9 +58,9 @@ public class ApplianceSteps {
         Selenide.refresh();
     }
 
-    @Then("check that the remove Minion button is displayed")
-    public void checkIsRemoveMinionButtonShown() {
-        assertTrue(AppliancePage.checkIsRemoveButtonShown());
+    @Then("Is the 'delete' Minion button displayed? {string}")
+    public void checkIsRemoveMinionButtonShown(String isDisplayed) {
+        assertEquals(TestDataStorage.stringToBoolean(isDisplayed), AppliancePage.checkIsRemoveButtonShown());
     }
 
     @Then("check the status of the minion is {string}")
@@ -70,7 +68,7 @@ public class ApplianceSteps {
         AppliancePage.waitMinionStatus(status);
     }
 
-    @Then("click on the delete button for minion")
+    @Then("click on the 'delete' button for minion")
     public void removeMinionFromTheList() {
         AppliancePage.clickRemoveMinion();
     }
@@ -82,18 +80,26 @@ public class ApplianceSteps {
 
     @Then("click on 'Add Device' button to open a pop up window")
     public void clickOnAddDeviceButtonToOpenAPopUpWindow() {
-        AppliancePage.clickAddDevice();
-    }
-
-    @Then("fill details of a newly added device with name {string} and ip address {string}")
-    public void fillDetailsOfANewlyAddedDeviceWithNameAndIpAddress(String deviceName, String deviceIpAddress) {
-        AppliancePage.setDeviceNameInput(deviceName);
-        AppliancePage.setDeviceIpInput(deviceIpAddress);
-        AppliancePage.clickSaveButton();
+        AppliancePage.clickAddDeviceButton();
     }
 
     @Then("check the status of the device with name {string} as status {string}")
     public void checkTheStatusOfTheAddedDeviceAsStatus(String name, String status) {
         assertEquals(status, AppliancePage.getDeviceStatusWithName(name));
+    }
+
+    @Then("Add device name {string}")
+    public void addDeviceName(String deviceName) {
+        AppliancePage.setDeviceNameInput(deviceName);
+    }
+
+    @Then("Add device IP address {string}")
+    public void addDeviceIPAddress(String deviceIpAddress) {
+        AppliancePage.setDeviceIpInput(deviceIpAddress);
+    }
+
+    @Then("Click on save button")
+    public void clickOnSaveButton() {
+        AppliancePage.clickSaveButton();
     }
 }
