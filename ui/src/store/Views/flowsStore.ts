@@ -41,6 +41,8 @@ export const useFlowsStore = defineStore('flowsStore', {
       tableChartData: {} as ChartData,
       lineChartData: {} as ChartData,
       filterDialogOpen: false,
+      hasLineData: false,
+      hasTableData: false,
       //Table Data
       tableData: [{} as any],
       //Line Data
@@ -85,6 +87,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       this.filters.exporters = exportersAutocompleteObject
     },
     async getTableDataset(requestData: RequestCriteriaInput) {
+      this.applications.tableData = []
       const flowsQueries = useflowsQueries()
       this.applications.isTableLoading = true
       const applicationTableData = await flowsQueries.getApplicationsSummaries(requestData)
@@ -93,8 +96,6 @@ export const useFlowsStore = defineStore('flowsStore', {
           ...((applicationTableData.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || [])
         ]
       }
-
-      this.applications.isTableLoading = false
     },
     async getLineDataset(requestData: RequestCriteriaInput) {
       const flowsQueries = useflowsQueries()
@@ -136,7 +137,7 @@ export const useFlowsStore = defineStore('flowsStore', {
       } as RequestCriteriaInput
     },
     createTableChartData() {
-      if (this.applications.tableData) {
+      if (this.applications.tableData.length > 0) {
         this.applications.tableChartData = {
           labels: this.applications.tableData.map((row) => row.label),
           datasets: [
@@ -156,10 +157,14 @@ export const useFlowsStore = defineStore('flowsStore', {
             }
           ]
         }
+        this.applications.hasTableData = true
+      } else {
+        this.applications.hasTableData = false
       }
+      this.applications.isTableLoading = false
     },
     createLineChartData() {
-      if (this.applications.lineInboundData.length > 0) {
+      if (this.applications.lineTotalData.length > 0) {
         const data = this.getLineChartDataForSelectedTraffic()
         const datasetArr = {
           type: 'line',
@@ -179,7 +184,11 @@ export const useFlowsStore = defineStore('flowsStore', {
           })
         }
         this.applications.lineChartData = datasetArr
+        this.applications.hasLineData = true
+      } else {
+        this.applications.hasLineData = false
       }
+      this.applications.isLineLoading = false
     },
     async populateData() {
       await this.getExporters()
