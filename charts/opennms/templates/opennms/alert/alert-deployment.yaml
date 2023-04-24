@@ -44,8 +44,10 @@ spec:
           image: {{ .Values.OpenNMS.Alert.Image }}
           imagePullPolicy: {{ .Values.OpenNMS.Alert.ImagePullPolicy }}
           env:
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.OpenNMS.Alert.ServiceName }}"
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+              value: "-javaagent:agent/opentelemetry-javaagent.jar -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres:5432/alert"
             - name: SPRING_DATASOURCE_USERNAME

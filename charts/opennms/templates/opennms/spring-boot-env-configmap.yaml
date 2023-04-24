@@ -7,3 +7,9 @@ data:
 {{- if .Values.OpenNMS.global.enableJsonLogging }}
   SPRING_PROFILES_ACTIVE: json-logging
 {{- end }}
+{{- if .Values.OpenNMS.global.openTelemetry.otlpTracesEndpoint }}
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: {{ .Values.OpenNMS.global.openTelemetry.otlpTracesEndpoint | toYaml }}
+{{- else }}
+  OTEL_TRACES_EXPORTER: "none"
+{{- end }}
+  OTEL_METRICS_EXPORTER: "none"

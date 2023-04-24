@@ -44,8 +44,10 @@ spec:
           image: {{ .Values.OpenNMS.DataChoices.Image }}
           imagePullPolicy: {{ .Values.OpenNMS.DataChoices.ImagePullPolicy }}
           env:
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.OpenNMS.DataChoices.ServiceName }}"
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
+              value: "-javaagent:agent/opentelemetry-javaagent.jar -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres:5432/datachoices"
             - name: SPRING_DATASOURCE_USERNAME
