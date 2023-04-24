@@ -25,28 +25,14 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.horizon.systemtests.steps.cloud;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selenide;
 import io.cucumber.java.en.Then;
+import org.opennms.horizon.systemtests.pages.cloud.ConfirmDeleteMinionPopup;
 
-import java.time.Duration;
-
-import static com.codeborne.selenide.Selectors.byText;
-import static com.codeborne.selenide.Selenide.$;
-import static org.opennms.horizon.systemtests.CucumberHooks.MINIONS;
-
-public class AppliancesSteps {
-
-    @Then("check minion in the list")
-    public static void justWait() {
-        $(byText(MINIONS.get(0).minionId)).shouldBe(Condition.visible, Duration.ofMinutes(10));
-    }
-
-    @Then("wait")
-    public static void waitSecond() {
-        Selenide.sleep(60_000);
+public class ConfirmDeleteMinionSteps {
+    @Then("confirm the minion deletion")
+    public void clickSubmitDeleteBtn() {
+        ConfirmDeleteMinionPopup.clickDeleteBtn();
     }
 }
