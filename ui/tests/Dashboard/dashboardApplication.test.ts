@@ -3,27 +3,19 @@ import mount from 'tests/mountWithPiniaVillus'
 import { useFlowsStore } from '@/store/Views/flowsStore'
 import { TimeRange } from '@/types/graphql'
 import router from '@/router'
-import { createClient, VILLUS_CLIENT } from 'villus'
-//import { mount } from '@vue/test-utils'
-import { createTestingPinia } from '@pinia/testing'
-
-// const wrapper = mount(DashboardApplications, {
-//   stubActions: false,
-//   global: {
-//     plugins: [createTestingPinia()],
-//     provide: {
-//       [VILLUS_CLIENT as unknown as string]: createClient({
-//         url: 'http://test/graphql'
-//       })
-//     }
-//   }
-// })
+import { createClient, setActiveClient } from 'villus'
 
 const wrapper = mount({
   component: DashboardApplications,
   shallow: false,
   stubActions: false
 })
+
+setActiveClient(
+  createClient({
+    url: 'http://test/graphql'
+  })
+)
 
 const timeRange = { startTime: 1682025158863, endTime: 1682111558863 }
 const filterValuesMock = {
