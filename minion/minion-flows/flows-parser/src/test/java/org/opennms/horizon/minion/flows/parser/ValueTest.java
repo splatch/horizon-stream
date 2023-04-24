@@ -28,15 +28,20 @@
 
 package org.opennms.horizon.minion.flows.parser;
 
+import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.bytes;
+
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.opennms.horizon.minion.flows.parser.ie.Value;
 import org.opennms.horizon.minion.flows.parser.ie.values.BooleanValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.DateTimeValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.FloatValue;
@@ -48,6 +53,9 @@ import org.opennms.horizon.minion.flows.parser.ie.values.OctetArrayValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.SignedValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.StringValue;
 import org.opennms.horizon.minion.flows.parser.ie.values.UnsignedValue;
+import org.opennms.horizon.minion.flows.parser.session.Field;
+import org.opennms.horizon.minion.flows.parser.session.Session;
+import org.opennms.horizon.minion.flows.parser.session.Template;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -74,22 +82,64 @@ public class ValueTest {
     }
 
     @Test
-    public void testSubTemplateList() {
+    public void testSubTemplateList() throws MissingTemplateException, InvalidPacketException, UnsupportedEncodingException {
         // Given
+        final List<Field> fields = List.of(field("field1", "field1".getBytes("UTF-8").length), field("field2", "field2".getBytes("UTF-8").length));
+        Session.Resolver resolver = Mockito.mock(Session.Resolver.class);
+        final Template template = Template.builder(100, Template.Type.OPTIONS_TEMPLATE).withFields(fields).build();
+        Mockito.when(resolver.lookupTemplate(100)).thenReturn(template);
+
+        ByteBuf byteBuf = Unpooled.buffer()
+            .writeByte(0xFF) // Semantic: Undefined
+            .writeShort(100)  // Template ID
+            .writeBytes("field1".getBytes("UTF-8"))  // Field 1
+            .writeBytes("field2".getBytes("UTF-8"));  // Field 2
 
         // When
+        final ListValue listValue = (ListValue) ListValue.parserWithSubTemplateList("name1", Optional.empty()).parse(resolver, byteBuf);
 
         // Then
-
+        Assert.assertNotNull(listValue.getValue());
+        Assert.assertEquals(1, listValue.getValue().size());
+        Assert.assertEquals(2, listValue.getValue().get(0).size());
     }
 
+    private static Field field(String name, final int length) {
+        return new Field() {
+            @Override
+            public int length() {
+                    return length;
+            }
+
+            @Override
+            public Value<?> parse(Session.Resolver resolver, ByteBuf buffer) {
+                return new OctetArrayValue(name, bytes(buffer, length()));
+            }
+        };
+    }
+
+
     @Test
-    public void testSubTemplateMultiList() {
+    public void testSubTemplateMultiList() throws MissingTemplateException, InvalidPacketException, UnsupportedEncodingException {
         // Given
+        final List<Field> fields = List.of(field("field1", "field1".getBytes("UTF-8").length), field("field2", "field2".getBytes("UTF-8").length));
+        Session.Resolver resolver = Mockito.mock(Session.Resolver.class);
+        final Template template = Template.builder(100, Template.Type.OPTIONS_TEMPLATE).withFields(fields).build();
+        Mockito.when(resolver.lookupTemplate(357)).thenReturn(template);
+
+        ByteBuf byteBuf = Unpooled.buffer()
+            .writeByte(0xFF) // Semantic: Undefined
+            .writeShort(357) // Header ID
+            .writeShort(16) // Header length
+            .writeBytes("field1".getBytes("UTF-8"))  // Field 1
+            .writeBytes("field2".getBytes("UTF-8"));  // Field 2
 
         // When
+        final ListValue listValue = (ListValue) ListValue.parserWithSubTemplateMultiList("name1", Optional.empty()).parse(resolver, byteBuf);
 
         // Then
+        Assert.assertNotNull(listValue.getValue());
+        Assert.assertEquals(2, listValue.getValue().get(0).size());
     }
 
     @Test
