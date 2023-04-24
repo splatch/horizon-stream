@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.inventory.grpc;
 
+import com.google.protobuf.BoolValue;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
 import com.google.protobuf.StringValue;
@@ -43,6 +44,8 @@ import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationList;
 import org.opennms.horizon.inventory.dto.MonitoringLocationServiceGrpc;
 import org.opennms.horizon.inventory.service.MonitoringLocationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -52,6 +55,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc.MonitoringLocationServiceImplBase {
+    private static final Logger LOG = LoggerFactory.getLogger(MonitoringLocationGrpcService.class);
     private final MonitoringLocationService service;
     private final TenantLookup tenantLookup;
 
@@ -115,8 +119,16 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
     public void createLocation(MonitoringLocationDTO request, StreamObserver<MonitoringLocationDTO> responseObserver) {
         tenantLookup.lookupTenantId(Context.current())
             .ifPresent(tenantId -> {
-                responseObserver.onNext(service.upsert(MonitoringLocationDTO.newBuilder(request).setTenantId(tenantId).build()));
-                responseObserver.onCompleted();
+                try {
+                    responseObserver.onNext(service.upsert(MonitoringLocationDTO.newBuilder(request).setTenantId(tenantId).build()));
+                    responseObserver.onCompleted();
+                } catch (Exception e) {
+                    LOG.error("Error while creating location with name {}", request.getLocation(), e);
+                    Status status = Status.newBuilder()
+                        .setCode(Code.INTERNAL_VALUE)
+                        .setMessage("Error while creating location with name " + request.getLocation()).build();
+                    responseObserver.onError(StatusProto.toStatusRuntimeException(status));
+                }
             });
     }
 
@@ -124,18 +136,34 @@ public class MonitoringLocationGrpcService extends MonitoringLocationServiceGrpc
     public void updateLocation(MonitoringLocationDTO request, StreamObserver<MonitoringLocationDTO> responseObserver) {
         tenantLookup.lookupTenantId(Context.current())
             .ifPresent(tenantId -> {
-                responseObserver.onNext(service.upsert(MonitoringLocationDTO.newBuilder(request).setTenantId(tenantId).build()));
-                responseObserver.onCompleted();
+                try {
+                    responseObserver.onNext(service.upsert(MonitoringLocationDTO.newBuilder(request).setTenantId(tenantId).build()));
+                    responseObserver.onCompleted();
+                } catch (Exception e) {
+                    LOG.error("Error while updating location with ID {}", request.getId(), e);
+                    Status status = Status.newBuilder()
+                        .setCode(Code.INTERNAL_VALUE)
+                        .setMessage("Error while updating location with ID " + request.getId()).build();
+                    responseObserver.onError(StatusProto.toStatusRuntimeException(status));
+                }
             });
     }
 
     @Override
-    public void deleteLocation(Int64Value request, StreamObserver<Empty> responseObserver) {
+    public void deleteLocation(Int64Value request, StreamObserver<BoolValue> responseObserver) {
         tenantLookup.lookupTenantId(Context.current())
             .ifPresent(tenantId -> {
-                service.delete(request.getValue(), tenantId);
-                responseObserver.onNext(Empty.getDefaultInstance());
-                responseObserver.onCompleted();
+                try {
+                    service.delete(request.getValue(), tenantId);
+                    responseObserver.onNext(BoolValue.of(true));
+                    responseObserver.onCompleted();
+                } catch (Exception e) {
+                    LOG.error("Error while deleting location with ID {}", request.getValue(), e);
+                    Status status = Status.newBuilder()
+                        .setCode(Code.INTERNAL_VALUE)
+                        .setMessage("Error while deleting location with ID " + request.getValue()).build();
+                    responseObserver.onError(StatusProto.toStatusRuntimeException(status));
+                }
             });
     }
 }

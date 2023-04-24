@@ -1,5 +1,6 @@
 package org.opennms.horizon.inventory.grpc;
 
+import com.google.protobuf.BoolValue;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
 import com.google.protobuf.StringValue;
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +47,7 @@ public class MonitoringLocationGrpcServiceTest {
     private StreamObserver<MonitoringLocationDTO> getResponseObserver;
 
     @Mock
-    private StreamObserver<Empty> deleteResponseObserver;
+    private StreamObserver<BoolValue> deleteResponseObserver;
 
     @Captor
     private ArgumentCaptor<MonitoringLocationList> listResponseCaptor;
@@ -54,7 +56,7 @@ public class MonitoringLocationGrpcServiceTest {
     private ArgumentCaptor<MonitoringLocationDTO> getResponseCaptor;
 
     @Captor
-    private ArgumentCaptor<Empty> deleteResponseCaptor;
+    private ArgumentCaptor<BoolValue> deleteResponseCaptor;
 
     @Test
     public void testListLocations() {
@@ -146,6 +148,19 @@ public class MonitoringLocationGrpcServiceTest {
     }
 
     @Test
+    public void testCreateLocationException() {
+        MonitoringLocationDTO request = MonitoringLocationDTO.newBuilder().build();
+        when(tenantLookup.lookupTenantId(any())).thenReturn(Optional.of("tenantId"));
+        when(service.upsert(any())).thenThrow(new RuntimeException("test exception"));
+
+        grpcService.createLocation(request, getResponseObserver);
+
+        ArgumentCaptor<Throwable> throwableCaptor = ArgumentCaptor.forClass(Throwable.class);
+        verify(getResponseObserver).onError(throwableCaptor.capture());
+        assertEquals("INTERNAL: Error while creating location with name " + request.getLocation(), throwableCaptor.getValue().getMessage());
+    }
+
+    @Test
     public void testUpdateLocation() {
         MonitoringLocationDTO request = MonitoringLocationDTO.newBuilder().build();
         MonitoringLocationDTO expectedLocation = MonitoringLocationDTO.newBuilder().build();
@@ -161,6 +176,19 @@ public class MonitoringLocationGrpcServiceTest {
     }
 
     @Test
+    public void testUpdateLocationException() {
+        MonitoringLocationDTO request = MonitoringLocationDTO.newBuilder().build();
+        when(tenantLookup.lookupTenantId(any())).thenReturn(Optional.of("tenantId"));
+        when(service.upsert(any())).thenThrow(new RuntimeException("test exception"));
+
+        grpcService.updateLocation(request, getResponseObserver);
+
+        ArgumentCaptor<Throwable> throwableCaptor = ArgumentCaptor.forClass(Throwable.class);
+        verify(getResponseObserver).onError(throwableCaptor.capture());
+        assertEquals("INTERNAL: Error while updating location with ID 0", throwableCaptor.getValue().getMessage());
+    }
+
+    @Test
     public void testDeleteLocation() {
         Int64Value request = Int64Value.newBuilder().setValue(1L).build();
         when(tenantLookup.lookupTenantId(any())).thenReturn(Optional.of("tenantId"));
@@ -169,7 +197,20 @@ public class MonitoringLocationGrpcServiceTest {
 
         verify(deleteResponseObserver).onNext(deleteResponseCaptor.capture());
         verify(deleteResponseObserver).onCompleted();
-        Empty response = deleteResponseCaptor.getValue();
-        assertEquals(Empty.getDefaultInstance(), response);
+        BoolValue response = deleteResponseCaptor.getValue();
+        assertEquals(BoolValue.of(true), response);
+    }
+
+    @Test
+    public void testDeleteLocationException() {
+        Int64Value request = Int64Value.newBuilder().setValue(1L).build();
+        when(tenantLookup.lookupTenantId(any())).thenReturn(Optional.of("tenantId"));
+        doThrow(new RuntimeException("test exception")).when(service).delete(any(), any());
+
+        grpcService.deleteLocation(request, deleteResponseObserver);
+
+        ArgumentCaptor<Throwable> throwableCaptor = ArgumentCaptor.forClass(Throwable.class);
+        verify(deleteResponseObserver).onError(throwableCaptor.capture());
+        assertEquals("INTERNAL: Error while deleting location with ID 1", throwableCaptor.getValue().getMessage());
     }
 }

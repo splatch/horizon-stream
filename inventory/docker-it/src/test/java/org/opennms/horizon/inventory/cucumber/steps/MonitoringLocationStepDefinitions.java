@@ -28,6 +28,7 @@
 
 package org.opennms.horizon.inventory.cucumber.steps;
 
+import com.google.protobuf.BoolValue;
 import com.google.protobuf.Empty;
 import com.google.protobuf.Int64Value;
 import com.google.protobuf.StringValue;
@@ -53,6 +54,7 @@ public class MonitoringLocationStepDefinitions {
     private MonitoringLocationDTO lastMonitoringLocation;
     private String lastLocation;
     private List<MonitoringLocationDTO> lastMonitoringLocations;
+    private BoolValue lastDelete;
 
     public MonitoringLocationStepDefinitions(InventoryBackgroundHelper backgroundHelper) {
         this.backgroundHelper = backgroundHelper;
@@ -158,12 +160,13 @@ public class MonitoringLocationStepDefinitions {
 
     @When("[MonitoringLocation] Delete Monitoring Location")
     public void monitoringLocationDeleteMonitoringLocation() {
-        backgroundHelper.getMonitoringLocationStub().deleteLocation(Int64Value.of(lastMonitoringLocation.getId()));
+        lastDelete = backgroundHelper.getMonitoringLocationStub().deleteLocation(Int64Value.of(lastMonitoringLocation.getId()));
     }
 
     @Then("[MonitoringLocation] Monitoring Location is deleted")
     public void monitoringLocationMonitoringLocationIsDeleted() {
         var monitoringLocationStub = backgroundHelper.getMonitoringLocationStub();
+        assertEquals(true, lastDelete.getValue());
         await().pollInterval(5, TimeUnit.SECONDS)
             .atMost(30, TimeUnit.SECONDS).until(() ->
                     monitoringLocationStub.listLocations(Empty.newBuilder().build()).getLocationsList().size(),
