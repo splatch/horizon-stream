@@ -39,6 +39,10 @@ spec:
                       - {{ .Values.NodeRestrictions.Value }}
       {{ end }}
       terminationGracePeriodSeconds: 120
+      volumes:
+        - name: spring-boot-app-config-volume
+          configMap:
+            name: spring-boot-app-config
       containers:
         - name: {{ .Values.OpenNMS.API.ServiceName }}
           image: {{ .Values.OpenNMS.API.Image }}
@@ -76,6 +80,9 @@ spec:
             requests:
               cpu: "{{ .Values.OpenNMS.API.Resources.Requests.Cpu }}"
               memory: "{{ .Values.OpenNMS.API.Resources.Requests.Memory }}"
+          volumeMounts:
+            - name: spring-boot-app-config-volume
+              mountPath: "/app/config"
       {{- if .Values.OpenNMS.API.PrivateRepoEnabled }}
       imagePullSecrets:
         - name: image-credentials

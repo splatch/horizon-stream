@@ -39,6 +39,10 @@ spec:
                 values:                                                                                
                 - {{ .Values.NodeRestrictions.Value }}                                                 
       {{- end }}
+      volumes:
+        - name: spring-boot-app-config-volume
+          configMap:
+            name: spring-boot-app-config
       containers:
         - name: {{ .Values.OpenNMS.Events.ServiceName }}
           image: {{ .Values.OpenNMS.Events.Image }}
@@ -67,6 +71,9 @@ spec:
               containerPort: {{ .Values.OpenNMS.Events.Port }}
             - name: grpc
               containerPort: {{ .Values.OpenNMS.Events.GrpcPort }}
+          volumeMounts:
+            - name: spring-boot-app-config-volume
+              mountPath: "/app/config"
       {{- if .Values.OpenNMS.Events.PrivateRepoEnabled }}
       imagePullSecrets:
         - name: image-credentials

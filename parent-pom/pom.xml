@@ -27,6 +27,7 @@
 
         <!-- Jib properties -->
         <application.jib.defaultGoal>dockerBuild</application.jib.defaultGoal> <!-- dockerBuild for local only; build to push also -->
+        <application.jib.app.config>/app/config</application.jib.app.config>
         <application.docker.skip>false</application.docker.skip>
         <application.docker.image>${application.docker.image.name}:${application.docker.image.tag}</application.docker.image>
         <!-- application.docker.image.name MUST be set by child modules that use jib-maven-plugin. -->

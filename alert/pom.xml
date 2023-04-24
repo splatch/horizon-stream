@@ -267,6 +267,9 @@
                             <jvmFlag>--add-opens=java.base/java.text=ALL-UNNAMED</jvmFlag>
                             <jvmFlag>--add-opens=java.desktop/java.awt.font=ALL-UNNAMED</jvmFlag>
                         </jvmFlags>
+                        <extraClasspath>
+                            <entry>${application.jib.app.config}</entry>
+                        </extraClasspath>
                     </container>
                 </configuration>
                 <executions>

@@ -39,6 +39,10 @@ spec:
                 values:                                                                                
                 - {{ .Values.NodeRestrictions.Value }}                                                 
       {{- end }}
+      volumes:
+        - name: spring-boot-app-config-volume
+          configMap:
+            name: spring-boot-app-config
       containers:
         - name: {{ .Values.OpenNMS.MetricsProcessor.ServiceName }}
           image: {{ .Values.OpenNMS.MetricsProcessor.Image }}
@@ -53,6 +57,9 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+          volumeMounts:
+            - name: spring-boot-app-config-volume
+              mountPath: "/app/config"
       {{- if .Values.OpenNMS.MetricsProcessor.PrivateRepoEnabled }}
       imagePullSecrets:
         - name: image-credentials
