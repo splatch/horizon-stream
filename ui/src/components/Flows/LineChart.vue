@@ -15,6 +15,7 @@ import useTheme from '@/composables/useTheme'
 import { ChartData } from '@/types'
 import { PropType } from 'vue'
 import { Line } from 'vue-chartjs'
+import { downloadCanvas } from '../Graphs/utils'
 import {
   Chart,
   CategoryScale,
@@ -51,12 +52,9 @@ defineProps({
 const lineChart = ref()
 
 const downloadChart = (filename: string) => {
-  let a = document.createElement('a')
   if (lineChart.value) {
-    a.href = lineChart.value.chart.toBase64Image()
-    a.download = `${filename + Date.now()}.png`
+    downloadCanvas(lineChart.value.chart.canvas, `${filename + Date.now()}`)
   }
-  a.click()
 }
 const chartOptions = computed<ChartOptions<any>>(() => {
   return {

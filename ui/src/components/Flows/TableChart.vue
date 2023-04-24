@@ -37,6 +37,7 @@ import { PropType } from 'vue'
 import { ChartData } from '@/types'
 import { Bar } from 'vue-chartjs'
 import { Chart, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ChartOptions } from 'chart.js'
+import { downloadCanvas } from '../Graphs/utils'
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
@@ -62,12 +63,9 @@ const props = defineProps({
 const barChart = ref()
 
 const downloadChart = (filename: string) => {
-  let a = document.createElement('a')
   if (barChart.value) {
-    a.href = barChart.value.chart.toBase64Image()
-    a.download = `${filename + Date.now()}.png`
+    downloadCanvas(barChart.value.chart.canvas, `${filename + Date.now()}`)
   }
-  a.click()
 }
 
 const chartOptions = computed<ChartOptions<any>>(() => {
