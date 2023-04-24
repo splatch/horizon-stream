@@ -352,6 +352,9 @@
                             <entry>${application.jib.app.config}</entry>
                         </extraClasspath>
                     </container>
+                    <extraDirectories>
+                        <paths>${application.jib.extra.root}</paths>
+                    </extraDirectories>
                 </configuration>
                 <executions>
                     <execution>
