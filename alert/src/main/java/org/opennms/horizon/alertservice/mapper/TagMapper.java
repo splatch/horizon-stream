@@ -32,22 +32,13 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.NullValueCheckStrategy;
-import org.opennms.horizon.alerts.proto.MonitorPolicyProto;
-import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
+import org.opennms.horizon.alert.tag.proto.TagProto;
+import org.opennms.horizon.alertservice.db.entity.Tag;
 
-@Mapper(componentModel = "spring", uses ={PolicyRuleMapper.class},
-    collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
-public interface MonitorPolicyMapper {
-    @Mappings({
-        @Mapping(target = "rulesList", source = "rules")
-    })
+@Mapper(componentModel = "spring", collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
+public interface TagMapper {
+    @Mapping(target = "nodeIdsList", source = "nodeIds")
     @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-    MonitorPolicyProto map(MonitorPolicy policy);
-
-    @Mappings({
-        @Mapping(target = "rules", source = "rulesList")
-    })
-    MonitorPolicy map(MonitorPolicyProto proto);
+    TagProto map(Tag tag);
 }
