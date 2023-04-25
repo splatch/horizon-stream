@@ -1,5 +1,6 @@
 package org.opennms.horizon.systemtests.steps.portal;
 
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import org.opennms.horizon.systemtests.pages.portal.EditInstanceNamePopup;
 
@@ -42,5 +43,10 @@ public class EditInstanceNameSteps {
     @Then("'Edit Instance' popup shows an error message {string} for Instance name")
     public void verifyErrorMessage(String errorMessage) {
         EditInstanceNamePopup.verifyErrorMessage(errorMessage);
+    }
+
+    @And("has correct URL link in the clipboard that matches with the URL field")
+    public void hasCorrectURLLinkInTheClipboard() {
+        EditInstanceNamePopup.verifyClipboardValue();
     }
 }

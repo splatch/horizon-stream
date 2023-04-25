@@ -93,6 +93,7 @@ public class CucumberHooks {
 
     @Before("@portal")
     public static void loginToPortal() {
+        portalApi.deleteAllBtoInstances();
         if (Selenide.webdriver().driver().hasWebDriverStarted()) {
             return;
         }

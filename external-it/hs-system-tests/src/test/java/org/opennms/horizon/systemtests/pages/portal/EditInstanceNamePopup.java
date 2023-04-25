@@ -1,8 +1,10 @@
 package org.opennms.horizon.systemtests.pages.portal;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
+import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
@@ -13,7 +15,8 @@ public class EditInstanceNamePopup {
     private final static SelenideElement updateBtn = $("#submit-cloud\\ instance");
     private final static SelenideElement cancelBtn = $("#cancel-btn-cloud\\ instance");
     private final static SelenideElement closeBtn = $("[data-ref-id='dialog-close']");
-    private final static SelenideElement errorTxt = $("[data-ref-id='feather-form-element-error']");
+    private final static SelenideElement errorTxt = $("div.cloud-instance-edit-dialog [data-ref-id='feather-form-element-error']");
+    private final static SelenideElement urlTxt = $("#cloud-details-instance-url");
 
     public static void waitNewState(Condition condition) {
         popup.shouldBe(condition);
@@ -37,5 +40,9 @@ public class EditInstanceNamePopup {
 
     public static void verifyErrorMessage(String errorMessage) {
         errorTxt.shouldHave(text(errorMessage));
+    }
+
+    public static void verifyClipboardValue() {
+        urlTxt.shouldHave(attribute("href", Selenide.clipboard().getText() + "/"));
     }
 }
