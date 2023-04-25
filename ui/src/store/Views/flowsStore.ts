@@ -72,6 +72,11 @@ export const useFlowsStore = defineStore('flowsStore', {
         applications: applications || this.filters.selectedApplications.map((app: any) => app.value)
       } as RequestCriteriaInput
     },
+    createApplicationCharts() {
+      const flowsApplicationStore = useFlowsApplicationStore()
+      flowsApplicationStore.createApplicationTableChartData()
+      flowsApplicationStore.createApplicationLineChartData()
+    },
     async updateApplicationCharts() {
       await this.getApplicationDatasets()
       this.createApplicationCharts()
@@ -83,11 +88,6 @@ export const useFlowsStore = defineStore('flowsStore', {
     },
     async updateChartData() {
       await this.updateApplicationCharts()
-    },
-    createApplicationCharts() {
-      const flowsApplicationStore = useFlowsApplicationStore()
-      flowsApplicationStore.createApplicationTableChartData()
-      flowsApplicationStore.createApplicationLineChartData()
     },
     async trafficRadioOnChange(selectedItem: string) {
       this.filters.traffic.selectedItem = selectedItem

@@ -151,7 +151,14 @@
           !appStore.isLineLoading
         "
       >
-        No data
+        <DashboardEmptyState :texts="ApplicationsText.Applications">
+          <template v-slot:icon>
+            <FeatherIcon
+              :icon="isDark ? PolarChartDark : PolarChart"
+              class="empty-chart-icon"
+            />
+          </template>
+        </DashboardEmptyState>
       </div>
       <div v-if="appStore.isLineLoading || appStore.isTableLoading">
         <FeatherSpinner />
@@ -191,9 +198,14 @@ import Download from '@featherds/icon/action/DownloadFile'
 import HelpIcon from '@featherds/icon/action/Help'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherDrawer } from '@featherds/drawer'
+import ApplicationsText from '@/components/Flows/flows.text'
 import { useFlowsApplicationStore } from '@/store/Views/flowsApplicationStore'
+import useTheme from '@/composables/useTheme'
+import PolarChart from '@/assets/PolarChart.svg'
+import PolarChartDark from '@/assets/PolarChart-dark.svg'
 const flowsStore = useFlowsStore()
 const appStore = useFlowsApplicationStore()
+const { isDark } = useTheme()
 
 const lineChartApplications = ref()
 const downloadLineChartApplications = (fileName: string) => {

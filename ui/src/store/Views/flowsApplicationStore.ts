@@ -62,7 +62,7 @@ export const useFlowsApplicationStore = defineStore('flowsApplicationStore', {
           flowsAppDataToChartJSTotal(applicationsLineData.value?.findApplicationSeries as FlowsApplicationData[]) || []
       }
 
-      //Get Total Flows
+      //Get Total App Flows
       this.totalFlows = applicationsLineData.value?.findApplicationSeries?.length || 0
     },
     getRequestData(count = 10, step?: number, exporter?: object[], applications?: string[]) {
