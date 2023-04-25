@@ -1,9 +1,10 @@
 import { flowsAppDataToChartJSDirection, flowsAppDataToChartJSTotal } from '@/dtos/chartJS.dto'
 import { defineStore } from 'pinia'
 import { useflowsQueries } from '@/store/Queries/flowsQueries'
-import { RequestCriteriaInput } from '@/types/graphql'
-import { FlowsApplicationData, FlowsApplicationSummaries, ChartData } from '@/types'
+import { RequestCriteriaInput, TimeRange } from '@/types/graphql'
+import { FlowsApplicationData, FlowsApplicationSummaries, ChartData, IExporter } from '@/types'
 import { useFlowsStore } from './flowsStore'
+import { get } from 'lodash'
 
 export const useFlowsApplicationStore = defineStore('flowsApplicationStore', {
   state: () => ({
@@ -148,9 +149,14 @@ export const useFlowsApplicationStore = defineStore('flowsApplicationStore', {
     },
     async getApplicationDataset() {
       const flowsQueries = useflowsQueries()
-      const requestData = this.getRequestData(10, 2000000, [], [])
+      const flowsStore = useFlowsStore()
+      flowsStore.filters.dateFilter = TimeRange.Last_24Hours
+      const exporter = get(flowsStore.filters.selectedExporterTopApplication, 'value') as IExporter
+      const exporters: IExporter[] = exporter ? [exporter] : []
+      const requestData = flowsStore.getRequestData(10, 2000000, exporters, [])
+
       const topApplications = await flowsQueries.getApplicationsSummaries(requestData)
-      this.topApplications = [
+      flowsStore.topApplications = [
         ...((topApplications.value?.findApplicationSummaries as FlowsApplicationSummaries[]) || [])
       ]
     }
