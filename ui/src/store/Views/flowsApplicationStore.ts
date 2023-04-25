@@ -23,7 +23,8 @@ export const useFlowsApplicationStore = defineStore('flowsApplicationStore', {
   }),
   actions: {
     async getApplicationDatasets() {
-      const requestData = this.getRequestData()
+      const flowsStore = useFlowsStore()
+      const requestData = flowsStore.getRequestData()
       await this.getApplicationTableDataset(requestData)
       await this.getApplicationLineDataset(requestData)
     },
@@ -65,16 +66,6 @@ export const useFlowsApplicationStore = defineStore('flowsApplicationStore', {
 
       //Get Total App Flows
       this.totalFlows = applicationsLineData.value?.findApplicationSeries?.length || 0
-    },
-    getRequestData(count = 10, step?: number, exporter?: object[], applications?: string[]) {
-      const flowsStore = useFlowsStore()
-      return {
-        count: count,
-        step: step || flowsStore.filters.steps,
-        exporter: exporter || flowsStore.filters.selectedExporters.map((exp: any) => exp.value),
-        timeRange: flowsStore.getTimeRange(flowsStore.filters.dateFilter),
-        applications: applications || flowsStore.filters.selectedApplications.map((app: any) => app.value)
-      } as RequestCriteriaInput
     },
     createApplicationTableChartData() {
       const flowsStore = useFlowsStore()
