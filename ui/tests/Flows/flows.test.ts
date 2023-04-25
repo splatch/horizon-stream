@@ -7,8 +7,8 @@ import { useFlowsApplicationStore } from '@/store/Views/flowsApplicationStore'
 
 describe('Flows', () => {
   let wrapper: any
-  const appStore = useFlowsApplicationStore()
-  const store = useFlowsStore()
+  let appStore: any
+  let store: any
 
   beforeAll(async () => {
     wrapper = await mountWithPiniaVillus({
@@ -22,6 +22,8 @@ describe('Flows', () => {
       Line: () => null
     }))
 
+    appStore = useFlowsApplicationStore()
+    store = useFlowsStore()
     store.filters.traffic.selectedItem = 'total'
     appStore.lineInboundData = LineGraphData
     appStore.lineOutboundData = LineGraphData
