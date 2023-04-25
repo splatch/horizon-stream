@@ -58,7 +58,7 @@ export const useFlowsStore = defineStore('flowsStore', {
 
       const exporters = (await flowsQueries.getExporters(requestData)) || []
       const exportersAutocompleteObject = exporters.value?.findExporters?.map((item: any) => ({
-        _text: item.node.nodeLabel.toUpperCase(),
+        _text: `${item.node.nodeLabel.toUpperCase()} : ${item.ipInterface.ipAddress}`,
         value: { nodeId: item.node.id as number, ipInterfaceId: item.ipInterface.id as number }
       })) as IAutocompleteItemType[]
       this.filters.exporters = exportersAutocompleteObject
