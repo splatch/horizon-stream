@@ -30,6 +30,10 @@ describe('Flows', () => {
     appStore.lineTotalData = LineGraphData
   })
 
+  afterAll(() => {
+    wrapper.unmount()
+  })
+
   test('The Flows page container mounts correctly', () => {
     expect(wrapper).toBeTruthy()
   })
@@ -109,7 +113,7 @@ describe('Flows', () => {
       appStore.lineOutboundData = LineGraphData
       appStore.lineTotalData = LineGraphData
     })
-    appStore.getApplicationDataset()
+    appStore.getApplicationLineDataset()
     appStore.createApplicationLineChartData()
     expect(appStore.lineChartData.datasets.length).toBe(2)
   })
