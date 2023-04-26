@@ -62,7 +62,7 @@ describe('Flows', () => {
     expect(store.populateData).toHaveBeenCalledOnce()
     expect(store.getExporters).toHaveBeenCalledOnce()
     expect(store.getApplications).toHaveBeenCalledOnce()
-    expect(store.getApplicationDatasets).toHaveBeenCalledOnce()
+    expect(store.updateApplicationCharts).toHaveBeenCalledOnce()
   })
 
   test('The Flows store get time range should return starttime and endtime object', () => {
@@ -104,9 +104,12 @@ describe('Flows', () => {
   test('The Flows store createLineChart should populate lineChartData', () => {
     appStore.lineChartData = { labels: [], datasets: [] }
     expect(appStore.lineChartData.datasets.length).toBe(0)
-    appStore.lineInboundData = LineGraphData
-    appStore.lineOutboundData = LineGraphData
-    appStore.lineTotalData = LineGraphData
+    vi.spyOn(appStore, 'getApplicationLineDataset').mockImplementation(async () => {
+      appStore.lineInboundData = LineGraphData
+      appStore.lineOutboundData = LineGraphData
+      appStore.lineTotalData = LineGraphData
+    })
+    appStore.getApplicationDataset()
     appStore.createApplicationLineChartData()
     expect(appStore.lineChartData.datasets.length).toBe(2)
   })
