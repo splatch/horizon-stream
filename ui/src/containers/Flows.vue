@@ -148,7 +148,7 @@
           ((!appStore.hasLineData && flowsStore.filters.dataStyle.selectedItem === 'line') ||
             (!appStore.hasTableData && flowsStore.filters.dataStyle.selectedItem === 'table')) &&
           !appStore.isLineLoading &&
-          !appStore.isLineLoading
+          !appStore.isTableLoading
         "
       >
         <DashboardEmptyState :texts="ApplicationsText.Applications">
