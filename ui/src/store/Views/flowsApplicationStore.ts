@@ -2,7 +2,7 @@ import { flowsAppDataToChartJSDirection, flowsAppDataToChartJSTotal } from '@/dt
 import { defineStore } from 'pinia'
 import { useflowsQueries } from '@/store/Queries/flowsQueries'
 import { RequestCriteriaInput, TimeRange } from '@/types/graphql'
-import { FlowsApplicationData, FlowsApplicationSummaries, ChartData, IExporter } from '@/types'
+import { FlowsApplicationData, FlowsApplicationSummaries, ChartData, IExporter, FlowsLineChartItem } from '@/types'
 import { useFlowsStore } from './flowsStore'
 import { get } from 'lodash'
 
@@ -17,9 +17,9 @@ export const useFlowsApplicationStore = defineStore('flowsApplicationStore', {
     hasLineData: false,
     hasTableData: false,
     tableData: [{} as any],
-    lineTotalData: [{} as any],
-    lineInboundData: [{} as any],
-    lineOutboundData: [{} as any]
+    lineTotalData: [] as FlowsLineChartItem[],
+    lineInboundData: [] as FlowsLineChartItem[],
+    lineOutboundData: [] as FlowsLineChartItem[]
   }),
   actions: {
     async getApplicationDatasets() {
