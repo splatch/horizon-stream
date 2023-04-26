@@ -32,6 +32,7 @@ import io.cucumber.java.en.Given;
 import io.grpc.StatusRuntimeException;
 import org.junit.jupiter.api.Assertions;
 import org.opennms.horizon.inventory.cucumber.InventoryBackgroundHelper;
+import org.opennms.horizon.inventory.dto.MonitoringLocationCreateDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
 
 public class CommonStepDefinitions {
@@ -46,7 +47,7 @@ public class CommonStepDefinitions {
     public void createLocation(String location) {
         var locationServiceBlockingStub = backgroundHelper.getMonitoringLocationStub();
         try {
-            var locationDto = locationServiceBlockingStub.createLocation(MonitoringLocationDTO.newBuilder().setLocation(location).build());
+            var locationDto = locationServiceBlockingStub.createLocation(MonitoringLocationCreateDTO.newBuilder().setLocation(location).build());
             Assertions.assertNotNull(locationDto);
         } catch (StatusRuntimeException e) {
             // catch duplicate location
