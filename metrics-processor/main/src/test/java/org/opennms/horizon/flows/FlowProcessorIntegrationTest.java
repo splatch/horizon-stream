@@ -43,7 +43,6 @@ import io.grpc.testing.GrpcCleanupRule;
 @ContextConfiguration(classes = {KafkaProducer.class, KafkaConfig.class, MetricsProcessorApplication.class, IngestorApplicationConfigTest.class,
     InventoryApplicationConfigTest.class, FlowProcessorConfig.class})
 @EmbeddedKafka(brokerProperties = {"listeners=PLAINTEXT://localhost:59092", "port=59092"}, topics = "flows")
-@TestPropertySource(locations = "classpath:test-application.yml")
 @DirtiesContext
 @ActiveProfiles("test")
 class FlowProcessorIntegrationTest {
