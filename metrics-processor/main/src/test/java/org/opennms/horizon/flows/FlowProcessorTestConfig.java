@@ -51,7 +51,7 @@ import com.codahale.metrics.MetricRegistry;
 
 @TestConfiguration
 @ImportAutoConfiguration
-public class FlowProcessorConfig {
+public class FlowProcessorTestConfig {
 
     @Bean
     public Pipeline createPipeLine(final MetricRegistry metricRegistry, final DocumentEnricherImpl documentEnricher,

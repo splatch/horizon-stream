@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -40,10 +42,12 @@ import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.testing.GrpcCleanupRule;
 
 @SpringBootTest
-@ContextConfiguration(classes = {KafkaProducer.class, KafkaConfig.class, MetricsProcessorApplication.class, IngestorApplicationConfigTest.class,
-    InventoryApplicationConfigTest.class, FlowProcessorConfig.class})
-@EmbeddedKafka(brokerProperties = {"listeners=PLAINTEXT://localhost:59092", "port=59092"}, topics = "flows")
+@ContextConfiguration(classes = {KafkaProducer.class, KafkaTestConfig.class, MetricsProcessorApplication.class, IngestorApplicationConfigTest.class,
+    InventoryApplicationConfigTest.class, FlowProcessorTestConfig.class})
+@EmbeddedKafka(brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"}, topics = "flows")
 @DirtiesContext
+@EnableConfigurationProperties
+@TestPropertySource(locations = "/application-test.yml")
 @ActiveProfiles("test")
 class FlowProcessorIntegrationTest {
 
@@ -67,19 +71,33 @@ class FlowProcessorIntegrationTest {
     private static final String LOCATION1 = "test-location1";
     private static final String LOCATION2 = "test-location2";
 
+    private Server ingestorServer;
+
+    private Server inventoryServer;
+
     @BeforeEach
     public void setUpMockServers() throws IOException {
-        Server server = InProcessServerBuilder.forName(IngestorApplicationConfigTest.SERVER_NAME)
+        ingestorServer = InProcessServerBuilder.forName(IngestorApplicationConfigTest.SERVER_NAME)
             .directExecutor()
             .addService(grpcIngesterMockServer)
             .build().start();
-        grpcCleanupRule.register(server);
+        grpcCleanupRule.register(ingestorServer);
 
-        Server inventoryServer = InProcessServerBuilder.forName(InventoryApplicationConfigTest.SERVER_NAME)
+        inventoryServer = InProcessServerBuilder.forName(InventoryApplicationConfigTest.SERVER_NAME)
             .directExecutor()
             .addService(grpcInventoryMockServer)
             .build().start();
         grpcCleanupRule.register(inventoryServer);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        if (!ingestorServer.isShutdown()) {
+            ingestorServer.shutdownNow();
+        }
+        if (!inventoryServer.isShutdown()) {
+            inventoryServer.shutdownNow();
+        }
     }
 
     @Test
@@ -103,7 +121,7 @@ class FlowProcessorIntegrationTest {
         ).build();
 
         // When
-        CompletableFuture<SendResult<String, byte[]>> future = producer.sendByte(flowTopic, flows.toByteArray(), tenantId);
+        CompletableFuture<SendResult<String, byte[]>> future = producer.send(flowTopic, flows.toByteArray(), tenantId);
         future.whenComplete((result, ex) -> Optional.ofNullable(ex)
             .ifPresentOrElse(val -> LOG.error("Unable to send message=[{}] due to: {}", testTaskSetResults.toByteArray(), val.getMessage()),
                 () -> LOG.info("Sent message=[{}] with offset=[{}]", testTaskSetResults.toByteArray(), result.getRecordMetadata().offset())));

@@ -24,7 +24,7 @@ import org.springframework.kafka.core.ProducerFactory;
 @TestConfiguration
 @ImportAutoConfiguration
 @EnableKafka
-public class KafkaConfig {
+public class KafkaTestConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;

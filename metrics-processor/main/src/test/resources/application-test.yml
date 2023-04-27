@@ -1,0 +1,24 @@
+spring:
+  kafka:
+    consumer:
+      group-id: "ts-consumer"
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    bootstrap-servers: localhost:9092
+
+kafka:
+  topics: "task-set.results"
+  flow-topics: "flows"
+
+grpc:
+  server:
+    deadline: 60000
+  inventory:
+    url: opennms-inventory:6565
+  flow-ingestor:
+    # Temporary URL
+    url: flows.onms-dp-dev.dev.nonprod.dataservice.opennms.com:443
+    retry:
+      maxAttempts: 3
+      maxDelay: 5000
