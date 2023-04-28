@@ -33,9 +33,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 
 import io.grpc.ManagedChannel;
 import io.grpc.inprocess.InProcessChannelBuilder;
@@ -43,44 +40,26 @@ import io.grpc.inprocess.InProcessServerBuilder;
 
 @TestConfiguration
 @ImportAutoConfiguration
-public class IngestorApplicationConfigTest {
+public class InventoryApplicationConfig {
 
     public static final String SERVER_NAME = InProcessServerBuilder.generateName();
 
     @Value("${grpc.server.deadline:60000}")
     private long deadline;
 
-    @Value("${grpc.flow-ingestor.retry.maxAttempts}")
-    private int maxNumberOfAttempts;
-
-    @Value("${grpc.flow-ingestor.retry.maxDelay}")
-    private int backOffPeriod;
-
     @Bean
-    public GrpcIngesterMockServer grpcIngesterMockServer() {
-        return new GrpcIngesterMockServer();
+    public GrpcInventoryMockServer grpcInventoryMockServer() {
+        return new GrpcInventoryMockServer();
     }
 
-    @Bean(name = "ingestorChannel")
-    public ManagedChannel createIngestorChannel() {
+    @Bean(name = "inventoryChannel")
+    public ManagedChannel createInventoryChannel() {
         return InProcessChannelBuilder.forName(SERVER_NAME).directExecutor().build();
     }
 
-    @Bean(destroyMethod = "shutdown", initMethod = "initStubs")
-    public IngestorClient createIngestorClient(@Qualifier("ingestorChannel") ManagedChannel channel, RetryTemplate retryTemplate) {
-        return new IngestorClient(channel, deadline, retryTemplate);
-    }
-
-    @Bean
-    public RetryTemplate retryTemplate() {
-        RetryTemplate retryTemplate = new RetryTemplate();
-        FixedBackOffPolicy fixedBackOffPolicy = new FixedBackOffPolicy();
-        fixedBackOffPolicy.setBackOffPeriod(backOffPeriod);
-        retryTemplate.setBackOffPolicy(fixedBackOffPolicy);
-        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-        retryPolicy.setMaxAttempts(maxNumberOfAttempts);
-        retryTemplate.setRetryPolicy(retryPolicy);
-        return retryTemplate;
+    @Bean(destroyMethod = "shutdown", initMethod = "initialStubs")
+    public InventoryClient createInventoryClient(@Qualifier("inventoryChannel") ManagedChannel channel) {
+        return new InventoryClient(channel, deadline);
     }
 
 }
