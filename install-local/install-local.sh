@@ -68,7 +68,7 @@ create_ssl_cert_secret () {
   # generate CA and ingress certs
   ./load-or-generate-secret.sh $NAMESPACE "opennms-ca" "root-ca-certificate" "tmp/ca.key" "tmp/ca.crt"
   ./generate-and-sign-certificate.sh $NAMESPACE "minion.$DOMAIN" "opennms-minion-gateway-certificate" "tmp/ca.key" "tmp/ca.crt"
-  ./generate-and-sign-certificate.sh $NAMESPACE "$DOMAIN" "tls-cert-wildcard" "tmp/ca.key" "tmp/ca.crt"
+  ./generate-and-sign-certificate.sh $NAMESPACE "$DOMAIN" "opennms-ui-certificate" "tmp/ca.key" "tmp/ca.crt"
 
   # Generate client CA certificate
   ./load-or-generate-secret.sh $NAMESPACE "client-ca" "client-root-ca-certificate" "tmp/ca.key" "tmp/ca.crt"

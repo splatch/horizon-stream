@@ -108,7 +108,6 @@ OpenNMS:
     env:
       OTEL_JAVAAGENT_ENABLED: "false"
     IngressAnnotations:
-      cert-manager.io/cluster-issuer: opennms-ca
       nginx.ingress.kubernetes.io/auth-tls-secret: default/client-root-ca-certificate
       nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
       nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"

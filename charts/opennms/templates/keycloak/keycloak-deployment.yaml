@@ -193,7 +193,7 @@ spec:
           secret:
             defaultMode: 420
             optional: false
-            secretName: tls-cert-wildcard
+            secretName: opennms-ui-certificate
         {{- end }}
         - name: realm-config
           configMap:
