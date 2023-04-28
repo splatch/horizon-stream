@@ -49,6 +49,8 @@ spec:
           env:
             - name: OTEL_SERVICE_NAME
               value: "{{ .Values.Keycloak.ServiceName }}"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.version={{ .Values.Keycloak.Image }}"
             - name: JAVA_TOOL_OPTIONS
               value: "-javaagent:/opt/keycloak/agent/opentelemetry-javaagent.jar"
             {{- if .Values.OpenNMS.global.openTelemetry.otlpTracesEndpoint }}
