@@ -41,6 +41,11 @@
     <dependencies>
         <dependency>
             <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>spring-boot-logback-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
             <artifactId>grpc-common-constants</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -267,6 +272,9 @@
                             <jvmFlag>--add-opens=java.base/java.text=ALL-UNNAMED</jvmFlag>
                             <jvmFlag>--add-opens=java.desktop/java.awt.font=ALL-UNNAMED</jvmFlag>
                         </jvmFlags>
+                        <extraClasspath>
+                            <entry>${application.jib.app.config}</entry>
+                        </extraClasspath>
                     </container>
                 </configuration>
                 <executions>

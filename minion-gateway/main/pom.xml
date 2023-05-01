@@ -29,6 +29,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opennms.horizon.shared</groupId>
+            <artifactId>spring-boot-logback-json</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.horizon.minion.gateway</groupId>
             <artifactId>minion-gateway-ignite-detector-api</artifactId>
             <version>${project.version}</version>
@@ -193,6 +198,9 @@
                             <jvmFlag>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmFlag>
                             <jvmFlag>--add-opens=java.base/java.util.concurrent=ALL-UNNAMED</jvmFlag>
                         </jvmFlags>
+                        <extraClasspath>
+                            <entry>${application.jib.app.config}</entry>
+                        </extraClasspath>
                     </container>
                 </configuration>
                 <executions>

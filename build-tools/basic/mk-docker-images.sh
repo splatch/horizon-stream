@@ -72,7 +72,7 @@ time {
 	echo "==="
 	echo "=== DATACHOICES IMAGE"
 	echo "==="
-	mvn -f events install -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dapplication.docker.image=opennms/horizon-stream-datachoices:local-basic
+	mvn -f datachoices install -Djib.container.creationTime=USE_CURRENT_TIMESTAMP -Dapplication.docker.image=opennms/horizon-stream-datachoices:local-basic
 
 	echo ""
 	echo "==="

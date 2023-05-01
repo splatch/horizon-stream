@@ -97,6 +97,13 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
+                <configuration>
+                    <container>
+                        <extraClasspath>
+                            <entry>${application.jib.app.config}</entry>
+                        </extraClasspath>
+                    </container>
+                </configuration>
                 <executions>
                     <execution>
                         <id>build-docker-image</id>

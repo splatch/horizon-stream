@@ -35,6 +35,10 @@ spec:
                 values:                                                                                
                 - {{ .Values.NodeRestrictions.Value }}                                                 
       {{- end }}
+      volumes:
+        - name: spring-boot-app-config-volume
+          configMap:
+            name: spring-boot-app-config
       containers:
         - name: {{ .Values.OpenNMS.DataChoices.ServiceName }}
           image: {{ .Values.OpenNMS.DataChoices.Image }}
@@ -60,11 +64,17 @@ spec:
               value: "http://{{ .Values.Keycloak.ServiceName }}:8080/auth/"
             - name: KEYCLOAK_REALM
               value: "{{ .Values.Keycloak.RealmName }}"
+          envFrom:
+          - configMapRef:
+              name: spring-boot-env
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.DataChoices.Port }}
             - name: grpc
               containerPort: {{ .Values.OpenNMS.DataChoices.GrpcPort }}
+          volumeMounts:
+            - name: spring-boot-app-config-volume
+              mountPath: "/app/config"
       {{- if .Values.OpenNMS.DataChoices.PrivateRepoEnabled }}
       imagePullSecrets:
         - name: image-credentials

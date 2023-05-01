@@ -39,6 +39,10 @@ spec:
                 values:                                                                                
                 - {{ .Values.NodeRestrictions.Value }}                                                 
       {{- end }}
+      volumes:
+        - name: spring-boot-app-config-volume
+          configMap:
+            name: spring-boot-app-config
       containers:
         - name: {{ .Values.OpenNMS.MetricsProcessor.ServiceName }}
           image: {{ .Values.OpenNMS.MetricsProcessor.Image }}
@@ -50,9 +54,15 @@ spec:
               value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
             - name: CORTEX_WRITE_URL
               value: {{ .Values.Cortex.Protocol }}://{{ .Values.Cortex.Host }}:{{ .Values.Cortex.Port }}{{ .Values.Cortex.PathWrite }}
+          envFrom:
+          - configMapRef:
+              name: spring-boot-env
           ports:
             - name: http
               containerPort: 8080
+          volumeMounts:
+            - name: spring-boot-app-config-volume
+              mountPath: "/app/config"
       {{- if .Values.OpenNMS.MetricsProcessor.PrivateRepoEnabled }}
       imagePullSecrets:
         - name: image-credentials

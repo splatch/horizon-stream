@@ -39,6 +39,10 @@ spec:
                 values:                                                                                
                 - {{ .Values.NodeRestrictions.Value }}                                                 
       {{- end }}
+      volumes:
+        - name: spring-boot-app-config-volume
+          configMap:
+            name: spring-boot-app-config
       containers:
         - name: {{ .Values.OpenNMS.MinionGatewayGrpcProxy.ServiceName }}
           image: {{ .Values.OpenNMS.MinionGatewayGrpcProxy.Image }}
@@ -52,6 +56,9 @@ spec:
               value: "{{ .Values.OpenNMS.MinionGateway.ServiceName }}"
             - name: GRPC_DOWNSTREAM_PORT
               value: "{{ .Values.OpenNMS.MinionGateway.GrpcPort }}"
+          envFrom:
+          - configMapRef:
+              name: spring-boot-env
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.MinionGatewayGrpcProxy.Port }}
@@ -62,4 +69,7 @@ spec:
             requests:
               cpu: "{{ .Values.OpenNMS.MinionGatewayGrpcProxy.Resources.Requests.Cpu }}"
               memory: "{{ .Values.OpenNMS.MinionGatewayGrpcProxy.Resources.Requests.Memory }}"
+          volumeMounts:
+            - name: spring-boot-app-config-volume
+              mountPath: "/app/config"
 {{- end }}

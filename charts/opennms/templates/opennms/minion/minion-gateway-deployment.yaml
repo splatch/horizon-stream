@@ -44,6 +44,9 @@ spec:
             name: minion-gateway-ignite-config
         - name: ignite-volume
           emptyDir: {}
+        - name: spring-boot-app-config-volume
+          configMap:
+            name: spring-boot-app-config
       containers:
         - name: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
           image: {{ .Values.OpenNMS.MinionGateway.Image }}
@@ -68,6 +71,9 @@ spec:
               value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
             - name: IGNITE_UPDATE_NOTIFIER # Disable Ignite version lookups
               value: "false"
+          envFrom:
+          - configMapRef:
+              name: spring-boot-env
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.MinionGateway.Port }}
@@ -82,6 +88,8 @@ spec:
               mountPath: "/app/resources/ignite"
             - name: ignite-volume
               mountPath: /ignite
+            - name: spring-boot-app-config-volume
+              mountPath: "/app/config"
           resources:
             limits:
               cpu: "{{ .Values.OpenNMS.MinionGateway.Resources.Limits.Cpu }}"

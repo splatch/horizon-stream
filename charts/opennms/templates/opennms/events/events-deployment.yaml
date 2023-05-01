@@ -39,6 +39,10 @@ spec:
                 values:                                                                                
                 - {{ .Values.NodeRestrictions.Value }}                                                 
       {{- end }}
+      volumes:
+        - name: spring-boot-app-config-volume
+          configMap:
+            name: spring-boot-app-config
       containers:
         - name: {{ .Values.OpenNMS.Events.ServiceName }}
           image: {{ .Values.OpenNMS.Events.Image }}
@@ -62,11 +66,17 @@ spec:
               value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
             - name: GRPC_URL_INVENTORY
               value: "{{ .Values.OpenNMS.Inventory.ServiceName }}:{{ .Values.OpenNMS.Inventory.GrpcPort }}"
+          envFrom:
+          - configMapRef:
+              name: spring-boot-env
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.Events.Port }}
             - name: grpc
               containerPort: {{ .Values.OpenNMS.Events.GrpcPort }}
+          volumeMounts:
+            - name: spring-boot-app-config-volume
+              mountPath: "/app/config"
       {{- if .Values.OpenNMS.Events.PrivateRepoEnabled }}
       imagePullSecrets:
         - name: image-credentials
