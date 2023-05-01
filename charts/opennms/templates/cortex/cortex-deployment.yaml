@@ -39,6 +39,8 @@ spec:
         - name: cortex-config-volume
           configMap:
             name: cortex-config-map
+        - name: cortex-rules-volume
+          emptyDir: {}
       containers:
         - name: {{ .Values.Cortex.ServiceName }}
           image: {{ .Values.Cortex.Image }}
@@ -56,4 +58,6 @@ spec:
             - name: cortex-config-volume
               mountPath: "/etc/cortex.yml"
               subPath: "cortex.yml"
+            - name: cortex-rules-volume
+              mountPath: /tmp/cortex/rules
 {{ end }}
