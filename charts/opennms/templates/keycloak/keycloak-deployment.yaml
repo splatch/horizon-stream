@@ -47,6 +47,21 @@ spec:
               memory: "{{ .Values.Keycloak.Resources.Requests.Memory }}"
           args: ['--import-realm']
           env:
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.Keycloak.ServiceName }}"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.version={{ .Values.Keycloak.Image }}"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-javaagent:/opt/keycloak/agent/opentelemetry-javaagent.jar"
+            {{- if .Values.OpenNMS.global.openTelemetry.otlpTracesEndpoint }}
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: {{ .Values.OpenNMS.global.openTelemetry.otlpTracesEndpoint | toYaml }}
+            {{- else }}
+            - name: OTEL_TRACES_EXPORTER
+              value: "none"
+            {{- end }}
+            - name: OTEL_METRICS_EXPORTER
+              value: "none"
             - name: KC_CACHE_STACK
               value: kubernetes
             - name: KC_CACHE

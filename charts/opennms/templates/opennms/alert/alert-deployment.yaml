@@ -15,6 +15,9 @@ spec:
       labels:
         appdomain: opennms
         app: {{ .Values.OpenNMS.Alert.ServiceName }}
+      annotations:
+        # roll the deployment when the Spring boot environment variable configmap changes
+        checksum/spring-boot-env-configmap: {{ include (print $.Template.BasePath "/opennms/spring-boot-env-configmap.yaml") . | sha256sum }}
     spec:
       {{- if .Values.NodeRestrictions.Enabled }}
       nodeSelector:                                                                                    
@@ -44,8 +47,12 @@ spec:
           image: {{ .Values.OpenNMS.Alert.Image }}
           imagePullPolicy: {{ .Values.OpenNMS.Alert.ImagePullPolicy }}
           env:
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.OpenNMS.Alert.ServiceName }}"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.version={{ .Values.OpenNMS.Alert.Image }}"
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
+              value: "-javaagent:agent/opentelemetry-javaagent.jar -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y" # Permanent debug port in `skaffold dev`
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://{{ .Values.OpenNMS.Alert.DbHost }}:5432/{{ .Values.OpenNMS.Alert.DbName }}?currentSchema={{ .Values.OpenNMS.Alert.DbSchemaName }}"
             - name: SPRING_DATASOURCE_USERNAME

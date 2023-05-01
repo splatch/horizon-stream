@@ -5,6 +5,8 @@ OpenShift: false
 OpenNMS:
   global:
     enableJsonLogging: false
+    openTelemetry:
+      otlpTracesEndpoint: null
   API:
     Path: /api
     ServiceName: opennms-rest-server

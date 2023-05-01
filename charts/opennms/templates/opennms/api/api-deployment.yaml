@@ -18,6 +18,9 @@ spec:
       labels:
         appdomain: opennms
         app: {{ .Values.OpenNMS.API.ServiceName }}
+      annotations:
+        # roll the deployment when the Spring boot environment variable configmap changes
+        checksum/spring-boot-env-configmap: {{ include (print $.Template.BasePath "/opennms/spring-boot-env-configmap.yaml") . | sha256sum }}
     spec:
       {{ if .Values.NodeRestrictions.Enabled }}
       nodeSelector:
@@ -48,8 +51,12 @@ spec:
           image: {{ .Values.OpenNMS.API.Image }}
           imagePullPolicy: {{ .Values.OpenNMS.API.ImagePullPolicy }}
           env:
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.OpenNMS.API.ServiceName }}"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.version={{ .Values.OpenNMS.API.Image }}"
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
+              value: "-javaagent:agent/opentelemetry-javaagent.jar -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
             - name: SPRING_CACHE_CAFFEINE_SPEC
               value: "maximumSize=10000,expireAfterWrite=60s"
             - name: TSDB_URL

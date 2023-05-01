@@ -19,6 +19,8 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
         prometheus.io/path: "/actuator/prometheus"
+        # roll the deployment when the Spring boot environment variable configmap changes
+        checksum/spring-boot-env-configmap: {{ include (print $.Template.BasePath "/opennms/spring-boot-env-configmap.yaml") . | sha256sum }}
     spec:
       {{- if .Values.NodeRestrictions.Enabled }}
       nodeSelector:                                                                                    
@@ -48,8 +50,12 @@ spec:
           image: {{ .Values.OpenNMS.MetricsProcessor.Image }}
           imagePullPolicy: {{ .Values.OpenNMS.MetricsProcessor.ImagePullPolicy }}
           env:
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.OpenNMS.MetricsProcessor.ServiceName }}"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.version={{ .Values.OpenNMS.MetricsProcessor.Image }}"
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
+              value: "-javaagent:agent/opentelemetry-javaagent.jar -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
             - name: CORTEX_WRITE_URL

@@ -17,6 +17,9 @@ spec:
         appdomain: opennms
         app: {{ .Values.OpenNMS.MinionGateway.ServiceName }}
         ignite-cluster: core
+      annotations:
+        # roll the deployment when the Spring boot environment variable configmap changes
+        checksum/spring-boot-env-configmap: {{ include (print $.Template.BasePath "/opennms/spring-boot-env-configmap.yaml") . | sha256sum }}
     spec:
       serviceAccountName: {{ .Values.OpenNMS.Minion.ServiceName }}-sa
       {{- if .Values.NodeRestrictions.Enabled }}
@@ -52,8 +55,12 @@ spec:
           image: {{ .Values.OpenNMS.MinionGateway.Image }}
           imagePullPolicy: {{ .Values.OpenNMS.Minion.ImagePullPolicy }}
           env:
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.OpenNMS.MinionGateway.ServiceName }}"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.version={{ .Values.OpenNMS.MinionGateway.Image }}"
             - name: JAVA_TOOL_OPTIONS
-              value: "-agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y -XX:MaxDirectMemorySize=768m"  # FIXME: Permanent debug port, enable only for dev mode
+              value: "-javaagent:agent/opentelemetry-javaagent.jar -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y -XX:MaxDirectMemorySize=768m"  # FIXME: Permanent debug port, enable only for dev mode
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
