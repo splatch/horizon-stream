@@ -18,6 +18,9 @@ spec:
         appdomain: opennms
         app: {{ .Values.OpenNMS.MinionGatewayGrpcProxy.ServiceName }}
         ignite-cluster: core
+      annotations:
+        # roll the deployment when the Spring boot environment variable configmap changes
+        checksum/spring-boot-env-configmap: {{ include (print $.Template.BasePath "/opennms/spring-boot-env-configmap.yaml") . | sha256sum }}
     spec:
       serviceAccountName: {{ .Values.OpenNMS.MinionGatewayGrpcProxy.ServiceName }}-sa
       {{- if .Values.NodeRestrictions.Enabled }}
