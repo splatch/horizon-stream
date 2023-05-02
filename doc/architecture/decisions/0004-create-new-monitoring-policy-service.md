@@ -52,6 +52,7 @@ The Alert service, Notification service, and upcoming Threshold service will con
 - The Alert service will be more focused on managing alerts and the alert engine, increasing its cohesion.
 - The alert engine and API will be capable of scaling independently of monitoring policies.
 - It becomes very obvious where monitoring policies exist.
+- Alerts are coupled with monitoring policies. Moving them to another service couples the Alert service with an additional microservice, but it also makes it consistent with the way the Notification and Threshold service are coupled.
 - Monitoring policies, tags, rules, and the events configured within monitoring policies or produced for thresholds will need to be communicated to the alert service.
 - The alert engine will lose high consistency in favour of eventual consistency.
 - The Alert service will still need the UEIs and reduction/clear keys for each event it uses to produce or clear alerts. This needs to be designed.
