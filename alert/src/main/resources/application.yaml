@@ -16,12 +16,9 @@ spring:
     change-log: db/changelog/changelog.xml
 
   kafka:
-    template:
-      default-topic: "alerts"
     consumer:
       client-id: "alert-service"
       group-id: "alert"
-      auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
     producer:
@@ -49,8 +46,10 @@ grpc:
 
 kafka:
   topics:
-    alert-events: "events"
-    new-alerts: "alerts"
+    event: "events"
     node-changed: "node"
-    monitoring-policy: "monitoring-policy"
     tag-operation: "tag-operation"
+    alert:
+      name: "alerts"
+    monitoring-policy:
+      name: "monitoring-policy"
