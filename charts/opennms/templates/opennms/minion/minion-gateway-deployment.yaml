@@ -55,6 +55,8 @@ spec:
           image: {{ .Values.OpenNMS.MinionGateway.Image }}
           imagePullPolicy: {{ .Values.OpenNMS.Minion.ImagePullPolicy }}
           env:
+            - name: OTEL_JAVAAGENT_ENABLED
+              value: "false"
             - name: OTEL_SERVICE_NAME
               value: "{{ .Values.OpenNMS.MinionGateway.ServiceName }}"
             - name: OTEL_RESOURCE_ATTRIBUTES
