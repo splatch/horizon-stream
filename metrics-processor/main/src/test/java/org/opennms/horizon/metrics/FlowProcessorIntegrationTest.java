@@ -15,9 +15,14 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opennms.dataplatform.flows.document.FlowDocument;
@@ -57,14 +62,14 @@ import io.grpc.testing.GrpcCleanupRule;
 @ActiveProfiles("test")
 class FlowProcessorIntegrationTest {
 
-    @Rule
-    public final GrpcCleanupRule grpcCleanupRule = new GrpcCleanupRule();
+    @ClassRule
+    public static final GrpcCleanupRule grpcCleanupRule = new GrpcCleanupRule();
 
-    @Autowired
-    public GrpcIngesterMockServer grpcIngesterMockServer;
+    //@Autowired
+    public static GrpcIngesterMockServer grpcIngesterMockServer = new GrpcIngesterMockServer();
 
-    @Autowired
-    public GrpcInventoryMockServer grpcInventoryMockServer;
+    //@Autowired
+    public static GrpcInventoryMockServer grpcInventoryMockServer = new GrpcInventoryMockServer();
 
     @Value("${kafka.flow-topics}")
     private String flowTopic;
@@ -78,12 +83,12 @@ class FlowProcessorIntegrationTest {
     private static final String LOCATION1 = "test-location1";
     private static final String LOCATION2 = "test-location2";
 
-    private Server ingestorServer;
+    private static Server ingestorServer;
 
-    private Server inventoryServer;
+    private static Server inventoryServer;
 
-    @BeforeEach
-    public void setUpMockServers() throws IOException {
+    @BeforeAll
+    public static void setUpMockServers() throws IOException {
         ingestorServer = InProcessServerBuilder.forName(IngestorApplicationConfig.SERVER_NAME)
             .directExecutor()
             .addService(grpcIngesterMockServer)
@@ -97,8 +102,8 @@ class FlowProcessorIntegrationTest {
         grpcCleanupRule.register(inventoryServer);
     }
 
-    @AfterEach
-    public void tearDown() {
+    @AfterAll
+    public static void tearDown() {
         if (!ingestorServer.isShutdown()) {
             ingestorServer.shutdownNow();
         }
