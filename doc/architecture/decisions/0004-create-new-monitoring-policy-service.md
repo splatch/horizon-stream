@@ -8,10 +8,7 @@ Proposed
 
 ## Context
 
-Monitoring policies are a feature that
-allow the user to configure how alerts are produced. 
-
-A monitoring policy contains the following:
+Monitoring policies are a feature that allow the user to configure how alerts are produced. A monitoring policy contains the following:
 
 - The node tags that the monitoring policy should create alerts for.
 - How network operators are notified about the monitoring policy's alerts.
