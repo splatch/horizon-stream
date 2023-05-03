@@ -5,7 +5,7 @@ Port: 1443
 Protocol: https
 TLS:
   Enabled: True
-  CertificateGeneration: true
+  CertificateGeneration: false
   Cert:
     Name: opennms-ui-certificate
 Keycloak:
@@ -30,8 +30,7 @@ OpenNMS:
       Requests:
         Cpu: '0'
         Memory: '0'
-    IngressAnnotations:
-      cert-manager.io/cluster-issuer: opennms-ca
+    IngressAnnotations: {}
   Minion:
     Resources:
       Limits:
@@ -94,7 +93,6 @@ OpenNMS:
       grpc.client.private.key.filepath: /opt/karaf/certs/client.key
       grpc.override.authority: minion.onmshs.local
   MinionGateway:
-    SecretName: opennms-minion-gateway-certificate
     Resources:
       Limits:
         Cpu: '0'
@@ -103,7 +101,6 @@ OpenNMS:
         Cpu: '0'
         Memory: '0'
     IngressAnnotations:
-      cert-manager.io/cluster-issuer: opennms-ca
       nginx.ingress.kubernetes.io/auth-tls-secret: default/client-root-ca-certificate
       nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
       nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
