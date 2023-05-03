@@ -104,6 +104,8 @@ OpenNMS:
       Requests:
         Cpu: 100m
         Memory: 250Mi
+    env:
+      OTEL_JAVAAGENT_ENABLED: "false"
     IngressAnnotations:
       cert-manager.io/cluster-issuer: opennms-ca
       nginx.ingress.kubernetes.io/auth-tls-secret: default/client-root-ca-certificate
