@@ -102,22 +102,16 @@ public class ValueTest {
         ByteBuf byteBuf = Unpooled.buffer()
             .writeByte(0xFF) // Semantic: Undefined
             .writeShort(100)  // Template ID
-            .writeBytes(field1)  // Field 1
-            .writeBytes(field2);  // Field 2
+            .writeBytes(field1)  // Field 1 list 1
+            .writeBytes(field2)  // Field 2 list 1
+            .writeBytes(field1)  // Field 1 list 2
+            .writeBytes(field2);  // Field 2 list 2
 
         // When
         final ListValue listValue = (ListValue) ListValue.parserWithSubTemplateList("name1", Optional.empty()).parse(resolver, byteBuf);
 
         // Then
-        Assert.assertNotNull(listValue.getValue());
-        Assert.assertEquals(1, listValue.getValue().size());
-        Assert.assertEquals(2, listValue.getValue().get(0).size());
-        Assert.assertNotNull(listValue.getValue());
-        Assert.assertEquals(2, listValue.getValue().get(0).size());
-        Assert.assertEquals(field1Name, listValue.getValue().get(0).get(0).getName());
-        Assert.assertEquals(field1Value, new String((byte[]) listValue.getValue().get(0).get(0).getValue(), StandardCharsets.UTF_8));
-        Assert.assertEquals(field2Name, listValue.getValue().get(0).get(1).getName());
-        Assert.assertEquals(field2Value, new String((byte[]) listValue.getValue().get(0).get(1).getValue(), StandardCharsets.UTF_8));
+        checkListValues(field1Name, field1Value, field2Name, field2Value, listValue);
     }
 
     private static Field field(String name, final int length) {
@@ -157,19 +151,30 @@ public class ValueTest {
         ByteBuf byteBuf = Unpooled.buffer()
             .writeByte(0xFF) // Semantic: Undefined
             .writeShort(357) // Header ID
-            .writeShort(dataRecordsLength + field1.length + field2.length)  // Header length
-            .writeBytes(field1)  // Field 1
-            .writeBytes(field2);
+            .writeShort(dataRecordsLength + field1.length + field2.length + field1.length + field2.length)  // Header length
+            .writeBytes(field1)  // Field 1 list 1
+            .writeBytes(field2)  // Field 2 list 1
+            .writeBytes(field1)  // Field 1 list 2
+            .writeBytes(field2); // Field 2 list 2
 
         // When
         final ListValue listValue = (ListValue) ListValue.parserWithSubTemplateMultiList("name1", Optional.empty()).parse(resolver, byteBuf);
 
         // Then
+        checkListValues(field1Name, field1Value, field2Name, field2Value, listValue);
+    }
+
+    private void checkListValues(String field1Name, String field1Value, String field2Name, String field2Value, ListValue listValue) {
         Assert.assertNotNull(listValue.getValue());
         Assert.assertEquals(2, listValue.getValue().get(0).size());
+        Assert.assertEquals(2, listValue.getValue().get(1).size());
         Assert.assertEquals(field1Name, listValue.getValue().get(0).get(0).getName());
         Assert.assertEquals(field1Value, new String((byte[]) listValue.getValue().get(0).get(0).getValue(), StandardCharsets.UTF_8));
         Assert.assertEquals(field2Name, listValue.getValue().get(0).get(1).getName());
+        Assert.assertEquals(field2Value, new String((byte[]) listValue.getValue().get(0).get(1).getValue(), StandardCharsets.UTF_8));
+        Assert.assertEquals(field1Name, listValue.getValue().get(1).get(0).getName());
+        Assert.assertEquals(field1Value, new String((byte[]) listValue.getValue().get(0).get(0).getValue(), StandardCharsets.UTF_8));
+        Assert.assertEquals(field2Name, listValue.getValue().get(1).get(1).getName());
         Assert.assertEquals(field2Value, new String((byte[]) listValue.getValue().get(0).get(1).getValue(), StandardCharsets.UTF_8));
     }
 
