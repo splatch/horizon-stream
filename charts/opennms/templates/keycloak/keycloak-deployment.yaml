@@ -122,6 +122,12 @@ spec:
             {{- end }}
             - name: OTEL_METRICS_EXPORTER
               value: "none"
+            {{- if .Values.OpenNMS.global.openTelemetry.env }}
+              {{- range $key, $val := .Values.OpenNMS.global.openTelemetry.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+              {{- end }}
+            {{- end }}
             {{- include "deployment.env" .Values.Keycloak | nindent 12 }}
           ports:
             - name: http
