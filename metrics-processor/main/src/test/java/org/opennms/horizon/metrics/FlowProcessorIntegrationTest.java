@@ -15,15 +15,10 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opennms.dataplatform.flows.document.FlowDocument;
 import org.opennms.dataplatform.flows.document.FlowDocumentLog;
@@ -65,10 +60,8 @@ class FlowProcessorIntegrationTest {
     @ClassRule
     public static final GrpcCleanupRule grpcCleanupRule = new GrpcCleanupRule();
 
-    //@Autowired
     public static GrpcIngesterMockServer grpcIngesterMockServer = new GrpcIngesterMockServer();
 
-    //@Autowired
     public static GrpcInventoryMockServer grpcInventoryMockServer = new GrpcInventoryMockServer();
 
     @Value("${kafka.flow-topics}")
