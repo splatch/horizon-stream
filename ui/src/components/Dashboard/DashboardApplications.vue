@@ -78,6 +78,14 @@ const buildData = () => {
 const config = {
   responsive: true,
   aspectRatio: 1.5,
+  scales: {
+    x: {
+      grid: {
+        display: true,
+        color: isDark.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+      }
+    }
+  },
   plugins: {
     legend: {
       display: true,
@@ -106,6 +114,7 @@ watchEffect(() => {
 
 onThemeChange(() => {
   config.plugins.legend.labels.color = isDark.value ? '#d1d0d0' : '#00000'
+  config.scales.x.grid.color = isDark.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
   constGraph.value = { ...config }
 })
 

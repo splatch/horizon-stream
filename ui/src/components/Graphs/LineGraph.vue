@@ -37,6 +37,8 @@ import { GraphProps } from '@/types/graphs'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
 import { format } from 'd3'
 const emits = defineEmits(['has-data'])
+import useTheme from '@/composables/useTheme'
+const { onThemeChange, isDark } = useTheme()
 
 // Chart.register(zoomPlugin) disable zoom until phase 2
 
@@ -53,46 +55,57 @@ const yAxisFormatter = format('.3s')
 
 let chart: any = {}
 
-const options = computed<ChartOptions>(() => ({
-  responsive: true,
-  aspectRatio: 1.4,
-  plugins: {
-    title: {
-      display: true,
-      text: props.graph.label
-    } as TitleOptions,
-    zoom: {
-      zoom: {
-        wheel: {
-          enabled: true
-        },
-        mode: 'x'
-      },
-      pan: {
-        enabled: true,
-        mode: 'x'
-      }
-    }
-  },
-  scales: {
-    y: {
+const options = computed<ChartOptions<any>>(() => {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
       title: {
-        display: false,
+        display: true,
         text: props.graph.label
       } as TitleOptions,
       ticks: {
-        callback: (value, index) => (index % 2 === 0 ? yAxisFormatter(value as number) : ''),
+        callback: (value: any, index: any) => (index % 2 === 0 ? yAxisFormatter(value as number) : ''),
         maxTicksLimit: 8
       },
-      stacked: false
+      stacked: false,
+      zoom: {
+        zoom: {
+          wheel: {
+            enabled: true
+          },
+          mode: 'x'
+        },
+        pan: {
+          enabled: true,
+          mode: 'x'
+        }
+      }
     },
-    x: {
-      ticks: {
-        maxTicksLimit: 12
+    scales: {
+      y: {
+        title: {
+          display: false,
+          text: props.graph.label
+        } as TitleOptions,
+        ticks: {
+          callback: (value: any) => yAxisFormatter(value as number),
+          maxTicksLimit: 8
+        },
+        stacked: false
+      },
+      x: {
+        ticks: {
+          maxTicksLimit: 12
+        },
+        grid: {
+          display: true,
+          color: isDark.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+        }
       }
     }
   }
-}))
+})
 
 const xAxisLabels = computed(() => {
   const graphsDataSetsValues = (graphs.dataSets.value[0]?.values as any) || ([] as any)
@@ -102,6 +115,10 @@ const xAxisLabels = computed(() => {
   })
 
   return totalLabels
+})
+
+onThemeChange(() => {
+  options.value.scales.x.grid.color = isDark.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
 })
 
 const dataSets = computed(() => {
