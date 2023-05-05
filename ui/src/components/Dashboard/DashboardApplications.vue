@@ -81,8 +81,10 @@ const config = {
   scales: {
     x: {
       grid: {
-        display: true,
-        color: isDark.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+        display: false
+      },
+      ticks: {
+        display: false
       }
     }
   },
@@ -114,7 +116,6 @@ watchEffect(() => {
 
 onThemeChange(() => {
   config.plugins.legend.labels.color = isDark.value ? '#d1d0d0' : '#00000'
-  config.scales.x.grid.color = isDark.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
   constGraph.value = { ...config }
 })
 
