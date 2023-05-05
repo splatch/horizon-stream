@@ -36,6 +36,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,6 +95,8 @@ public class ValueTest {
 
         byte[] field1 = field1Value.getBytes();
         byte[] field2 = field2Value.getBytes();
+        List<String> allFieldValues = Arrays.asList(field1Value, field2Value);
+        List<String> allFieldNames = Arrays.asList("firstField", "secondField");
         final List<Field> fields = List.of(field("firstField", field1.length), field("secondField", field2.length));
         Session.Resolver resolver = Mockito.mock(Session.Resolver.class);
         Mockito.when(resolver.lookupTemplate(100)).thenReturn(Template.builder(100, Template.Type.TEMPLATE)
@@ -108,9 +112,11 @@ public class ValueTest {
 
         // When
         final List<List<Value<?>>> listValue = (List<List<Value<?>>>) ListValue.parserWithSubTemplateList("name1", Optional.empty()).parse(resolver, byteBuf).getValue();
+        Assert.assertEquals(2, listValue.get(0).size());
+        Assert.assertEquals(2, listValue.get(1).size());
 
         // Then
-        checkListValues("firstField", field1Value, "secondField", field2Value, listValue);
+        checkListValues(allFieldValues, allFieldNames, listValue);
     }
 
     private static Field field(String name, final int length) {
@@ -132,6 +138,9 @@ public class ValueTest {
         // Given
         String field1Value = "firstValue";
         String field2Value = "secondValue";
+        String field3Value = "thirdValue";
+        String field4Value = "fourthValue";
+        String field5Value = "fifthValue";
 
         //  This is the total length of the Data Records encoding for the
         //  Template ID previously specified, including the two bytes for the
@@ -140,9 +149,14 @@ public class ValueTest {
         int dataRecordsLength = 4;
         byte[] field1 = field1Value.getBytes();
         byte[] field2 = field2Value.getBytes();
+        byte[] field3 = field3Value.getBytes();
+        byte[] field4 = field4Value.getBytes();
+        byte[] field5 = field5Value.getBytes();
         final List<Field> fields = List.of(field("firstField", field1.length), field("secondField", field2.length));
-        final List<Field> fields2 = List.of(field("firstField", field1.length), field("secondField", field2.length));
+        final List<Field> fields2 = List.of(field("thirdField", field3.length), field("fourthField", field4.length), field("fifthField", field5.length));
 
+        List<String> allFieldValues = Arrays.asList(field4Value, field2Value, field3Value, field4Value, field5Value);
+        List<String> allFieldNames = Arrays.asList("firstField", "secondField", "thirdField", "fourthField", "fifthField");
         Session.Resolver resolver = Mockito.mock(Session.Resolver.class);
         Mockito.when(resolver.lookupTemplate(357)).thenReturn(Template.builder(357, Template.Type.TEMPLATE)
             .withFields(fields).build());
@@ -154,32 +168,34 @@ public class ValueTest {
             .writeByte(0xFF) // Semantic: Undefined
             .writeShort(357) // Header ID
             .writeShort(dataRecordsLength + field1.length + field2.length)  // Header length
-            .writeBytes(field1)  // Field 1 list 1
-            .writeBytes(field2)  // Field 2 list 1
+            .writeBytes(field1)  // Field 1 template 1
+            .writeBytes(field2)  // Field 2 template 1
             .writeShort(358)
-            .writeShort(dataRecordsLength + field1.length + field2.length)  // Header length
-            .writeBytes(field1)  // Field 1 list 2
-            .writeBytes(field2); // Field 2 list 2
+            .writeShort(dataRecordsLength + field3.length + field4.length + field5.length)  // Header length
+            .writeBytes(field3)  // Field 3 template 2
+            .writeBytes(field4) // Field 4 template 2
+            .writeBytes(field5); // Field 5 template 2
 
         // When
         final List<List<Value<?>>> listValue = (List<List<Value<?>>>) ListValue.parserWithSubTemplateMultiList("name1", Optional.empty()).parse(resolver, byteBuf).getValue();
+        Assert.assertEquals(2, listValue.get(0).size());
+        Assert.assertEquals(3, listValue.get(1).size());
 
         // Then
-        checkListValues("firstField", field1Value, "secondField", field2Value, listValue);
+        checkListValues(allFieldValues, allFieldNames, listValue);
     }
 
-    private void checkListValues(String field1Name, String field1Value, String field2Name, String field2Value, List<List<Value<?>>> listValue) {
+    private void checkListValues(List<String> allFieldValues, List<String> allFieldNames, List<List<Value<?>>> listValue) {
+        List<String> foundFieldNames = new ArrayList<>();
+        List<String> foundFieldValues = new ArrayList<>();
         Assert.assertNotNull(listValue);
-        Assert.assertEquals(2, listValue.get(0).size());
-        Assert.assertEquals(2, listValue.get(1).size());
-        Assert.assertEquals(field1Name, listValue.get(0).get(0).getName());
-        Assert.assertEquals(field1Value, new String((byte[]) listValue.get(0).get(0).getValue(), StandardCharsets.UTF_8));
-        Assert.assertEquals(field2Name, listValue.get(0).get(1).getName());
-        Assert.assertEquals(field2Value, new String((byte[]) listValue.get(0).get(1).getValue(), StandardCharsets.UTF_8));
-        Assert.assertEquals(field1Name, listValue.get(1).get(0).getName());
-        Assert.assertEquals(field1Value, new String((byte[]) listValue.get(0).get(0).getValue(), StandardCharsets.UTF_8));
-        Assert.assertEquals(field2Name, listValue.get(1).get(1).getName());
-        Assert.assertEquals(field2Value, new String((byte[]) listValue.get(0).get(1).getValue(), StandardCharsets.UTF_8));
+
+        listValue.forEach(val -> val.forEach(el -> {
+            foundFieldNames.add(el.getName());
+            foundFieldValues.add(new String((byte[]) el.getValue(), StandardCharsets.UTF_8));
+        }));
+        Assert.assertTrue(foundFieldNames.containsAll(allFieldNames));
+        Assert.assertTrue(foundFieldValues.containsAll(allFieldValues));
     }
 
     @Test
