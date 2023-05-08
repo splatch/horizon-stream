@@ -47,6 +47,8 @@ kafka:
     event: "events"
     node-changed: "node"
     tag-operation: "tag-operation"
+    alert: "alerts"
+    monitoring-policy: "monitoring-policy"
     create-topics:
       alert:
         name: "alerts"
