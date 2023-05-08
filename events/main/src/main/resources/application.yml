@@ -11,7 +11,7 @@ spring:
   kafka:
     bootstrap-servers: localhost:59092
     consumer:
-      group-id: "alert-service"
+      group-id: "event-service"
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
 

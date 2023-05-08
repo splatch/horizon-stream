@@ -16,16 +16,14 @@ spring:
     change-log: db/changelog/changelog.xml
 
   kafka:
+    bootstrap-servers: localhost:9092
     consumer:
-      client-id: "alert-service"
-      group-id: "alert"
+      group-id: "alert-service"
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
     producer:
-      client-id: "alert-service"
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
-    bootstrap-servers: localhost:9092
 
 management:
   endpoints:
