@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alertservice.component;
+package org.opennms.horizon.alertservice.service.routing;
 
 import java.util.Arrays;
 
