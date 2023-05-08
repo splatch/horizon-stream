@@ -4,8 +4,8 @@ import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PostPersist;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.opennms.horizon.alerts.proto.MonitorPolicyProto;
+import org.opennms.horizon.alertservice.config.KafkaTopicProperties;
 import org.opennms.horizon.alertservice.db.entity.MonitorPolicy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 

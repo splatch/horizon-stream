@@ -4,6 +4,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.opennms.horizon.alerts.proto.Alert;
 import org.opennms.horizon.alertservice.api.AlertLifecycleListener;
 import org.opennms.horizon.alertservice.api.AlertService;
+import org.opennms.horizon.alertservice.config.KafkaTopicProperties;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 

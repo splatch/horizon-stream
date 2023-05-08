@@ -26,26 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alertservice.service.routing;
+package org.opennms.horizon.alertservice.config;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.opennms.horizon.alertservice.service.AlertMapper;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
+public class AlertServiceConfig {
 
-@Getter
-@ConfigurationProperties(prefix = "kafka.topics")
-public class KafkaTopicProperties {
-    @Setter
-    private String event;
-    private final Topic alert = new Topic();
-    private final Topic monitoringPolicy = new Topic();
-
-    @Data
-    public static class Topic {
-        private String name;
-        private Integer partitions = 10;
-        private Short replicas = 1;
+    @Bean("alertMapper")
+    public AlertMapper alertMapper() {
+        return AlertMapper.INSTANCE;
     }
 }

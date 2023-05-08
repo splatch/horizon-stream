@@ -26,16 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.alertservice.service;
+package org.opennms.horizon.alertservice.config;
 
+import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
-public class AlertServiceConfig {
+public class KafkaConfig {
 
-    @Bean("alertMapper")
-    public AlertMapper alertMapper() {
-        return AlertMapper.INSTANCE;
+    @Bean
+    public NewTopic alertTopic(KafkaTopicProperties kafkaTopicProperties) {
+        return getTopicBuilder(kafkaTopicProperties.getAlert()).build();
     }
+
+    @Bean
+    public NewTopic monitoringPolicyTopic(KafkaTopicProperties kafkaTopicProperties) {
+        return getTopicBuilder(kafkaTopicProperties.getMonitoringPolicy()).build();
+    }
+
+    private TopicBuilder getTopicBuilder(KafkaTopicProperties.Topic topic) {
+        return TopicBuilder.name(topic.getName())
+            .partitions(topic.getPartitions())
+            .replicas(topic.getReplicas());
+    }
+
 }
