@@ -23,7 +23,7 @@ public class AlertProducer implements AlertLifecycleListener {
     public AlertProducer(KafkaTemplate<String, byte[]> kafkaTemplate, AlertService alertService, KafkaTopicProperties kafkaTopicProperties) {
         this.kafkaTemplate = kafkaTemplate;
         this.alertService = Objects.requireNonNull(alertService);
-        this.kafkaTopic = kafkaTopicProperties.getAlert().getName();
+        this.kafkaTopic = kafkaTopicProperties.getAlert();
     }
 
     @PostConstruct

@@ -18,7 +18,7 @@ public class MonitoringPolicyProducer {
     private final String kafkaTopic;
 
     public MonitoringPolicyProducer(KafkaTemplate<String, byte[]> kafkaTemplate, KafkaTopicProperties kafkaTopicProperties) {
-        this.kafkaTopic = kafkaTopicProperties.getMonitoringPolicy().getName();
+        this.kafkaTopic = kafkaTopicProperties.getMonitoringPolicy();
         this.kafkaTemplate = kafkaTemplate;
     }
 

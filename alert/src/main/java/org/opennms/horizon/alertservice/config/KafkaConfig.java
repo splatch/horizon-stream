@@ -38,18 +38,24 @@ public class KafkaConfig {
 
     @Bean
     public NewTopic alertTopic(KafkaTopicProperties kafkaTopicProperties) {
-        return getTopicBuilder(kafkaTopicProperties.getAlert()).build();
+        return getTopicBuilder(kafkaTopicProperties.getCreateTopics().getAlert()).build();
     }
 
     @Bean
     public NewTopic monitoringPolicyTopic(KafkaTopicProperties kafkaTopicProperties) {
-        return getTopicBuilder(kafkaTopicProperties.getMonitoringPolicy()).build();
+        return getTopicBuilder(kafkaTopicProperties.getCreateTopics().getMonitoringPolicy()).build();
     }
 
-    private TopicBuilder getTopicBuilder(KafkaTopicProperties.Topic topic) {
-        return TopicBuilder.name(topic.getName())
+    private TopicBuilder getTopicBuilder(KafkaTopicProperties.TopicConfig topic) {
+        TopicBuilder builder = TopicBuilder.name(topic.getName())
             .partitions(topic.getPartitions())
             .replicas(topic.getReplicas());
+
+        if (topic.getCompact()) {
+            builder.compact();
+        }
+
+        return builder;
     }
 
 }

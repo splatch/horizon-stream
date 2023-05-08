@@ -37,15 +37,32 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @ConfigurationProperties(prefix = "kafka.topics")
 public class KafkaTopicProperties {
+
     @Setter
     private String event;
-    private final Topic alert = new Topic();
-    private final Topic monitoringPolicy = new Topic();
+
+    @Setter
+    private String tagOperation;
+
+    @Setter
+    private String alert;
+
+    @Setter
+    private String monitoringPolicy;
+
+    private final CreateTopics createTopics = new CreateTopics();
+
+    @Getter
+    public static class CreateTopics {
+        private final TopicConfig alert = new TopicConfig();
+        private final TopicConfig monitoringPolicy = new TopicConfig();
+    }
 
     @Data
-    public static class Topic {
+    public static class TopicConfig {
         private String name;
         private Integer partitions = 10;
         private Short replicas = 1;
+        private Boolean compact = false;
     }
 }
