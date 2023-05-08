@@ -10,6 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@SuppressWarnings("JpaEntityListenerInspection") // no-args constructor not required since Hibernate 5.3 and Spring 5.1
 public class MonitoringPolicyProducer {
 
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
