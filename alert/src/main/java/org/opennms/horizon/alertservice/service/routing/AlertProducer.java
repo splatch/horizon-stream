@@ -13,14 +13,14 @@ import javax.annotation.PreDestroy;
 import java.util.Objects;
 
 @Component
-public class AlertKafkaProducer implements AlertLifecycleListener {
+public class AlertProducer implements AlertLifecycleListener {
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
 
     private final AlertService alertService;
 
     private final String kafkaTopic;
 
-    public AlertKafkaProducer(KafkaTemplate<String, byte[]> kafkaTemplate, AlertService alertService, KafkaTopicProperties kafkaTopicProperties) {
+    public AlertProducer(KafkaTemplate<String, byte[]> kafkaTemplate, AlertService alertService, KafkaTopicProperties kafkaTopicProperties) {
         this.kafkaTemplate = kafkaTemplate;
         this.alertService = Objects.requireNonNull(alertService);
         this.kafkaTopic = kafkaTopicProperties.getAlert().getName();

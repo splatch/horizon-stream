@@ -10,13 +10,13 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MonitoringPolicyKafkaProducer {
+public class MonitoringPolicyProducer {
 
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
 
     private final String kafkaTopic;
 
-    public MonitoringPolicyKafkaProducer(KafkaTemplate<String, byte[]> kafkaTemplate, KafkaTopicProperties kafkaTopicProperties) {
+    public MonitoringPolicyProducer(KafkaTemplate<String, byte[]> kafkaTemplate, KafkaTopicProperties kafkaTopicProperties) {
         this.kafkaTopic = kafkaTopicProperties.getMonitoringPolicy().getName();
         this.kafkaTemplate = kafkaTemplate;
     }
