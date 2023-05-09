@@ -78,6 +78,16 @@ const buildData = () => {
 const config = {
   responsive: true,
   aspectRatio: 1.5,
+  scales: {
+    x: {
+      grid: {
+        display: false
+      },
+      ticks: {
+        display: false
+      }
+    }
+  },
   plugins: {
     legend: {
       display: true,
