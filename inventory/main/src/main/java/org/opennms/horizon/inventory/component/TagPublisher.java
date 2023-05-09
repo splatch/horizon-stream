@@ -85,7 +85,7 @@ public class TagPublisher {
     }
 
     private void sendTagMessage(TagOperationList tagData) {
-        var record = new ProducerRecord<String, byte[]>(tagTopic, tagData.toByteArray());
-        kafkaTemplate.send(record);
+        var rec = new ProducerRecord<String, byte[]>(tagTopic, tagData.toByteArray());
+        kafkaTemplate.send(rec);
     }
 }

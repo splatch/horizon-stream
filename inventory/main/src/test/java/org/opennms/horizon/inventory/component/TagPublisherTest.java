@@ -49,7 +49,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class TagPublisherTest {
+class TagPublisherTest {
     @Mock
     private TagRepository tagRepository;
 
