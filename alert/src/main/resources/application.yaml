@@ -45,12 +45,15 @@ grpc:
 kafka:
   topics:
     event: "events"
-    node-changed: "node"
     tag-operation: "tag-operation"
     alert: "alerts"
     monitoring-policy: "monitoring-policy"
+    node-changed: "node"
     create-topics:
       alert:
         name: "alerts"
       monitoring-policy:
         name: "monitoring-policy"
+      node-changed:
+        name: "node"
+        partitions: 1 # topic relies on there being a single partition for ordering

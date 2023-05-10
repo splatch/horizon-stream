@@ -46,6 +46,11 @@ public class KafkaConfig {
         return getTopicBuilder(kafkaTopicProperties.getCreateTopics().getMonitoringPolicy()).build();
     }
 
+    @Bean
+    public NewTopic nodeChangedTopic(KafkaTopicProperties kafkaTopicProperties) {
+        return getTopicBuilder(kafkaTopicProperties.getCreateTopics().getNodeChanged()).build();
+    }
+
     private TopicBuilder getTopicBuilder(KafkaTopicProperties.TopicConfig topic) {
         TopicBuilder builder = TopicBuilder.name(topic.getName())
             .partitions(topic.getPartitions())

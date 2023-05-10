@@ -48,6 +48,9 @@ public class KafkaTopicProperties {
     private String alert;
 
     @Setter
+    private String nodeChanged;
+
+    @Setter
     private String monitoringPolicy;
 
     private final CreateTopics createTopics = new CreateTopics();
@@ -56,6 +59,7 @@ public class KafkaTopicProperties {
     public static class CreateTopics {
         private final TopicConfig alert = new TopicConfig();
         private final TopicConfig monitoringPolicy = new TopicConfig();
+        private final TopicConfig nodeChanged = new TopicConfig();
     }
 
     @Data
