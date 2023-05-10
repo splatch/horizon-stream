@@ -101,6 +101,12 @@
           </ButtonTextIcon>
         </div>
       </div>
+      <div>
+        <LocationsCertificateDownload
+          :input-model="locationStore.downloadCertificatePassword"
+          :on-button-click="() => downloadCert(formInputs.location)"
+        />
+      </div>
       <div class="row mt-m">
         <InstructionsStepper
           :text-button="instructions.textButton"
@@ -174,6 +180,10 @@ const onSubmit = async () => {
     locationStore.setDisplayType(DisplayType.LIST)
     form.clearErrors()
   }
+}
+
+const downloadCert = (string: string) => {
+  locationStore.downloadCertificatePassword = 'GeNeRaTeDpAsSw0rD123'
 }
 
 const generateKeyBtn: IButtonTextIcon = {
