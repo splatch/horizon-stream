@@ -55,7 +55,7 @@ public class TagPublisher {
     private final TagRepository tagRepository;
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
 
-    public TagPublisher(TagRepository tagRepository, @Qualifier("byteArrayTemplate") KafkaTemplate<String, byte[]> kafkaTemplate) {
+    public TagPublisher(TagRepository tagRepository, KafkaTemplate<String, byte[]> kafkaTemplate) {
         this.tagRepository = tagRepository;
         this.kafkaTemplate = kafkaTemplate;
     }
