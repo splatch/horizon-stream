@@ -128,7 +128,7 @@ const props = defineProps({
 })
 
 const copyClick = () => {
-  navigator.clipboard.writeText(props.inputModel)
+  navigator.clipboard.writeText(props.inputModel).catch(() => 'Copy to clipboard was unsuccessful.')
   showSnackbar({
     msg: 'Copied.'
   })
