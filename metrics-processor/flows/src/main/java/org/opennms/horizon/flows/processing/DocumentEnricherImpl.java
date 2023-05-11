@@ -29,6 +29,7 @@
 package org.opennms.horizon.flows.processing;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.protobuf.TextFormat;
 import com.google.protobuf.UInt64Value;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -39,6 +40,7 @@ import org.opennms.horizon.flows.classification.ClassificationEngine;
 import org.opennms.horizon.flows.classification.ClassificationRequest;
 import org.opennms.horizon.flows.classification.persistence.api.Protocols;
 import org.opennms.horizon.flows.grpc.client.InventoryClient;
+import org.opennms.horizon.flows.integration.FlowException;
 import org.opennms.horizon.inventory.dto.IpInterfaceDTO;
 import org.opennms.horizon.shared.utils.InetAddressUtils;
 import org.slf4j.Logger;
@@ -82,6 +84,13 @@ public class DocumentEnricherImpl {
 
         return flows.stream().flatMap(flow -> {
             final var document = FlowDocument.newBuilder(flow);
+            try {
+                TextFormat.merge(flow.toString(), document);
+            } catch (TextFormat.ParseException e) {
+                LOG.error("Error while copying flow object to enrichedFlow object: ", e);
+                return Stream.empty();
+            }
+
             if (document == null) {
                 return Stream.empty();
             }
