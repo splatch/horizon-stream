@@ -63,7 +63,7 @@
           ></FeatherInput>
         </div>
       </div>
-      <div class="row">
+      <!-- <div class="row">
         <div class="box api-key">
           <div class="top">
             <label for="apiKey">API Key:</label>
@@ -100,11 +100,12 @@
             /></template>
           </ButtonTextIcon>
         </div>
-      </div>
+      </div> -->
       <div>
         <LocationsCertificateDownload
           :input-model="locationStore.downloadCertificatePassword"
-          :on-button-click="() => downloadCert(formInputs.location)"
+          :on-primary-button-click="() => downloadCert(formInputs.location)"
+          :has-cert="true"
         />
       </div>
       <div class="row mt-m">

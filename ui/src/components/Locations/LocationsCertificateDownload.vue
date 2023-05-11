@@ -6,37 +6,76 @@
     <div class="download-container">
       <div class="download-title">{{ props.title }}</div>
       <div class="download-functionality">
-        <FeatherButton
-          primary
-          @click="onButtonClick"
-          data-test="download-btn"
+        <div
+          class="certificate-stats"
+          v-if="props.hasCert"
         >
-          {{ props.buttonText }}
-        </FeatherButton>
-        <div class="input-wrapper">
-          <FeatherInput
-            :label="props.inputPlaceholder"
-            :modelValue="props.inputModel"
-            type="text"
-            class="download-input"
-            :disabled="true"
-            data-test="download-input"
-          />
-          <FeatherButton
-            :disabled="!props.inputModel"
-            text
-            @click="copyClick"
-            class="download-copy-button"
-          >
-            <template v-slot:icon>
-              <FeatherIcon
-                :icon="CopyIcon"
-                aria-hidden="true"
-                focusable="false"
-              />
-              Copy
-            </template>
-          </FeatherButton>
+          <div class="certificate-data">
+            <FeatherIcon
+              class="cert-icon"
+              :icon="CheckIcon"
+            />
+            <div>Start Date: 05-08-2023</div>
+          </div>
+          <div class="certificate-data">
+            <FeatherIcon
+              class="cert-icon"
+              :icon="CalendarIcon"
+            />
+            <div>Expire on 05-08-2024</div>
+          </div>
+        </div>
+        <div
+          class="divider"
+          v-if="props.hasCert"
+        ></div>
+        <div
+          :class="{ hasCert: !props.hasCert }"
+          class="download-buttons-wrapper"
+        >
+          <div class="download-buttons">
+            <FeatherButton
+              primary
+              @click="onPrimaryButtonClick"
+              data-test="download-btn"
+            >
+              {{ props.primaryButtonText }}
+            </FeatherButton>
+            <FeatherButton
+              v-if="props.hasCert"
+              secondary
+              @click="onSecondaryButtonClick"
+              data-test="download-btn"
+            >
+              {{ props.secondaryButtonText }}
+            </FeatherButton>
+          </div>
+
+          <div class="input-wrapper">
+            <FeatherInput
+              :label="props.inputPlaceholder"
+              :modelValue="props.inputModel"
+              type="text"
+              class="download-input"
+              :disabled="true"
+              data-test="download-input"
+            />
+            <FeatherButton
+              :disabled="!props.inputModel"
+              text
+              @click="copyClick"
+              class="download-copy-button"
+            >
+              <template v-slot:icon>
+                <FeatherIcon
+                  :icon="CopyIcon"
+                  aria-hidden="true"
+                  focusable="false"
+                />
+                Copy
+              </template>
+            </FeatherButton>
+          </div>
         </div>
       </div>
     </div>
@@ -46,6 +85,9 @@
 <script lang="ts" setup>
 import { PropType } from 'vue'
 import CopyIcon from '@featherds/icon/action/ContentCopy'
+import CheckIcon from '@featherds/icon/action/CheckCircle'
+import CalendarIcon from '@featherds/icon/action/CalendarEndDate'
+
 import useSnackbar from '@/composables/useSnackbar'
 const { showSnackbar } = useSnackbar()
 
@@ -54,22 +96,34 @@ const props = defineProps({
     default: 'Certificate Status',
     type: String
   },
-  buttonText: {
+  primaryButtonText: {
     default: 'Download Certificate',
     type: String
   },
-  onButtonClick: {
+  secondaryButtonText: {
+    default: 'Revoke/Regenerate',
+    type: String
+  },
+  onPrimaryButtonClick: {
     required: true,
     type: Function as PropType<(event: Event) => void>,
     default: () => ({})
   },
+  onSecondaryButtonClick: {
+    type: Function as PropType<(event: Event) => void>,
+    default: () => ({})
+  },
   inputPlaceholder: {
-    default: 'Certificate Password',
+    default: 'Unlock File Password',
     type: String
   },
   inputModel: {
     required: true,
     type: String
+  },
+  hasCert: {
+    required: true,
+    type: Boolean
   }
 })
 
@@ -84,6 +138,7 @@ const copyClick = () => {
 <style lang="scss" scoped>
 @use '@featherds/styles/themes/variables';
 @use '@featherds/styles/mixins/typography';
+@use '@/styles/mediaQueriesMixins';
 
 .download-wrapper {
   width: 100%;
@@ -97,12 +152,17 @@ const copyClick = () => {
 }
 .download-functionality {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
   width: 100%;
+  flex-wrap: wrap;
   gap: var(variables.$spacing-l);
+  @include mediaQueriesMixins.screen-xl {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 60px;
+  }
 
   :deep(.btn-primary) {
     max-width: 285px;
@@ -115,6 +175,16 @@ const copyClick = () => {
   flex: 1 1 0;
   gap: var(variables.$spacing-xs);
 }
+.divider {
+  border: 1px solid #c4c4c4;
+  height: 120px;
+  width: 1px;
+  display: none;
+
+  @include mediaQueriesMixins.screen-xl {
+    display: block;
+  }
+}
 .download-title {
   @include typography.subtitle2();
   margin-bottom: var(variables.$spacing-m);
@@ -125,7 +195,41 @@ const copyClick = () => {
 .download-input {
   width: 285px;
 }
+.download-buttons {
+  display: flex;
+  flex-direction: row;
+}
+.certificate-stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(variables.$spacing-xxs);
+
+  div {
+    @include typography.body-small;
+  }
+}
 :deep(.feather-input-sub-text) {
   display: none;
+}
+.download-buttons-wrapper {
+  &.hasCert {
+    max-width: unset;
+  }
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: var(variables.$spacing-m);
+  max-width: 450px;
+}
+.cert-icon {
+  width: 20px;
+  height: 20px;
+}
+.certificate-data {
+  display: flex;
+  align-items: center;
+  gap: var(variables.$spacing-xs);
 }
 </style>
