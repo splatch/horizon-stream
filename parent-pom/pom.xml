@@ -66,7 +66,6 @@
         <hamcrest.version>1.3</hamcrest.version>
         <hibernate.version>6.1.6.Final</hibernate.version>
         <hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
-
         <httpcore.version>4.4.4</httpcore.version>
         <httpclient.version>4.5.13</httpclient.version>
         <ignite.version>2.14.0</ignite.version>
@@ -80,7 +79,6 @@
         <jakarta.mail.version>1.6.7</jakarta.mail.version>
         <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
         <javax.annotation.version>1.2</javax.annotation.version>
-        <javax.validation.version>2.0.1.Final</javax.validation.version>
         <jaxrs.version>2.1</jaxrs.version>
         <jboss-logging.version>3.4.1.Final</jboss-logging.version>
         <jcifs.version>2.1.6</jcifs.version>
@@ -556,9 +554,9 @@
                 <version>${jakarta.activation.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.validation</groupId>
-                <artifactId>validation-api</artifactId>
-                <version>${javax.validation.version}</version>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${jakarta.validation.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
