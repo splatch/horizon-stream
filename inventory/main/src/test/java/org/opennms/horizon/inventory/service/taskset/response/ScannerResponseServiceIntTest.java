@@ -111,7 +111,6 @@ class ScannerResponseServiceIntTest extends GrpcTestBase {
     private SnmpInterfaceRepository snmpInterfaceRepository;
 
     @MockBean
-    @Qualifier("byteArrayTemplate")
     private KafkaTemplate<String, byte[]> kafkaTemplate;
 
     @Autowired
