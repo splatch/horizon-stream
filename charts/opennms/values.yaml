@@ -271,6 +271,7 @@ Keycloak:
   HostnameAdminUrl: ~
   Replicas: 1
   ServiceName: onms-keycloak
+  TlsSecretName:
   DbSchemaName: "keycloak"
   DbName: "horizon_stream"
   DbHost: "postgres"
