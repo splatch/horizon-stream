@@ -68,7 +68,7 @@ public class DocumentEnricherTest {
             .setDstPort(UInt32Value.of(80))
             .setProtocol(UInt32Value.of(6)) // TCP
             .setLocation("Default")
-            .setNetflowVersion(NetflowVersion.V9)
+            .setNetflowVersion(NetflowVersion.V5)
             .setTenantId("tenantId")
             .setExporterAddress("127.0.0.1");
 
@@ -186,7 +186,7 @@ public class DocumentEnricherTest {
                 .where(FlowDocument::getLastSwitched, Matchers.is(UInt64Value.of(flow3.getLastSwitched().getValue() + 3600_000L)))));
 
         docs.forEach(doc -> {
-            Assert.assertEquals(NetflowVersion.V9, doc.getNetflowVersion());
+            Assert.assertEquals(NetflowVersion.V5, doc.getNetflowVersion());
             Assert.assertEquals("tenantId", doc.getTenantId());
         });
     }
