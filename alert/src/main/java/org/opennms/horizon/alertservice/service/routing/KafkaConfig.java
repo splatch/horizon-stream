@@ -64,6 +64,9 @@ public class KafkaConfig {
     @Value("${kafka.topics.monitoring-policy}")
     private String monitoringPolicyTopic;
 
+    @Value("${kafka.topics.new-alerts}")
+    private String alertsTopic;
+
     @Bean
     public ConsumerFactory<String, byte[]> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -100,7 +103,7 @@ public class KafkaConfig {
     @Bean("topicCreator")
     public KafkaAdmin.NewTopics topicCreator() {
         return new KafkaAdmin.NewTopics(
-            TopicBuilder.name("alerts")
+            TopicBuilder.name(alertsTopic)
                 .partitions(10)
                 .replicas(1)
                 .build(),
