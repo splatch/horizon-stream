@@ -122,8 +122,8 @@ spec:
             {{- end }}
             - name: OTEL_METRICS_EXPORTER
               value: "none"
-            {{- if .Values.OpenNMS.global.openTelemetry.env }}
-              {{- range $key, $val := .Values.OpenNMS.global.openTelemetry.env }}
+            {{- if .Values.OpenNMS.global.env }}
+              {{- range $key, $val := .Values.OpenNMS.global.env }}
             - name: {{ $key }}
               value: {{ $val | quote }}
               {{- end }}

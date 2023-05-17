@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
 {{- if .Values.OpenNMS.global.enableJsonLogging }}
-  SPRING_PROFILES_ACTIVE: json-logging
+  SPRING_PROFILES_INCLUDE: json-logging
 {{- end }}
 {{- if .Values.OpenNMS.global.openTelemetry.otlpTracesEndpoint }}
   OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: {{ .Values.OpenNMS.global.openTelemetry.otlpTracesEndpoint | toYaml }}
@@ -13,8 +13,8 @@ data:
   OTEL_TRACES_EXPORTER: "none"
 {{- end }}
   OTEL_METRICS_EXPORTER: "none"
-{{- if .Values.OpenNMS.global.openTelemetry.env }}
-  {{- range $key, $val := .Values.OpenNMS.global.openTelemetry.env }}
+{{- if .Values.OpenNMS.global.env }}
+  {{- range $key, $val := .Values.OpenNMS.global.env }}
   {{ $key }}: {{ $val | quote }}
   {{- end }}
 {{- end }}

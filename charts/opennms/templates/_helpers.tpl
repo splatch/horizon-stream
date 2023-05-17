@@ -12,3 +12,10 @@
     {{- end }}
   {{- end }}
 {{- end }}
+
+{{- define "kafkaSecretFrom" -}}
+  {{- if .kafkaSecretName }}
+- secretRef:
+    name: {{ .kafkaSecretName }}
+  {{- end }}
+{{- end }}

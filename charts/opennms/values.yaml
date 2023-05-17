@@ -7,8 +7,11 @@ OpenNMS:
     enableJsonLogging: false
     openTelemetry:
       otlpTracesEndpoint: null
-      env:
-        OTEL_PROPAGATORS: tracecontext,baggage,jaeger,b3multi
+    env:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: "onms-kafka:9092"
+      OTEL_PROPAGATORS: tracecontext,baggage,jaeger,b3multi
+    eventHubs:
+      connectionString: ~
   API:
     Path: /api
     ServiceName: opennms-rest-server
@@ -40,6 +43,7 @@ OpenNMS:
         Memory: 256Mi
     PrivateRepoEnabled: false
     FlowIngestorUrl: flows.onms-dp-dev.dev.nonprod.dataservice.opennms.com:443
+    kafkaSecretName: ~
   UI:
     Path: /
     ServiceName: opennms-ui
@@ -121,6 +125,7 @@ OpenNMS:
         grpc_send_timeout "1200s";
         client_body_timeout "1200s";
     PrivateRepoEnabled: false
+    kafkaSecretName: ~
 
 
   Inventory:
@@ -142,6 +147,7 @@ OpenNMS:
         Memory: 250Mi
     EncryptionKey: ~
     PrivateRepoEnabled: false
+    kafkaSecretName: ~
   Alert:
     ServiceName: opennms-alert
     Image: opennms/horizon-stream-alert
@@ -160,7 +166,8 @@ OpenNMS:
         Cpu: 100m
         Memory: 250Mi
     PrivateRepoEnabled: false
-  Notification: 
+    kafkaSecretName: ~
+  Notification:
     ServiceName: opennms-notifications
     Image: opennms/horizon-stream-notification
     ImagePullPolicy: IfNotPresent
@@ -177,6 +184,7 @@ OpenNMS:
         Cpu: 100m
         Memory: 250Mi
     PrivateRepoEnabled: false
+    kafkaSecretName: ~
   Events:
     ServiceName: opennms-events
     Image: opennms/horizon-stream-events

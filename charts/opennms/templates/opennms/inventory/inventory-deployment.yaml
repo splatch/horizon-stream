@@ -64,8 +64,6 @@ spec:
                 secretKeyRef:
                   name: postgres
                   key: inventoryPwd
-            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: "{{ .Values.Kafka.ServiceName }}:{{ .Values.Kafka.Port }}"
             - name: KEYCLOAK_BASE_URL
               value: "http://{{ .Values.Keycloak.ServiceName }}:8080/auth/"
             - name: KEYCLOAK_REALM
@@ -79,6 +77,7 @@ spec:
           envFrom:
           - configMapRef:
               name: spring-boot-env
+          {{- include "kafkaSecretFrom" .Values.OpenNMS.Inventory | indent 10 }}
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.Inventory.Port }}
