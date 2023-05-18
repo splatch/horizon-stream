@@ -7,9 +7,11 @@ OpenNMS:
     enableJsonLogging: false
     openTelemetry:
       otlpTracesEndpoint: null
-    env:
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: "onms-kafka:9092"
-      OTEL_PROPAGATORS: tracecontext,baggage,jaeger,b3multi
+      env:
+        OTEL_PROPAGATORS: tracecontext,baggage,jaeger,b3multi
+    springBoot:
+      env:
+        SPRING_KAFKA_BOOTSTRAP_SERVERS: "onms-kafka:9092"
     eventHubs:
       connectionString: ~
   API:
