@@ -117,6 +117,19 @@ public class InventoryBackgroundHelper {
         LOG.info("Using Tenant Id {}", tenantId);
     }
 
+    public void clearTenantId() {
+        grpcHeaders.remove(GrpcConstants.TENANT_ID_KEY);
+        LOG.info("Blank Tenant Id");
+
+        NettyChannelBuilder channelBuilder =
+            NettyChannelBuilder.forAddress(LOCALHOST, externalGrpcPort);
+
+        ManagedChannel managedChannel = channelBuilder.usePlaintext().build();
+        managedChannel.getState(true);
+        azureActiveDiscoveryServiceBlockingStub = AzureActiveDiscoveryServiceGrpc.newBlockingStub(managedChannel)
+            .withDeadlineAfter(DEADLINE_DURATION, TimeUnit.SECONDS);
+    }
+
     public void createGrpcConnectionForInventory() {
         NettyChannelBuilder channelBuilder =
             NettyChannelBuilder.forAddress(LOCALHOST, externalGrpcPort);
