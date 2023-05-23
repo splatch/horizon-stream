@@ -77,7 +77,7 @@ spec:
           envFrom:
           - configMapRef:
               name: spring-boot-env
-          {{- include "kafkaSecretFrom" .Values.OpenNMS.MetricsProcessor | indent 10 }}
+          {{- include "kafkaSecretFrom" .Values.OpenNMS.MinionGateway | indent 10 }}
           ports:
             - name: http
               containerPort: {{ .Values.OpenNMS.MinionGateway.Port }}
