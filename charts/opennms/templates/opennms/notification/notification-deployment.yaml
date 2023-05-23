@@ -49,6 +49,8 @@ spec:
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-javaagent:agent/opentelemetry-javaagent.jar -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y"  # FIXME: Permanent debug port, enable only for dev mode
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "{{ .Values.kafkaClient.bootstrapServers }}"
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://{{ .Values.OpenNMS.Notification.DbHost }}:5432/{{ .Values.OpenNMS.Notification.DbName }}?currentSchema={{ .Values.OpenNMS.Notification.DbSchemaName }}"
             - name: SPRING_DATASOURCE_USERNAME
