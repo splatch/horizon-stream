@@ -29,8 +29,8 @@
 package org.opennms.horizon.inventory.service;
 
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -64,6 +64,7 @@ import org.opennms.horizon.inventory.dto.NodeDTO;
 import org.opennms.horizon.inventory.dto.TagCreateDTO;
 import org.opennms.horizon.inventory.dto.TagCreateListDTO;
 import org.opennms.horizon.inventory.exception.EntityExistException;
+import org.opennms.horizon.inventory.exception.LocationNotFoundException;
 import org.opennms.horizon.inventory.mapper.IpInterfaceMapper;
 import org.opennms.horizon.inventory.mapper.NodeMapper;
 import org.opennms.horizon.inventory.mapper.SnmpInterfaceMapper;
@@ -163,18 +164,18 @@ public class NodeServiceTest {
     }
 
     @Test
-    public void createNode() throws EntityExistException {
+    public void createNode() throws EntityExistException, LocationNotFoundException {
         String tenant = "ANY";
         String location = "loc";
         MonitoringLocation ml = new MonitoringLocation();
         ml.setTenantId(tenant);
         ml.setLocation(location);
 
-        when(mockMonitoringLocationRepository.save(any())).thenReturn(ml);
+        when(mockMonitoringLocationRepository.findByLocationAndTenantId(location, tenant)).thenReturn(Optional.of(ml));
 
         NodeCreateDTO nodeCreateDTO = NodeCreateDTO.newBuilder()
             .setLabel("Label")
-            .setLocation("loc")
+            .setLocation(location)
             .setManagementIp("127.0.0.1")
             .addTags(TagCreateDTO.newBuilder().setName("tag-name").build())
             .build();
@@ -183,17 +184,15 @@ public class NodeServiceTest {
         nodeService.createNode(nodeCreateDTO, ScanType.NODE_SCAN, tenant);
         verify(mockNodeRepository).save(any(Node.class));
         verify(mockIpInterfaceRepository).save(any(IpInterface.class));
-        verify(mockMonitoringLocationRepository).save(any(MonitoringLocation.class));
         verify(mockMonitoringLocationRepository).findByLocationAndTenantId(location, tenant);
         verify(tagService).addTags(eq(tenant), any(TagCreateListDTO.class));
-        verify(mockConfigUpdateService, timeout(5000)).sendConfigUpdate(tenant, location);
         verify(mockIpInterfaceRepository).findByIpLocationTenantAndScanType(any(InetAddress.class), eq(nodeCreateDTO.getLocation()), eq(tenant), eq(ScanType.NODE_SCAN));
         // Check the default state
-        assertEquals(MonitoredState.DETECTED,nodeCreateDTO.getMonitoredState());
+        assertEquals(MonitoredState.DETECTED, nodeCreateDTO.getMonitoredState());
     }
 
     @Test
-    public void createNodeExistingLocation() throws EntityExistException {
+    public void createNodeExistingLocation() throws EntityExistException, LocationNotFoundException {
         String location = "loc";
         String tenantId = "ANY";
 
@@ -216,14 +215,13 @@ public class NodeServiceTest {
     }
 
     @Test
-    public void createNodeNoIp() throws EntityExistException {
+    public void createNodeNoIp() throws EntityExistException, LocationNotFoundException {
         String tenant = "TENANT";
         String location = "LOCATION";
         MonitoringLocation ml = new MonitoringLocation();
         ml.setTenantId(tenant);
         ml.setLocation(location);
-
-        when(mockMonitoringLocationRepository.save(any(MonitoringLocation.class))).thenReturn(ml);
+        when(mockMonitoringLocationRepository.findByLocationAndTenantId(location, tenant)).thenReturn(Optional.of(ml));
 
         NodeCreateDTO nodeCreateDTO = NodeCreateDTO.newBuilder()
             .setLabel("Label")
@@ -233,12 +231,11 @@ public class NodeServiceTest {
         nodeService.createNode(nodeCreateDTO, ScanType.NODE_SCAN, tenant);
         verify(mockNodeRepository).save(any(Node.class));
         verify(mockMonitoringLocationRepository).findByLocationAndTenantId(location, tenant);
-        verify(mockMonitoringLocationRepository).save(any(MonitoringLocation.class));
         verifyNoInteractions(mockIpInterfaceRepository);
     }
 
     @Test
-    public void createNodeWithLocationDefaultLocationExist() throws EntityExistException {
+    public void createNodeWithLocationDefaultLocationExist() throws EntityExistException, LocationNotFoundException {
         NodeCreateDTO nodeCreate = NodeCreateDTO.newBuilder()
             .setLabel("test-node")
             .setManagementIp("127.0.0.1").build();
@@ -249,25 +246,26 @@ public class NodeServiceTest {
         verify(mockMonitoringLocationRepository).findByLocationAndTenantId(GrpcConstants.DEFAULT_LOCATION, tenantID);
         verify(mockNodeRepository).save(any(Node.class));
         verify(mockIpInterfaceRepository).save(any(IpInterface.class));
-        verify(mockIpInterfaceRepository).findByIpLocationTenantAndScanType(any(InetAddress.class), eq(nodeCreate.getLocation()), eq(tenantID), eq(ScanType.NODE_SCAN));
+        verify(mockIpInterfaceRepository).findByIpLocationTenantAndScanType(any(InetAddress.class), eq(GrpcConstants.DEFAULT_LOCATION), eq(tenantID), eq(ScanType.NODE_SCAN));
     }
 
     @Test
-    public void createNodeWithLocationDefaultLocationNotExist() throws EntityExistException {
+    public void createNodeWithLocationNotExist() throws EntityExistException, LocationNotFoundException {
+        MonitoringLocation ml = new MonitoringLocation();
+        ml.setTenantId(tenantID);
+        ml.setLocation(GrpcConstants.DEFAULT_LOCATION);
         NodeCreateDTO nodeCreate = NodeCreateDTO.newBuilder()
             .setLabel("test-node")
             .setManagementIp("127.0.0.1").build();
         doReturn(Optional.empty()).when(mockMonitoringLocationRepository).findByLocationAndTenantId(GrpcConstants.DEFAULT_LOCATION, tenantID);
         doReturn(new MonitoringLocation()).when(mockMonitoringLocationRepository).save(any(MonitoringLocation.class));
         doReturn(Optional.empty()).when(mockIpInterfaceRepository).findByIpLocationTenantAndScanType(any(InetAddress.class), eq(nodeCreate.getLocation()), eq(tenantID), eq(ScanType.NODE_SCAN));
-        ArgumentCaptor<MonitoringLocation> captor = ArgumentCaptor.forClass(MonitoringLocation.class);
-        nodeService.createNode(nodeCreate, ScanType.NODE_SCAN, tenantID);
+        assertThatThrownBy(() -> nodeService.createNode(nodeCreate, ScanType.NODE_SCAN, tenantID))
+            .isInstanceOf(LocationNotFoundException.class);
         verify(mockMonitoringLocationRepository).findByLocationAndTenantId(GrpcConstants.DEFAULT_LOCATION, tenantID);
-        verify(mockMonitoringLocationRepository).save(captor.capture());
-        assertThat(captor.getValue().getLocation()).isEqualTo(GrpcConstants.DEFAULT_LOCATION);
-        verify(mockNodeRepository).save(any(Node.class));
-        verify(mockIpInterfaceRepository).save(any(IpInterface.class));
-        verify(mockIpInterfaceRepository).findByIpLocationTenantAndScanType(any(InetAddress.class), eq(nodeCreate.getLocation()), eq(tenantID), eq(ScanType.NODE_SCAN));
+//        verify(mockNodeRepository).save(any(Node.class));
+//        verify(mockIpInterfaceRepository).save(any(IpInterface.class));
+        verify(mockIpInterfaceRepository).findByIpLocationTenantAndScanType(any(InetAddress.class), eq(GrpcConstants.DEFAULT_LOCATION), eq(tenantID), eq(ScanType.NODE_SCAN));
     }
 
     @Test
@@ -309,7 +307,7 @@ public class NodeServiceTest {
     public void testListNodesByIdsEmpty() {
         doReturn(Collections.emptyList()).when(mockNodeRepository).findByIdInAndTenantId(List.of(1L, 2L, 3L), tenantID);
         Map<String, List<NodeDTO>> result = nodeService.listNodeByIds(List.of(1L, 2L, 3L), tenantID);
-        assertThat(result.isEmpty()).isTrue();
+        assertThat(result).isEmpty();
         verify(mockNodeRepository).findByIdInAndTenantId(List.of(1L, 2L, 3L), tenantID);
     }
 
@@ -322,11 +320,11 @@ public class NodeServiceTest {
             .setLabel("test-node")
             .setManagementIp("127.0.0.1")
             .build();
-        doReturn(Optional.of(ipInterface)).when(mockIpInterfaceRepository).findByIpLocationTenantAndScanType(any(InetAddress.class), eq(nodeCreate.getLocation()), eq(tenantID), eq(ScanType.NODE_SCAN));
+        doReturn(Optional.of(ipInterface)).when(mockIpInterfaceRepository).findByIpLocationTenantAndScanType(any(InetAddress.class), eq(GrpcConstants.DEFAULT_LOCATION), eq(tenantID), eq(ScanType.NODE_SCAN));
         assertThatThrownBy(() -> nodeService.createNode(nodeCreate, ScanType.NODE_SCAN, tenantID))
             .isInstanceOf(EntityExistException.class)
             .hasMessageContaining("already exists in the system ");
-        verify(mockIpInterfaceRepository).findByIpLocationTenantAndScanType(any(InetAddress.class), eq(nodeCreate.getLocation()), eq(tenantID), eq(ScanType.NODE_SCAN));
+        verify(mockIpInterfaceRepository).findByIpLocationTenantAndScanType(any(InetAddress.class), eq(GrpcConstants.DEFAULT_LOCATION), eq(tenantID), eq(ScanType.NODE_SCAN));
         verifyNoInteractions(mockNodeRepository);
         verifyNoInteractions(mockMonitoringLocationRepository);
         verifyNoInteractions(tagService);
