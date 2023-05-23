@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.server.mapper;
+package org.opennms.horizon.server.model.inventory;
 
-import org.mapstruct.Mapper;
-import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
-import org.opennms.horizon.server.model.inventory.Location;
+import lombok.Getter;
+import lombok.Setter;
 
-@Mapper(componentModel = "spring")
-public interface LocationMapper {
-    Location protoToLocation(MonitoringLocationDTO locationDTO);
-    MonitoringLocationDTO locationToProto(Location location);
+@Getter
+@Setter
+public class MonitoringLocationUpdate {
+    private long id;
+    private String location;
+    private double longitude;
+    private double latitude;
+    private String address;
 }
-

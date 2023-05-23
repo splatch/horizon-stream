@@ -33,8 +33,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Location {
-    private long id;
-    private String tenantId;
+public class MonitoringLocationCreate {
     private String location;
+    private double longitude;
+    private double latitude;
+    private String address;
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2022 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,21 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.horizon.inventory.mapper;
+package org.opennms.horizon.server.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.NullValueCheckStrategy;
+import org.opennms.horizon.inventory.dto.MonitoringLocationCreateDTO;
 import org.opennms.horizon.inventory.dto.MonitoringLocationDTO;
-import org.opennms.horizon.inventory.model.MonitoringLocation;
+import org.opennms.horizon.server.model.inventory.MonitoringLocation;
+import org.opennms.horizon.server.model.inventory.MonitoringLocationCreate;
+import org.opennms.horizon.server.model.inventory.MonitoringLocationUpdate;
 
-@Mapper(componentModel = "spring", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(componentModel = "spring")
 public interface MonitoringLocationMapper {
-    @Mapping(target = "latitude", source = "geoLocation.latitude")
-    @Mapping(target = "longitude", source = "geoLocation.longitude")
-    MonitoringLocation dtoToModel(MonitoringLocationDTO dto);
+    @Mapping(target = "geoLocation.latitude", source = "latitude")
+    @Mapping(target = "geoLocation.longitude", source = "longitude")
+    MonitoringLocationCreateDTO locationCreateToLocationCreateProto(MonitoringLocationCreate location);
 
     @Mapping(target = "geoLocation.latitude", source = "latitude")
     @Mapping(target = "geoLocation.longitude", source = "longitude")
-    MonitoringLocationDTO modelToDTO(MonitoringLocation model);
+    MonitoringLocationDTO locationUpdateToLocationProto(MonitoringLocationUpdate location);
+
+    @Mapping(target = "geoLocation.latitude", source = "latitude")
+    @Mapping(target = "geoLocation.longitude", source = "longitude")
+    MonitoringLocationDTO locationToLocationProto(MonitoringLocation location);
+
+    @Mapping(target = "latitude", source = "geoLocation.latitude")
+    @Mapping(target = "longitude", source = "geoLocation.longitude")
+    MonitoringLocation protoToLocation(MonitoringLocationDTO location);
 }
