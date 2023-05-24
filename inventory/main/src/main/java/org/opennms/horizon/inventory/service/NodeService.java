@@ -152,8 +152,7 @@ public class NodeService {
     }
 
     private MonitoringLocation findMonitoringLocation(NodeCreateDTO request, String tenantId) throws LocationNotFoundException {
-        String location = locationNameOrDefault(request);
-        Optional<MonitoringLocation> found = monitoringLocationRepository.findByLocationAndTenantId(location, tenantId);
+        Optional<MonitoringLocation> found = monitoringLocationRepository.findByLocationAndTenantId(request.getLocation(), tenantId);
 
         return found.orElseThrow(() -> new LocationNotFoundException("Location not found " + request.getLocation()));
     }
@@ -180,7 +179,7 @@ public class NodeService {
     public Node createNode(NodeCreateDTO request, ScanType scanType, String tenantId) throws EntityExistException, LocationNotFoundException {
         if (request.hasManagementIp()) { //Do we really want to create a node without managed IP?
             Optional<IpInterface> ipInterfaceOpt = ipInterfaceRepository
-                .findByIpLocationTenantAndScanType(InetAddressUtils.getInetAddress(request.getManagementIp()), locationNameOrDefault(request), tenantId, scanType);
+                .findByIpLocationTenantAndScanType(InetAddressUtils.getInetAddress(request.getManagementIp()), request.getLocation(), tenantId, scanType);
             if (ipInterfaceOpt.isPresent()) {
                 IpInterface ipInterface = ipInterfaceOpt.get();
                 log.error("IP address {} already exists in the system and belong to device {}", request.getManagementIp(), ipInterface.getNode().getNodeLabel());
@@ -304,10 +303,6 @@ public class NodeService {
     public List<NodeDTO> listNodesByTags(String tenantId, List<String> tags) {
         return nodeRepository.findByTenantIdAndTagNamesIn(tenantId, tags).stream()
             .map(mapper::modelToDTO).toList();
-    }
-
-    private static String locationNameOrDefault(NodeCreateDTO request) {
-        return request.getLocation().isBlank() ? GrpcConstants.DEFAULT_LOCATION : request.getLocation();
     }
 
 }
