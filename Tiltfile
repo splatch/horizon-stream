@@ -38,6 +38,7 @@
 # Tilt config #
 secret_settings(disable_scrub=True)  ## TODO: update secret values so we can reenable scrub
 load('ext://uibutton', 'cmd_button', 'location')
+load('ext://helm_remote', 'helm_remote') # for simple charts like jaeger
 
 cmd_button(name='reload-certificates',
            argv=['sh', '-c', 'find target/tmp/ -type f -exec rm {} \\;'],
@@ -175,6 +176,14 @@ load_certificate_authority("client-root-ca-certificate", "client-ca", "target/tm
 
 
 # Deployment #
+# https://github.com/jaegertracing/helm-charts/tree/main/charts/jaeger
+helm_remote('jaeger', version='0.71.0', repo_url='https://jaegertracing.github.io/helm-charts', values="tilt-jaeger-values.yaml")
+k8s_resource(
+    'jaeger',
+    labels=['0_useful'],
+    port_forwards=port_forward(16686, name="Jaeger UI"),
+)
+
 k8s_yaml(
     helm(
         'charts/opennms',
