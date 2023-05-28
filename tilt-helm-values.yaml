@@ -16,6 +16,9 @@ Keycloak:
 Postgres:
   addTestLocation: True
 
+Ingress:
+  Enabled: false
+
 OpenNMS:
   global:
     openTelemetry:

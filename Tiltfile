@@ -43,7 +43,8 @@ config.set_enabled_resources(cfg.get('args', []))
 
 secret_settings(disable_scrub=True)  ## TODO: update secret values so we can reenable scrub
 load('ext://uibutton', 'cmd_button', 'location')
-load('ext://helm_remote', 'helm_remote') # for simple charts like jaeger
+load('ext://helm_remote', 'helm_remote') # for simple charts like jaeger and cert-manager
+load('ext://helm_resource', 'helm_resource', 'helm_repo') # for charts that we want to have resources for
 
 cmd_button(name='reload-certificates',
            argv=['sh', '-c', 'find target/tmp/ -type f -exec rm {} \\;'],
@@ -187,6 +188,21 @@ k8s_resource(
     'jaeger',
     labels=['0_useful'],
     port_forwards=port_forward(16686, name="Jaeger UI"),
+)
+
+# Deployment #
+helm_remote('cert-manager', version='1.11.0', repo_url='https://charts.jetstack.io', set = [
+    'installCRDs=true'
+])
+
+# https://github.com/kubernetes/ingress-nginx/tree/main/charts/ingress-nginx
+helm_repo('ingress-nginx-repo', 'https://kubernetes.github.io/ingress-nginx')
+helm_resource('ingress-nginx', 'ingress-nginx-repo/ingress-nginx',
+	flags=[
+		'--version=4.5.2',
+		'--values=tilt-ingress-nginx-values.yaml',
+	],
+	deps=["Tiltfile", "tilt-ingress-nginx-values.yaml"],
 )
 
 k8s_yaml(
@@ -413,7 +429,7 @@ k8s_resource(
 ### Others ###
 listen_on = cfg.get('listen-on', "0.0.0.0")
 k8s_resource(
-    'ingress-nginx-controller',
+    'ingress-nginx',
     labels=['0_useful'],
     port_forwards=[
         port_forward(8123, 80, host=listen_on),
@@ -422,19 +438,4 @@ k8s_resource(
     links=[
         link("https://onmshs.local:1443/", name="Web UI"),
     ],
-)
-
-k8s_resource(
-    'opennms-nginx-errors',
-    labels=['opennms-nginx-errors'],
-)
-
-k8s_resource(
-    'ingress-nginx-admission-create',
-    labels=['z_ingress-nginx-support'],
-)
-
-k8s_resource(
-    'ingress-nginx-admission-patch',
-    labels=['z_ingress-nginx-support'],
 )
