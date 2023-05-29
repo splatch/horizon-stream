@@ -199,7 +199,7 @@ helm_remote('cert-manager', version='1.11.0', repo_url='https://charts.jetstack.
 helm_repo('ingress-nginx-repo', 'https://kubernetes.github.io/ingress-nginx')
 helm_resource('ingress-nginx', 'ingress-nginx-repo/ingress-nginx',
 	flags=[
-		'--version=4.5.2',
+		'--version=4.7.0',
 		'--values=tilt-ingress-nginx-values.yaml',
 	],
 	deps=["Tiltfile", "tilt-ingress-nginx-values.yaml"],
