@@ -42,6 +42,7 @@ import org.opennms.cloud.grpc.minion_gateway.MinionIdentity;
 import org.opennms.horizon.grpc.echo.contract.EchoRequest;
 import org.opennms.horizon.grpc.echo.contract.EchoResponse;
 import org.opennms.horizon.grpc.heartbeat.contract.TenantLocationSpecificHeartbeatMessage;
+import org.opennms.horizon.inventory.exception.LocationNotFoundException;
 import org.opennms.horizon.inventory.service.MonitoringLocationService;
 import org.opennms.horizon.inventory.service.MonitoringSystemService;
 import org.opennms.taskset.contract.MonitorResponse;
@@ -117,6 +118,9 @@ public class MinionHeartbeatConsumer {
             }
 
             Span.current().setStatus(StatusCode.OK);
+        } catch (LocationNotFoundException e) {
+            log.error("Location not found while processing heartbeat message: {}", e.getMessage());
+            Span.current().setStatus(StatusCode.ERROR, "Location not found while processing heartbeat message: " + e.getMessage());
         } catch (Exception e) {
             log.error("Error while processing heartbeat message: ", e);
             Span.current().recordException(e);
