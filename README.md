@@ -1,4 +1,6 @@
-# Lōkahi by OpenNMS
+<p align="center"><img src="images/Lokahi_small-scale.png" alt="Lokahi by OpenNMS brandmark" width="300" /></a></p>
+
+<img src="images/LokahiExploration.png" alt="colorful swirl"/>
 
 Lōkahi (pronounced "loh-kah-hee") is an open source network monitoring project designed for Cloud-native deployments: the next generation of OpenNMS Horizon.
 Both the word lōkahi, which means unity, unison, and harmony, and David Hustace, one of The OpenNMS Group's founders, share Hawaiian roots.
