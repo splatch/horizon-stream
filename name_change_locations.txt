@@ -171,28 +171,28 @@ build-tools/basic/mk-docker-images.sh:89:		-t opennms/horizon-stream-keycloak:lo
 build-tools/basic/mk-docker-images.sh:96:	docker build -t opennms/horizon-stream-grafana:local-basic grafana
 build-tools/basic/mk-docker-images.sh:106:		-t opennms/horizon-stream-ui:local-basic \
 
-charts/opennms/templates/keycloak/keycloak-realm-configmap-static.yaml:13:      "loginTheme": "horizon-stream",
-charts/opennms/templates/keycloak/keycloak-realm-configmap-static.yaml:14:      "emailTheme": "horizon-stream",
-charts/opennms/templates/keycloak/keycloak-realm-configmap-static.yaml:19:          "clientId": "horizon-stream",
-charts/opennms/values.yaml:19:    Image: opennms/horizon-stream-rest-server
-charts/opennms/values.yaml:36:    Image: opennms/horizon-stream-metrics-processor
-charts/opennms/values.yaml:54:    Image: opennms/horizon-stream-ui
-charts/opennms/values.yaml:78:    Image: opennms/horizon-stream-minion
-charts/opennms/values.yaml:101:    Image: opennms/horizon-stream-minion-gateway
-charts/opennms/values.yaml:136:    Image: opennms/horizon-stream-inventory
-charts/opennms/values.yaml:156:    Image: opennms/horizon-stream-alert
-charts/opennms/values.yaml:175:    Image: opennms/horizon-stream-notification
-charts/opennms/values.yaml:193:    Image: opennms/horizon-stream-events
-charts/opennms/values.yaml:211:    Image: opennms/horizon-stream-datachoices
-charts/opennms/values.yaml:232:    Image: opennms/horizon-stream-minion-certificate-manager
-charts/opennms/values.yaml:246:    Image: opennms/horizon-stream-minion-certificate-verifier
-charts/opennms/values.yaml:280:  Image: opennms/horizon-stream-keycloak:latest
-charts/opennms/values.yaml:312:  Image: opennms/horizon-stream-grafana
-charts/opennms/onms-realm.json:5:  "loginTheme": "horizon-stream",
-charts/opennms/onms-realm.json:6:  "emailTheme": "horizon-stream",
-charts/opennms/onms-realm.json:11:      "clientId": "horizon-stream",
+charts/lokahi/templates/keycloak/keycloak-realm-configmap-static.yaml:13:      "loginTheme": "horizon-stream",
+charts/lokahi/templates/keycloak/keycloak-realm-configmap-static.yaml:14:      "emailTheme": "horizon-stream",
+charts/lokahi/templates/keycloak/keycloak-realm-configmap-static.yaml:19:          "clientId": "horizon-stream",
+charts/lokahi/values.yaml:19:    Image: opennms/horizon-stream-rest-server
+charts/lokahi/values.yaml:36:    Image: opennms/horizon-stream-metrics-processor
+charts/lokahi/values.yaml:54:    Image: opennms/horizon-stream-ui
+charts/lokahi/values.yaml:78:    Image: opennms/horizon-stream-minion
+charts/lokahi/values.yaml:101:    Image: opennms/horizon-stream-minion-gateway
+charts/lokahi/values.yaml:136:    Image: opennms/horizon-stream-inventory
+charts/lokahi/values.yaml:156:    Image: opennms/horizon-stream-alert
+charts/lokahi/values.yaml:175:    Image: opennms/horizon-stream-notification
+charts/lokahi/values.yaml:193:    Image: opennms/horizon-stream-events
+charts/lokahi/values.yaml:211:    Image: opennms/horizon-stream-datachoices
+charts/lokahi/values.yaml:232:    Image: opennms/horizon-stream-minion-certificate-manager
+charts/lokahi/values.yaml:246:    Image: opennms/horizon-stream-minion-certificate-verifier
+charts/lokahi/values.yaml:280:  Image: opennms/horizon-stream-keycloak:latest
+charts/lokahi/values.yaml:312:  Image: opennms/horizon-stream-grafana
+charts/lokahi/onms-realm.json:5:  "loginTheme": "horizon-stream",
+charts/lokahi/onms-realm.json:6:  "emailTheme": "horizon-stream",
+charts/lokahi/onms-realm.json:11:      "clientId": "horizon-stream",
 charts/Makefile:7:	helm repo index --url https://opennms-cloud.github.io/horizon-stream/charts/packaged --merge packaged/index.yaml ./packaged
-charts/opennms-operator/Chart.yaml:5:home: https://github.com/OpenNMS/horizon-stream
+charts/lokahi-operator/Chart.yaml:5:home: https://github.com/OpenNMS/horizon-stream
 
 # Ignore these, already published.
 charts/packaged/index.yaml:9:    - https://opennms-cloud.github.io/horizon-stream/charts/packaged/opennms-0.7.4.tgz
@@ -215,8 +215,8 @@ install-local/install-local.sh:208:cat install-local-opennms-horizon-stream-valu
 install-local/install-local.sh:209:  sed "s/onmshs/$DOMAIN/g" | sed "s/\$NAMESPACE/$NAMESPACE/g" > tmp/install-local-opennms-horizon-stream-values.yaml
 install-local/install-local.sh:210:cat install-local-opennms-horizon-stream-custom-images-values.yaml | \
 install-local/install-local.sh:211:  sed "s/onmshs/$DOMAIN/g" | sed "s/\$NAMESPACE/$NAMESPACE/g" > tmp/install-local-opennms-horizon-stream-custom-images-values.yaml
-install-local/install-local.sh:224:  helm upgrade -i horizon-stream ./../charts/opennms -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --wait --timeout "${TIMEOUT}"
-install-local/install-local.sh:271:  helm upgrade -i horizon-stream ./../charts/opennms -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --create-namespace --wait --timeout "${TIMEOUT}"
+install-local/install-local.sh:224:  helm upgrade -i horizon-stream ./../charts/lokahi -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --wait --timeout "${TIMEOUT}"
+install-local/install-local.sh:271:  helm upgrade -i horizon-stream ./../charts/lokahi -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --create-namespace --wait --timeout "${TIMEOUT}"
 install-local/install-local-opennms-horizon-stream-values.yaml:4:    Image: opennms/horizon-stream-rest-server:v0.0.32-dev
 install-local/install-local-opennms-horizon-stream-values.yaml:13:    Image: opennms/horizon-stream-metrics-processor:v0.0.32-dev
 install-local/install-local-opennms-horizon-stream-values.yaml:22:    Image: opennms/horizon-stream-ui:v0.0.32-dev
@@ -270,7 +270,7 @@ install-local/install-local.sh:134:		"${IMAGE_PREFIX}/horizon-stream-minion:${IM
 install-local/install-local.sh:135:		"${IMAGE_PREFIX}/horizon-stream-notification:${IMAGE_TAG}" \
 install-local/install-local.sh:136:		"${IMAGE_PREFIX}/horizon-stream-rest-server:${IMAGE_TAG}" \
 install-local/install-local.sh:137:		"${IMAGE_PREFIX}/horizon-stream-ui:${IMAGE_TAG}"
-install-local/install-local.sh:165:  helm upgrade -i horizon-stream ./../charts/opennms \
+install-local/install-local.sh:165:  helm upgrade -i horizon-stream ./../charts/lokahi \
 install-local/install-local.sh:166:  -f ./tmp/install-local-opennms-horizon-stream-custom-images-values.yaml \
 install-local/install-local.sh:168:  --set OpenNMS.Alert.Image=${IMAGE_PREFIX}/horizon-stream-alert:${IMAGE_TAG} \
 install-local/install-local.sh:169:  --set OpenNMS.DataChoices.Image=${IMAGE_PREFIX}/horizon-stream-datachoices:${IMAGE_TAG} \
@@ -290,9 +290,9 @@ install-local/install-local.sh:208:cat install-local-opennms-horizon-stream-valu
 install-local/install-local.sh:209:  sed "s/onmshs/$DOMAIN/g" | sed "s/\$NAMESPACE/$NAMESPACE/g" > tmp/install-local-opennms-horizon-stream-values.yaml
 install-local/install-local.sh:210:cat install-local-opennms-horizon-stream-custom-images-values.yaml | \
 install-local/install-local.sh:211:  sed "s/onmshs/$DOMAIN/g" | sed "s/\$NAMESPACE/$NAMESPACE/g" > tmp/install-local-opennms-horizon-stream-custom-images-values.yaml
-install-local/install-local.sh:224:  helm upgrade -i horizon-stream ./../charts/opennms -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --wait --timeout "${TIMEOUT}"
+install-local/install-local.sh:224:  helm upgrade -i horizon-stream ./../charts/lokahi -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --wait --timeout "${TIMEOUT}"
 install-local/install-local.sh:260:  helm get values horizon-stream --namespace $NAMESPACE
-install-local/install-local.sh:271:  helm upgrade -i horizon-stream ./../charts/opennms -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --create-namespace --wait --timeout "${TIMEOUT}"
+install-local/install-local.sh:271:  helm upgrade -i horizon-stream ./../charts/lokahi -f ./tmp/install-local-opennms-horizon-stream-values.yaml --namespace $NAMESPACE --create-namespace --wait --timeout "${TIMEOUT}"
 install-local/install-local-opennms-horizon-stream-custom-images-values.yaml:4:    Image: opennms/horizon-stream-core:local
 install-local/install-local-opennms-horizon-stream-custom-images-values.yaml:13:    Image: opennms/horizon-stream-rest-server:local
 install-local/install-local-opennms-horizon-stream-custom-images-values.yaml:22:    Image: opennms/horizon-stream-metrics-processor:local
