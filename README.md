@@ -39,14 +39,14 @@ Our current goal is that you can develop and run Lōkahi on a development system
 
 Lōkahi requires a K8s-compatible infrastructure for deploying the application.
 
-For installation instructions, see the [administrator's getting started guide](https://github.com/OpenNMS/horizon-stream/wiki/Getting-Started---Admin) in the project's wiki on GitHub.
+For installation instructions, see the [administrator's getting started guide](https://github.com/OpenNMS-Cloud/lokahi/wiki/Getting-Started---Admin) in the project's wiki on GitHub.
 
 ## How to contribute
 
 We welcome community contributions from anyone!
 There are a lot of moving parts and churn in this early phase so we recommend contacting us in our [OpenNMS Development](https://chat.opennms.com/opennms/channels/opennms-development) channel to share your thoughts.
 
-Read the [Development Guidelines](https://github.com/OpenNMS/horizon-stream/wiki/Development-Guidelines) to learn how you can run tests and make your first contribution.
+Read the [Development Guidelines](https://github.com/OpenNMS-Cloud/lokahi/wiki/Development-Guidelines) to learn how you can run tests and make your first contribution.
 
 The project is mainly written in Java and Golang.
 
@@ -57,14 +57,14 @@ To contact Lōkahi users and developers, join the following channels in our Matt
 
 ## Documentation
 
-We use the [GitHub Wiki](https://github.com/OpenNMS-Cloud/horizon-stream/wiki) in the Lōkahi GitHub repository to document the project.
+We use the [GitHub Wiki](https://github.com/OpenNMS-Cloud/lokahi/wiki) in the Lōkahi GitHub repository to document the project.
 Eventually we will migrate the documentation to a `/docs` repo within the project for a more sophisticated versioned documentation framework.
 
 The following sections might be of most interest:
 
-* Installation in the [administrator's getting started guide](https://github.com/OpenNMS/horizon-stream/wiki/Getting-Started---Admin)
-* Building from source in the [developers getting started](https://github.com/OpenNMS/horizon-stream/wiki/Getting-Started) section
-* [Troubleshooting](https://github.com/OpenNMS/horizon-stream/wiki/Troubleshooting) for quick help
+* Installation in the [administrator's getting started guide](https://github.com/OpenNMS-Cloud/lokahi/wiki/Getting-Started---Admin)
+* Building from source in the [developers getting started](https://github.com/OpenNMS-Cloud/lokahi/wiki/Getting-Started) section
+* [Troubleshooting](https://github.com/OpenNMS-Cloud/lokahi/wiki/Troubleshooting) for quick help
 
 ## Rapid Development Profile
 
