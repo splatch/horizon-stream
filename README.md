@@ -66,16 +66,6 @@ The following sections might be of most interest:
 * Building from source in the [developers getting started](https://github.com/OpenNMS-Cloud/lokahi/wiki/Getting-Started) section
 * [Troubleshooting](https://github.com/OpenNMS-Cloud/lokahi/wiki/Troubleshooting) for quick help
 
-## Rapid Development Profile
-
-To facilitate more rapid development, the `rapid-build` Maven profile
-disables intergation tests (Failsafe) and the Karaf Maven plugin's validation of features.
-
-You can enable it in standard Maven ways:
-* Manually add `-P rapid-build` to individual `mvn` commands.
-* Add the `rapid-build` profile to the user's `settings.xml` file in the `<activeProfiles>` section.
-* Create a file at `${user.home}/.OPENNMS-RAPID-BUILD`.
-
 ## License
 
 The software is licensed under the GNU Affero General Public License 3.0.
