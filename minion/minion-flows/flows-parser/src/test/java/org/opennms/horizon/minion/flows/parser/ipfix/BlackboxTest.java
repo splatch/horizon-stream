@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.slice;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
@@ -75,7 +76,8 @@ public class BlackboxTest {
 
     @Test
     public void testFiles() throws Exception {
-        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), InetSocketAddress.createUnresolved("localhost", 49152),
+            () -> new SequenceNumberTracker(32));
 
         for (final String file : this.files) {
 

@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.slice;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
@@ -97,7 +98,8 @@ public class NMS13006_Test {
     }
 
     public void testFile(final String filename) throws Exception {
-        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), InetSocketAddress.createUnresolved("localhost", 49152),
+            () -> new SequenceNumberTracker(32));
 
         try (final FileChannel channel = FileChannel.open(FOLDER.resolve(filename))) {
             final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());

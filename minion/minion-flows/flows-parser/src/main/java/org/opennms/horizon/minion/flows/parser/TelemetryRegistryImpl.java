@@ -36,6 +36,8 @@ import org.opennms.horizon.flows.document.FlowDocument;
 import org.opennms.horizon.flows.document.FlowDocumentLog;
 import org.opennms.horizon.minion.flows.listeners.Listener;
 import org.opennms.horizon.minion.flows.listeners.Parser;
+import org.opennms.horizon.minion.flows.listeners.TcpParser;
+import org.opennms.horizon.minion.flows.listeners.UdpParser;
 import org.opennms.horizon.minion.flows.listeners.factory.ListenerFactory;
 import org.opennms.horizon.minion.flows.listeners.factory.TcpListenerFactory;
 import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerFactory;
@@ -53,6 +55,8 @@ import org.opennms.sink.flows.contract.ParserConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.Getter;
+
 // TODO: this should be replace by using AlertingPluginRegistry to make plugins work.
 // TODO: AlertingPluginRegistry needs de-registration to make dynamic loading work.
 // TODO: And then this will replace TelemetryRegistry
@@ -62,6 +66,15 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
 
     private final List<ListenerFactory> listenerFactories = new ArrayList<>();
     private final List<ParserFactory> parserFactories = new ArrayList<>();
+
+    @Getter
+    private final List<Listener> listeners = new ArrayList<>();
+
+    @Getter
+    private final List<UdpParser> udpParsers = new ArrayList<>();
+
+    @Getter
+    private final List<TcpParser> tcpParsers = new ArrayList<>();
 
     private final AsyncDispatcher<FlowDocument> dispatcher;
 
@@ -98,7 +111,9 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     public Listener createListener(ListenerConfig listenerConfig) {
         for (var factory : this.listenerFactories) {
             if (listenerConfig.getClassName().equals(factory.getListenerClass().getCanonicalName())) {
-                return factory.create(listenerConfig);
+                Listener listener = factory.create(listenerConfig);
+                listeners.add(listener);
+                return listener;
             }
         }
 
@@ -109,7 +124,13 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     public Parser createParser(ParserConfig parserConfig) {
         for (var factory : this.parserFactories) {
             if (parserConfig.getClassName().equals(factory.getParserClass().getCanonicalName())) {
-                return factory.create(parserConfig);
+                Parser parser = factory.create(parserConfig);
+                if (parser instanceof UdpParser) {
+                    udpParsers.add((UdpParser) parser);
+                } else {
+                    tcpParsers.add((TcpParser) parser);
+                }
+                return parser;
             }
         }
 

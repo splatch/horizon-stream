@@ -88,7 +88,7 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     }
 
     @Override
-    protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
+    public UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
         return new SessionKey(remoteAddress, localAddress);
     }
 
@@ -107,7 +107,7 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
             if (o == null || getClass() != o.getClass()) return false;
             final SessionKey that = (SessionKey) o;
             return Objects.equal(this.localAddress, that.localAddress) &&
-                    Objects.equal(this.remoteAddress, that.remoteAddress);
+                Objects.equal(this.remoteAddress, that.remoteAddress);
         }
 
         @Override
@@ -118,9 +118,9 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
         @Override
         public String toString() {
             return MoreObjects.toStringHelper(this)
-                    .add("remoteAddress", remoteAddress)
-                    .add("localAddress", localAddress)
-                    .toString();
+                .add("remoteAddress", remoteAddress)
+                .add("localAddress", localAddress)
+                .toString();
         }
 
         @Override
@@ -133,5 +133,9 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
             return this.remoteAddress.getAddress();
         }
 
+        @Override
+        public InetSocketAddress getLocalAddress() {
+            return this.localAddress;
+        }
     }
 }

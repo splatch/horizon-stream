@@ -34,6 +34,7 @@ import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.slice
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -63,7 +64,8 @@ public class ParserTest {
         execute(IP_FIX_RESOURCE, buffer -> {
             try {
 
-                final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
+                final Session session = new TcpSession(InetAddress.getLoopbackAddress(), InetSocketAddress.createUnresolved("localhost", 49152),
+                    () -> new SequenceNumberTracker(32));
 
                 final Header h1 = new Header(slice(buffer, Header.SIZE));
                 final Packet p1 = new Packet(session, h1, slice(buffer, h1.length - Header.SIZE));

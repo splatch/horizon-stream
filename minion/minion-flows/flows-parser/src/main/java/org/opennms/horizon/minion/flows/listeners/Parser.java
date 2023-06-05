@@ -42,6 +42,8 @@ public interface Parser {
     String getName();
     String getDescription();
 
+    String getShortName();
+
     Object dumpInternalState();
 
     void start(final ScheduledExecutorService executorService);

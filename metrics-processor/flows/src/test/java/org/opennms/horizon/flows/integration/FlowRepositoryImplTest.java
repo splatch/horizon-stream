@@ -63,5 +63,7 @@ class FlowRepositoryImplTest {
 
         Mockito.verify(ingesterBlockingStub, Mockito.times(3))
             .storeFlowDocuments(Mockito.argThat(new FlowDocumentArgumentMatcher()));
+        Mockito.verify(ingesterBlockingStub, Mockito.times(3))
+            .storeFlowDocuments(Mockito.any(StoreFlowDocumentsRequest.class));
     }
 }

@@ -29,6 +29,7 @@
 package org.opennms.horizon.minion.flows.parser.session;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -118,6 +119,8 @@ public class UdpSessionManager {
         String getDescription();
 
         InetAddress getRemoteAddress();
+
+        InetSocketAddress getLocalAddress();
     }
 
     private final static class DomainKey {
@@ -257,6 +260,11 @@ public class UdpSessionManager {
         @Override
         public InetAddress getRemoteAddress() {
             return this.sessionKey.getRemoteAddress();
+        }
+
+        @Override
+        public InetSocketAddress getLocalAddress() {
+            return this.sessionKey.getLocalAddress();
         }
 
         @Override

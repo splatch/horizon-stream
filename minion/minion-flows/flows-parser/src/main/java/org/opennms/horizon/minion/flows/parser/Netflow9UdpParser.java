@@ -87,7 +87,7 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
     }
 
     @Override
-    protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
+    public UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
         return new SessionKey(remoteAddress.getAddress(), localAddress);
     }
 
@@ -130,6 +130,11 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
         @Override
         public InetAddress getRemoteAddress() {
             return this.remoteAddress;
+        }
+
+        @Override
+        public InetSocketAddress getLocalAddress() {
+            return this.localAddress;
         }
     }
 }

@@ -31,6 +31,7 @@ package org.opennms.horizon.minion.flows.parser;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +51,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
 
 public abstract class UdpParserBase extends ParserBase implements UdpParser {
     public final static long HOUSEKEEPING_INTERVAL = 60000;
@@ -57,7 +59,11 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
     private final Meter packetsReceived;
     private final Counter parserErrors;
 
+    @Getter
     private UdpSessionManager sessionManager;
+
+    @Getter
+    private ConcurrentHashMap<UdpSessionManager.SessionKey, Session> sessionKeyHashMap = new ConcurrentHashMap<>();
 
     private ScheduledFuture<?> housekeepingFuture;
     private final Duration templateTimeout = Duration.ofMinutes(30);
@@ -83,8 +89,6 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
 
     protected abstract RecordProvider parse(final Session session, final ByteBuf buffer) throws Exception;
 
-    protected abstract UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress);
-
     public final CompletableFuture<?> parse(final ByteBuf buffer,
                                             final InetSocketAddress remoteAddress,
                                             final InetSocketAddress localAddress) throws Exception {
@@ -92,6 +96,8 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
 
         final UdpSessionManager.SessionKey sessionKey = this.buildSessionKey(remoteAddress, localAddress);
         final Session session = this.sessionManager.getSession(sessionKey);
+        // Check if the key is present before ?
+        sessionKeyHashMap.put(sessionKey, session);
 
         try {
             return this.transmit(this.parse(session, buffer), session, remoteAddress);

@@ -29,8 +29,12 @@
 package org.opennms.horizon.minion.flows.parser;
 
 import org.opennms.horizon.flows.document.FlowDocument;
+import java.util.List;
+
 import org.opennms.horizon.minion.flows.listeners.Listener;
 import org.opennms.horizon.minion.flows.listeners.Parser;
+import org.opennms.horizon.minion.flows.listeners.TcpParser;
+import org.opennms.horizon.minion.flows.listeners.UdpParser;
 import org.opennms.horizon.shared.ipc.sink.api.AsyncDispatcher;
 import org.opennms.sink.flows.contract.ListenerConfig;
 import org.opennms.sink.flows.contract.ParserConfig;
@@ -42,4 +46,10 @@ public interface TelemetryRegistry {
     Parser createParser(ParserConfig parserConfig);
 
     AsyncDispatcher<FlowDocument> getDispatcher();
+
+    List<UdpParser> getUdpParsers();
+
+    List<TcpParser> getTcpParsers();
+
+    List<Listener> getListeners();
 }

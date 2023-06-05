@@ -29,6 +29,7 @@
 package org.opennms.horizon.minion.flows.parser.session;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.List;
 
@@ -56,6 +57,8 @@ public interface Session {
     Resolver getResolver(final long observationDomainId);
 
     InetAddress getRemoteAddress();
+
+    InetSocketAddress getLocalAddress();
 
     boolean verifySequenceNumber(final long observationDomainId,
                                  final long sequenceNumber);

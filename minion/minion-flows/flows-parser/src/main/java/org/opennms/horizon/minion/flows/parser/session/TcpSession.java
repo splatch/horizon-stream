@@ -29,6 +29,7 @@
 package org.opennms.horizon.minion.flows.parser.session;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,6 +53,8 @@ import org.opennms.horizon.minion.flows.parser.ie.Value;
 import org.opennms.horizon.minion.flows.parser.state.ExporterState;
 import org.opennms.horizon.minion.flows.parser.state.OptionState;
 import org.opennms.horizon.minion.flows.parser.state.TemplateState;
+
+import lombok.Getter;
 
 public class TcpSession implements Session {
     private final class Resolver implements Session.Resolver {
@@ -130,14 +133,16 @@ public class TcpSession implements Session {
     }
 
     private final InetAddress remoteAddress;
+    private final InetSocketAddress localAddress;
     private final Map<TemplateKey, Template> templates = Maps.newHashMap();
     private final Map<TemplateKey, Map<Set<Value<?>>, List<Value<?>>>> options = Maps.newHashMap();
     private final Map<Long, SequenceNumberTracker> sequenceNumbers = Maps.newHashMap();
 
     private final Supplier<SequenceNumberTracker> sequenceNumberTracker;
 
-    public TcpSession(final InetAddress remoteAddress, final Supplier<SequenceNumberTracker> sequenceNumberTracker) {
+    public TcpSession(final InetAddress remoteAddress, final InetSocketAddress localAddress, final Supplier<SequenceNumberTracker> sequenceNumberTracker) {
         this.remoteAddress = Objects.requireNonNull(remoteAddress);
+        this.localAddress = Objects.requireNonNull(localAddress);
         this.sequenceNumberTracker = Objects.requireNonNull(sequenceNumberTracker);
     }
 
@@ -173,6 +178,11 @@ public class TcpSession implements Session {
     @Override
     public InetAddress getRemoteAddress() {
         return this.remoteAddress;
+    }
+
+    @Override
+    public InetSocketAddress getLocalAddress() {
+        return this.localAddress;
     }
 
     @Override
