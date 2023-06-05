@@ -25,7 +25,7 @@ WORKDIR /app
 COPY --from=builder /app/operator .
 
 COPY charts/lokahi charts/lokahi
-COPY charts/opennms-operator/values.yaml charts/opennms-operator/values.yaml
+COPY charts/lokahi-operator/values.yaml charts/lokahi-operator/values.yaml
 
 COPY config/ config/
 
