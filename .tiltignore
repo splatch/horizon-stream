@@ -1,5 +1,5 @@
-charts/opennms/charts
-charts/opennms/tmpcharts
+charts/lokahi/charts
+charts/lokahi/tmpcharts
 charts/opennms-operator/charts
 charts/opennms-operator/tmpcharts
 charts/opennms-operator-dependencies/charts
