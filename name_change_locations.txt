@@ -192,7 +192,7 @@ charts/lokahi/onms-realm.json:5:  "loginTheme": "horizon-stream",
 charts/lokahi/onms-realm.json:6:  "emailTheme": "horizon-stream",
 charts/lokahi/onms-realm.json:11:      "clientId": "horizon-stream",
 charts/Makefile:7:	helm repo index --url https://opennms-cloud.github.io/horizon-stream/charts/packaged --merge packaged/index.yaml ./packaged
-charts/lokahi-operator/Chart.yaml:5:home: https://github.com/OpenNMS/horizon-stream
+charts/opennms-operator/Chart.yaml:5:home: https://github.com/OpenNMS/horizon-stream
 
 # Ignore these, already published.
 charts/packaged/index.yaml:9:    - https://opennms-cloud.github.io/horizon-stream/charts/packaged/opennms-0.7.4.tgz
