@@ -3,7 +3,7 @@
 <img src="images/LokahiExploration.png" alt="colorful swirl"/>
 
 Lōkahi (pronounced "loh-KAH-hee") is an open source network monitoring project designed for Cloud-native deployments: the next generation of OpenNMS Horizon.
-Both the word _lōkahi_, which means unity, unison, and harmony, and one of The OpenNMS Group's founders, share Hawaiian roots.
+Both the word _lōkahi_, which means unity, unison, and harmony, and David Hustace, one of The OpenNMS Group's founders, share Hawaiian roots.
 
 The OpenNMS project is 23 years young.
 Under continuous development during that time, it has evolved into a premier network monitoring solution with unparalleled scalability and reliability, deployed in many of the world's largest networks.
