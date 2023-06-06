@@ -25,7 +25,7 @@ Lōkahi aims to provide the following:
 
 This project is in early and active development, adding new features continually.
 
-For more details on the motivation behind the project and some high-level goals, see the "Introducing Lōkahi by OpenNMS"[LINK HERE] blog post.
+For more details on the motivation behind the project and some high-level goals, see the [Introducing Lōkahi by OpenNMS](https://www.opennms.com/en/blog/2023-06-07-introducing-lokahi-by-opennms/) blog post.
 
 ## Installation
 
