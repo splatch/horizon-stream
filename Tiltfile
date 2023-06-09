@@ -53,6 +53,12 @@ cmd_button(name='reload-certificates',
            location=location.NAV,
            icon_name='sync')
 
+cmd_button(name='reload-helm',
+           argv=['touch', 'tilt-helm-values.yaml'],
+           text='Helm upgrade',
+           location=location.NAV,
+           icon_name='system_update_alt')
+
 # Functions #
 cluster_arch_cmd = '$(tilt get cluster default -o=jsonpath --template="{.status.arch}")'
 
