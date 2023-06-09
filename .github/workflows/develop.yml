@@ -10,13 +10,6 @@ on:
 # Just use this one for now. The downside is it will run redundant workflows for code that didn't change.
     branches:
       - 'develop'
-    paths-ignore:
-      - '.github/**'
-      - 'CHANGELOG/**'
-      - 'build-tools/**'
-      - 'doc/**'
-      - 'tooling/**'
-      - 'tools/**'
   workflow_call:
     inputs:
       image-tag:
