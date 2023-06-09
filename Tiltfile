@@ -37,6 +37,7 @@
 
 # Tilt config #
 config.define_string("listen-on")
+config.define_string_list("values")
 config.define_string_list("args", args=True)
 cfg = config.parse()
 config.set_enabled_resources(cfg.get('args', []))
@@ -208,7 +209,7 @@ helm_resource('ingress-nginx', 'ingress-nginx-repo/ingress-nginx',
 k8s_yaml(
     helm(
         'charts/lokahi',
-        values=['./tilt-helm-values.yaml'],
+        values=['./tilt-helm-values.yaml'] + cfg.get('values', []),
     )
 )
 
