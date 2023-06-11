@@ -1,4 +1,6 @@
 controller:
+  podAnnotations:
+    kubectl.kubernetes.io/default-container: controller # needs to be the same as controller.containerName
   opentelemetry:
     enabled: true
   config:
