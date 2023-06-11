@@ -166,16 +166,6 @@ OpenNMS:
     env:
       OTEL_JAVAAGENT_ENABLED: "true" # Enable for local development since it adds useful data
     IngressAnnotations:
-      nginx.ingress.kubernetes.io/auth-tls-secret: default/client-root-ca-certificate
-      nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
-      nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
-      nginx.ingress.kubernetes.io/auth-url: "http://opennms-minion-certificate-verifier.default.svc.cluster.local:8080/certificate/debug"
-      nginx.ingress.kubernetes.io/auth-response-headers: "tenant-id, location"
-      nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "false"
-      nginx.ingress.kubernetes.io/server-snippet: |
-        grpc_read_timeout "1200s";
-        grpc_send_timeout "1200s";
-        client_body_timeout "1200s";
       nginx.ingress.kubernetes.io/configuration-snippet: |
         # This adds the tenant-id and location to the response headers sent to the client so we can use them in
         # logging. This is bit circuitous, and it is unnecessary to send these to the client, but this was a way I
