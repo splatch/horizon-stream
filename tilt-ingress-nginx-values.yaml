@@ -20,7 +20,7 @@ controller:
     location-snippet: |
       # This appears to need to be a location snippet to work, although it should supposedly work in the http context.
       # http://nginx.org/en/docs/http/ngx_http_headers_module.html#add_header
-      add_header Server-Timing "traceparent;desc=\"$opentelemetry_context_traceparent\"";
+      add_header Server-Timing "traceparent;desc=\"$opentelemetry_context_traceparent\"" always;
 
 # opentelemetry config options in this configmap:
 #   https://kubernetes.github.io/ingress-nginx/user-guide/third-party-addons/opentelemetry/
