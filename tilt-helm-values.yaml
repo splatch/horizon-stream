@@ -176,6 +176,9 @@ OpenNMS:
         grpc_read_timeout "1200s";
         grpc_send_timeout "1200s";
         client_body_timeout "1200s";
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        set $dummy_val "$opentelemetry_context_traceparent"; # workaround for https://github.com/kubernetes/ingress-nginx/issues/9811
+        grpc_set_header 'traceparent' $opentelemetry_context_traceparent; # This doesn't get sent downstream normally. :(
   MinionCertificateManager:
     Enabled: true
     CaSecretName: root-ca-certificate
