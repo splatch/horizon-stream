@@ -78,7 +78,7 @@ OpenNMS:
           - -c
           - |
             set -euo pipefail
-            trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+            trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; if [ -f /tmp/curl-headers.txt ]; then grep server-timing: /tmp/curl-headers.txt; fi; exit $s' ERR
 
             url="https://onmshs.local:1443"
             set -- --connect-to onmshs.local:1443:ingress-nginx-controller.default.svc.cluster.local:443
@@ -87,6 +87,7 @@ OpenNMS:
             graphql="${url}/"
 
             token=$(curl "$@" -sSf -k -X POST -H "Content-Type\\: application/x-www-form-urlencoded" \
+              --dump-header /tmp/curl-headers.txt \
               -d 'username=admin' \
               -d 'password=admin' \
               -d 'grant_type=password' \
@@ -98,6 +99,7 @@ OpenNMS:
             query="{\"query\": \"query { searchLocation(searchTerm: \\\"LOC_NAME\\\") { id, location } }\"}"
             query=${query/LOC_NAME/$locationName}
             result=$(curl "$@" -sSf -k -H "Content-Type: application/json" \
+              --dump-header /tmp/curl-headers.txt \
               -H "Authorization: Bearer $token" \
               --data "${query}" \
               "${graphql}api/graphql")
@@ -115,6 +117,7 @@ OpenNMS:
               query="{\"query\": \"mutation { createLocation(location: {location: \\\"LOC_NAME\\\"}) { id, location } }\"}"
               query=${query/LOC_NAME/$locationName}
               result=$(curl "$@" -sSf -k -H "Content-Type: application/json" \
+                --dump-header /tmp/curl-headers.txt \
                 -H "Authorization: Bearer $token" \
                 --data "${query}" \
                 "${graphql}api/graphql")
