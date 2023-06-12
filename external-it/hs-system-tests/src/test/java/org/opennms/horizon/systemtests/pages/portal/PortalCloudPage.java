@@ -170,6 +170,10 @@ public class PortalCloudPage {
         noDataSubTxt.shouldHave(text("Get started by selecting Add Instance."));
     }
 
+    public static void verifyNoInstancesTxtMember() {
+        noDataTxt.shouldBe(visible, text("No instances available."));
+    }
+
     public static void clickInstanceNameTitle() {
         instanceNameTitle.click();
     }

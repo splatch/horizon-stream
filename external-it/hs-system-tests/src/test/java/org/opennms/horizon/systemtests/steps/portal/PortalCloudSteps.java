@@ -117,7 +117,7 @@ public class PortalCloudSteps {
 
     @Then("sees 'No instances available.' section without 'ADD INSTANCE' button")
     public void verifyNoInstancesWithNoAddButton() {
-        PortalCloudPage.verifyNoInstancesTxt();
+        PortalCloudPage.verifyNoInstancesTxtMember();
         PortalCloudPage.addInstanceNoDataBtnHasState(hidden);
         PortalCloudPage.clearSearchBtnIsHidden();
     }
