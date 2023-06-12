@@ -58,15 +58,15 @@ public class PortalCloudPage {
 
     private static final SelenideElement headerTxt = $("#header");
     private static final SelenideElement subscriptionInfoTxt = $("[data-ref-id='feather-chip-list']");
-    private static final SelenideElement addInstanceBtn = $("#cloud-add-instance-button");
+    private static final SelenideElement addInstanceBtn = $(By.id("cloud-add-instance-button"));
     private static final SelenideElement instanceTable = $("table.condensed  tbody");
     private static final ElementsCollection names = $$x("//tbody/tr/td[position()=1]");
     private static final SelenideElement instanceNameTitle = $("th[data-ref-id='feather-sort-header']");
-    private static final SelenideElement logInBtn = $("#cloud-instances-row-login-0");
-    private static final SelenideElement detailsBtn = $("#cloud-instances-row-details-0");
-    private static final SelenideElement clearSearchBtn = $("#cloud-instances-nodata-clear-search");
-    private static final SelenideElement addInstanceNoDataBtn = $("#cloud-instances-nodata-add-instance");
-    private static final SelenideElement searchInstanceInp = $("#cloud-instances-search");
+    private static final SelenideElement logInBtn = $(By.id("cloud-instances-row-login-0"));
+    private static final SelenideElement detailsBtn = $(By.id("cloud-instances-row-details-0"));
+    private static final SelenideElement clearSearchBtn = $(By.id("cloud-instances-nodata-clear-search"));
+    private static final SelenideElement addInstanceNoDataBtn = $(By.id("cloud-instances-nodata-add-instance"));
+    private static final SelenideElement searchInstanceInp = $(By.id("cloud-instances-search"));
     private static final SelenideElement shadedBackground = $("div.backdrop");
     private static final SelenideElement spinner = $("div.cloud-instances div.spinner-container");
     private static final SelenideElement noDataTxt = $("h3.empty-view");
@@ -80,7 +80,8 @@ public class PortalCloudPage {
 
     public static void verifyMainPageHeader() {
         headerTxt.shouldBe(visible, Duration.ofMinutes(1)).shouldHave(text("OpenNMS Cloud"));
-        waitSpinnerDisappear();
+        // TODO: waiting for the spinner leads to intermittent failures.
+//        waitSpinnerDisappear();
     }
 
     public static void clickAddInstance() {

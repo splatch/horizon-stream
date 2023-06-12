@@ -32,6 +32,7 @@ package org.opennms.horizon.systemtests.pages.portal;
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import org.openqa.selenium.By;
 
 import java.util.List;
 
@@ -55,14 +56,14 @@ public class EditInstancePage {
     private static final ElementsCollection usersRow = $$("tbody tr");
     private static final SelenideElement usersTable = $("tbody");
     private static final ElementsCollection emails = $$x("//tbody//td[position()=2]/div");
-    private static final SelenideElement searchUserInp = $("#cloud-details-users-search");
-    private static final SelenideElement deleteInstanceBtn = $("#delete-btn-cloud-instance");
-    private static final SelenideElement editNameBtn = $("#edit-btn-cloud-instance");
-    private static final SelenideElement instanceUrlTxt = $("#cloud-details-instance-url");
-    private static final SelenideElement copyUrlBtn = $("#copy-url-btn");
-    private static final SelenideElement goBackBtn = $("#cloud-details-back");
-    private static final SelenideElement addUserBtn = $("#cloud-add-user-button");
-    private static final SelenideElement userSearchInp = $("#cloud-details-users-search");
+    private static final SelenideElement searchUserInp = $(By.id("cloud-details-users-search"));
+    private static final SelenideElement deleteInstanceBtn = $(By.id("delete-btn-cloud-instance"));
+    private static final SelenideElement editNameBtn = $(By.id("edit-btn-cloud-instance"));
+    private static final SelenideElement instanceUrlTxt = $(By.id("cloud-details-instance-url"));
+    private static final SelenideElement copyUrlBtn = $(By.id("copy-url-btn"));
+    private static final SelenideElement goBackBtn = $(By.id("cloud-details-back"));
+    private static final SelenideElement addUserBtn = $(By.id("cloud-add-user-button"));
+    private static final SelenideElement userSearchInp = $(By.id("cloud-details-users-search"));
     private static final SelenideElement spinner = $("div.data-table .spinner-container");
 
     public static void clickGoBackButton() {
