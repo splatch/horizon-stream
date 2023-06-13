@@ -29,7 +29,6 @@
 package org.opennms.horizon.minion.flows.shell;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -44,6 +43,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -51,11 +51,13 @@ import java.util.function.Consumer;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.horizon.flows.document.FlowDocument;
+import org.opennms.horizon.minion.flows.listeners.Parser;
 import org.opennms.horizon.minion.flows.listeners.UdpParser;
 import org.opennms.horizon.minion.flows.parser.FlowSinkModule;
 import org.opennms.horizon.minion.flows.parser.FlowsListenerFactory;
 import org.opennms.horizon.minion.flows.parser.TelemetryRegistry;
 import org.opennms.horizon.minion.flows.parser.TelemetryRegistryImpl;
+import org.opennms.horizon.minion.flows.parser.TestUtil;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
 import org.opennms.horizon.minion.flows.parser.session.SequenceNumberTracker;
 import org.opennms.horizon.minion.flows.parser.session.UdpSessionManager;
@@ -92,39 +94,47 @@ public class ClearSeassionCmdTest {
         new FlowsListenerFactory(telemetryRegistry).create(readFlowsConfig());
 
         // Set up ClearSeassionCmd parameters
-        final ClearSessionCmd clearSessionCmd = new ClearSessionCmd();
-        clearSessionCmd.featureShortName = "N9";
+        final ClearUdpSessionCmd clearSessionCmd = new ClearUdpSessionCmd();
+        clearSessionCmd.keyword = "netflow9";
         clearSessionCmd.protocolShortName = "udp";
         clearSessionCmd.portNumber = 49152;
+        clearSessionCmd.observationDomainId = 1;
         clearSessionCmd.registry = telemetryRegistry;
 
-        UdpParser netflow9Parser = telemetryRegistry.getUdpParsers().stream()
-            .filter(udpParser -> udpParser.getShortName().equals(clearSessionCmd.featureShortName)).findFirst().get();
         ScheduledExecutorService scheduledExecutorService = Mockito.mock(ScheduledExecutorService.class);
+        InetSocketAddress localSocketAddress = new InetSocketAddress("localhost", 49152);
+        InetSocketAddress remoteSocketAddress = buildLocalSocketAddress(TestUtil.findAvailablePort(12345, 12370));
 
-        execute(TEST_FILE, buffer -> {
+        List<Parser> udpParsers = telemetryRegistry.getParsers().stream()
+            .filter(udpParser -> udpParser.getKeyword().equals(clearSessionCmd.keyword)).toList();
+
+        udpParsers.forEach(netflow9Parser -> execute(TEST_FILE, buffer -> {
             try {
                 netflow9Parser.start(scheduledExecutorService);
-                netflow9Parser.parse(buffer, buildLocalSocketAddress(), buildLocalSocketAddress());
+                ((UdpParser) netflow9Parser).parse(buffer, remoteSocketAddress, localSocketAddress);
+                assertFalse(((UdpParser) netflow9Parser).getSessionManager().getTemplates().isEmpty());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        });
+        }));
 
-        // Then
-        assertNotNull(netflow9Parser.getSessionKeyHashMap());
-        assertFalse(netflow9Parser.getSessionKeyHashMap().isEmpty());
-        assertNotNull(netflow9Parser.getSessionManager().getSession(netflow9Parser.buildSessionKey(buildLocalSocketAddress(), buildLocalSocketAddress())));
+        udpParsers.stream().filter(udpParser -> udpParser instanceof UdpParser)
+            .forEach(netflow9Parser -> {
 
-        // When
-        clearSessionCmd.execute();
+                // When
+                try {
+                    clearSessionCmd.execute();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
 
-        // Then
-        assertTrue(netflow9Parser.getSessionKeyHashMap().isEmpty());
+                // Then
+                assertTrue(((UdpParser) netflow9Parser).getSessionManager().getTemplates().isEmpty());
+            });
     }
 
-    private InetSocketAddress buildLocalSocketAddress() {
-        return InetSocketAddress.createUnresolved("localhost", 49152);
+    private InetSocketAddress buildLocalSocketAddress(int port) {
+        return new InetSocketAddress("localhost", port);
     }
 
     Any readFlowsConfig() throws IOException {

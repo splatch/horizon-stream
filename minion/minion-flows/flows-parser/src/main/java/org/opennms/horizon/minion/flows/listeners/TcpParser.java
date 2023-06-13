@@ -48,8 +48,6 @@ public interface TcpParser extends Parser {
         Optional<CompletableFuture<?>> parse(final ByteBuf buffer) throws Exception;
     }
 
-    Set<TcpSession> getSessions();
-
     Handler accept(final InetSocketAddress remoteAddress,
                    final InetSocketAddress localAddress);
 }

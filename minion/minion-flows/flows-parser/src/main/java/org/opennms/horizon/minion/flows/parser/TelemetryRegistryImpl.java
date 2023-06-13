@@ -71,10 +71,7 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     private final List<Listener> listeners = new ArrayList<>();
 
     @Getter
-    private final List<UdpParser> udpParsers = new ArrayList<>();
-
-    @Getter
-    private final List<TcpParser> tcpParsers = new ArrayList<>();
+    private final List<Parser> parsers = new ArrayList<>();
 
     private final AsyncDispatcher<FlowDocument> dispatcher;
 
@@ -111,6 +108,7 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     public Listener createListener(ListenerConfig listenerConfig) {
         for (var factory : this.listenerFactories) {
             if (listenerConfig.getClassName().equals(factory.getListenerClass().getCanonicalName())) {
+                // TODO: check this one
                 Listener listener = factory.create(listenerConfig);
                 listeners.add(listener);
                 return listener;
@@ -125,11 +123,7 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
         for (var factory : this.parserFactories) {
             if (parserConfig.getClassName().equals(factory.getParserClass().getCanonicalName())) {
                 Parser parser = factory.create(parserConfig);
-                if (parser instanceof UdpParser) {
-                    udpParsers.add((UdpParser) parser);
-                } else {
-                    tcpParsers.add((TcpParser) parser);
-                }
+                parsers.add(parser);
                 return parser;
             }
         }

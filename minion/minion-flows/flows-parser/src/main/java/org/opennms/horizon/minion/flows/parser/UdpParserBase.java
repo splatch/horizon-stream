@@ -62,9 +62,6 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
     @Getter
     private UdpSessionManager sessionManager;
 
-    @Getter
-    private ConcurrentHashMap<UdpSessionManager.SessionKey, Session> sessionKeyHashMap = new ConcurrentHashMap<>();
-
     private ScheduledFuture<?> housekeepingFuture;
     private final Duration templateTimeout = Duration.ofMinutes(30);
 
@@ -96,8 +93,6 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
 
         final UdpSessionManager.SessionKey sessionKey = this.buildSessionKey(remoteAddress, localAddress);
         final Session session = this.sessionManager.getSession(sessionKey);
-        // Check if the key is present before ?
-        sessionKeyHashMap.put(sessionKey, session);
 
         try {
             return this.transmit(this.parse(session, buffer), session, remoteAddress);

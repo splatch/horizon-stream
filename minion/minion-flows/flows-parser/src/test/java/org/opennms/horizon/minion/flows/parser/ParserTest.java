@@ -64,7 +64,7 @@ public class ParserTest {
         execute(IP_FIX_RESOURCE, buffer -> {
             try {
 
-                final Session session = new TcpSession(InetAddress.getLoopbackAddress(), InetSocketAddress.createUnresolved("localhost", 49152),
+                final Session session = new TcpSession(InetSocketAddress.createUnresolved("localhost", 49152), InetAddress.getLoopbackAddress(),
                     () -> new SequenceNumberTracker(32));
 
                 final Header h1 = new Header(slice(buffer, Header.SIZE));

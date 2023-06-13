@@ -140,7 +140,7 @@ public class TcpSession implements Session {
 
     private final Supplier<SequenceNumberTracker> sequenceNumberTracker;
 
-    public TcpSession(final InetAddress remoteAddress, final InetSocketAddress localAddress, final Supplier<SequenceNumberTracker> sequenceNumberTracker) {
+    public TcpSession(final InetSocketAddress localAddress, final InetAddress remoteAddress, final Supplier<SequenceNumberTracker> sequenceNumberTracker) {
         this.remoteAddress = Objects.requireNonNull(remoteAddress);
         this.localAddress = Objects.requireNonNull(localAddress);
         this.sequenceNumberTracker = Objects.requireNonNull(sequenceNumberTracker);

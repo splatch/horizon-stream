@@ -42,8 +42,6 @@ public interface UdpParser extends Parser {
                                final InetSocketAddress remoteAddress,
                                final InetSocketAddress localAddress) throws Exception;
 
-    ConcurrentHashMap<UdpSessionManager.SessionKey, Session> getSessionKeyHashMap();
-
     UdpSessionManager getSessionManager();
 
     UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress);

@@ -218,8 +218,8 @@ public abstract class ParserBase implements Parser {
     }
 
     @Override
-    public String getShortName() {
-        return this.protocol.shortName;
+    public String getKeyword() {
+        return this.protocol.keyword;
     }
 
     public void setMaxClockSkew(final long maxClockSkew) {

@@ -55,8 +55,12 @@ import org.opennms.horizon.minion.flows.parser.state.ExporterState;
 import org.opennms.horizon.minion.flows.parser.state.ParserState;
 import org.opennms.horizon.minion.flows.parser.state.TemplateState;
 
+import lombok.Getter;
+
 public class UdpSessionManager {
+    @Getter
     final ConcurrentMap<TemplateKey, TimeWrapper<TemplateOptions>> templates = Maps.newConcurrentMap();
+    @Getter
     private final Map<DomainKey, SequenceNumberTracker> sequenceNumbers = Maps.newConcurrentMap();
     private final Duration timeout;
     private final Supplier<SequenceNumberTracker> sequenceNumberTracker;
@@ -71,7 +75,7 @@ public class UdpSessionManager {
         this.removeTemplateIf(e -> e.getValue().time.isBefore(timeout));
     }
 
-    private void removeTemplateIf(final Predicate<Map.Entry<TemplateKey, TimeWrapper<TemplateOptions>>> predicate) {
+    public void removeTemplateIf(final Predicate<Map.Entry<TemplateKey, TimeWrapper<TemplateOptions>>> predicate) {
         UdpSessionManager.this.templates.entrySet().removeIf(predicate);
     }
 
@@ -123,7 +127,9 @@ public class UdpSessionManager {
         InetSocketAddress getLocalAddress();
     }
 
-    private final static class DomainKey {
+    @Getter
+    public final static class DomainKey {
+        @Getter
         public final SessionKey sessionKey;
         public final long observationDomainId;
 
@@ -153,7 +159,8 @@ public class UdpSessionManager {
         }
     }
 
-    final static class TemplateKey {
+    @Getter
+    public final static class TemplateKey {
         public final DomainKey observationDomainId;
         public final int templateId;
 

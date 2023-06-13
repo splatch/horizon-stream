@@ -28,7 +28,10 @@
 
 package org.opennms.horizon.minion.flows.listeners;
 
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+
+import org.opennms.horizon.minion.flows.parser.session.Session;
 
 /**
  * Interface used by the daemon to manage parsers.
@@ -42,7 +45,7 @@ public interface Parser {
     String getName();
     String getDescription();
 
-    String getShortName();
+    String getKeyword();
 
     Object dumpInternalState();
 

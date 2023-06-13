@@ -31,7 +31,6 @@ package org.opennms.horizon.minion.flows.parser;
 import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.slice;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -41,7 +40,6 @@ import org.opennms.horizon.minion.flows.listeners.TcpParser;
 import org.opennms.horizon.minion.flows.parser.factory.DnsResolver;
 import org.opennms.horizon.minion.flows.parser.ipfix.proto.Header;
 import org.opennms.horizon.minion.flows.parser.ipfix.proto.Packet;
-import org.opennms.horizon.minion.flows.parser.session.Session;
 import org.opennms.horizon.minion.flows.parser.session.TcpSession;
 import org.opennms.horizon.minion.flows.parser.state.ParserState;
 import org.opennms.horizon.minion.flows.parser.transport.IpFixMessageBuilder;
@@ -78,7 +76,7 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
     @Override
     public Handler accept(final InetSocketAddress remoteAddress,
                           final InetSocketAddress localAddress) {
-        final TcpSession session = new TcpSession(remoteAddress.getAddress(), localAddress, this::sequenceNumberTracker);
+        final TcpSession session = new TcpSession(localAddress, remoteAddress.getAddress(), this::sequenceNumberTracker);
 
         return new Handler() {
             @Override
