@@ -96,7 +96,6 @@ public class ClearSeassionCmdTest {
         // Set up ClearSeassionCmd parameters
         final ClearUdpSessionCmd clearSessionCmd = new ClearUdpSessionCmd();
         clearSessionCmd.keyword = "netflow9";
-        clearSessionCmd.protocolShortName = "udp";
         clearSessionCmd.portNumber = 49152;
         clearSessionCmd.observationDomainId = 1;
         clearSessionCmd.registry = telemetryRegistry;
