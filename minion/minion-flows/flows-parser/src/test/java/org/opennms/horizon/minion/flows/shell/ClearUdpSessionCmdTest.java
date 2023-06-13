@@ -43,6 +43,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
@@ -75,7 +76,7 @@ import io.netty.buffer.Unpooled;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ClearSeassionCmdTest {
+public class ClearUdpSessionCmdTest {
 
     private final static String TEST_FILE = "/flows/netflow9_test_cisco_wlc_tpl.dat";
 
@@ -91,21 +92,24 @@ public class ClearSeassionCmdTest {
         when(messageDispatcherFactory.createAsyncDispatcher(any(FlowSinkModule.class))).thenReturn(dispatcher);
         TelemetryRegistry telemetryRegistry = new TelemetryRegistryImpl(messageDispatcherFactory, identity, dnsResolver);
 
-        new FlowsListenerFactory(telemetryRegistry).create(readFlowsConfig());
+        FlowsListenerFactory.FlowsListener flowsListener = new FlowsListenerFactory(telemetryRegistry).create(readFlowsConfig());
 
         // Set up ClearSeassionCmd parameters
         final ClearUdpSessionCmd clearSessionCmd = new ClearUdpSessionCmd();
         clearSessionCmd.keyword = "netflow9";
         clearSessionCmd.portNumber = 49152;
         clearSessionCmd.observationDomainId = 1;
-        clearSessionCmd.registry = telemetryRegistry;
+        clearSessionCmd.flowsListener = flowsListener;
 
         ScheduledExecutorService scheduledExecutorService = Mockito.mock(ScheduledExecutorService.class);
         InetSocketAddress localSocketAddress = new InetSocketAddress("localhost", 49152);
         InetSocketAddress remoteSocketAddress = buildLocalSocketAddress(TestUtil.findAvailablePort(12345, 12370));
 
-        List<Parser> udpParsers = telemetryRegistry.getParsers().stream()
-            .filter(udpParser -> udpParser.getKeyword().equals(clearSessionCmd.keyword)).toList();
+        List<Parser> udpParsers = new ArrayList<>();
+        flowsListener.getListeners()
+            .forEach(listener -> udpParsers.addAll(listener.getParsers().stream()
+                .filter(parser -> parser instanceof UdpParser)
+                .filter(parser -> clearSessionCmd.keyword.equals(parser.getKeyword())).toList()));
 
         udpParsers.forEach(netflow9Parser -> execute(TEST_FILE, buffer -> {
             try {

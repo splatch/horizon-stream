@@ -44,8 +44,4 @@ public interface TelemetryRegistry {
     Parser createParser(ParserConfig parserConfig);
 
     AsyncDispatcher<FlowDocument> getDispatcher();
-    
-    List<Parser> getParsers();
-
-    List<Listener> getListeners();
 }

@@ -67,12 +67,6 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     private final List<ListenerFactory> listenerFactories = new ArrayList<>();
     private final List<ParserFactory> parserFactories = new ArrayList<>();
 
-    @Getter
-    private final List<Listener> listeners = new ArrayList<>();
-
-    @Getter
-    private final List<Parser> parsers = new ArrayList<>();
-
     private final AsyncDispatcher<FlowDocument> dispatcher;
 
     public TelemetryRegistryImpl(MessageDispatcherFactory messageDispatcherFactory,
@@ -108,10 +102,7 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     public Listener createListener(ListenerConfig listenerConfig) {
         for (var factory : this.listenerFactories) {
             if (listenerConfig.getClassName().equals(factory.getListenerClass().getCanonicalName())) {
-                // TODO: check this one
-                Listener listener = factory.create(listenerConfig);
-                listeners.add(listener);
-                return listener;
+                return factory.create(listenerConfig);
             }
         }
 
@@ -122,9 +113,7 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
     public Parser createParser(ParserConfig parserConfig) {
         for (var factory : this.parserFactories) {
             if (parserConfig.getClassName().equals(factory.getParserClass().getCanonicalName())) {
-                Parser parser = factory.create(parserConfig);
-                parsers.add(parser);
-                return parser;
+                return factory.create(parserConfig);
             }
         }
 

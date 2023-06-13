@@ -60,7 +60,6 @@ import lombok.Getter;
 public class UdpSessionManager {
     @Getter
     final ConcurrentMap<TemplateKey, TimeWrapper<TemplateOptions>> templates = Maps.newConcurrentMap();
-    @Getter
     private final Map<DomainKey, SequenceNumberTracker> sequenceNumbers = Maps.newConcurrentMap();
     private final Duration timeout;
     private final Supplier<SequenceNumberTracker> sequenceNumberTracker;

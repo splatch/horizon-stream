@@ -29,7 +29,9 @@
 
 package org.opennms.horizon.minion.flows.shell;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.karaf.shell.api.action.Action;
@@ -39,6 +41,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.horizon.minion.flows.listeners.Parser;
 import org.opennms.horizon.minion.flows.listeners.UdpParser;
+import org.opennms.horizon.minion.flows.parser.FlowsListenerFactory;
 import org.opennms.horizon.minion.flows.parser.TelemetryRegistry;
 
 /**
@@ -49,7 +52,7 @@ import org.opennms.horizon.minion.flows.parser.TelemetryRegistry;
 public class ClearUdpSessionCmd implements Action {
 
     @Reference
-    TelemetryRegistry registry;
+    FlowsListenerFactory.FlowsListener flowsListener;
 
     @Option(name = "-f", aliases = "--keyword", description = "specify protocol keyword")
     String keyword = "not-specified";
@@ -75,21 +78,23 @@ public class ClearUdpSessionCmd implements Action {
 
         // Udp Sessions
         // Get Udp Parsers
-        List<Parser> udpParsers = registry.getParsers().stream()
-            .filter(parser -> parser instanceof UdpParser)
-            .filter(parser -> keyword.equals(parser.getKeyword())).toList();
+        List<Parser> udpParsers = new ArrayList<>();
+        flowsListener.getListeners()
+            .forEach(listener -> udpParsers.addAll(listener.getParsers().stream()
+                .filter(parser -> parser instanceof UdpParser)
+                .filter(parser -> keyword.equals(parser.getKeyword())).toList()));
 
-        if (udpParsers.isEmpty()) {
-            System.out.printf("The given feature %s could not be matched with any of the following UDP active parsers: %s",
-                keyword, udpParsers);
-            return null;
-        }
+                if (udpParsers.isEmpty()) {
+                    System.out.printf("The given feature %s could not be matched with any of the following UDP active parsers: %s",
+                        keyword, udpParsers);
+                    return null;
+                }
 
-        udpParsers.forEach(udpParser -> ((UdpParser) udpParser).getSessionManager().getTemplates()
-            .forEach((key, value) -> ((UdpParser) udpParser).getSessionManager().removeTemplateIf((e ->
-                e.getKey().observationDomainId.observationDomainId == this.observationDomainId))));
+                udpParsers.forEach(udpParser -> ((UdpParser) udpParser).getSessionManager().getTemplates()
+                    .forEach((key, value) -> ((UdpParser) udpParser).getSessionManager().removeTemplateIf((e ->
+                        e.getKey().observationDomainId.observationDomainId == this.observationDomainId))));
 
-        System.out.printf("Sessions for protocol UDP and keyword %s successfully dropped.", keyword);
-        return null;
+                System.out.printf("Sessions for protocol UDP and keyword %s successfully dropped.", keyword);
+                return null;
+            }
     }
-}
