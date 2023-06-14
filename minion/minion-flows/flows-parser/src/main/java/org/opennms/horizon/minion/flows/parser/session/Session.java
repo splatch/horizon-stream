@@ -58,8 +58,6 @@ public interface Session {
 
     InetAddress getRemoteAddress();
 
-    InetSocketAddress getLocalAddress();
-
     boolean verifySequenceNumber(final long observationDomainId,
                                  final long sequenceNumber);
 }

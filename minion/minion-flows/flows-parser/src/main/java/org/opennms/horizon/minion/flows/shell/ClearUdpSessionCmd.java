@@ -31,7 +31,6 @@ package org.opennms.horizon.minion.flows.shell;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.karaf.shell.api.action.Action;
@@ -42,23 +41,20 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.horizon.minion.flows.listeners.Parser;
 import org.opennms.horizon.minion.flows.listeners.UdpParser;
 import org.opennms.horizon.minion.flows.parser.FlowsListenerFactory;
-import org.opennms.horizon.minion.flows.parser.TelemetryRegistry;
 
 /**
  * Shell command to clear parsers sessions to avoid templates inconsistencies
  */
 @Command(scope = "opennms", name = "clear-session", description = "Clear Parsers Sessions to avoid templates inconsistencies")
 @Service
+@SuppressWarnings("java:S106") // System.out is used intentionally: we want to see it in the Karaf shell
 public class ClearUdpSessionCmd implements Action {
 
     @Reference
     FlowsListenerFactory.FlowsListener flowsListener;
 
-    @Option(name = "-f", aliases = "--keyword", description = "specify protocol keyword")
-    String keyword = "not-specified";
-
-    @Option(name = "-p", aliases = "--port", description = "specify port")
-    int portNumber;
+    @Option(name = "-p", aliases = "--parserName", description = "specify udp parser name")
+    String parserName = "not-specified";
 
     @Option(name = "-o", aliases = "--observationDomainId", description = "specify observation domain Id")
     int observationDomainId;
@@ -66,13 +62,8 @@ public class ClearUdpSessionCmd implements Action {
 
     @Override
     public Object execute() throws Exception {
-        if (StringUtils.isBlank(keyword)) {
-            System.out.println("Please specify a valid feature, e.g. -f netflow9 or --keyword netflow5");
-            return null;
-        }
-
-        if (portNumber == 0) {
-            System.out.println("Please specify a valid port, e.g. -p 1234 or --port 1234");
+        if (StringUtils.isBlank(parserName)) {
+            System.out.println("Please specify a valid parser name, e.g. -p Netflow5UdpParser or --parserName Netflow9UdpParser");
             return null;
         }
 
@@ -81,20 +72,20 @@ public class ClearUdpSessionCmd implements Action {
         List<Parser> udpParsers = new ArrayList<>();
         flowsListener.getListeners()
             .forEach(listener -> udpParsers.addAll(listener.getParsers().stream()
-                .filter(parser -> parser instanceof UdpParser)
-                .filter(parser -> keyword.equals(parser.getKeyword())).toList()));
+                .filter(UdpParser.class::isInstance)
+                .filter(parser -> parserName.equals(((UdpParser) parser).getClass().getSimpleName())).toList()));
 
-                if (udpParsers.isEmpty()) {
-                    System.out.printf("The given feature %s could not be matched with any of the following UDP active parsers: %s",
-                        keyword, udpParsers);
-                    return null;
-                }
+        if (udpParsers.isEmpty()) {
+            System.out.printf("The given feature %s could not be matched with any of the following UDP active parsers: %s",
+                parserName, udpParsers);
+            return null;
+        }
 
-                udpParsers.forEach(udpParser -> ((UdpParser) udpParser).getSessionManager().getTemplates()
-                    .forEach((key, value) -> ((UdpParser) udpParser).getSessionManager().removeTemplateIf((e ->
-                        e.getKey().observationDomainId.observationDomainId == this.observationDomainId))));
+        udpParsers.forEach(udpParser -> ((UdpParser) udpParser).getSessionManager().getTemplates()
+            .forEach((key, value) -> ((UdpParser) udpParser).getSessionManager().removeTemplateIf((e ->
+                e.getKey().observationDomainId.observationDomainId == this.observationDomainId))));
 
-                System.out.printf("Sessions for protocol UDP and keyword %s successfully dropped.", keyword);
-                return null;
-            }
+        System.out.printf("Sessions for protocol UDP and keyword %s successfully dropped.", parserName);
+        return null;
     }
+}

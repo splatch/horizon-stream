@@ -122,13 +122,9 @@ public class UdpSessionManager {
         String getDescription();
 
         InetAddress getRemoteAddress();
-
-        InetSocketAddress getLocalAddress();
     }
 
-    @Getter
     public final static class DomainKey {
-        @Getter
         public final SessionKey sessionKey;
         public final long observationDomainId;
 
@@ -158,7 +154,6 @@ public class UdpSessionManager {
         }
     }
 
-    @Getter
     public final static class TemplateKey {
         public final DomainKey observationDomainId;
         public final int templateId;
@@ -266,11 +261,6 @@ public class UdpSessionManager {
         @Override
         public InetAddress getRemoteAddress() {
             return this.sessionKey.getRemoteAddress();
-        }
-
-        @Override
-        public InetSocketAddress getLocalAddress() {
-            return this.sessionKey.getLocalAddress();
         }
 
         @Override

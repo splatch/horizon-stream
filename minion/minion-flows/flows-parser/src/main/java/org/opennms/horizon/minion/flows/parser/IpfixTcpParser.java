@@ -57,7 +57,6 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
 
     private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
 
-    @Getter
     private final Set<TcpSession> sessions = Sets.newConcurrentHashSet();
 
     public IpfixTcpParser(final String name,

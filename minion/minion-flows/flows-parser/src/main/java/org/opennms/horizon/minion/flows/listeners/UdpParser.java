@@ -30,9 +30,7 @@ package org.opennms.horizon.minion.flows.listeners;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.opennms.horizon.minion.flows.parser.session.Session;
 import org.opennms.horizon.minion.flows.parser.session.UdpSessionManager;
 
 import io.netty.buffer.ByteBuf;
@@ -43,7 +41,5 @@ public interface UdpParser extends Parser {
                                final InetSocketAddress localAddress) throws Exception;
 
     UdpSessionManager getSessionManager();
-
-    UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress);
 
 }

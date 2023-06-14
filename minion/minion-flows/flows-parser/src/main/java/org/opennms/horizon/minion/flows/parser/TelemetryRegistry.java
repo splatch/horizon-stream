@@ -28,8 +28,6 @@
 
 package org.opennms.horizon.minion.flows.parser;
 
-import java.util.List;
-
 import org.opennms.horizon.flows.document.FlowDocument;
 import org.opennms.horizon.minion.flows.listeners.Listener;
 import org.opennms.horizon.minion.flows.listeners.Parser;

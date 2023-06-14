@@ -33,17 +33,15 @@ import java.util.Objects;
 import org.opennms.horizon.minion.flows.parser.proto.Header;
 
 public enum Protocol {
-    NETFLOW5(Header.VERSION, "Netflow v5", "netflow5"),
-    NETFLOW9(org.opennms.horizon.minion.flows.parser.netflow9.proto.Header.VERSION, "Netflow v9", "netflow9"),
-    IPFIX(org.opennms.horizon.minion.flows.parser.ipfix.proto.Header.VERSION, "IPFix", "ipfix");
+    NETFLOW5(Header.VERSION, "Netflow v5"),
+    NETFLOW9(org.opennms.horizon.minion.flows.parser.netflow9.proto.Header.VERSION, "Netflow v9"),
+    IPFIX(org.opennms.horizon.minion.flows.parser.ipfix.proto.Header.VERSION, "IPFix");
 
     public final int version;
     public final String description;
-    public final String keyword;
 
-    Protocol(final int version, final String description, final String keyword) {
+    Protocol(final int version, final String description) {
         this.version = version;
         this.description = Objects.requireNonNull(description);
-        this.keyword = keyword;
     }
 }

@@ -33,11 +33,8 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.horizon.flows.document.FlowDocument;
-import org.opennms.horizon.flows.document.FlowDocumentLog;
 import org.opennms.horizon.minion.flows.listeners.Listener;
 import org.opennms.horizon.minion.flows.listeners.Parser;
-import org.opennms.horizon.minion.flows.listeners.TcpParser;
-import org.opennms.horizon.minion.flows.listeners.UdpParser;
 import org.opennms.horizon.minion.flows.listeners.factory.ListenerFactory;
 import org.opennms.horizon.minion.flows.listeners.factory.TcpListenerFactory;
 import org.opennms.horizon.minion.flows.listeners.factory.UdpListenerFactory;
@@ -54,8 +51,6 @@ import org.opennms.sink.flows.contract.ListenerConfig;
 import org.opennms.sink.flows.contract.ParserConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import lombok.Getter;
 
 // TODO: this should be replace by using AlertingPluginRegistry to make plugins work.
 // TODO: AlertingPluginRegistry needs de-registration to make dynamic loading work.

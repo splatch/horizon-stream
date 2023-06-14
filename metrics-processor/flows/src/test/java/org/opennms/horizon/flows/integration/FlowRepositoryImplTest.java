@@ -46,15 +46,15 @@ class FlowRepositoryImplTest {
     void testCorrectNumberOfInteractionsWithIngesterStub() {
         // Given
         var flowsLog =
-            TenantLocationSpecificFlowDocumentLog.newBuilder()
-                .setTenantId(tenantId)
-                .addMessage(FlowDocument.newBuilder());
+                TenantLocationSpecificFlowDocumentLog.newBuilder()
+                    .setTenantId(tenantId)
+                    .addMessage(FlowDocument.newBuilder());
 
         // When
         flowRepository.persist(flowsLog.build());
 
         // Then
-        class FlowDocumentArgumentMatcher implements ArgumentMatcher<StoreFlowDocumentsRequest> {
+        class FlowDocumentArgumentMatcher implements ArgumentMatcher<StoreFlowDocumentsRequest>{
             @Override
             public boolean matches(StoreFlowDocumentsRequest right) {
                 return right.getDocumentsList().stream().allMatch(d -> tenantId.equals(d.getTenantId()));
