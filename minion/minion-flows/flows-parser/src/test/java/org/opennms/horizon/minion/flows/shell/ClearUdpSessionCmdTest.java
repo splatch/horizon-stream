@@ -96,8 +96,7 @@ public class ClearUdpSessionCmdTest {
 
         // Set up ClearSeassionCmd parameters
         final ClearUdpSessionCmd clearSessionCmd = new ClearUdpSessionCmd();
-        clearSessionCmd.parserName = "netflow9";
-        clearSessionCmd.portNumber = 49152;
+        clearSessionCmd.parserName = "Netflow9UdpParser";
         clearSessionCmd.observationDomainId = 1;
         clearSessionCmd.flowsListener = flowsListener;
 
@@ -109,7 +108,7 @@ public class ClearUdpSessionCmdTest {
         flowsListener.getListeners()
             .forEach(listener -> udpParsers.addAll(listener.getParsers().stream()
                 .filter(parser -> parser instanceof UdpParser)
-                .filter(parser -> clearSessionCmd.parserName.equals(parser.getKeyword())).toList()));
+                .filter(parser -> clearSessionCmd.parserName.equals(((UdpParser) parser).getClass().getSimpleName())).toList()));
 
         udpParsers.forEach(netflow9Parser -> execute(TEST_FILE, buffer -> {
             try {

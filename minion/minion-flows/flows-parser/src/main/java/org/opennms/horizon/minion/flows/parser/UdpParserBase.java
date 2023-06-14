@@ -86,6 +86,9 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
 
     protected abstract RecordProvider parse(final Session session, final ByteBuf buffer) throws Exception;
 
+    protected abstract UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress);
+
+
     public final CompletableFuture<?> parse(final ByteBuf buffer,
                                             final InetSocketAddress remoteAddress,
                                             final InetSocketAddress localAddress) throws Exception {

@@ -81,4 +81,10 @@ public class Netflow5UdpParser extends UdpParserBase implements UdpParser, Dispa
 
         return packet;
     }
+
+    @Override
+    public UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress,
+                                                           final InetSocketAddress localAddress) {
+        return new Netflow9UdpParser.SessionKey(remoteAddress.getAddress(), localAddress);
+    }
 }
