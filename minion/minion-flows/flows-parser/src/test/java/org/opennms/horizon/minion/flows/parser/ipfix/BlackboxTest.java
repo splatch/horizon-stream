@@ -76,8 +76,7 @@ public class BlackboxTest {
 
     @Test
     public void testFiles() throws Exception {
-        final Session session = new TcpSession(InetSocketAddress.createUnresolved("localhost", 49152), InetAddress.getLoopbackAddress(),
-            () -> new SequenceNumberTracker(32));
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
 
         for (final String file : this.files) {
 

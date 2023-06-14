@@ -75,7 +75,7 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
     @Override
     public Handler accept(final InetSocketAddress remoteAddress,
                           final InetSocketAddress localAddress) {
-        final TcpSession session = new TcpSession(localAddress, remoteAddress.getAddress(), this::sequenceNumberTracker);
+        final TcpSession session = new TcpSession(remoteAddress.getAddress(), this::sequenceNumberTracker);
 
         return new Handler() {
             @Override

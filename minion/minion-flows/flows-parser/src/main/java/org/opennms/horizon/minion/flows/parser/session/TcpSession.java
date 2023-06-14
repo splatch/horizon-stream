@@ -130,16 +130,14 @@ public class TcpSession implements Session {
     }
 
     private final InetAddress remoteAddress;
-    private final InetSocketAddress localAddress;
     private final Map<TemplateKey, Template> templates = Maps.newHashMap();
     private final Map<TemplateKey, Map<Set<Value<?>>, List<Value<?>>>> options = Maps.newHashMap();
     private final Map<Long, SequenceNumberTracker> sequenceNumbers = Maps.newHashMap();
 
     private final Supplier<SequenceNumberTracker> sequenceNumberTracker;
 
-    public TcpSession(final InetSocketAddress localAddress, final InetAddress remoteAddress, final Supplier<SequenceNumberTracker> sequenceNumberTracker) {
+    public TcpSession(final InetAddress remoteAddress, final Supplier<SequenceNumberTracker> sequenceNumberTracker) {
         this.remoteAddress = Objects.requireNonNull(remoteAddress);
-        this.localAddress = Objects.requireNonNull(localAddress);
         this.sequenceNumberTracker = Objects.requireNonNull(sequenceNumberTracker);
     }
 

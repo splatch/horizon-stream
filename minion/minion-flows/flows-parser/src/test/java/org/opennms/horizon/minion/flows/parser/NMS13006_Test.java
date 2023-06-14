@@ -98,8 +98,7 @@ public class NMS13006_Test {
     }
 
     public void testFile(final String filename) throws Exception {
-        final Session session = new TcpSession(InetSocketAddress.createUnresolved("localhost", 49152), InetAddress.getLoopbackAddress(),
-            () -> new SequenceNumberTracker(32));
+        final Session session = new TcpSession(InetAddress.getLoopbackAddress(), () -> new SequenceNumberTracker(32));
 
         try (final FileChannel channel = FileChannel.open(FOLDER.resolve(filename))) {
             final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
