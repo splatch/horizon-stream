@@ -50,7 +50,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
 
 import io.netty.buffer.ByteBuf;
-import lombok.Getter;
 
 
 public class IpfixTcpParser extends ParserBase implements TcpParser {

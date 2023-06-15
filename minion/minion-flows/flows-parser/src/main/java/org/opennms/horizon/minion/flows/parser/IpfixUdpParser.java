@@ -88,7 +88,7 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     }
 
     @Override
-    public UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
+    protected UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress) {
         return new SessionKey(remoteAddress, localAddress);
     }
 
@@ -132,5 +132,6 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
         public InetAddress getRemoteAddress() {
             return this.remoteAddress.getAddress();
         }
+
     }
 }

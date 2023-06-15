@@ -46,12 +46,15 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opennms.horizon.flows.document.FlowDocument;
+import org.opennms.horizon.minion.flows.listeners.Listener;
 import org.opennms.horizon.minion.flows.listeners.Parser;
 import org.opennms.horizon.minion.flows.listeners.UdpParser;
 import org.opennms.horizon.minion.flows.parser.FlowSinkModule;
@@ -104,35 +107,33 @@ public class ClearUdpSessionCmdTest {
         InetSocketAddress localSocketAddress = new InetSocketAddress("localhost", 49152);
         InetSocketAddress remoteSocketAddress = buildLocalSocketAddress(TestUtil.findAvailablePort(12345, 12370));
 
-        List<Parser> udpParsers = new ArrayList<>();
-        flowsListener.getListeners()
-            .forEach(listener -> udpParsers.addAll(listener.getParsers().stream()
-                .filter(parser -> parser instanceof UdpParser)
-                .filter(parser -> clearSessionCmd.parserName.equals(((UdpParser) parser).getClass().getSimpleName())).toList()));
+        Optional<? extends Parser> matchedParser = flowsListener.getListeners().stream()
+            .flatMap(listener -> listener.getParsers().stream())
+            .filter(UdpParser.class::isInstance)
+            .filter(parser -> clearSessionCmd.parserName.equals(((UdpParser) parser).getClass().getSimpleName()))
+            .findFirst();
 
-        udpParsers.forEach(netflow9Parser -> execute(TEST_FILE, buffer -> {
+        execute(TEST_FILE, buffer -> {
             try {
-                netflow9Parser.start(scheduledExecutorService);
-                ((UdpParser) netflow9Parser).parse(buffer, remoteSocketAddress, localSocketAddress);
-                assertFalse(((UdpParser) netflow9Parser).getSessionManager().getTemplates().isEmpty());
+                matchedParser.get().start(scheduledExecutorService);
+                ((UdpParser) matchedParser.get()).parse(buffer, remoteSocketAddress, localSocketAddress);
+                assertFalse(((UdpParser) matchedParser.get()).getSessionManager().getTemplates().isEmpty());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }));
+        });
 
-        udpParsers.stream().filter(udpParser -> udpParser instanceof UdpParser)
-            .forEach(netflow9Parser -> {
 
-                // When
-                try {
-                    clearSessionCmd.execute();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+        // When
+        try {
+            clearSessionCmd.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-                // Then
-                assertTrue(((UdpParser) netflow9Parser).getSessionManager().getTemplates().isEmpty());
-            });
+        // Then
+        assertTrue(((UdpParser) matchedParser.get()).getSessionManager().getTemplates().isEmpty());
+
     }
 
     private InetSocketAddress buildLocalSocketAddress(int port) {

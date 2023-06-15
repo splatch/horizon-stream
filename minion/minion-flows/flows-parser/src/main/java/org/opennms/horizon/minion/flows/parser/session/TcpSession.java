@@ -29,7 +29,6 @@
 package org.opennms.horizon.minion.flows.parser.session;
 
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,14 +43,15 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.opennms.horizon.shared.utils.InetAddressUtils;
+
+import com.google.common.collect.Maps;
+
 import org.opennms.horizon.minion.flows.parser.MissingTemplateException;
 import org.opennms.horizon.minion.flows.parser.ie.Value;
 import org.opennms.horizon.minion.flows.parser.state.ExporterState;
 import org.opennms.horizon.minion.flows.parser.state.OptionState;
 import org.opennms.horizon.minion.flows.parser.state.TemplateState;
-import org.opennms.horizon.shared.utils.InetAddressUtils;
-
-import com.google.common.collect.Maps;
 
 public class TcpSession implements Session {
     private final class Resolver implements Session.Resolver {

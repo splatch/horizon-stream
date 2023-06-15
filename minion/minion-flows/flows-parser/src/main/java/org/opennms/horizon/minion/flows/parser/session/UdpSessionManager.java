@@ -29,7 +29,6 @@
 package org.opennms.horizon.minion.flows.parser.session;
 
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -56,6 +55,7 @@ import org.opennms.horizon.minion.flows.parser.state.ParserState;
 import org.opennms.horizon.minion.flows.parser.state.TemplateState;
 
 import lombok.Getter;
+
 
 public class UdpSessionManager {
     @Getter

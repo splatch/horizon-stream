@@ -31,6 +31,8 @@ package org.opennms.horizon.minion.flows.shell;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.karaf.shell.api.action.Action;
@@ -68,22 +70,21 @@ public class ClearUdpSessionCmd implements Action {
         }
 
         // Udp Sessions
-        // Get Udp Parsers
-        List<Parser> udpParsers = new ArrayList<>();
-        flowsListener.getListeners()
-            .forEach(listener -> udpParsers.addAll(listener.getParsers().stream()
-                .filter(UdpParser.class::isInstance)
-                .filter(parser -> parserName.equals(((UdpParser) parser).getClass().getSimpleName())).toList()));
+        // Get Udp Parser
+        Optional<? extends Parser> matchedParser = flowsListener.getListeners().stream()
+            .flatMap(listener -> listener.getParsers().stream())
+            .filter(UdpParser.class::isInstance)
+            .filter(parser -> parserName.equals(((UdpParser) parser).getClass().getSimpleName()))
+            .findFirst();
 
-        if (udpParsers.isEmpty()) {
-            System.out.printf("The given feature %s could not be matched with any of the following UDP active parsers: %s",
-                parserName, udpParsers);
+        if (matchedParser.isEmpty()) {
+            System.out.printf("The %s parser name could not be matched. ",
+                parserName);
             return null;
         }
 
-        udpParsers.forEach(udpParser -> ((UdpParser) udpParser).getSessionManager().getTemplates()
-            .forEach((key, value) -> ((UdpParser) udpParser).getSessionManager().removeTemplateIf((e ->
-                e.getKey().observationDomainId.observationDomainId == this.observationDomainId))));
+        ((UdpParser) matchedParser.get()).getSessionManager().removeTemplateIf((e ->
+            e.getKey().observationDomainId.observationDomainId == this.observationDomainId));
 
         System.out.printf("Sessions for protocol UDP and keyword %s successfully dropped.", parserName);
         return null;

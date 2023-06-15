@@ -34,7 +34,6 @@ import static org.opennms.horizon.minion.flows.listeners.utils.BufferUtils.slice
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -49,8 +48,6 @@ import org.opennms.horizon.minion.flows.parser.ipfix.proto.Packet;
 import org.opennms.horizon.minion.flows.parser.session.SequenceNumberTracker;
 import org.opennms.horizon.minion.flows.parser.session.Session;
 import org.opennms.horizon.minion.flows.parser.session.TcpSession;
-
-import com.google.common.base.Throwables;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

@@ -31,7 +31,6 @@ package org.opennms.horizon.minion.flows.parser;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -87,7 +86,6 @@ public abstract class UdpParserBase extends ParserBase implements UdpParser {
     protected abstract RecordProvider parse(final Session session, final ByteBuf buffer) throws Exception;
 
     protected abstract UdpSessionManager.SessionKey buildSessionKey(final InetSocketAddress remoteAddress, final InetSocketAddress localAddress);
-
 
     public final CompletableFuture<?> parse(final ByteBuf buffer,
                                             final InetSocketAddress remoteAddress,
