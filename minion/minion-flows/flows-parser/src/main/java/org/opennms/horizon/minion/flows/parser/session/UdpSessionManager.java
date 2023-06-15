@@ -44,20 +44,21 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.opennms.horizon.minion.flows.parser.ie.Value;
-import org.opennms.horizon.minion.flows.parser.state.OptionState;
-
-import com.google.common.collect.Maps;
-
 import org.opennms.horizon.minion.flows.parser.MissingTemplateException;
+import org.opennms.horizon.minion.flows.parser.ie.Value;
 import org.opennms.horizon.minion.flows.parser.state.ExporterState;
+import org.opennms.horizon.minion.flows.parser.state.OptionState;
 import org.opennms.horizon.minion.flows.parser.state.ParserState;
 import org.opennms.horizon.minion.flows.parser.state.TemplateState;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Maps;
 
 import lombok.Getter;
 
 
 public class UdpSessionManager {
+    @VisibleForTesting
     @Getter
     final ConcurrentMap<TemplateKey, TimeWrapper<TemplateOptions>> templates = Maps.newConcurrentMap();
     private final Map<DomainKey, SequenceNumberTracker> sequenceNumbers = Maps.newConcurrentMap();
@@ -124,7 +125,7 @@ public class UdpSessionManager {
         InetAddress getRemoteAddress();
     }
 
-    public final static class DomainKey {
+    public static final class DomainKey {
         public final SessionKey sessionKey;
         public final long observationDomainId;
 
@@ -154,7 +155,7 @@ public class UdpSessionManager {
         }
     }
 
-    public final static class TemplateKey {
+    public static final class TemplateKey {
         public final DomainKey observationDomainId;
         public final int templateId;
 

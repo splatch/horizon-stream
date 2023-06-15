@@ -49,6 +49,8 @@ import org.opennms.horizon.minion.flows.parser.session.SequenceNumberTracker;
 import org.opennms.horizon.minion.flows.parser.session.Session;
 import org.opennms.horizon.minion.flows.parser.session.TcpSession;
 
+import com.google.common.base.Throwables;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 

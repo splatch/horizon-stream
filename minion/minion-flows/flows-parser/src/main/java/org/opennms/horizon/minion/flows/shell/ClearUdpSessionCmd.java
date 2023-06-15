@@ -29,9 +29,6 @@
 
 package org.opennms.horizon.minion.flows.shell;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,21 +62,23 @@ public class ClearUdpSessionCmd implements Action {
     @Override
     public Object execute() throws Exception {
         if (StringUtils.isBlank(parserName)) {
-            System.out.println("Please specify a valid parser name, e.g. -p Netflow5UdpParser or --parserName Netflow9UdpParser");
+            System.out.println("Please specify a valid parser name, e.g. -p Netflow-5-Parser or --parserName Netflow-9-Parser");
             return null;
         }
 
         // Udp Sessions
         // Get Udp Parser
-        Optional<? extends Parser> matchedParser = flowsListener.getListeners().stream()
+        final var matchedParser = flowsListener.getListeners().stream()
             .flatMap(listener -> listener.getParsers().stream())
-            .filter(UdpParser.class::isInstance)
-            .filter(parser -> parserName.equals(((UdpParser) parser).getClass().getSimpleName()))
+            .filter(parser -> parserName.equals(parser.getName()))
             .findFirst();
-
         if (matchedParser.isEmpty()) {
-            System.out.printf("The %s parser name could not be matched. ",
-                parserName);
+            System.err.println("Parser not found: " + parserName);
+            return null;
+        }
+
+        if (!UdpParser.class.isInstance(matchedParser.get())) {
+            System.err.println("Parser is not a UDP parser, silly: " + parserName);
             return null;
         }
 

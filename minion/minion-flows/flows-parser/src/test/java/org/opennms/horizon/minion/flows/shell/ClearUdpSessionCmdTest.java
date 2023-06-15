@@ -99,7 +99,7 @@ public class ClearUdpSessionCmdTest {
 
         // Set up ClearSeassionCmd parameters
         final ClearUdpSessionCmd clearSessionCmd = new ClearUdpSessionCmd();
-        clearSessionCmd.parserName = "Netflow9UdpParser";
+        clearSessionCmd.parserName = "Netflow-9-Parser";
         clearSessionCmd.observationDomainId = 1;
         clearSessionCmd.flowsListener = flowsListener;
 
@@ -110,7 +110,7 @@ public class ClearUdpSessionCmdTest {
         Optional<? extends Parser> matchedParser = flowsListener.getListeners().stream()
             .flatMap(listener -> listener.getParsers().stream())
             .filter(UdpParser.class::isInstance)
-            .filter(parser -> clearSessionCmd.parserName.equals(((UdpParser) parser).getClass().getSimpleName()))
+            .filter(parser -> clearSessionCmd.parserName.equals(parser.getName()))
             .findFirst();
 
         execute(TEST_FILE, buffer -> {
