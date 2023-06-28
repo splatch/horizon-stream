@@ -25,7 +25,7 @@ IMAGE_TAG=${3:-local}
 IMAGE_PREFIX=${4:-opennms}
 KIND_CLUSTER_NAME=kind-test
 NAMESPACE=hs-instance
-TIMEOUT=${TIMEOUT:-5m0s}
+TIMEOUT=${TIMEOUT:-10m0s}
 
 #### FUNCTION DEF
 ################################
@@ -175,7 +175,7 @@ install_helm_chart_custom_images () {
   echo ________________Installing Lokahi________________
   echo
 
-  if ! helm upgrade -i lokahi ./../charts/lokahi \
+  if ! time helm upgrade -i lokahi ./../charts/lokahi \
   -f ./tmp/install-local-opennms-lokahi-custom-images-values.yaml \
   --namespace $NAMESPACE \
   --set OpenNMS.Alert.Image=${IMAGE_PREFIX}/lokahi-alert:${IMAGE_TAG} \
@@ -248,7 +248,7 @@ if [ $CONTEXT == "local" ]; then
   echo
   echo ________________Installing Lokahi________________
   echo
-  helm upgrade -i lokahi ./../charts/lokahi -f ./tmp/install-local-opennms-lokahi-values.yaml --namespace $NAMESPACE --wait --timeout "${TIMEOUT}"
+  time helm upgrade -i lokahi ./../charts/lokahi -f ./tmp/install-local-opennms-lokahi-values.yaml --namespace $NAMESPACE --wait --timeout "${TIMEOUT}"
   if [ $? -ne 0 ]; then exit; fi
 
   cluster_ready_check
@@ -299,7 +299,7 @@ elif [ $CONTEXT == "existing-k8s" ]; then
   echo
   echo ________________Installing Lokahi________________
   echo
-  helm upgrade -i lokahi ./../charts/lokahi -f ./tmp/install-local-opennms-lokahi-values.yaml --namespace $NAMESPACE --create-namespace --wait --timeout "${TIMEOUT}"
+  time helm upgrade -i lokahi ./../charts/lokahi -f ./tmp/install-local-opennms-lokahi-values.yaml --namespace $NAMESPACE --create-namespace --wait --timeout "${TIMEOUT}"
   if [ $? -ne 0 ]; then exit; fi
 
   cluster_ready_check
