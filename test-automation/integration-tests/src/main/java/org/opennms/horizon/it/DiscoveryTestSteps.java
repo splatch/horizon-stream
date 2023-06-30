@@ -40,7 +40,6 @@ import org.opennms.horizon.it.helper.TestsExecutionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
@@ -51,7 +50,11 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -117,12 +120,10 @@ public class DiscoveryTestSteps {
                 .await()
                 .ignoreExceptions()
                 .atMost(120, TimeUnit.SECONDS)
-                .until(() -> checkTheStatusOfAllNodes(numNodes.longValue(), status) )
-            ;
-            assertTrue(true);
+                .until(() -> checkTheStatusOfAllNodes(numNodes.longValue(), status));
         } catch (Exception e) {
             LOG.info("Test check the status failed with the error: {}", e.getMessage());
-            assertTrue(false);
+            throw e;
         }
     }
 
@@ -168,7 +169,7 @@ public class DiscoveryTestSteps {
             throw new RuntimeException("No node matching name " + nodeName);
         }
 
-//        String ip = node.getContainerIpAddress();  -> Don't use this API - always just return localhost
+//        String ip = node.getContainerIpAddress();  -> Don't use this API - it always just returns "localhost"
         String ipaddress = getContainerIP(node);
         LOG.info("IP:" + ipaddress);
 
@@ -192,7 +193,7 @@ public class DiscoveryTestSteps {
 
         // GRAPHQL errors result in 200 http response code and a body with "errors" detail
         assertTrue("create-node errors: " + discoveryResult.getErrors(),
-            ( discoveryResult.getErrors() == null ) || ( discoveryResult.getErrors().isEmpty() ));
+            (discoveryResult.getErrors() == null) || (discoveryResult.getErrors().isEmpty()));
     }
 
     private String getContainerIP(GenericContainer container) {
@@ -264,12 +265,12 @@ public class DiscoveryTestSteps {
         if (!nodeIterator.hasNext()) {
             throw new RuntimeException("Cannot get node IPs when there are no nodes");
         }
-        String IPs = getContainerIP(nodeIterator.next());
+        String ips = getContainerIP(nodeIterator.next());
 
         while (nodeIterator.hasNext()) {
-            IPs += "," + getContainerIP(nodeIterator.next());
+            ips += "," + getContainerIP(nodeIterator.next());
         }
-        return IPs;
+        return ips;
     }
 
     @Then("Subnet discovery {string} for nodes using location {string} and IP range")
@@ -301,7 +302,7 @@ public class DiscoveryTestSteps {
 
         // GRAPHQL errors result in 200 http response code and a body with "errors" detail
         assertTrue("create-node errors: " + discoveryResult.getErrors(),
-            ( discoveryResult.getErrors() == null ) || ( discoveryResult.getErrors().isEmpty() ));
+            (discoveryResult.getErrors() == null ) || (discoveryResult.getErrors().isEmpty()));
     }
 
     @Then("Subnet discovery {string} for nodes using location {string} and mask {long}")
@@ -339,7 +340,7 @@ public class DiscoveryTestSteps {
 
         // GRAPHQL errors result in 200 http response code and a body with "errors" detail
         assertTrue("create-node errors: " + discoveryResult.getErrors(),
-            ( discoveryResult.getErrors() == null ) || ( discoveryResult.getErrors().isEmpty() ));
+            (discoveryResult.getErrors() == null ) || (discoveryResult.getErrors().isEmpty()));
 
     }
 
@@ -348,12 +349,15 @@ public class DiscoveryTestSteps {
 
         String queryList = GQLQueryConstants.LIST_NODE_METRICS;
 
-        int[] nodeIds = getAllNodeIDs();
+        ArrayList<Integer> nodeIds = getAllNodeIDs();
 
-        int index = 0;
-        boolean status = nodeIds.length == numNodes;
-        while (index < nodeIds.length && status) {
-            Map<String, Object> queryVariables = Map.of("id", nodeIds[index]);
+        if (nodeIds.size() != numNodes) {
+            return false;
+        }
+
+        for (Iterator<Integer> iterator = nodeIds.iterator(); iterator.hasNext(); ) {
+            Integer nextId = iterator.next();
+            Map<String, Object> queryVariables = Map.of("id", nextId.intValue());
 
             GQLQuery gqlQuery = new GQLQuery();
             gqlQuery.setQuery(queryList);
@@ -365,14 +369,16 @@ public class DiscoveryTestSteps {
             LinkedHashMap lhm = jsonPathEvaluator.get("data");
             LinkedHashMap map = (LinkedHashMap) lhm.get("nodeStatus");
             String currentStatus = (String) map.get("status");
-            LOG.info("Status of the node(" + nodeIds[index] + "): " + currentStatus);
-            status = currentStatus.equals(expectedStatus);
-            ++index;
+            LOG.info("Checking status " + currentStatus);
+            if (!currentStatus.equals(expectedStatus)) {
+                return false;
+            }
         }
-        return status;
+
+        return true;
     }
 
-    public int[] getAllNodeIDs() throws MalformedURLException {
+    public ArrayList<Integer> getAllNodeIDs() throws MalformedURLException {
         LOG.info("Getting the node IDs from the inventory");
 
         GQLQuery gqlQuery = new GQLQuery();
@@ -383,11 +389,10 @@ public class DiscoveryTestSteps {
         JsonPath jsonPathEvaluator = response.jsonPath();
         LinkedHashMap lhm = jsonPathEvaluator.get("data");
         ArrayList map = (ArrayList) lhm.get("findAllNodes");
-        int[] nodeIDs = new int[map.size()];
-        int index = 0;
-        while (index < map.size()) {
-            nodeIDs[index] = (int) ((LinkedHashMap) map.get(index)).get("id");
-            ++index;
+        ArrayList<Integer> nodeIDs = new ArrayList<>();
+        for (Iterator iterator = map.iterator(); iterator.hasNext(); ) {
+            LinkedHashMap next = (LinkedHashMap) iterator.next();
+            nodeIDs.add(Integer.valueOf((int) next.get("id")));
         }
 
         return nodeIDs;
@@ -422,6 +427,6 @@ public class DiscoveryTestSteps {
 
         // GRAPHQL errors result in 200 http response code and a body with "errors" detail
         assertTrue("create-node errors: " + discoveryResult.getErrors(),
-            ( discoveryResult.getErrors() == null ) || ( discoveryResult.getErrors().isEmpty() ));
+            (discoveryResult.getErrors() == null ) || (discoveryResult.getErrors().isEmpty()));
     }
 }

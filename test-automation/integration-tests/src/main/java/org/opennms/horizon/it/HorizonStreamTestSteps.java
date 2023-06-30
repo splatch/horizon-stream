@@ -21,7 +21,7 @@ public class HorizonStreamTestSteps {
 
     private String ingressBaseUrl;
     private String minionImageName;
-    private String nodeImageName = "polinux/snmpd:alpine";
+    private static final String NODE_SNMPD_IMAGE_NAME = "polinux/snmpd:alpine";
     private String minionIngress;
     private boolean minionIngressTlsEnabled;
     private int minionIngressPort;
@@ -43,7 +43,7 @@ public class HorizonStreamTestSteps {
         this.testsExecutionHelper.setUserAccessTokenSupplier(this.keycloakTestSteps::getKeycloakAccessToken);
         this.testsExecutionHelper.setIngressUrlSupplier(this::getIngressBaseUrl);
         this.testsExecutionHelper.setMinionImageNameSupplier(() -> minionImageName);
-        this.testsExecutionHelper.setNodeImageNameSupplier(() -> nodeImageName);
+        this.testsExecutionHelper.setNodeImageNameSupplier(() -> NODE_SNMPD_IMAGE_NAME);
         this.testsExecutionHelper.setMinionIngressSupplier(() -> minionIngress);
         this.testsExecutionHelper.setMinionIngressPortSupplier(() -> minionIngressPort);
         this.testsExecutionHelper.setMinionIngressCaCertificateSupplier(() -> minionIngressCaCertificate != null ? new File(minionIngressCaCertificate).getAbsoluteFile() : null);

@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.Testcontainers;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.containers.wait.strategy.WaitAllStrategy;
 import org.testcontainers.images.builder.Transferable;
@@ -286,8 +287,17 @@ public class InventoryTestSteps {
         keystores.put(location, Map.entry(pkcs12password, pkcs12));
     }
 
+    @Then("Minion {string} is started with shared networking in location {string}")
+    public void startMinionSharedNetwork(String systemId, String location) throws IOException {
+        startMinion(systemId, location, true);
+    }
+
     @Then("Minion {string} is started in location {string}")
-    public void startMinion(String systemId, String location) throws IOException {
+    public void startMinionSpecificNetwork(String systemId, String location) throws IOException {
+        startMinion(systemId, location, false);
+    }
+
+    public void startMinion(String systemId, String location, boolean sharedNetworking) throws IOException {
         if (!keystores.containsKey(location)) {
             fail("Could not find location " + location + " certificate");
         }
@@ -296,6 +306,12 @@ public class InventoryTestSteps {
 
         stopMinion(systemId);
 
+        Network network;
+        if (sharedNetworking) {
+            network = Network.SHARED;
+        } else {
+            network = helper.getCommonNetworkSupplier().get();
+        }
         GenericContainer<?> minion = new GenericContainer<>(DockerImageName.parse(helper.getMinionImageNameSupplier().get()))
             .withEnv("MINION_GATEWAY_HOST", helper.getMinionIngressSupplier().get())
             .withEnv("MINION_GATEWAY_PORT", String.valueOf(helper.getMinionIngressPortSupplier().get()))
@@ -307,7 +323,7 @@ public class InventoryTestSteps {
             .withEnv("GRPC_CLIENT_OVERRIDE_AUTHORITY", helper.getMinionIngressOverrideAuthority().get())
             .withEnv("IGNITE_SERVER_ADDRESSES", "localhost")
             .withNetworkAliases("minion-" + systemId.toLowerCase())
-            .withNetwork(helper.getCommonNetworkSupplier().get())
+            .withNetwork(network)
             .withLabel("label", systemId);
         minions.put(systemId, minion);
 
