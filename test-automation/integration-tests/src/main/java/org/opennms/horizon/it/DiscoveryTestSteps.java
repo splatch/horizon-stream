@@ -162,7 +162,7 @@ public class DiscoveryTestSteps {
     }
 
     @Then("Discover {string} for node {string}, location {string}, port {int}, community {string}")
-    public void discoverSingleNode(String discoveryName, String nodeName, String location, int port, String community) {
+    public void discoverSingleNode(String discoveryName, String nodeName, String location, int port, String community) throws MalformedURLException {
         GenericContainer<?> node = nodes.get(nodeName);
         if (node == null) {
             throw new RuntimeException("No node matching name " + nodeName);
@@ -172,7 +172,13 @@ public class DiscoveryTestSteps {
         String ipaddress = getContainerIP(node);
         LOG.info("IP:" + ipaddress);
 
-        String query = String.format(GQLQueryConstants.ADD_DISCOVERY_QUERY, discoveryName, location, ipaddress, community, port);
+        Long locationId = helper.commonQueryLocations().getData().getFindAllLocations().stream()
+            .filter(loc -> location.equals(loc.getLocation()))
+            .findFirst()
+            .map(LocationData::getId)
+            .orElseThrow(() -> new IllegalArgumentException("Unknown location " + location));
+
+        String query = String.format(GQLQueryConstants.ADD_DISCOVERY_QUERY, discoveryName, locationId, ipaddress, community, port);
 
         GQLQuery gqlQuery = new GQLQuery();
         gqlQuery.setQuery(query);
@@ -275,7 +281,13 @@ public class DiscoveryTestSteps {
 
         String ipRange = calculateIPRanges(nodes.values());
 
-        String query = String.format(GQLQueryConstants.ADD_DISCOVERY_QUERY, discoveryName, location, ipRange, "public", 161);
+        Long locationId = helper.commonQueryLocations().getData().getFindAllLocations().stream()
+            .filter(loc -> location.equals(loc.getLocation()))
+            .findFirst()
+            .map(LocationData::getId)
+            .orElseThrow(() -> new IllegalArgumentException("Unknown location " + location));
+
+        String query = String.format(GQLQueryConstants.ADD_DISCOVERY_QUERY, discoveryName, locationId, ipRange, "public", 161);
 
         GQLQuery gqlQuery = new GQLQuery();
         gqlQuery.setQuery(query);
@@ -307,10 +319,13 @@ public class DiscoveryTestSteps {
         String ipaddress = getContainerIP(node) + "/" + mask;
         LOG.info("IP:" + ipaddress);
 
-        // Zero out the last of the IP to match the mask
+        Long locationId = helper.commonQueryLocations().getData().getFindAllLocations().stream()
+            .filter(loc -> location.equals(loc.getLocation()))
+            .findFirst()
+            .map(LocationData::getId)
+            .orElseThrow(() -> new IllegalArgumentException("Unknown location " + location));
 
-
-        String query = String.format(GQLQueryConstants.ADD_DISCOVERY_QUERY, discoveryName, location, ipaddress, "public", 161);
+        String query = String.format(GQLQueryConstants.ADD_DISCOVERY_QUERY, discoveryName, locationId, ipaddress, "public", 161);
 
         GQLQuery gqlQuery = new GQLQuery();
         gqlQuery.setQuery(query);
@@ -379,7 +394,7 @@ public class DiscoveryTestSteps {
     }
 
     @Then("Subnet discovery {string} for nodes using location {string} and IP list")
-    public void subnetDiscoveryForNodesUsingLocationAndIPList(String discoveryName, String locationName) {
+    public void subnetDiscoveryForNodesUsingLocationAndIPList(String discoveryName, String location) throws MalformedURLException {
         GenericContainer node = nodes.values().iterator().next();
         if (node == null) {
             throw new RuntimeException("No nodes for subnet discovery");
@@ -387,7 +402,13 @@ public class DiscoveryTestSteps {
 
         String ipList = getAllContainerIPs(nodes.values());
 
-        String query = String.format(GQLQueryConstants.ADD_DISCOVERY_QUERY, discoveryName, locationName, ipList, "public", 161);
+        Long locationId = helper.commonQueryLocations().getData().getFindAllLocations().stream()
+            .filter(loc -> location.equals(loc.getLocation()))
+            .findFirst()
+            .map(LocationData::getId)
+            .orElseThrow(() -> new IllegalArgumentException("Unknown location " + location));
+
+        String query = String.format(GQLQueryConstants.ADD_DISCOVERY_QUERY, discoveryName, locationId, ipList, "public", 161);
 
         GQLQuery gqlQuery = new GQLQuery();
         gqlQuery.setQuery(query);

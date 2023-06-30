@@ -1,3 +1,4 @@
+@inventory
 Feature: Minion Monitoring via Echo Messages Logged in Prometheus
 
   Background: Login to Keycloak

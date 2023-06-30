@@ -1,3 +1,4 @@
+@discovery
 Feature: Minion Monitoring via Echo Messages Logged in Prometheus
 
   Background: Login to Keycloak
@@ -15,11 +16,10 @@ Feature: Minion Monitoring via Echo Messages Logged in Prometheus
     Given Minion ingress overridden authority is in variable "MINION_INGRESS_OVERRIDE_AUTHORITY"
     Then login to Keycloak with timeout 120000ms
 
-  @discovery
   Scenario: Discover a single node by it's IP
     Given No Minion running with location "SingleDiscovery"
     Given Location "SingleDiscovery" does not exist
-    When Location "SingleDiscovery" is created
+    When Create location "SingleDiscovery"
     Then Location "SingleDiscovery" do exist
     Then Request certificate for location "SingleDiscovery"
     When Minion "test-minion" is started in location "SingleDiscovery"
@@ -31,11 +31,10 @@ Feature: Minion Monitoring via Echo Messages Logged in Prometheus
     Then Location "SingleDiscovery" does not exist
     Then Minion "test-minion" is stopped
 
-  @discovery
   Scenario: Discover a node using non-default snmp configuration
     Given No Minion running with location "NonDefaultSNMPDiscovery"
     Given Location "NonDefaultSNMPDiscovery" does not exist
-    When Location "NonDefaultSNMPDiscovery" is created
+    When Create location "NonDefaultSNMPDiscovery"
     Then Location "NonDefaultSNMPDiscovery" do exist
     Then Request certificate for location "NonDefaultSNMPDiscovery"
     When Minion "test-minion" is started in location "NonDefaultSNMPDiscovery"
@@ -48,11 +47,10 @@ Feature: Minion Monitoring via Echo Messages Logged in Prometheus
     Then Minion "test-minion" is stopped
 
   # Discovery with subnet doesn't appear to work...
-#  @discovery
 #  Scenario: Discover multiple nodes through subnet scan
 #    Given No Minion running with location "External"
 #    Given Location "External" does not exist
-#    When Location "External" is created
+#    When Create location "External"
 #    Then Location "External" do exist
 #    Then Request certificate for location "External"
 #    When Minion "test-minion" is started in location "External"
@@ -67,11 +65,10 @@ Feature: Minion Monitoring via Echo Messages Logged in Prometheus
 #    Then Location "External" does not exist
 #    Then Minion "test-minion" is stopped
 
-  @discovery
   Scenario: Discover multiple nodes using IP range
     Given No Minion running with location "RangeDiscovery"
     Given Location "RangeDiscovery" does not exist
-    When Location "RangeDiscovery" is created
+    When Create location "RangeDiscovery"
     Then Location "RangeDiscovery" do exist
     Then Request certificate for location "RangeDiscovery"
     When Minion "test-minion" is started in location "RangeDiscovery"
@@ -86,11 +83,10 @@ Feature: Minion Monitoring via Echo Messages Logged in Prometheus
     Then Minion "test-minion" is stopped
 
   # Discovery using a ',' between IPs does not currently work
-#  @discovery
 #  Scenario: Discover multiple nodes using IP list
 #    Given No Minion running with location "ListDiscovery"
 #    Given Location "ListDiscovery" does not exist
-#    When Location "ListDiscovery" is created
+#    When Create location "ListDiscovery"
 #    Then Location "ListDiscovery" do exist
 #    Then Request certificate for location "ListDiscovery"
 #    When Minion "test-minion" is started in location "ListDiscovery"
