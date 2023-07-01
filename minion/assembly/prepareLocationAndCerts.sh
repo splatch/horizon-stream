@@ -158,7 +158,7 @@ execute_gql_query ()
 	typeset report_errors_flag
 
 	gql_query="$1"
-	report_errors_flag="$2"
+	report_errors_flag="${2:-}"
 
 	gql_url="$(format_graphql_url)"
 
@@ -390,8 +390,9 @@ parse_command_line ()
 ##
 ######################################################################################################################
 
-# STOP on errors
-set -e
+# https://github.com/olivergondza/bash-strict-mode
+set -eEuo pipefail
+trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
 parse_command_line "$@"
 
