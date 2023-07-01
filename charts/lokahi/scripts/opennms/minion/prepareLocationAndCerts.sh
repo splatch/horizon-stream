@@ -40,6 +40,7 @@ CERT_ROOTDIR="$(pwd)/target"
 CLIENT_KEYSTORE="${CERT_ROOTDIR}/minion.p12"
 CLIENT_KEYSTORE_PASSWORD="" # default: keep the original generated password
 CLIENT_TRUSTSTORE="${CERT_ROOTDIR}/CA.cert"
+INSECURE="false"
 API_BASE_URL=https://onmshs.local
 LOCATION_NAME="default"
 USERNAME="admin"
@@ -47,6 +48,7 @@ PASSWORD="admin"
 VERBOSE="false"
 AUTH_REALM="opennms"
 CLIENT_ID="lokahi"
+CURL_ARGS=()
 
 
 
@@ -171,7 +173,6 @@ execute_gql_query ()
 
 	gql_response="$(
 		curl \
-			--cacert "${CLIENT_TRUSTSTORE}" \
 			-S \
 			-s \
 			-f \
@@ -179,6 +180,7 @@ execute_gql_query ()
 			-H 'Content-Type: application/json' \
 			-H "Authorization: Bearer ${ACCESS_TOKEN}" \
 			--data-ascii "${gql_formatted_query_envelope}" \
+			"${CURL_ARGS[@]}" \
 			"${gql_url}"
 		)"
 
@@ -207,7 +209,6 @@ login ()
 
 	response="$(
 		curl \
-			--cacert "${CLIENT_TRUSTSTORE}" \
 			-S \
 			-s \
 			-f \
@@ -218,6 +219,7 @@ login ()
 			-d 'grant_type=password' \
 			-d "client_id=${CLIENT_ID}" \
 			-d 'scope=openid' \
+			"${CURL_ARGS[@]}" \
 			"${auth_url}"
 	)"
 
@@ -340,6 +342,10 @@ store_certificate ()
 
 get_ca_cert_from_k8s ()
 {
+	if [ "$INSECURE" = "true" ]; then
+		return # we don't need to bother getting the CLIENT_TRUSTSTORE from kubectl
+	fi
+
 	echo ">>> EXTRACTING client truststore contents from K8S"
 
 	if [ -f "${CLIENT_TRUSTSTORE}" ]
@@ -347,41 +353,56 @@ get_ca_cert_from_k8s ()
 		mv -f "${CLIENT_TRUSTSTORE}" "${CLIENT_TRUSTSTORE}.bak"
 	fi
 
-	kubectl get secret root-ca-certificate -ogo-template='{{index .data "ca.crt" }}' | base64 --decode > "${CLIENT_TRUSTSTORE}"
+	kubectl get secret root-ca-certificate -o go-template='{{index .data "ca.crt" }}' | base64 --decode > "${CLIENT_TRUSTSTORE}"
 
 	openssl x509 -in target/CA.cert -subject -noout
 }
 
 show_command_line_help ()
 {
-	echo "Usage: $0 [-h] [-v] [-l location] [-u username] [-p password] [-U URL] [-f file] [-P pass]"
+	echo "Usage: $0 [-h] [-v] [-k] [-l location] [-u username] [-p password] [-U URL] [-c arg] [-f file] [-P pass]"
 	echo
 	echo "	-h	Display this help"
 	echo "	-v 	Enable verbose mode"
+	echo "	-k 	Don't get client truststore, pass insecure (-k) flag to curl"
 	echo "	-l loc	Name of the location to use/create (default: ${LOCATION_NAME})"
 	echo "	-u user	Username for logging into the cluster"
 	echo "	-p pass	Password for logging into the cluster"
 	echo "	-U URL	API base URL (default: ${API_BASE_URL})"
+	echo "	-c arg	curl arguments (you can use multiple times)"
 	echo "	-f file	Output .p12 file (default: ${CLIENT_KEYSTORE})"
 	echo "	-P pass	Change p12 password to this password (default: keep original password)"
 }
 
 parse_command_line ()
 {
-	while getopts f:hvl:p:P:u:U: FLAG
+	while getopts f:hvkl:p:P:u:U:c: FLAG
 	do
 		case "$FLAG" in
 			h)	show_command_line_help; exit 0 ;;
 			v)	VERBOSE="true" ;;
+			k)	INSECURE="true" ;;
 			l)	LOCATION_NAME="${OPTARG}" ;;
 			u)	USERNAME="${OPTARG}" ;;
 			p)	PASSWORD="${OPTARG}" ;;
 			U)	API_BASE_URL="${OPTARG}" ;;
+			c)	CURL_ARGS+=("${OPTARG}") ;;
 			f)	CLIENT_KEYSTORE="${OPTARG}" ;;
 			P)	CLIENT_KEYSTORE_PASSWORD="${OPTARG}" ;;
 			?)	show_command_line_help >&2; exit 1 ;;
 		esac
 	done
+}
+
+setup_curl_args ()
+{
+	# Prepend our args here so the user can override anything if needed
+	if [ "$INSECURE" = "true" ];
+	then
+		CURL_ARGS=("-k" "${CURL_ARGS[@]}")
+	else
+		CURL_ARGS=("--cacert=${CLIENT_TRUSTSTORE}" "${CURL_ARGS[@]}")
+	fi
 }
 
 
@@ -397,6 +418,8 @@ set -eEuo pipefail
 trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 
 parse_command_line "$@"
+
+setup_curl_args
 
 get_ca_cert_from_k8s
 
