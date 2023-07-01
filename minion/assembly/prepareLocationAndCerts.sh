@@ -174,6 +174,7 @@ execute_gql_query ()
 			--cacert "${CLIENT_TRUSTSTORE}" \
 			-S \
 			-s \
+			-f \
 			-X POST \
 			-H 'Content-Type: application/json' \
 			-H "Authorization: Bearer ${ACCESS_TOKEN}" \
@@ -209,6 +210,7 @@ login ()
 			--cacert "${CLIENT_TRUSTSTORE}" \
 			-S \
 			-s \
+			-f \
 			-X POST \
 			-H 'Content-Type: application/x-www-form-urlencoded' \
 			-d "username=${USERNAME}" \
