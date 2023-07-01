@@ -13,7 +13,8 @@
 ##	5. Download the location certificate and password
 ##
 ## EXAMPLE USAGE:
-##	./prepareLocationAndCerts.sh -l LOC001 -u admin -p admin
+##	./prepareLocationAndCerts.sh
+##	./prepareLocationAndCerts.sh -l my-minion-location
 ##
 ######################################################################################################################
 
@@ -40,9 +41,9 @@ CLIENT_KEYSTORE="${CERT_ROOTDIR}/minion.p12"
 CLIENT_KEYSTORE_PASSWORD="" # default: keep the original generated password
 CLIENT_TRUSTSTORE="${CERT_ROOTDIR}/CA.cert"
 API_BASE_URL=https://onmshs.local
-LOCATION_NAME="minion-standalone-loc"
-USERNAME=""
-PASSWORD=""
+LOCATION_NAME="default"
+USERNAME="admin"
+PASSWORD="admin"
 VERBOSE="false"
 AUTH_REALM="opennms"
 CLIENT_ID="lokahi"
