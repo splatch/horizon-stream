@@ -37,9 +37,9 @@ TEMPLATE_GET_CERTIFICATE_GQL='
 
 CERT_ROOTDIR="$(pwd)/target"
 CLIENT_KEYSTORE="${CERT_ROOTDIR}/minion.p12"
+CLIENT_KEYSTORE_PASSWORD="" # default: keep the original generated password
 CLIENT_TRUSTSTORE="${CERT_ROOTDIR}/CA.cert"
 API_BASE_URL=https://onmshs.local
-AUTH_BASE_URL=https://onmshs.local/auth
 LOCATION_NAME="minion-standalone-loc"
 USERNAME=""
 PASSWORD=""
@@ -110,7 +110,7 @@ format_auth_url ()
 
 	realm="$1"
 
-	echo "${AUTH_BASE_URL}/realms/${realm}/protocol/openid-connect/token"
+	echo "${API_BASE_URL}/auth/realms/${realm}/protocol/openid-connect/token"
 }
 
 gql_result_check_no_errors ()
@@ -351,24 +351,31 @@ get_ca_cert_from_k8s ()
 
 show_command_line_help ()
 {
-	echo "Usage: $0 [-h] [-l location] [-p password] [-u username]"
+	echo "Usage: $0 [-h] [-v] [-l location] [-u username] [-p password] [-U URL] [-f file] [-P pass]"
 	echo
 	echo "	-h	Display this help"
-	echo "	-l loc	Name of the location to use/create"
-	echo "	-p pass	Password for logging into the cluster"
+	echo "	-v 	Enable verbose mode"
+	echo "	-l loc	Name of the location to use/create (default: ${LOCATION_NAME})"
 	echo "	-u user	Username for logging into the cluster"
+	echo "	-p pass	Password for logging into the cluster"
+	echo "	-U URL	API base URL (default: ${API_BASE_URL})"
+	echo "	-f file	Output .p12 file (default: ${CLIENT_KEYSTORE})"
+	echo "	-P pass	Change p12 password to this password (default: keep original password)"
 }
 
 parse_command_line ()
 {
-	while getopts hvl:p:u: FLAG
+	while getopts f:hvl:p:P:u:U: FLAG
 	do
 		case "$FLAG" in
 			h)	show_command_line_help; exit 0 ;;
-			l)	LOCATION_NAME="${OPTARG}" ;;
-			p)	PASSWORD="${OPTARG}" ;;
-			u)	USERNAME="${OPTARG}" ;;
 			v)	VERBOSE="true" ;;
+			l)	LOCATION_NAME="${OPTARG}" ;;
+			u)	USERNAME="${OPTARG}" ;;
+			p)	PASSWORD="${OPTARG}" ;;
+			U)	API_BASE_URL="${OPTARG}" ;;
+			f)	CLIENT_KEYSTORE="${OPTARG}" ;;
+			P)	CLIENT_KEYSTORE_PASSWORD="${OPTARG}" ;;
 			?)	show_command_line_help >&2; exit 1 ;;
 		esac
 	done
@@ -404,4 +411,12 @@ store_certificate "${CLIENT_KEYSTORE}"
 
 print_p12_subject "${CLIENT_KEYSTORE}" "${CERTIFICATE_PASSWORD}"
 
+if [ -n "${CLIENT_KEYSTORE_PASSWORD}" ]; then
+	keytool -importkeystore -srckeystore "${CLIENT_KEYSTORE}" -srcstoretype PKCS12 -srcstorepass "${CERTIFICATE_PASSWORD}" \
+		-destkeystore "${CLIENT_KEYSTORE}.new" -deststoretype PKCS12 -storepass "${CLIENT_KEYSTORE_PASSWORD}"
+	mv "${CLIENT_KEYSTORE}.new" "${CLIENT_KEYSTORE}"
+	CERTIFICATE_PASSWORD="${CLIENT_KEYSTORE_PASSWORD}"
+fi
+
+echo "Certificate File = ${CLIENT_KEYSTORE}"
 echo "Certificate Password = ${CERTIFICATE_PASSWORD}"
